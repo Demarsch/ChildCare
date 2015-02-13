@@ -23,6 +23,7 @@ namespace Registry
         public MainWindow()
         {
             InitializeComponent();
+            var db = DataLib.ModelContext.New;
         }
     }
 }
