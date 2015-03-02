@@ -68,6 +68,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -109,6 +110,10 @@
     <ProjectReference Include="..\MainLib\MainLib.csproj">
       <Project>{69d040e8-9029-45c8-8824-d64c6dd793e3}</Project>
       <Name>MainLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StuffLib\StuffLib.csproj">
+      <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
+      <Name>StuffLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

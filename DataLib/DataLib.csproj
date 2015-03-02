@@ -74,7 +74,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <EntityDeploy Include="ChildCareModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>ChildCareModel.Designer.cs</LastGenOutput>
@@ -99,6 +101,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="PartialClasses\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StuffLib\StuffLib.csproj">
+      <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
+      <Name>StuffLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

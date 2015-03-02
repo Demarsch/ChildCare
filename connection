@@ -1,0 +1,1 @@
+metadata=res://*/ChildCareModel.csdl|res://*/ChildCareModel.ssdl|res://*/ChildCareModel.msl;provider=System.Data.SqlClient;provider connection string="data source=S4PROG1\CHILDCARE;initial catalog=ChildCare;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework"

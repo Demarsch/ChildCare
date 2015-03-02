@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="SqlSchemaCompare.scmp" />
-    <None Include="DatabaseProject.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\DBSettings.sql" />

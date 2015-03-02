@@ -4,19 +4,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLib", "DataLib\DataLib.csproj", "{F14028ED-2AE3-452B-9780-75EC4F09B3E2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4} = {D44B47AF-D567-4754-8E22-B24ACAC78CA4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainLib", "MainLib\MainLib.csproj", "{69D040E8-9029-45C8-8824-D64C6DD793E3}"
 	ProjectSection(ProjectDependencies) = postProject
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4} = {D44B47AF-D567-4754-8E22-B24ACAC78CA4}
 		{F14028ED-2AE3-452B-9780-75EC4F09B3E2} = {F14028ED-2AE3-452B-9780-75EC4F09B3E2}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Registry", "Registry\Registry.csproj", "{39195B37-33A6-417A-8F77-DFB0EC8F3DD4}"
 	ProjectSection(ProjectDependencies) = postProject
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4} = {D44B47AF-D567-4754-8E22-B24ACAC78CA4}
 		{69D040E8-9029-45C8-8824-D64C6DD793E3} = {69D040E8-9029-45C8-8824-D64C6DD793E3}
 		{F14028ED-2AE3-452B-9780-75EC4F09B3E2} = {F14028ED-2AE3-452B-9780-75EC4F09B3E2}
 	EndProjectSection
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DatabaseProject", "DatabaseProject\DatabaseProject.sqlproj", "{AF5B2989-48E6-42F2-BE2C-B30F91F5287F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StuffLib", "StuffLib\StuffLib.csproj", "{D44B47AF-D567-4754-8E22-B24ACAC78CA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +49,10 @@ Global
 		{AF5B2989-48E6-42F2-BE2C-B30F91F5287F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF5B2989-48E6-42F2-BE2C-B30F91F5287F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF5B2989-48E6-42F2-BE2C-B30F91F5287F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
