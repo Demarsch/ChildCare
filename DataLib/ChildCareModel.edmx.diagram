@@ -6,6 +6,7 @@
     <edmx:Diagrams>
       <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" >
         <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="0.5" PointY="0.5" />
+        <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="4.125" PointY="1.375" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

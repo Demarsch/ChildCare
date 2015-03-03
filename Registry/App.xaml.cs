@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using log4net.Core;
 
 namespace Registry
 {
@@ -13,5 +8,14 @@ namespace Registry
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            var loggerRepository = LoggerManager.CreateRepository(typeof (App).FullName);
+            var mainViewModel = new MainWindowViewModel(new LogImpl(loggerRepository.GetLogger(typeof (App).Name)), new MainService());
+            var mainWindow = new MainWindow {DataContext = mainViewModel};
+            MainWindow = mainWindow;
+            mainWindow.Show();
+        }
     }
 }

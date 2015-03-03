@@ -22,6 +22,7 @@
       <Schema Namespace="DataLib" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="ModelContext" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="DBSettings" EntityType="DataLib.DBSetting" />
+          <EntitySet Name="People" EntityType="DataLib.Person" />
         </EntityContainer>
         <EntityType Name="DBSetting">
           <Key>
@@ -30,6 +31,19 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Person">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" Nullable="false" />
+          <Property Name="LastName" Type="String" Nullable="true" />
+          <Property Name="MiddleName" Type="String" Nullable="true" />
+          <Property Name="BirthDate" Type="DateTime" Nullable="false" />
+          <Property Name="IsMale" Type="Boolean" Nullable="false" />
+          <Property Name="SocialNumber" Type="Int64" Nullable="true" />
+          <Property Name="InsuranceNumber" Type="Int64" Nullable="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>

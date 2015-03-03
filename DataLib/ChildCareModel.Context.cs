@@ -26,5 +26,6 @@ namespace DataLib
         }
     
         public virtual DbSet<DBSetting> DBSettings { get; set; }
+        public virtual DbSet<Person> People { get; set; }
     }
 }
