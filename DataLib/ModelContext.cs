@@ -12,14 +12,17 @@ namespace DataLib
 {
     public partial class ModelContext
     {
-        public static string ConnectionStringTemplate = "metadata=res://*/ChildCareModel.csdl|res://*/ChildCareModel.ssdl|res://*/ChildCareModel.msl;provider=System.Data.SqlClient;provider connection string=\"data source=@source@;initial catalog=ChildCare;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework\"";
-        public static string DefaultConnectionString = "";
+        #region Context
 
-        public ModelContext(string connectionString) : base (connectionString)
+        public ModelContext(string connectionString)
+            : base(connectionString)
         {
 
         }
 
+        /// <summary>
+        /// Создает и возвращает новый контекст
+        /// </summary>
         public static ModelContext New
         {
             get
@@ -30,6 +33,25 @@ namespace DataLib
                 return result;
             }
         }
+
+        /// <summary>
+        /// Возвращает контекст, созданный один раз (для неизменяемых справочников)
+        /// </summary>
+        private static ModelContext staticContext = null;
+        public static ModelContext Static
+        {
+            get
+            {
+                return staticContext ?? (staticContext = New);
+            }
+        }
+
+        #endregion
+
+        #region connection management
+
+        private static string ConnectionStringTemplate = "metadata=res://*/ChildCareModel.csdl|res://*/ChildCareModel.ssdl|res://*/ChildCareModel.msl;provider=System.Data.SqlClient;provider connection string=\"data source=@source@;initial catalog=ChildCare;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework\"";
+        private static string DefaultConnectionString = "";
 
         private static bool CheckConnection()
         {
@@ -77,5 +99,6 @@ namespace DataLib
             Application.Current.Shutdown();
         }
 
+        #endregion
     }
 }
