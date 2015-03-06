@@ -5,8 +5,12 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" >
-        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="0.5" PointY="0.5" />
-        <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="4.125" PointY="1.375" />
+        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.PersonName" Width="1.5" PointX="3" PointY="1.125" />
+        <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="0.75" PointY="2.375" />
+        <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="4.375" />
+        <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
+        <AssociationConnector Association="DataLib.FK_Users_Persons" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

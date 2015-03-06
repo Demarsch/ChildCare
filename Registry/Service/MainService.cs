@@ -15,7 +15,7 @@ namespace Registry
             var parsedUserInput = ParseUserInput(userInput);
             using (var context = ModelContext.New)
             {
-                var result =  context.People.Where(x => parsedUserInput.Names.Contains(x.FirstName)
+                var result =  context.Persons.Where(x => parsedUserInput.Names.Contains(x.FirstName)
                                                  || parsedUserInput.Names.Contains(x.MiddleName)
                                                  || parsedUserInput.Names.Contains(x.LastName)
                                                  || parsedUserInput.Number == x.SocialNumber

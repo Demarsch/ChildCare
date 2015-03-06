@@ -12,13 +12,14 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class DBSetting
+    public partial class User
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public string Comment { get; set; }
+        public int PersonId { get; set; }
+        public string SID { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+    
+        public virtual Person Person { get; set; }
     }
 }

@@ -14,13 +14,22 @@ namespace DataLib
     
     public partial class Person
     {
+        public Person()
+        {
+            this.PersonNames = new HashSet<PersonName>();
+            this.Users = new HashSet<User>();
+        }
+    
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string MiddleName { get; set; }
-        public System.DateTime BirthDate { get; set; }
-        public bool IsMale { get; set; }
-        public Nullable<long> SocialNumber { get; set; }
-        public Nullable<long> InsuranceNumber { get; set; }
+        public string FullName { get; set; }
+        public string ShortName { get; set; }
+        public System.DateTime BirthDateTime { get; set; }
+        public string Snils { get; set; }
+        public string MedNumber { get; set; }
+        public int GenderId { get; set; }
+        public Nullable<System.DateTime> DeleteDateTime { get; set; }
+    
+        public virtual ICollection<PersonName> PersonNames { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }
