@@ -2,13 +2,15 @@
     [Id]             INT           IDENTITY (1, 1) NOT NULL,
     [FullName]       VARCHAR (100) NOT NULL,
     [ShortName]      VARCHAR (100) NOT NULL,
-    [BirthDateTime]  DATETIME      NOT NULL,
+    [BirthDate]      DATETIME      NOT NULL,
     [Snils]          VARCHAR (50)  NOT NULL,
     [MedNumber]      VARCHAR (50)  NOT NULL,
     [GenderId]       INT           NOT NULL,
     [DeleteDateTime] DATETIME      NULL,
     CONSTRAINT [PK_Persons] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 GO

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="DBSettings">
           <Key>
             <PropertyRef Name="Id" />
@@ -14,7 +14,7 @@
           <Property Name="Value" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="Comment" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="PersonNames">
           <Key>
@@ -26,7 +26,7 @@
           <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="MiddleName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="Persons">
           <Key>
@@ -35,7 +35,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FullName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="BirthDateTime" Type="datetime" Nullable="false" />
+          <Property Name="BirthDate" Type="datetime" Nullable="false" />
           <Property Name="Snils" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="MedNumber" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="GenderId" Type="int" Nullable="false" />
@@ -116,7 +116,7 @@
           <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" Nullable="true" />
         </EntityType>
         <EntityType Name="PersonName">
           <Key>
@@ -128,7 +128,7 @@
           <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="MiddleName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" Nullable="true" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonNames_Persons" FromRole="PersonName" ToRole="Person" />
         </EntityType>
         <EntityType Name="Person">
@@ -145,6 +145,7 @@
           <Property Name="DeleteDateTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_Persons" FromRole="Person" ToRole="PersonName" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
+          <Property Name="BirthDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -215,11 +216,11 @@
           <EntitySetMapping Name="Persons">
             <EntityTypeMapping TypeName="DataLib.Person">
               <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="BirthDate" ColumnName="BirthDate" />
                 <ScalarProperty Name="DeleteDateTime" ColumnName="DeleteDateTime" />
                 <ScalarProperty Name="GenderId" ColumnName="GenderId" />
                 <ScalarProperty Name="MedNumber" ColumnName="MedNumber" />
                 <ScalarProperty Name="Snils" ColumnName="Snils" />
-                <ScalarProperty Name="BirthDateTime" ColumnName="BirthDateTime" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
