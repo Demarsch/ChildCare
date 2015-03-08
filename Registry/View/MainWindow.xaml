@@ -1,28 +1,34 @@
-﻿<ribbon:RibbonWindow
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ribbon="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:registry="clr-namespace:Registry"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d"
     x:Class="Registry.MainWindow"
     Title="Регистратура" Height="350" Width="525" WindowStartupLocation="CenterScreen" WindowState="Maximized"
     d:DataContext="{d:DesignInstance registry:MainWindowViewModel}">
-    <ribbon:Ribbon>
-        <ribbon:Ribbon.ApplicationMenu>
-            <ribbon:RibbonApplicationMenu>
-                <ribbon:RibbonApplicationMenuItem ItemsSource="{Binding Patients}">
-                    <ribbon:RibbonApplicationMenuItem.Header>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Поиск пациента" Margin="2" />
-                            <xctk:WatermarkTextBox Width="200" Margin="2" Watermark="Введите данные пациента" Text="{Binding UserInput, Delay=500, UpdateSourceTrigger=PropertyChanged}" />
-                        </StackPanel>
-                    </ribbon:RibbonApplicationMenuItem.Header>
-                </ribbon:RibbonApplicationMenuItem>
-            </ribbon:RibbonApplicationMenu>
-        </ribbon:Ribbon.ApplicationMenu>
-    </ribbon:Ribbon>
+    <Window.Resources>
+        <registry:IntToVisiblityConverter x:Key="IntToVisiblityConverter" />
+        <registry:IntToInversedVisibilityConverter x:Key="IntToInversedVisibilityConverter" />
+    </Window.Resources>
+    <DockPanel>
+        <ToggleButton DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="3" Padding="3" VerticalAlignment="Top" Content="Open" x:Name="MainMenuButton" />
+        <Popup IsOpen="{Binding IsChecked, ElementName=MainMenuButton, Mode=TwoWay}" PlacementTarget="{x:Reference MainMenuButton}" Placement="Bottom" StaysOpen="False" Height="400">
+            <Border Background="White" BorderBrush="Black" BorderThickness="1">
+                <StackPanel Orientation="Horizontal">
+                    <xctk:WatermarkTextBox Width="220" Watermark="Введите данные для поиска пациента" Margin="5" Text="{Binding UserInput, Delay=500, UpdateSourceTrigger=PropertyChanged}"
+                                           VerticalAlignment="Top"/>
+                    <Separator VerticalAlignment="Stretch" Width="2" />
+                    <Grid>
+                        <ItemsControl Margin="5" Width="300" ItemsSource="{Binding Patients}" Visibility="{Binding Patients.Count, Converter={StaticResource IntToVisiblityConverter}}" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Text="Никого найти не удалось" Visibility="{Binding Patients.Count, Converter={StaticResource IntToInversedVisibilityConverter}}"
+                                   Foreground="DimGray" Margin="5"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Popup>
+    </DockPanel>
 
-</ribbon:RibbonWindow>
+</Window>

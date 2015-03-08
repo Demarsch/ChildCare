@@ -47,7 +47,7 @@ namespace Registry
             this.log = log;
             Patients = new ObservableCollection<PersonViewModel>();
             SearchPatientsCommand = new RelayCommand(SearchPeople);
-            SelectPatientCommand = new RelayCommand<PersonViewModel>(SelectPatient, CanSelectPatient);
+            SelectPatientCommand = new RelayCommand<PersonViewModel>(SelectPatient);
         }
 
         //TODO: we probably don't need an explicit command to run the search (implicit is enough when user types something)
@@ -60,26 +60,26 @@ namespace Registry
             if (userInput != null && userInput.Length > 2)
             {
                 var newPeople = service.GetPeople(UserInput);
-                Patients = new ObservableCollection<PersonViewModel>(newPeople.Select(x => new PersonViewModel(x)));
+                Patients = new ObservableCollection<PersonViewModel>(newPeople.Select(x => new PersonViewModel(x, this)));
             }
-            else
-                Patients.Add(new PersonViewModel(null));
         }
 
         public ICommand SelectPatientCommand { get; private set; }
 
         private void SelectPatient(PersonViewModel person)
         {
-            if (person == null || person.IsEmpty)
-                MessageBox.Show("На самом деле мы никого не выбрали");
-            else
-                MessageBox.Show(string.Format("Выбран пациент {0}. Его информация должна отобразиться в риббоне",
-                    person.FullName));
+            SelectedPatient = person;
+            MessageBox.Show(person == null
+                ? "На самом деле мы никого не выбрали"
+                : string.Format("Выбран пациент {0}. Его информация должна отобразиться в топлевелпэйшнтинфо", person.FullName));
         }
 
-        private bool CanSelectPatient(PersonViewModel person)
+        private PersonViewModel selectedPatient;
+
+        public PersonViewModel SelectedPatient
         {
-            return person == null || person.IsEmpty;
+            get { return selectedPatient; }
+            set { Set("SelectedPatient", ref selectedPatient, value); }
         }
     }
 }

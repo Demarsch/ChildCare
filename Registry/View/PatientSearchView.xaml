@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:registry="clr-namespace:Registry">
+    <DataTemplate DataType="{x:Type registry:PersonViewModel}">
+        <DataTemplate.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </DataTemplate.Resources>
+        <Button HorizontalAlignment="Stretch" Margin="5" Padding="5" Command="{Binding PatientList.SelectPatientCommand}" CommandParameter="{Binding}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border Background="Transparent" Width="40" Height="40" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" BorderBrush="Black" BorderThickness="1">
+                    <TextBlock Text="Фото" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Ф.И.О." Margin="5" Foreground="DimGray" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding FullName, Mode=OneTime}" Margin="5" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="Дата рождения" Margin="5" Foreground="DimGray" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding BirthDate, StringFormat='{}{0:dd-MMM-yyyy}'}" Margin="5" />
+            </Grid>
+        </Button>
+    </DataTemplate>
+</ResourceDictionary>

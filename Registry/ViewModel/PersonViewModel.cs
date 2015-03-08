@@ -6,25 +6,30 @@ namespace Registry
 {
     public class PersonViewModel : ObservableObject
     {
-        private readonly Person person;
+        private readonly Person patient;
 
-        public PersonViewModel(Person person)
+        public MainWindowViewModel PatientList { get; private set; }
+
+        public PersonViewModel(Person patient, MainWindowViewModel patientList)
         {
-            this.person = person;
+            if (patient == null)
+                throw new ArgumentNullException("patient");
+            if (patientList == null)
+                throw new ArgumentNullException("patientList");
+            PatientList = patientList;
+            this.patient = patient;
         }
 
-        public int Id { get { return IsEmpty ? 0 : person.Id; } }
+        public int Id { get { return patient.Id; } }
 
-        public string FullName { get { return IsEmpty ? string.Empty : person.FullName; } }
+        public string FullName { get { return patient.FullName; } }
         //TODO: rework into comparing with named constant
-        public bool IsMale { get { return IsEmpty || person.GenderId == 1; } }
+        public bool IsMale { get { return patient.GenderId == 1; } }
 
-        public DateTime BirthDate { get { return IsEmpty ? DateTime.MinValue : person.BirthDate; } }
+        public DateTime BirthDate { get { return patient.BirthDate; } }
 
-        public string Snils { get { return IsEmpty ? string.Empty : person.Snils; } }
+        public string Snils { get { return patient.Snils; } }
 
-        public string MedNumber { get { return IsEmpty ? string.Empty : person.MedNumber; } }
-
-        public bool IsEmpty { get { return person == null; } }
+        public string MedNumber { get { return patient.MedNumber; } }
     }
 }
