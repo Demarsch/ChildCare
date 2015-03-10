@@ -22,7 +22,7 @@
                                            VerticalAlignment="Top"/>
                     <Separator VerticalAlignment="Stretch" Width="2" />
                     <Grid>
-                        <ItemsControl Margin="5" Width="300" ItemsSource="{Binding Patients}" Visibility="{Binding Patients.Count, Converter={StaticResource IntToVisiblityConverter}}" />
+                        <ItemsControl Margin="5" Width="400" ItemsSource="{Binding Patients}" Visibility="{Binding Patients.Count, Converter={StaticResource IntToVisiblityConverter}}" />
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Text="Никого найти не удалось" Visibility="{Binding Patients.Count, Converter={StaticResource IntToInversedVisibilityConverter}}"
                                    Foreground="DimGray" Margin="5"/>
                     </Grid>

@@ -19,6 +19,6 @@ namespace DataLib
         public string Value { get; set; }
         public string Comment { get; set; }
         public System.DateTime BeginDateTime { get; set; }
-        public Nullable<System.DateTime> EndDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     }
 }

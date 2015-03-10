@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.Sql;
-using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace DataLib
@@ -28,7 +25,10 @@ namespace DataLib
             get
             {
                 if (string.IsNullOrEmpty(DefaultConnectionString)) PrepareConnectionString();
-                ModelContext result = new ModelContext(DefaultConnectionString);
+                var result = new ModelContext(DefaultConnectionString);
+#if DEBUG
+                result.Database.Log = x => Debug.Write(x);
+#endif
                 result.Database.CommandTimeout = 300;
                 return result;
             }
@@ -38,6 +38,7 @@ namespace DataLib
         /// Возвращает контекст, созданный один раз (для неизменяемых справочников)
         /// </summary>
         private static ModelContext staticContext = null;
+
         public static ModelContext Static
         {
             get
