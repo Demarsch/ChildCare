@@ -6,23 +6,23 @@
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </DataTemplate.Resources>
         <Button HorizontalAlignment="Stretch" Margin="5" Padding="5" Command="{Binding PatientList.SelectPatientCommand}" CommandParameter="{Binding}">
-            <Grid HorizontalAlignment="Stretch">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Background="Transparent" Width="48" Height="48" BorderBrush="Black" BorderThickness="1">
+                <Border Background="Transparent" Width="40" Height="40" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" BorderBrush="Black" BorderThickness="1">
                     <TextBlock Text="Фото" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
-                <DockPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch">
-                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="14" Text="{Binding FullName, Mode=OneTime}" Margin="5" />
-                    <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Text="{Binding BirthDate, StringFormat='{}{0:dd-MMM-yyyy}'}" Margin="5" />
-                </DockPanel>
-                <TextBlock Grid.Row="1" Grid.Column="1"  Margin="5" Foreground="DimGray" Text="CНИЛС 123 456 789-01 Полис 1234567890123" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Ф.И.О." Margin="5" Foreground="DimGray" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding FullName, Mode=OneTime}" Margin="5" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="Дата рождения" Margin="5" Foreground="DimGray" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding BirthDate, StringFormat='{}{0:dd-MMM-yyyy}'}" Margin="5" />
             </Grid>
         </Button>
     </DataTemplate>
