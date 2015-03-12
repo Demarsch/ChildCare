@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -11,6 +14,8 @@ namespace Registry
 {
     public class MainWindowViewModel : ObservableObject
     {
+        private const int UserInputSearchThreshold = 3;
+
         private readonly ILog log;
 
         private readonly MainService service;
@@ -33,7 +38,7 @@ namespace Registry
                 value = value.Trim();
                 if (Set("UserInput", ref userInput, value))
                     //TODO: run new search asynchrounously
-                    SearchPeople();
+                    SearchPatients(value);
             }
         }
 
@@ -46,40 +51,125 @@ namespace Registry
             this.service = service;
             this.log = log;
             Patients = new ObservableCollection<PersonViewModel>();
-            SearchPatientsCommand = new RelayCommand(SearchPeople);
-            SelectPatientCommand = new RelayCommand<PersonViewModel>(SelectPatient);
         }
 
-        //TODO: we probably don't need an explicit command to run the search (implicit is enough when user types something)
-        public ICommand SearchPatientsCommand { get; private set; }
-
-        private void SearchPeople()
+        private void SearchPatients(string userInput)
         {
+            IsLookingForPatient = false;
+            FailReason = string.Empty;
+            NoOneisFound = false;
             Patients.Clear();
-            //TODO: make the constant a DB parameter
-            if (userInput != null && userInput.Length > 2)
+            if (userInput == null || userInput.Length < UserInputSearchThreshold)
+                return;
+            IsLookingForPatient = true;
+            var uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            Task.Delay(500)
+                .ContinueWith((_, x) => SearchPatientsImpl(x as string), userInput)
+                .ContinueWith(PatientsSearched, uiScheduler);
+        }
+
+        private IEnumerable<PersonViewModel> SearchPatientsImpl(string userInput)
+        {
+            if (userInput != UserInput)
+                return null;
+            return service.GetPeople(userInput).Select(x => new PersonViewModel(x)).ToArray();
+        }
+
+        private void PatientsSearched(Task<IEnumerable<PersonViewModel>> sourceTask)
+        {
+            var anotherSearchWasExecuted = false;
+            try
             {
-                var newPeople = service.GetPeople(UserInput);
-                Patients = new ObservableCollection<PersonViewModel>(newPeople.Select(x => new PersonViewModel(x, this)));
+                var result = sourceTask.Result;
+                anotherSearchWasExecuted = result == null || sourceTask.AsyncState as string != UserInput;
+                if (anotherSearchWasExecuted)
+                    return;
+                Patients = new ObservableCollection<PersonViewModel>(sourceTask.Result);
+            }
+            catch (AggregateException ex)
+            {
+                var innerException = ex.InnerExceptions[0];
+                //TODO: probably move this string to separate localizable dll
+                FailReason =
+                    "В процессе поиск пациента возникла ошибка. Возможно отсутствует связь с базой данной. Повторите поиск еще раз, если ошибка повторится, обратитесь в службу поддержки";
+                log.Error(string.Format("Failed to find patients for user input of '{0}'", sourceTask.AsyncState),
+                    innerException);
+            }
+            finally
+            {
+                if (!anotherSearchWasExecuted)
+                {
+                    IsLookingForPatient = false;
+                    NoOneisFound = patients.Count == 0;
+                }
             }
         }
 
-        public ICommand SelectPatientCommand { get; private set; }
-
         private void SelectPatient(PersonViewModel person)
         {
-            SelectedPatient = person;
-            MessageBox.Show(person == null
-                ? "На самом деле мы никого не выбрали"
-                : string.Format("Выбран пациент {0}. Его информация должна отобразиться в топлевелпэйшнтинфо", person.FullName));
+            CurrentPatient = person;
         }
 
         private PersonViewModel selectedPatient;
-
+        //The difference between this property and CurrentPatient is that one is bound to ListBox and may become null when user searches patients.
+        //On the other hand CurrentPatient is null initially (when no patient is selected) and after user selects or creates a patient, it will never become null again
+        //meaning that user can't deselect patient
         public PersonViewModel SelectedPatient
         {
             get { return selectedPatient; }
-            set { Set("SelectedPatient", ref selectedPatient, value); }
+            set
+            {
+                Set("SelectedPatient", ref selectedPatient, value);
+                if (value == null)
+                    return;
+                SelectPatient(value);
+            }
         }
+
+        private PersonViewModel currentPatient;
+
+        public PersonViewModel CurrentPatient
+        {
+            get { return currentPatient; }
+            set
+            {
+                var isPatientSelected = IsPatientSelected;
+                if (Set("CurrentPatient", ref currentPatient, value) && IsPatientSelected != isPatientSelected)
+                    RaisePropertyChanged("IsPatientSelected");
+            }
+        }
+
+        public bool IsPatientSelected { get { return currentPatient != null; } }
+
+        private bool isLookingForPatient;
+
+        public bool IsLookingForPatient
+        {
+            get { return isLookingForPatient; }
+            set { Set("IsLookingForPatient", ref isLookingForPatient, value); }
+        }
+
+        private bool noOneisFound;
+
+        public bool NoOneisFound
+        {
+            get { return noOneisFound; }
+            set { Set("NoOneisFound", ref noOneisFound, value); }
+        }
+
+        private string failReason;
+
+        public string FailReason
+        {
+            get { return failReason; }
+            set
+            {
+                var isFailed = IsFailed;
+                if (Set("FailReason", ref failReason, value) && isFailed != IsFailed)
+                    RaisePropertyChanged("IsFailed");
+            }
+        }
+
+        public bool IsFailed { get { return !string.IsNullOrEmpty(failReason); } }
     }
 }

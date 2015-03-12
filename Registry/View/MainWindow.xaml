@@ -1,34 +1,69 @@
 ﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ribbon="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:registry="clr-namespace:Registry"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d"
     x:Class="Registry.MainWindow"
     Title="Регистратура" Height="350" Width="525" WindowStartupLocation="CenterScreen" WindowState="Maximized"
     d:DataContext="{d:DesignInstance registry:MainWindowViewModel}">
     <Window.Resources>
-        <registry:IntToVisiblityConverter x:Key="IntToVisiblityConverter" />
-        <registry:IntToInversedVisibilityConverter x:Key="IntToInversedVisibilityConverter" />
+        <stuffLib:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
+            <stuffLib:ConverterItem To="{x:Static Visibility.Visible}">
+                <stuffLib:ConverterItem.From>
+                    <system:Boolean>False</system:Boolean>
+                </stuffLib:ConverterItem.From>
+            </stuffLib:ConverterItem>
+        </stuffLib:UniversalConverter>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <stuffLib:MultiBooleanConverter x:Key="MultiBooleanToInversedVisibilityConverter" UseLogicalOr="True" TrueValue="{x:Static Visibility.Collapsed}" FalseValue="{x:Static Visibility.Visible}" />
     </Window.Resources>
-    <DockPanel>
-        <ToggleButton DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="3" Padding="3" VerticalAlignment="Top" Content="Open" x:Name="MainMenuButton" />
-        <Popup IsOpen="{Binding IsChecked, ElementName=MainMenuButton, Mode=TwoWay}" PlacementTarget="{x:Reference MainMenuButton}" Placement="Bottom" StaysOpen="False" Height="400">
-            <Border Background="White" BorderBrush="Black" BorderThickness="1">
-                <StackPanel Orientation="Horizontal">
-                    <xctk:WatermarkTextBox Width="220" Watermark="Введите данные для поиска пациента" Margin="5" Text="{Binding UserInput, Delay=500, UpdateSourceTrigger=PropertyChanged}"
-                                           VerticalAlignment="Top"/>
-                    <Separator VerticalAlignment="Stretch" Width="2" />
-                    <Grid>
-                        <ItemsControl Margin="5" Width="400" ItemsSource="{Binding Patients}" Visibility="{Binding Patients.Count, Converter={StaticResource IntToVisiblityConverter}}" />
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Text="Никого найти не удалось" Visibility="{Binding Patients.Count, Converter={StaticResource IntToInversedVisibilityConverter}}"
-                                   Foreground="DimGray" Margin="5"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
-        </Popup>
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="False">
+        <Border DockPanel.Dock="Top" BorderBrush="DimGray" BorderThickness="0 0 0 1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
+                    <GradientStop Offset="0" Color="LightGray" />
+                    <GradientStop Offset="1" Color="White" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Новый Пациент" Padding="5" Margin="5" VerticalAlignment="Center" Background="White" />
+                <xctk:WatermarkTextBox Grid.Column="1" Margin="5" Watermark="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН"
+                                       VerticalAlignment="Center" x:Name="SearchPatientTextBox" Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}" />
+                <Popup Grid.Column="1" PlacementTarget="{x:Reference SearchPatientTextBox}" Placement="Bottom" VerticalOffset="5" IsOpen="{Binding IsFocused, ElementName=SearchPatientTextBox, Mode=OneWay}"
+                       MinHeight="100" Width="{Binding ActualWidth, ElementName=SearchPatientTextBox}">
+                    <Border Background="White" BorderBrush="DimGray" BorderThickness="1">
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FocusVisualStyle="{x:Null}"
+                                 ItemsSource="{Binding Patients}" SelectedItem="{Binding SelectedPatient, Mode=OneWayToSource}">
+                                <ListBox.Visibility>
+                                    <MultiBinding Converter="{StaticResource MultiBooleanToInversedVisibilityConverter}">
+                                        <Binding Path="IsLookingForPatient" />
+                                        <Binding Path="NoOneisFound" />
+                                    </MultiBinding>
+                                </ListBox.Visibility>
+                                <ListBox.Resources>
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White" />
+                                </ListBox.Resources>
+                            </ListBox>
+                            <TextBlock Text="Идет поиск пациентов..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 20 0 20" 
+                                   Visibility="{Binding IsLookingForPatient, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <TextBlock Text="Не найдено ни одного пациента. Попробуйте изменить критерии поиска" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" Margin="0 20 0 20" Visibility="{Binding NoOneisFound, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </Grid>
+                    </Border>
+                </Popup>
+                <TextBlock Grid.Column="2" Text="Пациент не выбран" Margin="5" VerticalAlignment="Center" FontWeight="Bold" Visibility="{Binding IsPatientSelected, Converter={StaticResource BooleanToInversedVisibilityConverter}}" />
+                <ContentControl Grid.Column="2" VerticalAlignment="Center" Content="{Binding CurrentPatient}" Visibility="{Binding IsPatientSelected, Converter={StaticResource BooleanToVisibilityConverter}}"></ContentControl>
+            </Grid>
+        </Border>
     </DockPanel>
-
 </Window>

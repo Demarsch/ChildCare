@@ -8,15 +8,10 @@ namespace Registry
     {
         private readonly Person patient;
 
-        public MainWindowViewModel PatientList { get; private set; }
-
-        public PersonViewModel(Person patient, MainWindowViewModel patientList)
+        public PersonViewModel(Person patient)
         {
             if (patient == null)
                 throw new ArgumentNullException("patient");
-            if (patientList == null)
-                throw new ArgumentNullException("patientList");
-            PatientList = patientList;
             this.patient = patient;
         }
 
@@ -31,5 +26,12 @@ namespace Registry
         public string Snils { get { return patient.Snils; } }
 
         public string MedNumber { get { return patient.MedNumber; } }
+        //TODO: rework into loading photo from base. Probably worth using IsAsync binding property
+        public string PhotoSource { get
+        {
+            return IsMale
+                ? "pack://application:,,,/Resources;component/Images/Man48x48.png"
+                : "pack://application:,,,/Resources;component/Images/Woman48x48.png";
+        } }
     }
 }
