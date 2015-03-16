@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Registry
 {
-    class EditPersonData : ObservableObject
+    class EditPersonDataViewModel : ObservableObject
     {
 
         private Person person;
 
-        public EditPersonData()
+        public EditPersonDataViewModel()
         {
 
         }

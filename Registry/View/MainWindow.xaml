@@ -38,14 +38,22 @@
                 <Button Grid.Column="0" ToolTip="Новый Пациент" Padding="5" Margin="5" VerticalAlignment="Center" Background="White" Command="{Binding NewPatientCommand}">
                     <Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/AddPatient48x48.png" />
                 </Button>
-                <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3">
-                    <ContentControl VerticalAlignment="Center" Content="{Binding CurrentPatient}" />
-                </Border>
+                <Button Grid.Column="1" Margin="2" VerticalAlignment="Center" Padding="3" Content="{Binding CurrentPatient}" Command="{Binding EditPatientCommand}"
+                        Background="White">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Информация о пациенте" Margin="5" FontWeight="Bold" />
+                                <TextBlock Text="Здесь можно будет увидеть дополнительную информацию о пациенте" Margin="5" />
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
                 <xctk:WatermarkTextBox Grid.Column="2" Margin="5" Watermark="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН"
-                                       VerticalAlignment="Center" x:Name="SearchPatientTextBox" Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}"
+                                       VerticalAlignment="Center" x:Name="searchPatientTextBox" Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}"
                                        PreviewKeyDown="SearchPatientTextBoxOnKeyDown" Width="500" HorizontalAlignment="Left"/>
-                <Popup Grid.Column="1" PlacementTarget="{x:Reference SearchPatientTextBox}" Placement="Bottom" VerticalOffset="5" IsOpen="{Binding IsFocused, ElementName=SearchPatientTextBox, Mode=OneWay}"
-                       MinHeight="100" Width="{Binding ActualWidth, ElementName=SearchPatientTextBox}" x:Name="popup">
+                <Popup Grid.Column="1" PlacementTarget="{x:Reference searchPatientTextBox}" Placement="Bottom" VerticalOffset="5" IsOpen="{Binding IsFocused, ElementName=searchPatientTextBox, Mode=OneWay}"
+                       MinHeight="100" Width="{Binding ActualWidth, ElementName=searchPatientTextBox}" x:Name="popup">
                     <Border Background="White" BorderBrush="DimGray" BorderThickness="1">
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"

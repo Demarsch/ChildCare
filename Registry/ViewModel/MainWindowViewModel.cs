@@ -179,5 +179,14 @@ namespace Registry
         {
             MessageBox.Show("Окно для создания нового пациента");
         }
+
+        public ICommand EditPatientCommand { get; private set; }
+
+        private void EditPatient()
+        {
+            if (currentPatient.IsEmpty)
+                return;
+            MessageBox.Show(string.Format("Пациент {0} будет отредактирован именно в этом окне", currentPatient));
+        }
     }
 }
