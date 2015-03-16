@@ -11,6 +11,8 @@
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="4.375" />
         <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
         <AssociationConnector Association="DataLib.FK_Users_Persons" />
+        <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="5.375" PointY="3.75" />
+        <AssociationConnector Association="DataLib.FK_Persons_Genders" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

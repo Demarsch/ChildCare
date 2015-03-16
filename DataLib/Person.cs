@@ -31,5 +31,6 @@ namespace DataLib
     
         public virtual ICollection<PersonName> PersonNames { get; set; }
         public virtual ICollection<User> Users { get; set; }
+        public virtual Gender Gender { get; set; }
     }
 }
