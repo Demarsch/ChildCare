@@ -45,6 +45,12 @@
     <Resource Include="Images\Man48x48.png" />
     <Resource Include="Images\Woman48x48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Question48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\AddPatient48x48.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

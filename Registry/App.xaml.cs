@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Threading;
+using System.Windows;
 using log4net.Core;
 
 namespace Registry
@@ -10,6 +12,9 @@ namespace Registry
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            var newCulture = new CultureInfo("ru-RU", true);
+            newCulture.DateTimeFormat.ShortDatePattern = "dd MMM yyyy";
+            Thread.CurrentThread.CurrentCulture = newCulture;
             base.OnStartup(e);
             var loggerRepository = LoggerManager.CreateRepository(typeof (App).FullName);
             var mainViewModel = new MainWindowViewModel(new LogImpl(loggerRepository.GetLogger(typeof (App).Name)), new MainService());
