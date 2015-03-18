@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DataLib;
 
-namespace Registry
+namespace Core
 {
-    //TODO: extract interface to be able to mock it
-    public class MainService
+    public class PatientService : IPatientService
     {
-        public IList<Person> GetPeople(string userInput)
+        public IList<Person> GetPatients(string searchString, int topCount = 0)
         {
             //TODO: check if we get valid result
-            var parsedUserInput = ParseUserInput(userInput);
+            var parsedUserInput = ParseUserInput(searchString);
             using (var context = ModelContext.New)
             {
                 //TODO: do we need to check for old names?
@@ -21,19 +19,20 @@ namespace Registry
                     .Where(x => parsedUserInput.Names.Any(y => x.FirstName.StartsWith(y))
                                                  || parsedUserInput.Names.Any(y => x.LastName.StartsWith(y))
                                                  || parsedUserInput.Names.Any(y => x.MiddleName.StartsWith(y))
-                                                 || parsedUserInput.Number == x.Person.Snils
-                                                 || parsedUserInput.Number == x.Person.MedNumber);
+                                                 || parsedUserInput.Numbers.Any(y => x.Person.Snils == y)
+                                                 || parsedUserInput.Numbers.Any(y => x.Person.MedNumber == y));
                 //Every match in name, middle name, last name, social number or insurance number gives one point to result
                 //Then we sort them by this result descending and show top 5 of them (i.e. those who have more matches will be first on the list)
                 //TODO: make this constant a DB parameter
-                return result.OrderByDescending(x => (parsedUserInput.Names.Any(y => x.FirstName.StartsWith(y)) ? 1 : 0)
+                result = result.OrderByDescending(x => (parsedUserInput.Names.Any(y => x.FirstName.StartsWith(y)) ? 1 : 0)
                                                      + (parsedUserInput.Names.Any(y => x.LastName.StartsWith(y)) ? 1 : 0)
                                                      + (parsedUserInput.Names.Any(y => x.MiddleName.StartsWith(y)) ? 1 : 0)
-                                                     + (parsedUserInput.Number == x.Person.Snils ? 1 : 0)
-                                                     + (parsedUserInput.Number == x.Person.MedNumber ? 1 : 0))
-                                                     .Take(5)
-                                                     .Select(x => x.Person)
-                                                     .ToArray();
+                                                     + (parsedUserInput.Numbers.Any(y => x.Person.Snils == y) ? 1 : 0)
+                                                     + (parsedUserInput.Numbers.Any(y => x.Person.MedNumber == y) ? 1 : 0));
+                if (topCount > 0)
+                    result = result.Take(topCount);
+                return result.Select(x => x.Person)
+                             .ToArray();
             }
         }
         //TODO: this is a draft version
@@ -47,7 +46,7 @@ namespace Registry
             userInput = sanitizedInput.ToString();
             var result = new ParsedUserInput();
             var numberString = new StringBuilder();
-            foreach (var word in userInput.Split(new [] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var word in userInput.Split(new[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 int number;
                 if (int.TryParse(word, out number))
@@ -56,7 +55,7 @@ namespace Registry
                     result.Names.Add(word);
             }
             if (numberString.Length > 0)
-                result.Number = numberString.ToString();
+                result.Numbers.Add(numberString.ToString());
             return result;
         }
 
@@ -64,11 +63,15 @@ namespace Registry
         {
             public IList<string> Names { get; private set; }
 
-            public string Number { get; set; }
+            public IList<string> Numbers { get; private set; }
+
+            public IList<DateTime> Dates { get; private set; }
 
             public ParsedUserInput()
             {
                 Names = new List<string>();
+                Numbers = new List<string>();
+                Dates = new List<DateTime>();
             }
         }
     }

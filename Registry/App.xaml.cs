@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Threading;
 using System.Windows;
+using Core;
+using log4net;
 using log4net.Core;
 
 namespace Registry
@@ -16,8 +18,10 @@ namespace Registry
             newCulture.DateTimeFormat.ShortDatePattern = "dd MMM yyyy";
             Thread.CurrentThread.CurrentCulture = newCulture;
             base.OnStartup(e);
-            var loggerRepository = LoggerManager.CreateRepository(typeof (App).FullName);
-            var mainViewModel = new MainWindowViewModel(new LogImpl(loggerRepository.GetLogger(typeof (App).Name)), new MainService());
+            var log = new LogImpl(LoggerManager.CreateRepository(typeof (App).FullName).GetLogger(typeof (App).Name)) as ILog;
+            var patientService = new PatientService() as IPatientService;
+            var patientSearchViewModel = new PatientSearchViewModel(patientService, log);
+            var mainViewModel = new MainWindowViewModel(patientSearchViewModel);
             var mainWindow = new MainWindow {DataContext = mainViewModel};
             MainWindow = mainWindow;
             mainWindow.Show();
