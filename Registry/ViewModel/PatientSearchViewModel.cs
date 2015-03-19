@@ -15,8 +15,6 @@ namespace Registry
 {
     public class PatientSearchViewModel : ObservableObject
     {
-        private System.Windows.Controls.ListBox patientList;
-
         private const int UserInputSearchThreshold = 3;
 
         private const int PatientDisplayCount = 5;
@@ -37,7 +35,6 @@ namespace Registry
             CurrentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
-            CycleThroughPatientListCommand = new RelayCommand<KeyEventArgs>(CycleThroughPatientList);
         }
 
         private ObservableCollection<PersonViewModel> patients;
@@ -56,8 +53,9 @@ namespace Registry
             set
             {
                 value = value.Trim();
-                if (Set("SearchString", ref searchString, value))
-                    SearchPatients(value);
+                if (!Set("SearchString", ref searchString, value))
+                    return;
+                SearchPatients(value);
             }
         }
 
@@ -193,46 +191,6 @@ namespace Registry
             if (currentPatient.IsEmpty)
                 return;
             MessageBox.Show(string.Format("Пациент {0} будет отредактирован именно в этом окне", currentPatient));
-        }
-
-        public ICommand CycleThroughPatientListCommand { get; private set; }
-
-        private void CycleThroughPatientList(KeyEventArgs e)
-        {
-            //if (e.Key == Key.Escape)
-            //    patientList.Focus();
-            //if (!patientList.HasItems)
-            //    return;
-            //if (e.Key == Key.Down)
-            //    SelectNextItem();
-            //else if (e.Key == Key.Up)
-            //    SelectPreviousItem();
-            //else if (e.Key == Key.Enter)
-            //    patientList.Focus();
-        }
-
-        private void SelectNextItem()
-        {
-            var source = patientList.ItemsSource as IList;
-            if (source == null)
-                return;
-            if (patientList.SelectedIndex < source.Count - 1)
-                patientList.SelectedIndex += 1;
-            else
-                patientList.SelectedIndex = 0;
-        }
-
-        private void SelectPreviousItem()
-        {
-            var source = patientList.ItemsSource as IList;
-            if (source == null)
-                return;
-            if (patientList.SelectedIndex == -1)
-                patientList.SelectedIndex = 0;
-            else if (patientList.SelectedIndex == 0)
-                patientList.SelectedIndex = source.Count - 1;
-            else
-                patientList.SelectedIndex -= 1;
         }
     }
 }

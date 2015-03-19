@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows;
 using Core;
+using DataLib;
 using log4net;
 using log4net.Core;
 
@@ -19,7 +20,8 @@ namespace Registry
             Thread.CurrentThread.CurrentCulture = newCulture;
             base.OnStartup(e);
             var log = new LogImpl(LoggerManager.CreateRepository(typeof (App).FullName).GetLogger(typeof (App).Name)) as ILog;
-            var patientService = new PatientService() as IPatientService;
+            var contextProvider = new ModelContextProvider();
+            var patientService = new PatientService(contextProvider) as IPatientService;
             var patientSearchViewModel = new PatientSearchViewModel(patientService, log);
             var mainViewModel = new MainWindowViewModel(patientSearchViewModel);
             var mainWindow = new MainWindow {DataContext = mainViewModel};

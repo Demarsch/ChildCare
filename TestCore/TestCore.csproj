@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F5EF279C-AD37-46CD-9558-61438976B828}</ProjectGuid>
+    <ProjectGuid>{D1A16BEA-8831-4464-9382-86CB9B7F5849}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Resources</RootNamespace>
-    <AssemblyName>Resources</AssemblyName>
+    <RootNamespace>TestCore</RootNamespace>
+    <AssemblyName>TestCore</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,20 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Misc\TestDataContext.cs" />
+    <Compile Include="Misc\TestDataContextProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Man48x48.png" />
-    <Resource Include="Images\Woman48x48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Question48x48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\AddPatient48x48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Loading16x16.gif" />
+    <ProjectReference Include="..\StuffLib\StuffLib.csproj">
+      <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
+      <Name>StuffLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

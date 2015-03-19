@@ -5,9 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:command="http://www.galasoft.ch/mvvmlight"
              xmlns:registry="clr-namespace:Registry"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance registry:PatientSearchViewModel}">
     <UserControl.Resources>
@@ -41,8 +40,7 @@
                     </ToolTip>
                 </Button.ToolTip>
             </Button>
-            <TextBlock Grid.Column="2" Margin="7 0 0 0"  x:Name="watermark" Text="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН" VerticalAlignment="Center" 
-                       Foreground="Gray">
+            <TextBlock Grid.Column="2" Margin="7 0 0 0"  x:Name="watermark" Text="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН" VerticalAlignment="Center">
                 <TextBlock.RenderTransform>
                     <TranslateTransform Y="0" />
                 </TextBlock.RenderTransform>
@@ -87,8 +85,11 @@
                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White" />
                             </ListBox.Resources>
                         </ListBox>
-                        <TextBlock Text="Идет поиск пациентов..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 20 0 20" 
-                                   Visibility="{Binding IsLookingForPatient, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 20 0 20" Visibility="{Binding IsLookingForPatient, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Orientation="Horizontal">
+                            <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" Width="16" Height="16" Margin="3" VerticalAlignment="Center" />
+                            <TextBlock VerticalAlignment="Center" Margin="3" Text="Идет поиск пациентов..." />
+                        </StackPanel>
                         <TextBlock Text="Не найдено ни одного пациента. Попробуйте изменить критерии поиска" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"
                                    VerticalAlignment="Center" Margin="0 20 0 20" Visibility="{Binding NoOneisFound, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </Grid>

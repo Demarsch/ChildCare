@@ -8,14 +8,23 @@ namespace Core
 {
     public class PatientService : IPatientService
     {
+        private readonly IDataContextProvider dataContextProvider;
+
+        public PatientService(IDataContextProvider dataContextProvider)
+        {
+            if (dataContextProvider == null)
+                throw new ArgumentNullException("dataContextProvider");
+            this.dataContextProvider = dataContextProvider;
+        }
+
         public IList<Person> GetPatients(string searchString, int topCount = 0)
         {
             //TODO: check if we get valid result
             var parsedUserInput = ParseUserInput(searchString);
-            using (var context = ModelContext.New)
+            using (var context = dataContextProvider.GetNewDataContext())
             {
                 //TODO: do we need to check for old names?
-                var result = context.PersonNames
+                var result = context.GetData<PersonName>()
                     .Where(x => parsedUserInput.Names.Any(y => x.FirstName.StartsWith(y))
                                                  || parsedUserInput.Names.Any(y => x.LastName.StartsWith(y))
                                                  || parsedUserInput.Names.Any(y => x.MiddleName.StartsWith(y))

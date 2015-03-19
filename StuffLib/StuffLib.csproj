@@ -7,7 +7,7 @@
     <ProjectGuid>{D44B47AF-D567-4754-8E22-B24ACAC78CA4}</ProjectGuid>
     <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StuffLib</RootNamespace>
+    <RootNamespace>Core</RootNamespace>
     <AssemblyName>StuffLib</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -99,6 +99,8 @@
   <ItemGroup>
     <Compile Include="Converters\UniversalMultiBooleanConverter.cs" />
     <Compile Include="Converters\UniversalConverter.cs" />
+    <Compile Include="Misc\IDataContext.cs" />
+    <Compile Include="Misc\IDataContextProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

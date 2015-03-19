@@ -109,7 +109,8 @@
     <Compile Include="Gender.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="ModelContext.cs" />
+    <Compile Include="Misc\ModelContext.cs" />
+    <Compile Include="Misc\ModelContextProvider.cs" />
     <Compile Include="Person.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
