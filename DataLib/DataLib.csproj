@@ -111,6 +111,7 @@
     </Compile>
     <Compile Include="Misc\ModelContext.cs" />
     <Compile Include="Misc\ModelContextProvider.cs" />
+    <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="Person.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -148,9 +149,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="PartialClasses\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\StuffLib\StuffLib.csproj">
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>

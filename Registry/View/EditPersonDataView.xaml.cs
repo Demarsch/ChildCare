@@ -17,9 +17,9 @@ namespace Registry
     /// <summary>
     /// Interaction logic for EditPersonData.xaml
     /// </summary>
-    public partial class EditPersonData : Window
+    public partial class EditPersonDataView : Window
     {
-        public EditPersonData()
+        public EditPersonDataView()
         {
             InitializeComponent();
         }

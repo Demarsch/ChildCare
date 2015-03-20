@@ -34,6 +34,11 @@ namespace Registry
             get { return IsEmpty || patient.GenderId == 1; }
         }
 
+        public string Gender
+        {
+            get { return (IsEmpty || patient.Gender == null) ? string.Empty : patient.Gender.ShortName; }
+        }
+
         public DateTime BirthDate
         {
             get { return IsEmpty ? DateTime.MinValue : patient.BirthDate; }

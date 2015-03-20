@@ -108,9 +108,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="View\PatientSearchUserControl.xaml.cs">
+    <Page Include="View\EditPersonDataView.xaml">
       <DependentUpon>PatientSearchUserControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="View\EditPersonData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -123,11 +123,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="ViewModel\EditPersonData.cs" />
+    <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
     <Compile Include="ViewModel\PatientSearchViewModel.cs" />
     <Compile Include="ViewModel\PersonViewModel.cs" />
-    <Compile Include="View\EditPersonData.xaml.cs">
-      <DependentUpon>EditPersonData.xaml</DependentUpon>
+    <Compile Include="View\EditPersonDataView.xaml.cs">
+      <DependentUpon>EditPersonDataView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

@@ -122,10 +122,18 @@
       <Project>{f14028ed-2ae3-452b-9780-75ec4f09b3e2}</Project>
       <Name>DataLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Resources\Resources.csproj">
+      <Project>{f5ef279c-ad37-46cd-9558-61438976b828}</Project>
+      <Name>Resources</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StuffLib\StuffLib.csproj">
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
       <Name>StuffLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModel\" />
+    <Folder Include="View\" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
