@@ -8,6 +8,7 @@ namespace Core
 {
     public class PatientService : IPatientService
     {
+<<<<<<< HEAD:MainLib/Services/Implementation/PatientService.cs
         private readonly IDataContextProvider dataContextProvider;
 
         public PatientService(IDataContextProvider dataContextProvider)
@@ -17,17 +18,25 @@ namespace Core
             this.dataContextProvider = dataContextProvider;
         }
 
-        public Person GetPersonById(int id)
-        {
-            var context = dataContextProvider.GetNewDataContext();
-            return context.GetData<Person>().FirstOrDefault(x => x.Id == id);
-        }
-
         public IList<Person> GetPatients(string searchString, int topCount = 0)
         {
             //TODO: check if we get valid result
             var parsedUserInput = ParseUserInput(searchString);
             using (var context = dataContextProvider.GetNewDataContext())
+=======
+        public Person GetPersonById(int id)
+        {
+            var context = ModelContext.New;
+            return context.Persons.FirstOrDefault(x => x.Id == id);
+        }
+
+        public IList<Person> GetPeople(string userInput)
+        {
+            //TODO: check if we get valid result
+            var parsedUserInput = ParseUserInput(userInput);
+
+            using (var context = ModelContext.New)
+>>>>>>> Minor fixes:Registry/Service/MainService.cs
             {
                 //TODO: do we need to check for old names?
                 var result = context.GetData<PersonName>()

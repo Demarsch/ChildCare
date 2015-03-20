@@ -107,11 +107,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-
+<<<<<<< HEAD
     <Compile Include="View\PatientSearchUserControl.xaml.cs">
       <DependentUpon>PatientSearchUserControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\EditPersonData.xaml">
+=======
     <Page Include="View\EditPersonDataView.xaml">
+>>>>>>> Minor fixes
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -124,8 +127,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
+<<<<<<< HEAD
+    <Compile Include="ViewModel\EditPersonData.cs" />
     <Compile Include="ViewModel\PatientSearchViewModel.cs" />
+=======
+    <Compile Include="Service\MainService.cs" />
+    <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
+>>>>>>> Minor fixes
     <Compile Include="ViewModel\PersonViewModel.cs" />
     <Compile Include="View\EditPersonDataView.xaml.cs">
       <DependentUpon>EditPersonDataView.xaml</DependentUpon>

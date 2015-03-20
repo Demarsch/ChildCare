@@ -1,11 +1,14 @@
-﻿using DataLib;
+﻿using Core;
+using DataLib;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Registry
 {
@@ -13,14 +16,14 @@ namespace Registry
     {
 
         private readonly ILog log;
-        private readonly MainService service;
+        private readonly IPatientService service;
 
         private Person person;
 
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonDataViewModel(ILog log, MainService service)
+        public EditPersonDataViewModel(ILog log, IPatientService service)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -28,24 +31,65 @@ namespace Registry
                 throw new ArgumentNullException("service");
             this.service = service;
             this.log = log;
+            SaveChangesCommand = new RelayCommand(SaveChanges);
         }
 
-        public EditPersonDataViewModel(ILog log, MainService service, int personId)
+        public EditPersonDataViewModel(ILog log, IPatientService service, int personId)
             : this(log, service)
         {
-            if (log == null)
-                throw new ArgumentNullException("log");
             this.Id = personId;
             this.log = log;
         }
 
         /// <summary>
-        /// Use this for creating new person with default data from search
+        /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonDataViewModel(ILog log, MainService service, string personData)
+        public EditPersonDataViewModel(ILog log, IPatientService service, string personData)
             : this(log, service)
         {
 
+        }
+
+        private void FillPropertyFromPrson()
+        {
+            if (!IsEmpty)
+            {
+                LastName = person.CurrentLastName;
+                FirstName = person.CurrentFirstName;
+                MiddleName = person.CurrentMiddleName;
+                BirthDate = person.BirthDate;
+                SNILS = person.Snils;
+                MedNumber = person.MedNumber;
+            }
+            else
+            {
+                LastName = string.Empty;
+                FirstName = string.Empty;
+                MiddleName = string.Empty;
+                BirthDate = new DateTime(1900, 1, 1);
+                SNILS = string.Empty;
+                MedNumber = string.Empty;
+            }
+        }
+
+        public async void GetPersonData()
+        {
+            var task = Task.Factory.StartNew(() => GetPersonDataAsync());
+            await task;
+            FillPropertyFromPrson();
+
+        }
+
+        private void GetPersonDataAsync()
+        {
+            person = service.GetPersonById(id);
+        }
+
+        public ICommand SaveChangesCommand { get; private set; }
+
+        private void SaveChanges()
+        {
+            throw new NotImplementedException();
         }
 
         public bool IsEmpty
@@ -53,77 +97,173 @@ namespace Registry
             get { return person == null; }
         }
 
+        private int id;
         public int Id
         {
-            get { return person.Id; }
+            get { return id; }
             set
             {
-                if (person != null && person.Id == value)
+                if (id == value)
                     return;
-                person = service.GetPersonById(value);
+                id = value;
+                GetPersonData();
             }
         }
 
+        private string lastName = string.Empty;
         public string LastName
         {
             get
             {
-                return IsEmpty ? string.Empty : person.CurrentLastName;
+                return lastName;
+            }
+            set
+            {
+                Set("LastName", ref lastName, value);
             }
         }
 
+        private string firstName = string.Empty;
         public string FirstName
         {
             get
             {
-                return IsEmpty ? string.Empty : person.CurrentFirstName;
+                return firstName;
+            }
+            set
+            {
+                Set("FirstName", ref firstName, value);
             }
         }
 
+        private string middleName = string.Empty;
         public string MiddleName
         {
             get
             {
-                return IsEmpty ? string.Empty : person.CurrentMiddleName;
+                return middleName;
+            }
+            set
+            {
+                Set("MiddleName", ref middleName, value);
             }
         }
 
+        private DateTime birthDate;
         public DateTime BirthDate
         {
             get
             {
-                return IsEmpty ? DateTime.Parse("1/1/1900") : person.BirthDate;
+                return IsEmpty ? DateTime.Parse("1/1/1900") : birthDate;
             }
             set
             {
-                if (person.BirthDate == value)
-                    return;
-                person.BirthDate = value;
-                //Set("BirthDate", ref person.BirthDate, value);
+                Set("BirthDate", ref birthDate, value);
             }
         }
 
+        private string snils = string.Empty;
         public string SNILS
         {
             get
             {
-                return IsEmpty ? string.Empty : person.Snils;
+                return snils;
+            }
+            set
+            {
+                Set("SNILS", ref snils, value);
             }
         }
 
+        private string medNumber = string.Empty;
         public string MedNumber
         {
             get
             {
-                return IsEmpty ? string.Empty : person.MedNumber;
+                return medNumber;
+            }
+            set
+            {
+                Set("MedNumber", ref medNumber, value);
             }
         }
 
+        // Maybe I need object?
+        private string gender = string.Empty;
         public string Gender
         {
             get
             {
-                return IsEmpty ? string.Empty : person.Gender.ShortName;
+                return gender;
+            }
+            set
+            {
+                Set("Gender", ref gender, value);
+            }
+        }
+
+        private string phones = string.Empty;
+        public string Phones
+        {
+            get
+            {
+                return phones;
+            }
+            set
+            {
+                Set("Phones", ref phones, value);
+            }
+        }
+
+        private string insurance = string.Empty;
+        public string Insurance
+        {
+            get
+            {
+                return insurance;
+            }
+            set
+            {
+                Set("Insurance", ref insurance, value);
+            }
+        }
+
+        private string addresses = string.Empty;
+        public string Addresses
+        {
+            get
+            {
+                return addresses;
+            }
+            set
+            {
+                Set("Addresses", ref addresses, value);
+            }
+        }
+
+        private string identityDocument = string.Empty;
+        public string IdentityDocument
+        {
+            get
+            {
+                return identityDocument;
+            }
+            set
+            {
+                Set("IdentityDocument", ref identityDocument, value);
+            }
+        }
+
+        private string relatives = string.Empty;
+        public string Relatives
+        {
+            get
+            {
+                return relatives;
+            }
+            set
+            {
+                Set("Relatives", ref relatives, value);
             }
         }
     }

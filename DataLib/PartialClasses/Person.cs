@@ -33,7 +33,7 @@ namespace DataLib
             get
             {
                 if (this.PersonNames.Any())
-                    return this.PersonNames.Last().FirstName;
+                    return this.PersonNames.Last().MiddleName;
                 return string.Empty;
             }
         }
