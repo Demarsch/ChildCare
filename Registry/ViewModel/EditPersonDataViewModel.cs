@@ -50,7 +50,7 @@ namespace Registry
 
         }
 
-        private void FillPropertyFromPrson()
+        private void FillPropertyFromPerson()
         {
             if (!IsEmpty)
             {
@@ -74,10 +74,9 @@ namespace Registry
 
         public async void GetPersonData()
         {
-            var task = Task.Factory.StartNew(() => GetPersonDataAsync());
+            var task = Task.Factory.StartNew(GetPersonDataAsync);
             await task;
-            FillPropertyFromPrson();
-
+            FillPropertyFromPerson();
         }
 
         private void GetPersonDataAsync()

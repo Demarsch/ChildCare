@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using DataLib;
 
 namespace Core
@@ -19,13 +21,12 @@ namespace Core
 
         public Person GetPersonById(int id)
         {
-            var context = dataContextProvider.GetNewDataContext();
-            return context.GetData<Person>().FirstOrDefault(x => x.Id == id);
+            using (var context = dataContextProvider.GetNewDataContext())
+                return context.GetData<Person>().FirstOrDefault(x => x.Id == id);
         }
 
         public IList<Person> GetPatients(string searchString, int topCount = 0)
         {
-            //TODO: check if we get valid result
             var parsedUserInput = ParseUserInput(searchString);
             using (var context = dataContextProvider.GetNewDataContext())
             {
@@ -34,59 +35,98 @@ namespace Core
                     .Where(x => parsedUserInput.Names.Any(y => x.FirstName.StartsWith(y))
                                                  || parsedUserInput.Names.Any(y => x.LastName.StartsWith(y))
                                                  || parsedUserInput.Names.Any(y => x.MiddleName.StartsWith(y))
-                                                 || parsedUserInput.Numbers.Any(y => x.Person.Snils == y)
-                                                 || parsedUserInput.Numbers.Any(y => x.Person.MedNumber == y));
+                                                 || parsedUserInput.Number == x.Person.Snils
+                                                 || parsedUserInput.Number == x.Person.MedNumber
+                                                 || parsedUserInput.Date == x.Person.BirthDate);
                 //Every match in name, middle name, last name, social number or insurance number gives one point to result
                 //Then we sort them by this result descending and show top 5 of them (i.e. those who have more matches will be first on the list)
-                //TODO: make this constant a DB parameter
                 result = result.OrderByDescending(x => (parsedUserInput.Names.Any(y => x.FirstName.StartsWith(y)) ? 1 : 0)
                                                      + (parsedUserInput.Names.Any(y => x.LastName.StartsWith(y)) ? 1 : 0)
                                                      + (parsedUserInput.Names.Any(y => x.MiddleName.StartsWith(y)) ? 1 : 0)
-                                                     + (parsedUserInput.Numbers.Any(y => x.Person.Snils == y) ? 1 : 0)
-                                                     + (parsedUserInput.Numbers.Any(y => x.Person.MedNumber == y) ? 1 : 0));
+                                                     + (parsedUserInput.Number == x.Person.Snils ? 1 : 0)
+                                                     + (parsedUserInput.Number == x.Person.MedNumber ? 1 : 0)
+                                                     + (parsedUserInput.Date == x.Person.BirthDate ? 1 : 0));
                 if (topCount > 0)
                     result = result.Take(topCount);
                 return result.Select(x => x.Person)
                              .ToArray();
             }
         }
-        //TODO: this is a draft version
-        //TODO: to be tested
+
+        private static readonly Regex DateRegex = new Regex(@"\d{1,2}[- /\.]\d{1,2}[- /\.]\d{2,4}");
+
+        private static readonly Regex SnilsRegex = new Regex(@"\d{3} ?\d{3} ?\d{3}-?\d{2}");
+
+        private static readonly Regex MedNumberRegex = new Regex(@"\d{13}");
+
         internal ParsedUserInput ParseUserInput(string userInput)
         {
-            var sanitizedInput = new StringBuilder(userInput.Length);
-            foreach (var symbol in userInput)
-                if (char.IsLetterOrDigit(symbol) || symbol == '-' || symbol == ' ')
-                    sanitizedInput.Append(symbol);
-            userInput = sanitizedInput.ToString();
             var result = new ParsedUserInput();
-            var numberString = new StringBuilder();
-            foreach (var word in userInput.Split(new[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries))
+            //Extracting dates
+            var matches = DateRegex.Matches(userInput);
+            for (var index = matches.Count - 1; index >= 0; index--)
             {
-                int number;
-                if (int.TryParse(word, out number))
-                    numberString.Append(word);
-                else
-                    result.Names.Add(word);
+                var match = matches[index];
+                DateTime date;
+                if (index == 0 && DateTime.TryParse(match.Value
+                    .Replace("-", CultureInfo.CurrentCulture.DateTimeFormat.DateSeparator)
+                    .Replace("/", CultureInfo.CurrentCulture.DateTimeFormat.DateSeparator)
+                    .Replace(" ", CultureInfo.CurrentCulture.DateTimeFormat.DateSeparator), CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                    result.Date = date;
+                userInput = userInput.Remove(match.Index, match.Length);
             }
-            if (numberString.Length > 0)
-                result.Numbers.Add(numberString.ToString());
+            //Extracting mednumber
+            matches = MedNumberRegex.Matches(userInput);
+            for (var index = matches.Count - 1; index >= 0; index--)
+            {
+                var match = matches[index];
+                if (index == 0)
+                    result.Number = match.Value;
+                userInput = userInput.Remove(match.Index, match.Length);
+            }
+            //Extracting SNILS
+            matches = SnilsRegex.Matches(userInput);
+            for (var index = matches.Count - 1; index >= 0; index--)
+            {
+                var match = matches[index];
+                if (index == 0)
+                    result.Number = SnilsCanBeDelimitized(match.Value) ? DelimitizeSnils(match.Value) : match.Value;
+                userInput = userInput.Remove(match.Index, match.Length);
+            }
+            foreach (var word in userInput.Split(new[] {' ', ','}, StringSplitOptions.RemoveEmptyEntries))
+                result.Names.Add(word);
             return result;
+        }
+
+        internal bool SnilsCanBeDelimitized(string snils)
+        {
+            return !string.IsNullOrEmpty(snils) && snils.Length == 11;
+        }
+
+        internal string DelimitizeSnils(string undelimitedSnils)
+        {
+            var result = new StringBuilder(14);
+            result.Append(undelimitedSnils.Substring(0, 3))
+                .Append(' ')
+                .Append(undelimitedSnils.Substring(3, 3))
+                .Append(' ')
+                .Append(undelimitedSnils.Substring(6, 3))
+                .Append('-')
+                .Append(undelimitedSnils.Substring(9));
+            return result.ToString();
         }
 
         internal class ParsedUserInput
         {
             public IList<string> Names { get; private set; }
 
-            public IList<string> Numbers { get; private set; }
+            public string Number { get; set; }
 
-            public IList<DateTime> Dates { get; private set; }
+            public DateTime Date { get; set; }
 
             public ParsedUserInput()
             {
                 Names = new List<string>();
-                Numbers = new List<string>();
-                Dates = new List<DateTime>();
             }
         }
     }
