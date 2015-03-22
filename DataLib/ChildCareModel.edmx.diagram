@@ -11,7 +11,13 @@
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="4.375" />
         <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
         <AssociationConnector Association="DataLib.FK_Users_Persons" />
-        <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="5.375" PointY="3.75" />
+        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="5.25" PointY="5.5" />
+        <EntityTypeShape EntityType="DataLib.AssignmentType" Width="1.5" PointX="3" PointY="9.5" />
+        <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="6.75" PointY="3.25" />
+        <AssociationConnector Association="DataLib.FK_Assignment_AssignedUsers" />
+        <AssociationConnector Association="DataLib.FK_Assignment_AssignmentType" />
+        <AssociationConnector Association="DataLib.FK_Assignment_CanceledUsers" />
+        <AssociationConnector Association="DataLib.FK_Assignment_Persons" />
         <AssociationConnector Association="DataLib.FK_Persons_Genders" />
       </Diagram>
     </edmx:Diagrams>

@@ -1,40 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace DataLib
 {
     public partial class Person
     {
+        //TODO: shouldn't we sort them?
         public string CurrentLastName
         {
             get
             {
-                if (this.PersonNames.Any())
-                    return this.PersonNames.Last().LastName;
-                return string.Empty;
+                var lastPersonName = PersonNames.LastOrDefault();
+                return lastPersonName == null ? string.Empty : lastPersonName.LastName;
             }
         }
-
+        //TODO: shouldn't we sort them?
         public string CurrentFirstName
         {
             get
             {
-                if (this.PersonNames.Any())
-                    return this.PersonNames.Last().FirstName;
-                return string.Empty;
+                var lastPersonName = PersonNames.LastOrDefault();
+                return lastPersonName == null ? string.Empty : lastPersonName.FirstName;
             }
         }
-
+        //TODO: shouldn't we sort them?
         public string CurrentMiddleName
         {
             get
             {
-                if (this.PersonNames.Any())
-                    return this.PersonNames.Last().MiddleName;
-                return string.Empty;
+                var lastPersonName = PersonNames.LastOrDefault();
+                return lastPersonName == null ? string.Empty : lastPersonName.MiddleName;
             }
         }
     }

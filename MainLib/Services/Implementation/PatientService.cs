@@ -19,10 +19,10 @@ namespace Core
             this.dataContextProvider = dataContextProvider;
         }
 
-        public Person GetPersonById(int id)
+        public EntityContext<Person> GetPersonById(int id)
         {
-            using (var context = dataContextProvider.GetNewDataContext())
-                return context.GetData<Person>().FirstOrDefault(x => x.Id == id);
+            var context = dataContextProvider.GetNewDataContext();
+            return new EntityContext<Person>(context.GetData<Person>().Single(x => x.Id == id), context);
         }
 
         public IList<Person> GetPatients(string searchString, int topCount = 0)
@@ -93,7 +93,7 @@ namespace Core
                     result.Number = SnilsCanBeDelimitized(match.Value) ? DelimitizeSnils(match.Value) : match.Value;
                 userInput = userInput.Remove(match.Index, match.Length);
             }
-            foreach (var word in userInput.Split(new[] {' ', ','}, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var word in userInput.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries))
                 result.Names.Add(word);
             return result;
         }

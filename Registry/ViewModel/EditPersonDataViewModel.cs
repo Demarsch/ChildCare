@@ -4,9 +4,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using log4net;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -14,11 +11,11 @@ namespace Registry
 {
     class EditPersonDataViewModel : ObservableObject
     {
-
         private readonly ILog log;
+
         private readonly IPatientService service;
 
-        private Person person;
+        private EntityContext<Person> person;
 
         /// <summary>
         /// Use this for creating new person
@@ -37,7 +34,7 @@ namespace Registry
         public EditPersonDataViewModel(ILog log, IPatientService service, int personId)
             : this(log, service)
         {
-            this.Id = personId;
+            Id = personId;
             this.log = log;
         }
 
@@ -54,12 +51,15 @@ namespace Registry
         {
             if (!IsEmpty)
             {
-                LastName = person.CurrentLastName;
-                FirstName = person.CurrentFirstName;
-                MiddleName = person.CurrentMiddleName;
-                BirthDate = person.BirthDate;
-                SNILS = person.Snils;
-                MedNumber = person.MedNumber;
+                using (person)
+                {
+                    LastName = person.Entity.CurrentLastName;
+                    FirstName = person.Entity.CurrentFirstName;
+                    MiddleName = person.Entity.CurrentMiddleName;
+                    BirthDate = person.Entity.BirthDate;
+                    SNILS = person.Entity.Snils;
+                    MedNumber = person.Entity.MedNumber;
+                }
             }
             else
             {

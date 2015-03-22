@@ -20,7 +20,7 @@ namespace DataLib
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public System.DateTime BeginDateTime { get; set; }
-        public Nullable<System.DateTime> EndDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     
         public virtual Person Person { get; set; }
     }

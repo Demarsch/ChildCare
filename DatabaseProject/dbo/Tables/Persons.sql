@@ -7,8 +7,11 @@
     [MedNumber]      VARCHAR (50)  NOT NULL,
     [GenderId]       INT           NOT NULL,
     [DeleteDateTime] DATETIME      NULL,
-    CONSTRAINT [PK_Persons] PRIMARY KEY CLUSTERED ([Id] ASC)
+    CONSTRAINT [PK_Persons] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_Persons_Genders] FOREIGN KEY ([GenderId]) REFERENCES [dbo].[Genders] ([Id])
 );
+
+
 
 
 

@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using Core;
 using GalaSoft.MvvmLight;
@@ -42,7 +43,7 @@ namespace Registry
         public ObservableCollection<PersonViewModel> Patients
         {
             get { return patients; }
-            set { Set("Patients", ref patients, value); }
+            private set { Set("Patients", ref patients, value); }
         }
 
         private string searchString;
@@ -90,7 +91,7 @@ namespace Registry
                 anotherSearchWasExecuted = result == null || sourceTask.AsyncState as string != SearchString;
                 if (anotherSearchWasExecuted)
                     return;
-                Patients = new ObservableCollection<PersonViewModel>(sourceTask.Result);
+                Patients = new ObservableCollection<PersonViewModel>(result);
             }
             catch (AggregateException ex)
             {
@@ -105,7 +106,7 @@ namespace Registry
                 if (!anotherSearchWasExecuted)
                 {
                     IsLookingForPatient = false;
-                    NoOneisFound = patients.Count == 0;
+                    NoOneisFound = Patients.Count == 0;
                 }
             }
         }
@@ -196,5 +197,11 @@ namespace Registry
 
             //MessageBox.Show(string.Format("Пациент {0} будет отредактирован именно в этом окне", currentPatient));
         }
+
+        #region Assignments
+
+
+
+        #endregion
     }
 }

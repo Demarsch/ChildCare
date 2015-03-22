@@ -101,6 +101,8 @@
     <Compile Include="Converters\UniversalConverter.cs" />
     <Compile Include="Misc\IDataContext.cs" />
     <Compile Include="Misc\IDataContextProvider.cs" />
+    <Compile Include="Misc\EntityContext.cs" />
+    <Compile Include="Misc\IReferenceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

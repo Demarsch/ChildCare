@@ -7,6 +7,6 @@ namespace Core
     {
         IList<Person> GetPatients(string searchString, int topCount = 0);
 
-        Person GetPersonById(int id);
+        EntityContext<Person> GetPersonById(int id);
     }
 }

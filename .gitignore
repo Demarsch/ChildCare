@@ -183,3 +183,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 *j.DotSettings
 *.DotSettings
+*.csproj.DotSettings

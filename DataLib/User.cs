@@ -14,6 +14,12 @@ namespace DataLib
     
     public partial class User
     {
+        public User()
+        {
+            this.CreatedAssignments = new HashSet<Assignment>();
+            this.CancelledAssignments = new HashSet<Assignment>();
+        }
+    
         public int Id { get; set; }
         public int PersonId { get; set; }
         public string SID { get; set; }
@@ -21,5 +27,7 @@ namespace DataLib
         public System.DateTime EndDateTime { get; set; }
     
         public virtual Person Person { get; set; }
+        public virtual ICollection<Assignment> CreatedAssignments { get; set; }
+        public virtual ICollection<Assignment> CancelledAssignments { get; set; }
     }
 }

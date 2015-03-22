@@ -12,13 +12,16 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class DBSetting
+    public partial class AssignmentType
     {
+        public AssignmentType()
+        {
+            this.Assignments = new HashSet<Assignment>();
+        }
+    
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Value { get; set; }
-        public string Comment { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
+    
+        public virtual ICollection<Assignment> Assignments { get; set; }
     }
 }

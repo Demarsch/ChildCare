@@ -5,6 +5,27 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Assignments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssignmentTypeId" Type="int" Nullable="false" />
+          <Property Name="PatientId" Type="int" Nullable="false" />
+          <Property Name="AssignUserId" Type="int" Nullable="false" />
+          <Property Name="AssignDateTime" Type="datetime" Nullable="false" />
+          <Property Name="IsCompleted" Type="bit" Nullable="false" />
+          <Property Name="Comments" Type="varchar" MaxLength="300" />
+          <Property Name="CancelDateTime" Type="datetime" />
+          <Property Name="CancelUserId" Type="int" />
+        </EntityType>
+        <EntityType Name="AssignmentTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="200" Nullable="false" />
+        </EntityType>
         <EntityType Name="DBSettings">
           <Key>
             <PropertyRef Name="Id" />
@@ -14,15 +35,15 @@
           <Property Name="Value" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="Comment" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Genders">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="1" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonNames">
           <Key>
@@ -34,7 +55,7 @@
           <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="MiddleName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Persons">
           <Key>
@@ -59,6 +80,54 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <Association Name="FK_Assignment_AssignedUsers">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="AssignUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignment_AssignmentType">
+          <End Role="AssignmentTypes" Type="Self.AssignmentTypes" Multiplicity="1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AssignmentTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="AssignmentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignment_CanceledUsers">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="CancelUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignment_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="PatientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonNames_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
           <End Role="PersonNames" Type="Self.PersonNames" Multiplicity="*" />
@@ -96,11 +165,29 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="DataLibStoreContainer">
+          <EntitySet Name="Assignments" EntityType="Self.Assignments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AssignmentTypes" EntityType="Self.AssignmentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Assignment_AssignedUsers" Association="Self.FK_Assignment_AssignedUsers">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignment_AssignmentType" Association="Self.FK_Assignment_AssignmentType">
+            <End Role="AssignmentTypes" EntitySet="AssignmentTypes" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignment_CanceledUsers" Association="Self.FK_Assignment_CanceledUsers">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignment_Persons" Association="Self.FK_Assignment_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
           <AssociationSet Name="FK_PersonNames_Persons" Association="Self.FK_PersonNames_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonNames" EntitySet="PersonNames" />
@@ -131,12 +218,30 @@
             <End Role="Person" EntitySet="Persons" />
             <End Role="User" EntitySet="Users" />
           </AssociationSet>
+          <EntitySet Name="Assignments" EntityType="DataLib.Assignment" />
+          <EntitySet Name="AssignmentTypes" EntityType="DataLib.AssignmentType" />
           <EntitySet Name="Genders" EntityType="DataLib.Gender" />
+          <AssociationSet Name="FK_Assignment_AssignedUsers" Association="DataLib.FK_Assignment_AssignedUsers">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignment_AssignmentType" Association="DataLib.FK_Assignment_AssignmentType">
+            <End Role="AssignmentType" EntitySet="AssignmentTypes" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignment_CanceledUsers" Association="DataLib.FK_Assignment_CanceledUsers">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignment_Persons" Association="DataLib.FK_Assignment_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
           <AssociationSet Name="FK_Persons_Genders" Association="DataLib.FK_Persons_Genders">
             <End Role="Gender" EntitySet="Genders" />
             <End Role="Person" EntitySet="Persons" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="DBSetting">
           <Key>
             <PropertyRef Name="Id" />
@@ -146,7 +251,7 @@
           <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonName">
           <Key>
@@ -158,7 +263,7 @@
           <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="MiddleName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" Nullable="false" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonNames_Persons" FromRole="PersonName" ToRole="Person" />
         </EntityType>
         <EntityType Name="Person">
@@ -175,6 +280,7 @@
           <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_Persons" FromRole="Person" ToRole="PersonName" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <Property Name="BirthDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignment_Persons" FromRole="Person" ToRole="Assignment" />
           <NavigationProperty Name="Gender" Relationship="DataLib.FK_Persons_Genders" FromRole="Person" ToRole="Gender" />
         </EntityType>
         <EntityType Name="User">
@@ -187,7 +293,9 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Users_Persons" FromRole="User" ToRole="Person" />
-        </EntityType>
+          <NavigationProperty Name="CreatedAssignments" Relationship="DataLib.FK_Assignment_AssignedUsers" FromRole="User" ToRole="Assignment" />
+          <NavigationProperty Name="CancelledAssignments" Relationship="DataLib.FK_Assignment_CanceledUsers" FromRole="User" ToRole="Assignment" />
+          </EntityType>
         <Association Name="FK_PersonNames_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
           <End Type="DataLib.PersonName" Role="PersonName" Multiplicity="*" />
@@ -212,15 +320,89 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Assignment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssignmentTypeId" Type="Int32" Nullable="false" />
+          <Property Name="PatientId" Type="Int32" Nullable="false" />
+          <Property Name="AssignUserId" Type="Int32" Nullable="false" />
+          <Property Name="AssignDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsCompleted" Type="Boolean" Nullable="false" />
+          <Property Name="Comments" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="CancelDateTime" Type="DateTime" Precision="3" />
+          <Property Name="CancelUserId" Type="Int32" />
+          <NavigationProperty Name="AssignedUser" Relationship="DataLib.FK_Assignment_AssignedUsers" FromRole="Assignment" ToRole="User" />
+          <NavigationProperty Name="AssignmentType" Relationship="DataLib.FK_Assignment_AssignmentType" FromRole="Assignment" ToRole="AssignmentType" />
+          <NavigationProperty Name="CancelledUser" Relationship="DataLib.FK_Assignment_CanceledUsers" FromRole="Assignment" ToRole="User" />
+          <NavigationProperty Name="Patient" Relationship="DataLib.FK_Assignment_Persons" FromRole="Assignment" ToRole="Person" />
+        </EntityType>
+        <EntityType Name="AssignmentType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignment_AssignmentType" FromRole="AssignmentType" ToRole="Assignment" />
+        </EntityType>
         <EntityType Name="Gender">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Persons" Relationship="DataLib.FK_Persons_Genders" FromRole="Gender" ToRole="Person" />
         </EntityType>
+        <Association Name="FK_Assignment_AssignedUsers">
+          <End Type="DataLib.User" Role="User" Multiplicity="1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="AssignUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignment_AssignmentType">
+          <End Type="DataLib.AssignmentType" Role="AssignmentType" Multiplicity="1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AssignmentType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="AssignmentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignment_CanceledUsers">
+          <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="CancelUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignment_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="PatientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Persons_Genders">
           <End Type="DataLib.Gender" Role="Gender" Multiplicity="1" />
           <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
@@ -233,7 +415,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -285,6 +467,29 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="SID" ColumnName="SID" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Assignments">
+            <EntityTypeMapping TypeName="DataLib.Assignment">
+              <MappingFragment StoreEntitySet="Assignments">
+                <ScalarProperty Name="CancelUserId" ColumnName="CancelUserId" />
+                <ScalarProperty Name="CancelDateTime" ColumnName="CancelDateTime" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
+                <ScalarProperty Name="AssignDateTime" ColumnName="AssignDateTime" />
+                <ScalarProperty Name="AssignUserId" ColumnName="AssignUserId" />
+                <ScalarProperty Name="PatientId" ColumnName="PatientId" />
+                <ScalarProperty Name="AssignmentTypeId" ColumnName="AssignmentTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AssignmentTypes">
+            <EntityTypeMapping TypeName="DataLib.AssignmentType">
+              <MappingFragment StoreEntitySet="AssignmentTypes">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
