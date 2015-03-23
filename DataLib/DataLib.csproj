@@ -91,9 +91,6 @@
     <Compile Include="Assignment.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="AssignmentType.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="ChildCareModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -125,6 +122,12 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Record.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="User.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

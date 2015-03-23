@@ -70,7 +70,8 @@
     <Build Include="dbo\Tables\Persons.sql" />
     <Build Include="dbo\Tables\PersonNames.sql" />
     <Build Include="dbo\Tables\Genders.sql" />
-    <Build Include="dbo\Tables\AssignmentTypes.sql" />
     <Build Include="dbo\Tables\Assignments.sql" />
+    <Build Include="dbo\Tables\RecordTypes.sql" />
+    <Build Include="dbo\Tables\Records.sql" />
   </ItemGroup>
 </Project>

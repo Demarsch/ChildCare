@@ -11,14 +11,21 @@
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="4.375" />
         <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
         <AssociationConnector Association="DataLib.FK_Users_Persons" />
-        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="5.25" PointY="5.5" />
-        <EntityTypeShape EntityType="DataLib.AssignmentType" Width="1.5" PointX="3" PointY="9.5" />
         <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="6.75" PointY="3.25" />
-        <AssociationConnector Association="DataLib.FK_Assignment_AssignedUsers" />
-        <AssociationConnector Association="DataLib.FK_Assignment_AssignmentType" />
-        <AssociationConnector Association="DataLib.FK_Assignment_CanceledUsers" />
-        <AssociationConnector Association="DataLib.FK_Assignment_Persons" />
         <AssociationConnector Association="DataLib.FK_Persons_Genders" />
+        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="7.5" PointY="5.875" />
+        <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="5.25" PointY="6" />
+        <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="3" PointY="11.75" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Records" />
+        <AssociationConnector Association="DataLib.FK_Assignments_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
+        <AssociationConnector Association="DataLib.FK_Records_Persons" />
+        <AssociationConnector Association="DataLib.FK_Records_Records" />
+        <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_Records_Users" />
+        <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
