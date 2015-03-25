@@ -20,6 +20,7 @@ namespace DataLib
             this.Users = new HashSet<User>();
             this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
+            this.InsuranceDocuments = new HashSet<InsuranceDocument>();
         }
     
         public int Id { get; set; }
@@ -36,5 +37,6 @@ namespace DataLib
         public virtual Gender Gender { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<Record> Records { get; set; }
+        public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
     }
 }

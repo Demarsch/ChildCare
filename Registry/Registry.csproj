@@ -107,11 +107,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-
+    <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="View\PatientSearchUserControl.xaml.cs">
       <DependentUpon>PatientSearchUserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="View\EditPersonDataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InsuranceDocumentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

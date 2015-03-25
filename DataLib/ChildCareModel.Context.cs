@@ -33,5 +33,8 @@ namespace DataLib
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<InsuranceCompany> InsuranceCompanies { get; set; }
+        public virtual DbSet<InsuranceDocument> InsuranceDocuments { get; set; }
+        public virtual DbSet<InsuranceDocumentType> InsuranceDocumentTypes { get; set; }
     }
 }

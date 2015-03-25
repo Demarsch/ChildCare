@@ -26,6 +26,12 @@
         <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
+        <EntityTypeShape EntityType="DataLib.InsuranceCompany" Width="1.5" PointX="5.75" PointY="17" />
+        <EntityTypeShape EntityType="DataLib.InsuranceDocument" Width="1.5" PointX="8" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.InsuranceDocumentType" Width="1.5" PointX="5.75" PointY="14.625" />
+        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceCompanies" />
+        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes" />
+        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_Persons" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
