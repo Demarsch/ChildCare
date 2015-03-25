@@ -112,6 +112,15 @@
     <Compile Include="Gender.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="InsuranceCompany.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InsuranceDocument.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="InsuranceDocumentType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Misc\ModelContext.cs" />
     <Compile Include="Misc\ModelContextProvider.cs" />
     <Compile Include="PartialClasses\Person.cs" />

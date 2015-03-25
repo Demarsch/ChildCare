@@ -108,6 +108,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DTO\AssignmentDTO.cs" />
+    <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
     <Compile Include="ViewModel\AssignmentViewModel.cs" />
@@ -116,6 +117,10 @@
       <DependentUpon>PatientSearchUserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="View\EditPersonDataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InsuranceDocumentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

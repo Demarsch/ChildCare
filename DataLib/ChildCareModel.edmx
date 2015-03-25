@@ -40,6 +40,48 @@
           <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
         </EntityType>
+        <EntityType Name="InsuranceCompanies">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AddressF" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="AddressJ" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateBegin" Type="datetime" Nullable="false" />
+          <Property Name="DateEdit" Type="datetime" Nullable="false" />
+          <Property Name="DateEnd" Type="datetime" Nullable="false" />
+          <Property Name="DateStart" Type="datetime" Nullable="false" />
+          <Property Name="IndexF" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="IndexJ" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="INN" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="KPP" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DocNumber" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="NameSMOK" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="NameSMOP" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="OGRN" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SmoCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="OKATO" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InsuranceDocuments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="InsuranceCompanyId" Type="int" Nullable="false" />
+          <Property Name="InsuranceDocumentTypeId" Type="int" Nullable="false" />
+          <Property Name="Series" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Number" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="BeginDate" Type="datetime" Nullable="false" />
+          <Property Name="EndDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InsuranceDocumentTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
         <EntityType Name="PersonNames">
           <Key>
             <PropertyRef Name="Id" />
@@ -173,6 +215,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_InsuranceDocuments_InsuranceCompanies">
+          <End Role="InsuranceCompanies" Type="Self.InsuranceCompanies" Multiplicity="1" />
+          <End Role="InsuranceDocuments" Type="Self.InsuranceDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceCompanies">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InsuranceDocuments">
+              <PropertyRef Name="InsuranceCompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InsuranceDocuments_InsuranceDocumentTypes">
+          <End Role="InsuranceDocumentTypes" Type="Self.InsuranceDocumentTypes" Multiplicity="1" />
+          <End Role="InsuranceDocuments" Type="Self.InsuranceDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceDocumentTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InsuranceDocuments">
+              <PropertyRef Name="InsuranceDocumentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InsuranceDocuments_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="InsuranceDocuments" Type="Self.InsuranceDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InsuranceDocuments">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonNames_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
           <End Role="PersonNames" Type="Self.PersonNames" Multiplicity="*" />
@@ -273,6 +351,9 @@
           <EntitySet Name="Assignments" EntityType="Self.Assignments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InsuranceCompanies" EntityType="Self.InsuranceCompanies" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InsuranceDocuments" EntityType="Self.InsuranceDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InsuranceDocumentTypes" EntityType="Self.InsuranceDocumentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
@@ -297,6 +378,18 @@
           <AssociationSet Name="FK_Assignments_Users1" Association="Self.FK_Assignments_Users1">
             <End Role="Users" EntitySet="Users" />
             <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InsuranceDocuments_InsuranceCompanies" Association="Self.FK_InsuranceDocuments_InsuranceCompanies">
+            <End Role="InsuranceCompanies" EntitySet="InsuranceCompanies" />
+            <End Role="InsuranceDocuments" EntitySet="InsuranceDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InsuranceDocuments_InsuranceDocumentTypes" Association="Self.FK_InsuranceDocuments_InsuranceDocumentTypes">
+            <End Role="InsuranceDocumentTypes" EntitySet="InsuranceDocumentTypes" />
+            <End Role="InsuranceDocuments" EntitySet="InsuranceDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InsuranceDocuments_Persons" Association="Self.FK_InsuranceDocuments_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="InsuranceDocuments" EntitySet="InsuranceDocuments" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonNames_Persons" Association="Self.FK_PersonNames_Persons">
             <End Role="Persons" EntitySet="Persons" />
@@ -396,6 +489,21 @@
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordType1" EntitySet="RecordTypes" />
           </AssociationSet>
+          <EntitySet Name="InsuranceCompanies" EntityType="DataLib.InsuranceCompany" />
+          <EntitySet Name="InsuranceDocuments" EntityType="DataLib.InsuranceDocument" />
+          <EntitySet Name="InsuranceDocumentTypes" EntityType="DataLib.InsuranceDocumentType" />
+          <AssociationSet Name="FK_InsuranceDocuments_InsuranceCompanies" Association="DataLib.FK_InsuranceDocuments_InsuranceCompanies">
+            <End Role="InsuranceCompany" EntitySet="InsuranceCompanies" />
+            <End Role="InsuranceDocument" EntitySet="InsuranceDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InsuranceDocuments_InsuranceDocumentTypes" Association="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes">
+            <End Role="InsuranceDocumentType" EntitySet="InsuranceDocumentTypes" />
+            <End Role="InsuranceDocument" EntitySet="InsuranceDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InsuranceDocuments_Persons" Association="DataLib.FK_InsuranceDocuments_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="InsuranceDocument" EntitySet="InsuranceDocuments" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="DBSetting">
           <Key>
@@ -438,6 +546,7 @@
           <NavigationProperty Name="Gender" Relationship="DataLib.FK_Persons_Genders" FromRole="Person" ToRole="Gender" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
+          <NavigationProperty Name="InsuranceDocuments" Relationship="DataLib.FK_InsuranceDocuments_Persons" FromRole="Person" ToRole="InsuranceDocument" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -687,6 +796,89 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="InsuranceCompany">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AddressF" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="AddressJ" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DateBegin" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateEdit" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateEnd" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IndexF" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IndexJ" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="INN" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="KPP" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DocNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="NameSMOK" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="NameSMOP" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="OGRN" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SmoCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="OKATO" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="InsuranceDocuments" Relationship="DataLib.FK_InsuranceDocuments_InsuranceCompanies" FromRole="InsuranceCompany" ToRole="InsuranceDocument" />
+        </EntityType>
+        <EntityType Name="InsuranceDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="InsuranceCompanyId" Type="Int32" Nullable="false" />
+          <Property Name="InsuranceDocumentTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Series" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Number" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="InsuranceCompany" Relationship="DataLib.FK_InsuranceDocuments_InsuranceCompanies" FromRole="InsuranceDocument" ToRole="InsuranceCompany" />
+          <NavigationProperty Name="InsuranceDocumentType" Relationship="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes" FromRole="InsuranceDocument" ToRole="InsuranceDocumentType" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_InsuranceDocuments_Persons" FromRole="InsuranceDocument" ToRole="Person" />
+        </EntityType>
+        <EntityType Name="InsuranceDocumentType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="InsuranceDocuments" Relationship="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes" FromRole="InsuranceDocumentType" ToRole="InsuranceDocument" />
+        </EntityType>
+        <Association Name="FK_InsuranceDocuments_InsuranceCompanies">
+          <End Type="DataLib.InsuranceCompany" Role="InsuranceCompany" Multiplicity="1" />
+          <End Type="DataLib.InsuranceDocument" Role="InsuranceDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceCompany">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InsuranceDocument">
+              <PropertyRef Name="InsuranceCompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InsuranceDocuments_InsuranceDocumentTypes">
+          <End Type="DataLib.InsuranceDocumentType" Role="InsuranceDocumentType" Multiplicity="1" />
+          <End Type="DataLib.InsuranceDocument" Role="InsuranceDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceDocumentType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InsuranceDocument">
+              <PropertyRef Name="InsuranceDocumentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InsuranceDocuments_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.InsuranceDocument" Role="InsuranceDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InsuranceDocument">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -805,6 +997,51 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InsuranceCompanies">
+            <EntityTypeMapping TypeName="DataLib.InsuranceCompany">
+              <MappingFragment StoreEntitySet="InsuranceCompanies">
+                <ScalarProperty Name="OKATO" ColumnName="OKATO" />
+                <ScalarProperty Name="SmoCode" ColumnName="SmoCode" />
+                <ScalarProperty Name="OGRN" ColumnName="OGRN" />
+                <ScalarProperty Name="NameSMOP" ColumnName="NameSMOP" />
+                <ScalarProperty Name="NameSMOK" ColumnName="NameSMOK" />
+                <ScalarProperty Name="DocNumber" ColumnName="DocNumber" />
+                <ScalarProperty Name="KPP" ColumnName="KPP" />
+                <ScalarProperty Name="INN" ColumnName="INN" />
+                <ScalarProperty Name="IndexJ" ColumnName="IndexJ" />
+                <ScalarProperty Name="IndexF" ColumnName="IndexF" />
+                <ScalarProperty Name="DateStart" ColumnName="DateStart" />
+                <ScalarProperty Name="DateEnd" ColumnName="DateEnd" />
+                <ScalarProperty Name="DateEdit" ColumnName="DateEdit" />
+                <ScalarProperty Name="DateBegin" ColumnName="DateBegin" />
+                <ScalarProperty Name="AddressJ" ColumnName="AddressJ" />
+                <ScalarProperty Name="AddressF" ColumnName="AddressF" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InsuranceDocuments">
+            <EntityTypeMapping TypeName="DataLib.InsuranceDocument">
+              <MappingFragment StoreEntitySet="InsuranceDocuments">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="Series" ColumnName="Series" />
+                <ScalarProperty Name="InsuranceDocumentTypeId" ColumnName="InsuranceDocumentTypeId" />
+                <ScalarProperty Name="InsuranceCompanyId" ColumnName="InsuranceCompanyId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InsuranceDocumentTypes">
+            <EntityTypeMapping TypeName="DataLib.InsuranceDocumentType">
+              <MappingFragment StoreEntitySet="InsuranceDocumentTypes">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

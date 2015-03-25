@@ -73,5 +73,8 @@
     <Build Include="dbo\Tables\Assignments.sql" />
     <Build Include="dbo\Tables\RecordTypes.sql" />
     <Build Include="dbo\Tables\Records.sql" />
+    <Build Include="dbo\Tables\InsuranceDocumentTypes.sql" />
+    <Build Include="dbo\Tables\InsuranceDocuments.sql" />
+    <Build Include="dbo\Tables\InsuranceCompanies.sql" />
   </ItemGroup>
 </Project>
