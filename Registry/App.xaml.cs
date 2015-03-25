@@ -21,8 +21,12 @@ namespace Registry
             base.OnStartup(e);
             var log = new LogImpl(LoggerManager.CreateRepository(typeof (App).FullName).GetLogger(typeof (App).Name)) as ILog;
             var contextProvider = new ModelContextProvider();
+
+            var patientAssignmentService = new PatientAssignmentService(contextProvider) as IPatientAssignmentService;
+            var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log);
+
             var patientService = new PatientService(contextProvider) as IPatientService;
-            var patientSearchViewModel = new PatientSearchViewModel(patientService, log);
+            var patientSearchViewModel = new PatientSearchViewModel(patientService, log, patientAssignmentListViewModel);
             var mainViewModel = new MainWindowViewModel(patientSearchViewModel);
             var mainWindow = new MainWindow {DataContext = mainViewModel};
             MainWindow = mainWindow;

@@ -107,7 +107,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-
+    <Compile Include="DTO\AssignmentDTO.cs" />
+    <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
+    <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
+    <Compile Include="ViewModel\AssignmentViewModel.cs" />
+    <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
     <Compile Include="View\PatientSearchUserControl.xaml.cs">
       <DependentUpon>PatientSearchUserControl.xaml</DependentUpon>
     </Compile>

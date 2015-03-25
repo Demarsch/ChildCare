@@ -25,7 +25,7 @@ namespace Core
             return new EntityContext<Person>(context.GetData<Person>().Single(x => x.Id == id), context);
         }
 
-        public IList<Person> GetPatients(string searchString, int topCount = 0)
+        public ICollection<Person> GetPatients(string searchString, int topCount = 0)
         {
             var parsedUserInput = ParseUserInput(searchString);
             using (var context = dataContextProvider.GetNewDataContext())

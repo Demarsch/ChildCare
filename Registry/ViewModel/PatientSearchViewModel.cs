@@ -14,7 +14,7 @@ using log4net;
 
 namespace Registry
 {
-    public class PatientSearchViewModel : ObservableObject
+    public class PatientSearchViewModel : FailableViewModel
     {
         private const int UserInputSearchThreshold = 3;
 
@@ -24,16 +24,21 @@ namespace Registry
 
         private readonly IPatientService patientService;
 
-        public PatientSearchViewModel(IPatientService patientService, ILog log)
+        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
+
+        public PatientSearchViewModel(IPatientService patientService, ILog log, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
                 throw new ArgumentNullException("patientService");
             if (log == null)
                 throw new ArgumentNullException("log");
+            if (patientAssignmentListViewModel == null)
+                throw new ArgumentNullException("patientAssignmentListViewModel");
             this.log = log;
             this.patientService = patientService;
-            Patients = new ObservableCollection<PersonViewModel>();
-            CurrentPatient = new PersonViewModel(null);
+            patients = new ObservableCollection<PersonViewModel>();
+            PatientAssignmentListViewModel = patientAssignmentListViewModel;
+            currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
         }
@@ -81,7 +86,7 @@ namespace Registry
                 return null;
             return patientService.GetPatients(searchString, PatientDisplayCount).Select(x => new PersonViewModel(x)).ToArray();
         }
-
+        //TODO: use fail reason on view side
         private void PatientsSearched(Task<IEnumerable<PersonViewModel>> sourceTask)
         {
             var anotherSearchWasExecuted = false;
@@ -97,9 +102,8 @@ namespace Registry
             {
                 var innerException = ex.InnerExceptions[0];
                 //TODO: probably move this string to separate localizable dll
-                FailReason = "В процессе поиск пациента возникла ошибка. Возможно отсутствует связь с базой данной. Повторите поиск еще раз, если ошибка повторится, обратитесь в службу поддержки";
-                log.Error(string.Format("Failed to find patients for user input of '{0}'", sourceTask.AsyncState),
-                    innerException);
+                FailReason = "В процессе поиск пациента возникла ошибка. Возможно отсутствует связь с базой данной. Повторите поиск еще раз. Если ошибка повторится, обратитесь в службу поддержки";
+                log.Error(string.Format("Failed to find patients for user input of '{0}'", sourceTask.AsyncState), innerException);
             }
             finally
             {
@@ -114,6 +118,7 @@ namespace Registry
         private void SelectPatient(PersonViewModel person)
         {
             CurrentPatient = person;
+            PatientAssignmentListViewModel.PatientId = person.Id;
         }
 
         private PersonViewModel selectedPatient;
@@ -162,21 +167,6 @@ namespace Registry
             get { return noOneisFound; }
             set { Set("NoOneisFound", ref noOneisFound, value); }
         }
-
-        private string failReason;
-        //TODO: use this on view side
-        public string FailReason
-        {
-            get { return failReason; }
-            set
-            {
-                var isFailed = IsFailed;
-                if (Set("FailReason", ref failReason, value) && isFailed != IsFailed)
-                    RaisePropertyChanged("IsFailed");
-            }
-        }
-
-        public bool IsFailed { get { return !string.IsNullOrEmpty(failReason); } }
 
         public ICommand NewPatientCommand { get; private set; }
 

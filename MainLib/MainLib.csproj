@@ -103,6 +103,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Services\Implementation\AssignmentService.cs" />
+    <Compile Include="Services\Interface\IAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -132,6 +134,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Data transfer objects\" />
     <Folder Include="ViewModel\" />
     <Folder Include="View\" />
   </ItemGroup>
