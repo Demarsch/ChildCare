@@ -12,15 +12,16 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class DBSetting
+    public partial class UserPermission
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public string DisplayName { get; set; }
-        public string Description { get; set; }
-        public string Comment { get; set; }
+        public int UserId { get; set; }
+        public int PermissionId { get; set; }
+        public bool IsGranted { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+    
+        public virtual Permission Permission { get; set; }
+        public virtual User User { get; set; }
     }
 }

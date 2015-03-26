@@ -124,6 +124,12 @@
     <Compile Include="Misc\ModelContext.cs" />
     <Compile Include="Misc\ModelContextProvider.cs" />
     <Compile Include="PartialClasses\Person.cs" />
+    <Compile Include="Permission.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PermissionLink.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Person.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -138,6 +144,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserPermission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>

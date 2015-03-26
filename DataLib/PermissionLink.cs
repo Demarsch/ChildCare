@@ -12,15 +12,13 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class DBSetting
+    public partial class PermissionLink
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public string DisplayName { get; set; }
-        public string Description { get; set; }
-        public string Comment { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
+        public int ParentId { get; set; }
+        public int ChildId { get; set; }
+    
+        public virtual Permission Permission { get; set; }
+        public virtual Permission Permission1 { get; set; }
     }
 }

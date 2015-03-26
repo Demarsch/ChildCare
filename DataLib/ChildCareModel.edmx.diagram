@@ -5,7 +5,6 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" >
-        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="5.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataLib.PersonName" Width="1.5" PointX="3" PointY="1.125" />
         <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="0.75" PointY="2.375" />
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="4.375" />
@@ -32,6 +31,14 @@
         <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceCompanies" />
         <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes" />
         <AssociationConnector Association="DataLib.FK_InsuranceDocuments_Persons" />
+        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="7.375" PointY="10.75" />
+        <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="12.625" PointY="2.75" />
+        <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="10.375" PointY="2.5" />
+        <EntityTypeShape EntityType="DataLib.UserPermission" Width="1.5" PointX="12.625" PointY="5.625" />
+        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
+        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
+        <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
+        <AssociationConnector Association="DataLib.FK_Permissions_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
