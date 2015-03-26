@@ -30,7 +30,12 @@
                 <Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/AddPatient48x48.png" />
             </Button>
             <xctk:SplitButton Grid.Column="1" Margin="2" VerticalAlignment="Center" Padding="3" Content="{Binding CurrentPatient}" Command="{Binding EditPatientCommand}"
-                        Background="White">
+                        Background="White" x:Name="editPatientButton" IsOpen="{Binding PatientAssignmentListViewModel.IsLoadingRequested, Mode=OneWayToSource}">
+                <xctk:SplitButton.Resources>
+                    <Style TargetType="{x:Type Popup}">
+                        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type xctk:SplitButton}}}"></Setter>
+                    </Style>
+                </xctk:SplitButton.Resources>
                 <xctk:SplitButton.ToolTip>
                     <ToolTip>
                         <StackPanel Orientation="Vertical">
@@ -40,7 +45,7 @@
                     </ToolTip>
                 </xctk:SplitButton.ToolTip>
                 <xctk:SplitButton.DropDownContent>
-                    <TextBlock Margin="5" Text="Assignment list placeholder" />
+                    <ContentControl HorizontalAlignment="Stretch" Content="{Binding PatientAssignmentListViewModel}" />
                 </xctk:SplitButton.DropDownContent>
             </xctk:SplitButton>
             <TextBlock Grid.Column="2" Margin="7 0 0 0"  x:Name="watermark" Text="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН" VerticalAlignment="Center">

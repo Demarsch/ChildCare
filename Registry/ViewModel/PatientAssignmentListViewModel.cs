@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using Core;
 using GalaSoft.MvvmLight.Command;
@@ -34,6 +36,7 @@ namespace Registry
             this.assignmentService = assignmentService;
             assignments = new ObservableCollection<AssignmentViewModel>();
             LoadCommand = new RelayCommand(Load, CanLoad);
+            showIncompleted = true;
         }
 
         public ICommand LoadCommand { get; private set; }
@@ -45,20 +48,35 @@ namespace Registry
             get { return patientId; }
             set
             {
+                var isPatientSelected = IsPatientSelected;
                 Assignments.Clear();
                 IsLoaded = false;
                 IsLoadingRequested = false;
                 FailReason = string.Empty;
                 patientId = value;
+                if (isPatientSelected != IsPatientSelected)
+                {
+                    RaisePropertyChanged("IsPatientSelected");
+                    CommandManager.InvalidateRequerySuggested();
+                };
             }
         }
+
+        public bool IsPatientSelected { get { return patientId != 0; } }
 
         private bool showCompleted;
 
         public bool ShowCompleted
         {
             get { return showCompleted; }
-            set { Set("ShowCompleted", ref showCompleted, value); }
+            set
+            {
+                var isChanged = Set("ShowCompleted", ref showCompleted, value);
+                if (!(showCancelled || showCompleted || showIncompleted))
+                    isChanged = Set("ShowCompleted", ref showCompleted, true);
+                if (isChanged)
+                    RefreshAssignments();
+            }
         }
 
         private bool showCancelled;
@@ -66,7 +84,29 @@ namespace Registry
         public bool ShowCancelled
         {
             get { return showCancelled; }
-            set { Set("ShowCancelled", ref showCancelled, value); }
+            set
+            {
+                var isChanged = Set("ShowCancelled", ref showCancelled, value);
+                if (!(showCancelled || showCompleted || showIncompleted))
+                    isChanged = Set("ShowCancelled", ref showCancelled, true);
+                if (isChanged)
+                    RefreshAssignments();
+            }
+        }
+
+        private bool showIncompleted;
+
+        public bool ShowIncompleted
+        {
+            get { return showIncompleted; }
+            set
+            {
+                var isChanged = Set("ShowIncompleted", ref showIncompleted, value);
+                if (!(showCancelled || showCompleted || showIncompleted))
+                    isChanged = Set("ShowIncompleted", ref showIncompleted, true);
+                if (isChanged)
+                    RefreshAssignments();
+            }
         }
 
         private bool isLoaded;
@@ -104,9 +144,9 @@ namespace Registry
         private void Load()
         {
             IsLoaded = false;
-            IsLoading = true;
             FailReason = string.Empty;
             Assignments.Clear();
+            IsLoading = true;
             var uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task<ICollection<AssignmentViewModel>>.Factory.StartNew(LoadImpl, patientId)
                 .ContinueWith(LoadCompleted, uiScheduler);
@@ -114,7 +154,7 @@ namespace Registry
 
         private bool CanLoad()
         {
-            return !IsLoading;
+            return !IsLoading && IsPatientSelected && !IsLoaded;
         }
 
         private ICollection<AssignmentViewModel> LoadImpl(object patientId)
@@ -130,7 +170,9 @@ namespace Registry
                 var result = sourceTask.Result;
                 if (newSearchWasExecuted)
                     return;
-                Assignments = new ObservableCollection<AssignmentViewModel>(result);
+                var newAssignments = new ObservableCollection<AssignmentViewModel>(result);
+                UpdateDefaultView(newAssignments);
+                Assignments = newAssignments;
             }
             catch (AggregateException ex)
             {
@@ -147,6 +189,25 @@ namespace Registry
                     IsLoaded = true;
                 }
             }
+        }
+
+        private void UpdateDefaultView(ObservableCollection<AssignmentViewModel> sourceCollection)
+        {
+            var defaultView = CollectionViewSource.GetDefaultView(sourceCollection);
+            defaultView.SortDescriptions.Add(new SortDescription("AssignDateTime", ListSortDirection.Descending));
+            defaultView.Filter = FilterAssignments;
+
+        }
+
+        private bool FilterAssignments(object obj)
+        {
+            var assignment = obj as AssignmentViewModel;
+            return assignment != null && ((assignment.IsCancelled && showCancelled) || (assignment.IsCompleted && showCompleted) || (!assignment.IsCompleted && showIncompleted));
+        }
+
+        private void RefreshAssignments()
+        {
+            CollectionViewSource.GetDefaultView(assignments).Refresh();
         }
     }
 }
