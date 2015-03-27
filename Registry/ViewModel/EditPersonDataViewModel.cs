@@ -4,6 +4,8 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using log4net;
 using System;
+using System.Linq;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -47,6 +49,19 @@ namespace Registry
 
         }
 
+        private ObservableCollection<InsuranceDocumentViewModel> insuranceDocuments;
+
+        public ObservableCollection<InsuranceDocumentViewModel> InsuranceDocuments
+        {
+            get { return insuranceDocuments; }
+            private set
+            {
+                if (value.Count < 1)
+                    value.Add(new InsuranceDocumentViewModel(new InsuranceDocument()));
+                Set("InsuranceDocuments", ref insuranceDocuments, value);
+            }
+        }
+
         private void FillPropertyFromPerson()
         {
             if (!IsEmpty)
@@ -59,6 +74,7 @@ namespace Registry
                     BirthDate = person.Entity.BirthDate;
                     SNILS = person.Entity.Snils;
                     MedNumber = person.Entity.MedNumber;
+                    InsuranceDocuments = insuranceDocuments;
                 }
             }
             else
@@ -82,6 +98,8 @@ namespace Registry
         private void GetPersonDataAsync()
         {
             person = service.GetPersonById(id);
+            service.GetPersonInsuranceDocuments(id);
+            insuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetPersonInsuranceDocuments(id).Select(x => new InsuranceDocumentViewModel(x)));
         }
 
         public ICommand SaveChangesCommand { get; private set; }

@@ -8,5 +8,7 @@ namespace Core
         ICollection<Person> GetPatients(string searchString, int topCount = 0);
 
         EntityContext<Person> GetPersonById(int id);
+
+        ICollection<InsuranceDocument> GetPersonInsuranceDocuments(int personId);
     }
 }

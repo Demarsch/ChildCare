@@ -6,23 +6,42 @@ using System.Text;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using log4net;
+using Core;
 
 namespace Registry
 {
     class InsuranceDocumentViewModel : ObservableObject
     {
+
         InsuranceDocument insuranceDocument;
 
         public InsuranceDocumentViewModel(InsuranceDocument insuranceDocument)
         {
             this.insuranceDocument = insuranceDocument;
+            FillData();
         }
 
-        private string insuranceCompany = string.Empty;
-        public string InsuranceCompany
+        private void FillData()
         {
-            get { return insuranceCompany; }
-            set { Set("InsuranceCompany", ref insuranceCompany, value); }
+            InsuranceCompanyId = insuranceDocument.InsuranceCompanyId;
+            InsuranceDocumentTypeId = insuranceDocument.InsuranceDocumentTypeId;
+            Series = insuranceDocument.Series;
+            Number = insuranceDocument.Number;
+            BeginDate = insuranceDocument.BeginDate;
+            EndDate = insuranceDocument.EndDate;
+        }
+
+        public bool IsEmpty
+        {
+            get { return insuranceDocument == null; }
+        }
+
+        private int insuranceCompanyId = 0;
+        public int InsuranceCompanyId
+        {
+            get { return insuranceCompanyId; }
+            set { Set("InsuranceCompanyId", ref insuranceCompanyId, value); }
         }
 
         private int insuranceDocumentTypeId = 0;

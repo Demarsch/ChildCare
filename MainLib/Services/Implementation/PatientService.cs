@@ -25,6 +25,12 @@ namespace Core
             return new EntityContext<Person>(context.GetData<Person>().Single(x => x.Id == id), context);
         }
 
+        public ICollection<InsuranceDocument> GetPersonInsuranceDocuments(int personId)
+        {
+            var context = dataContextProvider.GetNewDataContext();
+            return context.GetData<InsuranceDocument>().Where(x => x.PersonId == personId).ToArray();
+        }
+
         public ICollection<Person> GetPatients(string searchString, int topCount = 0)
         {
             var parsedUserInput = ParseUserInput(searchString);

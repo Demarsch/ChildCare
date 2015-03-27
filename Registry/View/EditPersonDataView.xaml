@@ -11,6 +11,12 @@
     x:Class="Registry.EditPersonDataView"
     Title="Редактирование данных пациента" Height="880" Width="600" WindowStartupLocation="CenterScreen"
     d:DataContext="{d:DesignInstance registry:EditPersonDataViewModel}">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <stuffLib:MultiBooleanConverter x:Key="MultiBooleanToInversedVisibilityConverter" UseLogicalOr="True" TrueValue="{x:Static Visibility.Collapsed}" FalseValue="{x:Static Visibility.Visible}" />
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -75,8 +81,18 @@
         <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="4" Margin="1" HorizontalAlignment="Stretch" Height="24" Text="{Binding MedNumber}"/>
 
 
-        <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Страховые документы</Label>
-        <TextBox Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Insurance}"/>
+        <TextBlock x:Name="tblInsurance"  Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Страховые документы</TextBlock>
+        <TextBox x:Name="tbInsurance"  Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Insurance}"/>
+
+        <Popup Grid.Column="6" Grid.Row="9"  PlacementTarget="{x:Reference tblInsurance}" Placement="Bottom" VerticalOffset="5" IsOpen="{Binding IsFocused, ElementName=tbInsurance, Mode=OneWay}"
+                       MinHeight="100" Width="{Binding ActualWidth, ElementName=tbInsurance}" x:Name="popup">
+            <Border Background="White" BorderBrush="DimGray" BorderThickness="1">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" x:Name="InsuranceDocumentList" />
+                    <Button HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocument}" Content="Добавить"/>
+                </Grid>
+            </Border>
+        </Popup>
 
         <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Адрес</Label>
         <TextBox Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Addresses}"/>
