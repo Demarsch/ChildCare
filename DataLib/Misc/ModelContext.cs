@@ -14,5 +14,15 @@ namespace DataLib
         {
             return Set<TData>();
         }
+
+        public void Save()
+        {
+            SaveChanges();
+        }
+
+        public void Add<TData>(TData obj) where TData : class
+        {
+            this.Set<TData>().Add(obj);
+        }
     }
 }

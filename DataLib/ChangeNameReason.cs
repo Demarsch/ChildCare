@@ -12,18 +12,19 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class PersonName
+    public partial class ChangeNameReason
     {
-        public int Id { get; set; }
-        public int PersonId { get; set; }
-        public string LastName { get; set; }
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public Nullable<System.DateTime> EndDateTime { get; set; }
-        public Nullable<int> ChangeNameReasonId { get; set; }
+        public ChangeNameReason()
+        {
+            this.PersonNames = new HashSet<PersonName>();
+        }
     
-        public virtual Person Person { get; set; }
-        public virtual ChangeNameReason ChangeNameReason { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool NeedCreateNewPersonName { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
+    
+        public virtual ICollection<PersonName> PersonNames { get; set; }
     }
 }
