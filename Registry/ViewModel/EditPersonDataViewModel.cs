@@ -106,7 +106,19 @@ namespace Registry
 
         private void SaveChanges()
         {
-            throw new NotImplementedException();
+            //ToDo: Create Fields for ChangeReason and FromDate
+            var res = service.SavePersonName(Id, FirstName, LastName, MiddleName, 1, DateTime.Now);
+            if (res == string.Empty)
+                TextMessage = "Данные сохранены";
+            else
+                textMessage = "Ошибка! " + res;
+        }
+
+        private string textMessage = string.Empty;
+        public string TextMessage
+        {
+            get { return textMessage; }
+            set { Set("TextMessage", ref textMessage, value); }
         }
 
         public bool IsEmpty

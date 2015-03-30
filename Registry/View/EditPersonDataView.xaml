@@ -53,7 +53,7 @@
 
         <Border Grid.Column="0" Grid.Row="1" Grid.RowSpan="5" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
             <StackPanel>
-                <Image Source="{Binding PhotoSource}"/>
+                <Image Source="{Binding Photo}"/>
                 <TextBlock Height="48">Нажмите, чтобы сделать фото</TextBlock>
             </StackPanel>
         </Border>
@@ -89,7 +89,7 @@
             <Border Background="White" BorderBrush="DimGray" BorderThickness="1">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" x:Name="InsuranceDocumentList" />
-                    <Button HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocument}" Content="Добавить"/>
+                    <Button HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="Transparent"  Command="{Binding AddInsuranceDocument}" Content="Добавить"/>
                 </Grid>
             </Border>
         </Popup>
@@ -109,8 +109,9 @@
         <Label Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Родственники/Представитель</Label>
         <TextBox Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Relatives}"/>
 
-        <StackPanel  Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Background="Transparent"  Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChanges}"/>
+        <TextBlock Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
+        <StackPanel  Grid.Row="20" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Background="Transparent"  Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}"/>
             <Button Background="Transparent"  Margin="3"  Height="24" Padding="3" Content="Отмена" />
         </StackPanel>
 

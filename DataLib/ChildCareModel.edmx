@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Assignments">
           <Key>
             <PropertyRef Name="Id" />
@@ -20,6 +20,16 @@
           <Property Name="CancelReasonId" Type="int" />
           <Property Name="Note" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="RecordId" Type="int" />
+        </EntityType>
+        <EntityType Name="ChangeNameReasons">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="NeedCreateNewPersonName" Type="bit" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="DBSettings">
           <Key>
@@ -112,6 +122,7 @@
           <Property Name="MiddleName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" />
+          <Property Name="ChangeNameReasonId" Type="int" />
         </EntityType>
         <EntityType Name="Persons">
           <Key>
@@ -317,6 +328,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PersonNames_ChangeNameReasons">
+          <End Role="ChangeNameReasons" Type="Self.ChangeNameReasons" Multiplicity="0..1" />
+          <End Role="PersonNames" Type="Self.PersonNames" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChangeNameReasons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonNames">
+              <PropertyRef Name="ChangeNameReasonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonNames_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
           <End Role="PersonNames" Type="Self.PersonNames" Multiplicity="*" />
@@ -427,6 +450,7 @@
         </Association>
         <EntityContainer Name="DataLibStoreContainer">
           <EntitySet Name="Assignments" EntityType="Self.Assignments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ChangeNameReasons" EntityType="Self.ChangeNameReasons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceCompanies" EntityType="Self.InsuranceCompanies" Schema="dbo" store:Type="Tables" />
@@ -483,6 +507,10 @@
           <AssociationSet Name="FK_Permissions_Users" Association="Self.FK_Permissions_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="UserPermissions" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonNames_ChangeNameReasons" Association="Self.FK_PersonNames_ChangeNameReasons">
+            <End Role="ChangeNameReasons" EntitySet="ChangeNameReasons" />
+            <End Role="PersonNames" EntitySet="PersonNames" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonNames_Persons" Association="Self.FK_PersonNames_Persons">
             <End Role="Persons" EntitySet="Persons" />
@@ -600,7 +628,11 @@
             <End Role="Person" EntitySet="Persons" />
             <End Role="InsuranceDocument" EntitySet="InsuranceDocuments" />
           </AssociationSet>
-          <EntitySet Name="DBSettings" EntityType="DataLib.DBSetting" />
+          <EntitySet Name="ChangeNameReasons" EntityType="DataLib.ChangeNameReason" />
+          <AssociationSet Name="FK_PersonNames_ChangeNameReasons" Association="DataLib.FK_PersonNames_ChangeNameReasons">
+            <End Role="ChangeNameReason" EntitySet="ChangeNameReasons" />
+            <End Role="PersonName" EntitySet="PersonNames" />
+          </AssociationSet>
           <EntitySet Name="PermissionLinks" EntityType="DataLib.PermissionLink" />
           <EntitySet Name="Permissions" EntityType="DataLib.Permission" />
           <EntitySet Name="UserPermissions" EntityType="DataLib.UserPermission" />
@@ -620,6 +652,7 @@
             <End Role="User" EntitySet="Users" />
             <End Role="UserPermission" EntitySet="UserPermissions" />
           </AssociationSet>
+          <EntitySet Name="DBSettings" EntityType="DataLib.DBSetting" />
           </EntityContainer>
         <EntityType Name="PersonName">
           <Key>
@@ -633,6 +666,8 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonNames_Persons" FromRole="PersonName" ToRole="Person" />
+          <Property Name="ChangeNameReasonId" Type="Int32" />
+          <NavigationProperty Name="ChangeNameReason" Relationship="DataLib.FK_PersonNames_ChangeNameReasons" FromRole="PersonName" ToRole="ChangeNameReason" />
         </EntityType>
         <EntityType Name="Person">
           <Key>
@@ -985,19 +1020,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="DBSetting">
+        <EntityType Name="ChangeNameReason">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="NeedCreateNewPersonName" Type="Boolean" Nullable="false" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_ChangeNameReasons" FromRole="ChangeNameReason" ToRole="PersonName" />
         </EntityType>
+        <Association Name="FK_PersonNames_ChangeNameReasons">
+          <End Type="DataLib.ChangeNameReason" Role="ChangeNameReason" Multiplicity="0..1" />
+          <End Type="DataLib.PersonName" Role="PersonName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChangeNameReason">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonName">
+              <PropertyRef Name="ChangeNameReasonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="PermissionLink">
           <Key>
             <PropertyRef Name="Id" />
@@ -1081,6 +1126,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="DBSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1090,6 +1148,7 @@
           <EntitySetMapping Name="PersonNames">
             <EntityTypeMapping TypeName="DataLib.PersonName">
               <MappingFragment StoreEntitySet="PersonNames">
+                <ScalarProperty Name="ChangeNameReasonId" ColumnName="ChangeNameReasonId" />
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
@@ -1236,15 +1295,12 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="DBSettings">
-            <EntityTypeMapping TypeName="DataLib.DBSetting">
-              <MappingFragment StoreEntitySet="DBSettings">
+          <EntitySetMapping Name="ChangeNameReasons">
+            <EntityTypeMapping TypeName="DataLib.ChangeNameReason">
+              <MappingFragment StoreEntitySet="ChangeNameReasons">
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="Comment" ColumnName="Comment" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="NeedCreateNewPersonName" ColumnName="NeedCreateNewPersonName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -1281,7 +1337,21 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="DBSettings">
+            <EntityTypeMapping TypeName="DataLib.DBSetting">
+              <MappingFragment StoreEntitySet="DBSettings">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
