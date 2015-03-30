@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLib", "DataLib\DataLib.csproj", "{F14028ED-2AE3-452B-9780-75EC4F09B3E2}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -34,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainLib.Test", "MainLib.Test\MainLib.Test.csproj", "{31E345DA-8A65-436D-8DAC-EBFB6540CD00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseUpdate", "DatabaseUpdate\DatabaseUpdate.csproj", "{53C0EFF3-2F75-42C3-87C2-F59DD01D02B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminTools", "AdminTools\AdminTools.csproj", "{A59841E0-E51A-4A86-A121-152EF259B761}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +81,10 @@ Global
 		{53C0EFF3-2F75-42C3-87C2-F59DD01D02B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53C0EFF3-2F75-42C3-87C2-F59DD01D02B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53C0EFF3-2F75-42C3-87C2-F59DD01D02B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A59841E0-E51A-4A86-A121-152EF259B761}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A59841E0-E51A-4A86-A121-152EF259B761}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A59841E0-E51A-4A86-A121-152EF259B761}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A59841E0-E51A-4A86-A121-152EF259B761}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
