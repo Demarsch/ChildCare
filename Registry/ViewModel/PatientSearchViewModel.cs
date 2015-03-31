@@ -181,8 +181,8 @@ namespace Registry
         {
             if (currentPatient.IsEmpty)
                 return;
-            var editPersonDataViewModel = new EditPersonDataViewModel(log, patientService, currentPatient.Id);
-            var editPersonDataView = new EditPersonDataView() { DataContext = editPersonDataViewModel };
+            var editPersonDataViewModel = new EditPersonViewModel(log, patientService, currentPatient.Id);
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonDataViewModel };
             editPersonDataView.ShowDialog();
 
             //MessageBox.Show(string.Format("Пациент {0} будет отредактирован именно в этом окне", currentPatient));

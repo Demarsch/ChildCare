@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Registry
 {
     /// <summary>
-    /// Interaction logic for EditPersonData.xaml
+    /// Interaction logic for EditPersonDataView.xaml
     /// </summary>
-    public partial class EditPersonDataView : Window
+    public partial class EditPersonView : Window
     {
-        public EditPersonDataView()
+        public EditPersonView()
         {
             InitializeComponent();
         }
