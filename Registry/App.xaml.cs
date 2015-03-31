@@ -20,10 +20,11 @@ namespace Registry
             Thread.CurrentThread.CurrentCulture = newCulture;
             base.OnStartup(e);
             var log = new LogImpl(LoggerManager.CreateRepository(typeof (App).FullName).GetLogger(typeof (App).Name)) as ILog;
-            var contextProvider = new ModelContextProvider();
+            var contextProvider = new ModelContextProvider() as IDataContextProvider;
+            var cacheService = new DataContextCacheService(contextProvider) as ICacheService;
 
             var patientAssignmentService = new PatientAssignmentService(contextProvider) as IPatientAssignmentService;
-            var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log);
+            var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log, cacheService);
 
             var patientService = new PatientService(contextProvider) as IPatientService;
             var patientSearchViewModel = new PatientSearchViewModel(patientService, log, patientAssignmentListViewModel);

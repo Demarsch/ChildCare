@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <stuffLib:MultiBooleanConverter x:Key="MultiBooleanToInversedVisibilityConverter" UseLogicalOr="True" TrueValue="{x:Static Visibility.Collapsed}" FalseValue="{x:Static Visibility.Visible}" />
+        <xctk:InverseBoolConverter x:Key="InverseBoolConverter" />
     </UserControl.Resources>
     <Border>
         <Border.Background>
@@ -30,20 +31,21 @@
                 <Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/AddPatient48x48.png" />
             </Button>
             <xctk:SplitButton Grid.Column="1" Margin="2" VerticalAlignment="Center" Padding="3" Content="{Binding CurrentPatient}" Command="{Binding EditPatientCommand}"
-                        Background="White" x:Name="editPatientButton" IsOpen="{Binding PatientAssignmentListViewModel.IsLoadingRequested, Mode=OneWayToSource}">
+                        Background="White" x:Name="editPatientButton" IsOpen="{Binding PatientAssignmentListViewModel.IsLoadingRequested, Mode=OneWayToSource}"
+                              ToolTipService.IsEnabled="{Binding CurrentPatient.IsEmpty, Converter={StaticResource InverseBoolConverter}}">
                 <xctk:SplitButton.Resources>
                     <Style TargetType="{x:Type Popup}">
-                        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type xctk:SplitButton}}}"></Setter>
+                        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type xctk:SplitButton}}}" />
                     </Style>
                 </xctk:SplitButton.Resources>
-                <xctk:SplitButton.ToolTip>
+                <ToolTipService.ToolTip>
                     <ToolTip>
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Информация о пациенте" Margin="5" FontWeight="Bold" />
                             <TextBlock Text="Здесь можно будет увидеть дополнительную информацию о пациенте" Margin="5" />
                         </StackPanel>
                     </ToolTip>
-                </xctk:SplitButton.ToolTip>
+                </ToolTipService.ToolTip>
                 <xctk:SplitButton.DropDownContent>
                     <ContentControl HorizontalAlignment="Stretch" Content="{Binding PatientAssignmentListViewModel}" />
                 </xctk:SplitButton.DropDownContent>

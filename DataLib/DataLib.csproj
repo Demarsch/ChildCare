@@ -146,6 +146,9 @@
     <Compile Include="RecordType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Room.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="User.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

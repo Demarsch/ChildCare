@@ -87,10 +87,10 @@
         <Popup Grid.Column="6" Grid.Row="9"  PlacementTarget="{x:Reference tblInsurance}" Placement="Bottom" VerticalOffset="5" IsOpen="{Binding IsFocused, ElementName=tbInsurance, Mode=OneWay}"
                        MinHeight="100" Width="{Binding ActualWidth, ElementName=tbInsurance}" x:Name="popup">
             <Border Background="White" BorderBrush="DimGray" BorderThickness="1">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" x:Name="InsuranceDocumentList" />
-                    <Button HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="Transparent"  Command="{Binding AddInsuranceDocument}" Content="Добавить"/>
-                </Grid>
+                    <Button HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocument}" Content="Добавить" Margin="5"/>
+                </StackPanel>
             </Border>
         </Popup>
 

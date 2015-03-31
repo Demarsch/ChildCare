@@ -18,6 +18,8 @@ namespace Registry
 
         private readonly ILog log;
 
+        private readonly ICacheService cacheService;
+
         private ObservableCollection<AssignmentViewModel> assignments;
 
         public ObservableCollection<AssignmentViewModel> Assignments
@@ -26,12 +28,15 @@ namespace Registry
             set { Set("Assignments", ref assignments, value); }
         }
 
-        public PatientAssignmentListViewModel(IPatientAssignmentService assignmentService, ILog log)
+        public PatientAssignmentListViewModel(IPatientAssignmentService assignmentService, ILog log, ICacheService cacheService)
         {
             if (assignmentService == null)
                 throw new ArgumentNullException("assignmentService");
             if (log == null)
                 throw new ArgumentNullException("log");
+            if (cacheService == null)
+                throw new ArgumentNullException("cacheService");
+            this.cacheService = cacheService;
             this.log = log;
             this.assignmentService = assignmentService;
             assignments = new ObservableCollection<AssignmentViewModel>();
@@ -64,6 +69,21 @@ namespace Registry
 
         public bool IsPatientSelected { get { return patientId != 0; } }
 
+        private bool showIncompleted;
+
+        public bool ShowIncompleted
+        {
+            get { return showIncompleted; }
+            set
+            {
+                var isChanged = Set("ShowIncompleted", ref showIncompleted, value);
+                if (!(showCancelled || showCompleted || showIncompleted))
+                    isChanged = Set("ShowCompleted", ref showCompleted, true);
+                if (isChanged)
+                    RefreshAssignments();
+            }
+        }
+
         private bool showCompleted;
 
         public bool ShowCompleted
@@ -73,7 +93,7 @@ namespace Registry
             {
                 var isChanged = Set("ShowCompleted", ref showCompleted, value);
                 if (!(showCancelled || showCompleted || showIncompleted))
-                    isChanged = Set("ShowCompleted", ref showCompleted, true);
+                    isChanged = Set("ShowCancelled", ref showCancelled, true);
                 if (isChanged)
                     RefreshAssignments();
             }
@@ -87,21 +107,6 @@ namespace Registry
             set
             {
                 var isChanged = Set("ShowCancelled", ref showCancelled, value);
-                if (!(showCancelled || showCompleted || showIncompleted))
-                    isChanged = Set("ShowCancelled", ref showCancelled, true);
-                if (isChanged)
-                    RefreshAssignments();
-            }
-        }
-
-        private bool showIncompleted;
-
-        public bool ShowIncompleted
-        {
-            get { return showIncompleted; }
-            set
-            {
-                var isChanged = Set("ShowIncompleted", ref showIncompleted, value);
                 if (!(showCancelled || showCompleted || showIncompleted))
                     isChanged = Set("ShowIncompleted", ref showIncompleted, true);
                 if (isChanged)
@@ -159,7 +164,7 @@ namespace Registry
 
         private ICollection<AssignmentViewModel> LoadImpl(object patientId)
         {
-            return assignmentService.GetAssignments((int)patientId).Select(x => new AssignmentViewModel(x)).ToArray();
+            return assignmentService.GetAssignments((int)patientId).Select(x => new AssignmentViewModel(x, cacheService)).ToArray();
         }
 
         private void LoadCompleted(Task<ICollection<AssignmentViewModel>> sourceTask)
@@ -202,7 +207,9 @@ namespace Registry
         private bool FilterAssignments(object obj)
         {
             var assignment = obj as AssignmentViewModel;
-            return assignment != null && ((assignment.IsCancelled && showCancelled) || (assignment.IsCompleted && showCompleted) || (!assignment.IsCompleted && showIncompleted));
+            return assignment != null && ((assignment.State == AssignmentState.Cancelled && showCancelled)
+                                        || (assignment.State == AssignmentState.Completed && showCompleted)
+                                        || (assignment.State == AssignmentState.Incompleted && showIncompleted));
         }
 
         private void RefreshAssignments()

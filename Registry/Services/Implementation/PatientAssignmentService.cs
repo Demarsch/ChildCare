@@ -26,7 +26,7 @@ namespace Registry
                     {
                         AssignDateTime = x.AssignDateTime,
                         IsCanceled = x.CancelUserId.HasValue,
-                        IsCompleted = x.RecordId.HasValue ? x.Record.IsCompleted : false,
+                        IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
                         RecordTypeId = x.RecordTypeId,
                         RoomId = x.RoomId
                     }).ToArray();

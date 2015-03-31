@@ -1,23 +1,17 @@
 ﻿using DataLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using log4net;
-using Core;
 
 namespace Registry
 {
     class InsuranceDocumentViewModel : ObservableObject
     {
-
-        InsuranceDocument insuranceDocument;
+        private readonly InsuranceDocument insuranceDocument;
 
         public InsuranceDocumentViewModel(InsuranceDocument insuranceDocument)
         {
+            if (insuranceDocument == null)
+                throw new ArgumentNullException("insuranceDocument");
             this.insuranceDocument = insuranceDocument;
             FillData();
         }

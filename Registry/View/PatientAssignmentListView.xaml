@@ -3,9 +3,54 @@
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <stuffLib:UniversalConverter x:Key="AssignmentStateToBackgroundConverter">
+        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Incompleted}">
+            <stuffLib:ConverterItem.To>
+                <SolidColorBrush Color="White" />
+            </stuffLib:ConverterItem.To>
+        </stuffLib:ConverterItem>
+        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Cancelled}">
+            <stuffLib:ConverterItem.To>
+                <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
+                    <GradientStop Color="Tomato" Offset="0" />
+                    <GradientStop Color="White" Offset="0.2" />
+                    <GradientStop Color="White" Offset="0.8" />
+                    <GradientStop Color="Tomato" Offset="1" />
+                </LinearGradientBrush>
+            </stuffLib:ConverterItem.To>
+        </stuffLib:ConverterItem>
+        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Completed}">
+            <stuffLib:ConverterItem.To>
+                <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
+                    <GradientStop Color="ForestGreen" Offset="0" />
+                    <GradientStop Color="White" Offset="0.2" />
+                    <GradientStop Color="White" Offset="0.8" />
+                    <GradientStop Color="ForestGreen" Offset="1" />
+                </LinearGradientBrush>
+            </stuffLib:ConverterItem.To>
+        </stuffLib:ConverterItem>
+    </stuffLib:UniversalConverter>
+    <stuffLib:UniversalConverter x:Key="AssignmentStateToBorderBrushConverter">
+        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Incompleted}">
+            <stuffLib:ConverterItem.To>
+                <SolidColorBrush Color="DimGray" />
+            </stuffLib:ConverterItem.To>
+        </stuffLib:ConverterItem>
+        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Cancelled}">
+            <stuffLib:ConverterItem.To>
+                <SolidColorBrush Color="Red" />
+            </stuffLib:ConverterItem.To>
+        </stuffLib:ConverterItem>
+        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Completed}">
+            <stuffLib:ConverterItem.To>
+                <SolidColorBrush Color="DarkGreen" />
+            </stuffLib:ConverterItem.To>
+        </stuffLib:ConverterItem>
+    </stuffLib:UniversalConverter>
+
     <DataTemplate DataType="{x:Type registry:PatientAssignmentListViewModel}">
         <DataTemplate.Resources>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <stuffLib:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
                 <stuffLib:ConverterItem To="{x:Static Visibility.Visible}">
                     <stuffLib:ConverterItem.From>
@@ -28,20 +73,29 @@
                     </Border.Background>
                 </Border>
                 <CheckBox Margin="5" Content="Невыполненные" IsChecked="{Binding ShowIncompleted}" />
-                <CheckBox Margin="5" Content="Выполненные" IsChecked="{Binding ShowCompleted}" />
-                <CheckBox Margin="5" Content="Отмененные" IsChecked="{Binding ShowCancelled}" />
-                <ListBox Margin="5" BorderBrush="Black" BorderThickness="1" MinHeight="100" MaxHeight="300" ItemsSource="{Binding Assignments}" HorizontalContentAlignment="Stretch">
-                    <ListBox.Resources>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White" />
-                    </ListBox.Resources>
-                </ListBox>
+                <CheckBox Margin="5" IsChecked="{Binding ShowCompleted}" VerticalContentAlignment="Center">
+                    <CheckBox.Content>
+                        <Border BorderBrush="DarkGreen" BorderThickness="0 0 0 2" HorizontalAlignment="Left">
+                            <TextBlock Text="Выполненные" Margin="0 0 0 2" />
+                        </Border>
+                    </CheckBox.Content>
+                </CheckBox>
+                <CheckBox Margin="5" IsChecked="{Binding ShowCancelled}">
+                    <CheckBox.Content>
+                        <Border BorderBrush="Tomato" BorderThickness="0 0 0 2" HorizontalAlignment="Left">
+                            <TextBlock Text="Отменённые" Margin="0 0 0 2" />
+                        </Border>
+                    </CheckBox.Content>
+                </CheckBox>
+                <ListBox Margin="5" BorderBrush="DimGray" BorderThickness="1" MinHeight="100" MaxHeight="300" ItemsSource="{Binding Assignments}" HorizontalContentAlignment="Stretch" />
             </StackPanel>
         </Grid>
     </DataTemplate>
-    
+
     <DataTemplate DataType="{x:Type registry:AssignmentViewModel}">
-        <Border HorizontalAlignment="Stretch" BorderBrush="Gray" BorderThickness="1" CornerRadius="5">
-            <Grid Margin="0 0 0 5">
+        <Border HorizontalAlignment="Stretch" BorderThickness="1" CornerRadius="5" Background="{Binding State, Converter={StaticResource AssignmentStateToBackgroundConverter}}"
+                BorderBrush="{Binding State, Converter={StaticResource AssignmentStateToBorderBrushConverter}}">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -51,9 +105,9 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding RecordType}" Margin="5" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding RecordType}" HorizontalAlignment="Center" FontWeight="Bold" Margin="5" />
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding AssignDateTime, StringFormat='dd-MM-yyyy HH:mm'}" Margin="5 0 0 5" />
-                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Room, StringFormat='{}Кабинет - {0}'}" Margin="3 0 5 0" Foreground="Gray" FontStyle="Italic" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Room}" Margin="3 0 5 0" Foreground="Gray" FontStyle="Italic" />
             </Grid>
         </Border>
     </DataTemplate>

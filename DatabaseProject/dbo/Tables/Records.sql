@@ -20,6 +20,9 @@
     CONSTRAINT [FK_Records_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
     CONSTRAINT [FK_Records_Records] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Records] ([Id]),
     CONSTRAINT [FK_Records_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]),
+    CONSTRAINT [FK_Records_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [dbo].[Rooms] ([Id]),
     CONSTRAINT [FK_Records_Users] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 

@@ -64,6 +64,8 @@ namespace UpdateDB
                 while (rd.Read())
                 {
                     var tb = rd.GetString(0);
+                    if (tb == "sysdiagrams")
+                        continue;
                     if (System.IO.File.Exists(textBox2.Text + System.IO.Path.DirectorySeparatorChar + tb + ".xlsx")) 
                         tb = tb.PadRight(50) + "+ файл";
                     tables.Add(tb);
@@ -114,17 +116,14 @@ namespace UpdateDB
                 System.Data.SqlClient.SqlCommand cmd = new System.Data.SqlClient.SqlCommand(GetDataCommand.Replace("@table@", st), con);
                 var rd = cmd.ExecuteReader();
                 int row = 1;
+                for (int col = 0; col < rd.FieldCount; col++)
+                {
+                    sheet.Cell(row, col + 1).SetDataType(XLCellValues.Text);
+                    sheet.Cell(row, col + 1).SetValue<string>(rd.GetName(col));
+                }
+                row++;
                 while (rd.Read())
                 {
-                    if (row == 1)
-                    {
-                        for (int col = 0; col < rd.FieldCount; col++)
-                        {
-                            sheet.Cell(row, col + 1).SetDataType(XLCellValues.Text);
-                            sheet.Cell(row, col + 1).SetValue<string>(rd.GetName(col));
-                        }
-                        row++;
-                    }
                     for (int col = 0; col < rd.FieldCount; col++)
                     {
                         if (rd.IsDBNull(col)) 

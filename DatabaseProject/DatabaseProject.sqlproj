@@ -80,5 +80,6 @@
     <Build Include="dbo\Tables\Permissions.sql" />
     <Build Include="dbo\Tables\PermissionLinks.sql" />
     <Build Include="dbo\Tables\ChangeNameReasons.sql" />
+    <Build Include="dbo\Tables\Rooms.sql" />
   </ItemGroup>
 </Project>

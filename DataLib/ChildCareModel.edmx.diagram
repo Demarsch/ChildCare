@@ -41,6 +41,9 @@
         <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
         <AssociationConnector Association="DataLib.FK_Permissions_Users" />
         <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="7.375" PointY="10.75" />
+        <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="3" PointY="8.75" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
+        <AssociationConnector Association="DataLib.FK_Records_Rooms" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

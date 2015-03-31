@@ -14,9 +14,12 @@
     CONSTRAINT [FK_Assignments_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
     CONSTRAINT [FK_Assignments_Records] FOREIGN KEY ([RecordId]) REFERENCES [dbo].[Records] ([Id]),
     CONSTRAINT [FK_Assignments_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]),
+    CONSTRAINT [FK_Assignments_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [dbo].[Rooms] ([Id]),
     CONSTRAINT [FK_Assignments_Users] FOREIGN KEY ([AssignUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Users1] FOREIGN KEY ([CancelUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

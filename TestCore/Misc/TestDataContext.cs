@@ -23,5 +23,15 @@ namespace TestCore
         {
             return data[typeof(TData)] as IQueryable<TData>;
         }
+
+        public void Save()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Add<TData>(TData obj) where TData : class
+        {
+            throw new NotImplementedException();
+        }
     }
 }

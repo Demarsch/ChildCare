@@ -74,7 +74,7 @@ namespace Registry
                     BirthDate = person.Entity.BirthDate;
                     SNILS = person.Entity.Snils;
                     MedNumber = person.Entity.MedNumber;
-                    InsuranceDocuments = insuranceDocuments;
+                    RaisePropertyChanged("InsuranceDocuments");
                 }
             }
             else

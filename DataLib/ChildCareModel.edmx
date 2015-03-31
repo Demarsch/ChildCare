@@ -175,6 +175,14 @@
           <Property Name="RecordTypeGroupId" Type="int" Nullable="false" />
           <Property Name="MedProfileId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="Rooms">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Number" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <EntityType Name="UserPermissions">
           <Key>
             <PropertyRef Name="Id" />
@@ -229,6 +237,18 @@
             </Principal>
             <Dependent Role="Assignments">
               <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignments_Rooms">
+          <End Role="Rooms" Type="Self.Rooms" Multiplicity="1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Rooms">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="RoomId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -400,6 +420,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Records_Rooms">
+          <End Role="Rooms" Type="Self.Rooms" Multiplicity="1" />
+          <End Role="Records" Type="Self.Records" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Rooms">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Records">
+              <PropertyRef Name="RoomId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Records_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="Records" Type="Self.Records" Multiplicity="*" />
@@ -462,6 +494,7 @@
           <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypes" EntityType="Self.RecordTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Rooms" EntityType="Self.Rooms" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPermissions" EntityType="Self.UserPermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Assignments_Persons" Association="Self.FK_Assignments_Persons">
@@ -474,6 +507,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_RecordTypes" Association="Self.FK_Assignments_RecordTypes">
             <End Role="RecordTypes" EntitySet="RecordTypes" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignments_Rooms" Association="Self.FK_Assignments_Rooms">
+            <End Role="Rooms" EntitySet="Rooms" />
             <End Role="Assignments" EntitySet="Assignments" />
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_Users" Association="Self.FK_Assignments_Users">
@@ -530,6 +567,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_Records_RecordTypes" Association="Self.FK_Records_RecordTypes">
             <End Role="RecordTypes" EntitySet="RecordTypes" />
+            <End Role="Records" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Rooms" Association="Self.FK_Records_Rooms">
+            <End Role="Rooms" EntitySet="Rooms" />
             <End Role="Records" EntitySet="Records" />
           </AssociationSet>
           <AssociationSet Name="FK_Records_Users" Association="Self.FK_Records_Users">
@@ -653,6 +694,15 @@
             <End Role="UserPermission" EntitySet="UserPermissions" />
           </AssociationSet>
           <EntitySet Name="DBSettings" EntityType="DataLib.DBSetting" />
+          <EntitySet Name="Rooms" EntityType="DataLib.Room" />
+          <AssociationSet Name="FK_Assignments_Rooms" Association="DataLib.FK_Assignments_Rooms">
+            <End Role="Room" EntitySet="Rooms" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Rooms" Association="DataLib.FK_Records_Rooms">
+            <End Role="Room" EntitySet="Rooms" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="PersonName">
           <Key>
@@ -768,6 +818,7 @@
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="Assignment" ToRole="RecordType" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Assignments_Users" FromRole="Assignment" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DataLib.FK_Assignments_Users1" FromRole="Assignment" ToRole="User" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Assignment" ToRole="Room" />
         </EntityType>
         <EntityType Name="Record">
           <Key>
@@ -796,6 +847,7 @@
           <NavigationProperty Name="Record1" Relationship="DataLib.FK_Records_Records" FromRole="Record1" ToRole="Record" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_Records_Rooms" FromRole="Record" ToRole="Room" />
         </EntityType>
         <EntityType Name="RecordType">
           <Key>
@@ -1139,6 +1191,40 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
+        <EntityType Name="Room">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Number" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Room" ToRole="Assignment" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Rooms" FromRole="Room" ToRole="Record" />
+        </EntityType>
+        <Association Name="FK_Assignments_Rooms">
+          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Room">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="RoomId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Rooms">
+          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Room">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="RoomId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1347,6 +1433,15 @@
                 <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Rooms">
+            <EntityTypeMapping TypeName="DataLib.Room">
+              <MappingFragment StoreEntitySet="Rooms">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

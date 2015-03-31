@@ -24,7 +24,11 @@ namespace Registry
             else if (e.Key == Key.Up)
                 SelectPreviousItem();
             else if (e.Key == Key.Enter)
+            {
+                if (patientList.SelectedIndex == -1)
+                    SelectNextItem();
                 patientList.Focus();
+            }
         }
 
         private void SelectNextItem()

@@ -97,8 +97,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\IdPropertyAttribute.cs" />
+    <Compile Include="Attributes\NamePropertyAttribute.cs" />
     <Compile Include="Converters\UniversalMultiBooleanConverter.cs" />
     <Compile Include="Converters\UniversalConverter.cs" />
+    <Compile Include="Misc\DataContextCacheService.cs" />
+    <Compile Include="Misc\ICacheService.cs" />
     <Compile Include="Misc\IDataContext.cs" />
     <Compile Include="Misc\IDataContextProvider.cs" />
     <Compile Include="Misc\EntityContext.cs" />
