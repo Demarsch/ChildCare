@@ -1,24 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Data;
+using System.Windows.Input;
+using Core;
+using GalaSoft.MvvmLight.Command;
 using DataLib;
 
 namespace AdminTools
 {
-    /// <summary>
-    /// A UI-friendly wrapper around a Person object.
-    /// </summary>
     public class PermissionViewModel :  INotifyPropertyChanged
     {
         #region Data
 
-        readonly ReadOnlyCollection<PermissionViewModel> _children;
-        readonly PermissionViewModel _parent;
-        readonly Permission _permission;
+        readonly ObservableCollection<PermissionViewModel> children;
+        readonly PermissionViewModel parent;
+        readonly Permission permission;
 
-        bool _isExpanded;
-        bool _isSelected;
+        bool isExpanded;
+        bool isSelected;
 
         #endregion // Data
 
@@ -31,11 +34,11 @@ namespace AdminTools
 
         private PermissionViewModel(Permission permission, PermissionViewModel parent)
         {
-            _permission = permission;
-            _parent = parent;
+            this.permission = permission;
+            this.parent = parent;
 
-            _children = new ReadOnlyCollection<PermissionViewModel>(
-                    _permission.PermissionLinks.Select(x => new PermissionViewModel(x.Permission1, this))
+            children = new ObservableCollection<PermissionViewModel>(
+                    permission.PermissionLinks.Select(x => new PermissionViewModel(x.Permission1, this))
                      .ToList<PermissionViewModel>());
         }
 
@@ -43,19 +46,19 @@ namespace AdminTools
 
         #region Person Properties
 
-        public ReadOnlyCollection<PermissionViewModel> Children
+        public ObservableCollection<PermissionViewModel> Children
         {
-            get { return _children; }
+            get { return children; }
         }
 
         public string Name
         {
-            get { return _permission.Name; }
+            get { return permission.Name; }
         }
            
         public bool IsGroup
         {
-            get { return _permission.IsGroup; }
+            get { return permission.IsGroup; }
         }
 
         public string PhotoSource
@@ -63,17 +66,17 @@ namespace AdminTools
             get
             {
                 return IsGroup
-                    ? "pack://application:,,,/Resources;component/Images/Man48x48.png"
+                    ? "pack://application:,,,/Resources;component/Images/UserGroup48x48.png"
                     : string.Empty;
             }
         }
 
         public PermissionViewModel Parent
         {
-            get { return _parent; }
+            get { return parent; }
         }
 
-        #endregion // Person Properties
+        #endregion
 
         #region Presentation Members
 
@@ -85,22 +88,22 @@ namespace AdminTools
         /// </summary>
         public bool IsExpanded
         {
-            get { return _isExpanded; }
+            get { return isExpanded; }
             set
             {
-                if (value != _isExpanded)
+                if (value != isExpanded)
                 {
-                    _isExpanded = value;
+                    isExpanded = value;
                     this.OnPropertyChanged("IsExpanded");
                 }
 
                 // Expand all the way up to the root.
-                if (_isExpanded && _parent != null)
-                    _parent.IsExpanded = true;
+                if (isExpanded && parent != null)
+                    parent.IsExpanded = true;
             }
         }
 
-        #endregion // IsExpanded
+        #endregion
 
         #region IsSelected
 
@@ -110,18 +113,18 @@ namespace AdminTools
         /// </summary>
         public bool IsSelected
         {
-            get { return _isSelected; }
+            get { return isSelected; }
             set
             {
-                if (value != _isSelected)
+                if (value != isSelected)
                 {
-                    _isSelected = value;
+                    isSelected = value;
                     this.OnPropertyChanged("IsSelected");
                 }
             }
         }
 
-        #endregion // IsSelected
+        #endregion 
 
         #region NameContainsText
 
@@ -133,7 +136,7 @@ namespace AdminTools
             return this.Name.IndexOf(text, StringComparison.InvariantCultureIgnoreCase) > -1;
         }
 
-        #endregion // NameContainsText
+        #endregion
         
         #endregion // Presentation Members        
 
@@ -147,6 +150,6 @@ namespace AdminTools
                 this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion // INotifyPropertyChanged Members
+        #endregion
     }
 }

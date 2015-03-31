@@ -3,10 +3,28 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:ev="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
         xmlns:admintools="clr-namespace:AdminTools"
-        mc:Ignorable="d"
-        Title="Редактор прав" Height="350" Width="525" WindowStartupLocation="CenterScreen">
+        mc:Ignorable="d" 
+        d:DataContext="{d:DesignInstance admintools:MainWindowViewModel}"
+        Title="Панель управления" Height="350" Width="525" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Grid>
-        <admintools:PermissionTreeControl DataContext="{Binding PermissionTreeViewModel}" />
+        <Menu IsMainMenu="True">
+            <Menu.Background>
+                <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                    <GradientStop Color="#110F3642" Offset="1" />
+                    <GradientStop Color="#33046681" Offset="0" />
+                </LinearGradientBrush>
+            </Menu.Background>
+
+            <MenuItem Header="Функции администратора" Padding="5">
+                <MenuItem Header="Редактор прав" Padding="0,5,5,5" Click="{ev:EventBinding PermissionsEditorCommand}">                
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="pack://application:,,,/Resources;component/Images/UserGroup48x48.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>

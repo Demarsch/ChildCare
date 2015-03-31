@@ -55,7 +55,7 @@
     <Resource Include="Images\Loading16x16.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\Group.png" />
+    <Resource Include="Images\UserGroup48x48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
