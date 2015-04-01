@@ -41,5 +41,7 @@ namespace DataLib
         public virtual DbSet<UserPermission> UserPermissions { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
+        public virtual DbSet<PersonRelative> PersonRelatives { get; set; }
+        public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }
     }
 }

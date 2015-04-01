@@ -1,15 +1,17 @@
 ﻿using Core;
 using DataLib;
+using GalaSoft.MvvmLight;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Registry
 {
-    class EditPersonViewModel
+    class EditPersonViewModel : ObservableObject
     {
         private readonly ILog log;
 
@@ -21,7 +23,7 @@ namespace Registry
             get { return editPersonDataViewModel; }
         }
 
-         /// <summary>
+        /// <summary>
         /// Use this for creating new person
         /// </summary>
         public EditPersonViewModel(ILog log, IPatientService service)
@@ -35,7 +37,7 @@ namespace Registry
 
         }
 
-          public EditPersonViewModel(ILog log, IPatientService service, int personId)
+        public EditPersonViewModel(ILog log, IPatientService service, int personId)
             : this(log, service)
         {
             Id = personId;
@@ -61,7 +63,34 @@ namespace Registry
                     return;
                 id = value;
                 editPersonDataViewModel = new EditPersonDataViewModel(log, service, id);
+                SetRelatives();
             }
+        }
+
+        private async void SetRelatives()
+        {
+            var task = Task.Factory.StartNew(SetRelativesAsync);
+            await task;
+        }
+
+        private void SetRelativesAsync()
+        {
+            var listRelatives = service.GetPersonRelatives(Id);
+            listRelatives.Add(new PersonRelativeDTO()
+                {
+                    RelativePersonId = -1,
+                    ShortName = "Новый родственник",
+                    RelativeRelationName = string.Empty,
+                    IsRepresentative = false
+                });
+            Relatives = new ObservableCollection<PersonRelativeDTO>(listRelatives);
+        }
+
+        private ObservableCollection<PersonRelativeDTO> relatives;
+        public ObservableCollection<PersonRelativeDTO> Relatives
+        {
+            get { return relatives; }
+            set { Set("Relatives", ref relatives, value); }
         }
     }
 }

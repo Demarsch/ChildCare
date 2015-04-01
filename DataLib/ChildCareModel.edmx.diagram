@@ -44,6 +44,11 @@
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="3" PointY="8.75" />
         <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
         <AssociationConnector Association="DataLib.FK_Records_Rooms" />
+        <EntityTypeShape EntityType="DataLib.PersonRelative" Width="1.5" PointX="3.875" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="0.75" PointY="11.375" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons1" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

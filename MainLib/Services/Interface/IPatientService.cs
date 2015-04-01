@@ -13,5 +13,7 @@ namespace Core
         string SavePersonName(int personId, string firstName, string lastName, string middleName, int changeNameReasonId, DateTime fromDateTime);
 
         ICollection<InsuranceDocument> GetPersonInsuranceDocuments(int personId);
+
+        ICollection<PersonRelativeDTO> GetPersonRelatives(int personId);
     }
 }

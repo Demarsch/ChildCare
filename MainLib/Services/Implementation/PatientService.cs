@@ -19,6 +19,19 @@ namespace Core
             this.dataContextProvider = dataContextProvider;
         }
 
+        public ICollection<PersonRelativeDTO> GetPersonRelatives(int personId)
+        {
+            var context = dataContextProvider.GetNewDataContext();
+            return (context.GetData<PersonRelative>().Where(x => x.PersonId == personId)
+                .Select(x => new PersonRelativeDTO()
+                {
+                     RelativePersonId = x.RelativeId,
+                     ShortName = x.Person1.ShortName,
+                     RelativeRelationName = x.RelativeRelationship.Name,
+                     IsRepresentative = x.IsRepresentative
+                }).ToList());
+        }
+
         public EntityContext<Person> GetPersonById(int id)
         {
             var context = dataContextProvider.GetNewDataContext();

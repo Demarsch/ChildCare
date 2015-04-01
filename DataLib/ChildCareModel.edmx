@@ -124,6 +124,16 @@
           <Property Name="EndDateTime" Type="datetime" />
           <Property Name="ChangeNameReasonId" Type="int" />
         </EntityType>
+        <EntityType Name="PersonRelatives">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="RelativeId" Type="int" Nullable="false" />
+          <Property Name="RelativeRelationshipId" Type="int" Nullable="false" />
+          <Property Name="IsRepresentative" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Persons">
           <Key>
             <PropertyRef Name="Id" />
@@ -174,6 +184,13 @@
           <Property Name="EditorId" Type="int" />
           <Property Name="RecordTypeGroupId" Type="int" Nullable="false" />
           <Property Name="MedProfileId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RelativeRelationships">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="Rooms">
           <Key>
@@ -372,6 +389,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PersonRelatives_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonRelatives" Type="Self.PersonRelatives" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelatives">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonRelatives_Persons1">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonRelatives" Type="Self.PersonRelatives" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelatives">
+              <PropertyRef Name="RelativeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonRelatives_RelativeRelationships">
+          <End Role="RelativeRelationships" Type="Self.RelativeRelationships" Multiplicity="1" />
+          <End Role="PersonRelatives" Type="Self.PersonRelatives" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationships">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelatives">
+              <PropertyRef Name="RelativeRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Persons_Genders">
           <End Role="Genders" Type="Self.Genders" Multiplicity="1" />
           <End Role="Persons" Type="Self.Persons" Multiplicity="*" />
@@ -491,9 +544,11 @@
           <EntitySet Name="PermissionLinks" EntityType="Self.PermissionLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonRelatives" EntityType="Self.PersonRelatives" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypes" EntityType="Self.RecordTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RelativeRelationships" EntityType="Self.RelativeRelationships" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rooms" EntityType="Self.Rooms" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPermissions" EntityType="Self.UserPermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
@@ -552,6 +607,18 @@
           <AssociationSet Name="FK_PersonNames_Persons" Association="Self.FK_PersonNames_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonNames" EntitySet="PersonNames" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonRelatives_Persons" Association="Self.FK_PersonRelatives_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonRelatives" EntitySet="PersonRelatives" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonRelatives_Persons1" Association="Self.FK_PersonRelatives_Persons1">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonRelatives" EntitySet="PersonRelatives" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonRelatives_RelativeRelationships" Association="Self.FK_PersonRelatives_RelativeRelationships">
+            <End Role="RelativeRelationships" EntitySet="RelativeRelationships" />
+            <End Role="PersonRelatives" EntitySet="PersonRelatives" />
           </AssociationSet>
           <AssociationSet Name="FK_Persons_Genders" Association="Self.FK_Persons_Genders">
             <End Role="Genders" EntitySet="Genders" />
@@ -703,6 +770,20 @@
             <End Role="Room" EntitySet="Rooms" />
             <End Role="Record" EntitySet="Records" />
           </AssociationSet>
+          <EntitySet Name="PersonRelatives" EntityType="DataLib.PersonRelative" />
+          <EntitySet Name="RelativeRelationships" EntityType="DataLib.RelativeRelationship" />
+          <AssociationSet Name="FK_PersonRelatives_Persons" Association="DataLib.FK_PersonRelatives_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonRelative" EntitySet="PersonRelatives" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonRelatives_Persons1" Association="DataLib.FK_PersonRelatives_Persons1">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonRelative" EntitySet="PersonRelatives" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonRelatives_RelativeRelationships" Association="DataLib.FK_PersonRelatives_RelativeRelationships">
+            <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
+            <End Role="PersonRelative" EntitySet="PersonRelatives" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="PersonName">
           <Key>
@@ -737,6 +818,8 @@
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="InsuranceDocuments" Relationship="DataLib.FK_InsuranceDocuments_Persons" FromRole="Person" ToRole="InsuranceDocument" />
+          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_Persons" FromRole="Person" ToRole="PersonRelative" />
+          <NavigationProperty Name="PersonRelatives1" Relationship="DataLib.FK_PersonRelatives_Persons1" FromRole="Person" ToRole="PersonRelative" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -1225,6 +1308,63 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="PersonRelative">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="RelativeId" Type="Int32" Nullable="false" />
+          <Property Name="RelativeRelationshipId" Type="Int32" Nullable="false" />
+          <Property Name="IsRepresentative" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonRelatives_Persons" FromRole="PersonRelative" ToRole="Person" />
+          <NavigationProperty Name="Person1" Relationship="DataLib.FK_PersonRelatives_Persons1" FromRole="PersonRelative" ToRole="Person" />
+          <NavigationProperty Name="RelativeRelationship" Relationship="DataLib.FK_PersonRelatives_RelativeRelationships" FromRole="PersonRelative" ToRole="RelativeRelationship" />
+        </EntityType>
+        <EntityType Name="RelativeRelationship">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_RelativeRelationships" FromRole="RelativeRelationship" ToRole="PersonRelative" />
+        </EntityType>
+        <Association Name="FK_PersonRelatives_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelative">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonRelatives_Persons1">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelative">
+              <PropertyRef Name="RelativeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonRelatives_RelativeRelationships">
+          <End Type="DataLib.RelativeRelationship" Role="RelativeRelationship" Multiplicity="1" />
+          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationship">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelative">
+              <PropertyRef Name="RelativeRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1442,6 +1582,25 @@
               <MappingFragment StoreEntitySet="Rooms">
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonRelatives">
+            <EntityTypeMapping TypeName="DataLib.PersonRelative">
+              <MappingFragment StoreEntitySet="PersonRelatives">
+                <ScalarProperty Name="IsRepresentative" ColumnName="IsRepresentative" />
+                <ScalarProperty Name="RelativeRelationshipId" ColumnName="RelativeRelationshipId" />
+                <ScalarProperty Name="RelativeId" ColumnName="RelativeId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RelativeRelationships">
+            <EntityTypeMapping TypeName="DataLib.RelativeRelationship">
+              <MappingFragment StoreEntitySet="RelativeRelationships">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
