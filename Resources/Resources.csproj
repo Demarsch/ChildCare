@@ -55,6 +55,7 @@
     <Resource Include="Images\Loading16x16.gif" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\BackArrow24x24.png" />
     <Content Include="Images\Group.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

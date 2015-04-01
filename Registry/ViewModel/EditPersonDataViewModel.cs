@@ -8,6 +8,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace Registry
 {
@@ -18,6 +19,8 @@ namespace Registry
         private readonly IPatientService service;
 
         private EntityContext<Person> person;
+
+        private List<Gender> genders;
 
         /// <summary>
         /// Use this for creating new person
