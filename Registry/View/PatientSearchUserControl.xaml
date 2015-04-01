@@ -91,9 +91,15 @@
                                     <Binding Path="NoOneisFound" />
                                 </MultiBinding>
                             </ListBox.Visibility>
-                            <ListBox.Resources>
-                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White" />
-                            </ListBox.Resources>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                   <Style.Triggers>
+                                       <Trigger Property="IsMouseOver" Value="True">
+                                           <Setter Property="BorderThickness" Value="2" />
+                                       </Trigger>
+                                   </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 20 0 20" Visibility="{Binding IsLookingForPatient, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     Orientation="Horizontal">

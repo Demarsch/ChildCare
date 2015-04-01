@@ -21,7 +21,8 @@ namespace TestCore
 
         public IQueryable<TData> GetData<TData>() where TData : class
         {
-            return data[typeof(TData)] as IQueryable<TData>;
+            IEnumerable result;
+            return data.TryGetValue(typeof(TData), out result) ? (result as ICollection<TData>).AsQueryable() : new TData[0].AsQueryable();
         }
 
         public void Save()

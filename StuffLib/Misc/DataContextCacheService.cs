@@ -58,6 +58,11 @@ namespace Core
             return dictionary.TryGetValue(name, out result) ? result : null;
         }
 
+        public ICollection<TData> GetItems<TData>() where TData : class
+        {
+            return dataContext.GetData<TData>().ToArray();
+        }
+
         #region Internals
 
         internal PropertyInfo GetIdProperty<TData>()
