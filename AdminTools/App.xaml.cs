@@ -23,8 +23,7 @@ namespace AdminTools
 
             var permissionService = new PermissionService(contextProvider) as IPermissionService;
 
-            var permissionTreeViewModel = new PermissionTreeViewModel(permissionService);
-            var mainViewModel = new MainWindowViewModel(permissionTreeViewModel);
+            var mainViewModel = new MainWindowViewModel(permissionService);
             var mainWindow = new MainWindow { DataContext = mainViewModel };
             MainWindow = mainWindow;
             mainWindow.Show();

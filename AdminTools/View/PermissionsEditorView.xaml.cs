@@ -17,12 +17,9 @@ using Core;
 
 namespace AdminTools
 {
-    /// <summary>
-    /// Interaction logic for PermissionTreeControl.xaml
-    /// </summary>
-    public partial class PermissionTreeControl : UserControl
-    { 
-        public PermissionTreeControl()
+    public partial class PermissionsEditorView : Window
+    {
+        public PermissionsEditorView()
         {
             InitializeComponent();            
         }
