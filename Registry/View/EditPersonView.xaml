@@ -4,7 +4,7 @@
         xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:registry="clr-namespace:Registry"
-        Width="914.999" SizeToContent="Height" ResizeMode="NoResize">
+        Width="920" SizeToContent="Height" ResizeMode="NoResize">
 
     <Window.Resources>
         <stuffLib:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
@@ -17,27 +17,28 @@
     </Window.Resources>
 
     <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="Viewer">
-        <ScrollViewer.Triggers>
-            <DataTrigger Binding="{Binding IsPersonEditing}" Value="False">
-                <DataTrigger.EnterActions>
-                    <BeginStoryboard>
-                        <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{x:Reference Viewer}">
-                            <DoubleAnimation From="0"  To="1500" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" AutoReverse="False" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </DataTrigger.EnterActions>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
-                <DataTrigger.EnterActions>
-                    <BeginStoryboard>
-                        <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{x:Reference Viewer}">
-                            <DoubleAnimation From="1500"  To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" AutoReverse="False" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </DataTrigger.EnterActions>
-            </DataTrigger>
-        </ScrollViewer.Triggers>
-
+        <ScrollViewer.Style>
+            <Style TargetType="{x:Type ScrollViewer}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
+                                    <DoubleAnimation To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
+                                    <DoubleAnimation To="1500" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ScrollViewer.Style>
         <Grid>
             <Grid.ColumnDefinitions >
                 <ColumnDefinition Width="auto"/>
