@@ -47,7 +47,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Личные данные пациента</Label>
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Личные данные</Label>
 
         <Border Grid.Column="0" Grid.Row="1" Grid.RowSpan="5" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
             <StackPanel>

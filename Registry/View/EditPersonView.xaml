@@ -1,56 +1,92 @@
 ﻿<Window x:Class="Registry.EditPersonView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:registry="clr-namespace:Registry"
-        Width="915" SizeToContent="Height">
-    <Grid>
-        <Grid.ColumnDefinitions >
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition  Height="auto"/>
-        </Grid.RowDefinitions>
+        Width="914.999" SizeToContent="Height" ResizeMode="NoResize">
 
-        <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
-        <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
-            <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
-            <Button DockPanel.Dock="Bottom" Background="Transparent" Height="auto">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
-                    <TextBlock Margin="3" Text="К пациенту"/>
-                </StackPanel>
-            </Button>
-            <ListBox ItemsSource="{Binding Relatives}" Width="300">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition  Width="auto"/>
-                                <ColumnDefinition  Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+    <Window.Resources>
+        <stuffLib:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
+            <stuffLib:ConverterItem To="{x:Static Visibility.Visible}">
+                <stuffLib:ConverterItem.From>
+                    <system:Boolean>False</system:Boolean>
+                </stuffLib:ConverterItem.From>
+            </stuffLib:ConverterItem>
+        </stuffLib:UniversalConverter>
+    </Window.Resources>
 
-                            <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
-                                <StackPanel>
-                                    <Image Source="{Binding Photo}"/>
-                                    <TextBlock Height="48">Нажмите, чтобы сделать фото</TextBlock>
+    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="Viewer">
+        <ScrollViewer.Triggers>
+            <DataTrigger Binding="{Binding IsPersonEditing}" Value="False">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{x:Reference Viewer}">
+                            <DoubleAnimation From="0"  To="1500" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" AutoReverse="False" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{x:Reference Viewer}">
+                            <DoubleAnimation From="1500"  To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" AutoReverse="False" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+            </DataTrigger>
+        </ScrollViewer.Triggers>
+
+        <Grid>
+            <Grid.ColumnDefinitions >
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition  Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
+            <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
+                <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
+                <Button DockPanel.Dock="Bottom" Background="Transparent" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource BooleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
+                        <TextBlock Margin="3" Text="К пациенту"/>
+                    </StackPanel>
+                </Button>
+                <ListBox Width="300" ItemsSource="{Binding Relatives}" SelectedItem="{Binding SelectedRelative}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition  Width="auto"/>
+                                    <ColumnDefinition  Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
+                                    <StackPanel>
+                                        <Image Source="{Binding Photo}"/>
+                                        <TextBlock Height="48">Нажмите, чтобы сделать фото</TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" Margin="3">
+                                    <TextBlock Text="{Binding RelativeRelationName}"/>
+                                    <TextBlock Margin="2" Text="{Binding ShortName}"/>
+                                    <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}"/>
                                 </StackPanel>
-                            </Border>
-
-                            <StackPanel Grid.Column="1" Margin="3">
-                                <TextBlock Text="{Binding RelativeRelationName}"/>
-                                <TextBlock Margin="2" Text="{Binding ShortName}"/>
-                                <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}"/>
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </DockPanel>
-        <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor"/>
-    </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
+        </Grid>
+    </ScrollViewer>
 </Window>

@@ -1,6 +1,7 @@
 ﻿using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Registry
 {
@@ -23,6 +25,16 @@ namespace Registry
             get { return editPersonDataViewModel; }
         }
 
+        private EditPersonDataViewModel editPersonRelativeDataViewModel;
+        public EditPersonDataViewModel EditPersonRelativeDataViewModel
+        {
+            get { return editPersonRelativeDataViewModel; }
+            set
+            {
+                Set("EditPersonRelativeDataViewModel", ref editPersonRelativeDataViewModel, value);
+            }
+        }
+
         /// <summary>
         /// Use this for creating new person
         /// </summary>
@@ -34,7 +46,8 @@ namespace Registry
                 throw new ArgumentNullException("service");
             this.service = service;
             this.log = log;
-
+            IsPersonEditing = true;
+            ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
         }
 
         public EditPersonViewModel(ILog log, IPatientService service, int personId)
@@ -66,6 +79,37 @@ namespace Registry
                 SetRelatives();
             }
         }
+
+        public ICommand ReturnToPersonEditingCommand { get; private set; }
+
+        private void ReturnToPersonEditing()
+        {
+            SelectedRelative = null;
+        }
+
+        private PersonRelativeDTO selectedRelative;
+        public PersonRelativeDTO SelectedRelative
+        {
+            get { return selectedRelative; }
+            set
+            {
+                Set("SelectedRelative", ref selectedRelative, value);
+                IsPersonEditing = (selectedRelative == null);
+                if (selectedRelative != null)
+                    if (selectedRelative.RelativePersonId > -1)
+                        EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, selectedRelative.RelativePersonId);
+                    else
+                        EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service);
+            }
+        }
+
+        private bool isPersonEditing;
+        public bool IsPersonEditing
+        {
+            get { return isPersonEditing; }
+            set { Set("IsPersonEditing", ref isPersonEditing, value); }
+        }
+
 
         private async void SetRelatives()
         {

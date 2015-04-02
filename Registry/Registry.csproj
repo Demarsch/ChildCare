@@ -111,6 +111,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DTO\AssignmentDTO.cs" />
+    <Compile Include="Helpers\ScrollViewerHelper.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
