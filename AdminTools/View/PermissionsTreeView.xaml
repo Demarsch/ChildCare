@@ -4,12 +4,30 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"              
              xmlns:ev="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              FocusManager.FocusedElement="{Binding ElementName=searchPermissionTextBox}"
              xmlns:admintools="clr-namespace:AdminTools.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" 
              d:DataContext="{d:DesignInstance admintools:PermissionsTreeViewModel}">
-    <DockPanel>
+    <DockPanel Margin="0,0,-44,0">
+
+        <!-- User Menu Elements AREA -->
+        <Border DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="1,0,1,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#33000000" Offset="0" />
+                    <GradientStop Color="#11000000" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <StackPanel HorizontalAlignment="Left" Margin="4" Orientation="Horizontal">
+                <Button Command="{Binding CreatePermissionCommand}" CommandParameter="{Binding  ElementName=PermissionTree, Path=SelectedItem}" Content="Создать право" Padding="8,0" />
+                <Button Command="{Binding EditPermissionCommand}" CommandParameter="{Binding ElementName=PermissionTree, Path=SelectedItem}" Content="Редактировать право" Padding="8,0" />
+                <Button Command="{Binding DeletePermissionCommand}" CommandParameter="{Binding ElementName=PermissionTree, Path=SelectedItem}" Content="Удалить право" Padding="8,0" />
+            </StackPanel>
+        </Border>
+        
         <Border DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="1,0,1,1" VerticalAlignment="Top">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -26,7 +44,7 @@
         </Border>
 
         <!-- Permissions TREE -->
-        <TreeView PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown" ItemsSource="{Binding FirstGeneration}">
+        <TreeView x:Name="PermissionTree" PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown" ItemsSource="{Binding PermissionRoots}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -43,13 +61,19 @@
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <StackPanel Orientation="Horizontal">
                         <Image Width="16" Height="16" Source="{Binding PhotoSource}" />
-                        <TextBlock Text="{Binding Name}">
+                        <TextBlock Text="{Binding Name}" Tag="{Binding DataContext., RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}">
                             <TextBlock.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Редактировать" Command="{Binding Path=PlacementTarget.Tag.DataContext.EditCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" />
-                                    <MenuItem Header="Удалить" Command="{Binding Path=PlacementTarget.Tag.DataContext.RemoveCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" />
+                                <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Header="Редактировать"
+                                              Command="{Binding EditPermissionCommand}" 
+                                              CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}" />
+                                    <MenuItem Header="Удалить" 
+                                              Command="{Binding DeletePermissionCommand}" 
+                                              CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}" />
                                     <Separator/>
-                                    <MenuItem Header="Создать" Command="{Binding Path=PlacementTarget.Tag.DataContext.AddCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" />
+                                    <MenuItem Header="Создать"
+                                              Command="{Binding CreatePermissionCommand}"
+                                              CommandParameter="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}}"/>
                                 </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>

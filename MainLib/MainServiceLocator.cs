@@ -33,6 +33,10 @@ namespace Core
             Add(typeof(IDataAccessLayer), new ModelAccessLayer(provider));
 
             Add(typeof(IPersonService), new PersonService(this));
+
+            Add(typeof(IPermissionService), new PermissionService(this));
+            
+            Add(typeof(IUserService), new UserService(this));
         }
     }
 }

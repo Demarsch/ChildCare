@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:admintools="clr-namespace:AdminTools.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" 
+             d:DesignHeight="300" d:DesignWidth="332" 
              d:DataContext="{d:DesignInstance admintools:UserEditorViewModel}">
     <DockPanel>
 
-        <!-- SEARCH User AREA -->
+        <!-- User Menu Elements AREA -->
         <Border DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="1,0,1,1">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -19,11 +19,12 @@
             </Border.Background>
 
             <StackPanel HorizontalAlignment="Left" Margin="4" Orientation="Horizontal">
-               <Button Command="{Binding NewUserCommand}" Content="+ Новый пользователь" Padding="8,0" />
+                <Button Command="{Binding NewUserCommand}" Content="+ Новая уч. запись" Padding="8,0" />
+                <Button Command="{Binding EditUserCommand}" CommandParameter="{Binding ElementName=userList, Path=SelectedItem}" Content="Редактировать уч. запись" Padding="8,0" />
             </StackPanel>
         </Border>
         
-        <!-- SEARCH User AREA -->
+        <!-- Search User AREA -->
         <Border DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="1,0,1,1">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -34,13 +35,13 @@
 
             <StackPanel HorizontalAlignment="Center" Margin="4" Orientation="Horizontal">
                 <TextBlock Text="Поиск:" Margin="0,3" />
-                <TextBox x:Name="searchUserTextBox" Margin="6,0" Text="{Binding GroupSearchText, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
+                <TextBox x:Name="searchUserTextBox" Margin="6,0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
                 <Button Command="{Binding SearchUserCommand}" Content="Найти" Padding="8,0" />
             </StackPanel>
         </Border>
 
         <!-- User List -->
-        <ListView x:Name="userList" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=OneWayToSource}">
+        <ListView x:Name="userList" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
                     <GridView.Columns>

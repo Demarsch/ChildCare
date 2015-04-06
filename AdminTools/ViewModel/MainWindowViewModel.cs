@@ -13,7 +13,7 @@ using AdminTools.ViewModel;
 
 namespace AdminTools.ViewModel
 {
-    class MainWindowViewModel
+    class MainWindowViewModel : FailableViewModel
     {
         public RelayCommand UsersEditorCommand { get; private set; }
 

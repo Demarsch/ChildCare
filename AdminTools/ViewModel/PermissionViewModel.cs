@@ -12,14 +12,14 @@ using DataLib;
 
 namespace AdminTools.ViewModel
 {
-    public class PermissionViewModel :  INotifyPropertyChanged
+    public class PermissionViewModel : FailableViewModel
     {
         #region Data
 
         readonly ObservableCollection<PermissionViewModel> children;
         readonly PermissionViewModel parent;
         readonly Permission permission;
-        readonly IPermissionService permissionService;
+        readonly ISimpleLocator service;
 
         bool isExpanded;
         bool isSelected;
@@ -28,24 +28,24 @@ namespace AdminTools.ViewModel
 
         #region Constructors
 
-        public PermissionViewModel(IPermissionService permissionService, Permission currentPermission)
-            : this(permissionService, currentPermission, null)
+        public PermissionViewModel(ISimpleLocator service, Permission currentPermission)
+            : this(service, currentPermission, null)
         {
         }
 
-        private PermissionViewModel(IPermissionService permissionService, Permission currentPermission, PermissionViewModel parent)
+        private PermissionViewModel(ISimpleLocator service, Permission currentPermission, PermissionViewModel parent)
         {
-            this.permissionService = permissionService;
+            this.service = service;
             this.permission = currentPermission;
             this.parent = parent;
 
             children = new ObservableCollection<PermissionViewModel>(
-                        permissionService.GetChildren(currentPermission).Select(x => new PermissionViewModel(this.permissionService, x, this)).ToList<PermissionViewModel>());
+                       service.Instance<IPermissionService>().GetChildren(currentPermission.Id).Select(x => new PermissionViewModel(this.service, x, this)));
         }
 
         #endregion // Constructors
 
-        #region Person Properties
+        #region Permission Properties
 
         public ObservableCollection<PermissionViewModel> Children
         {
@@ -78,15 +78,7 @@ namespace AdminTools.ViewModel
         }
 
         #endregion
-
-        #region Presentation Members
-
-        #region IsExpanded
-
-        /// <summary>
-        /// Gets/sets whether the TreeViewItem 
-        /// associated with this object is expanded.
-        /// </summary>
+                
         public bool IsExpanded
         {
             get { return isExpanded; }
@@ -95,7 +87,7 @@ namespace AdminTools.ViewModel
                 if (value != isExpanded)
                 {
                     isExpanded = value;
-                    this.OnPropertyChanged("IsExpanded");
+                    Set("IsExpanded", ref isExpanded, value);
                 }
 
                 // Expand all the way up to the root.
@@ -103,15 +95,7 @@ namespace AdminTools.ViewModel
                     parent.IsExpanded = true;
             }
         }
-
-        #endregion
-
-        #region IsSelected
-
-        /// <summary>
-        /// Gets/sets whether the TreeViewItem 
-        /// associated with this object is selected.
-        /// </summary>
+        
         public bool IsSelected
         {
             get { return isSelected; }
@@ -120,12 +104,10 @@ namespace AdminTools.ViewModel
                 if (value != isSelected)
                 {
                     isSelected = value;
-                    this.OnPropertyChanged("IsSelected");
+                    Set("IsSelected", ref isSelected, value); 
                 }
             }
-        }
-
-        #endregion 
+        }        
 
         #region NameContainsText
 
@@ -137,20 +119,7 @@ namespace AdminTools.ViewModel
             return this.Name.IndexOf(text, StringComparison.InvariantCultureIgnoreCase) > -1;
         }
 
-        #endregion
-        
-        #endregion // Presentation Members        
-
-        #region INotifyPropertyChanged Members
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (this.PropertyChanged != null)
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #endregion
+        #endregion            
+       
     }
 }
