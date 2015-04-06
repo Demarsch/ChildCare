@@ -8,27 +8,23 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Core;
 using GalaSoft.MvvmLight.Command;
+using AdminTools.View;
+using AdminTools.ViewModel;
 
-namespace AdminTools
+namespace AdminTools.ViewModel
 {
     class MainWindowViewModel
     {
-        public RelayCommand PermissionsEditorCommand { get; private set; }
-        private readonly IPermissionService permissionService;
+        public RelayCommand UsersEditorCommand { get; private set; }
 
-        public MainWindowViewModel(IPermissionService permissionService)
+        public MainWindowViewModel()
         {
-            this.permissionService = permissionService;
-            this.PermissionsEditorCommand = new RelayCommand(this.PermissionsEditor);
+            this.UsersEditorCommand = new RelayCommand(this.UsersEditor);
         }
-        
-        public void PermissionsEditor()
+
+        public void UsersEditor()
         {
-            var permissionsEditorViewModel = new PermissionsEditorViewModel(permissionService);
-            var permissionsEditorView = new PermissionsEditorView() { DataContext = permissionsEditorViewModel };
-
-            permissionsEditorView.ShowDialog();
-
-        }
+            (new UserManagerView() { DataContext = new UserManagerViewModel() }).ShowDialog();
+        } 
     }
 }

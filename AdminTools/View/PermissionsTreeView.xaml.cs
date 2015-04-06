@@ -12,16 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using DataLib;
-using Core;
 
-namespace AdminTools
+namespace AdminTools.View
 {
-    public partial class PermissionsEditorView : Window
+    /// <summary>
+    /// Interaction logic for PermissionsTreeView.xaml
+    /// </summary>
+    public partial class PermissionsTreeView : UserControl
     {
-        public PermissionsEditorView()
+        public PermissionsTreeView()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
         private void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)

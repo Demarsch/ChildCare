@@ -88,14 +88,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="View\PermissionsEditorView.xaml.cs">
-      <DependentUpon>PermissionsEditorView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModel\PermissionsTreeViewModel.cs" />
+    <Compile Include="ViewModel\UserEditorViewModel.cs" />
+    <Compile Include="ViewModel\UserManagerViewModel.cs" />
+    <Compile Include="ViewModel\UserViewModel.cs" />
     <Compile Include="Services\Interface\IPermissionService.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="Services\Implementation\PermissionService.cs" />
-    <Compile Include="ViewModel\PermissionsEditorViewModel.cs" />
     <Compile Include="ViewModel\PermissionViewModel.cs" />
+    <Compile Include="View\PermissionsTreeView.xaml.cs">
+      <DependentUpon>PermissionsTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UserEditorView.xaml.cs">
+      <DependentUpon>UserEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UserManagerView.xaml.cs">
+      <DependentUpon>UserManagerView.xaml</DependentUpon>
+    </Compile>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -108,7 +117,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\PermissionsEditorView.xaml">
+    <Page Include="View\PermissionsTreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\UserEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\UserManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

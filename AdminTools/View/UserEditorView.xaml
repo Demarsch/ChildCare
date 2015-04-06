@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="AdminTools.View.UserEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:admintools="clr-namespace:AdminTools.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" 
+             d:DataContext="{d:DesignInstance admintools:UserEditorViewModel}">
+    <DockPanel>
+
+        <!-- SEARCH User AREA -->
+        <Border DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="1,0,1,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#33000000" Offset="0" />
+                    <GradientStop Color="#11000000" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <StackPanel HorizontalAlignment="Left" Margin="4" Orientation="Horizontal">
+               <Button Command="{Binding NewUserCommand}" Content="+ Новый пользователь" Padding="8,0" />
+            </StackPanel>
+        </Border>
+        
+        <!-- SEARCH User AREA -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="Gray" BorderThickness="1,0,1,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#33000000" Offset="0" />
+                    <GradientStop Color="#11000000" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <StackPanel HorizontalAlignment="Center" Margin="4" Orientation="Horizontal">
+                <TextBlock Text="Поиск:" Margin="0,3" />
+                <TextBox x:Name="searchUserTextBox" Margin="6,0" Text="{Binding GroupSearchText, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
+                <Button Command="{Binding SearchUserCommand}" Content="Найти" Padding="8,0" />
+            </StackPanel>
+        </Border>
+
+        <!-- User List -->
+        <ListView x:Name="userList" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=OneWayToSource}">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Ф.И.О." DisplayMemberBinding="{Binding Path=UserFullName}"></GridViewColumn>
+                        <GridViewColumn Header="SID" DisplayMemberBinding="{Binding Path=SID}"></GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</UserControl>

@@ -3,8 +3,7 @@ using System.Threading;
 using System.Windows;
 using Core;
 using DataLib;
-
-
+using AdminTools.ViewModel;
 
 namespace AdminTools
 {
@@ -15,15 +14,10 @@ namespace AdminTools
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            var newCulture = new CultureInfo("ru-RU", true);
-            newCulture.DateTimeFormat.ShortDatePattern = "dd MMM yyyy";
-            Thread.CurrentThread.CurrentCulture = newCulture;
             base.OnStartup(e);
             var contextProvider = new ModelContextProvider();
 
-            var permissionService = new PermissionService(contextProvider) as IPermissionService;
-
-            var mainViewModel = new MainWindowViewModel(permissionService);
+            var mainViewModel = new MainWindowViewModel();
             var mainWindow = new MainWindow { DataContext = mainViewModel };
             MainWindow = mainWindow;
             mainWindow.Show();
