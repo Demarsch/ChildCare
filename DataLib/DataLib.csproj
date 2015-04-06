@@ -109,6 +109,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ChildCareModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="EFImplementations\ModelAccesLayer.cs" />
     <Compile Include="DBSetting.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -124,8 +125,8 @@
     <Compile Include="InsuranceDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Misc\ModelContext.cs" />
-    <Compile Include="Misc\ModelContextProvider.cs" />
+    <Compile Include="EFImplementations\ModelContext.cs" />
+    <Compile Include="EFImplementations\ModelContextProvider.cs" />
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="Permission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>

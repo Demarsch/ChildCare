@@ -53,6 +53,9 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="MvvmEventBinding">
+      <HintPath>..\packages\MvvmEventBinding.1.0.0\lib\net45\MvvmEventBinding.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -90,6 +93,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
+    <Compile Include="Data transfer objects\PersonRelativeDTO.cs" />
+=======
+    <Compile Include="MainInstances.cs" />
+    <Compile Include="MainServiceLocator.cs" />
+>>>>>>> Created DataAccessLayer, project for services, some projects structure changes
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -103,6 +112,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Services\Implementation\AssignmentService.cs" />
+    <Compile Include="Services\Interface\IAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -126,19 +137,20 @@
       <Project>{f5ef279c-ad37-46cd-9558-61438976b828}</Project>
       <Name>Resources</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Services\Services.csproj">
+      <Project>{7914bfc6-1b77-4daf-8f8c-7af1aa9dedc1}</Project>
+      <Name>Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StuffLib\StuffLib.csproj">
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
       <Name>StuffLib</Name>
     </ProjectReference>
   </ItemGroup>
-<<<<<<< HEAD
-  <ItemGroup />
-=======
   <ItemGroup>
     <Folder Include="ViewModel\" />
     <Folder Include="View\" />
   </ItemGroup>
->>>>>>> Minor fixes
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Core;
+using System.Data.Entity;
 
 namespace DataLib
 {
@@ -13,6 +14,11 @@ namespace DataLib
         public IQueryable<TData> GetData<TData>() where TData : class
         {
             return Set<TData>();
+        }
+
+        public void SetState<TData>(TData obj, DataContextItemState state) where TData : class
+        {
+            Entry(obj).State = (state == DataContextItemState.Add) ? EntityState.Added : (state == DataContextItemState.Delete ? EntityState.Deleted : (state == DataContextItemState.Update ? EntityState.Modified : EntityState.Unchanged));
         }
 
         public void Save()

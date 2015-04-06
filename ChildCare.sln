@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLib", "DataLib\DataLib.csproj", "{F14028ED-2AE3-452B-9780-75EC4F09B3E2}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,12 +11,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainLib", "MainLib\MainLib.csproj", "{69D040E8-9029-45C8-8824-D64C6DD793E3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D44B47AF-D567-4754-8E22-B24ACAC78CA4} = {D44B47AF-D567-4754-8E22-B24ACAC78CA4}
+		{7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1} = {7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1}
 		{F14028ED-2AE3-452B-9780-75EC4F09B3E2} = {F14028ED-2AE3-452B-9780-75EC4F09B3E2}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Registry", "Registry\Registry.csproj", "{39195B37-33A6-417A-8F77-DFB0EC8F3DD4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D44B47AF-D567-4754-8E22-B24ACAC78CA4} = {D44B47AF-D567-4754-8E22-B24ACAC78CA4}
+		{7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1} = {7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1}
 		{69D040E8-9029-45C8-8824-D64C6DD793E3} = {69D040E8-9029-45C8-8824-D64C6DD793E3}
 		{F14028ED-2AE3-452B-9780-75EC4F09B3E2} = {F14028ED-2AE3-452B-9780-75EC4F09B3E2}
 	EndProjectSection
@@ -38,6 +40,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminTools", "AdminTools\AdminTools.csproj", "{A59841E0-E51A-4A86-A121-152EF259B761}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StuffLib.Test", "StuffLib.Test\StuffLib.Test.csproj", "{4441AE3B-6EE5-4F5A-9F88-ED73BDCB1C02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D44B47AF-D567-4754-8E22-B24ACAC78CA4} = {D44B47AF-D567-4754-8E22-B24ACAC78CA4}
+		{F14028ED-2AE3-452B-9780-75EC4F09B3E2} = {F14028ED-2AE3-452B-9780-75EC4F09B3E2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +99,10 @@ Global
 		{4441AE3B-6EE5-4F5A-9F88-ED73BDCB1C02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4441AE3B-6EE5-4F5A-9F88-ED73BDCB1C02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4441AE3B-6EE5-4F5A-9F88-ED73BDCB1C02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7914BFC6-1B77-4DAF-8F8C-7AF1AA9DEDC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
