@@ -12,12 +12,6 @@ namespace DataLib
     public interface IDataAccessLayer
     {
         /// <summary>
-        /// Конструктор
-        /// </summary>
-        /// <param name="serviceLocator"></param>
-        IDataAccessLayer(IDataContextProvider contextProvider);
-
-        /// <summary>
         /// Получает объекты по условию, подгружает указанные зависимости
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
@@ -64,7 +58,7 @@ namespace DataLib
         /// <summary>
         /// Очищает кеш
         /// </summary>
-        void ClearChache<TEntity>() where TEntity : class;
+        void ClearCache<TEntity>() where TEntity : class;
         
     }
 }

@@ -26,7 +26,7 @@ namespace DataLib
             return result;
         }
 
-        private IDataContext GetNewLiteDataContext()
+        public IDataContext GetNewLiteDataContext()
         {
             if (String.IsNullOrEmpty(defaultConnectionString)) PrepareConnectionString();
             var result = new ModelContext(defaultConnectionString);

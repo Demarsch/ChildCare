@@ -9,8 +9,6 @@ namespace Core
 {
     public interface IPersonService
     {
-        IPersonService(ISimpleLocator serviceLocator);
-
         Person PersonById(int Id);
     }
 }

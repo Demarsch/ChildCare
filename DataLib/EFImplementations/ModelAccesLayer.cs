@@ -102,7 +102,7 @@ namespace DataLib
             return item;
         }
 
-        public void ClearCache<TEntity>()
+        public void ClearCache<TEntity>() where TEntity : class
         {
             Type type = typeof(TEntity);
             if (caches.ContainsKey(type)) caches[type].Clear();

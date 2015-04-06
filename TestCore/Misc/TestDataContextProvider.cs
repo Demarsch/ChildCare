@@ -19,5 +19,10 @@ namespace TestCore
         {
             return dataContext;
         }
+
+        public IDataContext GetNewLiteDataContext()
+        {
+            return dataContext;
+        }
     }
 }

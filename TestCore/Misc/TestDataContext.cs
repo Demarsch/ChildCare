@@ -34,5 +34,10 @@ namespace TestCore
         {
             throw new NotImplementedException();
         }
+
+        public void SetState<TData>(TData obj, DataContextItemState state) where TData : class
+        {
+            throw new NotImplementedException();
+        }
     }
 }

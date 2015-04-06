@@ -94,7 +94,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data transfer objects\PersonRelativeDTO.cs" />
-    <Compile Include="MainInstances.cs" />
     <Compile Include="MainServiceLocator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
