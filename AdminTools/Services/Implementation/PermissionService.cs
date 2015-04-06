@@ -17,9 +17,14 @@ namespace AdminTools
             this.dataContextProvider = dataContextProvider;
         }
 
-        public ICollection<Permission> GetRootPermissions()
+        public Permission GetRootPermission()
         {            
-            return dataContextProvider.GetNewDataContext().GetData<Permission>().Where(x => !x.PermissionLinks1.Any()).ToArray();           
+            return dataContextProvider.GetNewDataContext().GetData<Permission>().FirstOrDefault(x => !x.PermissionLinks1.Any());           
+        }
+
+        public ICollection<Permission> GetChildren(Permission parent)
+        {
+            return parent.PermissionLinks.Select(x => x.Permission1).ToArray();
         }
     }
 }

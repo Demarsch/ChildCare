@@ -10,7 +10,7 @@ using Core;
 using GalaSoft.MvvmLight.Command;
 using DataLib;
 
-namespace AdminTools
+namespace AdminTools.ViewModel
 {
     public class PermissionViewModel :  INotifyPropertyChanged
     {
@@ -19,6 +19,7 @@ namespace AdminTools
         readonly ObservableCollection<PermissionViewModel> children;
         readonly PermissionViewModel parent;
         readonly Permission permission;
+        readonly IPermissionService permissionService;
 
         bool isExpanded;
         bool isSelected;
@@ -27,19 +28,19 @@ namespace AdminTools
 
         #region Constructors
 
-        public PermissionViewModel(Permission permission)
-            : this(permission, null)
+        public PermissionViewModel(IPermissionService permissionService, Permission currentPermission)
+            : this(permissionService, currentPermission, null)
         {
         }
 
-        private PermissionViewModel(Permission permission, PermissionViewModel parent)
+        private PermissionViewModel(IPermissionService permissionService, Permission currentPermission, PermissionViewModel parent)
         {
-            this.permission = permission;
+            this.permissionService = permissionService;
+            this.permission = currentPermission;
             this.parent = parent;
 
             children = new ObservableCollection<PermissionViewModel>(
-                    permission.PermissionLinks.Select(x => new PermissionViewModel(x.Permission1, this))
-                     .ToList<PermissionViewModel>());
+                        permissionService.GetChildren(currentPermission).Select(x => new PermissionViewModel(this.permissionService, x, this)).ToList<PermissionViewModel>());
         }
 
         #endregion // Constructors

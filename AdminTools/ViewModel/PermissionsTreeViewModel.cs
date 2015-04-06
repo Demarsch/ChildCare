@@ -7,49 +7,44 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using Core;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using System.Windows;
+using DataLib;
 
-namespace AdminTools
-{
-    /// <summary>
-    /// This is the view-model of the UI.  It provides a data source
-    /// for the PermissionsEditorView (the FirstGeneration property), a bindable
-    /// SearchText property, and the SearchCommand to perform a search.
-    /// </summary>
-    public class PermissionsEditorViewModel
+namespace AdminTools.ViewModel
+{    
+    public class PermissionsTreeViewModel : FailableViewModel
     {
-        #region Data
+        #region PermissionData
 
-        readonly ObservableCollection<PermissionViewModel> firstGeneration;
-        readonly PermissionViewModel rootPermission;
+        private ObservableCollection<PermissionViewModel> firstGeneration;
+        private PermissionViewModel rootPermission;
         public RelayCommand SearchPermissionCommand { get; private set; }
        
         private readonly IPermissionService permissionService;
 
-        IEnumerator<PermissionViewModel> matchingPermissionsEnumerator;
-        string searchText = String.Empty;
+        private IEnumerator<PermissionViewModel> matchingPermissionsEnumerator;
+        private string searchText = String.Empty;
 
         #endregion 
-
+             
         #region Constructor
 
-        public PermissionsEditorViewModel(IPermissionService permissionService)
+        public PermissionsTreeViewModel(IPermissionService permissionService)
         {
             if (permissionService == null)
                 throw new ArgumentNullException("permissionService");
             this.permissionService = permissionService;
-
-            rootPermission = new PermissionViewModel(permissionService.GetRootPermissions().First());
-
+                     
+            rootPermission = new PermissionViewModel(permissionService, permissionService.GetRootPermission());
             firstGeneration = new ObservableCollection<PermissionViewModel>(
                 new PermissionViewModel[] 
                 { 
                     rootPermission 
                 });
 
-            this.SearchPermissionCommand = new RelayCommand(this.SearchPermission);
-        }               
+            this.SearchPermissionCommand = new RelayCommand(this.SearchPermission);           
+        }    
 
         #endregion 
 
@@ -88,7 +83,7 @@ namespace AdminTools
         }
 
         #endregion
-
+                     
         #endregion
 
         #region Search Logic

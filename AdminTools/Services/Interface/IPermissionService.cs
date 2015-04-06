@@ -9,6 +9,7 @@ namespace AdminTools
 {
     public interface IPermissionService
     {
-        ICollection<Permission> GetRootPermissions();
+        Permission GetRootPermission();
+        ICollection<Permission> GetChildren(Permission parent);
     }
 }

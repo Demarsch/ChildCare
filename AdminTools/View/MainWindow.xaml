@@ -6,9 +6,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:ev="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
         xmlns:admintools="clr-namespace:AdminTools"
-        mc:Ignorable="d" 
-        d:DataContext="{d:DesignInstance admintools:MainWindowViewModel}"
-        Title="Панель управления" Height="350" Width="525" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+        Title="Панель управления" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Grid>
         <Menu IsMainMenu="True">
             <Menu.Background>
@@ -19,7 +17,7 @@
             </Menu.Background>
 
             <MenuItem Header="Функции администратора" Padding="5">
-                <MenuItem Header="Редактор прав" Padding="0,5,5,5" Click="{ev:EventBinding PermissionsEditorCommand}">                
+                <MenuItem Header="Редактор пользователей" Padding="0,5,5,5" Click="{ev:EventBinding UsersEditorCommand}">                
                     <MenuItem.Icon>
                         <Image Width="16" Height="16" Source="pack://application:,,,/Resources;component/Images/UserGroup48x48.png" />
                     </MenuItem.Icon>
