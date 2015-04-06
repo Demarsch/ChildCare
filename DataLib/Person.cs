@@ -23,6 +23,8 @@ namespace DataLib
             this.InsuranceDocuments = new HashSet<InsuranceDocument>();
             this.PersonRelatives = new HashSet<PersonRelative>();
             this.PersonRelatives1 = new HashSet<PersonRelative>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
+            this.PersonStaffs = new HashSet<PersonStaff>();
         }
     
         public int Id { get; set; }
@@ -42,5 +44,7 @@ namespace DataLib
         public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
         public virtual ICollection<PersonRelative> PersonRelatives { get; set; }
         public virtual ICollection<PersonRelative> PersonRelatives1 { get; set; }
+        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
     }
 }

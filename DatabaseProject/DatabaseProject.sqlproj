@@ -83,5 +83,16 @@
     <Build Include="dbo\Tables\Rooms.sql" />
     <Build Include="dbo\Tables\RelativeRelationships.sql" />
     <Build Include="dbo\Tables\PersonRelatives.sql" />
+    <Build Include="dbo\Tables\Staffs.sql" />
+    <Build Include="dbo\Tables\PersonStaffs.sql" />
+    <Build Include="dbo\Tables\Decisions.sql" />
+    <Build Include="dbo\Tables\CommissionTypes.sql" />
+    <Build Include="dbo\Tables\CommissionProtocols.sql" />
+    <Build Include="dbo\Tables\CommissionProtocolMembers.sql" />
+    <Build Include="dbo\Tables\CommissionMemberTypes.sql" />
+    <Build Include="dbo\Tables\CommissionMembers.sql" />
+    <Build Include="dbo\Tables\CommissionDecisionsLinks.sql" />
+    <Build Include="dbo\Tables\CommissionDecisions.sql" />
+    <Build Include="dbo\Tables\Branches.sql" />
   </ItemGroup>
 </Project>

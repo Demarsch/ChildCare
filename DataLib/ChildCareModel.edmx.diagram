@@ -49,6 +49,34 @@
         <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons1" />
         <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
+        <EntityTypeShape EntityType="DataLib.Branch" Width="1.5" PointX="13.125" PointY="25.5" />
+        <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="19.875" PointY="13.625" />
+        <EntityTypeShape EntityType="DataLib.CommissionDecisionsLink" Width="1.5" PointX="14.625" PointY="13.875" />
+        <EntityTypeShape EntityType="DataLib.CommissionMember" Width="1.5" PointX="17.625" PointY="13.75" />
+        <EntityTypeShape EntityType="DataLib.CommissionMemberType" Width="1.5" PointX="12.375" PointY="14" />
+        <EntityTypeShape EntityType="DataLib.CommissionProtocolMember" Width="1.5" PointX="22.875" PointY="14.125" />
+        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="17.625" PointY="9.625" />
+        <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="12.375" PointY="22" />
+        <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="12.375" PointY="18.25" />
+        <EntityTypeShape EntityType="DataLib.PersonStaff" Width="1.5" PointX="15.375" PointY="26.625" />
+        <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="13.125" PointY="29" />
+        <AssociationConnector Association="DataLib.FK_Branches_Branches" />
+        <AssociationConnector Association="DataLib.FK_PersonStaffs_Branches" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionTypes" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
+        <AssociationConnector Association="DataLib.FK_CommissionMembers_CommissionMemberTypes" />
+        <AssociationConnector Association="DataLib.FK_CommissionMembers_CommissionTypes" />
+        <AssociationConnector Association="DataLib.FK_CommissionMembers_PersonStaffs" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocolMembers_CommissionMembers" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocolMembers_CommissionProtocols" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Persons" />
+        <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
+        <AssociationConnector Association="DataLib.FK_PersonStaffs_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

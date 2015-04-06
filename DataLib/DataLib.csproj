@@ -91,6 +91,9 @@
     <Compile Include="Assignment.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Branch.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ChangeNameReason.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -109,7 +112,31 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ChildCareModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="EFImplementations\ModelAccesLayer.cs" />
+    <Compile Include="CommissionDecision.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionDecisionsLink.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionMember.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionMemberType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionProtocol.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionProtocolMember.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Decision.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EFImplementations\ModelAccessLayer.cs" />
     <Compile Include="DBSetting.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -143,6 +170,9 @@
     <Compile Include="PersonRelative.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PersonStaff.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
@@ -154,6 +184,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Room.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Staff.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
