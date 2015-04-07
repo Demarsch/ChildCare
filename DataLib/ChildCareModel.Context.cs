@@ -54,5 +54,13 @@ namespace DataLib
         public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
+        public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
+        public virtual DbSet<CommissionSource> CommissionSources { get; set; }
+        public virtual DbSet<FinacingSource> FinacingSources { get; set; }
+        public virtual DbSet<MedicalHelpType> MedicalHelpTypes { get; set; }
+        public virtual DbSet<PersonTalon> PersonTalons { get; set; }
+        public virtual DbSet<RecordContract> RecordContracts { get; set; }
+        public virtual DbSet<UserMessage> UserMessages { get; set; }
+        public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
     }
 }

@@ -130,6 +130,12 @@
     <Compile Include="CommissionProtocolMember.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CommissionQuestion.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionSource.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CommissionType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -138,6 +144,9 @@
     </Compile>
     <Compile Include="EFImplementations\ModelAccessLayer.cs" />
     <Compile Include="DBSetting.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FinacingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Gender.cs">
@@ -154,6 +163,9 @@
     </Compile>
     <Compile Include="EFImplementations\ModelContext.cs" />
     <Compile Include="EFImplementations\ModelContextProvider.cs" />
+    <Compile Include="MedicalHelpType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="Permission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
@@ -173,8 +185,14 @@
     <Compile Include="PersonStaff.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PersonTalon.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordContract.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordType.cs">
@@ -190,6 +208,12 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserMessage.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserMessageType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="UserPermission.cs">

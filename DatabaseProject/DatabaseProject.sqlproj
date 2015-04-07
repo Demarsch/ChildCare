@@ -94,5 +94,13 @@
     <Build Include="dbo\Tables\CommissionDecisionsLinks.sql" />
     <Build Include="dbo\Tables\CommissionDecisions.sql" />
     <Build Include="dbo\Tables\Branches.sql" />
+    <Build Include="dbo\Tables\UserMessageTypes.sql" />
+    <Build Include="dbo\Tables\UserMessages.sql" />
+    <Build Include="dbo\Tables\PersonTalons.sql" />
+    <Build Include="dbo\Tables\FinacingSources.sql" />
+    <Build Include="dbo\Tables\CommissionSources.sql" />
+    <Build Include="dbo\Tables\CommissionQuestions.sql" />
+    <Build Include="dbo\Tables\RecordContracts.sql" />
+    <Build Include="dbo\Tables\MedicalHelpTypes.sql" />
   </ItemGroup>
 </Project>
