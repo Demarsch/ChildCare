@@ -77,6 +77,8 @@ namespace Registry
                     BirthDate = person.Entity.BirthDate;
                     SNILS = person.Entity.Snils;
                     MedNumber = person.Entity.MedNumber;
+                    Gender = person.Entity.Gender.ShortName;
+                    PhotoURI = person.Entity.PhotoUri;
                     RaisePropertyChanged("InsuranceDocuments");
                 }
             }
@@ -139,6 +141,36 @@ namespace Registry
                     return;
                 id = value;
                 GetPersonData();
+            }
+        }
+
+        private string photoURI = string.Empty;
+        public string PhotoURI
+        {
+            get
+            {
+                return photoURI;
+            }
+            set
+            {
+                string val = value;
+                if (val == string.Empty)
+                {
+                    switch (Gender)
+                    {
+                        case "муж":
+                            val = "pack://application:,,,/Resources;component/Images/Man48x48.png";
+                            break;
+                        case "жен":
+                            val = "pack://application:,,,/Resources;component/Images/Woman48x48.png";
+                            break;
+                        default:
+                            val = "pack://application:,,,/Resources;component/Images/Question48x48.png";
+                            break;
+                    }
+                }
+                Set("PhotoURI", ref photoURI, val);
+
             }
         }
 

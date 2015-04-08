@@ -15,5 +15,7 @@ namespace Core
         public string RelativeRelationName { get; set; }
 
         public bool? IsRepresentative { get; set; }
+
+        public string PhotoUri { get; set; }
     }
 }

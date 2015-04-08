@@ -31,5 +31,14 @@ namespace DataLib
                 return lastPersonName == null ? string.Empty : lastPersonName.MiddleName;
             }
         }
+
+        //ToDo: get photo from store
+        public string PhotoUri
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
     }
 }

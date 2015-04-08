@@ -72,7 +72,7 @@
 
                                 <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
                                     <StackPanel>
-                                        <Image Source="{Binding Photo}"/>
+                                        <Image Source="{Binding PhotoUri}"/>
                                         <TextBlock Height="48">Нажмите, чтобы сделать фото</TextBlock>
                                     </StackPanel>
                                 </Border>

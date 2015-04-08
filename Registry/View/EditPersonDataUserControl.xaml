@@ -51,7 +51,7 @@
 
         <Border Grid.Column="0" Grid.Row="1" Grid.RowSpan="5" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
             <StackPanel>
-                <Image Source="{Binding Photo}"/>
+                <Image Source="{Binding PhotoURI}" VerticalAlignment="Top" HorizontalAlignment="Center"/>
                 <TextBlock Height="48">Нажмите, чтобы сделать фото</TextBlock>
             </StackPanel>
         </Border>
@@ -87,7 +87,7 @@
             <Border Background="White" BorderBrush="DimGray" BorderThickness="1">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" x:Name="InsuranceDocumentList" />
-                    <Button HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocument}" Content="Добавить" Margin="5"/>
+                    
                 </StackPanel>
             </Border>
         </Popup>

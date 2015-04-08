@@ -125,7 +125,8 @@ namespace Registry
                     RelativePersonId = -1,
                     ShortName = "Новый родственник",
                     RelativeRelationName = string.Empty,
-                    IsRepresentative = false
+                    IsRepresentative = false,
+                    PhotoUri = string.Empty
                 });
             Relatives = new ObservableCollection<PersonRelativeDTO>(listRelatives);
         }
