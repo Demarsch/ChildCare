@@ -16,16 +16,14 @@ namespace Registry
     {
         private readonly ILog log;
 
-        private readonly IPatientService service;
+        private readonly IPersonService service;
 
-        private EntityContext<Person> person;
-
-        private List<Gender> genders;
+        private Person person;
 
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPatientService service)
+        public EditPersonDataViewModel(ILog log, IPersonService service)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -37,7 +35,7 @@ namespace Registry
             EditInsuranceCommand = new RelayCommand(EditInsurance);
         }
 
-        public EditPersonDataViewModel(ILog log, IPatientService service, int personId)
+        public EditPersonDataViewModel(ILog log, IPersonService service, int personId)
             : this(log, service)
         {
             Id = personId;
@@ -47,7 +45,7 @@ namespace Registry
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPatientService service, string personData)
+        public EditPersonDataViewModel(ILog log, IPersonService service, string personData)
             : this(log, service)
         {
 
@@ -70,18 +68,16 @@ namespace Registry
         {
             if (!IsEmpty)
             {
-                using (person)
-                {
-                    LastName = person.Entity.CurrentLastName;
-                    FirstName = person.Entity.CurrentFirstName;
-                    MiddleName = person.Entity.CurrentMiddleName;
-                    BirthDate = person.Entity.BirthDate;
-                    SNILS = person.Entity.Snils;
-                    MedNumber = person.Entity.MedNumber;
-                    Gender = person.Entity.Gender.ShortName;
-                    PhotoURI = person.Entity.PhotoUri;
+                    LastName = person.LastNameTo(DateTime.Now);
+                    FirstName = person.FirstNameTo(DateTime.Now);
+                    MiddleName = person.MiddleNameTo(DateTime.Now);
+                    BirthDate = person.BirthDate;
+                    SNILS = person.Snils;
+                    MedNumber = person.MedNumber;
+                    Gender = person.Gender.ShortName;
+                    PhotoURI = person.PhotoUri;
+                    //Insurance = person.TodayActualInsuranceDocumentStrings;
                     RaisePropertyChanged("InsuranceDocuments");
-                }
             }
             else
             {
@@ -103,9 +99,9 @@ namespace Registry
 
         private void GetPersonDataAsync()
         {
-            person = service.GetPersonById(id);
-            service.GetPersonInsuranceDocuments(id);
-            insuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetPersonInsuranceDocuments(id).Select(x => new InsuranceDocumentViewModel(x)));
+            person = service.GetPersonInfoes(id);
+            //service.GetPersonInsuranceDocuments(id);
+            //insuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetPersonInsuranceDocuments(id).Select(x => new InsuranceDocumentViewModel(x)));
         }
 
         public ICommand SaveChangesCommand { get; private set; }
@@ -113,7 +109,7 @@ namespace Registry
         private void SaveChanges()
         {
             //ToDo: Create Fields for ChangeReason and FromDate
-            var res = service.SavePersonName(Id, FirstName, LastName, MiddleName, 1, DateTime.Now);
+            var res = string.Empty;//service.SavePersonName(Id, FirstName, LastName, MiddleName, 1, DateTime.Now);
             if (res == string.Empty)
                 TextMessage = "Данные сохранены";
             else

@@ -181,7 +181,7 @@ namespace Registry
         {
             if (currentPatient.IsEmpty)
                 return;
-            var editPersonDataViewModel = new EditPersonViewModel(log, patientService, currentPatient.Id);
+            var editPersonDataViewModel = new EditPersonViewModel(log, new PersonService(new MainServiceLocator()), currentPatient.Id);
             var editPersonDataView = new EditPersonView() { DataContext = editPersonDataViewModel };
             editPersonDataView.ShowDialog();
 

@@ -166,6 +166,7 @@
     <Compile Include="MedicalHelpType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PartialClasses\InsuranceDocument.cs" />
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="Permission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>

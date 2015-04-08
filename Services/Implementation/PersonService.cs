@@ -20,5 +20,22 @@ namespace Core
         {
             return data.Cache<Person>(Id);
         }
+
+        public Person GetPersonInfoes(int id)
+        {
+            return data.First<Person>(x => x.Id == id, x => x.PersonRelatives, x => x.InsuranceDocuments, x => x.PersonNames, x => x.Gender);
+        }
+
+        public ICollection<PersonRelative> GetPersonRelatives(int personId)
+        {
+            return data.Get<PersonRelative>(x => x.PersonId == personId, x => x.RelativeRelationship, x => x.Person1);
+                //.Select(x => new PersonRelativeDTO()
+                //{
+                //    RelativePersonId = x.RelativeId,
+                //    ShortName = x.Person1.ShortName,
+                //    RelativeRelationName = x.RelativeRelationship.Name,
+                //    IsRepresentative = x.IsRepresentative
+                //}).ToList());
+        }
     }
 }

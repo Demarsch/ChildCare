@@ -35,7 +35,7 @@ namespace Core
         public EntityContext<Person> GetPersonById(int id)
         {
             var context = dataContextProvider.GetNewDataContext();
-            return new EntityContext<Person>(context.GetData<Person>().Single(x => x.Id == id), context);
+            return new EntityContext<Person>(context.GetData<Person>().FirstOrDefault(x => x.Id == id), context);
         }
 
         public string SavePersonName(int personId, string firstName, string lastName, string middleName, int changeNameReasonId, DateTime fromDateTime)

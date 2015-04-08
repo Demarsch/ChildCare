@@ -214,6 +214,10 @@
       <Project>{f5ef279c-ad37-46cd-9558-61438976b828}</Project>
       <Name>Resources</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Services\Services.csproj">
+      <Project>{7914bfc6-1b77-4daf-8f8c-7af1aa9dedc1}</Project>
+      <Name>Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StuffLib\StuffLib.csproj">
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
       <Name>StuffLib</Name>

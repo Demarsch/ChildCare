@@ -93,7 +93,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data transfer objects\PersonRelativeDTO.cs" />
     <Compile Include="MainServiceLocator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -145,6 +144,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Data transfer objects\" />
     <Folder Include="ViewModel\" />
     <Folder Include="View\" />
   </ItemGroup>

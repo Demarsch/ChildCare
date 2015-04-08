@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Core;
 
 namespace Registry
 {
@@ -17,7 +18,7 @@ namespace Registry
     {
         private readonly ILog log;
 
-        private readonly IPatientService service;
+        private readonly IPersonService service;
 
         private EditPersonDataViewModel editPersonDataViewModel;
         public EditPersonDataViewModel EditPersonDataViewModel
@@ -38,7 +39,7 @@ namespace Registry
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonViewModel(ILog log, IPatientService service)
+        public EditPersonViewModel(ILog log, IPersonService service)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -48,9 +49,10 @@ namespace Registry
             this.log = log;
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
+            EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service);
         }
 
-        public EditPersonViewModel(ILog log, IPatientService service, int personId)
+        public EditPersonViewModel(ILog log, IPersonService service, int personId)
             : this(log, service)
         {
             Id = personId;
@@ -60,7 +62,7 @@ namespace Registry
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonViewModel(ILog log, IPatientService service, string personData)
+        public EditPersonViewModel(ILog log, IPersonService service, string personData)
             : this(log, service)
         {
 
@@ -87,8 +89,8 @@ namespace Registry
             SelectedRelative = null;
         }
 
-        private PersonRelativeDTO selectedRelative;
-        public PersonRelativeDTO SelectedRelative
+        private PersonRelative selectedRelative;
+        public PersonRelative SelectedRelative
         {
             get { return selectedRelative; }
             set
@@ -96,10 +98,11 @@ namespace Registry
                 Set("SelectedRelative", ref selectedRelative, value);
                 IsPersonEditing = (selectedRelative == null);
                 if (selectedRelative != null)
-                    if (selectedRelative.RelativePersonId > -1)
-                        EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, selectedRelative.RelativePersonId);
-                    else
-                        EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service);
+                    EditPersonRelativeDataViewModel.Id = selectedRelative.RelativeId;
+                //if (selectedRelative.RelativePersonId > -1)
+                //    EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, selectedRelative.RelativePersonId);
+                //else
+                //    EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service);
             }
         }
 
@@ -120,19 +123,20 @@ namespace Registry
         private void SetRelativesAsync()
         {
             var listRelatives = service.GetPersonRelatives(Id);
-            listRelatives.Add(new PersonRelativeDTO()
-                {
-                    RelativePersonId = -1,
-                    ShortName = "Новый родственник",
-                    RelativeRelationName = string.Empty,
-                    IsRepresentative = false,
-                    PhotoUri = string.Empty
-                });
-            Relatives = new ObservableCollection<PersonRelativeDTO>(listRelatives);
+            //listRelatives.Add(new PersonRelativeDTO()
+            //    {
+            //        RelativePersonId = -1,
+            //        ShortName = "Новый родственник",
+            //        RelativeRelationName = string.Empty,
+            //        IsRepresentative = false,
+            //        PhotoUri = string.Empty
+            //    });
+            listRelatives.Add(new PersonRelative());
+            Relatives = new ObservableCollection<PersonRelative>(listRelatives);
         }
 
-        private ObservableCollection<PersonRelativeDTO> relatives;
-        public ObservableCollection<PersonRelativeDTO> Relatives
+        private ObservableCollection<PersonRelative> relatives;
+        public ObservableCollection<PersonRelative> Relatives
         {
             get { return relatives; }
             set { Set("Relatives", ref relatives, value); }
