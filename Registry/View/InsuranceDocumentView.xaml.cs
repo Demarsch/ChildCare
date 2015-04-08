@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Registry.View
+namespace Registry
 {
     /// <summary>
     /// Interaction logic for InsuranceDocementView.xaml
     /// </summary>
-    public partial class InsuranceDocementView : Window
+    public partial class InsuranceDocumentView : Window
     {
-        public InsuranceDocementView()
+        public InsuranceDocumentView()
         {
             InitializeComponent();
         }

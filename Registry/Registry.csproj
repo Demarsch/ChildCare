@@ -121,8 +121,8 @@
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\InsuranceDocementView.xaml.cs">
-      <DependentUpon>InsuranceDocementView.xaml</DependentUpon>
+    <Compile Include="View\InsuranceDocumentView.xaml.cs">
+      <DependentUpon>InsuranceDocumentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PatientSearchUserControl.xaml.cs">
       <DependentUpon>PatientSearchUserControl.xaml</DependentUpon>
@@ -135,7 +135,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\InsuranceDocementView.xaml">
+    <Page Include="View\InsuranceDocumentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

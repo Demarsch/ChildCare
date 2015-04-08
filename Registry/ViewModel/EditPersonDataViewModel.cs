@@ -34,6 +34,7 @@ namespace Registry
             this.service = service;
             this.log = log;
             SaveChangesCommand = new RelayCommand(SaveChanges);
+            EditInsuranceCommand = new RelayCommand(EditInsurance);
         }
 
         public EditPersonDataViewModel(ILog log, IPatientService service, int personId)
@@ -117,6 +118,16 @@ namespace Registry
                 TextMessage = "Данные сохранены";
             else
                 textMessage = "Ошибка! " + res;
+        }
+
+        public ICommand EditInsuranceCommand;
+
+        private void EditInsurance()
+        {
+            //ToDo: USe better solution for using other window
+            var insuranceDocumentViewModel = new InsuranceDocumentViewModel(null);
+            var insuranceDocumentView = new InsuranceDocumentView() { DataContext = insuranceDocumentViewModel };
+            insuranceDocumentView.Show();
         }
 
         private string textMessage = string.Empty;

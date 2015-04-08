@@ -23,5 +23,10 @@ namespace Registry
         {
             InitializeComponent();
         }
+
+        private void tbInsurance_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace Registry
             if (log == null)
                 throw new ArgumentNullException("log");
             if (patientAssignmentListViewModel == null)
-                throw new ArgumentNullException("patientAssignmentListViewModel");
+                throw new ArgumentNullException("patientAssignmentListViewMo");
             this.log = log;
             this.patientService = patientService;
             patients = new ObservableCollection<PersonViewModel>();
