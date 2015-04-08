@@ -31,7 +31,7 @@
                         <DataTrigger.ExitActions>
                             <BeginStoryboard>
                                 <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
-                                    <DoubleAnimation To="1500" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
+                                    <DoubleAnimation To="650" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </DataTrigger.ExitActions>
@@ -80,7 +80,7 @@
                                 <StackPanel Grid.Column="1" Margin="3">
                                     <TextBlock Text="{Binding RelativeRelationName}"/>
                                     <TextBlock Margin="2" Text="{Binding ShortName}"/>
-                                    <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}"/>
+                                    <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}"  IsHitTestVisible="False"/>
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
