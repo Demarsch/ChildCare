@@ -29,9 +29,22 @@ namespace DataLib
         public Nullable<bool> IsCompleted { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public string Comment { get; set; }
+        public string MKB { get; set; }
+        public Nullable<int> InUserId { get; set; }
+        public Nullable<System.DateTime> DecisionDate { get; set; }
+        public int CommissionSourceId { get; set; }
+        public int CommissionQuestionId { get; set; }
+        public Nullable<int> PersonTalonId { get; set; }
+        public Nullable<int> MedicalHelpTypeId { get; set; }
+        public Nullable<int> RecordContractId { get; set; }
     
         public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
         public virtual ICollection<CommissionProtocolMember> CommissionProtocolMembers { get; set; }
         public virtual Person Person { get; set; }
+        public virtual CommissionSource CommissionSource { get; set; }
+        public virtual MedicalHelpType MedicalHelpType { get; set; }
+        public virtual PersonTalon PersonTalon { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
+        public virtual User User { get; set; }
     }
 }

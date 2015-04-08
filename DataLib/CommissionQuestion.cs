@@ -12,25 +12,15 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class CommissionType
+    public partial class CommissionQuestion
     {
-        public CommissionType()
-        {
-            this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
-            this.CommissionMembers = new HashSet<CommissionMember>();
-            this.CommissionQuestions = new HashSet<CommissionQuestion>();
-            this.CommissionSources = new HashSet<CommissionSource>();
-        }
-    
         public int Id { get; set; }
+        public int CommissionTypeId { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
-        public virtual ICollection<CommissionMember> CommissionMembers { get; set; }
-        public virtual ICollection<CommissionQuestion> CommissionQuestions { get; set; }
-        public virtual ICollection<CommissionSource> CommissionSources { get; set; }
+        public virtual CommissionType CommissionType { get; set; }
     }
 }
