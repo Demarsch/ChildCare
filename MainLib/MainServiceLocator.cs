@@ -15,13 +15,18 @@ namespace Core
             return (TService)(services[typeof(TService)]);
         }
 
+        public void Add<TService>(Type interfaceType, TService service) where TService : class
+        {
+            services[interfaceType] = service;
+        }
+        
         public MainServiceLocator()
         {
             IDataContextProvider provider = new ModelContextProvider();
 
-            services.Add(typeof(IDataAccessLayer), new ModelAccessLayer(provider));
+            Add(typeof(IDataAccessLayer), new ModelAccessLayer(provider));
 
-            services.Add(typeof(IPersonService), new PersonService(this));
+            Add(typeof(IPersonService), new PersonService(this));
         }
     }
 }
