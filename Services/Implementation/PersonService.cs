@@ -23,7 +23,7 @@ namespace Core
 
         public Person GetPersonInfoes(int id)
         {
-            return data.First<Person>(x => x.Id == id, x => x.PersonRelatives, x => x.InsuranceDocuments, x => x.PersonNames, x => x.Gender);
+            return data.First<Person>(x => x.Id == id, x => x.PersonRelatives, x => x.InsuranceDocuments, x => x.InsuranceDocuments.Select(y => y.InsuranceCompany), x => x.InsuranceDocuments.Select(y => y.InsuranceDocumentType), x => x.PersonNames, x => x.Gender);
         }
 
         public ICollection<PersonRelative> GetPersonRelatives(int personId)

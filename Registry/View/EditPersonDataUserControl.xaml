@@ -84,10 +84,10 @@
         <TextBox x:Name="tbInsurance"  Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Insurance}" MouseDoubleClick="{mvvm:EventBinding EditInsuranceCommand}" />
 
         <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Адрес</Label>
-        <TextBox Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Addresses}"/>
+        <TextBox Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" IsReadOnly="True" Text="{Binding Addresses}"/>
 
         <Label Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Удостоверение личности</Label>
-        <TextBox Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding IdentityDocument}"/>
+        <TextBox Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" IsReadOnly="True" Text="{Binding IdentityDocument}"/>
 
         <Label Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Инвалидость</Label>
         <TextBox Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72"/>

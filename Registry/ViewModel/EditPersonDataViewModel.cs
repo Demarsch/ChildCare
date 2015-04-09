@@ -68,16 +68,16 @@ namespace Registry
         {
             if (!IsEmpty)
             {
-                    LastName = person.LastNameTo(DateTime.Now);
-                    FirstName = person.FirstNameTo(DateTime.Now);
-                    MiddleName = person.MiddleNameTo(DateTime.Now);
-                    BirthDate = person.BirthDate;
-                    SNILS = person.Snils;
-                    MedNumber = person.MedNumber;
-                    Gender = person.Gender.ShortName;
-                    PhotoURI = person.PhotoUri;
-                    //Insurance = person.TodayActualInsuranceDocumentStrings;
-                    RaisePropertyChanged("InsuranceDocuments");
+                LastName = person.LastNameTo(DateTime.Now);
+                FirstName = person.FirstNameTo(DateTime.Now);
+                MiddleName = person.MiddleNameTo(DateTime.Now);
+                BirthDate = person.BirthDate;
+                SNILS = person.Snils;
+                MedNumber = person.MedNumber;
+                Gender = person.Gender.ShortName;
+                PhotoURI = person.PhotoUri;
+                Insurance = person.TodayActualInsuranceDocumentStrings;
+                RaisePropertyChanged("InsuranceDocuments");
             }
             else
             {
@@ -116,7 +116,7 @@ namespace Registry
                 textMessage = "Ошибка! " + res;
         }
 
-        public ICommand EditInsuranceCommand;
+        public ICommand EditInsuranceCommand { get; set; }
 
         private void EditInsurance()
         {
