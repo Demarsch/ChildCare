@@ -121,8 +121,8 @@ namespace Registry
         private void EditInsurance()
         {
             //ToDo: USe better solution for using other window
-            var insuranceDocumentViewModel = new InsuranceDocumentViewModel(null);
-            var insuranceDocumentView = new InsuranceDocumentView() { DataContext = insuranceDocumentViewModel };
+            var insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
+            var insuranceDocumentView = new PersonInsuranceDocumentsView() { DataContext = insuranceDocumentViewModel };
             insuranceDocumentView.Show();
         }
 

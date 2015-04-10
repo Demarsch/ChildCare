@@ -17,9 +17,9 @@ namespace Registry
     /// <summary>
     /// Interaction logic for InsuranceDocementView.xaml
     /// </summary>
-    public partial class InsuranceDocumentView : Window
+    public partial class PersonInsuranceDocumentsView : Window
     {
-        public InsuranceDocumentView()
+        public PersonInsuranceDocumentsView()
         {
             InitializeComponent();
         }

@@ -14,5 +14,9 @@ namespace Core
         Person GetPersonInfoes(int id);
 
         ICollection<PersonRelative> GetPersonRelatives(int personId);
+
+        ICollection<InsuranceDocument> GetInsuranceDocuments(int personId);
+
+        ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes();
     }
 }

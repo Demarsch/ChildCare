@@ -32,6 +32,19 @@ namespace DataLib
             return list;
         }
 
+        public virtual IList<TEntity> Get<TEntity>(params Expression<Func<TEntity, object>>[] navigationProperties) where TEntity : class
+        {
+            List<TEntity> list;
+            using (IDataContext context = provider.GetNewLiteDataContext())
+            {
+                IQueryable<TEntity> query = context.GetData<TEntity>();
+                foreach (var navigation in navigationProperties)
+                    query = query.Include(navigation);
+                list = query.AsNoTracking().ToList();
+            }
+            return list;
+        }
+
         public virtual TEntity First<TEntity>(Expression<Func<TEntity, bool>> predicateForEntityFields, params Expression<Func<TEntity, object>>[] navigationProperties) where TEntity : class
         {
             TEntity res;

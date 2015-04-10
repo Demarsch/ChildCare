@@ -21,6 +21,14 @@ namespace DataLib
         IList<TEntity> Get<TEntity>(Expression<Func<TEntity, bool>> predicateForEntityFields, params Expression<Func<TEntity, object>>[] navigationProperties) where TEntity : class;
 
         /// <summary>
+        /// Получает все объекты типа, подгружает указанные зависимости
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="navigationProperties">подгружаемые зависимости</param>
+        /// <returns></returns>
+        IList<TEntity> Get<TEntity>(params Expression<Func<TEntity, object>>[] navigationProperties) where TEntity : class;
+
+        /// <summary>
         /// Получает первый объект по условию, подгружает указанные зависимости
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

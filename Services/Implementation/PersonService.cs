@@ -37,5 +37,15 @@ namespace Core
                 //    IsRepresentative = x.IsRepresentative
                 //}).ToList());
         }
+
+        public ICollection<InsuranceDocument> GetInsuranceDocuments(int personId)
+        {
+            return data.Get<InsuranceDocument>(x => x.PersonId == personId, x => x.InsuranceCompany, x => x.InsuranceDocumentType);
+        }
+
+        public ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes()
+        {
+            return data.Get<InsuranceDocumentType>();
+        }
     }
 }
