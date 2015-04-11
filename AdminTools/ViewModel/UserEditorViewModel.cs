@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AdminTools.ViewModel
 {
-    class UserEditorViewModel : FailableViewModel
+    class UserEditorViewModel : BasicViewModel
     {
         #region UserData
 

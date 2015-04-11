@@ -13,7 +13,7 @@ using DataLib;
 
 namespace AdminTools.ViewModel
 {    
-    public class PermissionsTreeViewModel : FailableViewModel
+    public class PermissionsTreeViewModel : BasicViewModel
     {
         #region PermissionData
 

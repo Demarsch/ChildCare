@@ -12,7 +12,7 @@ using log4net;
 
 namespace Registry
 {
-    public class PatientAssignmentListViewModel : FailableViewModel
+    public class PatientAssignmentListViewModel : BasicViewModel
     {
         private readonly IPatientAssignmentService assignmentService;
 

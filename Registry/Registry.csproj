@@ -110,6 +110,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\TimeToHeightConverter.cs" />
     <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
     <Compile Include="ViewModel\AssignmentViewModel.cs" />
     <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleViewModel.cs" />
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
     </Compile>
@@ -168,6 +170,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\PersonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -224,9 +230,7 @@
       <Name>StuffLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Converters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

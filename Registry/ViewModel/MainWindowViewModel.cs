@@ -13,13 +13,18 @@ namespace Registry
 {
     public class MainWindowViewModel : ObservableObject
     {
-        public MainWindowViewModel(PatientSearchViewModel patientSearchViewModel)
+        public MainWindowViewModel(PatientSearchViewModel patientSearchViewModel, ScheduleViewModel scheduleViewModel)
         {
             if (patientSearchViewModel == null)
                 throw new ArgumentNullException("patientSearchViewModel");
+            if (scheduleViewModel == null)
+                throw new ArgumentNullException("scheduleViewModel");
+            ScheduleViewModel = scheduleViewModel;
             PatientSearchViewModel = patientSearchViewModel;
         }
 
         public PatientSearchViewModel PatientSearchViewModel { get; private set; }
+
+        public ScheduleViewModel ScheduleViewModel { get; private set; }
     }
 }

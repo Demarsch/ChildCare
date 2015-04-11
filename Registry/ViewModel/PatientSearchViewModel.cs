@@ -14,7 +14,7 @@ using log4net;
 
 namespace Registry
 {
-    public class PatientSearchViewModel : FailableViewModel
+    public class PatientSearchViewModel : BasicViewModel
     {
         private const int UserInputSearchThreshold = 3;
 

@@ -6,6 +6,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="View/PersonView.xaml" />
                 <ResourceDictionary Source="View/PatientAssignmentListView.xaml" />
+                <ResourceDictionary Source="View/ScheduleView.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
