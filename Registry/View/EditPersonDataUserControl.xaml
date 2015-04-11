@@ -4,9 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:registry="clr-namespace:Registry"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
-    xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:mvvm="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
     mc:Ignorable="d"
     x:Class="Registry.EditPersonDataUserControl"
@@ -81,7 +79,8 @@
 
 
         <TextBlock x:Name="tblInsurance"  Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Страховые документы</TextBlock>
-        <TextBox x:Name="tbInsurance"  Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Insurance}" MouseDoubleClick="{mvvm:EventBinding EditInsuranceCommand}" />
+        <TextBox x:Name="tbInsurance"  Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" Text="{Binding Insurance}" 
+                 IsReadOnly="True" MouseDoubleClick="{mvvm:EventBinding EditInsuranceCommand}" />
 
         <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Адрес</Label>
         <TextBox Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" IsReadOnly="True" Text="{Binding Addresses}"/>

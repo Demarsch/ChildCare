@@ -1,10 +1,11 @@
 ﻿<Window x:Class="Registry.PersonInsuranceDocumentsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:registry="clr-namespace:Registry"
-                    xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib"
-        Title="InsuranceDocementView" SizeToContent="WidthAndHeight">
+        mc:Ignorable="d"
+        Title="InsuranceDocementView" SizeToContent="WidthAndHeight" d:DataContext="{d:DesignInstance registry:PersonInsuranceDocumentsViewModel}">
     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}">
             <ListBox.ItemTemplate>
@@ -25,7 +26,8 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" Text="Вид полиса" />
-                        <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding ListInsuranceDocumentTypes}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding InsuranceDocumentTypeId}" />
+                        <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListInsuranceDocumentTypes, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
+                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding InsuranceDocumentTypeId}" />
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="2" Text="Страховая компания" />
 

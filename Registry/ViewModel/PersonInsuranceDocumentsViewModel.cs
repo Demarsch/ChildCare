@@ -12,6 +12,7 @@ namespace Registry
     class PersonInsuranceDocumentsViewModel : ObservableObject
     {
         private int personId;
+
         private IPersonService service;
 
         public PersonInsuranceDocumentsViewModel(int personId, IPersonService service)
