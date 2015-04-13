@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataLib;
+using log4net;
+using log4net.Core;
 
 namespace Core
 {
@@ -22,6 +24,10 @@ namespace Core
         
         public MainServiceLocator()
         {
+            Add(typeof(ILog), new LogImpl(LoggerManager.CreateRepository("ChildCare").GetLogger("ChildCare")));
+
+            Add(typeof(IUserSystemInfoService), new ADUserSystemInfoService());
+
             IDataContextProvider provider = new ModelContextProvider();
 
             Add(typeof(IDataAccessLayer), new ModelAccessLayer(provider));

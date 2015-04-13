@@ -139,6 +139,7 @@
     <Compile Include="CommissionType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataTransferObjects\UserSystemInfo.cs" />
     <Compile Include="Decision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

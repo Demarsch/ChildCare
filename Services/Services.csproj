@@ -35,6 +35,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,8 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTO\PersonRelativeDTO.cs" />
+    <Compile Include="Implementation\ADUserSystemInfoService.cs" />
     <Compile Include="Implementation\PersonService.cs" />
     <Compile Include="Interface\IPersonService.cs" />
+    <Compile Include="Interface\IUserSystemInfoService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
