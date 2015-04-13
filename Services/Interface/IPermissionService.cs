@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using DataLib;
 
-namespace AdminTools
+namespace Core
 {
     public interface IPermissionService
     {
-        Permission GetRootPermission();
-        ICollection<Permission> GetChildren(Permission parent);
+        Permission GetPermissionById(int id);
+        ICollection<Permission> GetRootPermissions();
+        ICollection<Permission> GetChildren(int parentId);
     }
 }

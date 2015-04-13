@@ -1,10 +1,11 @@
 ﻿using System;
 using DataLib;
 using GalaSoft.MvvmLight;
+using Core;
 
 namespace AdminTools.ViewModel
 {
-    public class UserViewModel : ObservableObject
+    public class UserViewModel : FailableViewModel
     {
         private readonly User user;
 
@@ -26,13 +27,20 @@ namespace AdminTools.ViewModel
         public string UserFullName
         {
             get { return IsEmpty ? string.Empty : user.Person.FullName; }
-        }
+        }             
 
         public string SID
         {
             get { return IsEmpty ? string.Empty : user.SID; }
         }
-        
+
+        public bool NameContainsText(string text)
+        {
+            if (String.IsNullOrEmpty(text) || String.IsNullOrEmpty(this.UserFullName))
+                return false;
+
+            return this.UserFullName.IndexOf(text, StringComparison.InvariantCultureIgnoreCase) > -1;
+        }
     }
 }
 

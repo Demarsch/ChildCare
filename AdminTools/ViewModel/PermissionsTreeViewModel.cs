@@ -17,11 +17,41 @@ namespace AdminTools.ViewModel
     {
         #region PermissionData
 
-        private ObservableCollection<PermissionViewModel> firstGeneration;
-        private PermissionViewModel rootPermission;
+        private ObservableCollection<PermissionViewModel> permissionRoots;
         public RelayCommand SearchPermissionCommand { get; private set; }
-       
-        private readonly IPermissionService permissionService;
+        
+        private RelayCommand<object> createPermissionCommand;
+        public RelayCommand<object> CreatePermissionCommand
+        {
+            get { return createPermissionCommand; }
+            set
+            {
+                Set("CreatePermissionCommand", ref createPermissionCommand, value);
+                
+            }
+        }
+
+        private RelayCommand<object> editPermissionCommand;
+        public RelayCommand<object> EditPermissionCommand
+        {
+            get { return editPermissionCommand; }
+            set
+            {
+                Set("EditPermissionCommand", ref editPermissionCommand, value);                
+            }
+        }
+
+        private RelayCommand<object> deletePermissionCommand;
+        public RelayCommand<object> DeletePermissionCommand
+        {
+            get { return deletePermissionCommand; }
+            set
+            {
+                Set("DeletePermissionCommand", ref deletePermissionCommand, value);
+            }
+        }
+
+        private readonly ISimpleLocator service;
 
         private IEnumerator<PermissionViewModel> matchingPermissionsEnumerator;
         private string searchText = String.Empty;
@@ -30,21 +60,21 @@ namespace AdminTools.ViewModel
              
         #region Constructor
 
-        public PermissionsTreeViewModel(IPermissionService permissionService)
+        public PermissionsTreeViewModel(ISimpleLocator service)
         {
-            if (permissionService == null)
+            if (service == null)
                 throw new ArgumentNullException("permissionService");
-            this.permissionService = permissionService;
-                     
-            rootPermission = new PermissionViewModel(permissionService, permissionService.GetRootPermission());
-            firstGeneration = new ObservableCollection<PermissionViewModel>(
-                new PermissionViewModel[] 
-                { 
-                    rootPermission 
-                });
+            this.service = service;
+            
+            permissionRoots = new ObservableCollection<PermissionViewModel>();
+            foreach (var item in service.Instance<IPermissionService>().GetRootPermissions())
+                permissionRoots.Add(new PermissionViewModel(service, item));	        
 
-            this.SearchPermissionCommand = new RelayCommand(this.SearchPermission);           
-        }    
+            this.SearchPermissionCommand = new RelayCommand(this.SearchPermission);
+            this.DeletePermissionCommand = new RelayCommand<object>(DeletePermission);
+            this.EditPermissionCommand = new RelayCommand<object>(EditPermission);
+            this.CreatePermissionCommand = new RelayCommand<object>(CreatePermission);
+        }         
 
         #endregion 
 
@@ -56,9 +86,9 @@ namespace AdminTools.ViewModel
         /// Returns a collection containing the first permission 
         /// in the tree, to which the TreeView can bind.
         /// </summary>
-        public ObservableCollection<PermissionViewModel> FirstGeneration
+        public ObservableCollection<PermissionViewModel> PermissionRoots
         {
-            get { return firstGeneration; }
+            get { return permissionRoots; }
         }
 
         #endregion         
@@ -83,7 +113,47 @@ namespace AdminTools.ViewModel
         }
 
         #endregion
-                     
+             
+        #endregion
+        
+        #region Context Menu Command
+
+        private void DeletePermission(object parameter)
+        {
+            if (parameter == null || !(parameter is PermissionViewModel))
+                return;
+            MessageBox.Show(
+                        "Удаление права " + (parameter as PermissionViewModel).Name,
+                        "Info",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                        );
+        }
+
+        private void EditPermission(object parameter)
+        {
+            if (parameter == null || !(parameter is PermissionViewModel))
+                return;
+            MessageBox.Show(
+                        "Редактирование права " + (parameter as PermissionViewModel).Name,
+                        "Info",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                        );
+        }
+
+        private void CreatePermission(object parameter)
+        {
+            if (parameter == null || !(parameter is PermissionViewModel))
+                return;
+            MessageBox.Show(
+                        "Создание нового права. Родитель -> " + (parameter as PermissionViewModel).Name,
+                        "Info",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                        );
+        }
+
         #endregion
 
         #region Search Logic
@@ -106,7 +176,7 @@ namespace AdminTools.ViewModel
 
         void VerifyMatchingPermissionsEnumerator()
         {
-            var matches = this.FindMatches(searchText, rootPermission);
+            var matches = this.FindMatches(searchText, permissionRoots.ToArray());
             matchingPermissionsEnumerator = matches.GetEnumerator();
 
             if (!matchingPermissionsEnumerator.MoveNext())
@@ -120,14 +190,17 @@ namespace AdminTools.ViewModel
             }
         }
 
-        IEnumerable<PermissionViewModel> FindMatches(string searchText, PermissionViewModel permission)
+        IEnumerable<PermissionViewModel> FindMatches(string searchText, PermissionViewModel[] roots)
         {
-            if (permission.NameContainsText(searchText))
-                yield return permission;
+            foreach (var permission in roots)
+            {
+                if (permission.NameContainsText(searchText))
+                    yield return permission;
 
-            foreach (PermissionViewModel child in permission.Children)
-                foreach (PermissionViewModel match in this.FindMatches(searchText, child))
-                    yield return match;
+                foreach (PermissionViewModel child in permission.Children)
+                    foreach (PermissionViewModel match in this.FindMatches(searchText, new PermissionViewModel[] { child }))
+                        yield return match;
+            }            
         }
 
         #endregion

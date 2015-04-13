@@ -15,7 +15,6 @@ namespace AdminTools
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var contextProvider = new ModelContextProvider();
 
             var mainViewModel = new MainWindowViewModel();
             var mainWindow = new MainWindow { DataContext = mainViewModel };

@@ -108,9 +108,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Services\Implementation\AssignmentService.cs" />
-    <Compile Include="Services\Implementation\UserService.cs" />
     <Compile Include="Services\Interface\IAssignmentService.cs" />
-    <Compile Include="Services\Interface\IUserService.cs" />
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

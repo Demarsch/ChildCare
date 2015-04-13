@@ -48,7 +48,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>AdminTools.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.1.1.35049, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MvvmLightLibs.5.1.1.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
@@ -92,9 +102,7 @@
     <Compile Include="ViewModel\UserEditorViewModel.cs" />
     <Compile Include="ViewModel\UserManagerViewModel.cs" />
     <Compile Include="ViewModel\UserViewModel.cs" />
-    <Compile Include="Services\Interface\IPermissionService.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="Services\Implementation\PermissionService.cs" />
     <Compile Include="ViewModel\PermissionViewModel.cs" />
     <Compile Include="View\PermissionsTreeView.xaml.cs">
       <DependentUpon>PermissionsTreeView.xaml</DependentUpon>
@@ -171,13 +179,14 @@
       <Project>{f5ef279c-ad37-46cd-9558-61438976b828}</Project>
       <Name>Resources</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Services\Services.csproj">
+      <Project>{7914bfc6-1b77-4daf-8f8c-7af1aa9dedc1}</Project>
+      <Name>Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StuffLib\StuffLib.csproj">
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
       <Name>StuffLib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -195,6 +204,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="AdminTools.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

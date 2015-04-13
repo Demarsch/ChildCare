@@ -43,8 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTO\PersonRelativeDTO.cs" />
+    <Compile Include="Implementation\PermissionService.cs" />
     <Compile Include="Implementation\PersonService.cs" />
+    <Compile Include="Implementation\UserService.cs" />
+    <Compile Include="Interface\IPermissionService.cs" />
     <Compile Include="Interface\IPersonService.cs" />
+    <Compile Include="Interface\IUserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
