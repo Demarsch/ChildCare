@@ -19,6 +19,7 @@ namespace Registry
         private readonly IPersonService service;
 
         private Person person;
+        private PersonName personName;
 
         /// <summary>
         /// Use this for creating new person
@@ -33,6 +34,8 @@ namespace Registry
             this.log = log;
             SaveChangesCommand = new RelayCommand(SaveChanges);
             EditInsuranceCommand = new RelayCommand(EditInsurance);
+            ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetChangeNameReasons());
+            Genders = new ObservableCollection<Gender>(service.GetGenders());
         }
 
         public EditPersonDataViewModel(ILog log, IPersonService service, int personId)
@@ -68,13 +71,16 @@ namespace Registry
         {
             if (!IsEmpty)
             {
-                LastName = person.LastNameTo(DateTime.Now);
-                FirstName = person.FirstNameTo(DateTime.Now);
-                MiddleName = person.MiddleNameTo(DateTime.Now);
+                if (personName != null)
+                {
+                    LastName = personName.LastName;
+                    FirstName = personName.FirstName;
+                    MiddleName = personName.MiddleName;
+                }
                 BirthDate = person.BirthDate;
                 SNILS = person.Snils;
                 MedNumber = person.MedNumber;
-                Gender = person.Gender.ShortName;
+                GenderId = person.GenderId;
                 PhotoURI = person.PhotoUri;
                 Insurance = person.TodayActualInsuranceDocumentStrings;
                 RaisePropertyChanged("InsuranceDocuments");
@@ -99,21 +105,89 @@ namespace Registry
 
         private void GetPersonDataAsync()
         {
-            person = service.GetPersonInfoes(id);
-            //service.GetPersonInsuranceDocuments(id);
-            //insuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetPersonInsuranceDocuments(id).Select(x => new InsuranceDocumentViewModel(x)));
+            var dateTimeNow = DateTime.Now;
+            person = service.GetPersonInfoes(id, dateTimeNow);
+            personName = person.PersonNames.FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
         }
 
         public ICommand SaveChangesCommand { get; private set; }
 
         private void SaveChanges()
         {
-            //ToDo: Create Fields for ChangeReason and FromDate
-            var res = string.Empty;//service.SavePersonName(Id, FirstName, LastName, MiddleName, 1, DateTime.Now);
+            List<PersonName> personNames = new List<PersonName>();
+            if (IsFIOChanged)
+            {
+                if (SelectedChangeNameReason == null)
+                {
+                    TextMessage = "Не указана причина изменения ФИО";
+                    return;
+                }
+                if (SelectedChangeNameReason.NeedCreateNewPersonName && ChangeNameDate == null)
+                {
+                    TextMessage = "Не указана дата изменения ФИО";
+                    return;
+                }
+
+                if (!SelectedChangeNameReason.NeedCreateNewPersonName)
+                {
+                    personName.LastName = LastName;
+                    personName.FirstName = FirstName;
+                    personName.MiddleName = MiddleName;
+                }
+                else
+                {
+                    var newPersonName = new PersonName()
+                    {
+                        LastName = LastName,
+                        FirstName = FirstName,
+                        MiddleName = MiddleName,
+                        BeginDateTime = ChangeNameDate,
+                        EndDateTime = new DateTime(9000, 1, 1)
+                    };
+                    personNames.Add(newPersonName);
+
+                    personName.EndDateTime = ChangeNameDate;
+                    personName.ChangeNameReasonId = SelectedChangeNameReason.Id;
+                }
+            }
+            else
+            {
+                if (personName == null)
+                {
+                    personName = new PersonName()
+                    {
+                        LastName = LastName,
+                        FirstName = FirstName,
+                        MiddleName = MiddleName,
+                        BeginDateTime = new DateTime(1900, 1, 1),
+                        EndDateTime = new DateTime(9000, 1, 1)
+                    };
+
+                }
+            }
+            personNames.Add(personName);
+            if (!GenderId.HasValue)
+            {
+                TextMessage = "Не указана пол";
+                return;
+            }
+            if (IsEmpty)
+            {
+                person = new Person();
+            }
+            person.BirthDate = BirthDate;
+            person.Snils = SNILS;
+            person.MedNumber = MedNumber;
+            person.GenderId = GenderId.Value;
+
+            person.ShortName = LastName + " " +  FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
+            person.FullName = LastName + " " + FirstName + " " + MiddleName;
+
+            var res = service.SetPersonInfoes(person, personNames);
             if (res == string.Empty)
                 TextMessage = "Данные сохранены";
             else
-                textMessage = "Ошибка! " + res;
+                TextMessage = "Ошибка! " + res;
         }
 
         public ICommand EditInsuranceCommand { get; set; }
@@ -124,6 +198,48 @@ namespace Registry
             var insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
             var insuranceDocumentView = new PersonInsuranceDocumentsView() { DataContext = insuranceDocumentViewModel };
             insuranceDocumentView.Show();
+        }
+
+        private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();
+        public ObservableCollection<Gender> Genders
+        {
+            get { return genders; }
+            set { Set("Genders", ref genders, value); }
+        }
+
+        private ObservableCollection<ChangeNameReason> сhangeNameReasons = new ObservableCollection<ChangeNameReason>();
+        public ObservableCollection<ChangeNameReason> ChangeNameReasons
+        {
+            get { return сhangeNameReasons; }
+            set { Set("ChangeNameReasons", ref сhangeNameReasons, value); }
+        }
+
+        private ChangeNameReason selectedChangeNameReason;
+        public ChangeNameReason SelectedChangeNameReason
+        {
+            get { return selectedChangeNameReason; }
+            set
+            {
+                Set("SelectedChangeNameReason", ref selectedChangeNameReason, value);
+                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
+            }
+        }
+
+        public bool IsSelectedChangeNameReasonWithCreateNewPersonNames
+        {
+            get { return IsFIOChanged && SelectedChangeNameReason != null && SelectedChangeNameReason.NeedCreateNewPersonName; }
+        }
+
+        public DateTime changeNameDate;
+        public DateTime ChangeNameDate
+        {
+            get { return changeNameDate; }
+            set { Set("ChangeNameDate", ref changeNameDate, value); }
+        }
+
+        public bool IsFIOChanged
+        {
+            get { return !IsEmpty && personName != null && (personName.LastName != LastName || personName.FirstName != FirstName || personName.MiddleName != MiddleName); }
         }
 
         private string textMessage = string.Empty;
@@ -163,7 +279,8 @@ namespace Registry
                 string val = value;
                 if (val == string.Empty)
                 {
-                    switch (Gender)
+                    //ToDo: make this property connecteted with actual value
+                    switch (person.Gender.ShortName)
                     {
                         case "муж":
                             val = "pack://application:,,,/Resources;component/Images/Man48x48.png";
@@ -191,6 +308,8 @@ namespace Registry
             set
             {
                 Set("LastName", ref lastName, value);
+                RaisePropertyChanged("IsFIOChanged");
+                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
             }
         }
 
@@ -204,6 +323,8 @@ namespace Registry
             set
             {
                 Set("FirstName", ref firstName, value);
+                RaisePropertyChanged("IsFIOChanged");
+                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
             }
         }
 
@@ -217,6 +338,8 @@ namespace Registry
             set
             {
                 Set("MiddleName", ref middleName, value);
+                RaisePropertyChanged("IsFIOChanged");
+                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
             }
         }
 
@@ -259,17 +382,16 @@ namespace Registry
             }
         }
 
-        // Maybe I need object?
-        private string gender = string.Empty;
-        public string Gender
+        private int? genderId = 0;
+        public int? GenderId
         {
             get
             {
-                return gender;
+                return genderId;
             }
             set
             {
-                Set("Gender", ref gender, value);
+                Set("GenderId", ref genderId, value);
             }
         }
 
