@@ -4,46 +4,72 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:registry="clr-namespace:Registry"
+        xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
         mc:Ignorable="d"
-        Title="InsuranceDocementView" SizeToContent="WidthAndHeight" WindowStyle="None" BorderThickness="1" d:DataContext="{d:DesignInstance registry:PersonInsuranceDocumentsViewModel}">
+        Title="InsuranceDocementView" SizeToContent="WidthAndHeight" WindowStyle="None" BorderBrush="White" d:DataContext="{d:DesignInstance registry:PersonInsuranceDocumentsViewModel}">
+    
+    <Window.Resources>
+        <stuffLib:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">
+            <stuffLib:ConverterItem From="{x:Static registry:ItemState.Active}">
+                <stuffLib:ConverterItem.To>
+                    <SolidColorBrush Color="LightGreen" />
+                </stuffLib:ConverterItem.To>
+            </stuffLib:ConverterItem>
+            <stuffLib:ConverterItem From="{x:Static registry:ItemState.Inactive}">
+                <stuffLib:ConverterItem.To>
+                    <SolidColorBrush Color="LightPink" />
+                </stuffLib:ConverterItem.To>
+            </stuffLib:ConverterItem>
+        </stuffLib:UniversalConverter>
+    </Window.Resources>
+    
     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                    <Border BorderBrush="Black" BorderThickness="1" Background="{Binding InsuranceDocumentState, Converter={StaticResource InsuranceDocementStateToBackgroundBrushConverter}}">
+                        <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" Text="Вид полиса" />
-                        <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListInsuranceDocumentTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
+                            <Button  Grid.Row="0" Grid.Column="3" Margin="2" Content="x" Background="White" Width="auto" Height="auto" Padding="2" HorizontalAlignment="Right" 
+                                 Command="{Binding DataContext.DeleteInsuranceDocumentCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Вид полиса" />
+                            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListInsuranceDocumentTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding InsuranceDocumentTypeId}" />
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="2" Text="Страховая компания" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Margin="2" Text="Страховая компания" />
 
-                        <!--<ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding InsuranceCompany.NameSMOK}" SelectedValue="{Binding InsuranceCompanyId}" />-->
+                            <!--<ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding InsuranceCompany.NameSMOK}" SelectedValue="{Binding InsuranceCompanyId}" />-->
 
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Margin="2" Text="Серия" />
-                        <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Text="{Binding Series}" />
-                        <TextBlock Grid.Row="3" Grid.Column="2" Margin="2" Text="Номер"/>
-                        <TextBox Grid.Row="3" Grid.Column="3" Margin="2" Text="{Binding Number}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="2" Text="Серия" />
+                            <TextBox Grid.Row="4" Grid.Column="1" Margin="2" Text="{Binding Series}" />
+                            <TextBlock Grid.Row="4" Grid.Column="2" Margin="2" Text="Номер"/>
+                            <TextBox Grid.Row="4" Grid.Column="3" Margin="2" Text="{Binding Number}"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Margin="2"  Text="С "/>
-                        <DatePicker Grid.Row="4" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" Height="24" Text="{Binding BeginDate, StringFormat=dd.MM.yyyy}" BorderThickness="1"/>
-                        <TextBlock Grid.Row="4" Grid.Column="2" Margin="2" Text="по" />
-                        <DatePicker Grid.Row="4" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch" Height="24" Text="{Binding EndDate, StringFormat=dd.MM.yyyy}" BorderThickness="1"/>
-                    </Grid>
+                            <TextBlock Grid.Row="5" Grid.Column="0" Margin="2"  Text="С "/>
+                            <DatePicker Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate}" BorderThickness="1"/>
+                            <TextBlock Grid.Row="5" Grid.Column="2" Margin="2" Text="по" />
+                            <DatePicker Grid.Row="5" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate}" BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
+
+                            <CheckBox Grid.Row="6" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch" Content="Бессрочно" BorderThickness="1" IsChecked="{Binding WithoutEndDate}"/>
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

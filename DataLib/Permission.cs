@@ -25,6 +25,7 @@ namespace DataLib
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsGroup { get; set; }
+        public bool ReadOnly { get; set; }
     
         public virtual ICollection<PermissionLink> PermissionLinks { get; set; }
         public virtual ICollection<PermissionLink> PermissionLinks1 { get; set; }

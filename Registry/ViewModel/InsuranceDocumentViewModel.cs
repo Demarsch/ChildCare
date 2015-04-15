@@ -24,6 +24,7 @@ namespace Registry
             Number = insuranceDocument.Number;
             BeginDate = insuranceDocument.BeginDate;
             EndDate = insuranceDocument.EndDate;
+            WithoutEndDate = insuranceDocument.EndDate.Date == DateTime.MaxValue.Date;
         }
 
         public bool IsEmpty
@@ -63,14 +64,50 @@ namespace Registry
         public DateTime BeginDate
         {
             get { return beginDate; }
-            set { Set("BeginDate", ref beginDate, value); }
+            set
+            {
+                Set("BeginDate", ref beginDate, value);
+                RaisePropertyChanged("InsuranceDocumentState");
+            }
         }
 
         private DateTime endDate = DateTime.MinValue;
         public DateTime EndDate
         {
             get { return endDate; }
-            set { Set("EndDate", ref endDate, value); }
+            set
+            {
+                Set("EndDate", ref endDate, value);
+                RaisePropertyChanged("InsuranceDocumentState");
+            }
+        }
+
+        private bool withoutEndDate;
+        public bool WithoutEndDate
+        {
+            get { return withoutEndDate; }
+            set
+            {
+                Set("WithoutEndDate", ref withoutEndDate, value);
+                EndDate = DateTime.MaxValue;
+                RaisePropertyChanged("WithEndDate");
+            }
+        }
+
+        public bool WithEndDate
+        {
+            get { return !WithoutEndDate; }
+        }
+
+        public ItemState InsuranceDocumentState
+        {
+            get
+            {
+                var datetimeNow = DateTime.Now;
+                if (datetimeNow >= BeginDate && datetimeNow < EndDate)
+                    return ItemState.Active;
+                return ItemState.Inactive;
+            }
         }
     }
 }

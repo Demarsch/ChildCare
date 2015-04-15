@@ -101,6 +101,7 @@ namespace Registry
             var task = Task.Factory.StartNew(GetPersonDataAsync);
             await task;
             FillPropertyFromPerson();
+            insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
         }
 
         private void GetPersonDataAsync()
@@ -191,13 +192,12 @@ namespace Registry
         }
 
         public ICommand EditInsuranceCommand { get; set; }
-
+        private PersonInsuranceDocumentsViewModel insuranceDocumentViewModel;
         private void EditInsurance()
         {
             //ToDo: USe better solution for using other window
-            var insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
             var insuranceDocumentView = new PersonInsuranceDocumentsView() { DataContext = insuranceDocumentViewModel };
-            insuranceDocumentView.Show();
+            insuranceDocumentView.ShowDialog();
         }
 
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();
