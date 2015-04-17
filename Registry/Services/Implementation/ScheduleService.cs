@@ -30,19 +30,21 @@ namespace Registry
                 .ToLookup(x => x, x => new WorkingTime(TimeSpan.FromHours(8.0), TimeSpan.FromHours(17.0)));
         }
 
-        public ILookup<int, AssignmentDTO> GetRoomsAssignments(DateTime date)
+        public ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date)
         {
             var endDate = date.Date.AddDays(1.0);
             using (var dataContext = dataContextProvider.GetNewDataContext())
                 return dataContext.GetData<Assignment>()
                     .Where(x => x.AssignDateTime >= date.Date && x.AssignDateTime < endDate && !x.CancelUserId.HasValue)
-                    .Select(x => new AssignmentDTO
+                    .OrderBy(x => x.AssignDateTime)
+                    .Select(x => new ScheduledAssignmentDTO()
                     {
                         Id = x.Id,
                         AssignDateTime = x.AssignDateTime,
                         IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
                         RecordTypeId = x.RecordTypeId,
-                        RoomId = x.RoomId
+                        RoomId = x.RoomId,
+                        PersonShortName = x.Person.ShortName
                     })
                     .ToLookup(x => x.RoomId);
         }

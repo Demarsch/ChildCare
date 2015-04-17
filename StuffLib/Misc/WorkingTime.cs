@@ -4,7 +4,7 @@ namespace Core
 {
     public class WorkingTime
     {
-        private static readonly TimeSpan MaxTime = new TimeSpan(23, 59, 59);
+        public static readonly TimeSpan MaxTime = new TimeSpan(23, 59, 59);
 
         public WorkingTime(TimeSpan from, TimeSpan to)
         {

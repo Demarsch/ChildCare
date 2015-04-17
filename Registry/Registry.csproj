@@ -112,6 +112,7 @@
     </ApplicationDefinition>
     <Compile Include="Converters\TimeToHeightConverter.cs" />
     <Compile Include="DTO\AssignmentDTO.cs" />
+    <Compile Include="DTO\ScheduledAssignmentDTO.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
     <Compile Include="Services\Interface\IScheduleService.cs" />
     <Compile Include="Services\Implementation\ScheduleService.cs" />
@@ -122,7 +123,10 @@
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
     <Compile Include="ViewModel\AssignmentViewModel.cs" />
     <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
+    <Compile Include="ViewModel\RecordTypeViewModel.cs" />
     <Compile Include="ViewModel\RoomViewModel.cs" />
+    <Compile Include="ViewModel\ScheduledAssignmentGroupViewModel.cs" />
+    <Compile Include="ViewModel\ScheduledAssignmentViewModel.cs" />
     <Compile Include="ViewModel\ScheduleViewModel.cs" />
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
@@ -231,6 +235,10 @@
     <ProjectReference Include="..\StuffLib\StuffLib.csproj">
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
       <Name>StuffLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestCore\TestCore.csproj">
+      <Project>{D1A16BEA-8831-4464-9382-86CB9B7F5849}</Project>
+      <Name>TestCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
-                    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+                    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                    xmlns:converters="clr-namespace:Core;assembly=StuffLib">
     <DataTemplate DataType="{x:Type registry:ScheduleViewModel}">
         <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}">
             <Grid IsSharedSizeScope="True">
@@ -15,7 +16,8 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Расписание работы кабинетов на" Margin="5" VerticalAlignment="Center" />
-                <DatePicker Grid.Row="0" Grid.Column="1" SelectedDateFormat="Long" Width="180" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5" />
+                <DatePicker Grid.Row="0" Grid.Column="1" SelectedDateFormat="Long" Width="180" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5" 
+                            IsEnabled="{Binding RoomsAreLoaded}"/>
                 <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -26,7 +28,7 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
-                        <ListBox IsEnabled="False" ItemsSource="{Binding TimeTickers}" Width="150" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                        <ListBox IsHitTestVisible="False" ItemsSource="{Binding TimeTickers}" Width="150" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent">
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="{x:Type system:TimeSpan}">
                                     <TextBlock Text="{Binding StringFormat='hh\\:mm', Mode=OneTime}" Margin="3" FontSize="9" VerticalAlignment="Top" HorizontalAlignment="Right"/>
@@ -39,12 +41,44 @@
                                     <Setter Property="Padding" Value="0" />
                                     <Setter Property="Margin" Value="0" />
                                     <Setter Property="BorderThickness" Value="0 0.5 0 0.5" />
-                                    <Setter Property="BorderBrush" Value="Black"></Setter>
+                                    <Setter Property="BorderBrush" Value="Black" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
                     </ScrollViewer>
-                    <ListBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rooms}"></ListBox>
+                    <ScrollViewer Grid.Row="0" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden">
+                        <ItemsControl  ItemsSource="{Binding Rooms}" IsEnabled="False" VerticalContentAlignment="Stretch">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type registry:RoomViewModel}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Background="LightSkyBlue" BorderBrush="Black" BorderThickness="0.5" HorizontalAlignment="Stretch" >
+                                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <TextBlock HorizontalAlignment="Center" Margin="3" Text="{Binding Number, StringFormat='#{0}', Mode=OneTime}" />
+                                                <TextBlock HorizontalAlignment="Center" Margin="3" Text="{Binding Name, Mode=OneTime}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Rooms}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
             </Grid>
         </xctk:BusyIndicator>

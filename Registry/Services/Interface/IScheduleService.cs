@@ -12,6 +12,6 @@ namespace Registry
 
         ILookup<int, WorkingTime> GetRoomsWorkingTime(DateTime date);
 
-        ILookup<int, AssignmentDTO> GetRoomsAssignments(DateTime date);
+        ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
     }
 }
