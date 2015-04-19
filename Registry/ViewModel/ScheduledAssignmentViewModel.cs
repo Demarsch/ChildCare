@@ -1,6 +1,4 @@
 using System;
-using Core;
-using DataLib;
 
 namespace Registry
 {
@@ -8,21 +6,21 @@ namespace Registry
     {
         private readonly ScheduledAssignmentDTO assignment;
 
-        public ScheduledAssignmentViewModel(ScheduledAssignmentDTO assignment, ICacheService cacheService)
+        public ScheduledAssignmentViewModel(ScheduledAssignmentDTO assignment)
         {
             if (assignment == null)
                 throw new ArgumentNullException("assignment");
-            if (cacheService == null)
-                throw new ArgumentNullException("cacheService");
             this.assignment = assignment;
-            StartTime = assignment.AssignDateTime.TimeOfDay;
-            EndTime = assignment.AssignDateTime.TimeOfDay.Add(TimeSpan.FromMinutes(cacheService.GetItemById<RecordType>(assignment.RecordTypeId).Duration));
+            StartTime = assignment.StartTime;
+            EndTime = assignment.EndTime;
         }
 
-        public TimeSpan StartTime { get; private set; }
+        public DateTime StartTime { get; private set; }
 
-        public TimeSpan EndTime { get; private set; }
+        public DateTime EndTime { get; private set; }
 
         public string PersonShortName { get { return assignment.PersonShortName; } }
+
+        public bool IsComplete { get { return assignment.IsCompleted; } }
     }
 }

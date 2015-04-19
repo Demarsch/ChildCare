@@ -92,7 +92,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type registry:AssignmentViewModel}">
+    <DataTemplate DataType="{x:Type registry:PatientAssignmentViewModel}">
         <Border HorizontalAlignment="Stretch" BorderThickness="1" CornerRadius="5" Background="{Binding State, Converter={StaticResource AssignmentStateToBackgroundConverter}}"
                 BorderBrush="{Binding State, Converter={StaticResource AssignmentStateToBorderBrushConverter}}">
             <Grid>

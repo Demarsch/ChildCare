@@ -12,7 +12,11 @@ namespace Registry
 
         public int RecordTypeId { get; set; }
 
-        public DateTime AssignDateTime { get; set; }
+        public DateTime StartTime { get; set; }
+
+        public int Duration { get; set; }
+
+        public DateTime EndTime { get { return StartTime.AddMinutes(Duration); }}
 
         public bool IsCompleted { get; set; }
     }

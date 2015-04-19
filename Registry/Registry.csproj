@@ -121,13 +121,12 @@
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
-    <Compile Include="ViewModel\AssignmentViewModel.cs" />
+    <Compile Include="ViewModel\PatientAssignmentViewModel.cs" />
     <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
-    <Compile Include="ViewModel\RecordTypeViewModel.cs" />
     <Compile Include="ViewModel\RoomViewModel.cs" />
-    <Compile Include="ViewModel\ScheduledAssignmentGroupViewModel.cs" />
     <Compile Include="ViewModel\ScheduledAssignmentViewModel.cs" />
     <Compile Include="ViewModel\ScheduleViewModel.cs" />
+    <Compile Include="ViewModel\TimeTickerViewModel.cs" />
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
     </Compile>
@@ -180,7 +179,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\RoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduledAssignmentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ScheduleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TimeTickerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

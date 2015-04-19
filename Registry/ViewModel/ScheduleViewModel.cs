@@ -28,9 +28,10 @@ namespace Registry
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
-            selectedDate = new DateTime(2015, 4, 1);
             //TODO: remove this fake data
-            TimeTickerStep = TimeSpan.FromMinutes(30.0);
+            selectedDate = new DateTime(2015, 4, 1);
+            openTime = selectedDate.AddHours(8.0);
+            closeTime = selectedDate.AddHours(17.0);
             LoadRoomsAsync().ContinueWith((x, date) => LoadAssignmentsAsync((DateTime)date), selectedDate);
         }
 
@@ -45,10 +46,16 @@ namespace Registry
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
                 var workingTimes = await Task<ILookup<int, WorkingTime>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
-                OpenTime = workingTimes.Count == 0 ? TimeSpan.Zero : workingTimes.Min(x => x.Min(y => y.From));
-                CloseTime = workingTimes.Count == 0 ? WorkingTime.MaxTime : workingTimes.Max(x => x.Max(y => y.To));
+                OpenTime = workingTimes.Count == 0 ? date.Date : workingTimes.Min(x => x.Min(y => y.From));
+                CloseTime = workingTimes.Count == 0 ? date.Date.AddDays(1.0).AddMinutes(-1.0) : workingTimes.Max(x => x.Max(y => y.To));
+                UpdateTimeTickers();
                 foreach (var room in rooms)
-                    room.SetAssignments(assignments[room.Id]);
+                {
+                    room.OpenTime = OpenTime;
+                    room.CloseTime = CloseTime;
+                    room.Assignments = assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)).ToArray();
+                    room.WorkingTimes = workingTimes[room.Id];
+                }
             }
             catch (Exception ex)
             {
@@ -68,7 +75,7 @@ namespace Registry
                 BusyStatus = "Загрузка списка кабинетов...";
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
                 var roomList = await Task<ICollection<Room>>.Factory.StartNew(() => scheduleService.GetRooms());
-                Rooms = new ObservableCollection<RoomViewModel>(roomList.Select(x => new RoomViewModel(x, cacheService)));
+                Rooms = roomList.Select(x => new RoomViewModel(x)).ToArray();
                 RoomsAreLoaded = true;
             }
             catch (Exception ex)
@@ -80,6 +87,22 @@ namespace Registry
             {
                 BusyStatus = null;
             }
+        }
+
+        private DateTime openTime;
+
+        public DateTime OpenTime
+        {
+            get { return openTime; }
+            private set { Set("OpenTime", ref openTime, value); }
+        }
+
+        private DateTime closeTime;
+
+        public DateTime CloseTime
+        {
+            get { return closeTime; }
+            private set { Set("CloseTime", ref closeTime, value); }
         }
 
         private bool roomsAreLoaded;
@@ -95,12 +118,16 @@ namespace Registry
         public DateTime SelectedDate
         {
             get { return selectedDate; }
-            set { Set("SelectedDate", ref selectedDate, value); }
+            set
+            {
+                if (Set("SelectedDate", ref selectedDate, value))
+                    LoadAssignmentsAsync(selectedDate);
+            }
         }
 
-        private ObservableCollection<RoomViewModel> rooms;
+        private IEnumerable<RoomViewModel> rooms;
 
-        public ObservableCollection<RoomViewModel> Rooms
+        public IEnumerable<RoomViewModel> Rooms
         {
             get { return rooms; }
             set { Set("Rooms", ref rooms, value); }
@@ -108,66 +135,22 @@ namespace Registry
 
         #region Time tickers
 
-        private IEnumerable<TimeSpan> timeTickers;
+        private IEnumerable<TimeTickerViewModel> timeTickers;
 
-        public IEnumerable<TimeSpan> TimeTickers
+        public IEnumerable<TimeTickerViewModel> TimeTickers
         {
             get { return timeTickers; }
             set { Set("TimeTickers", ref timeTickers, value); }
         }
 
-        private TimeSpan openTime;
-
-        public TimeSpan OpenTime
-        {
-            get { return openTime; }
-            set
-            {
-                if (Set("OpenTime", ref openTime, value))
-                    UpdateTimeTickers();
-            }
-        }
-
-        private TimeSpan closeTime;
-
-        public TimeSpan CloseTime
-        {
-            get { return closeTime; }
-            set
-            {
-                if (Set("CloseTime", ref closeTime, value))
-                    UpdateTimeTickers();
-            }
-        }
-
-        private TimeSpan timeTickerStep;
-
-        public TimeSpan TimeTickerStep
-        {
-            get { return timeTickerStep; }
-            set
-            {
-                if (Set("TimeTickerStep", ref timeTickerStep, value))
-                    UpdateTimeTickers();
-            }
-        }
-
         private void UpdateTimeTickers()
         {
-            if (openTime < TimeSpan.Zero
-                || closeTime < TimeSpan.Zero
-                || openTime >= closeTime
-                || timeTickerStep <= TimeSpan.Zero)
-            {
-                TimeTickers = new TimeSpan[0];
-                return;
-            }
-            var result = new List<TimeSpan>();
+            var result = new List<TimeTickerViewModel>();
             var currentTime = openTime;
             while (currentTime < closeTime)
             {
-                result.Add(currentTime);
-                currentTime = currentTime.Add(timeTickerStep);
+                result.Add(new TimeTickerViewModel(currentTime));
+                currentTime = currentTime.AddHours(1.0);
             }
             TimeTickers = result;
         }

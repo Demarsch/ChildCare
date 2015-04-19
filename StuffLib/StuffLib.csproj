@@ -112,11 +112,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attached behaviors\ScrollSyncrhonizer.cs" />
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
     <Compile Include="Converters\ToSharedSizeGroupConverter.cs" />
     <Compile Include="Converters\UniversalMultiBooleanConverter.cs" />
     <Compile Include="Converters\UniversalConverter.cs" />
+    <Compile Include="Misc\Configuration.cs" />
     <Compile Include="Misc\DataContextCacheService.cs" />
     <Compile Include="Misc\ICacheService.cs" />
     <Compile Include="Misc\IDataContext.cs" />

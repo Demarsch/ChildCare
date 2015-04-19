@@ -1,10 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:registry="clr-namespace:Registry"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-                    xmlns:converters="clr-namespace:Core;assembly=StuffLib">
+                    xmlns:core="clr-namespace:Core;assembly=StuffLib">
     <DataTemplate DataType="{x:Type registry:ScheduleViewModel}">
+        <DataTemplate.Resources>
+            <ControlTemplate x:Key="listBoxItem"  TargetType="{x:Type ListBoxItem}">
+                <ContentPresenter />
+            </ControlTemplate>
+        </DataTemplate.Resources>
         <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}">
             <Grid IsSharedSizeScope="True">
                 <Grid.ColumnDefinitions>
@@ -27,25 +31,26 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
-                        <ListBox IsHitTestVisible="False" ItemsSource="{Binding TimeTickers}" Width="150" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type system:TimeSpan}">
-                                    <TextBlock Text="{Binding StringFormat='hh\\:mm', Mode=OneTime}" Margin="3" FontSize="9" VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
+                    <!--Time tickers-->
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" core:ScrollSynchronizer.ScrollGroup="ScheduleVerticalScroll">
+                        <ListBox IsHitTestVisible="False" ItemsSource="{Binding TimeTickers}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent"
+                                 BorderThickness="0 1 0 1">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
+                                                        UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="Height" Value="{Binding DataContext.TimeTickerStep, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, 
-                                    Converter={x:Static registry:TimeToHeightConverter.DefaultInstance}}" />
-                                    <Setter Property="Padding" Value="0" />
-                                    <Setter Property="Margin" Value="0" />
-                                    <Setter Property="BorderThickness" Value="0 0.5 0 0.5" />
-                                    <Setter Property="BorderBrush" Value="Black" />
+                                    <Setter Property="xctk:TimelinePanel.Date" Value="{Binding StartTime, Mode=OneTime}" />
+                                    <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding EndTime, Mode=OneTime}" />
+                                    <Setter Property="Template" Value="{StaticResource listBoxItem}" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
                     </ScrollViewer>
+                    <!--Room headers-->
                     <ScrollViewer Grid.Row="0" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden">
                         <ItemsControl  ItemsSource="{Binding Rooms}" IsEnabled="False" VerticalContentAlignment="Stretch">
                             <ItemsControl.ItemsPanel>
@@ -57,7 +62,7 @@
                                 <DataTemplate DataType="{x:Type registry:RoomViewModel}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="200" />
                                         </Grid.ColumnDefinitions>
                                         <Border Background="LightSkyBlue" BorderBrush="Black" BorderThickness="0.5" HorizontalAlignment="Stretch" >
                                             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -70,8 +75,14 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <!--Assignments-->
+                    <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" core:ScrollSynchronizer.ScrollGroup="ScheduleVerticalScroll">
                         <ItemsControl ItemsSource="{Binding Rooms}">
+                            <ItemsControl.Template>
+                                <ControlTemplate>
+                                    <ItemsPresenter />
+                                </ControlTemplate>
+                            </ItemsControl.Template>
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" />
