@@ -87,8 +87,7 @@ namespace AdminTools.ViewModel
 
         private void NewUser()
         {
-            (new UserAccountView() { DataContext = new UserAccountViewModel(this.service, this.log) }).ShowDialog();
-            
+            (new UserAccountView() { DataContext = new UserAccountViewModel(this.service, this.log) }).ShowDialog();            
             /*
             MessageBox.Show(
                         "Создание учетной записи пользователя. ",
