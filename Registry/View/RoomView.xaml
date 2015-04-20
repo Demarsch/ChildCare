@@ -3,8 +3,7 @@
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib"
-                    xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
     <DataTemplate DataType="{x:Type registry:RoomViewModel}">
         <DataTemplate.Resources>
             <ControlTemplate x:Key="listBoxItem"  TargetType="{x:Type ListBoxItem}">
@@ -14,7 +13,7 @@
         <Grid>
             <!--Working time layer-->
             <ListBox ItemsSource="{Binding WorkingTimes}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="DimGray"
-                                 BorderThickness="0">
+                                 BorderThickness="0" IsHitTestVisible="False">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
@@ -37,6 +36,9 @@
             <!--Assignments layer-->
             <ListBox ItemsSource="{Binding Assignments}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent"
                      BorderThickness="0">
+                <i:Interaction.Behaviors>
+                    <core:IgnoreMouseWheelBehavior />
+                </i:Interaction.Behaviors>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
