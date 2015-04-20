@@ -58,6 +58,11 @@
     <Resource Include="Images\BackArrow24x24.png" />
     <Resource Include="Images\UserGroup48x48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Account_16x16.png" />
+    <Resource Include="Images\DB_refresh_24x24.png" />
+    <Resource Include="Images\Refresh_16x16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

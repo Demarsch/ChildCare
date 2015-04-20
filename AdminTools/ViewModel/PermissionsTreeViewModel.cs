@@ -6,14 +6,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using Core;
 using GalaSoft.MvvmLight.CommandWpf;
 using System.Windows;
 using DataLib;
+using GalaSoft.MvvmLight;
+using Core;
 
 namespace AdminTools.ViewModel
-{    
-    public class PermissionsTreeViewModel : FailableViewModel
+{
+    public class PermissionsTreeViewModel : ObservableObject
     {
         #region PermissionData
 

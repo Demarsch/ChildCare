@@ -1,0 +1,97 @@
+﻿<Window x:Class="AdminTools.View.UserAccountView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:admintool="clr-namespace:AdminTools.ViewModel"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        Title="Учетная запись пользователя"
+        WindowStartupLocation="CenterScreen"
+        Height="150" Width="500"
+        mc:Ignorable="d" 
+        d:DataContext="{d:DesignInstance admintool:UserAccountViewModel}" SizeToContent="WidthAndHeight" MinWidth="600">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <Image x:Key="SynchronizePerson" Source="pack://application:,,,/Resources;component/Images/Refresh_16x16.png" Stretch="None"/>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <xctk:WatermarkTextBox Grid.Row="0" Grid.Column="0" x:Name="searchUserTextBox"  
+                               Watermark="Введите Ф.И.О. пользователя для поиска в Active Directory..."
+                               Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}" 
+                               Margin="5" FontStyle="Italic" />
+
+        <Button Grid.Row="0" Grid.Column="1" 
+                Content="Найти в ActiveDirectory" Margin="5"
+                Command="{Binding SearchInActiveDirectoryCommand}" 
+                CommandParameter="{Binding ElementName=searchUserWatermarkTextBox, Path=Text}" />
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" >
+            <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" 
+                   Width="16" Height="16" Margin="3" VerticalAlignment="Center"
+                   Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <TextBlock VerticalAlignment="Center" Margin="3" FontWeight="Bold"
+                       Text="{Binding SearchLabel, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+        </StackPanel>
+
+        <ListView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="userADList"
+                  ItemsSource="{Binding UsersAD}" 
+                  SelectedItem="{Binding SelectedUserAD, Mode=TwoWay}"
+                  Visibility="{Binding IsSearchSuccessful, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Ф.И.О." DisplayMemberBinding="{Binding Path=UserName}"></GridViewColumn>
+                        <GridViewColumn Header="SID" DisplayMemberBinding="{Binding Path=SID}"></GridViewColumn>
+                        <GridViewColumn Header="Логин/домен" DisplayMemberBinding="{Binding Path=PrincipalName}"></GridViewColumn>
+                        <GridViewColumn Header="Активный" DisplayMemberBinding="{Binding Path=Enabled}"></GridViewColumn>
+                        <GridViewColumn Header="Уч. карта">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button x:Name="SynchButton" ToolTip="Синхронизировать с МИС"
+                                            Content="{StaticResource SynchronizePerson}" Margin="0" HorizontalAlignment="Center" BorderThickness="0" Background="Transparent" 
+                                            Command="{Binding ElementName=userADList, Path=DataContext.SynchPersonCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Popup IsOpen="{Binding ShowPopup, Mode=OneWay}" StaysOpen="False" Placement="Mouse">
+            <Border Background="LightYellow">
+                <StackPanel>
+                    <TextBlock Margin="3" Text="Выберите учетную карту, доступную в МИС" FontStyle="Italic"/> 
+                    <ListView x:Name="userList" ItemsSource="{Binding Persons}" SelectedItem="{Binding SelectedPerson, Mode=TwoWay}">
+                        <ListView.View>
+                            <GridView>
+                                <GridView.Columns>
+                                    <GridViewColumn Header="Ф.И.О." DisplayMemberBinding="{Binding Path=FullName}"></GridViewColumn>
+                                    <GridViewColumn Header="Дата рождения" DisplayMemberBinding="{Binding Path=BirthDate, StringFormat=dd-MM-yyyy}"></GridViewColumn>
+                                    <GridViewColumn Header="СНИЛС" DisplayMemberBinding="{Binding Path=Snils}"></GridViewColumn>
+                                </GridView.Columns>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <TextBlock Margin="3" FontStyle="Italic"> 
+                        или <Hyperlink Command="{Binding CreatePersonCommand}">создайте</Hyperlink> новую уч. карту</TextBlock>                   
+                </StackPanel>
+            </Border>
+        </Popup>
+
+    </Grid>
+</Window>

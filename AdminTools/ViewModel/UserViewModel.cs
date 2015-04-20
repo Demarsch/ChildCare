@@ -1,11 +1,10 @@
 ﻿using System;
 using DataLib;
 using GalaSoft.MvvmLight;
-using Core;
 
 namespace AdminTools.ViewModel
 {
-    public class UserViewModel : FailableViewModel
+    public class UserViewModel : ObservableObject
     {
         private readonly User user;
 

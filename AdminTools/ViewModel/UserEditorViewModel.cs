@@ -1,4 +1,6 @@
-﻿using Core;
+﻿using AdminTools.View;
+using Core;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.Generic;
@@ -7,28 +9,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using log4net;
 
 namespace AdminTools.ViewModel
 {
-    class UserEditorViewModel : FailableViewModel
+    class UserEditorViewModel : ObservableObject
     {
         #region UserData
 
         private readonly ISimpleLocator service;
-        private UserViewModel currentUser;
         private ObservableCollection<UserViewModel> users;
         public RelayCommand SearchUserCommand { get; private set; }
         private string searchText = String.Empty;
         public RelayCommand NewUserCommand { get; private set; }
+        private readonly ILog log;
         #endregion
 
         #region Constructor
 
-        public UserEditorViewModel(ISimpleLocator service)
+        public UserEditorViewModel(ISimpleLocator service, ILog log)
         {
             if (service == null)
                 throw new ArgumentNullException("userService");
             this.service = service;
+            this.log = log;
 
             users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllActiveUsers(DateTime.Now).Select(x => new UserViewModel(x)).ToArray());
             
@@ -83,18 +87,27 @@ namespace AdminTools.ViewModel
 
         private void NewUser()
         {
+            (new UserAccountView() { DataContext = new UserAccountViewModel(this.service, this.log) }).ShowDialog();
+            
+            /*
             MessageBox.Show(
                         "Создание учетной записи пользователя. ",
                         "Info",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information
-                        );
+                        );*/
         }
 
         #region Search Logic
 
-        private void SearchUser()
+        private async void SearchUser()
         {
+            var task = Task.Factory.StartNew(SearchUserAsync);
+            await task;
+        }
+
+        private void SearchUserAsync()
+        {         
             if (searchText == string.Empty)
                 Users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllUsers().Select(x => new UserViewModel(x)).ToArray());
             else if (searchText.Length >= 3)

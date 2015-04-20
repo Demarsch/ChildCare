@@ -112,21 +112,23 @@
     </ApplicationDefinition>
     <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
+    <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
+    <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
+    <Compile Include="ViewModel\AssignmentViewModel.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
+    <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
+    <Compile Include="ViewModel\PatientSearchViewModel.cs" />
     <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
-    <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
-    <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
-    <Compile Include="ViewModel\AssignmentViewModel.cs" />
-    <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
+    <Compile Include="ViewModel\PersonViewModel.cs" />
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PersonInsuranceDocumentsView.xaml.cs">
-      <DependentUpon>PersonInsuranceDocumentsView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\PatientSearchUserControl.xaml.cs">
       <DependentUpon>PatientSearchUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonInsuranceDocumentsView.xaml.cs">
+      <DependentUpon>PersonInsuranceDocumentsView.xaml</DependentUpon>
     </Compile>
     <Page Include="View\EditPersonDataUserControl.xaml">
       <SubType>Designer</SubType>
@@ -135,6 +137,10 @@
     <Page Include="View\EditPersonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PatientSearchUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\PersonInsuranceDocumentsView.xaml">
       <SubType>Designer</SubType>
@@ -150,8 +156,6 @@
     </Compile>
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
-    <Compile Include="ViewModel\PatientSearchViewModel.cs" />
-    <Compile Include="ViewModel\PersonViewModel.cs" />
     <Compile Include="View\EditPersonDataUserControl.xaml.cs">
       <DependentUpon>EditPersonDataUserControl.xaml</DependentUpon>
     </Compile>
@@ -160,10 +164,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\PatientAssignmentListView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\PatientSearchUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

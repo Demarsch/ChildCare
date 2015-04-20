@@ -24,5 +24,7 @@ namespace Core
         ICollection<ChangeNameReason> GetChangeNameReasons();
 
         ICollection<Gender> GetGenders();
+
+        ICollection<Person> GetPersonsByFullName(string fullName);
     }
 }
