@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Assignments">
           <Key>
             <PropertyRef Name="Id" />
@@ -227,6 +227,7 @@
           <Property Name="Number" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="BeginDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
+          <Property Name="DeleteDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="InsuranceDocumentTypes">
           <Key>
@@ -260,6 +261,7 @@
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="IsGroup" Type="bit" Nullable="false" />
+          <Property Name="ReadOnly" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonNames">
           <Key>
@@ -2010,6 +2012,7 @@
           <NavigationProperty Name="InsuranceCompany" Relationship="DataLib.FK_InsuranceDocuments_InsuranceCompanies" FromRole="InsuranceDocument" ToRole="InsuranceCompany" />
           <NavigationProperty Name="InsuranceDocumentType" Relationship="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes" FromRole="InsuranceDocument" ToRole="InsuranceDocumentType" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_InsuranceDocuments_Persons" FromRole="InsuranceDocument" ToRole="Person" />
+          <Property Name="DeleteDateTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="InsuranceDocumentType">
           <Key>
@@ -2099,6 +2102,7 @@
           <NavigationProperty Name="PermissionLinks" Relationship="DataLib.FK_PermissionLinks_Permissions" FromRole="Permission" ToRole="PermissionLink" />
           <NavigationProperty Name="PermissionLinks1" Relationship="DataLib.FK_PermissionLinks_Permissions1" FromRole="Permission" ToRole="PermissionLink" />
           <NavigationProperty Name="UserPermissions" Relationship="DataLib.FK_UserPermissions_Permissions" FromRole="Permission" ToRole="UserPermission" />
+          <Property Name="ReadOnly" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="UserPermission">
           <Key>
@@ -3060,6 +3064,7 @@
           <EntitySetMapping Name="InsuranceDocuments">
             <EntityTypeMapping TypeName="DataLib.InsuranceDocument">
               <MappingFragment StoreEntitySet="InsuranceDocuments">
+                <ScalarProperty Name="DeleteDateTime" ColumnName="DeleteDateTime" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
                 <ScalarProperty Name="Number" ColumnName="Number" />
@@ -3102,6 +3107,7 @@
           <EntitySetMapping Name="Permissions">
             <EntityTypeMapping TypeName="DataLib.Permission">
               <MappingFragment StoreEntitySet="Permissions">
+                <ScalarProperty Name="ReadOnly" ColumnName="ReadOnly" />
                 <ScalarProperty Name="IsGroup" ColumnName="IsGroup" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />

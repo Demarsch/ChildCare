@@ -99,10 +99,6 @@ namespace Registry
                 IsPersonEditing = (selectedRelative == null);
                 if (selectedRelative != null)
                     EditPersonRelativeDataViewModel.Id = selectedRelative.RelativeId;
-                //if (selectedRelative.RelativePersonId > -1)
-                //    EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, selectedRelative.RelativePersonId);
-                //else
-                //    EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service);
             }
         }
 

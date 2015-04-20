@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using System.Linq;
 
 namespace Registry
 {
@@ -22,12 +23,13 @@ namespace Registry
             this.service = service;
             this.personId = personId;
             ListInsuranceDocumentTypes = new ObservableCollection<InsuranceDocumentType>(service.GetInsuranceDocumentTypes());
-            InsuranceDocuments = new ObservableCollection<InsuranceDocument>(service.GetInsuranceDocuments(this.personId));
+            InsuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetInsuranceDocuments(this.personId).Select(x => new InsuranceDocumentViewModel(x)));
             AddInsuranceDocumentCommand = new RelayCommand(AddInsuranceDocument);
+            DeleteInsuranceDocumentCommand = new RelayCommand<InsuranceDocumentViewModel>(DeleteInsuranceDocument);
         }
 
-        private ObservableCollection<InsuranceDocument> insuranceDocuments = new ObservableCollection<InsuranceDocument>();
-        public ObservableCollection<InsuranceDocument> InsuranceDocuments
+        private ObservableCollection<InsuranceDocumentViewModel> insuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>();
+        public ObservableCollection<InsuranceDocumentViewModel> InsuranceDocuments
         {
             get { return insuranceDocuments; }
             set { Set("InsuranceDocuments", ref insuranceDocuments, value); }
@@ -41,10 +43,15 @@ namespace Registry
         }
 
         public ICommand AddInsuranceDocumentCommand { get; set; }
-
         private void AddInsuranceDocument()
         {
-            InsuranceDocuments.Add(new InsuranceDocument());
+            InsuranceDocuments.Add(new InsuranceDocumentViewModel(new InsuranceDocument()));
+        }
+
+        public ICommand DeleteInsuranceDocumentCommand { get; set; }
+        private void DeleteInsuranceDocument(InsuranceDocumentViewModel insuranceDocument)
+        {
+            InsuranceDocuments.Remove(insuranceDocument);
         }
     }
 }
