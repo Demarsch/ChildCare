@@ -185,3 +185,4 @@ FakesAssemblies/
 *.DotSettings
 *.csproj.DotSettings
 *.csproj.DotSettings
+*.orig

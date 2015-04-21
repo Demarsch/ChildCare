@@ -4,6 +4,8 @@ namespace Registry
 {
     public class AssignmentDTO
     {
+        public int Id { get; set; }
+
         public DateTime AssignDateTime { get; set; }
 
         public int RecordTypeId { get; set; }

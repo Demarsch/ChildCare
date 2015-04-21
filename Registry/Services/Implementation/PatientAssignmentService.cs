@@ -24,6 +24,7 @@ namespace Registry
                 return dataContext.GetData<Assignment>().Where(x => x.PersonId == patientId)
                     .Select(x => new AssignmentDTO
                     {
+                        Id = x.Id,
                         AssignDateTime = x.AssignDateTime,
                         IsCanceled = x.CancelUserId.HasValue,
                         IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,

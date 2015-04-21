@@ -12,7 +12,7 @@ using log4net;
 
 namespace Registry
 {
-    public class PatientAssignmentListViewModel : FailableViewModel
+    public class PatientAssignmentListViewModel : BasicViewModel
     {
         private readonly IPatientAssignmentService assignmentService;
 
@@ -20,9 +20,9 @@ namespace Registry
 
         private readonly ICacheService cacheService;
 
-        private ObservableCollection<AssignmentViewModel> assignments;
+        private ObservableCollection<PatientAssignmentViewModel> assignments;
 
-        public ObservableCollection<AssignmentViewModel> Assignments
+        public ObservableCollection<PatientAssignmentViewModel> Assignments
         {
             get { return assignments; }
             set { Set("Assignments", ref assignments, value); }
@@ -39,7 +39,7 @@ namespace Registry
             this.cacheService = cacheService;
             this.log = log;
             this.assignmentService = assignmentService;
-            assignments = new ObservableCollection<AssignmentViewModel>();
+            assignments = new ObservableCollection<PatientAssignmentViewModel>();
             LoadCommand = new RelayCommand(Load, CanLoad);
             showIncompleted = true;
         }
@@ -153,7 +153,7 @@ namespace Registry
             Assignments.Clear();
             IsLoading = true;
             var uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            Task<ICollection<AssignmentViewModel>>.Factory.StartNew(LoadImpl, patientId)
+            Task<ICollection<PatientAssignmentViewModel>>.Factory.StartNew(LoadImpl, patientId)
                 .ContinueWith(LoadCompleted, uiScheduler);
         }
 
@@ -162,12 +162,12 @@ namespace Registry
             return !IsLoading && IsPatientSelected && !IsLoaded;
         }
 
-        private ICollection<AssignmentViewModel> LoadImpl(object patientId)
+        private ICollection<PatientAssignmentViewModel> LoadImpl(object patientId)
         {
-            return assignmentService.GetAssignments((int)patientId).Select(x => new AssignmentViewModel(x, cacheService)).ToArray();
+            return assignmentService.GetAssignments((int)patientId).Select(x => new PatientAssignmentViewModel(x, cacheService)).ToArray();
         }
 
-        private void LoadCompleted(Task<ICollection<AssignmentViewModel>> sourceTask)
+        private void LoadCompleted(Task<ICollection<PatientAssignmentViewModel>> sourceTask)
         {
             var newSearchWasExecuted = patientId != (int)sourceTask.AsyncState;
             try
@@ -175,7 +175,7 @@ namespace Registry
                 var result = sourceTask.Result;
                 if (newSearchWasExecuted)
                     return;
-                var newAssignments = new ObservableCollection<AssignmentViewModel>(result);
+                var newAssignments = new ObservableCollection<PatientAssignmentViewModel>(result);
                 UpdateDefaultView(newAssignments);
                 Assignments = newAssignments;
             }
@@ -196,17 +196,17 @@ namespace Registry
             }
         }
 
-        private void UpdateDefaultView(ObservableCollection<AssignmentViewModel> sourceCollection)
+        private void UpdateDefaultView(ObservableCollection<PatientAssignmentViewModel> sourceCollection)
         {
             var defaultView = CollectionViewSource.GetDefaultView(sourceCollection);
-            defaultView.SortDescriptions.Add(new SortDescription("AssignDateTime", ListSortDirection.Descending));
+            defaultView.SortDescriptions.Add(new SortDescription("StartTime", ListSortDirection.Descending));
             defaultView.Filter = FilterAssignments;
 
         }
 
         private bool FilterAssignments(object obj)
         {
-            var assignment = obj as AssignmentViewModel;
+            var assignment = obj as PatientAssignmentViewModel;
             return assignment != null && ((assignment.State == AssignmentState.Cancelled && showCancelled)
                                         || (assignment.State == AssignmentState.Completed && showCompleted)
                                         || (assignment.State == AssignmentState.Incompleted && showIncompleted));

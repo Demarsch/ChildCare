@@ -7,10 +7,8 @@
         x:Class="Registry.MainWindow"
         Title="Регистратура" Height="350" Width="525" WindowStartupLocation="CenterScreen" WindowState="Maximized"
         d:DataContext="{d:DesignInstance registry:MainWindowViewModel}">
-    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
         <registry:PatientSearchUserControl DataContext="{Binding PatientSearchViewModel}" DockPanel.Dock="Top" />
-        <Border Background="LightGray">
-            <TextBlock Text="Schedule placeholder" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" />
-        </Border>
+        <ContentControl Content="{Binding ScheduleViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
     </DockPanel>
 </Window>

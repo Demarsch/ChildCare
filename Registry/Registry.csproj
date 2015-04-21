@@ -110,11 +110,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\TimeToHeightConverter.cs" />
     <Compile Include="DTO\AssignmentDTO.cs" />
+    <Compile Include="DTO\ScheduledAssignmentDTO.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
+    <Compile Include="Services\Interface\IScheduleService.cs" />
+    <Compile Include="Services\Implementation\ScheduleService.cs" />
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
-    <Compile Include="ViewModel\AssignmentViewModel.cs" />
+    <Compile Include="ViewModel\PatientAssignmentViewModel.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
     <Compile Include="ViewModel\ItemState.cs" />
     <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
@@ -122,6 +126,10 @@
     <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="ViewModel\PersonViewModel.cs" />
+    <Compile Include="ViewModel\RoomViewModel.cs" />
+    <Compile Include="ViewModel\ScheduledAssignmentViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleViewModel.cs" />
+    <Compile Include="ViewModel\TimeTickerViewModel.cs" />
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
     </Compile>
@@ -169,6 +177,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\PersonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RoomView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduledAssignmentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TimeTickerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -224,9 +248,13 @@
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>
       <Name>StuffLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestCore\TestCore.csproj">
+      <Project>{D1A16BEA-8831-4464-9382-86CB9B7F5849}</Project>
+      <Name>TestCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Converters\" />
+    <SplashScreen Include="SplashScreen.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

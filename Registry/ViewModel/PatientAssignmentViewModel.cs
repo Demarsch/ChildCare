@@ -5,13 +5,13 @@ using GalaSoft.MvvmLight;
 
 namespace Registry
 {
-    public class AssignmentViewModel : ObservableObject
+    public class PatientAssignmentViewModel : ObservableObject
     {
         private readonly AssignmentDTO assignment;
 
         private readonly ICacheService cacheService;
 
-        public AssignmentViewModel(AssignmentDTO assignment, ICacheService cacheService)
+        public PatientAssignmentViewModel(AssignmentDTO assignment, ICacheService cacheService)
         {
             if (assignment == null)
                 throw new ArgumentNullException("assignment");
