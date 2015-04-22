@@ -198,10 +198,10 @@ namespace AdminTools.ViewModel
             {
                 var personInfo = parameter as UserSystemInfoDTO;
                 Persons = new ObservableCollection<Person>(personInfo.Persons);
-                if (!personInfo.Persons.Any())                
+                /*if (!personInfo.Persons.Any())                
                     CreatePerson(null);    
-                else
-                    ShowPopup = true;
+                else*/
+                ShowPopup = true;
             }            
         }
 

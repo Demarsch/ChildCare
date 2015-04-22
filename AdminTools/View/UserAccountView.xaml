@@ -14,7 +14,6 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <Image x:Key="SynchronizePerson" Source="pack://application:,,,/Resources;component/Images/Refresh_16x16.png" Stretch="None"/>
     </Window.Resources>
     
     <Grid>
@@ -60,10 +59,15 @@
                         <GridViewColumn Header="Уч. карта">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
+                                    <!--Content="{StaticResource SynchronizePerson}"-->
                                     <Button x:Name="SynchButton" ToolTip="Синхронизировать с МИС"
-                                            Content="{StaticResource SynchronizePerson}" Margin="0" HorizontalAlignment="Center" BorderThickness="0" Background="Transparent" 
+                                            Margin="0" HorizontalAlignment="Center" BorderThickness="0" Background="Transparent" 
                                             Command="{Binding ElementName=userADList, Path=DataContext.SynchPersonCommand}"
-                                            CommandParameter="{Binding}"/>
+                                            CommandParameter="{Binding}">                                       
+                                            <StackPanel>
+                                                <Image Source="pack://application:,,,/Resources;component/Images/Refresh_16x16.png" Stretch="None" HorizontalAlignment="Center" />
+                                            </StackPanel>
+                                    </Button>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
