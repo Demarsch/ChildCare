@@ -5,6 +5,7 @@ using Core;
 using DataLib;
 using log4net;
 using log4net.Core;
+using TestCore;
 
 namespace Registry
 {
@@ -21,14 +22,18 @@ namespace Registry
             base.OnStartup(e);
             var log = new LogImpl(LoggerManager.CreateRepository(typeof (App).FullName).GetLogger(typeof (App).Name)) as ILog;
             var contextProvider = new ModelContextProvider() as IDataContextProvider;
+            
             var cacheService = new DataContextCacheService(contextProvider) as ICacheService;
 
             var patientAssignmentService = new PatientAssignmentService(contextProvider) as IPatientAssignmentService;
             var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log, cacheService);
 
+            var scheduleService = new ScheduleService(contextProvider);
+            var scheduleViewModel = new ScheduleViewModel(scheduleService, cacheService, log);
+
             var patientService = new PatientService(contextProvider) as IPatientService;
             var patientSearchViewModel = new PatientSearchViewModel(patientService, log, patientAssignmentListViewModel);
-            var mainViewModel = new MainWindowViewModel(patientSearchViewModel);
+            var mainViewModel = new MainWindowViewModel(patientSearchViewModel, scheduleViewModel);
             var mainWindow = new MainWindow {DataContext = mainViewModel};
             MainWindow = mainWindow;
             mainWindow.Show();
