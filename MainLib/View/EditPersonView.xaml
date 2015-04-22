@@ -1,9 +1,9 @@
-﻿<Window x:Class="Registry.EditPersonView"
+﻿<Window x:Class="MainLib.EditPersonView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:registry="clr-namespace:Registry"
+        xmlns:mainLib="clr-namespace:MainLib"
         Width="920" SizeToContent="Height" ResizeMode="NoResize">
 
     <Window.Resources>
@@ -23,14 +23,14 @@
                     <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
                         <DataTrigger.EnterActions>
                             <BeginStoryboard>
-                                <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
+                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
                                     <DoubleAnimation To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </DataTrigger.EnterActions>
                         <DataTrigger.ExitActions>
                             <BeginStoryboard>
-                                <Storyboard TargetProperty="(registry:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
+                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
                                     <DoubleAnimation To="650" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
@@ -49,7 +49,7 @@
                 <RowDefinition  Height="auto"/>
             </Grid.RowDefinitions>
 
-            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
+            <mainLib:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
             <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
                 <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
                 <Button DockPanel.Dock="Bottom" Background="Transparent" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource BooleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
@@ -87,7 +87,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </DockPanel>
-            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
+            <mainLib:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
         </Grid>
     </ScrollViewer>
 </Window>

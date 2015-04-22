@@ -22,17 +22,15 @@ namespace AdminTools.ViewModel
         public RelayCommand SearchUserCommand { get; private set; }
         private string searchText = String.Empty;
         public RelayCommand NewUserCommand { get; private set; }
-        private readonly ILog log;
         #endregion
 
         #region Constructor
 
-        public UserEditorViewModel(ISimpleLocator service, ILog log)
+        public UserEditorViewModel(ISimpleLocator service)
         {
             if (service == null)
                 throw new ArgumentNullException("userService");
             this.service = service;
-            this.log = log;
 
             users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllActiveUsers(DateTime.Now).Select(x => new UserViewModel(x)).ToArray());
             
@@ -87,7 +85,7 @@ namespace AdminTools.ViewModel
 
         private void NewUser()
         {
-            (new UserAccountView() { DataContext = new UserAccountViewModel(this.service, this.log) }).ShowDialog();            
+            (new UserAccountView() { DataContext = new UserAccountViewModel(this.service) }).ShowDialog();            
             /*
             MessageBox.Show(
                         "Создание учетной записи пользователя. ",

@@ -8,9 +8,9 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using System.Linq;
 
-namespace Registry
+namespace MainLib
 {
-    class PersonInsuranceDocumentsViewModel : ObservableObject
+    public class PersonInsuranceDocumentsViewModel : ObservableObject
     {
         private int personId;
 

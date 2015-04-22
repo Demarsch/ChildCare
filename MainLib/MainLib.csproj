@@ -93,6 +93,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ScrollViewerHelper.cs" />
     <Compile Include="MainServiceLocator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -111,6 +112,20 @@
     <Compile Include="Services\Interface\IAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
+    <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
+    <Compile Include="ViewModel\EditPersonViewModel.cs" />
+    <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
+    <Compile Include="ViewModel\ItemState.cs" />
+    <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
+    <Compile Include="View\EditPersonDataUserControl.xaml.cs">
+      <DependentUpon>EditPersonDataUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditPersonView.xaml.cs">
+      <DependentUpon>EditPersonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonInsuranceDocumentsView.xaml.cs">
+      <DependentUpon>PersonInsuranceDocumentsView.xaml</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -143,8 +158,20 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data transfer objects\" />
-    <Folder Include="ViewModel\" />
-    <Folder Include="View\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\EditPersonDataUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditPersonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonInsuranceDocumentsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

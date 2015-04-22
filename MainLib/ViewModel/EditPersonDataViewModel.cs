@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.Generic;
 
-namespace Registry
+namespace MainLib
 {
-    class EditPersonDataViewModel : ObservableObject
+    public class EditPersonDataViewModel : ObservableObject
     {
         private readonly ILog log;
 

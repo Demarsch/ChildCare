@@ -3,14 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:registry="clr-namespace:Registry"
+    xmlns:mainLib="clr-namespace:MainLib"
     xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
     xmlns:mvvm="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
     mc:Ignorable="d"
-    x:Class="Registry.EditPersonDataUserControl"
+    x:Class="MainLib.EditPersonDataUserControl"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     Height="auto" Width="600" Background="White"
-    d:DataContext="{d:DesignInstance registry:EditPersonDataViewModel}">
+    d:DataContext="{d:DesignInstance mainLib:EditPersonDataViewModel}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

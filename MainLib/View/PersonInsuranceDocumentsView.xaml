@@ -1,21 +1,21 @@
-﻿<Window x:Class="Registry.PersonInsuranceDocumentsView"
+﻿<Window x:Class="MainLib.PersonInsuranceDocumentsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:registry="clr-namespace:Registry"
+        xmlns:mainLib="clr-namespace:MainLib"
         xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
         mc:Ignorable="d"
-        Title="InsuranceDocementView" SizeToContent="WidthAndHeight" WindowStyle="None" BorderBrush="White" d:DataContext="{d:DesignInstance registry:PersonInsuranceDocumentsViewModel}">
+        Title="InsuranceDocementView" SizeToContent="WidthAndHeight" WindowStyle="None" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}">
     
     <Window.Resources>
         <stuffLib:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">
-            <stuffLib:ConverterItem From="{x:Static registry:ItemState.Active}">
+            <stuffLib:ConverterItem From="{x:Static mainLib:ItemState.Active}">
                 <stuffLib:ConverterItem.To>
                     <SolidColorBrush Color="LightGreen" />
                 </stuffLib:ConverterItem.To>
             </stuffLib:ConverterItem>
-            <stuffLib:ConverterItem From="{x:Static registry:ItemState.Inactive}">
+            <stuffLib:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
                 <stuffLib:ConverterItem.To>
                     <SolidColorBrush Color="LightPink" />
                 </stuffLib:ConverterItem.To>

@@ -11,5 +11,7 @@ namespace Core
         ICollection<User> GetAllActiveUsers(DateTime onDate);
         ICollection<User> GetAllActiveUsers(DateTime from, DateTime to);
         User GetUserById(int id);
+        User GetUserByPersonId(int personId);
+        bool Save(User user, out string msg);
     }
 }

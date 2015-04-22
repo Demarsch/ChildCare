@@ -17,9 +17,9 @@ namespace AdminTools
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var log = new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)) as ILog;
+            var mainService = new MainServiceLocator();
 
-            var mainViewModel = new MainWindowViewModel(log);
+            var mainViewModel = new MainWindowViewModel(mainService);
             var mainWindow = new MainWindow { DataContext = mainViewModel };
             MainWindow = mainWindow;
             mainWindow.Show();

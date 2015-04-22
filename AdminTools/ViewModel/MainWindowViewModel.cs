@@ -11,23 +11,24 @@ using AdminTools.View;
 using AdminTools.ViewModel;
 using GalaSoft.MvvmLight;
 using log4net;
+using Core;
 
 namespace AdminTools.ViewModel
 {
     class MainWindowViewModel : ObservableObject
     {
         public RelayCommand UsersEditorCommand { get; private set; }
-        private readonly ILog log;
+        private ISimpleLocator service;
 
-        public MainWindowViewModel(ILog log)
+        public MainWindowViewModel(ISimpleLocator service)
         {
-            this.log = log;
+            this.service = service;
             this.UsersEditorCommand = new RelayCommand(this.UsersEditor);            
         }
 
         public void UsersEditor()
         {
-            (new UserManagerView() { DataContext = new UserManagerViewModel(this.log) }).ShowDialog();
+            (new UserManagerView() { DataContext = new UserManagerViewModel(this.service) }).ShowDialog();
         } 
     }
 }

@@ -16,7 +16,9 @@ namespace AdminTools.DTO
         public string PrincipalName { get; set; }
 
         public bool Enabled { get; set; }
-        
+
+        public string PhotoSource { get; set; }
+
         public ICollection<Person> Persons { get; set; }
     }
 }

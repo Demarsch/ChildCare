@@ -15,17 +15,14 @@ namespace AdminTools.ViewModel
     {
         public PermissionsTreeViewModel PermissionsTreeViewModel { get; private set; }
         public UserEditorViewModel UserEditorViewModel { get; private set; }
-        private readonly ILog log;
 
-        public UserManagerViewModel(ILog log)
-        {                                  
-            var mainService = new MainServiceLocator();
-            this.log = log;
-            var permissionsTreeViewModel = new PermissionsTreeViewModel(mainService);
+        public UserManagerViewModel(ISimpleLocator service)
+        {
+            var permissionsTreeViewModel = new PermissionsTreeViewModel(service);
             var permissionsTreeView = new PermissionsTreeView() { DataContext = permissionsTreeViewModel };
             PermissionsTreeViewModel = permissionsTreeViewModel;
 
-            var usersEditorViewModel = new UserEditorViewModel(mainService, this.log);
+            var usersEditorViewModel = new UserEditorViewModel(service);
             var usersEditorView = new UserEditorView() { DataContext = usersEditorViewModel };
             UserEditorViewModel = usersEditorViewModel;
         }  

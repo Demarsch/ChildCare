@@ -17,14 +17,35 @@ namespace Core
             data = serviceLocator.Instance<IDataAccessLayer>();
         }
 
+        public bool Save(User user, out string msg)
+        {
+            string exception = string.Empty;
+            try
+            {
+                data.Save<User>(user);
+                msg = exception;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                return false;
+            }
+        }
+
         public User GetUserById(int id)
         {
             return data.Cache<User>(id);
         }
 
+        public User GetUserByPersonId(int personId)
+        {
+            return data.Get<User>(x => x.PersonId == personId, (x => x.Person)).FirstOrDefault();
+        }
+
         public ICollection<User> GetAllUsers()
         {
-            return data.Get<User>(x => true, (x => x.Person)).OrderBy(x => x.Person.FullName).ToArray();
+            return data.Get<User>(x => true, (x => x.Person)).OrderBy(x => x.Person).ToArray();
         }
 
         public ICollection<User> GetAllUsers(string byName)

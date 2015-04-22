@@ -10,11 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Core;
 
-namespace Registry
+namespace MainLib
 {
-    class EditPersonViewModel : ObservableObject
+    public class EditPersonViewModel : ObservableObject
     {
         private readonly ILog log;
 
@@ -66,7 +65,7 @@ namespace Registry
             : this(log, service)
         {
 
-        }
+        }                 
 
         private int id;
         public int Id

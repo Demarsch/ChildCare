@@ -2,9 +2,9 @@
 using System;
 using GalaSoft.MvvmLight;
 
-namespace Registry
+namespace MainLib
 {
-    class InsuranceDocumentViewModel : ObservableObject
+    public class InsuranceDocumentViewModel : ObservableObject
     {
         private readonly InsuranceDocument insuranceDocument;
 

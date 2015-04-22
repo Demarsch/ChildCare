@@ -11,6 +11,7 @@ using Core;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using log4net;
+using MainLib;
 
 namespace Registry
 {

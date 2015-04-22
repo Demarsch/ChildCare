@@ -99,6 +99,9 @@
     <Reference Include="WpfAnimatedGif">
       <HintPath>..\packages\WpfAnimatedGif.1.4.12\lib\net\WpfAnimatedGif.dll</HintPath>
     </Reference>
+    <Reference Include="WPFSpark">
+      <HintPath>..\packages\WPFSpark\WPFSpark.dll</HintPath>
+    </Reference>
     <Reference Include="Xceed.Wpf.Toolkit">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.4\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>

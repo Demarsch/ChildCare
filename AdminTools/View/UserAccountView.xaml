@@ -65,7 +65,7 @@
                                             Command="{Binding ElementName=userADList, Path=DataContext.SynchPersonCommand}"
                                             CommandParameter="{Binding}">                                       
                                             <StackPanel>
-                                                <Image Source="pack://application:,,,/Resources;component/Images/Refresh_16x16.png" Stretch="None" HorizontalAlignment="Center" />
+                                                <Image Source="{Binding PhotoSource}" Stretch="None" HorizontalAlignment="Center" />
                                             </StackPanel>
                                     </Button>
                                 </DataTemplate>
@@ -80,13 +80,26 @@
             <Border Background="LightYellow">
                 <StackPanel>
                     <TextBlock Margin="3" Text="Выберите учетную карту, доступную в МИС" FontStyle="Italic"/> 
-                    <ListView x:Name="userList" ItemsSource="{Binding Persons}" SelectedItem="{Binding SelectedPerson, Mode=TwoWay}">
+                    <ListView x:Name="personsList" ItemsSource="{Binding Persons}" SelectedItem="{Binding SelectedPerson, Mode=TwoWay}">
                         <ListView.View>
                             <GridView>
                                 <GridView.Columns>
                                     <GridViewColumn Header="Ф.И.О." DisplayMemberBinding="{Binding Path=FullName}"></GridViewColumn>
                                     <GridViewColumn Header="Дата рождения" DisplayMemberBinding="{Binding Path=BirthDate, StringFormat=dd-MM-yyyy}"></GridViewColumn>
                                     <GridViewColumn Header="СНИЛС" DisplayMemberBinding="{Binding Path=Snils}"></GridViewColumn>
+                                    
+                                    <!--<GridViewColumn>
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Margin="3" FontStyle="Italic"> 
+                                                    <Hyperlink                                                    
+                                                        Command="{Binding ElementName=personsList, Path=SelectPersonCommand}"
+                                                        CommandParameter="{Binding ElementName=personsList, Path=SelectedItem}">Выбрать</Hyperlink>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    -->
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
