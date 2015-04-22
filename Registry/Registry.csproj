@@ -116,6 +116,7 @@
     <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
     <Compile Include="ViewModel\AssignmentViewModel.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
+    <Compile Include="ViewModel\ItemState.cs" />
     <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
     <Compile Include="ViewModel\PatientSearchViewModel.cs" />
     <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
