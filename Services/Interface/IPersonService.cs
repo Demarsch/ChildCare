@@ -21,6 +21,8 @@ namespace Core
 
         ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes();
 
+        ICollection<InsuranceCompany> GetInsuranceCompanies(string filter);
+
         ICollection<ChangeNameReason> GetChangeNameReasons();
 
         ICollection<Gender> GetGenders();

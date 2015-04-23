@@ -20,6 +20,7 @@ namespace MainLib
         {
             InsuranceCompanyId = insuranceDocument.InsuranceCompanyId;
             InsuranceDocumentTypeId = insuranceDocument.InsuranceDocumentTypeId;
+            InsuranceCompany = insuranceDocument.InsuranceCompany;
             Series = insuranceDocument.Series;
             Number = insuranceDocument.Number;
             BeginDate = insuranceDocument.BeginDate;
@@ -37,6 +38,13 @@ namespace MainLib
         {
             get { return insuranceCompanyId; }
             set { Set("InsuranceCompanyId", ref insuranceCompanyId, value); }
+        }
+
+        private InsuranceCompany insuranceCompany;
+        public InsuranceCompany InsuranceCompany
+        {
+            get { return insuranceCompany; }
+            set { Set("InsuranceCompany", ref insuranceCompany, value); }
         }
 
         private int insuranceDocumentTypeId = 0;

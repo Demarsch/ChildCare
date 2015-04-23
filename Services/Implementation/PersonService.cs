@@ -82,5 +82,12 @@ namespace Core
         {
             return data.Get<Person>().Where(x => x.FullName.ToLower().Trim() == fullName.ToLower().Trim()).ToList();
         }
+
+
+        public ICollection<InsuranceCompany> GetInsuranceCompanies(string filter)
+        {
+            //ToDo: More complex search with splitting filter on words
+            return data.Get<InsuranceCompany>().Where(x => filter != string.Empty ? x.NameSMOK.Contains(filter) : true).ToList();
+        }
     }
 }

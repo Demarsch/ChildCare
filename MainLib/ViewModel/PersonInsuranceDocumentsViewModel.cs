@@ -26,6 +26,14 @@ namespace MainLib
             InsuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetInsuranceDocuments(this.personId).Select(x => new InsuranceDocumentViewModel(x)));
             AddInsuranceDocumentCommand = new RelayCommand(AddInsuranceDocument);
             DeleteInsuranceDocumentCommand = new RelayCommand<InsuranceDocumentViewModel>(DeleteInsuranceDocument);
+            InsuranceCompanySuggestionProvider = new InsuranceCompanySuggestionProvider(service);
+        }
+
+        private InsuranceCompanySuggestionProvider insuranceCompanySuggestionProvider;
+        public InsuranceCompanySuggestionProvider InsuranceCompanySuggestionProvider
+        {
+            get { return insuranceCompanySuggestionProvider; }
+            set { Set("InsuranceCompanySuggestionProvider", ref insuranceCompanySuggestionProvider, value); }
         }
 
         private ObservableCollection<InsuranceDocumentViewModel> insuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>();

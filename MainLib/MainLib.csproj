@@ -73,6 +73,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WpfControls">
+      <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
+    </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.4\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
@@ -114,6 +117,7 @@
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
+    <Compile Include="ViewModel\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="ViewModel\ItemState.cs" />
     <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
