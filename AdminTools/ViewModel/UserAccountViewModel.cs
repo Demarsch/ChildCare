@@ -30,8 +30,11 @@ namespace AdminTools.ViewModel
             this.SynchPersonCommand = new RelayCommand<object>(SynchPerson);
             this.SelectPersonCommand = new RelayCommand<object>(SelectPerson);
             this.CreatePersonCommand = new RelayCommand<object>(CreatePerson);
+            this.SaveUserCommand = new RelayCommand(SaveUser);
             IsSearching = false;
             IsSearchSuccessful = false;
+            SearchUsed = false;
+            SaveLabel = string.Empty;
             SearchLabel = string.Empty;
         }
 
@@ -40,29 +43,11 @@ namespace AdminTools.ViewModel
         {
         }
 
-        private string searchString = string.Empty;
-        public string SearchString
+        private RelayCommand saveUserCommand;
+        public RelayCommand SaveUserCommand
         {
-            get { return searchString; }
-            set
-            {
-                value = value.Trim();
-                if (!Set("SearchString", ref searchString, value))
-                    return;
-                SearchUsers(value);
-            }
-        }
-
-        private void SearchUsers(string searchString)
-        {
-
-        }
-
-        private string searchLabel = string.Empty;
-        public string SearchLabel
-        {
-            get { return searchLabel; }
-            set { Set("SearchLabel", ref searchLabel, value); }            
+            get { return saveUserCommand; }
+            set { Set("SaveUserCommand", ref saveUserCommand, value); }
         }
 
         private RelayCommand<object> createPersonCommand;
@@ -125,11 +110,21 @@ namespace AdminTools.ViewModel
         public Person SelectedPerson
         {
             get { return selectedPerson; }
-            set {                    
-                    if (!Set("SelectedPerson", ref selectedPerson, value))
-                        return;
-                    CreatePerson(value.Id);
-                }
+            set { Set("SelectedPerson", ref selectedPerson, value); }
+        }
+
+        private string searchString = string.Empty;
+        public string SearchString
+        {
+            get { return searchString; }
+            set { Set("SearchString", ref searchString, value); }
+        }
+
+        private string searchLabel = string.Empty;
+        public string SearchLabel
+        {
+            get { return searchLabel; }
+            set { Set("SearchLabel", ref searchLabel, value); }
         }
 
         private bool isSearching;
@@ -146,6 +141,20 @@ namespace AdminTools.ViewModel
             set { Set("IsSearchSuccessful", ref isSearchSuccessful, value); }
         }
 
+        private string saveLabel = string.Empty;
+        public string SaveLabel
+        {
+            get { return saveLabel; }
+            set { Set("SaveLabel", ref saveLabel, value); }
+        }
+
+        private bool searchUsed;
+        public bool SearchUsed
+        {
+            get { return searchUsed; }
+            set { Set("SearchUsed", ref searchUsed, value); }
+        }  
+
         private bool showPopup;
         public bool ShowPopup
         {
@@ -160,6 +169,8 @@ namespace AdminTools.ViewModel
             {               
                 SearchLabel = "Результаты поиска: Слишком короткая строка для поиска.";
                 IsSearchSuccessful = false;
+                SearchUsed = false;
+                SaveLabel = "Создать новую учетную запись.";
                 return;
             }            
             var task = Task.Factory.StartNew(SearchInActiveDirectoryAsync);
@@ -184,16 +195,20 @@ namespace AdminTools.ViewModel
             }
             finally
             {
-                IsSearching = false;                
+                IsSearching = false;
                 if (!UsersAD.Any())
                 {
                     SearchLabel = "Результаты поиска: По Вашему запросу ничего не найдено.";
                     IsSearchSuccessful = false;
+                    SearchUsed = true;
+                    SaveLabel = "Создать новую учетную запись.";                    
                 }
                 else
                 {
                     SearchLabel = "Результаты поиска";
                     IsSearchSuccessful = true;
+                    SearchUsed = false;
+                    SaveLabel = "Сохранить учетную запись пользователя.";
                 }
             }
         }
@@ -228,9 +243,12 @@ namespace AdminTools.ViewModel
         private void SelectPerson(object parameter)
         {
             if (parameter == null) return;
-            
+            SelectedPerson = parameter as Person;
+            ShowPopup = false;
+            CreatePerson(SelectedPerson.Id);
         }
 
+        private bool isCanceled = false;
         private void CreatePerson(object personId)
         {
             EditPersonViewModel personViewModel = null;
@@ -242,23 +260,30 @@ namespace AdminTools.ViewModel
                 var existingUser = this.service.Instance<IUserService>().GetUserByPersonId(personId.ToInt());
                 if (existingUser != null)
                 {
-                    MessageBox.Show("Выбранная учетная запись уже закреплена за пользователем: " + existingUser.Person.FullName);
+                    MessageBox.Show("У пользователя " + existingUser.Person.FullName + " уже имеется учетная запись.");
+                    SearchUsed = false;
+                    SaveLabel = "Сохранить учетную запись пользователя.";
                     return;
                 }
                 personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), personId.ToInt());
             }               
 
-            (new EditPersonView() { DataContext = personViewModel }).ShowDialog();
+            (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
             
             //TODO: change Save verification
-            if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
-           
-            User user = this.service.Instance<IUserService>().GetUserByPersonId(personViewModel.Id);
+            isCanceled = (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены");
+            SearchUsed = isCanceled;
+            SaveLabel = "Сохранить учетную запись пользователя " + (SelectedPerson != null ? SelectedPerson.FullName : SelectedUserAD.UserName);
+        }
+
+        private void SaveUser()
+        {            
+            User user = this.service.Instance<IUserService>().GetUserByPersonId(SelectedPerson.Id);
             if (user == null)
             {
                 user = new User();
-                user.PersonId = personViewModel.Id;
-                user.SID = SelectedUserAD.SID;
+                user.PersonId = SelectedPerson.Id;
+                user.SID = (SelectedUserAD.SID.HasData() ? SelectedUserAD.SID : string.Empty);
                 user.BeginDateTime = DateTime.Now;
                 user.EndDateTime = user.BeginDateTime;
 
@@ -273,7 +298,6 @@ namespace AdminTools.ViewModel
 
                 CurrentUser = new UserViewModel(user);
             }
-            
         }
     }
 }

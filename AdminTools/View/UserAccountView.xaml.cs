@@ -23,5 +23,17 @@ namespace AdminTools.View
         {
             InitializeComponent();
         }
+
+        private void OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as ListViewItem;
+
+            if (item != null)
+            {
+                //item.IsSelected = true;
+                //e.Handled = true;
+            }
+        }
+        
     }
 }
