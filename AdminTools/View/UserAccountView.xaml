@@ -8,16 +8,16 @@
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         Title="Учетная запись пользователя"
         WindowStartupLocation="CenterScreen"
-        Height="150" Width="500"
         mc:Ignorable="d" 
-        d:DataContext="{d:DesignInstance admintool:UserAccountViewModel}" SizeToContent="WidthAndHeight" MinWidth="600">
+        d:DataContext="{d:DesignInstance admintool:UserAccountViewModel}" SizeToContent="WidthAndHeight" MinWidth="550">
 
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"  />
     </Window.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -30,12 +30,17 @@
         <xctk:WatermarkTextBox Grid.Row="0" Grid.Column="0" x:Name="searchUserTextBox"  
                                Watermark="Введите Ф.И.О. пользователя для поиска в Active Directory..."
                                Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}" 
-                               Margin="5" FontStyle="Italic" />
+                               Margin="5" FontStyle="Italic" FontSize="13" />
 
         <Button Grid.Row="0" Grid.Column="1" 
-                Content="Найти в ActiveDirectory" Margin="5"
+                Margin="5" Background="Transparent"
                 Command="{Binding SearchInActiveDirectoryCommand}" 
-                CommandParameter="{Binding ElementName=searchUserWatermarkTextBox, Path=Text}" />
+                CommandParameter="{Binding ElementName=searchUserWatermarkTextBox, Path=Text}">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="24" Height="24" Source="pack://application:,,,/Resources;component/Images/FolderSearch_48x48.png" />
+                <TextBlock Text="Найти в AD" Margin="5" FontSize="13"></TextBlock>
+            </StackPanel>
+        </Button>
 
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" >
             <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" 
@@ -63,10 +68,10 @@
                                     <Button x:Name="SynchButton" ToolTip="Синхронизировать с МИС"
                                             Margin="0" HorizontalAlignment="Center" BorderThickness="0" Background="Transparent" 
                                             Command="{Binding ElementName=userADList, Path=DataContext.SynchPersonCommand}"
-                                            CommandParameter="{Binding}">                                       
-                                            <StackPanel>
-                                                <Image Source="{Binding PhotoSource}" Stretch="None" HorizontalAlignment="Center" />
-                                            </StackPanel>
+                                            CommandParameter="{Binding}">
+                                        <StackPanel>
+                                            <Image Source="{Binding PhotoSource}" Stretch="None" HorizontalAlignment="Center" />
+                                        </StackPanel>
                                     </Button>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -74,12 +79,27 @@
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnPreviewMouseLeftButtonDown" />
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
+
+        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5"
+                Visibility="{Binding SearchUsed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Command="{Binding SaveUserCommand}">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="24" Height="24" Source="pack://application:,,,/Resources;component/Images/AddPatient48x48.png"  />
+                <TextBlock Margin="5" FontSize="13"
+                           Text="{Binding SaveLabel, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            </StackPanel>
+        </Button>
 
         <Popup IsOpen="{Binding ShowPopup, Mode=OneWay}" StaysOpen="False" Placement="Mouse">
             <Border Background="LightYellow">
                 <StackPanel>
-                    <TextBlock Margin="3" Text="Выберите учетную карту, доступную в МИС" FontStyle="Italic"/> 
+                    <TextBlock Margin="3" Text="Выберите учетную карту, доступную в МИС" FontStyle="Italic"/>
                     <ListView x:Name="personsList" ItemsSource="{Binding Persons}" SelectedItem="{Binding SelectedPerson, Mode=TwoWay}">
                         <ListView.View>
                             <GridView>
@@ -87,25 +107,23 @@
                                     <GridViewColumn Header="Ф.И.О." DisplayMemberBinding="{Binding Path=FullName}"></GridViewColumn>
                                     <GridViewColumn Header="Дата рождения" DisplayMemberBinding="{Binding Path=BirthDate, StringFormat=dd-MM-yyyy}"></GridViewColumn>
                                     <GridViewColumn Header="СНИЛС" DisplayMemberBinding="{Binding Path=Snils}"></GridViewColumn>
-                                    
-                                    <!--<GridViewColumn>
+                                    <GridViewColumn>
                                         <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Margin="3" FontStyle="Italic"> 
-                                                    <Hyperlink                                                    
-                                                        Command="{Binding ElementName=personsList, Path=SelectPersonCommand}"
-                                                        CommandParameter="{Binding ElementName=personsList, Path=SelectedItem}">Выбрать</Hyperlink>
-                                                </TextBlock>
+                                            <DataTemplate>                                               
+                                                    <Button Background="Transparent"                                                    
+                                                        Command="{Binding ElementName=personsList, Path=DataContext.SelectPersonCommand}"
+                                                        CommandParameter="{Binding}">
+                                                        <TextBlock Text="Выбрать" /> 
+                                                    </Button>                                                                                           
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    -->
                                 </GridView.Columns>
                             </GridView>
                         </ListView.View>
                     </ListView>
                     <TextBlock Margin="3" FontStyle="Italic"> 
-                        или <Hyperlink Command="{Binding CreatePersonCommand}">создайте</Hyperlink> новую уч. карту</TextBlock>                   
+                        или <Hyperlink Command="{Binding CreatePersonCommand}">создайте</Hyperlink> новую уч. карту</TextBlock>
                 </StackPanel>
             </Border>
         </Popup>
