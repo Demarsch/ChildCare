@@ -82,9 +82,6 @@ namespace Registry
             {
                 log.Error("Failed to load rooms from database", ex);
                 FailReason = "При попытке загрузить список кабинетов возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки";
-            }
-            finally
-            {
                 BusyStatus = null;
             }
         }

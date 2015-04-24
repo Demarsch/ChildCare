@@ -8,7 +8,8 @@
         xmlns:wpf="http://wpfcontrols.com/"
         xmlns:local="clr-namespace:Core"
         mc:Ignorable="d"
-        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}" Loaded="Window_Loaded">
+        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}"
+        Loaded="Window_Loaded" MinWidth="300" MinHeight="150">
 
     <Window.Resources>
         <stuffLib:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">
@@ -51,8 +52,9 @@
         </DataTemplate>
     </Window.Resources>
 
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}">
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+        <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
+        <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" Margin="5">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1" Background="{Binding InsuranceDocumentState, Converter={StaticResource InsuranceDocementStateToBackgroundBrushConverter}}">
@@ -121,7 +123,5 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
-
-    </StackPanel>
+    </DockPanel>
 </Window>
