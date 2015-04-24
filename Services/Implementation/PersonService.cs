@@ -89,5 +89,11 @@ namespace Core
             //ToDo: More complex search with splitting filter on words
             return data.Get<InsuranceCompany>().Where(x => filter != string.Empty ? x.NameSMOK.Contains(filter) : true).ToList();
         }
+
+
+        public InsuranceDocumentType GetInsuranceDocumentTypeById(int id)
+        {
+            return data.Get<InsuranceDocumentType>().FirstOrDefault(x => x.Id == id);
+        }
     }
 }

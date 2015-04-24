@@ -43,6 +43,27 @@ namespace MainLib
             set { Set("InsuranceDocuments", ref insuranceDocuments, value); }
         }
 
+        public string InsuranceDocumentsString
+        {
+            get
+            {
+                string resStr = string.Empty;
+                foreach (var insuranceDocument in InsuranceDocuments)
+                {
+                    if (resStr != string.Empty)
+                        resStr += "\r\n";
+                    var insuranceDocumentType = service.GetInsuranceDocumentTypeById(insuranceDocument.InsuranceDocumentTypeId);
+                    var insuranceDocumentTypeName = string.Empty;
+                    if (insuranceDocumentType != null)
+                        insuranceDocumentTypeName = insuranceDocumentType.Name;
+                    resStr += String.Format("тип док-та: {0}\r\nстрах. орг.: {1}\r\nсерия {2} номер {3}\r\nпериод действия {4}-{5}",
+                         insuranceDocumentTypeName, insuranceDocument.InsuranceCompany.NameSMOK, insuranceDocument.Series, insuranceDocument.Number, insuranceDocument.BeginDate.ToString("dd.MM.yyyy"),
+                         insuranceDocument.EndDate.ToString("dd.MM.yyyy"));
+                }
+                return resStr;
+            }
+        }
+
         private ObservableCollection<InsuranceDocumentType> listInsuranceDocumentTypes = new ObservableCollection<InsuranceDocumentType>();
         public ObservableCollection<InsuranceDocumentType> ListInsuranceDocumentTypes
         {

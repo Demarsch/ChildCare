@@ -8,7 +8,7 @@
         xmlns:wpf="http://wpfcontrols.com/"
         xmlns:local="clr-namespace:Core"
         mc:Ignorable="d"
-        Title="InsuranceDocementView" SizeToContent="WidthAndHeight" WindowStyle="None" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}">
+        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}" Loaded="Window_Loaded">
 
     <Window.Resources>
         <stuffLib:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">

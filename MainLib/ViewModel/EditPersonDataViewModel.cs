@@ -36,6 +36,7 @@ namespace MainLib
             EditInsuranceCommand = new RelayCommand(EditInsurance);
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetChangeNameReasons());
             Genders = new ObservableCollection<Gender>(service.GetGenders());
+            
         }
 
         public EditPersonDataViewModel(ILog log, IPersonService service, int personId)
@@ -102,6 +103,16 @@ namespace MainLib
             await task;
             FillPropertyFromPerson();
             insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
+            insuranceDocumentViewModel.PropertyChanged += insuranceDocumentViewModel_PropertyChanged;
+        }
+
+        void insuranceDocumentViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "InsuranceDocuments")
+            {
+                Insurance = insuranceDocumentViewModel.InsuranceDocumentsString;
+
+            }
         }
 
         private void GetPersonDataAsync()
