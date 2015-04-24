@@ -13,7 +13,7 @@ namespace DataLib
     {
         private ModelContext staticModelContext;
 
-        public IDataContext StaticDataContext { get { return staticModelContext ?? (staticModelContext = GetNewDataContext() as ModelContext);} }
+        public IDataContext StaticDataContext { get { return staticModelContext ?? (staticModelContext = GetNewLiteDataContext() as ModelContext);} }
 
         public IDataContext GetNewDataContext()
         {
@@ -35,6 +35,7 @@ namespace DataLib
 #endif
             result.Configuration.LazyLoadingEnabled = false;
             result.Configuration.ProxyCreationEnabled = false;
+            result.Configuration.AutoDetectChangesEnabled = false;
             result.Database.CommandTimeout = 300;
             return result;
         }

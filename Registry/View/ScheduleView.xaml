@@ -3,27 +3,66 @@
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib"
-                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
     <DataTemplate DataType="{x:Type registry:ScheduleViewModel}">
         <DataTemplate.Resources>
-            <ControlTemplate x:Key="listBoxItem"  TargetType="{x:Type ListBoxItem}">
+            <ControlTemplate x:Key="ListBoxItem"  TargetType="{x:Type ListBoxItem}">
                 <ContentPresenter />
             </ControlTemplate>
+            <core:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Visible}">
+                <core:ConverterItem To="{x:Static Visibility.Collapsed}">
+                    <core:ConverterItem.From>
+                        <system:Boolean>True</system:Boolean>
+                    </core:ConverterItem.From>
+                </core:ConverterItem>
+            </core:UniversalConverter>
+            <core:UniversalConverter x:Key="ModeToButtonTextConverter" DefaultValue="Перейти в режим просмотра">
+                <core:ConverterItem To="Перейти в режим назначений">
+                    <core:ConverterItem.From>
+                        <system:Boolean>True</system:Boolean>
+                    </core:ConverterItem.From>
+                </core:ConverterItem>
+            </core:UniversalConverter>
+            <core:UniversalConverter x:Key="ModeToDateSelectorTextConverter" DefaultValue="Выберите день назначения">
+                <core:ConverterItem To="Расписание работы кабинетов на">
+                    <core:ConverterItem.From>
+                        <system:Boolean>True</system:Boolean>
+                    </core:ConverterItem.From>
+                </core:ConverterItem>
+            </core:UniversalConverter>
         </DataTemplate.Resources>
         <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}">
-            <Grid IsSharedSizeScope="True">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Расписание работы кабинетов на" Margin="5" VerticalAlignment="Center" />
-                <DatePicker Grid.Row="0" Grid.Column="1" SelectedDateFormat="Long" Width="180" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5" 
-                            IsEnabled="{Binding RoomsAreLoaded}"/>
-                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <DockPanel LastChildFill="True">
+                <!--Schedule filters-->
+                <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                    <Button DockPanel.Dock="Left" MinWidth="190" Margin="5" Padding="5" Background="White" Content="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToButtonTextConverter}}"
+                            Command="{Binding ChangeModeCommand}" />
+                    <TextBlock DockPanel.Dock="Left" Text="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToDateSelectorTextConverter}}" MinWidth="190" Margin="5" VerticalAlignment="Center" TextAlignment="Right" />
+                    <DatePicker DockPanel.Dock="Left" SelectedDateFormat="Long" Width="130" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5" 
+                            IsEnabled="{Binding DataSourcesAreLoaded}" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsInReadOnlyMode, Converter={StaticResource BooleanToInversedVisibilityConverter}}">
+                        <Grid Width="180" VerticalAlignment="Center">
+                            <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}" DisplayMemberPath="NumberAndName"
+                                  Margin="5"/>
+                            <TextBlock Text="Выберите кабинет" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="RoomSelectionText" IsHitTestVisible="False">
+                                <TextBlock.RenderTransform>
+                                    <TranslateTransform />
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </Grid>
+                        <Grid Width="180" VerticalAlignment="Center">
+                            <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding RecordTypes}" SelectedItem="{Binding SelectedRecordType}" DisplayMemberPath="Name"
+                                  Margin="5"/>
+                            <TextBlock Text="Выберите услугу" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="RecordTypeSelectionText" IsHitTestVisible="False">
+                                <TextBlock.RenderTransform>
+                                    <TranslateTransform />
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
+                </DockPanel>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -46,7 +85,7 @@
                                 <Style TargetType="{x:Type ListBoxItem}">
                                     <Setter Property="xctk:TimelinePanel.Date" Value="{Binding StartTime, Mode=OneTime}" />
                                     <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding EndTime, Mode=OneTime}" />
-                                    <Setter Property="Template" Value="{StaticResource listBoxItem}" />
+                                    <Setter Property="Template" Value="{StaticResource ListBoxItem}" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
@@ -94,7 +133,41 @@
                         </ItemsControl>
                     </ScrollViewer>
                 </Grid>
-            </Grid>
+            </DockPanel>
         </xctk:BusyIndicator>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsRoomSelected}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetName="RoomSelectionText" TargetProperty="RenderTransform.Y">
+                            <DoubleAnimation To="-23" Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetName="RoomSelectionText" TargetProperty="RenderTransform.Y">
+                            <DoubleAnimation Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsRecordTypeSelected}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetName="RecordTypeSelectionText" TargetProperty="RenderTransform.Y">
+                            <DoubleAnimation To="-23" Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetName="RecordTypeSelectionText" TargetProperty="RenderTransform.Y">
+                            <DoubleAnimation Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 </ResourceDictionary>

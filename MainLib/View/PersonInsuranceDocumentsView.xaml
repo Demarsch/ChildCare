@@ -4,26 +4,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mainLib="clr-namespace:MainLib"
-        xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
         xmlns:wpf="http://wpfcontrols.com/"
-        xmlns:local="clr-namespace:Core"
+        xmlns:core="clr-namespace:Core;assembly=StuffLib"
         mc:Ignorable="d"
         Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}"
         Loaded="Window_Loaded" MinWidth="300" MinHeight="150">
 
     <Window.Resources>
-        <stuffLib:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">
-            <stuffLib:ConverterItem From="{x:Static mainLib:ItemState.Active}">
-                <stuffLib:ConverterItem.To>
+        <core:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">
+            <core:ConverterItem From="{x:Static mainLib:ItemState.Active}">
+                <core:ConverterItem.To>
                     <SolidColorBrush Color="LightGreen" />
-                </stuffLib:ConverterItem.To>
-            </stuffLib:ConverterItem>
-            <stuffLib:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
-                <stuffLib:ConverterItem.To>
+                </core:ConverterItem.To>
+            </core:ConverterItem>
+            <core:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
+                <core:ConverterItem.To>
                     <SolidColorBrush Color="LightPink" />
-                </stuffLib:ConverterItem.To>
-            </stuffLib:ConverterItem>
-        </stuffLib:UniversalConverter>
+                </core:ConverterItem.To>
+            </core:ConverterItem>
+        </core:UniversalConverter>
 
         <DataTemplate x:Key="AutoCompleteTemplate">
             <Border Padding="5">

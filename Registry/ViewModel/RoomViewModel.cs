@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -60,5 +60,7 @@ namespace Registry
             get { return closeTime; }
             set { Set("CloseTime", ref closeTime, value); }
         }
+
+        public string NumberAndName { get { return string.Format("№{0} - {1}", Number, Name); } }
     }
 }

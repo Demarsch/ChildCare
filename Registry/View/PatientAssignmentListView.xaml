@@ -2,62 +2,63 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:core="clr-namespace:Core;assembly=StuffLib">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    <stuffLib:UniversalConverter x:Key="AssignmentStateToBackgroundConverter">
-        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Incompleted}">
-            <stuffLib:ConverterItem.To>
+    <core:UniversalConverter x:Key="AssignmentStateToBackgroundConverter">
+        <core:ConverterItem From="{x:Static registry:AssignmentState.Incompleted}">
+            <core:ConverterItem.To>
                 <SolidColorBrush Color="White" />
-            </stuffLib:ConverterItem.To>
-        </stuffLib:ConverterItem>
-        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Cancelled}">
-            <stuffLib:ConverterItem.To>
+            </core:ConverterItem.To>
+        </core:ConverterItem>
+        <core:ConverterItem From="{x:Static registry:AssignmentState.Cancelled}">
+            <core:ConverterItem.To>
                 <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
                     <GradientStop Color="Tomato" Offset="0" />
                     <GradientStop Color="White" Offset="0.2" />
                     <GradientStop Color="White" Offset="0.8" />
                     <GradientStop Color="Tomato" Offset="1" />
                 </LinearGradientBrush>
-            </stuffLib:ConverterItem.To>
-        </stuffLib:ConverterItem>
-        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Completed}">
-            <stuffLib:ConverterItem.To>
+            </core:ConverterItem.To>
+        </core:ConverterItem>
+        <core:ConverterItem From="{x:Static registry:AssignmentState.Completed}">
+            <core:ConverterItem.To>
                 <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
                     <GradientStop Color="ForestGreen" Offset="0" />
                     <GradientStop Color="White" Offset="0.2" />
                     <GradientStop Color="White" Offset="0.8" />
                     <GradientStop Color="ForestGreen" Offset="1" />
                 </LinearGradientBrush>
-            </stuffLib:ConverterItem.To>
-        </stuffLib:ConverterItem>
-    </stuffLib:UniversalConverter>
-    <stuffLib:UniversalConverter x:Key="AssignmentStateToBorderBrushConverter">
-        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Incompleted}">
-            <stuffLib:ConverterItem.To>
+            </core:ConverterItem.To>
+        </core:ConverterItem>
+    </core:UniversalConverter>
+    <core:UniversalConverter x:Key="AssignmentStateToBorderBrushConverter">
+        <core:ConverterItem From="{x:Static registry:AssignmentState.Incompleted}">
+            <core:ConverterItem.To>
                 <SolidColorBrush Color="DimGray" />
-            </stuffLib:ConverterItem.To>
-        </stuffLib:ConverterItem>
-        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Cancelled}">
-            <stuffLib:ConverterItem.To>
+            </core:ConverterItem.To>
+        </core:ConverterItem>
+        <core:ConverterItem From="{x:Static registry:AssignmentState.Cancelled}">
+            <core:ConverterItem.To>
                 <SolidColorBrush Color="Red" />
-            </stuffLib:ConverterItem.To>
-        </stuffLib:ConverterItem>
-        <stuffLib:ConverterItem From="{x:Static registry:AssignmentState.Completed}">
-            <stuffLib:ConverterItem.To>
+            </core:ConverterItem.To>
+        </core:ConverterItem>
+        <core:ConverterItem From="{x:Static registry:AssignmentState.Completed}">
+            <core:ConverterItem.To>
                 <SolidColorBrush Color="DarkGreen" />
-            </stuffLib:ConverterItem.To>
-        </stuffLib:ConverterItem>
-    </stuffLib:UniversalConverter>
+            </core:ConverterItem.To>
+        </core:ConverterItem>
+    </core:UniversalConverter>
 
     <DataTemplate DataType="{x:Type registry:PatientAssignmentListViewModel}">
         <DataTemplate.Resources>
-            <stuffLib:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
-                <stuffLib:ConverterItem To="{x:Static Visibility.Visible}">
-                    <stuffLib:ConverterItem.From>
+            <core:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
+                <core:ConverterItem To="{x:Static Visibility.Visible}">
+                    <core:ConverterItem.From>
                         <system:Boolean>False</system:Boolean>
-                    </stuffLib:ConverterItem.From>
-                </stuffLib:ConverterItem>
-            </stuffLib:UniversalConverter>
+                    </core:ConverterItem.From>
+                </core:ConverterItem>
+            </core:UniversalConverter>
         </DataTemplate.Resources>
         <Grid HorizontalAlignment="Stretch" MinHeight="100">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Выберите пациента для просмотра его назначений"

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Core;
 using DataLib;
+using GalaSoft.MvvmLight.Command;
 using log4net;
 
 namespace Registry
@@ -15,29 +17,27 @@ namespace Registry
 
         private readonly IScheduleService scheduleService;
 
-        private readonly ICacheService cacheService;
-
-        public ScheduleViewModel(IScheduleService scheduleService, ICacheService cacheService, ILog log)
+        public ScheduleViewModel(IScheduleService scheduleService, ILog log)
         {
             if (scheduleService == null)
                 throw new ArgumentNullException("scheduleService");
             if (log == null)
                 throw new ArgumentNullException("log");
-            if (cacheService == null)
-                throw new ArgumentNullException("cacheService");
-            this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
             //TODO: remove this fake data
             selectedDate = new DateTime(2015, 4, 1);
             openTime = selectedDate.AddHours(8.0);
             closeTime = selectedDate.AddHours(17.0);
-            LoadRoomsAsync().ContinueWith((x, date) => LoadAssignmentsAsync((DateTime)date), selectedDate);
+            isInReadOnlyMode = true;
+            ChangeModeCommand = new RelayCommand(ChangeMode);
+            LoadDataSources();
+            LoadAssignmentsAsync(selectedDate);
         }
 
         private async Task LoadAssignmentsAsync(DateTime date)
         {
-            if (!RoomsAreLoaded)
+            if (!DataSourcesAreLoaded)
                 return;
             try
             {
@@ -68,21 +68,18 @@ namespace Registry
             }
         }
 
-        private async Task LoadRoomsAsync()
+        private void LoadDataSources()
         {
             try
             {
-                BusyStatus = "Загрузка списка кабинетов...";
-                await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var roomList = await Task<ICollection<Room>>.Factory.StartNew(() => scheduleService.GetRooms());
-                Rooms = roomList.Select(x => new RoomViewModel(x)).ToArray();
-                RoomsAreLoaded = true;
+                Rooms = scheduleService.GetRooms().Select(x => new RoomViewModel(x)).ToArray();
+                RecordTypes = scheduleService.GetRecordTypes().ToList();
+                DataSourcesAreLoaded = true;
             }
             catch (Exception ex)
             {
                 log.Error("Failed to load rooms from database", ex);
                 FailReason = "При попытке загрузить список кабинетов возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки";
-                BusyStatus = null;
             }
         }
 
@@ -102,13 +99,31 @@ namespace Registry
             private set { Set("CloseTime", ref closeTime, value); }
         }
 
-        private bool roomsAreLoaded;
+        private bool dataSourcesAreLoaded;
 
-        public bool RoomsAreLoaded
+        public bool DataSourcesAreLoaded
         {
-            get { return roomsAreLoaded; }
-            set { Set("RoomsAreLoaded", ref roomsAreLoaded, value); }
+            get { return dataSourcesAreLoaded; }
+            set { Set("DataSourcesAreLoaded", ref dataSourcesAreLoaded, value); }
         }
+
+        private IEnumerable<RoomViewModel> rooms;
+
+        public IEnumerable<RoomViewModel> Rooms
+        {
+            get { return rooms; }
+            set { Set("Rooms", ref rooms, value); }
+        }
+
+        private IEnumerable<RecordType> recordTypes;
+
+        public IEnumerable<RecordType> RecordTypes
+        {
+            get { return recordTypes; }
+            set { Set("RecordTypes", ref recordTypes, value); }
+        }
+
+        #region Filter
 
         private DateTime selectedDate;
 
@@ -122,13 +137,69 @@ namespace Registry
             }
         }
 
-        private IEnumerable<RoomViewModel> rooms;
+        private bool isInReadOnlyMode;
 
-        public IEnumerable<RoomViewModel> Rooms
+        public bool IsInReadOnlyMode
         {
-            get { return rooms; }
-            set { Set("Rooms", ref rooms, value); }
+            get { return isInReadOnlyMode; }
+            set
+            {
+                Set("IsInReadOnlyMode", ref isInReadOnlyMode, value);
+                if (!isInReadOnlyMode)
+                    return;
+                SelectedRoom = null;
+                SelectedRecordType = null;
+            }
         }
+
+        public ICommand ChangeModeCommand { get; private set; }
+
+        private void ChangeMode()
+        {
+            IsInReadOnlyMode = !IsInReadOnlyMode;
+        }
+
+        private RoomViewModel selectedRoom;
+
+        public RoomViewModel SelectedRoom
+        {
+            get { return selectedRoom; }
+            set
+            {
+                Set("SelectedRoom", ref selectedRoom, value);
+                IsRoomSelected = selectedRoom != null;
+            }
+        }
+
+        private bool isRoomSelected;
+
+        public bool IsRoomSelected
+        {
+            get { return isRoomSelected; }
+            private set { Set("IsRoomSelected", ref isRoomSelected, value); }
+        }
+
+        private RecordType selectedRecordType;
+
+        public RecordType SelectedRecordType
+        {
+            get { return selectedRecordType; }
+            set
+            {
+                Set("SelectedRecordType", ref selectedRecordType, value);
+                IsRecordTypeSelected = selectedRecordType != null;
+            }
+        }
+
+        private bool isRecordTypeSelected;
+
+        public bool IsRecordTypeSelected
+        {
+            get { return isRecordTypeSelected; }
+            private set { Set("IsRecordTypeSelected", ref isRecordTypeSelected, value); }
+        }
+
+        #endregion
 
         #region Time tickers
 

@@ -1,36 +1,36 @@
 ﻿<Window x:Class="MainLib.EditPersonView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:mainLib="clr-namespace:MainLib"
+        xmlns:core="clr-namespace:Core;assembly=StuffLib"
         Width="920" SizeToContent="Height" ResizeMode="NoResize">
 
     <Window.Resources>
-        <stuffLib:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
-            <stuffLib:ConverterItem To="{x:Static Visibility.Visible}">
-                <stuffLib:ConverterItem.From>
+        <core:UniversalConverter x:Key="booleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
+            <core:ConverterItem To="{x:Static Visibility.Visible}">
+                <core:ConverterItem.From>
                     <system:Boolean>False</system:Boolean>
-                </stuffLib:ConverterItem.From>
-            </stuffLib:ConverterItem>
-        </stuffLib:UniversalConverter>
+                </core:ConverterItem.From>
+            </core:ConverterItem>
+        </core:UniversalConverter>
     </Window.Resources>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="Viewer">
+    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="viewer">
         <ScrollViewer.Style>
             <Style TargetType="{x:Type ScrollViewer}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
                         <DataTrigger.EnterActions>
                             <BeginStoryboard>
-                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
+                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
                                     <DoubleAnimation To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </DataTrigger.EnterActions>
                         <DataTrigger.ExitActions>
                             <BeginStoryboard>
-                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=Viewer}">
+                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
                                     <DoubleAnimation To="650" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
@@ -52,7 +52,7 @@
             <mainLib:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
             <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
                 <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
-                <Button DockPanel.Dock="Bottom" Background="Transparent" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource BooleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
+                <Button DockPanel.Dock="Bottom" Background="Transparent" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
                         <TextBlock Margin="3" Text="К пациенту"/>

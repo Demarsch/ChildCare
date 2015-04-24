@@ -10,6 +10,8 @@ namespace Registry
     {
         ICollection<Room> GetRooms();
 
+        ICollection<RecordType> GetRecordTypes();
+        
         ILookup<int, WorkingTime> GetRoomsWorkingTime(DateTime date);
 
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);

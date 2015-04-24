@@ -22,6 +22,11 @@ namespace Registry
             return dataContextProvider.StaticDataContext.GetData<Room>().ToArray();
         }
 
+        public ICollection<RecordType> GetRecordTypes()
+        {
+            return dataContextProvider.StaticDataContext.GetData<RecordType>().ToArray();
+        }
+
         public ILookup<int, WorkingTime> GetRoomsWorkingTime(DateTime date)
         {
             //TODO: replace with real data
