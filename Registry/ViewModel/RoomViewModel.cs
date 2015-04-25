@@ -20,7 +20,6 @@ namespace Registry
             openTime = DateTime.Today.AddHours(8.0);
             closeTime = DateTime.Today.AddHours(17.0);
             assignments = new ScheduledAssignmentViewModel[0];
-            workingTimes = new WorkingTime[0];
         }
 
         public int Id { get { return room.Id; } }
@@ -35,14 +34,6 @@ namespace Registry
         {
             get { return assignments; }
             set { Set("Assignments", ref assignments, value); }
-        }
-
-        private IEnumerable<WorkingTime> workingTimes;
-
-        public IEnumerable<WorkingTime> WorkingTimes
-        {
-            get { return workingTimes; }
-            set { Set("WorkingTimes", ref workingTimes, value); }
         }
 
         private DateTime openTime;

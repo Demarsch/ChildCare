@@ -11,31 +11,9 @@
             </ControlTemplate>
         </DataTemplate.Resources>
         <Grid>
-            <!--Working time layer-->
-            <ListBox ItemsSource="{Binding WorkingTimes}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="DimGray"
-                                 BorderThickness="0" IsHitTestVisible="False">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
-                                                        UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="xctk:TimelinePanel.Date" Value="{Binding From, Mode=OneTime}" />
-                        <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding To, Mode=OneTime}" />
-                        <Setter Property="Template" Value="{StaticResource listBoxItem}" />
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type core:WorkingTime}">
-                        <Border Background="White" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
             <!--Assignments layer-->
             <ListBox ItemsSource="{Binding Assignments}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent"
-                     BorderThickness="0">
+                     BorderThickness="1" BorderBrush="Black">
                 <i:Interaction.Behaviors>
                     <core:IgnoreMouseWheelBehavior />
                 </i:Interaction.Behaviors>

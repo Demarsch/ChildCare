@@ -102,5 +102,8 @@
     <Build Include="dbo\Tables\CommissionQuestions.sql" />
     <Build Include="dbo\Tables\RecordContracts.sql" />
     <Build Include="dbo\Tables\MedicalHelpTypes.sql" />
+    <Build Include="dbo\Tables\ScheduleDays.sql" />
+    <Build Include="dbo\Tables\ScheduleDayItems.sql" />
+    <Build Include="dbo\Tables\ClosedDates.sql" />
   </ItemGroup>
 </Project>

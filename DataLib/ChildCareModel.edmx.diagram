@@ -100,6 +100,13 @@
         <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
         <AssociationConnector Association="DataLib.FK_Permissions_Users" />
+        <EntityTypeShape EntityType="DataLib.ClosedDate" Width="1.5" PointX="9.375" PointY="13.75" />
+        <EntityTypeShape EntityType="DataLib.ScheduleDayItem" Width="1.5" PointX="15.75" PointY="17.875" />
+        <EntityTypeShape EntityType="DataLib.ScheduleDay" Width="1.5" PointX="13.5" PointY="9.5" />
+        <AssociationConnector Association="DataLib.FK_ScheduleDay_Records" />
+        <AssociationConnector Association="DataLib.FK_ScheduleDay_Rooms" />
+        <AssociationConnector Association="DataLib.FK_ScheduleDayItem_ScheduleDay" />
+        <AssociationConnector Association="DataLib.FK_ScheduleDays_RecordTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

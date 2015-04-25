@@ -30,7 +30,7 @@ namespace Registry
             openTime = selectedDate.AddHours(8.0);
             closeTime = selectedDate.AddHours(17.0);
             isInReadOnlyMode = true;
-            ChangeModeCommand = new RelayCommand(ChangeMode);
+            changeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
             LoadDataSources();
             LoadAssignmentsAsync(selectedDate);
         }
@@ -39,22 +39,23 @@ namespace Registry
         {
             if (!DataSourcesAreLoaded)
                 return;
+            date = date.Date;
             try
             {
                 BusyStatus = "Загрузка расписания...";
                 FailReason = null;
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var workingTimes = await Task<ILookup<int, WorkingTime>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date);
+                var workingTimes = await Task<RoomWorkingTimeRepository>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
-                OpenTime = workingTimes.Count == 0 ? date.Date : workingTimes.Min(x => x.Min(y => y.From));
-                CloseTime = workingTimes.Count == 0 ? date.Date.AddDays(1.0).AddMinutes(-1.0) : workingTimes.Max(x => x.Max(y => y.To));
+                OpenTime = date.Add(workingTimes.GetOpenTime());
+                CloseTime = date.Add(workingTimes.GetCloseTime());
                 UpdateTimeTickers();
                 foreach (var room in rooms)
                 {
                     room.OpenTime = OpenTime;
                     room.CloseTime = CloseTime;
                     room.Assignments = assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)).ToArray();
-                    room.WorkingTimes = workingTimes[room.Id];
+                    //room.WorkingTimes = workingTimes[room.Id];
                 }
             }
             catch (Exception ex)
@@ -152,11 +153,18 @@ namespace Registry
             }
         }
 
-        public ICommand ChangeModeCommand { get; private set; }
+        private readonly RelayCommand changeModeCommand;
+
+        public ICommand ChangeModeCommand { get { return changeModeCommand; } }
 
         private void ChangeMode()
         {
             IsInReadOnlyMode = !IsInReadOnlyMode;
+        }
+
+        private bool CanChangeMode()
+        {
+            return currentPatient != null;
         }
 
         private RoomViewModel selectedRoom;
@@ -197,6 +205,18 @@ namespace Registry
         {
             get { return isRecordTypeSelected; }
             private set { Set("IsRecordTypeSelected", ref isRecordTypeSelected, value); }
+        }
+
+        private PersonViewModel currentPatient;
+
+        public PersonViewModel CurrentPatient
+        {
+            get { return currentPatient; }
+            set
+            {
+                currentPatient = value;
+                changeModeCommand.RaiseCanExecuteChanged();
+            }
         }
 
         #endregion

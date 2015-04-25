@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +22,13 @@ namespace Registry
                 throw new ArgumentNullException("scheduleViewModel");
             ScheduleViewModel = scheduleViewModel;
             PatientSearchViewModel = patientSearchViewModel;
+            patientSearchViewModel.PropertyChanged += PatientSearchViewModelOnPropertyChanged;
+        }
+
+        private void PatientSearchViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (string.IsNullOrEmpty(propertyChangedEventArgs.PropertyName) || propertyChangedEventArgs.PropertyName == "CurrentPatient")
+                ScheduleViewModel.CurrentPatient = PatientSearchViewModel.CurrentPatient;
         }
 
         public PatientSearchViewModel PatientSearchViewModel { get; private set; }

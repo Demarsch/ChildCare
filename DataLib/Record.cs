@@ -18,6 +18,7 @@ namespace DataLib
         {
             this.Assignments = new HashSet<Assignment>();
             this.Records1 = new HashSet<Record>();
+            this.ScheduleDays = new HashSet<ScheduleDay>();
         }
     
         public int Id { get; set; }
@@ -45,5 +46,6 @@ namespace DataLib
         public virtual RecordType RecordType { get; set; }
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
+        public virtual ICollection<ScheduleDay> ScheduleDays { get; set; }
     }
 }

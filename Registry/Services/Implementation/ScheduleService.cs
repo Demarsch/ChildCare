@@ -27,20 +27,6 @@ namespace Registry
             return dataContextProvider.StaticDataContext.GetData<RecordType>().ToArray();
         }
 
-        public ILookup<int, WorkingTime> GetRoomsWorkingTime(DateTime date)
-        {
-            //TODO: replace with real data
-            return dataContextProvider.StaticDataContext.GetData<Room>()
-                .Select(x => x.Id)
-                .AsEnumerable()
-                .SelectMany(x => new[]
-                {
-                    new { Id = x, WorkingTime =  new WorkingTime(date.Date.AddHours(8.0), date.Date.AddHours(12.0)) }, 
-                    new { Id = x, WorkingTime =  new WorkingTime(date.Date.AddHours(13.0), date.Date.AddHours(17.0))}
-                })
-                .ToLookup(x => x.Id, x => x.WorkingTime);
-        }
-
         public ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date)
         {
             var endDate = date.Date.AddDays(1.0);
@@ -59,6 +45,29 @@ namespace Registry
                         PersonShortName = x.Person.ShortName
                     })
                     .ToLookup(x => x.RoomId);
+        }
+
+        public RoomWorkingTimeRepository GetRoomsWorkingTime(DateTime date)
+        {
+            date = date.Date;
+            var dayOfWeek = (int)date.DayOfWeek;
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                //Only schedule days that are valid for specified date
+                return new RoomWorkingTimeRepository(
+                        dataContext.GetData<ScheduleDay>()
+                       .Where(x => x.DayOfWeek == dayOfWeek && x.BeginDate <= date && x.EndDate >= date)
+                       .GroupBy(x => new { x.RoomId, x.RecordTypeId })
+                       .Select(x => x.OrderByDescending(y => y.BeginDate).ThenBy(y => y.EndDate).FirstOrDefault())
+                       .SelectMany(x => x.ScheduleDayItems)
+                       .Select(x => new WorkingTime
+                       {
+                           RoomId = x.ScheduleDay.RoomId,
+                           RecordTypeId = x.ScheduleDay.RecordTypeId,
+                           StartTime = x.StartTime,
+                           EndTime = x.EndTime
+                       }));
+            }
         }
     }
 }

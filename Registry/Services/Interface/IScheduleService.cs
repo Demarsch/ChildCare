@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core;
 using DataLib;
 
 namespace Registry
@@ -11,9 +10,9 @@ namespace Registry
         ICollection<Room> GetRooms();
 
         ICollection<RecordType> GetRecordTypes();
-        
-        ILookup<int, WorkingTime> GetRoomsWorkingTime(DateTime date);
 
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
+
+        RoomWorkingTimeRepository GetRoomsWorkingTime(DateTime date);
     }
 }

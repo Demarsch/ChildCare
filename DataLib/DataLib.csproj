@@ -112,6 +112,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ChildCareModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="ClosedDate.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CommissionDecision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -205,6 +208,12 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Room.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ScheduleDay.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ScheduleDayItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Staff.cs">

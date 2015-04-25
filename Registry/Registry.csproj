@@ -113,6 +113,8 @@
     <Compile Include="Converters\TimeToHeightConverter.cs" />
     <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\ScheduledAssignmentDTO.cs" />
+    <Compile Include="DTO\WorkingTime.cs" />
+    <Compile Include="Misc\RoomWorkingTimeRepository.cs" />
     <Compile Include="Services\Interface\IScheduleService.cs" />
     <Compile Include="Services\Implementation\ScheduleService.cs" />
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
@@ -216,6 +218,10 @@
     <ProjectReference Include="..\Services\Services.csproj">
       <Project>{7914bfc6-1b77-4daf-8f8c-7af1aa9dedc1}</Project>
       <Name>Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StuffLib.Test\StuffLib.Test.csproj">
+      <Project>{4441AE3B-6EE5-4F5A-9F88-ED73BDCB1C02}</Project>
+      <Name>StuffLib.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\StuffLib\StuffLib.csproj">
       <Project>{d44b47af-d567-4754-8e22-b24acac78ca4}</Project>

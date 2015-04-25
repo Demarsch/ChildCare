@@ -316,26 +316,6 @@ namespace Core
         #region Методы расширений для класса IEnumerable<string>
 
         /// <summary>
-        /// соединение строк в одну строку
-        /// </summary>
-        /// <param name="strings"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
-        public static string CombineStrings(this IEnumerable<string> strings, string separator)
-        {
-            StringBuilder result = new StringBuilder();
-            if (strings != null)
-            {
-                foreach (string item in strings)
-                    result.Append(item).Append(separator);
-                if (result.Length != 0)
-                    result.Remove(result.Length - separator.Length, separator.Length);
-            }
-            return result.ToString();
-
-        }
-
-        /// <summary>
         /// фильтрация строк по словам из filter
         /// </summary>
         /// <param name="q"></param>
@@ -537,6 +517,8 @@ namespace Core
         }
 
         #endregion
+
+
 
     }
 }

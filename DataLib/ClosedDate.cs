@@ -12,21 +12,10 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class Room
+    public partial class ClosedDate
     {
-        public Room()
-        {
-            this.Assignments = new HashSet<Assignment>();
-            this.Records = new HashSet<Record>();
-            this.ScheduleDays = new HashSet<ScheduleDay>();
-        }
-    
         public int Id { get; set; }
-        public string Number { get; set; }
-        public string Name { get; set; }
-    
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        public virtual ICollection<Record> Records { get; set; }
-        public virtual ICollection<ScheduleDay> ScheduleDays { get; set; }
+        public System.DateTime ClosedDate1 { get; set; }
+        public Nullable<System.DateTime> MoveToDate { get; set; }
     }
 }
