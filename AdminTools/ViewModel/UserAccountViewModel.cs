@@ -11,7 +11,6 @@ using System.Windows;
 using DataLib;
 using Core;
 using log4net;
-using AdminTools.DTO;
 using GalaSoft.MvvmLight;
 using MainLib;
 
@@ -26,16 +25,12 @@ namespace AdminTools.ViewModel
             if (service == null)
                 throw new ArgumentNullException("service");
             this.service = service;
-            this.SearchInActiveDirectoryCommand = new RelayCommand(SearchInActiveDirectory);
-            this.SynchPersonCommand = new RelayCommand<object>(SynchPerson);
-            this.SelectPersonCommand = new RelayCommand<object>(SelectPerson);
-            this.CreatePersonCommand = new RelayCommand<object>(CreatePerson);
+            this.EditPersonDataCommand = new RelayCommand<object>(EditPersonData);
             this.SaveUserCommand = new RelayCommand(SaveUser);
-            IsSearching = false;
+            UsersSystemInfoSuggestionProvider = new UsersSystemInfoSuggestionProvider(service.Instance<IUserSystemInfoService>());
+            UsersSystemInfoSuggestionProvider.GetSuggestions
             IsSearchSuccessful = false;
-            SearchUsed = false;
-            SaveLabel = string.Empty;
-            SearchLabel = string.Empty;
+            AllowSave = false;
         }
 
         public UserAccountViewModel(ISimpleLocator service, ILog log, int userId)
@@ -43,40 +38,30 @@ namespace AdminTools.ViewModel
         {
         }
 
+        #region Commands
+
+        private UsersSystemInfoSuggestionProvider usersSystemInfoSuggestionProvider;
+        public UsersSystemInfoSuggestionProvider UsersSystemInfoSuggestionProvider
+        {
+            get { return usersSystemInfoSuggestionProvider; }
+            set { Set("UsersSystemInfoSuggestionProvider", ref usersSystemInfoSuggestionProvider, value); }
+        }
+
         private RelayCommand saveUserCommand;
         public RelayCommand SaveUserCommand
         {
             get { return saveUserCommand; }
             set { Set("SaveUserCommand", ref saveUserCommand, value); }
+        }        
+
+        private RelayCommand<object> editPersonDataCommand;
+        public RelayCommand<object> EditPersonDataCommand
+        {
+            get { return editPersonDataCommand; }
+            set { Set("EditPersonDataCommand", ref editPersonDataCommand, value); }
         }
 
-        private RelayCommand<object> createPersonCommand;
-        public RelayCommand<object> CreatePersonCommand
-        {
-            get { return createPersonCommand; }
-            set { Set("CreatePersonCommand", ref createPersonCommand, value); }
-        }
-
-        private RelayCommand<object> synchPersonCommand;
-        public RelayCommand<object> SynchPersonCommand
-        {
-            get { return synchPersonCommand; }
-            set { Set("SynchPersonCommand", ref synchPersonCommand, value); }
-        }
-
-        private RelayCommand<object> selectPersonCommand;
-        public RelayCommand<object> SelectPersonCommand
-        {
-            get { return selectPersonCommand; }
-            set { Set("SelectPersonCommand", ref selectPersonCommand, value); }
-        }
-        
-        private RelayCommand searchInActiveDirectoryCommand;
-        public RelayCommand SearchInActiveDirectoryCommand
-        {
-            get { return searchInActiveDirectoryCommand; }
-            set { Set("SearchInActiveDirectoryCommand", ref searchInActiveDirectoryCommand, value); }
-        }
+        #endregion 
 
         private UserViewModel currentUser;
         public UserViewModel CurrentUser
@@ -84,19 +69,16 @@ namespace AdminTools.ViewModel
             get { return currentUser; }
             set { Set("CurrentUser", ref currentUser, value); }
         }
-
-        private ObservableCollection<UserSystemInfoDTO> usersAD;
-        public ObservableCollection<UserSystemInfoDTO> UsersAD
-        {
-            get { return usersAD; }
-            set { Set("UsersAD", ref usersAD, value); }
-        }
-        
-        private UserSystemInfoDTO selectedUserAD;
-        public UserSystemInfoDTO SelectedUserAD
+                
+        private UserSystemInfo selectedUserAD;
+        public UserSystemInfo SelectedUserAD
         {
             get { return selectedUserAD; }
-            set { Set("SelectedUserAD", ref selectedUserAD, value); }
+            set {
+                    if (!Set("SelectedUserAD", ref selectedUserAD, value))
+                            return;
+                    IsSearchSuccessful = (value != null); 
+                }
         }
 
         private ObservableCollection<Person> persons;
@@ -110,174 +92,76 @@ namespace AdminTools.ViewModel
         public Person SelectedPerson
         {
             get { return selectedPerson; }
-            set { Set("SelectedPerson", ref selectedPerson, value); }
-        }
-
-        private string searchString = string.Empty;
-        public string SearchString
-        {
-            get { return searchString; }
-            set { Set("SearchString", ref searchString, value); }
-        }
-
-        private string searchLabel = string.Empty;
-        public string SearchLabel
-        {
-            get { return searchLabel; }
-            set { Set("SearchLabel", ref searchLabel, value); }
-        }
-
-        private bool isSearching;
-        public bool IsSearching
-        {
-            get { return isSearching; }
-            set { Set("IsSearching", ref isSearching, value); }
-        }               
+            set
+            {
+                Set("SelectedPerson", ref selectedPerson, value);                  
+                AllowSave = (value != null);
+            }
+        }           
 
         private bool isSearchSuccessful;
         public bool IsSearchSuccessful
         {
             get { return isSearchSuccessful; }
-            set { Set("IsSearchSuccessful", ref isSearchSuccessful, value); }
-        }
-
-        private string saveLabel = string.Empty;
-        public string SaveLabel
-        {
-            get { return saveLabel; }
-            set { Set("SaveLabel", ref saveLabel, value); }
-        }
-
-        private bool searchUsed;
-        public bool SearchUsed
-        {
-            get { return searchUsed; }
-            set { Set("SearchUsed", ref searchUsed, value); }
-        }  
-
-        private bool showPopup;
-        public bool ShowPopup
-        {
-            get { return showPopup; }
-            set { Set("ShowPopup", ref showPopup, value); }
-
-        }
-
-        private async void SearchInActiveDirectory()
-        {
-            if (SearchString.Length < 3)
-            {               
-                SearchLabel = "Результаты поиска: Слишком короткая строка для поиска.";
-                IsSearchSuccessful = false;
-                SearchUsed = false;
-                SaveLabel = "Создать новую учетную запись.";
-                return;
-            }            
-            var task = Task.Factory.StartNew(SearchInActiveDirectoryAsync);
-            await task;
-        }
-
-        private void SearchInActiveDirectoryAsync()
-        {
-            try
-            {
-                IsSearching = true;
-                SearchLabel = "Идет поиск ...";
-                UsersAD = new ObservableCollection<UserSystemInfoDTO>(service.Instance<IUserSystemInfoService>().Find(SearchString)
-                          .Select(x => new UserSystemInfoDTO() { UserName = x.UserName, SID = x.SID, PrincipalName = x.PrincipalName, Enabled = x.Enabled, Persons = GetPersonsFromMIS(x.UserName), 
-                              PhotoSource = "pack://application:,,,/Resources;component/Images/Refresh_16x16.png"}).ToArray());  
-            }
-            catch (AggregateException ex)
-            {
-                var innerException = ex.InnerExceptions[0];
-                MessageBox.Show("В процессе поиска учетной записи произошла ошибка. Возможно отсутствует доступ к Active Directory. Обратитесь в службу поддержки");
-                this.service.Instance<ILog>().Error(string.Format("Failed to find user in Active Directory"), innerException);                
-            }
-            finally
-            {
-                IsSearching = false;
-                if (!UsersAD.Any())
-                {
-                    SearchLabel = "Результаты поиска: По Вашему запросу ничего не найдено.";
-                    IsSearchSuccessful = false;
-                    SearchUsed = true;
-                    SaveLabel = "Создать новую учетную запись.";                    
-                }
-                else
-                {
-                    SearchLabel = "Результаты поиска";
-                    IsSearchSuccessful = true;
-                    SearchUsed = false;
-                    SaveLabel = "Сохранить учетную запись пользователя.";
-                }
+            set 
+            { 
+                Set("IsSearchSuccessful", ref isSearchSuccessful, value);
+                if (value)
+                    Persons = new ObservableCollection<Person>(GetPersonsFromMIS(SelectedUserAD.UserName));
+                else                                    
+                    AllowSave = false;                
             }
         }
 
-        private ICollection<Person> GetPersonsFromMIS(string personFullName)
+        private bool allowSave;
+        public bool AllowSave
+        {
+            get { return allowSave; }
+            set { Set("AllowSave", ref allowSave, value); }
+        }                
+          
+        private ICollection<Person> GetPersonsFromMIS(string searchText)
         {
             //return service.Instance<IPatientService>().GetPatients(personFullName);
-            return service.Instance<IPersonService>().GetPersonsByFullName(personFullName);
+            return service.Instance<IPersonService>().GetPersonsByFullName(searchText);
         }
 
-        private void SynchPerson(object parameter)
-        {           
-            if (SelectedUserAD == null)
-            {
-                MessageBox.Show("Не выбрана учетная запись из Active Directory");
-                return;
-            }
-            ShowPopup = false;
-            if (parameter == null) return;
-
-            if (parameter is UserSystemInfoDTO)
-            {
-                var personInfo = parameter as UserSystemInfoDTO;
-                Persons = new ObservableCollection<Person>(personInfo.Persons);
-                if (!personInfo.Persons.Any())                
-                    CreatePerson(null);    
-                else
-                    ShowPopup = true;
-            }            
-        }
-
-        private void SelectPerson(object parameter)
+        private void EditPersonData(object parameter)
         {
-            if (parameter == null) return;
-            SelectedPerson = parameter as Person;
-            ShowPopup = false;
-            CreatePerson(SelectedPerson.Id);
+            if (parameter == null) 
+                EditPerson(null);
+            else
+            {
+                SelectedPerson = parameter as Person;
+                EditPerson(SelectedPerson.Id);
+            }
         }
 
-        private bool isCanceled = false;
-        private void CreatePerson(object personId)
+        private void EditPerson(object personId)
         {
             EditPersonViewModel personViewModel = null;
 
-            if (personId == null)
+            if (personId == null)            
                 personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>());
-            else
-            {
-                var existingUser = this.service.Instance<IUserService>().GetUserByPersonId(personId.ToInt());
-                if (existingUser != null)
-                {
-                    MessageBox.Show("У пользователя " + existingUser.Person.FullName + " уже имеется учетная запись.");
-                    SearchUsed = false;
-                    SaveLabel = "Сохранить учетную запись пользователя.";
-                    return;
-                }
+            else            
                 personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), personId.ToInt());
-            }               
 
             (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
-            
-            //TODO: change Save verification
-            isCanceled = (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены");
-            SearchUsed = isCanceled;
-            SaveLabel = "Сохранить учетную запись пользователя " + (SelectedPerson != null ? SelectedPerson.FullName : SelectedUserAD.UserName);
+
+            //TODO: Change verification way
+            if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
+
+            Persons = new ObservableCollection<Person>(GetPersonsFromMIS(SelectedUserAD.UserName));
+            SelectedPerson = Persons.FirstOrDefault(x => x.Id == personViewModel.Id);
         }
 
         private void SaveUser()
         {            
+            if (SelectedPerson == null)
+            {
+                MessageBox.Show("Не выбрана учетная карта.");
+                return;
+            }
             User user = this.service.Instance<IUserService>().GetUserByPersonId(SelectedPerson.Id);
             if (user == null)
             {
@@ -297,6 +181,11 @@ namespace AdminTools.ViewModel
                 }
 
                 CurrentUser = new UserViewModel(user);
+            }
+            else
+            {
+                MessageBox.Show("У пользователя " + SelectedPerson.FullName + " уже имеется учетная запись.");
+                return;
             }
         }
     }

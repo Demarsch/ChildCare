@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using log4net;
+using DataLib;
+using MainLib;
 
 namespace AdminTools.ViewModel
 {
@@ -31,12 +33,13 @@ namespace AdminTools.ViewModel
             if (service == null)
                 throw new ArgumentNullException("userService");
             this.service = service;
-
-            users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllActiveUsers(DateTime.Now).Select(x => new UserViewModel(x)).ToArray());
-            
+                       
             this.EditUserCommand = new RelayCommand<object>(EditUser);
-            this.SearchUserCommand = new RelayCommand(this.SearchUser);
+            this.SearchUserCommand = new RelayCommand(this.LoadUsers);
             this.NewUserCommand = new RelayCommand(this.NewUser);
+            this.UpdateUserStatusCommand = new RelayCommand<object>(UpdateUserStatus);
+            FilterChecked = true;
+            LoadUsers();
         }    
 
         #endregion 
@@ -62,6 +65,18 @@ namespace AdminTools.ViewModel
             set { Set("SearchText", ref searchText, value); }
         }
 
+        private bool filterChecked;
+        public bool FilterChecked
+        {
+            get { return filterChecked; }
+            set 
+            {
+                if (!Set("FilterChecked", ref filterChecked, value))
+                    return;
+                LoadUsersAsync();
+            }
+        }    
+
         private RelayCommand<object> editUserCommand;
         public RelayCommand<object> EditUserCommand
         {
@@ -69,41 +84,67 @@ namespace AdminTools.ViewModel
             set { Set("EditUserCommand", ref editUserCommand, value); }
         }
 
+        private RelayCommand<object> updateUserStatusCommand;
+        public RelayCommand<object> UpdateUserStatusCommand
+        {
+            get { return updateUserStatusCommand; }
+            set { Set("UpdateUserStatusCommand", ref updateUserStatusCommand, value); }
+        }
+
         #endregion
 
         private void EditUser(object parameter)
         {
             if (parameter == null)
+            {
+                MessageBox.Show("Не выбран пользователь.");
                 return;
-            MessageBox.Show(
-                        "Редактирование учетной записи пользователя " + (parameter as UserViewModel).UserFullName,
-                        "Info",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                        );
+            }
+            var personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), (parameter as UserViewModel).PersonId);
+            (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
+
+            //TODO: Change verification way
+            if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
+
+            LoadUsersAsync();
+            SelectedUser = Users.FirstOrDefault(x => x.Id == (parameter as UserViewModel).Id);
         }
 
         private void NewUser()
         {
-            (new UserAccountView() { DataContext = new UserAccountViewModel(this.service) }).ShowDialog();            
-            /*
-            MessageBox.Show(
-                        "Создание учетной записи пользователя. ",
-                        "Info",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                        );*/
+            var userAccountModelView = new UserAccountViewModel(this.service);
+            (new UserAccountView() { DataContext = userAccountModelView }).ShowDialog();
+
+            LoadUsers();
+        }
+
+        private void UpdateUserStatus(object parameter)
+        {
+            if (parameter == null) return;
+            User user = this.service.Instance<IUserService>().GetUserById((parameter as UserViewModel).Id);
+            user.EndDateTime = (user.EndDateTime.HasValue ? (DateTime?)null : DateTime.Now);
+            string message = string.Empty;
+            if (this.service.Instance<IUserService>().Save(user, out message))
+            {
+                LoadUsersAsync();
+                SelectedUser = Users.FirstOrDefault(x => x.Id == user.Id);
+            }
+            else
+            {
+                MessageBox.Show("При сохранении возникла ошибка: " + message);
+                this.service.Instance<ILog>().Error(string.Format("Failed to update user status. " + message));
+            }
         }
 
         #region Search Logic
 
-        private async void SearchUser()
+        private async void LoadUsers()
         {
-            var task = Task.Factory.StartNew(SearchUserAsync);
+            var task = Task.Factory.StartNew(LoadUsersAsync);
             await task;
         }
 
-        private void SearchUserAsync()
+        private void LoadUsersAsync()
         {         
             if (searchText == string.Empty)
                 Users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllUsers().Select(x => new UserViewModel(x)).ToArray());
@@ -118,6 +159,7 @@ namespace AdminTools.ViewModel
                         MessageBoxImage.Information
                         );
             }
+            Users = new ObservableCollection<UserViewModel>(Users.Where(x => (FilterChecked ? x.IsActive : true)));
 
             if (!users.Any())
             {

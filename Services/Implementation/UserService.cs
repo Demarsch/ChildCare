@@ -45,7 +45,7 @@ namespace Core
 
         public ICollection<User> GetAllUsers()
         {
-            return data.Get<User>(x => true, (x => x.Person)).OrderBy(x => x.Person).ToArray();
+            return data.Get<User>(x => true, (x => x.Person)).OrderBy(x => x.Person.FullName).ToArray();
         }
 
         public ICollection<User> GetAllUsers(string byName)

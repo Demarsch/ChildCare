@@ -17,7 +17,6 @@ namespace DataLib
         public Person()
         {
             this.PersonNames = new HashSet<PersonName>();
-            this.Users = new HashSet<User>();
             this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
             this.InsuranceDocuments = new HashSet<InsuranceDocument>();
@@ -26,6 +25,7 @@ namespace DataLib
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.PersonStaffs = new HashSet<PersonStaff>();
             this.PersonTalons = new HashSet<PersonTalon>();
+            this.Users = new HashSet<User>();
         }
     
         public int Id { get; set; }
@@ -38,7 +38,6 @@ namespace DataLib
         public System.DateTime BirthDate { get; set; }
     
         public virtual ICollection<PersonName> PersonNames { get; set; }
-        public virtual ICollection<User> Users { get; set; }
         public virtual Gender Gender { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<Record> Records { get; set; }
@@ -48,5 +47,6 @@ namespace DataLib
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
         public virtual ICollection<PersonTalon> PersonTalons { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }

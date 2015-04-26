@@ -1,6 +1,7 @@
 ﻿using System;
 using DataLib;
 using GalaSoft.MvvmLight;
+using Core;
 
 namespace AdminTools.ViewModel
 {
@@ -23,6 +24,11 @@ namespace AdminTools.ViewModel
             get { return IsEmpty ? 0 : user.Id; }
         }
 
+        public int PersonId
+        {
+            get { return IsEmpty ? 0 : user.PersonId; }
+        }
+
         public string UserFullName
         {
             get { return IsEmpty ? string.Empty : user.Person.FullName; }
@@ -32,6 +38,13 @@ namespace AdminTools.ViewModel
         {
             get { return IsEmpty ? string.Empty : user.SID; }
         }
+
+        private bool isActive;
+        public bool IsActive
+        {
+            get { return !user.EndDateTime.HasValue; }
+            set { Set("IsActive", ref isActive, value); }
+        }        
 
         public bool NameContainsText(string text)
         {

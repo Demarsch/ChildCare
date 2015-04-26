@@ -7,9 +7,7 @@
       <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" >
         <EntityTypeShape EntityType="DataLib.PersonName" Width="1.5" PointX="3" PointY="1.125" />
         <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="0.75" PointY="2.375" />
-        <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="4.375" />
         <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
-        <AssociationConnector Association="DataLib.FK_Users_Persons" />
         <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="6.75" PointY="3.25" />
         <AssociationConnector Association="DataLib.FK_Persons_Genders" />
         <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="7.5" PointY="5.875" />
@@ -18,12 +16,9 @@
         <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
         <AssociationConnector Association="DataLib.FK_Assignments_Records" />
         <AssociationConnector Association="DataLib.FK_Assignments_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Users" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
         <AssociationConnector Association="DataLib.FK_Records_Persons" />
         <AssociationConnector Association="DataLib.FK_Records_Records" />
         <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
         <EntityTypeShape EntityType="DataLib.InsuranceCompany" Width="1.5" PointX="5.75" PointY="17" />
         <EntityTypeShape EntityType="DataLib.InsuranceDocument" Width="1.5" PointX="8" PointY="0.75" />
@@ -39,7 +34,6 @@
         <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
         <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
         <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
-        <AssociationConnector Association="DataLib.FK_Permissions_Users" />
         <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="7.375" PointY="10.75" />
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="3" PointY="8.75" />
         <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
@@ -89,7 +83,6 @@
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_MedicalHelpTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonTalons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Users" />
         <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
@@ -97,10 +90,17 @@
         <AssociationConnector Association="DataLib.FK_PersonTalons_MedicalHelpTypes" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
+        <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="17" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Users" />
+        <AssociationConnector Association="DataLib.FK_Users_Persons" />
+        <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
-        <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
-      </Diagram>
+        <AssociationConnector Association="DataLib.FK_Permissions_Users" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

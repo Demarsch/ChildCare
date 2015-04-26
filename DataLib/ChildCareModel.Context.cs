@@ -27,7 +27,6 @@ namespace DataLib
     
         public virtual DbSet<PersonName> PersonNames { get; set; }
         public virtual DbSet<Person> Persons { get; set; }
-        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Record> Records { get; set; }
@@ -62,5 +61,6 @@ namespace DataLib
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

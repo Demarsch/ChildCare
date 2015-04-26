@@ -80,7 +80,7 @@ namespace Core
 
         public ICollection<Person> GetPersonsByFullName(string fullName)
         {
-            return data.Get<Person>().Where(x => x.FullName.ToLower().Trim() == fullName.ToLower().Trim()).ToList();
+            return data.Get<Person>().Where(x => x.FullName.ToLower().Trim().Contains(fullName.ToLower().Trim())).ToList();
         }
 
 

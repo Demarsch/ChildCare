@@ -4,11 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:admintools="clr-namespace:AdminTools.ViewModel"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:core="clr-namespace:Core;assembly=StuffLib"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="332" 
+             d:DesignHeight="300" d:DesignWidth="457" 
              d:DataContext="{d:DesignInstance admintools:UserEditorViewModel}">
-    <DockPanel>
 
+    <UserControl.Resources>
+        <system:Boolean x:Key="True">True</system:Boolean>
+        <system:Boolean x:Key="False">False</system:Boolean>
+        <core:UniversalConverter x:Key="UserIsActiveConverter">
+            <core:ConverterItem From="{StaticResource True}">
+                <core:ConverterItem.To>pack://application:,,,/Resources;component/Images/SwitchOn_32x32.png</core:ConverterItem.To>
+            </core:ConverterItem>
+            <core:ConverterItem From="{StaticResource False}">
+                <core:ConverterItem.To>pack://application:,,,/Resources;component/Images/SwitchOff_32x32.png</core:ConverterItem.To>
+            </core:ConverterItem>
+        </core:UniversalConverter>        
+    </UserControl.Resources>
+    
+    <DockPanel>        
         <!-- User Menu Elements AREA -->
         <Border DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="1,0,1,1">
             <Border.Background>
@@ -18,9 +33,20 @@
                 </LinearGradientBrush>
             </Border.Background>
 
-            <StackPanel HorizontalAlignment="Left" Margin="4" Orientation="Horizontal">
-                <Button Command="{Binding NewUserCommand}" Content="+ Новая уч. запись" Padding="8,0" />
-                <Button Command="{Binding EditUserCommand}" CommandParameter="{Binding ElementName=userList, Path=SelectedItem}" Content="Редактировать уч. запись" Padding="8,0" />
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Button Command="{Binding NewUserCommand}" Margin="5">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Resources;component/Icons/AddUser_48x48.ico" Stretch="Uniform" Height="24" Width="24"/>
+                        <TextBlock Text="Новая уч. запись" Margin="5"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding EditUserCommand}" CommandParameter="{Binding ElementName=userList, Path=SelectedItem}" Margin="5">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Resources;component/Icons/Edit_48x48.ico" Stretch="Uniform" Height="24" Width="24"/>
+                        <TextBlock Text="Редактировать перс. данные" Margin="5"/>
+                    </StackPanel>
+                </Button>
+                <CheckBox Margin="5,13,5,0" Content="Только активные уч. записи" IsChecked="{Binding FilterChecked, Mode=TwoWay}"/>
             </StackPanel>
         </Border>
         
@@ -45,6 +71,17 @@
             <ListView.View>
                 <GridView>
                     <GridView.Columns>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Background="Transparent" BorderThickness="0" 
+                                            Command="{Binding ElementName=userList, Path=DataContext.UpdateUserStatusCommand}"
+                                            CommandParameter="{Binding}">
+                                        <Image Source="{Binding Path=IsActive, Converter={StaticResource UserIsActiveConverter}}" Margin="5,0,0,5" Stretch="None" Height="24"/>
+                                    </Button>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Header="Ф.И.О." DisplayMemberBinding="{Binding Path=UserFullName}"></GridViewColumn>
                         <GridViewColumn Header="SID" DisplayMemberBinding="{Binding Path=SID}"></GridViewColumn>
                     </GridView.Columns>

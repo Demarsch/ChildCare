@@ -43,7 +43,7 @@ namespace DataLib
         public virtual ICollection<Record> Records1 { get; set; }
         public virtual Record Record1 { get; set; }
         public virtual RecordType RecordType { get; set; }
-        public virtual User User { get; set; }
         public virtual Room Room { get; set; }
+        public virtual User User { get; set; }
     }
 }
