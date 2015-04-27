@@ -49,25 +49,7 @@ namespace Registry
 
         public RoomWorkingTimeRepository GetRoomsWorkingTime(DateTime date)
         {
-            date = date.Date;
-            var dayOfWeek = (int)date.DayOfWeek;
-            using (var dataContext = dataContextProvider.GetNewDataContext())
-            {
-                //Only schedule days that are valid for specified date
-                return new RoomWorkingTimeRepository(
-                        dataContext.GetData<ScheduleDay>()
-                       .Where(x => x.DayOfWeek == dayOfWeek && x.BeginDate <= date && x.EndDate >= date)
-                       .GroupBy(x => new { x.RoomId, x.RecordTypeId })
-                       .Select(x => x.OrderByDescending(y => y.BeginDate).ThenBy(y => y.EndDate).FirstOrDefault())
-                       .SelectMany(x => x.ScheduleDayItems)
-                       .Select(x => new WorkingTime
-                       {
-                           RoomId = x.ScheduleDay.RoomId,
-                           RecordTypeId = x.ScheduleDay.RecordTypeId,
-                           StartTime = x.StartTime,
-                           EndTime = x.EndTime
-                       }));
-            }
+            throw new NotImplementedException();
         }
     }
 }

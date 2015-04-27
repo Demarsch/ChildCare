@@ -210,10 +210,7 @@
     <Compile Include="Room.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="ScheduleDay.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ScheduleDayItem.cs">
+    <Compile Include="ScheduleItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Staff.cs">
