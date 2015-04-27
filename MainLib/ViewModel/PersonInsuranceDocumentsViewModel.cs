@@ -26,6 +26,8 @@ namespace MainLib
             InsuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetInsuranceDocuments(this.personId).Select(x => new InsuranceDocumentViewModel(x)));
             AddInsuranceDocumentCommand = new RelayCommand(AddInsuranceDocument);
             DeleteInsuranceDocumentCommand = new RelayCommand<InsuranceDocumentViewModel>(DeleteInsuranceDocument);
+            CancelCommand = new RelayCommand(Cancel);
+            AcceptCommand = new RelayCommand(Accept);
             InsuranceCompanySuggestionProvider = new InsuranceCompanySuggestionProvider(service);
         }
 
@@ -81,6 +83,25 @@ namespace MainLib
         private void DeleteInsuranceDocument(InsuranceDocumentViewModel insuranceDocument)
         {
             InsuranceDocuments.Remove(insuranceDocument);
+        }
+
+        private bool? isChangesAccepted;
+        public bool? IsChangesAccepted
+        {
+            get { return isChangesAccepted; }
+            set { Set("IsChangesAccepted", ref isChangesAccepted, value); }
+        }
+
+        public ICommand CancelCommand { get; set; }
+        private void Cancel()
+        {
+            IsChangesAccepted = false;
+        }
+
+        public ICommand AcceptCommand { get; set; }
+        private void Accept()
+        {
+            IsChangesAccepted = true;
         }
     }
 }

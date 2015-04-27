@@ -108,10 +108,17 @@ namespace MainLib
 
         void insuranceDocumentViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "InsuranceDocuments")
+            if (e.PropertyName == "IsChangesAccepted")
             {
-                Insurance = insuranceDocumentViewModel.InsuranceDocumentsString;
-
+                if (insuranceDocumentViewModel.IsChangesAccepted.HasValue)
+                {
+                    if (!insuranceDocumentViewModel.IsChangesAccepted.Value)
+                    {
+                        //ToDo: maybe create mo flexible method
+                        insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
+                    }
+                    Insurance = insuranceDocumentViewModel.InsuranceDocumentsString;
+                }
             }
         }
 
@@ -197,7 +204,18 @@ namespace MainLib
             person.ShortName = LastName + " " + FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
             person.FullName = LastName + " " + FirstName + " " + MiddleName;
 
-            var res = service.SetPersonInfoes(person, personNames);
+            //InsuranceDocuments
+            var insuranceDocuments = insuranceDocumentViewModel.InsuranceDocuments.Select(x => new InsuranceDocument()
+                {
+                    InsuranceCompanyId = x.InsuranceCompanyId,
+                    InsuranceDocumentTypeId = x.InsuranceDocumentTypeId,
+                    Number = x.Number,
+                    Series = x.Series,
+                    BeginDate = x.BeginDate,
+                    EndDate = x.EndDate
+                }).ToList();
+
+            var res = service.SetPersonInfoes(person, personNames, insuranceDocuments);
             if (newPersonName != null)
                 personName = newPersonName;
             if (res == string.Empty)
@@ -213,6 +231,7 @@ namespace MainLib
         private void EditInsurance()
         {
             //ToDo: USe better solution for using other window
+            insuranceDocumentViewModel.IsChangesAccepted = null;
             var insuranceDocumentView = new PersonInsuranceDocumentsView() { DataContext = insuranceDocumentViewModel };
             insuranceDocumentView.ShowDialog();
         }

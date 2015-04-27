@@ -13,7 +13,7 @@ namespace Core
 
         Person GetPersonInfoes(int id, DateTime toDate);
 
-        string SetPersonInfoes(Person person, List<PersonName> personNames);
+        string SetPersonInfoes(Person person, List<PersonName> personNames, List<InsuranceDocument> insuranceDocuments);
 
         ICollection<PersonRelative> GetPersonRelatives(int personId);
 

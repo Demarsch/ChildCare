@@ -7,7 +7,7 @@
         xmlns:wpf="http://wpfcontrols.com/"
         xmlns:core="clr-namespace:Core;assembly=StuffLib"
         mc:Ignorable="d"
-        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}"
+        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStyle="None" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}"
         Loaded="Window_Loaded" MinWidth="300" MinHeight="150">
 
     <Window.Resources>
@@ -52,8 +52,12 @@
     </Window.Resources>
 
     <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Отмена" Margin="3" Padding="2" Background="#FFFFBEBE" Command="{Binding CancelCommand}" Click="button_Click"/>
+            <Button Content="Выбрать" Margin="3" Padding="2" Background="#FFADEE9A"  Command="{Binding AcceptCommand}" Click="button_Click"/>
+        </StackPanel>
         <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
-        <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" Margin="5">
+        <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" SelectionMode="Extended" Margin="5">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1" Background="{Binding InsuranceDocumentState, Converter={StaticResource InsuranceDocementStateToBackgroundBrushConverter}}">
@@ -87,20 +91,11 @@
                                  Watermark="введите слова из названия и регион для поиска"
                                  DisplayMember="NameSMOK"
                                  ItemTemplate="{StaticResource AutoCompleteTemplate}"
-                                 SelectedItem="{Binding InsuranceCompany}"
+                                 SelectedItem="{Binding InsuranceCompany, Mode=TwoWay}"
                                  IconPlacement="Left"
                                  IconVisibility="Visible"
                                  Provider="{Binding DataContext.InsuranceCompanySuggestionProvider, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
                                  x:Name="Actb" TabIndex="1">
-                                <wpf:AutoCompleteTextBox.Icon>
-                                    <Border Width="20" Height="20">
-                                        <Image Source="pack://application:,,,/Resources;component/Images/Loading16x16.gif"
-                                            Height="16"
-                                            Width="16"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center" />
-                                    </Border>
-                                </wpf:AutoCompleteTextBox.Icon>
                                 <wpf:AutoCompleteTextBox.LoadingContent>
                                     <TextBlock Text="Загрузка данных..." Margin="5" FontSize="14" />
                                 </wpf:AutoCompleteTextBox.LoadingContent>

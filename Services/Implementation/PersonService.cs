@@ -27,7 +27,7 @@ namespace Core
                 x => x.PersonNames, x => x.Gender);
         }
 
-        public string SetPersonInfoes(Person person, List<PersonName> personNames)
+        public string SetPersonInfoes(Person person, List<PersonName> personNames, List<InsuranceDocument> insuranceDocuments)
         {
             try
             {
@@ -35,6 +35,9 @@ namespace Core
                 foreach (var personName in personNames)
                     personName.PersonId = person.Id;
                 data.Save<PersonName>(personNames.ToArray());
+                foreach (var insuranceDocument in insuranceDocuments)
+                    insuranceDocument.PersonId = person.Id;
+                data.Save<InsuranceDocument>(insuranceDocuments.ToArray());
             }
             catch (Exception ex)
             {
@@ -86,8 +89,9 @@ namespace Core
 
         public ICollection<InsuranceCompany> GetInsuranceCompanies(string filter)
         {
+            var words = filter.Split(' ');
             //ToDo: More complex search with splitting filter on words
-            return data.Get<InsuranceCompany>().Where(x => filter != string.Empty ? x.NameSMOK.Contains(filter) : true).ToList();
+            return data.Get<InsuranceCompany>().Where(x => filter != string.Empty ? words.All(y => x.NameSMOK.Contains(y)) : true).ToList();
         }
 
 
