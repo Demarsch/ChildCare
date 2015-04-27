@@ -20,6 +20,10 @@ namespace MainLib
         public EditPersonDataViewModel EditPersonDataViewModel
         {
             get { return editPersonDataViewModel; }
+            set
+            {
+                Set("EditPersonDataViewModel", ref editPersonDataViewModel, value);
+            }
         }
 
         private EditPersonDataViewModel editPersonRelativeDataViewModel;
@@ -46,6 +50,7 @@ namespace MainLib
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
             EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service);
+            EditPersonDataViewModel = new EditPersonDataViewModel(log, service);
         }
 
         public EditPersonViewModel(ILog log, IPersonService service, int personId)
@@ -62,7 +67,7 @@ namespace MainLib
             : this(log, service)
         {
 
-        }                 
+        }
 
         private int id;
         public int Id
@@ -70,10 +75,8 @@ namespace MainLib
             get { return id; }
             set
             {
-                if (id == value)
-                    return;
-                id = value;
-                editPersonDataViewModel = new EditPersonDataViewModel(log, service, id);
+                Set("Id", ref id, value);
+                editPersonDataViewModel.Id = id;
                 SetRelatives();
             }
         }

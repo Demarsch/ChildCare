@@ -28,7 +28,6 @@ namespace AdminTools.ViewModel
             this.EditPersonDataCommand = new RelayCommand<object>(EditPersonData);
             this.SaveUserCommand = new RelayCommand(SaveUser);
             UsersSystemInfoSuggestionProvider = new UsersSystemInfoSuggestionProvider(service.Instance<IUserSystemInfoService>());
-            UsersSystemInfoSuggestionProvider.GetSuggestions
             IsSearchSuccessful = false;
             AllowSave = false;
         }

@@ -39,6 +39,10 @@ namespace Registry
             this.patientService = patientService;
             patients = new ObservableCollection<PersonViewModel>();
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
+            //ToDo: Change when we'll make a dicition about service
+            if (personService == null)
+                personService = new PersonService(new MainServiceLocator());
+            editPersonViewModel = new EditPersonViewModel(log, personService);
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
@@ -169,21 +173,30 @@ namespace Registry
             set { Set("NoOneisFound", ref noOneisFound, value); }
         }
 
+        private EditPersonViewModel editPersonViewModel;
+
         public ICommand NewPatientCommand { get; private set; }
 
         private void NewPatient()
         {
-            MessageBox.Show("Окно для создания нового пациента");
+            if (personService == null)
+                personService = new PersonService(new MainServiceLocator());
+            editPersonViewModel.Id = 0;
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
+            editPersonDataView.ShowDialog();
         }
 
         public ICommand EditPatientCommand { get; private set; }
 
+        IPersonService personService = null;
         private void EditPatient()
         {
             if (currentPatient.IsEmpty)
                 return;
-            var editPersonDataViewModel = new EditPersonViewModel(log, new PersonService(new MainServiceLocator()), currentPatient.Id);
-            var editPersonDataView = new EditPersonView() { DataContext = editPersonDataViewModel };
+            if (personService == null)
+                personService = new PersonService(new MainServiceLocator());
+            editPersonViewModel.Id = currentPatient.Id;
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
 
             //MessageBox.Show(string.Format("Пациент {0} будет отредактирован именно в этом окне", currentPatient));

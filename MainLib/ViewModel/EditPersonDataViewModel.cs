@@ -36,7 +36,7 @@ namespace MainLib
             EditInsuranceCommand = new RelayCommand(EditInsurance);
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetChangeNameReasons());
             Genders = new ObservableCollection<Gender>(service.GetGenders());
-            
+
         }
 
         public EditPersonDataViewModel(ILog log, IPersonService service, int personId)
@@ -119,7 +119,8 @@ namespace MainLib
         {
             var dateTimeNow = DateTime.Now;
             person = service.GetPersonInfoes(id, dateTimeNow);
-            personName = person.PersonNames.FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
+            if (!IsEmpty)
+                personName = person.PersonNames.FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
         }
 
         public ICommand SaveChangesCommand { get; private set; }
@@ -127,6 +128,7 @@ namespace MainLib
         private void SaveChanges()
         {
             List<PersonName> personNames = new List<PersonName>();
+            PersonName newPersonName = null;
             if (IsFIOChanged)
             {
                 if (SelectedChangeNameReason == null)
@@ -148,7 +150,7 @@ namespace MainLib
                 }
                 else
                 {
-                    var newPersonName = new PersonName()
+                    newPersonName = new PersonName()
                     {
                         LastName = LastName,
                         FirstName = FirstName,
@@ -192,14 +194,18 @@ namespace MainLib
             person.MedNumber = MedNumber;
             person.GenderId = GenderId.Value;
 
-            person.ShortName = LastName + " " +  FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
+            person.ShortName = LastName + " " + FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
             person.FullName = LastName + " " + FirstName + " " + MiddleName;
 
             var res = service.SetPersonInfoes(person, personNames);
+            if (newPersonName != null)
+                personName = newPersonName;
             if (res == string.Empty)
                 TextMessage = "Данные сохранены";
             else
                 TextMessage = "Ошибка! " + res;
+            RaisePropertyChanged("IsFIOChanged");
+            RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
         }
 
         public ICommand EditInsuranceCommand { get; set; }
@@ -271,9 +277,7 @@ namespace MainLib
             get { return id; }
             set
             {
-                if (id == value)
-                    return;
-                id = value;
+                Set("Id", ref id, value);
                 GetPersonData();
             }
         }

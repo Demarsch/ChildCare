@@ -61,9 +61,9 @@ namespace DataLib
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
-        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<ClosedDate> ClosedDates { get; set; }
         public virtual DbSet<ScheduleDayItem> ScheduleDayItems { get; set; }
         public virtual DbSet<ScheduleDay> ScheduleDays { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }
