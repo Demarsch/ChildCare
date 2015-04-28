@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Core;
 using DataLib;
@@ -47,9 +48,24 @@ namespace Registry
                     .ToLookup(x => x.RoomId);
         }
 
-        public RoomWorkingTimeRepository GetRoomsWorkingTime(DateTime date)
+        public ICollection<ScheduleItemDTO> GetRoomsWorkingTime(DateTime date)
         {
-            throw new NotImplementedException();
+            date = date.Date;
+            var dayOfWeek = (int)date.DayOfWeek;
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                var result = dataContext.GetData<ScheduleItem>().Where(x => x.BeginDate <= date && x.EndDate >= date && x.DayOfWeek == dayOfWeek);
+                return result.GroupBy(x => new { x.RoomId, x.RecordTypeId })
+                    .SelectMany(x => x.GroupBy(y => new { y.BeginDate, y.EndDate }).OrderByDescending(y => y.Key.BeginDate).ThenBy(y => y.Key.EndDate).FirstOrDefault())
+                    .Select(x => new ScheduleItemDTO
+                    {
+                        RoomId = x.RoomId, 
+                        RecordTypeId = x.RecordTypeId,
+                        StartTime = x.StartTime,
+                        EndTime = x.EndTime
+                    })
+                    .ToArray();
+            }
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
 
@@ -19,7 +17,8 @@ namespace Registry
             this.room = room;
             openTime = DateTime.Today.AddHours(8.0);
             closeTime = DateTime.Today.AddHours(17.0);
-            assignments = new ScheduledAssignmentViewModel[0];
+            assignments = new ScheduledAssignmentDTO[0];
+            workingTimes = new ScheduleItemViewModel[0];
         }
 
         public int Id { get { return room.Id; } }
@@ -28,9 +27,9 @@ namespace Registry
 
         public string Name { get { return room.Name; } }
 
-        private IEnumerable<ScheduledAssignmentViewModel> assignments;
+        private IEnumerable<ScheduledAssignmentDTO> assignments;
 
-        public IEnumerable<ScheduledAssignmentViewModel> Assignments
+        public IEnumerable<ScheduledAssignmentDTO> Assignments
         {
             get { return assignments; }
             set { Set("Assignments", ref assignments, value); }
@@ -53,5 +52,18 @@ namespace Registry
         }
 
         public string NumberAndName { get { return string.Format("№{0} - {1}", Number, Name); } }
+
+        private IEnumerable<ScheduleItemViewModel> workingTimes;
+
+        public IEnumerable<ScheduleItemViewModel> WorkingTimes
+        {
+            get { return workingTimes; }
+            set { Set("WorkingTimes", ref workingTimes, value); }
+        }
+
+        public bool AllowsRecordType(int recordTypeId)
+        {
+            return workingTimes.Any(x => x.RecordTypeId == recordTypeId);
+        }
     }
 }

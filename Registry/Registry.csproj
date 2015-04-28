@@ -110,11 +110,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\TimeToHeightConverter.cs" />
     <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\ScheduledAssignmentDTO.cs" />
-    <Compile Include="DTO\WorkingTime.cs" />
-    <Compile Include="Misc\RoomWorkingTimeRepository.cs" />
+    <Compile Include="DTO\ScheduleItemDTO.cs" />
     <Compile Include="Services\Interface\IScheduleService.cs" />
     <Compile Include="Services\Implementation\ScheduleService.cs" />
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
@@ -124,7 +122,7 @@
     <Compile Include="ViewModel\PatientSearchViewModel.cs" />
     <Compile Include="ViewModel\PersonViewModel.cs" />
     <Compile Include="ViewModel\RoomViewModel.cs" />
-    <Compile Include="ViewModel\ScheduledAssignmentViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleItemViewModel.cs" />
     <Compile Include="ViewModel\ScheduleViewModel.cs" />
     <Compile Include="ViewModel\TimeTickerViewModel.cs" />
     <Compile Include="View\PatientSearchUserControl.xaml.cs">
@@ -234,6 +232,9 @@
   </ItemGroup>
   <ItemGroup>
     <SplashScreen Include="SplashScreen.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

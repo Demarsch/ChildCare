@@ -25,9 +25,11 @@ namespace Registry
 
         private readonly IPatientService patientService;
 
+        private readonly IPersonService personService;
+
         public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
 
-        public PatientSearchViewModel(IPatientService patientService, ILog log, PatientAssignmentListViewModel patientAssignmentListViewModel)
+        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
                 throw new ArgumentNullException("patientService");
@@ -35,13 +37,13 @@ namespace Registry
                 throw new ArgumentNullException("log");
             if (patientAssignmentListViewModel == null)
                 throw new ArgumentNullException("patientAssignmentListViewModel");
+            if (personService == null)
+                throw new ArgumentNullException("personService");
+            this.personService = personService;
             this.log = log;
             this.patientService = patientService;
             patients = new ObservableCollection<PersonViewModel>();
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
-            //ToDo: Change when we'll make a dicition about service
-            if (personService == null)
-                personService = new PersonService(new MainServiceLocator());
             editPersonViewModel = new EditPersonViewModel(log, personService);
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
@@ -173,14 +175,12 @@ namespace Registry
             set { Set("NoOneisFound", ref noOneisFound, value); }
         }
 
-        private EditPersonViewModel editPersonViewModel;
+        private readonly EditPersonViewModel editPersonViewModel;
 
         public ICommand NewPatientCommand { get; private set; }
 
         private void NewPatient()
         {
-            if (personService == null)
-                personService = new PersonService(new MainServiceLocator());
             editPersonViewModel.Id = 0;
             var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
@@ -188,24 +188,13 @@ namespace Registry
 
         public ICommand EditPatientCommand { get; private set; }
 
-        IPersonService personService = null;
         private void EditPatient()
         {
             if (currentPatient.IsEmpty)
                 return;
-            if (personService == null)
-                personService = new PersonService(new MainServiceLocator());
             editPersonViewModel.Id = currentPatient.Id;
             var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
-
-            //MessageBox.Show(string.Format("Пациент {0} будет отредактирован именно в этом окне", currentPatient));
         }
-
-        #region Assignments
-
-
-
-        #endregion
     }
 }

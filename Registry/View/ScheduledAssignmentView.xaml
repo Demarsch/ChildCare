@@ -3,7 +3,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib">
-    <DataTemplate DataType="{x:Type registry:ScheduledAssignmentViewModel}">
+    <DataTemplate DataType="{x:Type registry:ScheduledAssignmentDTO}">
         <DataTemplate.Resources>
             <core:UniversalConverter x:Key="isCompletedToBackgroundConverter">
                 <core:ConverterItem>
@@ -24,7 +24,7 @@
                 </core:ConverterItem>
             </core:UniversalConverter>
         </DataTemplate.Resources>
-        <Border BorderBrush="Gray" BorderThickness="0 0.5 0 0.5" Background="{Binding IsComplete, Converter={StaticResource isCompletedToBackgroundConverter}}">
+        <Border BorderBrush="Gray" BorderThickness="0 0.5 0 0.5" Background="{Binding IsCompleted, Converter={StaticResource isCompletedToBackgroundConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />

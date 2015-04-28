@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using Core;
 using DataLib;
@@ -25,6 +27,7 @@ namespace Registry
                 throw new ArgumentNullException("log");
             this.log = log;
             this.scheduleService = scheduleService;
+            filteredRooms = new CollectionViewSource();
             //TODO: remove this fake data
             selectedDate = new DateTime(2015, 4, 1);
             openTime = selectedDate.AddHours(8.0);
@@ -45,17 +48,26 @@ namespace Registry
                 BusyStatus = "Загрузка расписания...";
                 FailReason = null;
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var workingTimes = await Task<RoomWorkingTimeRepository>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date);
+                var workingTimes = (await Task<ICollection<ScheduleItemDTO>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).Select(x => new ScheduleItemViewModel(x, date)).ToLookup(x => x.RoomId);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
-                OpenTime = date.Add(workingTimes.GetOpenTime());
-                CloseTime = date.Add(workingTimes.GetCloseTime());
+                if (workingTimes.Count == 0)
+                {
+                    //TODO: store these settings in DB. This is just a default values used for displaying purposes
+                    OpenTime = date.AddHours(8.0);
+                    closeTime = date.AddHours(17.0);
+                }
+                else
+                {
+                    OpenTime = date.Add(workingTimes.Min(x => x.Min(y => y.StartTime.TimeOfDay)));
+                    CloseTime = date.Add(workingTimes.Max(x => x.Max(y => y.EndTime.TimeOfDay)));
+                }
                 UpdateTimeTickers();
                 foreach (var room in rooms)
                 {
                     room.OpenTime = OpenTime;
                     room.CloseTime = CloseTime;
-                    room.Assignments = assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)).ToArray();
-                    //room.WorkingTimes = workingTimes[room.Id];
+                    room.Assignments = assignments[room.Id].ToArray();
+                    room.WorkingTimes = workingTimes[room.Id].ToArray();
                 }
             }
             catch (Exception ex)
@@ -113,7 +125,21 @@ namespace Registry
         public IEnumerable<RoomViewModel> Rooms
         {
             get { return rooms; }
-            set { Set("Rooms", ref rooms, value); }
+            set
+            {
+                if (Set("Rooms", ref rooms, value))
+                {
+                    filteredRooms.Source = value;
+                    RaisePropertyChanged("FilteredRooms");
+                }
+            }
+        }
+
+        private readonly CollectionViewSource filteredRooms;
+
+        public ICollectionView FilteredRooms
+        {
+            get { return filteredRooms.View; }
         }
 
         private IEnumerable<RecordType> recordTypes;
@@ -125,6 +151,14 @@ namespace Registry
         }
 
         #region Filter
+
+        private bool noRoomIsFound;
+
+        public bool NoRoomIsFound
+        {
+            get { return noRoomIsFound; }
+            private set { Set("NoRoomIsFound", ref noRoomIsFound, value); }
+        }
 
         private DateTime selectedDate;
 
@@ -176,6 +210,7 @@ namespace Registry
             {
                 Set("SelectedRoom", ref selectedRoom, value);
                 IsRoomSelected = selectedRoom != null;
+                UpdateRoomFilter();
             }
         }
 
@@ -196,6 +231,7 @@ namespace Registry
             {
                 Set("SelectedRecordType", ref selectedRecordType, value);
                 IsRecordTypeSelected = selectedRecordType != null;
+                UpdateRoomFilter();
             }
         }
 
@@ -217,6 +253,18 @@ namespace Registry
                 currentPatient = value;
                 changeModeCommand.RaiseCanExecuteChanged();
             }
+        }
+
+        private void UpdateRoomFilter()
+        {
+            FilteredRooms.Filter = FilterRooms;
+            NoRoomIsFound = Rooms.Any() && FilteredRooms.IsEmpty;
+        }
+
+        private bool FilterRooms(object obj)
+        {
+            var room = obj as RoomViewModel;
+            return (!isRoomSelected || room.Id == selectedRoom.Id) && (!isRecordTypeSelected || room.AllowsRecordType(selectedRecordType.Id));
         }
 
         #endregion

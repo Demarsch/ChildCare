@@ -13,6 +13,6 @@ namespace Registry
 
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
 
-        RoomWorkingTimeRepository GetRoomsWorkingTime(DateTime date);
+        ICollection<ScheduleItemDTO> GetRoomsWorkingTime(DateTime date);
     }
 }

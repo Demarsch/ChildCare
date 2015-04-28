@@ -6,6 +6,7 @@ using DataLib;
 using log4net;
 using log4net.Core;
 using TestCore;
+using System;
 
 namespace Registry
 {
@@ -22,7 +23,16 @@ namespace Registry
             base.OnStartup(e);
             var log = new LogImpl(LoggerManager.CreateRepository(typeof (App).FullName).GetLogger(typeof (App).Name)) as ILog;
             var contextProvider = new ModelContextProvider() as IDataContextProvider;
-            
+            var dataAccessLayer = new ModelAccessLayer(contextProvider);
+            var serviceLocator = new MainServiceLocator();
+            serviceLocator.Add(typeof(ILog), log);
+            serviceLocator.Add(typeof(IUserSystemInfoService), new ADUserSystemInfoService());
+            serviceLocator.Add(typeof(IDataAccessLayer), dataAccessLayer);
+            var personService = new PersonService(serviceLocator);
+            serviceLocator.Add(typeof(IPersonService), personService);
+            serviceLocator.Add(typeof(IPermissionService), new PermissionService(serviceLocator));
+            serviceLocator.Add(typeof(IUserService), new UserService(serviceLocator));
+
             var cacheService = new DataContextCacheService(contextProvider) as ICacheService;
 
             var patientAssignmentService = new PatientAssignmentService(contextProvider) as IPatientAssignmentService;
@@ -32,7 +42,7 @@ namespace Registry
             var scheduleViewModel = new ScheduleViewModel(scheduleService, log);
 
             var patientService = new PatientService(contextProvider) as IPatientService;
-            var patientSearchViewModel = new PatientSearchViewModel(patientService, log, patientAssignmentListViewModel);
+            var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, patientAssignmentListViewModel);
             var mainViewModel = new MainWindowViewModel(patientSearchViewModel, scheduleViewModel);
             var mainWindow = new MainWindow {DataContext = mainViewModel};
             MainWindow = mainWindow;

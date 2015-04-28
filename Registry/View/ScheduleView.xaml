@@ -93,7 +93,7 @@
                     <!--Room headers-->
                     <ScrollViewer Grid.Row="0" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" core:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll">
                         <StackPanel Orientation="Horizontal">
-                            <ItemsControl  ItemsSource="{Binding Rooms}" IsEnabled="False" VerticalContentAlignment="Stretch">
+                            <ItemsControl  ItemsSource="{Binding FilteredRooms}" IsEnabled="False" VerticalContentAlignment="Stretch">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Orientation="Horizontal" />
@@ -119,19 +119,27 @@
                         </StackPanel>
                     </ScrollViewer>
                     <!--Assignments-->
-                    <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" core:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll"
+                    <Grid Grid.Row="1" Grid.Column="1" >
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" core:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll"
                                    core:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll">
-                        <ItemsControl ItemsSource="{Binding Rooms}">
-                            <i:Interaction.Behaviors>
-                                <core:IgnoreMouseWheelBehavior />
-                            </i:Interaction.Behaviors>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </ScrollViewer>
+                            <ItemsControl ItemsSource="{Binding FilteredRooms}">
+                                <i:Interaction.Behaviors>
+                                    <core:IgnoreMouseWheelBehavior />
+                                </i:Interaction.Behaviors>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <TextBlock Visibility="{Binding NoRoomIsFound, Converter={StaticResource BooleanToVisibilityConverter}}" FontWeight="Bold" FontSize="16" IsHitTestVisible="False"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center">
+                            <Run Text="Под указанные критерии не подходит ни один кабинет." />
+                            <LineBreak />
+                            <Run Text="Попробуйте снять часть фильтров" />
+                        </TextBlock>
+                    </Grid>
                 </Grid>
             </DockPanel>
         </xctk:BusyIndicator>
