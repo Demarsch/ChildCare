@@ -45,12 +45,13 @@ namespace MainLib
             set { Set("InsuranceDocuments", ref insuranceDocuments, value); }
         }
 
-        public string InsuranceDocumentsString
+        public string ActialInsuranceDocumentsString
         {
             get
             {
                 string resStr = string.Empty;
-                foreach (var insuranceDocument in InsuranceDocuments)
+                var dateTimeNow = DateTime.Now;
+                foreach (var insuranceDocument in InsuranceDocuments.Where(x => dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate))
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";

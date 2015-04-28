@@ -117,7 +117,7 @@ namespace MainLib
                         //ToDo: maybe create mo flexible method
                         insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
                     }
-                    Insurance = insuranceDocumentViewModel.InsuranceDocumentsString;
+                    Insurance = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
                 }
             }
         }

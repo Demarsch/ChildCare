@@ -72,7 +72,7 @@ namespace Core
         public ICollection<ChangeNameReason> GetChangeNameReasons()
         {
             var DateTimeNow = DateTime.Now;
-            return data.Get<ChangeNameReason>().Where(x => DateTimeNow >= x.BeginDateTime && DateTimeNow < x.EndDateTime).ToList();
+            return data.Get<ChangeNameReason>(x => DateTimeNow >= x.BeginDateTime && DateTimeNow < x.EndDateTime).ToList();
         }
 
 
@@ -83,17 +83,17 @@ namespace Core
 
         public ICollection<Person> GetPersonsByFullName(string fullName)
         {
-            return data.Get<Person>().Where(x => x.FullName.ToLower().Trim().Contains(fullName.ToLower().Trim())).ToList();
+            return data.Get<Person>(x => x.FullName.ToLower().Trim().Contains(fullName.ToLower().Trim())).ToList();
         }
 
 
         public ICollection<InsuranceCompany> GetInsuranceCompanies(string filter)
         {
-            var words = filter.Split(' ');
-            //ToDo: More complex search with splitting filter on words
-            return data.Get<InsuranceCompany>().Where(x => filter != string.Empty ? words.All(y => x.NameSMOK.Contains(y)) : true).ToList();
+            var words = filter.Split(' ').ToList();
+            words.Remove("");
+            var list = data.Get<InsuranceCompany>(x => filter != string.Empty ? words.All(y => x.NameSMOK.Contains(y) ||  x.AddressF.Contains(y)) : true).ToList();
+            return list;
         }
-
 
         public InsuranceDocumentType GetInsuranceDocumentTypeById(int id)
         {
