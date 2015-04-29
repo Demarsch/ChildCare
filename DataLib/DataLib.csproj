@@ -88,6 +88,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Assignment.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -170,6 +173,9 @@
     <Compile Include="MedicalHelpType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Okato.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PartialClasses\InsuranceCompany.cs" />
     <Compile Include="PartialClasses\InsuranceDocument.cs" />
     <Compile Include="PartialClasses\Person.cs" />
@@ -180,6 +186,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Person.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PersonAddress.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonName.cs">

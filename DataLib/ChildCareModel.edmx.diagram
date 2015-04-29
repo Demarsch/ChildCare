@@ -104,6 +104,11 @@
         <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="15.375" PointY="0.75" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_Rooms" />
+        <EntityTypeShape EntityType="DataLib.AddressType" Width="1.5" PointX="0.75" PointY="13" />
+        <EntityTypeShape EntityType="DataLib.Okato" Width="1.5" PointX="12.375" PointY="14.125" />
+        <EntityTypeShape EntityType="DataLib.PersonAddress" Width="1.5" PointX="3" PointY="0.75" />
+        <AssociationConnector Association="DataLib.FK_PersonAddresses_AddressTypes" />
+        <AssociationConnector Association="DataLib.FK_Addresses_Persons" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

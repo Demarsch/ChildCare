@@ -26,6 +26,7 @@ namespace DataLib
             this.PersonStaffs = new HashSet<PersonStaff>();
             this.PersonTalons = new HashSet<PersonTalon>();
             this.Users = new HashSet<User>();
+            this.PersonAddresses = new HashSet<PersonAddress>();
         }
     
         public int Id { get; set; }
@@ -48,5 +49,6 @@ namespace DataLib
         public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
         public virtual ICollection<PersonTalon> PersonTalons { get; set; }
         public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<PersonAddress> PersonAddresses { get; set; }
     }
 }

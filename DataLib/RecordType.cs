@@ -34,6 +34,7 @@ namespace DataLib
         public int MedProfileId { get; set; }
         public string ShortName { get; set; }
         public int MinDuration { get; set; }
+        public string ShrotName { get; set; }
     
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<Record> Records { get; set; }

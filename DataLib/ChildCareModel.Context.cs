@@ -64,5 +64,8 @@ namespace DataLib
         public virtual DbSet<ClosedDate> ClosedDates { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
+        public virtual DbSet<AddressType> AddressTypes { get; set; }
+        public virtual DbSet<Okato> Okatos { get; set; }
+        public virtual DbSet<PersonAddress> PersonAddresses { get; set; }
     }
 }
