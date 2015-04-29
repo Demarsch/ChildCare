@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using Core;
 using DataLib;
@@ -66,6 +65,11 @@ namespace Registry
                     })
                     .ToArray();
             }
+        }
+
+        public TimeIntervalCollection GetFreeTimes(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, TimeSpan minimumDuration, TimeSpan generalDuration)
+        {
+            throw new NotImplementedException();
         }
     }
 }

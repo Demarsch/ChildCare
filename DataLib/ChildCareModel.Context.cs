@@ -30,7 +30,6 @@ namespace DataLib
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Record> Records { get; set; }
-        public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<InsuranceCompany> InsuranceCompanies { get; set; }
         public virtual DbSet<InsuranceDocument> InsuranceDocuments { get; set; }
         public virtual DbSet<InsuranceDocumentType> InsuranceDocumentTypes { get; set; }
@@ -62,10 +61,11 @@ namespace DataLib
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
         public virtual DbSet<ClosedDate> ClosedDates { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<Okato> Okatos { get; set; }
         public virtual DbSet<PersonAddress> PersonAddresses { get; set; }
+        public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
+        public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

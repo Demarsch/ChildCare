@@ -26,15 +26,14 @@ namespace DataLib
         public Nullable<int> ParentId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public string ShortName { get; set; }
+        public int MinDuration { get; set; }
         public int Duration { get; set; }
         public int DisplayOrder { get; set; }
         public Nullable<bool> Assignable { get; set; }
         public Nullable<int> EditorId { get; set; }
         public int RecordTypeGroupId { get; set; }
         public int MedProfileId { get; set; }
-        public string ShortName { get; set; }
-        public int MinDuration { get; set; }
-        public string ShrotName { get; set; }
     
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<Record> Records { get; set; }

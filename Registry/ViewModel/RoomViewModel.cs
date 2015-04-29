@@ -10,10 +10,15 @@ namespace Registry
     {
         private readonly Room room;
 
-        public RoomViewModel(Room room)
+        private readonly IScheduleService scheduleService;
+
+        public RoomViewModel(Room room, IScheduleService scheduleService)
         {
             if (room == null)
                 throw new ArgumentNullException("room");
+            if (scheduleService == null)
+                throw new ArgumentNullException("scheduleService");
+            this.scheduleService = scheduleService;
             this.room = room;
             openTime = DateTime.Today.AddHours(8.0);
             closeTime = DateTime.Today.AddHours(17.0);
@@ -64,6 +69,25 @@ namespace Registry
         public bool AllowsRecordType(int recordTypeId)
         {
             return workingTimes.Any(x => x.RecordTypeId == recordTypeId);
+        }
+
+        private IEnumerable<ScheduleCellViewModel> scheduleCells;
+
+        public IEnumerable<ScheduleCellViewModel> ScheduleCells
+        {
+            get { return scheduleCells; }
+            private set { Set("ScheduleCells", ref scheduleCells, value); }
+        }
+
+        public void BuildScheduleGrid(int? selectedRoomId, int? selectedRecordTypeId)
+        {
+            if ((selectedRoomId.HasValue && room.Id != selectedRoomId.Value)
+                || (selectedRecordTypeId.HasValue && AllowsRecordType(selectedRecordTypeId.Value)))
+            {
+                ScheduleCells = new ScheduleCellViewModel[0];
+                return;
+            }
+
         }
     }
 }

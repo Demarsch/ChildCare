@@ -106,5 +106,6 @@
     <Build Include="dbo\Tables\PersonAddresses.sql" />
     <Build Include="dbo\Tables\Okatos.sql" />
     <Build Include="dbo\Tables\AddressTypes.sql" />
+    <Build Include="dbo\Tables\ScheduleItem.sql" />
   </ItemGroup>
 </Project>

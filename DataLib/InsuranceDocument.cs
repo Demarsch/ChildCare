@@ -22,7 +22,7 @@ namespace DataLib
         public string Number { get; set; }
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
-        public System.DateTime DeleteDateTime { get; set; }
+        public Nullable<System.DateTime> DeleteDateTime { get; set; }
     
         public virtual InsuranceCompany InsuranceCompany { get; set; }
         public virtual InsuranceDocumentType InsuranceDocumentType { get; set; }

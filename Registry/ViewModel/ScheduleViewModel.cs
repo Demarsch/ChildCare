@@ -85,7 +85,7 @@ namespace Registry
         {
             try
             {
-                Rooms = scheduleService.GetRooms().Select(x => new RoomViewModel(x)).ToArray();
+                Rooms = scheduleService.GetRooms().Select(x => new RoomViewModel(x, scheduleService)).ToArray();
                 RecordTypes = scheduleService.GetRecordTypes().ToList();
                 DataSourcesAreLoaded = true;
             }
@@ -117,7 +117,7 @@ namespace Registry
         public bool DataSourcesAreLoaded
         {
             get { return dataSourcesAreLoaded; }
-            set { Set("DataSourcesAreLoaded", ref dataSourcesAreLoaded, value); }
+            private set { Set("DataSourcesAreLoaded", ref dataSourcesAreLoaded, value); }
         }
 
         private IEnumerable<RoomViewModel> rooms;
@@ -259,6 +259,13 @@ namespace Registry
         {
             FilteredRooms.Filter = FilterRooms;
             NoRoomIsFound = Rooms.Any() && FilteredRooms.IsEmpty;
+            BuildScheduleGrid();
+        }
+
+        private void BuildScheduleGrid()
+        {
+            foreach (var room in rooms)
+                room.BuildScheduleGrid(selectedRoom == null ? null : (int?)selectedRoom.Id, selectedRecordType == null ? null : (int?)selectedRecordType.Id);
         }
 
         private bool FilterRooms(object obj)

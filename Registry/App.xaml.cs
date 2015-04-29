@@ -21,7 +21,7 @@ namespace Registry
             newCulture.DateTimeFormat.ShortDatePattern = "dd MMM yyyy";
             Thread.CurrentThread.CurrentCulture = newCulture;
             base.OnStartup(e);
-            var log = new LogImpl(LoggerManager.CreateRepository(typeof (App).FullName).GetLogger(typeof (App).Name)) as ILog;
+            var log = new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)) as ILog;
             var contextProvider = new ModelContextProvider() as IDataContextProvider;
             var dataAccessLayer = new ModelAccessLayer(contextProvider);
             var serviceLocator = new MainServiceLocator();
@@ -44,7 +44,7 @@ namespace Registry
             var patientService = new PatientService(contextProvider) as IPatientService;
             var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, patientAssignmentListViewModel);
             var mainViewModel = new MainWindowViewModel(patientSearchViewModel, scheduleViewModel);
-            var mainWindow = new MainWindow {DataContext = mainViewModel};
+            var mainWindow = new MainWindow { DataContext = mainViewModel };
             MainWindow = mainWindow;
             mainWindow.Show();
         }

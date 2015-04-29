@@ -97,7 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
+    <Compile Include="Implementations\TimeInterval.cs" />
+    <Compile Include="Interfaces\ITimeInterval.cs" />
     <Compile Include="MainServiceLocator.cs" />
+    <Compile Include="Misc\TimeIntervalCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

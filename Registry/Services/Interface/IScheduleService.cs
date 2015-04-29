@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core;
 using DataLib;
 
 namespace Registry
@@ -14,5 +15,7 @@ namespace Registry
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
 
         ICollection<ScheduleItemDTO> GetRoomsWorkingTime(DateTime date);
+
+        TimeIntervalCollection GetFreeTimes(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, TimeSpan minimumDuration, TimeSpan generalDuration); 
     }
 }

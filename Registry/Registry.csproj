@@ -122,6 +122,7 @@
     <Compile Include="ViewModel\PatientSearchViewModel.cs" />
     <Compile Include="ViewModel\PersonViewModel.cs" />
     <Compile Include="ViewModel\RoomViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleCellViewModel.cs" />
     <Compile Include="ViewModel\ScheduleItemViewModel.cs" />
     <Compile Include="ViewModel\ScheduleViewModel.cs" />
     <Compile Include="ViewModel\TimeTickerViewModel.cs" />
