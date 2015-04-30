@@ -9,10 +9,16 @@
             <ControlTemplate x:Key="ListBoxItem"  TargetType="{x:Type ListBoxItem}">
                 <ContentPresenter />
             </ControlTemplate>
+            <Style TargetType="{x:Type ListBox}">
+                <Setter Property="Width" Value="200" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
         </DataTemplate.Resources>
         <Grid>
             <!--Working time layer-->
-            <ListBox ItemsSource="{Binding WorkingTimes}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Gray" IsHitTestVisible="False">
+            <ListBox ItemsSource="{Binding WorkingTimes}" Background="Gray" IsHitTestVisible="False">
                 <i:Interaction.Behaviors>
                     <core:IgnoreMouseWheelBehavior />
                 </i:Interaction.Behaviors>
@@ -36,8 +42,26 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <!--Assignments layer-->
-            <ListBox ItemsSource="{Binding Assignments}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent"
-                     BorderThickness="0">
+            <ListBox ItemsSource="{Binding Assignments}" BorderThickness="0">
+                <i:Interaction.Behaviors>
+                    <core:IgnoreMouseWheelBehavior />
+                </i:Interaction.Behaviors>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
+                                                        UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="xctk:TimelinePanel.Date" Value="{Binding StartTime, Mode=OneTime}" />
+                        <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding EndTime, Mode=OneTime}" />
+                        <Setter Property="Template" Value="{StaticResource ListBoxItem}" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+            <!--Schedule cells layer-->
+            <ListBox ItemsSource="{Binding ScheduleCells}" BorderThickness="0">
                 <i:Interaction.Behaviors>
                     <core:IgnoreMouseWheelBehavior />
                 </i:Interaction.Behaviors>

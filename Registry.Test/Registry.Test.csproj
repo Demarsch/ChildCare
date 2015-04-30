@@ -50,6 +50,10 @@
       <Project>{F14028ED-2AE3-452B-9780-75EC4F09B3E2}</Project>
       <Name>DataLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MainLib\MainLib.csproj">
+      <Project>{69D040E8-9029-45C8-8824-D64C6DD793E3}</Project>
+      <Name>MainLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Registry\Registry.csproj">
       <Project>{39195b37-33a6-417a-8f77-dfb0ec8f3dd4}</Project>
       <Name>Registry</Name>

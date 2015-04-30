@@ -16,6 +16,6 @@ namespace Registry
 
         ICollection<ScheduleItemDTO> GetRoomsWorkingTime(DateTime date);
 
-        TimeIntervalCollection GetFreeTimes(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, TimeSpan minimumDuration, TimeSpan generalDuration); 
+        IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes); 
     }
 }

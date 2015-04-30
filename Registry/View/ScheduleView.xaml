@@ -45,20 +45,14 @@
                         <Grid Width="180" VerticalAlignment="Center">
                             <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}" DisplayMemberPath="NumberAndName"
                                   Margin="5"/>
-                            <TextBlock Text="Выберите кабинет" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="RoomSelectionText" IsHitTestVisible="False">
-                                <TextBlock.RenderTransform>
-                                    <TranslateTransform />
-                                </TextBlock.RenderTransform>
-                            </TextBlock>
+                            <TextBlock Text="Выберите кабинет" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="RoomSelectionText" IsHitTestVisible="False"
+                                       Margin="11 0 0 0" Visibility="Collapsed"/>
                         </Grid>
                         <Grid Width="180" VerticalAlignment="Center">
                             <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding RecordTypes}" SelectedItem="{Binding SelectedRecordType}" DisplayMemberPath="Name"
                                   Margin="5"/>
-                            <TextBlock Text="Выберите услугу" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="RecordTypeSelectionText" IsHitTestVisible="False">
-                                <TextBlock.RenderTransform>
-                                    <TranslateTransform />
-                                </TextBlock.RenderTransform>
-                            </TextBlock>
+                            <TextBlock Text="Выберите услугу" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="RecordTypeSelectionText" IsHitTestVisible="False"
+                                       Margin="11 0 0 0" Visibility="Collapsed"/>
                         </Grid>
                     </StackPanel>
                 </DockPanel>
@@ -144,37 +138,11 @@
             </DockPanel>
         </xctk:BusyIndicator>
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding IsRoomSelected}" Value="True">
-                <DataTrigger.EnterActions>
-                    <BeginStoryboard>
-                        <Storyboard TargetName="RoomSelectionText" TargetProperty="RenderTransform.Y">
-                            <DoubleAnimation To="-23" Duration="0:0:0.2" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </DataTrigger.EnterActions>
-                <DataTrigger.ExitActions>
-                    <BeginStoryboard>
-                        <Storyboard TargetName="RoomSelectionText" TargetProperty="RenderTransform.Y">
-                            <DoubleAnimation Duration="0:0:0.2" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </DataTrigger.ExitActions>
+            <DataTrigger Binding="{Binding SelectedRoom}" Value="{x:Null}">
+                <Setter TargetName="RoomSelectionText" Property="Visibility" Value="Visible" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding IsRecordTypeSelected}" Value="True">
-                <DataTrigger.EnterActions>
-                    <BeginStoryboard>
-                        <Storyboard TargetName="RecordTypeSelectionText" TargetProperty="RenderTransform.Y">
-                            <DoubleAnimation To="-23" Duration="0:0:0.2" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </DataTrigger.EnterActions>
-                <DataTrigger.ExitActions>
-                    <BeginStoryboard>
-                        <Storyboard TargetName="RecordTypeSelectionText" TargetProperty="RenderTransform.Y">
-                            <DoubleAnimation Duration="0:0:0.2" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </DataTrigger.ExitActions>
+            <DataTrigger Binding="{Binding SelectedRecordType}" Value="{x:Null}">
+                <Setter TargetName="RecordTypeSelectionText" Property="Visibility" Value="Visible" />
             </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>

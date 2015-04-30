@@ -1,26 +1,55 @@
 using System;
+using Core;
+using GalaSoft.MvvmLight;
 
 namespace Registry
 {
-    public class ScheduledAssignmentViewModel
+    public class ScheduledAssignmentViewModel : ObservableObject, ITimeInterval
     {
-        private readonly ScheduledAssignmentDTO assignment;
+        private ScheduledAssignmentDTO assignment;
 
         public ScheduledAssignmentViewModel(ScheduledAssignmentDTO assignment)
         {
             if (assignment == null)
+            {
                 throw new ArgumentNullException("assignment");
+            }
             this.assignment = assignment;
-            StartTime = assignment.StartTime;
-            EndTime = assignment.EndTime;
         }
 
-        public DateTime StartTime { get; private set; }
+        public int Id { get { return assignment.Id; } }
 
-        public DateTime EndTime { get; private set; }
+        public DateTime StartTime { get { return assignment.StartTime; } }
+
+        public DateTime EndTime { get { return assignment.EndTime; } }
 
         public string PersonShortName { get { return assignment.PersonShortName; } }
 
-        public bool IsComplete { get { return assignment.IsCompleted; } }
+        public bool IsCompleted { get { return assignment.IsCompleted; } }
+
+        public bool TryUpdate(ScheduledAssignmentDTO assignment)
+        {
+            if (assignment == null)
+            {
+                throw new ArgumentNullException("assignment");
+            }
+            if (this.assignment.Id != assignment.Id)
+            {
+                return false;
+            }
+            this.assignment = assignment;
+            RaisePropertyChanged(string.Empty);
+            return true;
+        }
+
+        TimeSpan ITimeInterval.StartTime
+        {
+            get { return StartTime.TimeOfDay; }
+        }
+
+        TimeSpan ITimeInterval.EndTime
+        {
+            get { return EndTime.TimeOfDay; }
+        }
     }
 }

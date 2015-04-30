@@ -9,7 +9,8 @@
                 <ResourceDictionary Source="View/ScheduleView.xaml" />
                 <ResourceDictionary Source="View/TimeTickerView.xaml" />
                 <ResourceDictionary Source="View/RoomView.xaml" />
-                <ResourceDictionary Source="View/ScheduledAssignmentView.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="View/ScheduledAssignmentView.xaml" />
+                <ResourceDictionary Source="View/ScheduleCellView.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

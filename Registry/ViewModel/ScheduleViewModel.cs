@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,12 +18,27 @@ namespace Registry
 
         private readonly IScheduleService scheduleService;
 
-        public ScheduleViewModel(IScheduleService scheduleService, ILog log)
+        private readonly RoomViewModel unseletedRoom;
+
+        private readonly RecordType unselectedRecordType;
+
+        private readonly ICacheService cacheService;
+
+        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService)
         {
             if (scheduleService == null)
+            {
                 throw new ArgumentNullException("scheduleService");
+            }
             if (log == null)
+            {
                 throw new ArgumentNullException("log");
+            }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
+            this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
             filteredRooms = new CollectionViewSource();
@@ -34,6 +48,8 @@ namespace Registry
             closeTime = selectedDate.AddHours(17.0);
             isInReadOnlyMode = true;
             changeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
+            unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
+            unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
             LoadAssignmentsAsync(selectedDate);
         }
@@ -48,26 +64,26 @@ namespace Registry
                 BusyStatus = "Загрузка расписания...";
                 FailReason = null;
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var workingTimes = (await Task<ICollection<ScheduleItemDTO>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).Select(x => new ScheduleItemViewModel(x, date)).ToLookup(x => x.RoomId);
+                var workingTimes = (await Task<ICollection<ScheduleItemDTO>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).ToLookup(x => x.RoomId);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
                 if (workingTimes.Count == 0)
                 {
-                    //TODO: store these settings in DB. This is just a default values used for displaying purposes
+                    //TODO: store these settings in DB. This are just default values used for displaying purposes
                     OpenTime = date.AddHours(8.0);
                     closeTime = date.AddHours(17.0);
                 }
                 else
                 {
-                    OpenTime = date.Add(workingTimes.Min(x => x.Min(y => y.StartTime.TimeOfDay)));
-                    CloseTime = date.Add(workingTimes.Max(x => x.Max(y => y.EndTime.TimeOfDay)));
+                    OpenTime = date.Add(workingTimes.Min(x => x.Min(y => y.StartTime)));
+                    CloseTime = date.Add(workingTimes.Max(x => x.Max(y => y.EndTime)));
                 }
                 UpdateTimeTickers();
                 foreach (var room in rooms)
                 {
                     room.OpenTime = OpenTime;
                     room.CloseTime = CloseTime;
-                    room.Assignments = assignments[room.Id].ToArray();
-                    room.WorkingTimes = workingTimes[room.Id].ToArray();
+                    room.Assignments = assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)).ToArray();
+                    room.WorkingTimes = workingTimes[room.Id].Select(x => new ScheduleItemViewModel(x, date)).ToArray();
                 }
             }
             catch (Exception ex)
@@ -85,14 +101,14 @@ namespace Registry
         {
             try
             {
-                Rooms = scheduleService.GetRooms().Select(x => new RoomViewModel(x, scheduleService)).ToArray();
-                RecordTypes = scheduleService.GetRecordTypes().ToList();
+                Rooms = new[] { unseletedRoom }.Concat(scheduleService.GetRooms().Select(x => new RoomViewModel(x, scheduleService, cacheService))).ToArray();
+                RecordTypes = new[] { unselectedRecordType }.Concat(scheduleService.GetRecordTypes()).ToArray();
                 DataSourcesAreLoaded = true;
             }
             catch (Exception ex)
             {
-                log.Error("Failed to load rooms from database", ex);
-                FailReason = "При попытке загрузить список кабинетов возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки";
+                log.Error("Failed to load datasources for ScheduleViewModel from database", ex);
+                FailReason = "При попытке загрузить списки кабинетов и услуг возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки";
             }
         }
 
@@ -125,11 +141,12 @@ namespace Registry
         public IEnumerable<RoomViewModel> Rooms
         {
             get { return rooms; }
-            set
+            private set
             {
                 if (Set("Rooms", ref rooms, value))
                 {
                     filteredRooms.Source = value;
+                    filteredRooms.View.Filter = FilterRooms;
                     RaisePropertyChanged("FilteredRooms");
                 }
             }
@@ -147,7 +164,7 @@ namespace Registry
         public IEnumerable<RecordType> RecordTypes
         {
             get { return recordTypes; }
-            set { Set("RecordTypes", ref recordTypes, value); }
+            private set { Set("RecordTypes", ref recordTypes, value); }
         }
 
         #region Filter
@@ -209,7 +226,7 @@ namespace Registry
             set
             {
                 Set("SelectedRoom", ref selectedRoom, value);
-                IsRoomSelected = selectedRoom != null;
+                IsRoomSelected = selectedRoom != null && !ReferenceEquals(selectedRoom, unseletedRoom);
                 UpdateRoomFilter();
             }
         }
@@ -230,7 +247,7 @@ namespace Registry
             set
             {
                 Set("SelectedRecordType", ref selectedRecordType, value);
-                IsRecordTypeSelected = selectedRecordType != null;
+                IsRecordTypeSelected = selectedRecordType != null && !ReferenceEquals(selectedRecordType, unselectedRecordType);
                 UpdateRoomFilter();
             }
         }
@@ -265,12 +282,14 @@ namespace Registry
         private void BuildScheduleGrid()
         {
             foreach (var room in rooms)
-                room.BuildScheduleGrid(selectedRoom == null ? null : (int?)selectedRoom.Id, selectedRecordType == null ? null : (int?)selectedRecordType.Id);
+                room.BuildScheduleGrid(selectedDate, isRoomSelected ? (int?)selectedRoom.Id : null, isRecordTypeSelected ? (int?)selectedRecordType.Id : null);
         }
 
         private bool FilterRooms(object obj)
         {
             var room = obj as RoomViewModel;
+            if (room == null || ReferenceEquals(room, unseletedRoom))
+                return false;
             return (!isRoomSelected || room.Id == selectedRoom.Id) && (!isRecordTypeSelected || room.AllowsRecordType(selectedRecordType.Id));
         }
 

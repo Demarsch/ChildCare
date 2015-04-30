@@ -1,8 +1,9 @@
 ﻿using System;
+using Core;
 
 namespace Registry
 {
-    public class ScheduleItemViewModel
+    public class ScheduleItemViewModel : ITimeInterval
     {
         private readonly ScheduleItemDTO scheduleItem;
 
@@ -23,5 +24,9 @@ namespace Registry
         public DateTime StartTime { get { return date.Add(scheduleItem.StartTime); } }
 
         public DateTime EndTime { get { return date.Add(scheduleItem.EndTime); } }
+
+        TimeSpan ITimeInterval.StartTime { get { return StartTime.TimeOfDay; } }
+
+        TimeSpan ITimeInterval.EndTime { get { return EndTime.TimeOfDay; } }
     }
 }

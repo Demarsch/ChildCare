@@ -67,9 +67,114 @@ namespace Registry
             }
         }
 
-        public TimeIntervalCollection GetFreeTimes(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, TimeSpan minimumDuration, TimeSpan generalDuration)
+        public IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes)
         {
-            throw new NotImplementedException();
+            if (minimumDurationInMinutes <= 0 || minimumDurationInMinutes % 5 != 0)
+            {
+                throw new ArgumentException("Minimum duration must be grater than zero and be divisable by 5", "minimumDurationInMinutes");
+            }
+            if (nominalDurationInMinutes <= 0 || nominalDurationInMinutes % 5 != 0)
+            {
+                throw new ArgumentException("Nominal duration must be grater than zero and be divisable by 5", "nominalDurationInMinutes");
+            }
+            if (minimumDurationInMinutes > nominalDurationInMinutes)
+            {
+                throw new ArgumentException("Minimum duration must not be grater than nominal duration", "minimumDurationInMinutes");
+            }
+            if (workingTime == null)
+            {
+                workingTime = new ITimeInterval[0];
+            }
+            if (occupiedTime == null)
+            {
+                occupiedTime = new ITimeInterval[0];
+            }
+            var times = new TimeIntervalCollection();
+            foreach (var interval in workingTime)
+                times.AddInterval(interval);
+            foreach (var interval in occupiedTime)
+                times.RemoveInterval(interval);
+            var result = new List<ITimeInterval>();
+            var fiveMinutes = TimeSpan.FromMinutes(5.0);
+            foreach (var freeTime in times)
+            {
+                var totalFreeMinutes = (int)freeTime.EndTime.Subtract(freeTime.StartTime).TotalMinutes;
+                //If total time consists of the whole number of nominal duration intervals then we just split in into pieces
+                if (totalFreeMinutes % nominalDurationInMinutes == 0)
+                {
+                    var intervalCount = totalFreeMinutes / nominalDurationInMinutes;
+                    result.AddRange(Enumerable.Range(0, intervalCount)
+                        .Select(x => new TimeInterval(freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * x)), 
+                                                      freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * (x + 1))))));
+                }
+                //If total time is less then minimum duration we can't put assignment inside it
+                else if (totalFreeMinutes < minimumDurationInMinutes)
+                {
+                    continue;
+                }
+                //If total time is between minimum and nominal duration we just use it all
+                else if (totalFreeMinutes < nominalDurationInMinutes)
+                {
+                    result.Add(new TimeInterval(freeTime.StartTime, freeTime.EndTime));
+                }
+                //If we can't split total time in whole pieces...
+                else
+                {
+                    var nominalDurationIntervalCount = totalFreeMinutes / nominalDurationInMinutes;
+                    //...we first create maximum number of nominal duration intervals
+                    var intervals = Enumerable.Range(0, nominalDurationIntervalCount).Select(x => new TimeInterval(freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * x)),
+                        freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * (x + 1))))).ToList();
+                    //Now we look at how much time remains
+                    var remainingDuration = totalFreeMinutes - nominalDurationInMinutes * nominalDurationIntervalCount;
+                    //If time remaining is greate than minimum duration we just fill this gap
+                    if (remainingDuration >= minimumDurationInMinutes)
+                    {
+                        intervals.Add(new TimeInterval(intervals[intervals.Count - 1].EndTime,  freeTime.EndTime));
+                        result.AddRange(intervals);
+                        continue;
+                    }
+                    //Otherwise we start to subtract 5 minutes from nominal duration intervals and add it to remaining time window while untill we can finally close the gap or there is no more intervals to decrease
+                    var intervalIndex = intervals.Count - 1;
+                    var currentDuration = remainingDuration;
+                    var intervalWasDecreased = false;
+                    do
+                    {
+                        //If we decreased all intervals by 5 minutes and we still don't have enough free time we try it again
+                        if (intervalIndex == -1)
+                        {
+                            //But if all intervals already have minimal duration then we can't get any more free time
+                            if (!intervalWasDecreased)
+                            {
+                                break;
+                            }
+                            intervalIndex = intervals.Count - 1;
+                            intervalWasDecreased = false;
+                        }
+                        var interval = intervals[intervalIndex];
+                        //If we can decrease interval...
+                        if ((int)interval.EndTime.Subtract(interval.StartTime).TotalMinutes > minimumDurationInMinutes)
+                        {
+                            //...then we decrease it and move all further intervals back
+                            interval.EndTime = interval.EndTime.Subtract(fiveMinutes);
+                            currentDuration += 5;
+                            for (var decreasingIntervalIndex = intervalIndex + 1; decreasingIntervalIndex < intervals.Count; decreasingIntervalIndex++)
+                            {
+                                var decreasingInterval = intervals[decreasingIntervalIndex];
+                                decreasingInterval.StartTime = decreasingInterval.StartTime.Subtract(fiveMinutes);
+                                decreasingInterval.EndTime = decreasingInterval.EndTime.Subtract(fiveMinutes);
+                            }
+                            intervalWasDecreased = true;
+                        }
+                        intervalIndex--;
+                    } while (currentDuration < minimumDurationInMinutes);
+                    if (currentDuration >= minimumDurationInMinutes)
+                    {
+                        intervals.Add(new TimeInterval(intervals[intervals.Count - 1].EndTime, freeTime.EndTime));
+                    }
+                    result.AddRange(intervals);
+                }
+            }
+            return result;
         }
     }
 }
