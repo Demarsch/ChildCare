@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
+using System.Windows.Navigation;
 using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
@@ -36,9 +39,9 @@ namespace Registry
             //TODO: probably worth using fallback value on binding side
             openTime = DateTime.Today.AddHours(8.0);
             closeTime = DateTime.Today.AddHours(17.0);
-            assignments = new ScheduledAssignmentViewModel[0];
+            assignments = new ObservableCollection<ScheduledAssignmentViewModel>();
             workingTimes = new ScheduleItemViewModel[0];
-            scheduleCells = new ScheduleCellViewModel[0];
+            scheduleCells = new ObservableCollection<ScheduleCellViewModel>();
         }
 
         public int Id { get { return room.Id; } }
@@ -47,9 +50,9 @@ namespace Registry
 
         public string Name { get { return room.Name; } }
 
-        private IEnumerable<ScheduledAssignmentViewModel> assignments;
+        private ObservableCollection<ScheduledAssignmentViewModel> assignments;
 
-        public IEnumerable<ScheduledAssignmentViewModel> Assignments
+        public ObservableCollection<ScheduledAssignmentViewModel> Assignments
         {
             get { return assignments; }
             set { Set("Assignments", ref assignments, value); }
@@ -94,9 +97,9 @@ namespace Registry
             return workingTimes.Any(x => x.RecordTypeId == recordTypeId);
         }
 
-        private IEnumerable<ScheduleCellViewModel> scheduleCells;
+        private ObservableCollection<ScheduleCellViewModel> scheduleCells;
 
-        public IEnumerable<ScheduleCellViewModel> ScheduleCells
+        public ObservableCollection<ScheduleCellViewModel> ScheduleCells
         {
             get { return scheduleCells; }
             private set { Set("ScheduleCells", ref scheduleCells, value); }
@@ -104,9 +107,13 @@ namespace Registry
 
         public void BuildScheduleGrid(DateTime date, int? selectedRoomId, int? selectedRecordTypeId)
         {
+            foreach (var scheduleCell in scheduleCells)
+            {
+                scheduleCell.AssignmentCreationRequested -= ScheduleCellOnAssignmentCreationRequested;
+            }
             if (!selectedRecordTypeId.HasValue || (selectedRoomId.HasValue && selectedRoomId.Value != Id) || !AllowsRecordType(selectedRecordTypeId.Value))
             {
-                ScheduleCells = new ScheduleCellViewModel[0];
+                ScheduleCells.Clear();
                 return;
             }
             var recordType = cacheService.GetItemById<RecordType>(selectedRecordTypeId.Value);
@@ -115,7 +122,25 @@ namespace Registry
                 assignments, 
                 recordType.Duration, 
                 recordType.MinDuration);
-            ScheduleCells = availableTimeIntervals.Select(x => new ScheduleCellViewModel(date.Add(x.StartTime), date.Add(x.EndTime))).ToArray();
+            ScheduleCells = new ObservableCollection<ScheduleCellViewModel>(availableTimeIntervals.Select(x => new ScheduleCellViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value)).ToArray());
+            foreach (var scheduleCell in scheduleCells)
+                scheduleCell.AssignmentCreationRequested += ScheduleCellOnAssignmentCreationRequested;
+        }
+
+        private void ScheduleCellOnAssignmentCreationRequested(object sender, EventArgs eventArgs)
+        {
+            OnAssignmentCreationRequested(new ReturnEventArgs<ScheduleCellViewModel>(sender as ScheduleCellViewModel));
+        }
+
+        public event EventHandler<ReturnEventArgs<ScheduleCellViewModel>> AssignmentCreationRequested;
+
+        protected virtual void OnAssignmentCreationRequested(ReturnEventArgs<ScheduleCellViewModel> e)
+        {
+            var handler = AssignmentCreationRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
     }
 }

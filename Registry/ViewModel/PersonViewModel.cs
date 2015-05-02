@@ -66,5 +66,7 @@ namespace Registry
                         : "pack://application:,,,/Resources;component/Images/Woman48x48.png";
             }
         }
+
+        public string ShortName { get { return patient.ShortName; } }
     }
 }

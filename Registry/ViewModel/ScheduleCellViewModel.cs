@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Windows;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 
 namespace Registry
 {
     public class ScheduleCellViewModel : ObservableObject
     {
-        public ScheduleCellViewModel(DateTime startTime, DateTime endTime)
+        public ScheduleCellViewModel(DateTime startTime, DateTime endTime, int recordTypeId)
         {
             if (startTime >= endTime)
             {
@@ -13,10 +16,36 @@ namespace Registry
             }
             StartTime = startTime;
             EndTime = endTime;
+            RecordTypeId = recordTypeId;
+            RequestAssignmentCreationCommand = new RelayCommand<MouseButtonEventArgs>(RequestAssignmentCreation);
         }
 
         public DateTime StartTime { get; private set; }
 
         public DateTime EndTime { get; private set; }
+
+        public int RecordTypeId { get; private set; }
+        
+        public ICommand RequestAssignmentCreationCommand { get; private set; }
+
+        private void RequestAssignmentCreation(MouseButtonEventArgs args)
+        {
+            if (args.ChangedButton == MouseButton.Left)
+            {
+                OnAssignmentCreationRequested();
+            }
+            args.Handled = true;
+        }
+
+        public event EventHandler AssignmentCreationRequested;
+
+        protected virtual void OnAssignmentCreationRequested()
+        {
+            var handler = AssignmentCreationRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
     }
 }

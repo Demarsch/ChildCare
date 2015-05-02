@@ -96,8 +96,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data transfer objects\UserDTO.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
+    <Compile Include="Implementations\Environment.cs" />
     <Compile Include="Implementations\TimeInterval.cs" />
+    <Compile Include="Interfaces\IEnvironment.cs" />
     <Compile Include="Interfaces\ITimeInterval.cs" />
     <Compile Include="MainServiceLocator.cs" />
     <Compile Include="Misc\TimeIntervalCollection.cs" />
@@ -163,9 +166,7 @@
       <Name>StuffLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data transfer objects\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Page Include="View\EditPersonDataUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>

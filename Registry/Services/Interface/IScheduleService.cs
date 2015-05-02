@@ -16,6 +16,8 @@ namespace Registry
 
         ICollection<ScheduleItemDTO> GetRoomsWorkingTime(DateTime date);
 
-        IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes); 
+        IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
+
+        void SaveAssignment(Assignment assignment);
     }
 }

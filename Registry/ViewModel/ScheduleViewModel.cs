@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using Core;
 using DataLib;
 using GalaSoft.MvvmLight.Command;
 using log4net;
+using Environment = System.Environment;
 
 namespace Registry
 {
@@ -24,7 +28,9 @@ namespace Registry
 
         private readonly ICacheService cacheService;
 
-        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService)
+        private readonly IEnvironment environment;
+
+        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment)
         {
             if (scheduleService == null)
             {
@@ -38,6 +44,11 @@ namespace Registry
             {
                 throw new ArgumentNullException("cacheService");
             }
+            if (environment == null)
+            {
+                throw new ArgumentNullException("environment");
+            }
+            this.environment = environment;
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
@@ -82,7 +93,7 @@ namespace Registry
                 {
                     room.OpenTime = OpenTime;
                     room.CloseTime = CloseTime;
-                    room.Assignments = assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)).ToArray();
+                    room.Assignments = new ObservableCollection<ScheduledAssignmentViewModel>(assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)).ToArray());
                     room.WorkingTimes = workingTimes[room.Id].Select(x => new ScheduleItemViewModel(x, date)).ToArray();
                 }
             }
@@ -102,6 +113,8 @@ namespace Registry
             try
             {
                 Rooms = new[] { unseletedRoom }.Concat(scheduleService.GetRooms().Select(x => new RoomViewModel(x, scheduleService, cacheService))).ToArray();
+                foreach (var room in Rooms)
+                    room.AssignmentCreationRequested += RoomOnAssignmentCreationRequested;
                 RecordTypes = new[] { unselectedRecordType }.Concat(scheduleService.GetRecordTypes()).ToArray();
                 DataSourcesAreLoaded = true;
             }
@@ -166,6 +179,48 @@ namespace Registry
             get { return recordTypes; }
             private set { Set("RecordTypes", ref recordTypes, value); }
         }
+
+        #region Assignments
+        
+        private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<ScheduleCellViewModel> e)
+        {
+            var selectedRoom = sender as RoomViewModel;
+            var assignment = new Assignment
+            {
+                AssignDateTime = e.Result.StartTime,
+                AssignUserId = environment.CurrentUser.UserId,
+                //TODO: put any valid value here and request user to change it after assignment creation
+                FinancingSourceId = 1,
+                Note = string.Empty,
+                PersonId = currentPatient.Id,
+                RecordTypeId = e.Result.RecordTypeId,
+                RoomId = selectedRoom.Id
+            };
+            try
+            {
+                scheduleService.SaveAssignment(assignment);
+                selectedRoom.Assignments.Add(new ScheduledAssignmentViewModel(new ScheduledAssignmentDTO
+                {
+                    Id = assignment.Id, 
+                    IsCompleted = false,
+                    PersonShortName = currentPatient.ShortName,
+                    RecordTypeId = assignment.RecordTypeId,
+                    RoomId = assignment.RoomId,
+                    StartTime = assignment.AssignDateTime,
+                    Duration = (int)e.Result.EndTime.Subtract(e.Result.StartTime).TotalMinutes
+                }));
+                selectedRoom.ScheduleCells.Remove(e.Result);
+            }
+            catch (Exception ex)
+            {
+                //TODO: notify user differently
+                log.Error("Failed to save new assignment", ex);
+                var message = string.Format("Не удалось создать назначение. Причина - {0}{1}Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", ex.Message, Environment.NewLine);
+                MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
 
         #region Filter
 

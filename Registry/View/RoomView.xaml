@@ -61,14 +61,15 @@
                 </ListBox.ItemContainerStyle>
             </ListBox>
             <!--Schedule cells layer-->
-            <ListBox ItemsSource="{Binding ScheduleCells}" BorderThickness="0">
+            <ListBox ItemsSource="{Binding ScheduleCells}" BorderThickness="0" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch">
                 <i:Interaction.Behaviors>
                     <core:IgnoreMouseWheelBehavior />
                 </i:Interaction.Behaviors>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
-                                                        UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"/>
+                                                        UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"
+                                            HorizontalAlignment="Stretch"/>
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemContainerStyle>

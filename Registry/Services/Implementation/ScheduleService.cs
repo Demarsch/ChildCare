@@ -176,5 +176,21 @@ namespace Registry
             }
             return result;
         }
+
+        public void SaveAssignment(Assignment assignment)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                if (assignment.Id == 0)
+                {
+                    dataContext.Add(assignment);
+                }
+                else
+                {
+                    dataContext.SetState(assignment, DataContextItemState.Update);
+                }
+                dataContext.Save();
+            }
+        }
     }
 }
