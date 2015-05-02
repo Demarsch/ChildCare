@@ -36,12 +36,13 @@ namespace Registry
 
             var cacheService = new DataContextCacheService(contextProvider) as ICacheService;
             var environment = new Environment(contextProvider) as IEnvironment;
+            var dialogService = new WindowDialogService() as IDialogService;
 
             var patientAssignmentService = new PatientAssignmentService(contextProvider) as IPatientAssignmentService;
             var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log, cacheService);
 
             var scheduleService = new ScheduleService(contextProvider);
-            var scheduleViewModel = new ScheduleViewModel(scheduleService, log, cacheService, environment);
+            var scheduleViewModel = new ScheduleViewModel(scheduleService, log, cacheService, environment, dialogService);
 
             var patientService = new PatientService(contextProvider) as IPatientService;
             var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, patientAssignmentListViewModel);

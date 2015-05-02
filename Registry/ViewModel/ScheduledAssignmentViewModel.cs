@@ -21,6 +21,8 @@ namespace Registry
 
         public DateTime StartTime { get { return assignment.StartTime; } }
 
+        public bool IsTemporary { get { return assignment.IsTemporary; } }
+
         public DateTime EndTime { get { return assignment.EndTime; } }
 
         public string PersonShortName { get { return assignment.PersonShortName; } }
@@ -29,11 +31,7 @@ namespace Registry
 
         public bool TryUpdate(ScheduledAssignmentDTO assignment)
         {
-            if (assignment == null)
-            {
-                throw new ArgumentNullException("assignment");
-            }
-            if (this.assignment.Id != assignment.Id)
+            if (assignment == null || this.assignment.Id != assignment.Id)
             {
                 return false;
             }
@@ -51,5 +49,28 @@ namespace Registry
         {
             get { return EndTime.TimeOfDay; }
         }
+
+        public ScheduledAssignmentViewModelState State
+        {
+            get
+            {
+                if (IsTemporary)
+                {
+                    return ScheduledAssignmentViewModelState.Temporary;
+                }
+                if (IsCompleted)
+                {
+                    return ScheduledAssignmentViewModelState.Completed;
+                }
+                return ScheduledAssignmentViewModelState.Uncompleted;
+            }
+        }
+    }
+
+    public enum ScheduledAssignmentViewModelState
+    {
+        Temporary,
+        Uncompleted,
+        Completed,
     }
 }

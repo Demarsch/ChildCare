@@ -27,7 +27,7 @@ namespace Registry
         public int RecordTypeId { get; private set; }
         
         public ICommand RequestAssignmentCreationCommand { get; private set; }
-
+        //TODO: make it the other way so that view-model is unaware of mouse buttons
         private void RequestAssignmentCreation(MouseButtonEventArgs args)
         {
             if (args.ChangedButton == MouseButton.Left)

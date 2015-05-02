@@ -42,7 +42,8 @@ namespace Registry
                         IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
                         RecordTypeId = x.RecordTypeId,
                         RoomId = x.RoomId,
-                        PersonShortName = x.Person.ShortName
+                        PersonShortName = x.Person.ShortName,
+                        IsTemporary = x.IsTemporary
                     })
                     .ToLookup(x => x.RoomId);
         }
@@ -189,6 +190,15 @@ namespace Registry
                 {
                     dataContext.SetState(assignment, DataContextItemState.Update);
                 }
+                dataContext.Save();
+            }
+        }
+
+        public void DeleteAssignment(int assignmentId)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                dataContext.SetState(new Assignment { Id = assignmentId }, DataContextItemState.Delete);
                 dataContext.Save();
             }
         }

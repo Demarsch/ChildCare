@@ -100,6 +100,9 @@
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
     <Compile Include="Implementations\Environment.cs" />
     <Compile Include="Implementations\TimeInterval.cs" />
+    <Compile Include="Implementations\WindowDialogService.cs" />
+    <Compile Include="Interfaces\IDialogViewModel.cs" />
+    <Compile Include="Interfaces\IDialogService.cs" />
     <Compile Include="Interfaces\IEnvironment.cs" />
     <Compile Include="Interfaces\ITimeInterval.cs" />
     <Compile Include="MainServiceLocator.cs" />
@@ -127,6 +130,9 @@
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="ViewModel\ItemState.cs" />
     <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
+    <Compile Include="View\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\EditPersonDataUserControl.xaml.cs">
       <DependentUpon>EditPersonDataUserControl.xaml</DependentUpon>
     </Compile>
@@ -168,6 +174,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="View\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\EditPersonDataUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

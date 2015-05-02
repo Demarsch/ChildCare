@@ -43,15 +43,15 @@
                             IsEnabled="{Binding DataSourcesAreLoaded}" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" Visibility="{Binding IsInReadOnlyMode, Converter={StaticResource BooleanToInversedVisibilityConverter}}">
                         <Grid Width="180" VerticalAlignment="Center">
-                            <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}" DisplayMemberPath="NumberAndName"
-                                  Margin="5"/>
-                            <TextBlock Text="Выберите кабинет" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="RoomSelectionText" IsHitTestVisible="False"
-                                       Margin="11 0 0 0" Visibility="Collapsed"/>
-                        </Grid>
-                        <Grid Width="180" VerticalAlignment="Center">
                             <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding RecordTypes}" SelectedItem="{Binding SelectedRecordType}" DisplayMemberPath="Name"
                                   Margin="5"/>
                             <TextBlock Text="Выберите услугу" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="RecordTypeSelectionText" IsHitTestVisible="False"
+                                       Margin="11 0 0 0" Visibility="Collapsed"/>
+                        </Grid>
+                        <Grid Width="180" VerticalAlignment="Center">
+                            <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding Rooms}" SelectedItem="{Binding SelectedRoom}" DisplayMemberPath="NumberAndName"
+                                  Margin="5"/>
+                            <TextBlock Text="Выберите кабинет" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="RoomSelectionText" IsHitTestVisible="False"
                                        Margin="11 0 0 0" Visibility="Collapsed"/>
                         </Grid>
                     </StackPanel>

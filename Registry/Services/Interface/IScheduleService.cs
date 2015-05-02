@@ -19,5 +19,7 @@ namespace Registry
         IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
 
         void SaveAssignment(Assignment assignment);
+
+        void DeleteAssignment(int assignmentId);
     }
 }

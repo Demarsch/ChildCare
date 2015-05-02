@@ -69,7 +69,6 @@
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
         <EntityTypeShape EntityType="DataLib.CommissionQuestion" Width="1.5" PointX="14.625" PointY="25.5" />
         <EntityTypeShape EntityType="DataLib.CommissionSource" Width="1.5" PointX="15.375" PointY="13.5" />
-        <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="15.375" PointY="4.875" />
         <EntityTypeShape EntityType="DataLib.MedicalHelpType" Width="1.5" PointX="19.875" PointY="4.625" />
         <EntityTypeShape EntityType="DataLib.PersonTalon" Width="1.5" PointX="22.125" PointY="5.875" />
         <EntityTypeShape EntityType="DataLib.RecordContract" Width="1.5" PointX="17.625" PointY="4.5" />
@@ -81,7 +80,6 @@
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
         <AssociationConnector Association="DataLib.FK_MedicalHelpTypes_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_MedicalHelpTypes" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_Persons" />
@@ -109,6 +107,9 @@
         <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
         <AssociationConnector Association="DataLib.FK_Permissions_Users" />
+        <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="0.75" PointY="6.5" />
+        <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

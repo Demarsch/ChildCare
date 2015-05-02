@@ -27,6 +27,8 @@
           <Property Name="CancelReasonId" Type="int" />
           <Property Name="Note" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="RecordId" Type="int" />
+          <Property Name="IsTemporary" Type="bit" Nullable="false" />
+          <Property Name="CreationDateTime" Type="datetime" Nullable="false" StoreGeneratedPattern="Computed" />
         </EntityType>
         <EntityType Name="Branches">
           <Key>
@@ -197,8 +199,9 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="int" Nullable="false" />
-          <Property Name="ShortName" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Genders">
           <Key>
@@ -503,6 +506,18 @@
             </Principal>
             <Dependent Role="PersonAddresses">
               <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignments_FinacingSources">
+          <End Role="FinacingSources" Type="Self.FinacingSources" Multiplicity="1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinacingSources">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1285,6 +1300,10 @@
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
           </AssociationSet>
+          <AssociationSet Name="FK_Assignments_FinacingSources" Association="Self.FK_Assignments_FinacingSources">
+            <End Role="FinacingSources" EntitySet="FinacingSources" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
           <AssociationSet Name="FK_Assignments_Persons" Association="Self.FK_Assignments_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="Assignments" EntitySet="Assignments" />
@@ -1704,7 +1723,6 @@
           </AssociationSet>
           <EntitySet Name="CommissionQuestions" EntityType="DataLib.CommissionQuestion" />
           <EntitySet Name="CommissionSources" EntityType="DataLib.CommissionSource" />
-          <EntitySet Name="FinacingSources" EntityType="DataLib.FinacingSource" />
           <EntitySet Name="MedicalHelpTypes" EntityType="DataLib.MedicalHelpType" />
           <EntitySet Name="PersonTalons" EntityType="DataLib.PersonTalon" />
           <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
@@ -1733,10 +1751,6 @@
           <AssociationSet Name="FK_CommissionSources_CommissionTypes" Association="DataLib.FK_CommissionSources_CommissionTypes">
             <End Role="CommissionType" EntitySet="CommissionTypes" />
             <End Role="CommissionSource" EntitySet="CommissionSources" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_FinacingSources" Association="DataLib.FK_RecordContracts_FinacingSources">
-            <End Role="FinacingSource" EntitySet="FinacingSources" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
           <AssociationSet Name="FK_MedicalHelpTypes_RecordContracts" Association="DataLib.FK_MedicalHelpTypes_RecordContracts">
             <End Role="RecordContract" EntitySet="RecordContracts" />
@@ -1824,6 +1838,15 @@
           <AssociationSet Name="FK_Permissions_Users" Association="DataLib.FK_Permissions_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="UserPermission" EntitySet="UserPermissions" />
+          </AssociationSet>
+          <EntitySet Name="FinacingSources" EntityType="DataLib.FinacingSource" />
+          <AssociationSet Name="FK_Assignments_FinacingSources" Association="DataLib.FK_Assignments_FinacingSources">
+            <End Role="FinacingSource" EntitySet="FinacingSources" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_FinacingSources" Association="DataLib.FK_RecordContracts_FinacingSources">
+            <End Role="FinacingSource" EntitySet="FinacingSources" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="PersonName">
@@ -1920,6 +1943,9 @@
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="Assignment" ToRole="RecordType" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Assignments_Users" FromRole="Assignment" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DataLib.FK_Assignments_Users1" FromRole="Assignment" ToRole="User" />
+          <Property Name="IsTemporary" Type="Boolean" Nullable="false" />
+          <Property Name="CreationDateTime" Type="DateTime" Nullable="false" Precision="3" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="FinacingSource" Relationship="DataLib.FK_Assignments_FinacingSources" FromRole="Assignment" ToRole="FinacingSource" />
           </EntityType>
         <EntityType Name="Record">
           <Key>
@@ -2684,15 +2710,6 @@
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_CommissionSources" FromRole="CommissionSource" ToRole="CommissionProtocol" />
           <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionSources_CommissionTypes" FromRole="CommissionSource" ToRole="CommissionType" />
         </EntityType>
-        <EntityType Name="FinacingSource">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="Int32" Nullable="false" />
-          <Property Name="ShortName" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinacingSources" FromRole="FinacingSource" ToRole="RecordContract" />
-        </EntityType>
         <EntityType Name="MedicalHelpType">
           <Key>
             <PropertyRef Name="Id" />
@@ -2730,9 +2747,9 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="RecordContract" ToRole="CommissionProtocol" />
-          <NavigationProperty Name="FinacingSource" Relationship="DataLib.FK_RecordContracts_FinacingSources" FromRole="RecordContract" ToRole="FinacingSource" />
           <NavigationProperty Name="MedicalHelpTypes" Relationship="DataLib.FK_MedicalHelpTypes_RecordContracts" FromRole="RecordContract" ToRole="MedicalHelpType" />
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
+          <NavigationProperty Name="FinacingSource" Relationship="DataLib.FK_RecordContracts_FinacingSources" FromRole="RecordContract" ToRole="FinacingSource" />
         </EntityType>
         <EntityType Name="UserMessage">
           <Key>
@@ -2829,18 +2846,6 @@
             </Principal>
             <Dependent Role="CommissionSource">
               <PropertyRef Name="CommissionTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_FinacingSources">
-          <End Type="DataLib.FinacingSource" Role="FinacingSource" Multiplicity="1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="FinacingSource">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3183,6 +3188,41 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="FinacingSource">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_FinacingSources" FromRole="FinacingSource" ToRole="Assignment" />
+          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinacingSources" FromRole="FinacingSource" ToRole="RecordContract" />
+        </EntityType>
+        <Association Name="FK_Assignments_FinacingSources">
+          <End Type="DataLib.FinacingSource" Role="FinacingSource" Multiplicity="1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinacingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_FinacingSources">
+          <End Type="DataLib.FinacingSource" Role="FinacingSource" Multiplicity="1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinacingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3229,6 +3269,8 @@
           <EntitySetMapping Name="Assignments">
             <EntityTypeMapping TypeName="DataLib.Assignment">
               <MappingFragment StoreEntitySet="Assignments">
+                <ScalarProperty Name="CreationDateTime" ColumnName="CreationDateTime" />
+                <ScalarProperty Name="IsTemporary" ColumnName="IsTemporary" />
                 <ScalarProperty Name="RecordId" ColumnName="RecordId" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="CancelReasonId" ColumnName="CancelReasonId" />
@@ -3566,15 +3608,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="FinacingSources">
-            <EntityTypeMapping TypeName="DataLib.FinacingSource">
-              <MappingFragment StoreEntitySet="FinacingSources">
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="MedicalHelpTypes">
             <EntityTypeMapping TypeName="DataLib.MedicalHelpType">
               <MappingFragment StoreEntitySet="MedicalHelpTypes">
@@ -3714,6 +3747,16 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="SID" ColumnName="SID" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FinacingSources">
+            <EntityTypeMapping TypeName="DataLib.FinacingSource">
+              <MappingFragment StoreEntitySet="FinacingSources">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

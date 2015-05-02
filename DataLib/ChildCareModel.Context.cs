@@ -54,7 +54,6 @@ namespace DataLib
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
-        public virtual DbSet<FinacingSource> FinacingSources { get; set; }
         public virtual DbSet<MedicalHelpType> MedicalHelpTypes { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
@@ -67,5 +66,6 @@ namespace DataLib
         public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<FinacingSource> FinacingSources { get; set; }
     }
 }

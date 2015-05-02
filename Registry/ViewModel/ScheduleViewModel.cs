@@ -30,7 +30,9 @@ namespace Registry
 
         private readonly IEnvironment environment;
 
-        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment)
+        private readonly IDialogService dialogService;
+
+        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment, IDialogService dialogService)
         {
             if (scheduleService == null)
             {
@@ -48,6 +50,11 @@ namespace Registry
             {
                 throw new ArgumentNullException("environment");
             }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }
+            this.dialogService = dialogService;
             this.environment = environment;
             this.cacheService = cacheService;
             this.log = log;
@@ -181,43 +188,104 @@ namespace Registry
         }
 
         #region Assignments
-        
+        //TODO: worth reviewing this code to probably get rid of all type of assignment objects
         private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<ScheduleCellViewModel> e)
         {
+            var financingSource = GetFinancingSource();
+            if (financingSource == 0)
+            {
+                log.Error("There are no financing sources in database");
+                dialogService.ShowError("В базе данных отсутствует информация о доступных источниках финансирования. Обратитесь в службу поддержки");
+                return;
+            }
             var selectedRoom = sender as RoomViewModel;
             var assignment = new Assignment
             {
                 AssignDateTime = e.Result.StartTime,
                 AssignUserId = environment.CurrentUser.UserId,
-                //TODO: put any valid value here and request user to change it after assignment creation
-                FinancingSourceId = 1,
                 Note = string.Empty,
+                FinancingSourceId = financingSource,
                 PersonId = currentPatient.Id,
                 RecordTypeId = e.Result.RecordTypeId,
-                RoomId = selectedRoom.Id
+                RoomId = selectedRoom.Id,
+                IsTemporary = true
             };
             try
             {
                 scheduleService.SaveAssignment(assignment);
-                selectedRoom.Assignments.Add(new ScheduledAssignmentViewModel(new ScheduledAssignmentDTO
-                {
-                    Id = assignment.Id, 
-                    IsCompleted = false,
-                    PersonShortName = currentPatient.ShortName,
-                    RecordTypeId = assignment.RecordTypeId,
-                    RoomId = assignment.RoomId,
-                    StartTime = assignment.AssignDateTime,
-                    Duration = (int)e.Result.EndTime.Subtract(e.Result.StartTime).TotalMinutes
-                }));
-                selectedRoom.ScheduleCells.Remove(e.Result);
             }
             catch (Exception ex)
             {
-                //TODO: notify user differently
                 log.Error("Failed to save new assignment", ex);
-                var message = string.Format("Не удалось создать назначение. Причина - {0}{1}Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", ex.Message, Environment.NewLine);
-                MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                dialogService.ShowError(string.Format("Не удалось создать назначение. Причина - {0}{1}Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", ex.Message, Environment.NewLine));
+                return;
             }
+            var newAssignmentDTO = new ScheduledAssignmentDTO
+            {
+                Id = assignment.Id,
+                IsCompleted = false,
+                PersonShortName = currentPatient.ShortName,
+                RecordTypeId = assignment.RecordTypeId,
+                RoomId = assignment.RoomId,
+                StartTime = assignment.AssignDateTime,
+                Duration = (int)e.Result.EndTime.Subtract(e.Result.StartTime).TotalMinutes,
+                IsTemporary = true
+            };
+            var newAssignment = new ScheduledAssignmentViewModel(newAssignmentDTO);
+            selectedRoom.Assignments.Add(newAssignment);
+            selectedRoom.ScheduleCells.Remove(e.Result);
+            var isFailed = false;
+            do
+            {
+                var viewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>());
+                viewModel.SelectedFinancingSource = viewModel.FinacingSources.Single(x => x.Id == assignment.FinancingSourceId);
+                var dialogResult = dialogService.ShowDialog(viewModel);
+                if (dialogResult != true)
+                {
+                    try
+                    {
+                        isFailed = false;
+                        scheduleService.DeleteAssignment(assignment.Id);
+                        selectedRoom.Assignments.Remove(newAssignment);
+                        selectedRoom.ScheduleCells.Add(e.Result);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Failed to delete temporary assignment", ex);
+                        dialogService.ShowError("Не удалось удалить временное назначение. Попробуйте удалить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        assignment.IsTemporary = false;
+                        assignment.FinancingSourceId = viewModel.SelectedFinancingSource.Id;
+                        assignment.Note = viewModel.Note;
+                        scheduleService.SaveAssignment(assignment);
+                        newAssignmentDTO.IsTemporary = false;
+                        newAssignment.TryUpdate(newAssignmentDTO);
+                        isFailed = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Failed to save additional data for temporary assignment", ex);
+                        dialogService.ShowError("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию");
+                        isFailed = true;
+                    }
+                }
+
+            } while (isFailed);
+        }
+
+        private int GetFinancingSource()
+        {
+            var result = cacheService.GetItems<FinacingSource>().Where(x => !x.IsActive).Select(x => x.Id).FirstOrDefault();
+            if (result == 0)
+            {
+                result = cacheService.GetItems<FinacingSource>().Select(x => x.Id).FirstOrDefault();
+            }
+            return result;
         }
 
         #endregion

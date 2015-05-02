@@ -1,5 +1,6 @@
 ﻿using System;
 using Core;
+using DataLib;
 
 namespace Registry
 {
@@ -20,6 +21,8 @@ namespace Registry
         public DateTime EndTime { get { return StartTime.AddMinutes(Duration); }}
 
         public bool IsCompleted { get; set; }
+
+        public bool IsTemporary { get; set; }
 
         TimeSpan ITimeInterval.StartTime
         {

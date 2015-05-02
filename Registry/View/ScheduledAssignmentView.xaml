@@ -1,30 +1,28 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib">
     <DataTemplate DataType="{x:Type registry:ScheduledAssignmentViewModel}">
         <DataTemplate.Resources>
-            <core:UniversalConverter x:Key="IsCompletedToBackgroundConverter">
-                <core:ConverterItem>
-                    <core:ConverterItem.From>
-                        <system:Boolean>True</system:Boolean>
-                    </core:ConverterItem.From>
-                    <core:ConverterItem.To>
+            <core:UniversalConverter x:Key="StateToBackgroundConverter">
+                <core:ConverterItem From="{x:Static registry:ScheduledAssignmentViewModelState.Completed}">
+                  <core:ConverterItem.To>
                         <SolidColorBrush Color="LightGreen" />
                     </core:ConverterItem.To>
                 </core:ConverterItem>
-                <core:ConverterItem>
-                    <core:ConverterItem.From>
-                        <system:Boolean>False</system:Boolean>
-                    </core:ConverterItem.From>
+                <core:ConverterItem From="{x:Static registry:ScheduledAssignmentViewModelState.Uncompleted}">
                     <core:ConverterItem.To>
                         <SolidColorBrush Color="Khaki" />
                     </core:ConverterItem.To>
                 </core:ConverterItem>
+                <core:ConverterItem From="{x:Static registry:ScheduledAssignmentViewModelState.Temporary}">
+                    <core:ConverterItem.To>
+                        <SolidColorBrush Color="Gainsboro" />
+                    </core:ConverterItem.To>
+                </core:ConverterItem>
             </core:UniversalConverter>
         </DataTemplate.Resources>
-        <Border BorderBrush="Gray" BorderThickness="0 0.5 0 0.5" Background="{Binding IsCompleted, Converter={StaticResource IsCompletedToBackgroundConverter}}">
+        <Border BorderBrush="Gray" BorderThickness="0 0.5 0 0.5" Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
