@@ -180,6 +180,7 @@ namespace Registry
 
         public void SaveAssignment(Assignment assignment)
         {
+            assignment.Note = assignment.Note ?? string.Empty;
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
                 if (assignment.Id == 0)

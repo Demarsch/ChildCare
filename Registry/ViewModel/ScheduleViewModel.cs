@@ -308,7 +308,20 @@ namespace Registry
             set
             {
                 if (Set("SelectedDate", ref selectedDate, value))
-                    LoadAssignmentsAsync(selectedDate);
+                {
+                    if (!IsInReadOnlyMode)
+                    {
+                        ClearScheduleGrid();
+                    }
+                    LoadAssignmentsAsync(selectedDate)
+                        .ContinueWith(x =>
+                        {
+                            if (!IsInReadOnlyMode)
+                            {
+                                BuildScheduleGrid();
+                            }
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
+                }
             }
         }
 
@@ -406,6 +419,12 @@ namespace Registry
         {
             foreach (var room in rooms)
                 room.BuildScheduleGrid(selectedDate, isRoomSelected ? (int?)selectedRoom.Id : null, isRecordTypeSelected ? (int?)selectedRecordType.Id : null);
+        }
+
+        private void ClearScheduleGrid()
+        {
+            foreach (var room in rooms)
+                room.ScheduleCells.Clear();
         }
 
         private bool FilterRooms(object obj)
