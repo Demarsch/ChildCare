@@ -412,6 +412,7 @@ namespace Registry
         {
             FilteredRooms.Filter = FilterRooms;
             NoRoomIsFound = Rooms.Any() && FilteredRooms.IsEmpty;
+            ClearScheduleGrid();
             BuildScheduleGrid();
         }
 
