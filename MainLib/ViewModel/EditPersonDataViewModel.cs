@@ -34,6 +34,7 @@ namespace MainLib
             this.log = log;
             SaveChangesCommand = new RelayCommand(SaveChanges);
             EditInsuranceCommand = new RelayCommand(EditInsurance);
+            EditPersonAddressCommand = new RelayCommand(EditPersonAddress);
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetChangeNameReasons());
             Genders = new ObservableCollection<Gender>(service.GetGenders());
 
@@ -104,6 +105,24 @@ namespace MainLib
             FillPropertyFromPerson();
             insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
             insuranceDocumentViewModel.PropertyChanged += insuranceDocumentViewModel_PropertyChanged;
+            personAddressesViewModel = new PersonAddressesViewModel(Id, service);
+            personAddressesViewModel.PropertyChanged += personAddressesViewModel_PropertyChanged;
+        }
+
+        void personAddressesViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsChangesAccepted")
+            {
+                if (personAddressesViewModel.IsChangesAccepted.HasValue)
+                {
+                    if (!personAddressesViewModel.IsChangesAccepted.Value)
+                    {
+                        //ToDo: maybe create mo flexible method
+                        personAddressesViewModel = new PersonAddressesViewModel(Id, service);
+                    }
+                    //Insurance = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
+                }
+            }
         }
 
         void insuranceDocumentViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -234,6 +253,16 @@ namespace MainLib
             insuranceDocumentViewModel.IsChangesAccepted = null;
             var insuranceDocumentView = new PersonInsuranceDocumentsView() { DataContext = insuranceDocumentViewModel };
             insuranceDocumentView.ShowDialog();
+        }
+
+        public ICommand EditPersonAddressCommand { get; set; }
+        private PersonAddressesViewModel personAddressesViewModel;
+        private void EditPersonAddress()
+        {
+            //ToDo: USe better solution for using other window
+            personAddressesViewModel.IsChangesAccepted = null;
+            var personAddressesView = new PersonAddressesView() { DataContext = personAddressesViewModel };
+            personAddressesView.ShowDialog();
         }
 
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();

@@ -129,6 +129,8 @@
     <Compile Include="ViewModel\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="ViewModel\ItemState.cs" />
+    <Compile Include="ViewModel\PersonAddressesViewModel.cs" />
+    <Compile Include="ViewModel\PersonAddressViewModel.cs" />
     <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
     <Compile Include="View\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
@@ -138,6 +140,9 @@
     </Compile>
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonAddressesView.xaml.cs">
+      <DependentUpon>PersonAddressesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PersonInsuranceDocumentsView.xaml.cs">
       <DependentUpon>PersonInsuranceDocumentsView.xaml</DependentUpon>
@@ -185,6 +190,10 @@
     <Page Include="View\EditPersonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonAddressesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\PersonInsuranceDocumentsView.xaml">
       <Generator>MSBuild:Compile</Generator>

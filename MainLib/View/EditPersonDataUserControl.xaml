@@ -96,7 +96,8 @@
                  IsReadOnly="True" MouseDoubleClick="{mvvm:EventBinding EditInsuranceCommand}" />
 
         <Label Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Адрес</Label>
-        <TextBox Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding Addresses}"/>
+        <TextBox Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding Addresses}"
+                 MouseDoubleClick="{mvvm:EventBinding EditPersonAddressCommand}"/>
 
         <Label Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Удостоверение личности</Label>
         <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding IdentityDocument}"/>

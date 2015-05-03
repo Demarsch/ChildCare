@@ -1,0 +1,144 @@
+﻿<Window x:Class="MainLib.PersonAddressesView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mainLib="clr-namespace:MainLib"
+        xmlns:wpf="http://wpfcontrols.com/"
+        xmlns:core="clr-namespace:Core;assembly=StuffLib"
+        mc:Ignorable="d"
+        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStartupLocation="Manual" d:DataContext="{d:DesignInstance mainLib:PersonAddressesViewModel}"
+        MinWidth="300" MinHeight="150" DialogResult="{Binding DialogResult}">
+
+    <Window.Resources>
+        <core:UniversalConverter x:Key="PersonAddressStateToBackgroundBrushConverter">
+            <core:ConverterItem From="{x:Static mainLib:ItemState.Active}">
+                <core:ConverterItem.To>
+                    <SolidColorBrush Color="LightGreen" />
+                </core:ConverterItem.To>
+            </core:ConverterItem>
+            <core:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
+                <core:ConverterItem.To>
+                    <SolidColorBrush Color="LightPink" />
+                </core:ConverterItem.To>
+            </core:ConverterItem>
+        </core:UniversalConverter>
+
+        <DataTemplate x:Key="AutoCompleteTemplate">
+            <Border Padding="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding Path=FullName}"
+                               FontWeight="Bold" 
+                               Grid.Column="0" 
+                               Grid.Row="0"
+                               VerticalAlignment="Bottom"/>
+                    <TextBlock Text="{Binding Path=CodeOKATO}"
+                               Foreground="Gray"
+                               Grid.Column="0" 
+                               Grid.Row="2"
+                               FontFamily="Segoe UI"
+                               VerticalAlignment="Bottom"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Выбрать" Margin="3" Padding="2" Background="#FFADEE9A"  Command="{Binding AcceptCommand}"/>
+            <Button Content="Отмена" Margin="3" Padding="2" Background="#FFFFBEBE" Command="{Binding CancelCommand}"/>
+        </StackPanel>
+        <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddIPersonAddressCommand}" Content="Добавить" Margin="5" Background="White"/>
+        <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding PersonAddresses}" Margin="5">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Black" BorderThickness="1" Background="{Binding PersonAddressState, Converter={StaticResource PersonAddressStateToBackgroundBrushConverter}}">
+                        <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Button  Grid.Row="0" Grid.Column="6" Margin="2" Content="x" Background="White" Width="auto" Height="auto" Padding="2" HorizontalAlignment="Right" 
+                                 Command="{Binding DataContext.DeletePersonAddressCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Вид адреса" />
+                            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6" Margin="2" ItemsSource="{Binding DataContext.ListAddressTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding AddressTypeId}" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6" Margin="2" Text="Регион/иностранное государство" />
+                            <wpf:AutoCompleteTextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Margin="2" Background="White"
+                                 Watermark="введите слова из названия региона или иностранного государства"
+                                 DisplayMember="NameSMOK"
+                                 ItemTemplate="{StaticResource AutoCompleteTemplate}"
+                                 SelectedItem="{Binding AddressRegionOKATO, Mode=TwoWay}"
+                                 IconPlacement="Left"
+                                 IconVisibility="Visible"
+                                 Provider="{Binding DataContext.AddressSuggestionProvider, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                                 TabIndex="1">
+                                <wpf:AutoCompleteTextBox.LoadingContent>
+                                    <TextBlock Text="Загрузка данных..." Margin="5" FontSize="14" />
+                                </wpf:AutoCompleteTextBox.LoadingContent>
+                            </wpf:AutoCompleteTextBox>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6" Margin="2" Text="ОКАТО" />
+                            <wpf:AutoCompleteTextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Margin="2" Background="White"
+                                 Watermark="введите слова из названия города, села, улицы и др."
+                                 DisplayMember="NameSMOK"
+                                 ItemTemplate="{StaticResource AutoCompleteTemplate}"
+                                 SelectedItem="{Binding AddressOKATO, Mode=TwoWay}"
+                                 IconPlacement="Left"
+                                 IconVisibility="Visible"
+                                 Provider="{Binding DataContext.AddressSuggestionProvider, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                                 TabIndex="1">
+                                <wpf:AutoCompleteTextBox.LoadingContent>
+                                    <TextBlock Text="Загрузка данных..." Margin="5" FontSize="14" />
+                                </wpf:AutoCompleteTextBox.LoadingContent>
+                            </wpf:AutoCompleteTextBox>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="2" Text="По подкументу" />
+                            <TextBox Grid.Row="5" Grid.Column="0" Margin="2" Text="{Binding UserText}" />
+                            
+                            <TextBlock Grid.Row="6" Grid.Column="0" Margin="2" Text="Дом"/>
+                            <TextBox Grid.Row="6" Grid.Column="1" Margin="2" Text="{Binding House}"/>
+                            <TextBlock Grid.Row="6" Grid.Column="2" Margin="2" Text="Корпус"/>
+                            <TextBox Grid.Row="6" Grid.Column="3" Margin="2" Text="{Binding Bulding}"/>
+                            <TextBlock Grid.Row="6" Grid.Column="4" Margin="2" Text="Квартира"/>
+                            <TextBox Grid.Row="6" Grid.Column="5" Margin="2" Text="{Binding Apartment}"/>
+
+                            <TextBlock Grid.Row="7" Grid.Column="0" Margin="2"  Text="С "/>
+                            <DatePicker Grid.Row="7" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate}" BorderThickness="1"/>
+                            <TextBlock Grid.Row="7" Grid.Column="2" Margin="2" Text="по" />
+                            <DatePicker Grid.Row="7" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate}" BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
+
+                            <CheckBox Grid.Row="8" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch" Content="Бессрочно" BorderThickness="1" IsChecked="{Binding WithoutEndDate}"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </DockPanel>
+</Window>
+
