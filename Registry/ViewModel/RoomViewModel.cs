@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Input;
 using System.Windows.Navigation;
 using Core;
 using DataLib;
@@ -39,9 +37,8 @@ namespace Registry
             //TODO: probably worth using fallback value on binding side
             openTime = DateTime.Today.AddHours(8.0);
             closeTime = DateTime.Today.AddHours(17.0);
-            assignments = new ObservableCollection<ScheduledAssignmentViewModel>();
             workingTimes = new ScheduleItemViewModel[0];
-            scheduleCells = new ObservableCollection<ScheduleCellViewModel>();
+            TimeSlots = new ObservalbeCollectionEx<ITimeInterval>();
         }
 
         public int Id { get { return room.Id; } }
@@ -50,13 +47,7 @@ namespace Registry
 
         public string Name { get { return room.Name; } }
 
-        private ObservableCollection<ScheduledAssignmentViewModel> assignments;
-
-        public ObservableCollection<ScheduledAssignmentViewModel> Assignments
-        {
-            get { return assignments; }
-            set { Set("Assignments", ref assignments, value); }
-        }
+        public ObservalbeCollectionEx<ITimeInterval> TimeSlots { get; private set; }
 
         private DateTime openTime;
 
@@ -97,34 +88,27 @@ namespace Registry
             return workingTimes.Any(x => x.RecordTypeId == recordTypeId);
         }
 
-        private ObservableCollection<ScheduleCellViewModel> scheduleCells;
-
-        public ObservableCollection<ScheduleCellViewModel> ScheduleCells
-        {
-            get { return scheduleCells; }
-            private set { Set("ScheduleCells", ref scheduleCells, value); }
-        }
-
         public void BuildScheduleGrid(DateTime date, int? selectedRoomId, int? selectedRecordTypeId)
         {
-            foreach (var scheduleCell in scheduleCells)
+            foreach (var freeTimeSlot in TimeSlots.OfType<ScheduleCellViewModel>())
             {
-                scheduleCell.AssignmentCreationRequested -= ScheduleCellOnAssignmentCreationRequested;
+                freeTimeSlot.AssignmentCreationRequested -= ScheduleCellOnAssignmentCreationRequested;
             }
             if (!selectedRecordTypeId.HasValue || (selectedRoomId.HasValue && selectedRoomId.Value != Id) || !AllowsRecordType(selectedRecordTypeId.Value))
             {
-                ScheduleCells.Clear();
+                TimeSlots.RemoveWhere(x => x is ScheduleCellViewModel);
                 return;
             }
             var recordType = cacheService.GetItemById<RecordType>(selectedRecordTypeId.Value);
             var availableTimeIntervals = scheduleService.GetAvailableTimeIntervals(
                 workingTimes.Where(x => x.RecordTypeId == selectedRecordTypeId.Value),
-                assignments, 
+                TimeSlots.OfType<ScheduledAssignmentViewModel>(), 
                 recordType.Duration, 
                 recordType.MinDuration);
-            ScheduleCells = new ObservableCollection<ScheduleCellViewModel>(availableTimeIntervals.Select(x => new ScheduleCellViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value)).ToArray());
-            foreach (var scheduleCell in scheduleCells)
-                scheduleCell.AssignmentCreationRequested += ScheduleCellOnAssignmentCreationRequested;
+            var freeTimeSlots = availableTimeIntervals.Select(x => new ScheduleCellViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value)).ToArray();
+            foreach (var freeTimeSlot in freeTimeSlots)
+                freeTimeSlot.AssignmentCreationRequested += ScheduleCellOnAssignmentCreationRequested;
+            TimeSlots.AddRange(freeTimeSlots);
         }
 
         private void ScheduleCellOnAssignmentCreationRequested(object sender, EventArgs eventArgs)

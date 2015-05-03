@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Input;
+using Core;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
 namespace Registry
 {
-    public class ScheduleCellViewModel : ObservableObject
+    public class ScheduleCellViewModel : ObservableObject, ITimeInterval
     {
         public ScheduleCellViewModel(DateTime startTime, DateTime endTime, int recordTypeId)
         {
@@ -46,6 +46,16 @@ namespace Registry
             {
                 handler(this, EventArgs.Empty);
             }
+        }
+
+        TimeSpan ITimeInterval.StartTime
+        {
+            get { return StartTime.TimeOfDay; }
+        }
+
+        TimeSpan ITimeInterval.EndTime
+        {
+            get { return EndTime.TimeOfDay; }
         }
     }
 }

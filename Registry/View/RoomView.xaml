@@ -42,7 +42,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <!--Assignments layer-->
-            <ListBox ItemsSource="{Binding Assignments}" BorderThickness="0">
+            <ListBox ItemsSource="{Binding TimeSlots}" BorderThickness="0">
                 <i:Interaction.Behaviors>
                     <core:IgnoreMouseWheelBehavior />
                 </i:Interaction.Behaviors>
@@ -50,26 +50,6 @@
                     <ItemsPanelTemplate>
                         <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
                                                         UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="xctk:TimelinePanel.Date" Value="{Binding StartTime, Mode=OneTime}" />
-                        <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding EndTime, Mode=OneTime}" />
-                        <Setter Property="Template" Value="{StaticResource ListBoxItem}" />
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
-            <!--Schedule cells layer-->
-            <ListBox ItemsSource="{Binding ScheduleCells}" BorderThickness="0" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch">
-                <i:Interaction.Behaviors>
-                    <core:IgnoreMouseWheelBehavior />
-                </i:Interaction.Behaviors>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
-                                                        UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"
-                                            HorizontalAlignment="Stretch"/>
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
                 <ListBox.ItemContainerStyle>

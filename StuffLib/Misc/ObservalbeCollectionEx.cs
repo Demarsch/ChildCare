@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -60,5 +61,29 @@ namespace Core
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
+        public bool RemoveWhere(Func<TItem, bool> predicate)
+        {
+            if (predicate == null)
+            {
+                return false;
+            }
+            var wasRemoved = false;
+            for (var index = Items.Count - 1; index >= 0; index--)
+            {
+                if (predicate(Items[index]))
+                {
+                    Items.RemoveAt(index);
+                    wasRemoved = true;
+                }
+            }
+            if (!wasRemoved)
+            {
+                return false;
+            }
+            OnPropertyChanged(new PropertyChangedEventArgs("Count"));
+            OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            return true;
+        }
     }
 }

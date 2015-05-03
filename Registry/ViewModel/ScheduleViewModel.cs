@@ -100,7 +100,7 @@ namespace Registry
                 {
                     room.OpenTime = OpenTime;
                     room.CloseTime = CloseTime;
-                    room.Assignments = new ObservableCollection<ScheduledAssignmentViewModel>(assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)).ToArray());
+                    room.TimeSlots.Replace(assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)));
                     room.WorkingTimes = workingTimes[room.Id].Select(x => new ScheduleItemViewModel(x, date)).ToArray();
                 }
             }
@@ -232,8 +232,8 @@ namespace Registry
                 IsTemporary = true
             };
             var newAssignment = new ScheduledAssignmentViewModel(newAssignmentDTO);
-            selectedRoom.Assignments.Add(newAssignment);
-            selectedRoom.ScheduleCells.Remove(e.Result);
+            selectedRoom.TimeSlots.Remove(e.Result);
+            selectedRoom.TimeSlots.Add(newAssignment);
             var isFailed = false;
             do
             {
@@ -246,8 +246,8 @@ namespace Registry
                     {
                         isFailed = false;
                         scheduleService.DeleteAssignment(assignment.Id);
-                        selectedRoom.Assignments.Remove(newAssignment);
-                        selectedRoom.ScheduleCells.Add(e.Result);
+                        selectedRoom.TimeSlots.Remove(newAssignment);
+                        selectedRoom.TimeSlots.Add(e.Result);
                     }
                     catch (Exception ex)
                     {
@@ -424,7 +424,7 @@ namespace Registry
         private void ClearScheduleGrid()
         {
             foreach (var room in rooms)
-                room.ScheduleCells.Clear();
+                room.TimeSlots.RemoveWhere(x => x is ScheduleCellViewModel);
         }
 
         private bool FilterRooms(object obj)
