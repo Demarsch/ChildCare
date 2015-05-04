@@ -16,9 +16,9 @@ namespace DataLib
     {
         public Permission()
         {
+            this.UserPermissions = new HashSet<UserPermission>();
             this.PermissionLinks = new HashSet<PermissionLink>();
             this.PermissionLinks1 = new HashSet<PermissionLink>();
-            this.UserPermissions = new HashSet<UserPermission>();
         }
     
         public int Id { get; set; }
@@ -27,8 +27,8 @@ namespace DataLib
         public bool IsGroup { get; set; }
         public bool ReadOnly { get; set; }
     
+        public virtual ICollection<UserPermission> UserPermissions { get; set; }
         public virtual ICollection<PermissionLink> PermissionLinks { get; set; }
         public virtual ICollection<PermissionLink> PermissionLinks1 { get; set; }
-        public virtual ICollection<UserPermission> UserPermissions { get; set; }
     }
 }

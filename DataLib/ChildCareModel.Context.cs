@@ -34,7 +34,6 @@ namespace DataLib
         public virtual DbSet<InsuranceDocument> InsuranceDocuments { get; set; }
         public virtual DbSet<InsuranceDocumentType> InsuranceDocumentTypes { get; set; }
         public virtual DbSet<ChangeNameReason> ChangeNameReasons { get; set; }
-        public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<UserPermission> UserPermissions { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
@@ -67,5 +66,6 @@ namespace DataLib
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<FinacingSource> FinacingSources { get; set; }
+        public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
     }
 }

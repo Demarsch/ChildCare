@@ -24,11 +24,8 @@
         <AssociationConnector Association="DataLib.FK_InsuranceDocuments_Persons" />
         <EntityTypeShape EntityType="DataLib.ChangeNameReason" Width="1.5" PointX="10.375" PointY="9.875" />
         <AssociationConnector Association="DataLib.FK_PersonNames_ChangeNameReasons" />
-        <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="12.625" PointY="2.75" />
         <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="10.375" PointY="2.5" />
         <EntityTypeShape EntityType="DataLib.UserPermission" Width="1.5" PointX="12.625" PointY="5.625" />
-        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
-        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
         <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
         <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="7.375" PointY="10.75" />
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="3" PointY="8.75" />
@@ -110,6 +107,9 @@
         <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="0.75" PointY="6.5" />
         <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
         <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
+        <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="12.625" PointY="3.25" />
+        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
+        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

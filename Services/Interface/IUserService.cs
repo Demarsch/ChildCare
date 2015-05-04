@@ -10,6 +10,7 @@ namespace Core
         ICollection<User> GetAllUsers(string byName);
         ICollection<User> GetAllActiveUsers(DateTime onDate);
         ICollection<User> GetAllActiveUsers(DateTime from, DateTime to);
+        ICollection<UserPermission> GetUserPermissions(int userId);
         User GetUserById(int id);
         User GetUserByPersonId(int personId);
         bool Save(User user, out string msg);

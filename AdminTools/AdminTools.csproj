@@ -116,14 +116,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ViewModel\UsersSystemInfoSuggestionProvider.cs" />
+    <Compile Include="DTO\PersonDTO.cs" />
+    <Compile Include="DTO\UserPermissionsDTO.cs" />
+    <Compile Include="ViewModel\EditPermissionViewModel.cs" />
+    <Compile Include="ViewModel\PersonSuggestionProvider.cs" />
     <Compile Include="ViewModel\PermissionsTreeViewModel.cs" />
     <Compile Include="ViewModel\UserAccountViewModel.cs" />
     <Compile Include="ViewModel\UserEditorViewModel.cs" />
-    <Compile Include="ViewModel\UserManagerViewModel.cs" />
     <Compile Include="ViewModel\UserViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PermissionViewModel.cs" />
+    <Compile Include="View\EditPermissionView.xaml.cs">
+      <DependentUpon>EditPermissionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PermissionsTreeView.xaml.cs">
       <DependentUpon>PermissionsTreeView.xaml</DependentUpon>
     </Compile>
@@ -133,9 +138,10 @@
     <Compile Include="View\UserEditorView.xaml.cs">
       <DependentUpon>UserEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\UserManagerView.xaml.cs">
-      <DependentUpon>UserManagerView.xaml</DependentUpon>
-    </Compile>
+    <Page Include="View\EditPermissionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -157,10 +163,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\UserEditorView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\UserManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -232,9 +234,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTO\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

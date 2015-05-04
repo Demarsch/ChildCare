@@ -279,7 +279,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ParentId" Type="int" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
           <Property Name="ChildId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Permissions">
@@ -894,7 +894,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PermissionLinks_Permissions">
-          <End Role="Permissions" Type="Self.Permissions" Multiplicity="1" />
+          <End Role="Permissions" Type="Self.Permissions" Multiplicity="0..1" />
           <End Role="PermissionLinks" Type="Self.PermissionLinks" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Permissions">
@@ -1603,17 +1603,8 @@
             <End Role="ChangeNameReason" EntitySet="ChangeNameReasons" />
             <End Role="PersonName" EntitySet="PersonNames" />
           </AssociationSet>
-          <EntitySet Name="PermissionLinks" EntityType="DataLib.PermissionLink" />
           <EntitySet Name="Permissions" EntityType="DataLib.Permission" />
           <EntitySet Name="UserPermissions" EntityType="DataLib.UserPermission" />
-          <AssociationSet Name="FK_PermissionLinks_Permissions" Association="DataLib.FK_PermissionLinks_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="PermissionLink" EntitySet="PermissionLinks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PermissionLinks_Permissions1" Association="DataLib.FK_PermissionLinks_Permissions1">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="PermissionLink" EntitySet="PermissionLinks" />
-          </AssociationSet>
           <AssociationSet Name="FK_UserPermissions_Permissions" Association="DataLib.FK_UserPermissions_Permissions">
             <End Role="Permission" EntitySet="Permissions" />
             <End Role="UserPermission" EntitySet="UserPermissions" />
@@ -1847,6 +1838,15 @@
           <AssociationSet Name="FK_RecordContracts_FinacingSources" Association="DataLib.FK_RecordContracts_FinacingSources">
             <End Role="FinacingSource" EntitySet="FinacingSources" />
             <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <EntitySet Name="PermissionLinks" EntityType="DataLib.PermissionLink" />
+          <AssociationSet Name="FK_PermissionLinks_Permissions" Association="DataLib.FK_PermissionLinks_Permissions">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="PermissionLink" EntitySet="PermissionLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PermissionLinks_Permissions1" Association="DataLib.FK_PermissionLinks_Permissions1">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="PermissionLink" EntitySet="PermissionLinks" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="PersonName">
@@ -2131,16 +2131,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="PermissionLink">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" Nullable="false" />
-          <Property Name="ChildId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Permission" Relationship="DataLib.FK_PermissionLinks_Permissions" FromRole="PermissionLink" ToRole="Permission" />
-          <NavigationProperty Name="Permission1" Relationship="DataLib.FK_PermissionLinks_Permissions1" FromRole="PermissionLink" ToRole="Permission" />
-        </EntityType>
         <EntityType Name="Permission">
           <Key>
             <PropertyRef Name="Id" />
@@ -2149,10 +2139,10 @@
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="IsGroup" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="PermissionLinks" Relationship="DataLib.FK_PermissionLinks_Permissions" FromRole="Permission" ToRole="PermissionLink" />
-          <NavigationProperty Name="PermissionLinks1" Relationship="DataLib.FK_PermissionLinks_Permissions1" FromRole="Permission" ToRole="PermissionLink" />
           <NavigationProperty Name="UserPermissions" Relationship="DataLib.FK_UserPermissions_Permissions" FromRole="Permission" ToRole="UserPermission" />
           <Property Name="ReadOnly" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="PermissionLinks" Relationship="DataLib.FK_PermissionLinks_Permissions" FromRole="Permission" ToRole="PermissionLink" />
+          <NavigationProperty Name="PermissionLinks1" Relationship="DataLib.FK_PermissionLinks_Permissions1" FromRole="Permission" ToRole="PermissionLink" />
         </EntityType>
         <EntityType Name="UserPermission">
           <Key>
@@ -2167,30 +2157,6 @@
           <NavigationProperty Name="Permission" Relationship="DataLib.FK_UserPermissions_Permissions" FromRole="UserPermission" ToRole="Permission" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Permissions_Users" FromRole="UserPermission" ToRole="User" />
         </EntityType>
-        <Association Name="FK_PermissionLinks_Permissions">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.PermissionLink" Role="PermissionLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionLink">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PermissionLinks_Permissions1">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.PermissionLink" Role="PermissionLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionLink">
-              <PropertyRef Name="ChildId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_UserPermissions_Permissions">
           <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
           <End Type="DataLib.UserPermission" Role="UserPermission" Multiplicity="*" />
@@ -3223,6 +3189,40 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="PermissionLink">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" Nullable="true" />
+          <Property Name="ChildId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Permission" Relationship="DataLib.FK_PermissionLinks_Permissions" FromRole="PermissionLink" ToRole="Permission" />
+          <NavigationProperty Name="Permission1" Relationship="DataLib.FK_PermissionLinks_Permissions1" FromRole="PermissionLink" ToRole="Permission" />
+        </EntityType>
+        <Association Name="FK_PermissionLinks_Permissions">
+          <End Type="DataLib.Permission" Role="Permission" Multiplicity="0..1" />
+          <End Type="DataLib.PermissionLink" Role="PermissionLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PermissionLink">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PermissionLinks_Permissions1">
+          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
+          <End Type="DataLib.PermissionLink" Role="PermissionLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PermissionLink">
+              <PropertyRef Name="ChildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3361,15 +3361,6 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="NeedCreateNewPersonName" ColumnName="NeedCreateNewPersonName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PermissionLinks">
-            <EntityTypeMapping TypeName="DataLib.PermissionLink">
-              <MappingFragment StoreEntitySet="PermissionLinks">
-                <ScalarProperty Name="ChildId" ColumnName="ChildId" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -3757,6 +3748,15 @@
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PermissionLinks">
+            <EntityTypeMapping TypeName="DataLib.PermissionLink">
+              <MappingFragment StoreEntitySet="PermissionLinks">
+                <ScalarProperty Name="ChildId" ColumnName="ChildId" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace AdminTools.View
 {
     /// <summary>
-    /// Interaction logic for UserManagerView.xaml
+    /// Interaction logic for EditPermissionView.xaml
     /// </summary>
-    public partial class UserManagerView : Window
+    public partial class EditPermissionView : Window
     {
-        public UserManagerView()
+        public EditPermissionView()
         {
             InitializeComponent();
         }
