@@ -45,7 +45,7 @@ namespace Registry
             var scheduleViewModel = new ScheduleViewModel(scheduleService, log, cacheService, environment, dialogService);
 
             var patientService = new PatientService(contextProvider) as IPatientService;
-            var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, patientAssignmentListViewModel);
+            var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, dialogService, patientAssignmentListViewModel);
             var mainViewModel = new MainWindowViewModel(patientSearchViewModel, scheduleViewModel);
             var mainWindow = new MainWindow { DataContext = mainViewModel };
             MainWindow = mainWindow;

@@ -5,14 +5,16 @@ using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace MainLib
 {
-    class PersonAddressesViewModel : ObservableObject, IDialogViewModel
+    public class PersonAddressesViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
     {
         #region Fields
 
@@ -20,20 +22,24 @@ namespace MainLib
 
         private IPersonService service;
 
+        private readonly IDialogService dialogService;
+
         #endregion fields
 
         #region Constructors
 
-        public PersonAddressesViewModel(int personId, IPersonService service)
+        public PersonAddressesViewModel(int personId, IPersonService service, IDialogService dialogService)
         {
             if (service == null)
                 throw new ArgumentNullException("service");
+            if (dialogService == null)
+                throw new ArgumentNullException("dialogService");
+            this.dialogService = dialogService;
             this.service = service;
             this.personId = personId;
             AddIPersonAddressCommand = new RelayCommand(AddPersonAddress);
             DeletePersonAddressCommand = new RelayCommand<PersonAddressViewModel>(DeleteInsuranceDocument);
-            CancelCommand = new RelayCommand(Cancel);
-            AcceptCommand = new RelayCommand(Accept);
+            CloseCommand = new RelayCommand<bool>(Close);
         }
 
         #endregion
@@ -52,13 +58,6 @@ namespace MainLib
         {
             get { return personAddresses; }
             set { Set("PersonAddresses", ref personAddresses, value); }
-        }
-
-        private bool? isChangesAccepted;
-        public bool? IsChangesAccepted
-        {
-            get { return isChangesAccepted; }
-            set { Set("IsChangesAccepted", ref isChangesAccepted, value); }
         }
 
         private DateTime beginDate = DateTime.MinValue;
@@ -126,17 +125,6 @@ namespace MainLib
             PersonAddresses.Remove(personAddressViewModel);
         }
 
-        public ICommand CancelCommand { get; set; }
-        private void Cancel()
-        {
-            IsChangesAccepted = false;
-        }
-
-        public ICommand AcceptCommand { get; set; }
-        private void Accept()
-        {
-            IsChangesAccepted = true;
-        }
         #endregion
 
         #region Implementation IDialogViewModel
@@ -156,13 +144,72 @@ namespace MainLib
             get { return "Отмена"; }
         }
 
-        public RelayCommand<bool> CloseCommand
+        private bool saveWasRequested;
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+        public RelayCommand<bool> CloseCommand { get; set; }
+
+        private void Close(bool validate)
         {
-            get { throw new NotImplementedException(); }
+            saveWasRequested = true;
+            if (validate)
+            {
+                RaisePropertyChanged(string.Empty);
+                if (invalidProperties.Count == 0)
+                {
+                    OnCloseRequested(new ReturnEventArgs<bool>(true));
+                }
+            }
+            else
+            {
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+            }
         }
 
         public event EventHandler<System.Windows.Navigation.ReturnEventArgs<bool>> CloseRequested;
 
+        protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        #endregion
+
+        #region Implementation IDataErrorInfo
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                //if (columnName == "SelectedFinancingSource")
+                //{
+                //    result = selectedFinancingSource == null || !selectedFinancingSource.IsActive ? "Укажите источник финансирования" : string.Empty;
+                //}
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
         #endregion
     }
 }

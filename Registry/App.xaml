@@ -5,6 +5,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="View/PersonView.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonAddressesView.xaml" />
                 <ResourceDictionary Source="View/PatientAssignmentListView.xaml" />
                 <ResourceDictionary Source="View/ScheduleView.xaml" />
                 <ResourceDictionary Source="View/TimeTickerView.xaml" />

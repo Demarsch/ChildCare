@@ -141,9 +141,6 @@
     <Compile Include="View\EditPersonView.xaml.cs">
       <DependentUpon>EditPersonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PersonAddressesView.xaml.cs">
-      <DependentUpon>PersonAddressesView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\PersonInsuranceDocumentsView.xaml.cs">
       <DependentUpon>PersonInsuranceDocumentsView.xaml</DependentUpon>
     </Compile>

@@ -18,18 +18,23 @@ namespace MainLib
 
         private readonly IPersonService service;
 
+        private readonly IDialogService dialogService;
+
         private Person person;
         private PersonName personName;
 
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPersonService service)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
             if (service == null)
                 throw new ArgumentNullException("service");
+            if (dialogService == null)
+                throw new ArgumentNullException("dialogService");
+            this.dialogService = dialogService;
             this.service = service;
             this.log = log;
             SaveChangesCommand = new RelayCommand(SaveChanges);
@@ -40,8 +45,8 @@ namespace MainLib
 
         }
 
-        public EditPersonDataViewModel(ILog log, IPersonService service, int personId)
-            : this(log, service)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, int personId)
+            : this(log, service, dialogService)
         {
             Id = personId;
             this.log = log;
@@ -50,8 +55,8 @@ namespace MainLib
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPersonService service, string personData)
-            : this(log, service)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, string personData)
+            : this(log, service, dialogService)
         {
 
         }
@@ -105,24 +110,6 @@ namespace MainLib
             FillPropertyFromPerson();
             insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
             insuranceDocumentViewModel.PropertyChanged += insuranceDocumentViewModel_PropertyChanged;
-            personAddressesViewModel = new PersonAddressesViewModel(Id, service);
-            personAddressesViewModel.PropertyChanged += personAddressesViewModel_PropertyChanged;
-        }
-
-        void personAddressesViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "IsChangesAccepted")
-            {
-                if (personAddressesViewModel.IsChangesAccepted.HasValue)
-                {
-                    if (!personAddressesViewModel.IsChangesAccepted.Value)
-                    {
-                        //ToDo: maybe create mo flexible method
-                        personAddressesViewModel = new PersonAddressesViewModel(Id, service);
-                    }
-                    //Insurance = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
-                }
-            }
         }
 
         void insuranceDocumentViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -256,13 +243,20 @@ namespace MainLib
         }
 
         public ICommand EditPersonAddressCommand { get; set; }
-        private PersonAddressesViewModel personAddressesViewModel;
+        private PersonAddressesViewModel personAddressesViewModel = null;
         private void EditPersonAddress()
         {
-            //ToDo: USe better solution for using other window
-            personAddressesViewModel.IsChangesAccepted = null;
-            var personAddressesView = new PersonAddressesView() { DataContext = personAddressesViewModel };
-            personAddressesView.ShowDialog();
+            if (personAddressesViewModel == null)
+                personAddressesViewModel = new PersonAddressesViewModel(Id, service, dialogService);
+            var dialogResult = dialogService.ShowDialog(personAddressesViewModel);
+            if (dialogResult != true)
+            {
+
+            }
+            else
+            {
+
+            }
         }
 
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();

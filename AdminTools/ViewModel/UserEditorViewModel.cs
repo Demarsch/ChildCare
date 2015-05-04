@@ -100,7 +100,7 @@ namespace AdminTools.ViewModel
                 MessageBox.Show("Не выбран пользователь.");
                 return;
             }
-            var personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), (parameter as UserViewModel).PersonId);
+            var personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), this.service.Instance<IDialogService>(), (parameter as UserViewModel).PersonId);
             (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
 
             //TODO: Change verification way

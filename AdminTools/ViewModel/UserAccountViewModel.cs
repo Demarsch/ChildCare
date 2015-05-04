@@ -141,9 +141,9 @@ namespace AdminTools.ViewModel
             EditPersonViewModel personViewModel = null;
 
             if (personId == null)            
-                personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>());
-            else            
-                personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), personId.ToInt());
+                personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(),this.service.Instance<IDialogService>());
+            else
+                personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), this.service.Instance<IDialogService>(), personId.ToInt());
 
             (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
 

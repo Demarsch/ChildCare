@@ -10,7 +10,7 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:core="clr-namespace:Core;assembly=StuffLib"
     Height="auto" Width="600" Background="White"
-    d:DataContext="{d:DesignInstance mainLib:EditPersonDataViewModel}">
+    d:DataContext="{d:DesignData mainLib:EditPersonDataViewModel}">
     <UserControl.Resources>
         <core:UniversalConverter x:Key="booleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Hidden}">
             <core:ConverterItem To="{x:Static Visibility.Visible}">

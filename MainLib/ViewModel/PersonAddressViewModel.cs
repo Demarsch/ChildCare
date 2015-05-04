@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MainLib
 {
-    class PersonAddressViewModel : ObservableObject
+    public class PersonAddressViewModel : ObservableObject
     {
         private readonly PersonAddress personAddress;
 
