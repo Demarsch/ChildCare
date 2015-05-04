@@ -17,8 +17,6 @@ namespace AdminTools.ViewModel
     {
         #region Data
 
-        readonly ObservableCollection<PermissionViewModel> children;
-        readonly PermissionViewModel parent;
         readonly Permission permission;
         readonly ISimpleLocator service;
 
@@ -40,6 +38,11 @@ namespace AdminTools.ViewModel
             this.permission = currentPermission;
             this.parent = parent;
 
+            name = this.permission.Name;
+            description = this.permission.Description;
+            isGroup = this.permission.IsGroup;
+            readOnly = this.permission.ReadOnly;
+
             children = new ObservableCollection<PermissionViewModel>(
                        service.Instance<IPermissionService>().GetChildren(currentPermission.Id).Select(x => new PermissionViewModel(this.service, x, this)));
         }
@@ -47,22 +50,53 @@ namespace AdminTools.ViewModel
         #endregion // Constructors
 
         #region Permission Properties
-
+       
+        private ObservableCollection<PermissionViewModel> children;
         public ObservableCollection<PermissionViewModel> Children
         {
             get { return children; }
+            set { Set("Children", ref children, value); }
         }
 
+        public int Id
+        {
+            get { return permission.Id; }
+        }
+        
+        private string name;
         public string Name
         {
-            get { return permission.Name; }
+            get { return name; }
+            set { Set("Name", ref name, value); }
         }
-           
+        
+        private string description;
+        public string Description
+        {
+            get { return description; }
+            set { Set("Description", ref description, value); }
+        }
+            
+        private bool isGroup;
         public bool IsGroup
         {
-            get { return permission.IsGroup; }
+            get { return isGroup; }
+            set 
+            { 
+                if (!Set("IsGroup", ref isGroup, value))
+                    return;
+                PhotoSource = (value ? "pack://application:,,,/Resources;component/Images/UserGroup48x48.png" : string.Empty);
+            }
+        }
+               
+        private bool readOnly;
+        public bool ReadOnly
+        {
+            get { return readOnly; }
+            set { Set("ReadOnly", ref readOnly, value); }
         }
 
+        private string photoSource;
         public string PhotoSource
         {
             get
@@ -71,11 +105,14 @@ namespace AdminTools.ViewModel
                     ? "pack://application:,,,/Resources;component/Images/UserGroup48x48.png"
                     : string.Empty;
             }
-        }
+            set { Set("PhotoSource", ref photoSource, value); }
+        }       
 
+        private PermissionViewModel parent;
         public PermissionViewModel Parent
         {
             get { return parent; }
+            set { Set("Parent", ref parent, value); }
         }
 
         #endregion

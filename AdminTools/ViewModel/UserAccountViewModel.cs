@@ -26,24 +26,20 @@ namespace AdminTools.ViewModel
                 throw new ArgumentNullException("service");
             this.service = service;
             this.EditPersonDataCommand = new RelayCommand<object>(EditPersonData);
+            this.SynchWithActiveDirectoryCommand = new RelayCommand<object>(SynchWithActiveDirectory);
+            this.SelectUserADCommand = new RelayCommand<object>(SelectUserAD);
             this.SaveUserCommand = new RelayCommand(SaveUser);
-            UsersSystemInfoSuggestionProvider = new UsersSystemInfoSuggestionProvider(service.Instance<IUserSystemInfoService>());
-            IsSearchSuccessful = false;
+            PersonSuggestionProvider = new PersonSuggestionProvider(service.Instance<IPersonService>());
             AllowSave = false;
-        }
-
-        public UserAccountViewModel(ISimpleLocator service, ILog log, int userId)
-            : this(service)
-        {
-        }
+        }       
 
         #region Commands
 
-        private UsersSystemInfoSuggestionProvider usersSystemInfoSuggestionProvider;
-        public UsersSystemInfoSuggestionProvider UsersSystemInfoSuggestionProvider
+        private PersonSuggestionProvider personSuggestionProvider;
+        public PersonSuggestionProvider PersonSuggestionProvider
         {
-            get { return usersSystemInfoSuggestionProvider; }
-            set { Set("UsersSystemInfoSuggestionProvider", ref usersSystemInfoSuggestionProvider, value); }
+            get { return personSuggestionProvider; }
+            set { Set("PersonSuggestionProvider", ref personSuggestionProvider, value); }
         }
 
         private RelayCommand saveUserCommand;
@@ -60,6 +56,19 @@ namespace AdminTools.ViewModel
             set { Set("EditPersonDataCommand", ref editPersonDataCommand, value); }
         }
 
+        private RelayCommand<object> synchWithActiveDirectoryCommand;
+        public RelayCommand<object> SynchWithActiveDirectoryCommand
+        {
+            get { return synchWithActiveDirectoryCommand; }
+            set { Set("SynchWithActiveDirectoryCommand", ref synchWithActiveDirectoryCommand, value); }
+        }
+
+        private RelayCommand<object> selectUserADCommand;
+        public RelayCommand<object> SelectUserADCommand
+        {
+            get { return selectUserADCommand; }
+            set { Set("SelectUserADCommand", ref selectUserADCommand, value); }
+        }
         #endregion 
 
         private UserViewModel currentUser;
@@ -68,61 +77,89 @@ namespace AdminTools.ViewModel
             get { return currentUser; }
             set { Set("CurrentUser", ref currentUser, value); }
         }
-                
+
+        private ObservableCollection<UserSystemInfo> usersAD;
+        public ObservableCollection<UserSystemInfo> UsersAD
+        {
+            get { return usersAD; }
+            set { Set("UsersAD", ref usersAD, value); }
+        }
+
         private UserSystemInfo selectedUserAD;
         public UserSystemInfo SelectedUserAD
         {
             get { return selectedUserAD; }
-            set {
-                    if (!Set("SelectedUserAD", ref selectedUserAD, value))
-                            return;
-                    IsSearchSuccessful = (value != null); 
-                }
+            set { Set("SelectedUserAD", ref selectedUserAD, value); }
         }
 
-        private ObservableCollection<Person> persons;
-        public ObservableCollection<Person> Persons
+        private ObservableCollection<PersonDTO> persons;
+        public ObservableCollection<PersonDTO> Persons
         {
             get { return persons; }
             set { Set("Persons", ref persons, value); }
         }
 
-        private Person selectedPerson;
-        public Person SelectedPerson
+        private PersonDTO selectedPerson;
+        public PersonDTO SelectedPerson
         {
             get { return selectedPerson; }
             set
             {
-                Set("SelectedPerson", ref selectedPerson, value);                  
+                if (!Set("SelectedPerson", ref selectedPerson, value))
+                    return;
                 AllowSave = (value != null);
             }
-        }           
-
-        private bool isSearchSuccessful;
-        public bool IsSearchSuccessful
-        {
-            get { return isSearchSuccessful; }
-            set 
-            { 
-                Set("IsSearchSuccessful", ref isSearchSuccessful, value);
-                if (value)
-                    Persons = new ObservableCollection<Person>(GetPersonsFromMIS(SelectedUserAD.UserName));
-                else                                    
-                    AllowSave = false;                
-            }
-        }
+        }   
 
         private bool allowSave;
         public bool AllowSave
         {
             get { return allowSave; }
-            set { Set("AllowSave", ref allowSave, value); }
-        }                
-          
-        private ICollection<Person> GetPersonsFromMIS(string searchText)
+            set 
+            { 
+                Set("AllowSave", ref allowSave, value);
+                if (value)
+                {
+                    Persons = new ObservableCollection<PersonDTO>(new List<PersonDTO>() { SelectedPerson });
+                    SelectedPerson = Persons.First();
+                }
+            }
+        }
+
+        private bool showPopup;
+        public bool ShowPopup
         {
-            //return service.Instance<IPatientService>().GetPatients(personFullName);
-            return service.Instance<IPersonService>().GetPersonsByFullName(searchText);
+            get { return showPopup; }
+            set { Set("ShowPopup", ref showPopup, value); }
+        }
+
+        private void SynchWithActiveDirectory(object parameter)
+        {
+            if (parameter == null)
+                return;
+            
+            /*var data = new List<UserSystemInfo>();
+            data.Add(new UserSystemInfo() { UserName = "Жариков Игорь Александрович", PrincipalName = "izharikov@lpu", Enabled = true, SID = "izharikov" });
+            data.Add(new UserSystemInfo() { UserName = "Жариков Петр Петрович", PrincipalName = "pzharikov@lpu", Enabled = false, SID = "pzharikov" });
+
+            UsersAD = new ObservableCollection<UserSystemInfo>(data);*/
+
+            UsersAD = new ObservableCollection<UserSystemInfo>(service.Instance<IUserSystemInfoService>().Find(SelectedPerson.FullName));
+            if (UsersAD.Any())
+                ShowPopup = true;
+            else
+                MessageBox.Show("В Active Directory не найдено ни одного совпадения по Вашему запросу.");
+        }
+
+        private void SelectUserAD(object parameter)
+        {
+            if (parameter == null)
+                return;
+            SelectedUserAD = parameter as UserSystemInfo; 
+            ShowPopup = false;
+            SelectedPerson.SID = SelectedUserAD.SID;
+            SelectedPerson.PrincipalName = SelectedUserAD.PrincipalName;
+            SelectedPerson.Enabled = SelectedUserAD.Enabled;
         }
 
         private void EditPersonData(object parameter)
@@ -131,7 +168,7 @@ namespace AdminTools.ViewModel
                 EditPerson(null);
             else
             {
-                SelectedPerson = parameter as Person;
+                SelectedPerson = parameter as PersonDTO;
                 EditPerson(SelectedPerson.Id);
             }
         }
@@ -150,8 +187,9 @@ namespace AdminTools.ViewModel
             //TODO: Change verification way
             if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
 
-            Persons = new ObservableCollection<Person>(GetPersonsFromMIS(SelectedUserAD.UserName));
-            SelectedPerson = Persons.FirstOrDefault(x => x.Id == personViewModel.Id);
+            SelectedPerson.FullName = personViewModel.EditPersonDataViewModel.LastName + " " + personViewModel.EditPersonDataViewModel.FirstName + " " + personViewModel.EditPersonDataViewModel.MiddleName;
+            SelectedPerson.BirthDate = personViewModel.EditPersonDataViewModel.BirthDate;
+            SelectedPerson.Snils = personViewModel.EditPersonDataViewModel.SNILS;
         }
 
         private void SaveUser()
@@ -161,14 +199,17 @@ namespace AdminTools.ViewModel
                 MessageBox.Show("Не выбрана учетная карта.");
                 return;
             }
+            if (SelectedPerson.SID == string.Empty && MessageBox.Show("У пользователя отсутствует SID. Продолжить ?", "Внимание", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
             User user = this.service.Instance<IUserService>().GetUserByPersonId(SelectedPerson.Id);
             if (user == null)
             {
                 user = new User();
-                user.PersonId = SelectedPerson.Id;
-                user.SID = (SelectedUserAD.SID.HasData() ? SelectedUserAD.SID : string.Empty);
+                user.Person = this.service.Instance<IPersonService>().PersonById(SelectedPerson.Id);
+                user.SID = (SelectedUserAD != null && SelectedUserAD.SID.HasData() ? SelectedUserAD.SID : string.Empty);
                 user.BeginDateTime = DateTime.Now;
-                user.EndDateTime = user.BeginDateTime;
+                user.EndDateTime = (DateTime?)null;
 
                 string message = string.Empty;
                 if (this.service.Instance<IUserService>().Save(user, out message))

@@ -18,17 +18,24 @@ namespace AdminTools.ViewModel
     class MainWindowViewModel : ObservableObject
     {
         public RelayCommand UsersEditorCommand { get; private set; }
+        public RelayCommand PermissionsTreeCommand { get; private set; }
         private ISimpleLocator service;
 
         public MainWindowViewModel(ISimpleLocator service)
         {
             this.service = service;
-            this.UsersEditorCommand = new RelayCommand(this.UsersEditor);            
+            this.UsersEditorCommand = new RelayCommand(this.UsersEditor);
+            this.PermissionsTreeCommand = new RelayCommand(this.PermissionsTree);      
         }
 
         public void UsersEditor()
         {
-            (new UserManagerView() { DataContext = new UserManagerViewModel(this.service) }).ShowDialog();
-        } 
+            (new UserEditorView() { DataContext = new UserEditorViewModel(this.service) }).ShowDialog();
+        }
+
+        public void PermissionsTree()
+        {
+            (new PermissionsTreeView() { DataContext = new PermissionsTreeViewModel(this.service) }).ShowDialog();
+        }
     }
 }

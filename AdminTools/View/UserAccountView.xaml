@@ -13,12 +13,20 @@
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d" 
         d:DataContext="{d:DesignInstance admintool:UserAccountViewModel}" SizeToContent="WidthAndHeight" MinWidth="550"
-        Icon="pack://application:,,,/Resources;component/Icons/AddUser_48x48.ico">
+        Icon="pack://application:,,,/Resources;component/Icons/AddUser_48x48.ico"
+        FocusManager.FocusedElement="{Binding ElementName=searchUserTextBox}">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"  />
+        <DataTemplate x:Key="PersonsAutoCompleteTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=FullName}" Margin="5" FontWeight="Bold" />
+                <TextBlock Text="{Binding Path=BirthDate, StringFormat=dd-MM-yyyy}" Margin="5"/>
+                <TextBlock Text="{Binding Path=Snils}" Margin="5" />
+            </StackPanel>            
+        </DataTemplate>
         <system:Boolean x:Key="True">True</system:Boolean>
         <system:Boolean x:Key="False">False</system:Boolean>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"  />
         <core:UniversalConverter x:Key="UserEnabledConverter">
             <core:ConverterItem From="{StaticResource True}">
                 <core:ConverterItem.To>pack://application:,,,/Resources;component/Images/SwitchOn_32x32.png</core:ConverterItem.To>
@@ -26,18 +34,14 @@
             <core:ConverterItem From="{StaticResource False}">
                 <core:ConverterItem.To>pack://application:,,,/Resources;component/Images/SwitchOff_32x32.png</core:ConverterItem.To>
             </core:ConverterItem>
+            <core:ConverterItem From="{x:Null}">
+                <core:ConverterItem.To>""</core:ConverterItem.To>
+            </core:ConverterItem>
         </core:UniversalConverter>
-        
-        <DataTemplate x:Key="UsersADAutoCompleteTemplate">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="{Binding Path=Enabled, Converter={StaticResource UserEnabledConverter}}" Margin="5,0,5,5" Stretch="None"/>
-                <TextBlock Text="{Binding Path=UserName}" Margin="5" FontWeight="Bold" />
-                <TextBlock Text="{Binding Path=PrincipalName}" Margin="5"/>                
-            </StackPanel>            
-        </DataTemplate>
     </Window.Resources>
 
     <Grid>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -49,26 +53,24 @@
         </Grid.ColumnDefinitions>
 
         <wpf:AutoCompleteTextBox Grid.Row="0" Grid.Column="0" Margin="5" Background="White" FontStyle="Italic" FontSize="13"
-                                 Watermark="Введите Ф.И.О. пользователя для поиска в Active Directory..."
-                                 DisplayMember="UserName"
-                                 ItemTemplate="{StaticResource UsersADAutoCompleteTemplate}"
-                                 SelectedItem="{Binding SelectedUserAD, Mode=TwoWay}"
+                                 Watermark="Введите Ф.И.О. пользователя для поиска в МИС..."
+                                 DisplayMember="FullName"
+                                 ItemTemplate="{StaticResource PersonsAutoCompleteTemplate}"
+                                 SelectedItem="{Binding SelectedPerson, Mode=TwoWay}"
                                  IconPlacement="Left"
                                  IconVisibility="Visible"
-                                 Provider="{Binding UsersSystemInfoSuggestionProvider}"
+                                 Provider="{Binding PersonSuggestionProvider}"
                                  x:Name="searchUserTextBox" TabIndex="1">            
             <wpf:AutoCompleteTextBox.LoadingContent>
                 <StackPanel Orientation="Horizontal">                    
-                    <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" 
-                           Height="16" Width="16" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                           Visibility="{Binding IsSearching, Converter={StaticResource BooleanToVisibilityConverter}}"/>                   
+                    <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" Height="16" Width="16" HorizontalAlignment="Center" VerticalAlignment="Center" />                   
                     <TextBlock Text="Загрузка данных..." Margin="5" FontSize="13" />
                 </StackPanel>
             </wpf:AutoCompleteTextBox.LoadingContent>
         </wpf:AutoCompleteTextBox>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Visibility="{Binding IsSearchSuccessful, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock Margin="3" Text="Выберите учетную карту, доступную в МИС" FontStyle="Italic"/>
+        <StackPanel Grid.Row="1" Grid.Column="0" Visibility="{Binding AllowSave, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock Margin="3" Text="Найденная учетная карта:" FontStyle="Italic"/>
             <ListView x:Name="personsList" ItemsSource="{Binding Persons}" SelectedItem="{Binding SelectedPerson, Mode=TwoWay}">
                 <ListView.View>
                     <GridView>
@@ -82,8 +84,32 @@
                                         <Button Background="Transparent"                                                    
                                                         Command="{Binding ElementName=personsList, Path=DataContext.EditPersonDataCommand}"
                                                         CommandParameter="{Binding}">
-                                            <TextBlock Text="Редактировать данные" />
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="pack://application:,,,/Resources;component/Images/Account_16x16.png" ToolTip="Редактировать данные" Stretch="Uniform" Height="16" Width="16" Margin="5"/>
+                                            </StackPanel>
                                         </Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Background="Transparent"                                                    
+                                                        Command="{Binding ElementName=personsList, Path=DataContext.SynchWithActiveDirectoryCommand}"
+                                                        CommandParameter="{Binding}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="pack://application:,,,/Resources;component/Images/DB_refresh_24x24.png" ToolTip="Найти в Active Directory" Stretch="Uniform" Height="16" Width="16" Margin="5"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="SID" DisplayMemberBinding="{Binding Path=SID}" Width="90"  ToolTipService.ToolTip="{Binding Path=SID}"></GridViewColumn>
+                            <GridViewColumn Header="Логин" DisplayMemberBinding="{Binding Path=PrincipalName}" Width="90" ToolTipService.ToolTip="{Binding Path=PrincipalName}"></GridViewColumn>
+                            <GridViewColumn Width="55" Header="Актив.">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Path=Enabled, Converter={StaticResource UserEnabledConverter}}" Margin="5" Stretch="None"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -94,7 +120,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" >
-            <TextBlock Margin="5,10,5,5" FontStyle="Italic" FontSize="13"> или <Hyperlink Command="{Binding EditPersonDataCommand}">создайте</Hyperlink> новую учетную карту</TextBlock>
+            <TextBlock Margin="10" FontStyle="Italic" FontSize="13"> или <Hyperlink Command="{Binding EditPersonDataCommand}">создайте</Hyperlink> новую учетную карту</TextBlock>
         </StackPanel>
 
         <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5"
@@ -102,10 +128,43 @@
                 Command="{Binding SaveUserCommand}">
             <StackPanel Orientation="Horizontal">
                 <Image Width="24" Height="24" Source="pack://application:,,,/Resources;component/Images/AddPatient48x48.png"  />
-                <TextBlock Margin="5" FontSize="13" Text="Сохранить выбранную учетную запись"/>
+                <TextBlock Margin="5" FontSize="13" Text="Создать учетную запись"/>
             </StackPanel>
         </Button>
 
-       
+        <Popup IsOpen="{Binding ShowPopup, Mode=TwoWay}" StaysOpen="False" Placement="Mouse">
+            <Border Background="LightYellow">
+                <StackPanel>
+                    <TextBlock Margin="3" Text="Выберите учетную запись, доступную в Active Directory" FontStyle="Italic"/>
+                    <ListView x:Name="usersADList" ItemsSource="{Binding UsersAD}" SelectedItem="{Binding SelectedUserAD, Mode=TwoWay}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Пользователь" DisplayMemberBinding="{Binding Path=UserName}"></GridViewColumn>
+                                <GridViewColumn Header="SID" DisplayMemberBinding="{Binding Path=SID}"></GridViewColumn>
+                                <GridViewColumn Header="Логин" DisplayMemberBinding="{Binding Path=PrincipalName}"></GridViewColumn>
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding Path=Enabled, Converter={StaticResource UserEnabledConverter}}" Margin="5" Stretch="None"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Background="Transparent"                                                    
+                                                        Command="{Binding ElementName=usersADList, Path=DataContext.SelectUserADCommand}"
+                                                        CommandParameter="{Binding}">
+                                                <TextBlock Text="Выбрать" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                 </GridViewColumn>                                    
+                            </GridView>
+                        </ListView.View>
+                    </ListView>                    
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </Window>

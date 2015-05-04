@@ -1,0 +1,41 @@
+﻿<Window x:Class="AdminTools.View.EditPermissionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:admintool="clr-namespace:AdminTools.ViewModel"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d" 
+        d:DataContext="{d:DesignInstance admintool:EditPermissionViewModel}" 
+        SizeToContent="WidthAndHeight" MinWidth="450"
+        Icon="pack://application:,,,/Resources;component/Icons/AddUser_48x48.ico"
+        Title="Новое право">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Название права" Margin="5"/>
+        <xctk:WatermarkTextBox Grid.Row="0" Grid.Column="1" Watermark="введите название права..." Margin="5" 
+               Text="{Binding PermissionName, UpdateSourceTrigger=PropertyChanged}"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Описание права" Margin="5"/>
+        <xctk:WatermarkTextBox Grid.Row="1" Grid.Column="1" Watermark="введите описание права..." Margin="5"
+               Text="{Binding PermissionDescription, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" Content="Группа пользователей" Margin="5"
+               IsChecked="{Binding IsPermissionGroup, Mode=TwoWay}"/>
+        <CheckBox Grid.Row="3" Grid.Column="1" Content="ReadOnly ??" Margin="5"
+               IsChecked="{Binding IsPermissionReadOnly, Mode=TwoWay}"/>
+        <Button Grid.Row="4" Grid.Column="1" Content="Сохранить" Margin="5" Command="{Binding SavePermissionCommand}"/>
+        
+    </Grid>    
+    
+</Window>

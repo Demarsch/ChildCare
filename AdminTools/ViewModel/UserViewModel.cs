@@ -12,6 +12,9 @@ namespace AdminTools.ViewModel
         public UserViewModel(User user)
         {
             this.user = user;
+            sid = !IsEmpty ? user.SID : string.Empty;
+            isActive = !IsEmpty ? !user.EndDateTime.HasValue : false;
+            userFullName = !IsEmpty ? user.Person.FullName : string.Empty;
         }
 
         public bool IsEmpty
@@ -28,21 +31,25 @@ namespace AdminTools.ViewModel
         {
             get { return IsEmpty ? 0 : user.PersonId; }
         }
-
+                
+        private string userFullName;
         public string UserFullName
         {
-            get { return IsEmpty ? string.Empty : user.Person.FullName; }
-        }             
+            get { return userFullName; }
+            set { Set("UserFullName", ref userFullName, value); }
+        }
 
+        private string sid;
         public string SID
         {
-            get { return IsEmpty ? string.Empty : user.SID; }
+            get { return sid; }
+            set { Set("SID", ref sid, value); }
         }
 
         private bool isActive;
         public bool IsActive
         {
-            get { return !user.EndDateTime.HasValue; }
+            get { return isActive; }
             set { Set("IsActive", ref isActive, value); }
         }        
 

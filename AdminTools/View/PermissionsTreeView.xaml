@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="AdminTools.View.PermissionsTreeView"
+﻿<Window x:Class="AdminTools.View.PermissionsTreeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,10 +8,12 @@
              FocusManager.FocusedElement="{Binding ElementName=searchPermissionTextBox}"
              xmlns:admintools="clr-namespace:AdminTools.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" 
-             d:DataContext="{d:DesignInstance admintools:PermissionsTreeViewModel}">
-    <DockPanel Margin="0,0,-44,0">
-
+             d:DesignHeight="300" d:DesignWidth="352" 
+             d:DataContext="{d:DesignInstance admintools:PermissionsTreeViewModel}"
+            Title="Редактор прав" WindowState="Maximized"
+            Icon="pack://application:,,,/Resources;component/Images/UserGroup48x48.png">
+    
+    <DockPanel>
         <!-- User Menu Elements AREA -->
         <Border DockPanel.Dock="Top" BorderBrush="Gray" BorderThickness="1,0,1,1">
             <Border.Background>
@@ -44,7 +46,7 @@
         </Border>
 
         <!-- Permissions TREE -->
-        <TreeView x:Name="PermissionTree" PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown" ItemsSource="{Binding PermissionRoots}">
+        <TreeView x:Name="PermissionTree" PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown" ItemsSource="{Binding PermissionRoots, Mode=TwoWay}" MouseDown="PermissionTree_MouseDown">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -58,9 +60,9 @@
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate ItemsSource="{Binding Children, Mode=TwoWay}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="16" Height="16" Source="{Binding PhotoSource}" />
+                        <Image Width="16" Height="16" Source="{Binding PhotoSource}" Margin="5,0" />
                         <TextBlock Text="{Binding Name}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type TreeView}}}">
                             <TextBlock.ContextMenu>
                                 <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
@@ -82,4 +84,4 @@
             </TreeView.ItemTemplate>
         </TreeView>
     </DockPanel>
-</UserControl>
+</Window>

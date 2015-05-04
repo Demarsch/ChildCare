@@ -15,7 +15,7 @@ namespace DataLib
     public partial class PermissionLink
     {
         public int Id { get; set; }
-        public int ParentId { get; set; }
+        public Nullable<int> ParentId { get; set; }
         public int ChildId { get; set; }
     
         public virtual Permission Permission { get; set; }

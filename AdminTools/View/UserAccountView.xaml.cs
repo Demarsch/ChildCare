@@ -22,7 +22,8 @@ namespace AdminTools.View
         public UserAccountView()
         {
             InitializeComponent();
-        }             
+        }
+
         
     }
 }
