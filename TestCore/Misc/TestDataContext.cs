@@ -35,6 +35,11 @@ namespace TestCore
             throw new NotImplementedException();
         }
 
+        public DateTime GetCurrentDate()
+        {
+            return DateTime.Now;
+        }
+
         public void SetState<TData>(TData obj, DataContextItemState state) where TData : class
         {
             throw new NotImplementedException();

@@ -1,6 +1,5 @@
 ﻿using System;
 using Core;
-using DataLib;
 
 namespace Registry
 {
@@ -23,6 +22,8 @@ namespace Registry
         public bool IsCompleted { get; set; }
 
         public bool IsTemporary { get; set; }
+
+        public int AssignUserId { get; set; }
 
         TimeSpan ITimeInterval.StartTime
         {

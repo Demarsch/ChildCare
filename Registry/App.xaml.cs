@@ -41,7 +41,7 @@ namespace Registry
             var patientAssignmentService = new PatientAssignmentService(contextProvider) as IPatientAssignmentService;
             var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log, cacheService);
 
-            var scheduleService = new ScheduleService(contextProvider);
+            var scheduleService = new ScheduleService(contextProvider, environment);
             var scheduleViewModel = new ScheduleViewModel(scheduleService, log, cacheService, environment, dialogService);
 
             var patientService = new PatientService(contextProvider) as IPatientService;

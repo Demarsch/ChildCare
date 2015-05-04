@@ -4,6 +4,7 @@ using Core;
 using DataLib;
 using NUnit.Framework;
 using TestCore;
+using Environment = Core.Environment;
 
 namespace Registry.Test.Services
 {
@@ -51,8 +52,9 @@ namespace Registry.Test.Services
                 }
             });
             var contextProvider = new TestDataContextProvider();
+            var environment = new Environment(contextProvider);
             contextProvider.SetDataContext(context);
-            var service = new ScheduleService(contextProvider);
+            var service = new ScheduleService(contextProvider, environment);
             var result = service.GetRoomsWorkingTime(date);
             Assert.AreEqual(2, result.Count);
             result = result.OrderBy(x => x.StartTime).ToArray();
@@ -110,7 +112,8 @@ namespace Registry.Test.Services
             });
             var contextProvider = new TestDataContextProvider();
             contextProvider.SetDataContext(context);
-            var service = new ScheduleService(contextProvider);
+            var environment = new Environment(contextProvider);
+            var service = new ScheduleService(contextProvider, environment);
             var result = service.GetRoomsWorkingTime(date);
             Assert.AreEqual(2, result.Count);
         }
@@ -122,7 +125,9 @@ namespace Registry.Test.Services
         [Test]
         public void GetAvailableTimeIntervals_SplitsIntervalIntoEvenPieces()
         {
-            var scheduleService = new ScheduleService(new TestDataContextProvider());
+            var contextProvider = new TestDataContextProvider();
+            var environment = new Environment(contextProvider);
+            var scheduleService = new ScheduleService(contextProvider, environment);
             var result = scheduleService.GetAvailableTimeIntervals(new[] { new TimeInterval(TimeSpan.FromHours(8.0), TimeSpan.FromHours(9.0)) }, null, 30, 30).ToArray();
             Assert.AreEqual(2, result.Length);
             Assert.IsTrue(result[0].StartTime == TimeSpan.FromHours(8.0) && result[0].EndTime == TimeSpan.FromHours(8.5));
@@ -132,7 +137,9 @@ namespace Registry.Test.Services
         [Test]
         public void GetAvailableTimeIntervals_ReturnsFullIntervalAndPartialInterval()
         {
-            var scheduleService = new ScheduleService(new TestDataContextProvider());
+            var contextProvider = new TestDataContextProvider();
+            var environment = new Environment(contextProvider);
+            var scheduleService = new ScheduleService(contextProvider, environment);
             var result = scheduleService.GetAvailableTimeIntervals(new[] { new TimeInterval(TimeSpan.FromHours(8.0), TimeSpan.FromHours(9.0)) }, null, 25, 10).ToArray();
             Assert.AreEqual(3, result.Length);
             Assert.IsTrue(result[0].StartTime == new TimeSpan(8, 0, 0) && result[0].EndTime == new TimeSpan(8, 25, 0));
@@ -143,7 +150,9 @@ namespace Registry.Test.Services
         [Test]
         public void GetAvailableTimeIntervals_DecreaseFullIntervalsToBeAbleToAccomodateGap()
         {
-            var scheduleService = new ScheduleService(new TestDataContextProvider());
+            var contextProvider = new TestDataContextProvider();
+            var environment = new Environment(contextProvider);
+            var scheduleService = new ScheduleService(contextProvider, environment);
             var result = scheduleService.GetAvailableTimeIntervals(new[] { new TimeInterval(TimeSpan.FromHours(8.0), TimeSpan.FromHours(9.0)) }, null, 25, 15).ToArray();
             Assert.AreEqual(3, result.Length);
             Assert.IsTrue(result[0].StartTime == new TimeSpan(8, 0, 0) && result[0].EndTime == new TimeSpan(8, 25, 0));
@@ -154,7 +163,9 @@ namespace Registry.Test.Services
         [Test]
         public void GetAvailableTimeIntervals_ReturnsNothingWhenNotEnoughFreeTime()
         {
-            var scheduleService = new ScheduleService(new TestDataContextProvider());
+            var contextProvider = new TestDataContextProvider();
+            var environment = new Environment(contextProvider);
+            var scheduleService = new ScheduleService(contextProvider, environment);
             var result = scheduleService.GetAvailableTimeIntervals(new[] { new TimeInterval(TimeSpan.FromHours(8.0), TimeSpan.FromHours(9.0)) }, null, 120, 120).ToArray();
             Assert.AreEqual(0, result.Length);
         }

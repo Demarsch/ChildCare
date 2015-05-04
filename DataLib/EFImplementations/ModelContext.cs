@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Core;
 using System.Data.Entity;
 
@@ -28,7 +29,12 @@ namespace DataLib
 
         public void Add<TData>(TData obj) where TData : class
         {
-            this.Set<TData>().Add(obj);
+            Set<TData>().Add(obj);
+        }
+
+        public DateTime GetCurrentDate()
+        {
+            return Database.SqlQuery<DateTime>("SELECT GETDATE()").FirstAsync().Result;
         }
     }
 }

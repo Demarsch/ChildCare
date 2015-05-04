@@ -33,5 +33,10 @@ namespace Core
                            });
             }
         }
+
+        public DateTime CurrentDate
+        {
+            get { return dataContextProvider.StaticDataContext.GetCurrentDate(); }
+        }
     }
 }

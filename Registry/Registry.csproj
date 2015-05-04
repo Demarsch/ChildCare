@@ -122,9 +122,9 @@
     <Compile Include="ViewModel\PatientSearchViewModel.cs" />
     <Compile Include="ViewModel\PersonViewModel.cs" />
     <Compile Include="ViewModel\RoomViewModel.cs" />
-    <Compile Include="ViewModel\ScheduleCellViewModel.cs" />
+    <Compile Include="ViewModel\FreeTimeSlotViewModel.cs" />
     <Compile Include="ViewModel\ScheduleAssignmentUpdateViewModel.cs" />
-    <Compile Include="ViewModel\ScheduledAssignmentViewModel.cs" />
+    <Compile Include="ViewModel\OccupiedTimeSlotViewModel.cs" />
     <Compile Include="ViewModel\ScheduleItemViewModel.cs" />
     <Compile Include="ViewModel\ScheduleViewModel.cs" />
     <Compile Include="ViewModel\TimeTickerViewModel.cs" />
@@ -164,11 +164,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ScheduleCellView.xaml">
+    <Page Include="View\FreeTimeSlotView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ScheduledAssignmentView.xaml">
+    <Page Include="View\OccupiedTimeSlotView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

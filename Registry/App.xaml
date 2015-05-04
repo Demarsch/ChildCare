@@ -10,8 +10,8 @@
                 <ResourceDictionary Source="View/ScheduleView.xaml" />
                 <ResourceDictionary Source="View/TimeTickerView.xaml" />
                 <ResourceDictionary Source="View/RoomView.xaml" />
-                <ResourceDictionary Source="View/ScheduledAssignmentView.xaml" />
-                <ResourceDictionary Source="View/ScheduleCellView.xaml" />
+                <ResourceDictionary Source="View/FreeTimeSlotView.xaml" />
+                <ResourceDictionary Source="View/OccupiedTimeSlotView.xaml" />
                 <ResourceDictionary Source="View/ScheduleAssignmentUpdateView.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <ControlTemplate x:Key="ValidationTemplate">

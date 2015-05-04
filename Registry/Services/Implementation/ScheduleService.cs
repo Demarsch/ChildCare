@@ -10,10 +10,19 @@ namespace Registry
     {
         private readonly IDataContextProvider dataContextProvider;
 
-        public ScheduleService(IDataContextProvider dataContextProvider)
+        private readonly IEnvironment environment;
+
+        public ScheduleService(IDataContextProvider dataContextProvider, IEnvironment environment)
         {
             if (dataContextProvider == null)
+            {
                 throw new ArgumentNullException("dataContextProvider");
+            }
+            if (environment == null)
+            {
+                throw new ArgumentNullException("environment");
+            }
+            this.environment = environment;
             this.dataContextProvider = dataContextProvider;
         }
 
@@ -43,7 +52,8 @@ namespace Registry
                         RecordTypeId = x.RecordTypeId,
                         RoomId = x.RoomId,
                         PersonShortName = x.Person.ShortName,
-                        IsTemporary = x.IsTemporary
+                        IsTemporary = x.IsTemporary,
+                        AssignUserId = x.AssignUserId
                     })
                     .ToLookup(x => x.RoomId);
         }
@@ -186,6 +196,7 @@ namespace Registry
                 if (assignment.Id == 0)
                 {
                     dataContext.Add(assignment);
+                    assignment.CreationDateTime = dataContext.GetCurrentDate();
                 }
                 else
                 {
@@ -200,6 +211,17 @@ namespace Registry
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
                 dataContext.SetState(new Assignment { Id = assignmentId }, DataContextItemState.Delete);
+                dataContext.Save();
+            }
+        }
+
+        public void CancelAssignment(int assignmentId)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                var assignment = dataContext.GetData<Assignment>().First(x => x.Id == assignmentId);
+                assignment.CancelUserId = environment.CurrentUser.UserId;
+                assignment.CancelDateTime = dataContext.GetCurrentDate();
                 dataContext.Save();
             }
         }

@@ -2,13 +2,13 @@
 using System.Windows.Input;
 using Core;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 
 namespace Registry
 {
-    public class ScheduleCellViewModel : ObservableObject, ITimeInterval
+    public class FreeTimeSlotViewModel : ObservableObject, ITimeInterval
     {
-        public ScheduleCellViewModel(DateTime startTime, DateTime endTime, int recordTypeId)
+        public FreeTimeSlotViewModel(DateTime startTime, DateTime endTime, int recordTypeId)
         {
             if (startTime >= endTime)
             {

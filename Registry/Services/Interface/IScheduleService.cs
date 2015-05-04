@@ -21,5 +21,7 @@ namespace Registry
         void SaveAssignment(Assignment assignment);
 
         void DeleteAssignment(int assignmentId);
+
+        void CancelAssignment(int assignmentId);
     }
 }

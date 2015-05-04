@@ -10,10 +10,7 @@
         <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
         <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="6.75" PointY="3.25" />
         <AssociationConnector Association="DataLib.FK_Persons_Genders" />
-        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="7.5" PointY="5.875" />
         <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="5.25" PointY="6" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Records" />
         <AssociationConnector Association="DataLib.FK_Records_Persons" />
         <AssociationConnector Association="DataLib.FK_Records_Records" />
         <EntityTypeShape EntityType="DataLib.InsuranceCompany" Width="1.5" PointX="5.75" PointY="17" />
@@ -29,7 +26,6 @@
         <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
         <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="7.375" PointY="10.75" />
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="3" PointY="8.75" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
         <AssociationConnector Association="DataLib.FK_Records_Rooms" />
         <EntityTypeShape EntityType="DataLib.PersonRelative" Width="1.5" PointX="3.875" PointY="0.75" />
         <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="0.75" PointY="11.375" />
@@ -91,13 +87,10 @@
         <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="10.25" PointY="5.875" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_Rooms" />
         <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="14.375" PointY="18" />
-        <AssociationConnector Association="DataLib.FK_Assignments_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="12" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Users" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Users" />
         <AssociationConnector Association="DataLib.FK_Users_Persons" />
         <AssociationConnector Association="DataLib.FK_Records_Users" />
@@ -105,11 +98,18 @@
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
         <AssociationConnector Association="DataLib.FK_Permissions_Users" />
         <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="0.75" PointY="6.5" />
-        <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
         <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
         <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="12.625" PointY="3.25" />
         <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
         <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
+        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="16.625" PointY="18.375" />
+        <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Records" />
+        <AssociationConnector Association="DataLib.FK_Assignments_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

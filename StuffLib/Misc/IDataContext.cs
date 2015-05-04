@@ -12,6 +12,8 @@ namespace Core
         void Save();
 
         void Add<TData>(TData obj) where TData : class;
+
+        DateTime GetCurrentDate();
     }
 
     public enum DataContextItemState { Add, Update, Delete, None }

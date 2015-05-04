@@ -16,10 +16,10 @@ namespace DataLib
     {
         public RecordType()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
             this.RecordTypes1 = new HashSet<RecordType>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -35,10 +35,10 @@ namespace DataLib
         public int RecordTypeGroupId { get; set; }
         public int MedProfileId { get; set; }
     
-        public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<RecordType> RecordTypes1 { get; set; }
         public virtual RecordType RecordType1 { get; set; }
         public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
+        public virtual ICollection<Assignment> Assignments { get; set; }
     }
 }

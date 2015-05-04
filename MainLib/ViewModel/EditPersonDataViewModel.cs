@@ -1,7 +1,7 @@
 ﻿using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using System;
 using System.Linq;

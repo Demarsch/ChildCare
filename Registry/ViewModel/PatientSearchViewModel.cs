@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using Core;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using MainLib;
 

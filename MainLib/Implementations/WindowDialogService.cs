@@ -19,12 +19,24 @@ namespace Core
         public void ShowError(string errorMessage)
         {
             MessageBox.Show(
-                Application.Current.Windows.Cast<Window>().FirstOrDefault(x => x.IsActive) ??
-                Application.Current.MainWindow,
+                Application.Current.Windows.Cast<Window>().FirstOrDefault(x => x.IsActive) ?? Application.Current.MainWindow,
                 errorMessage,
                 "Ошибка",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
+        }
+
+        public bool? AskUser(string question, bool isWarning = false)
+        {
+            var result = MessageBox.Show(
+                Application.Current.Windows.Cast<Window>().FirstOrDefault(x => x.IsActive) ?? Application.Current.MainWindow,
+                question,
+                "Подтверждение",
+                MessageBoxButton.YesNo,
+                isWarning ? MessageBoxImage.Warning : MessageBoxImage.Question);
+            return result == MessageBoxResult.Yes
+                ? true
+                : result == MessageBoxResult.No ? (bool?)false : null;
         }
     }
 }

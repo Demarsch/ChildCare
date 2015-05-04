@@ -3,7 +3,7 @@
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:command="http://www.galasoft.ch/mvvmlight">
-    <DataTemplate DataType="{x:Type registry:ScheduleCellViewModel}">
+    <DataTemplate DataType="{x:Type registry:FreeTimeSlotViewModel}">
         <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" BorderBrush="DarkGoldenrod" BorderThickness="1" x:Name="border" CornerRadius="2">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="PreviewMouseDown">

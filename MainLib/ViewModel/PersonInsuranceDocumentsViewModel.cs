@@ -3,9 +3,8 @@ using System;
 using GalaSoft.MvvmLight;
 using Core;
 using System.Collections.ObjectModel;
-using System.Collections.Generic;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using System.Linq;
 
 namespace MainLib

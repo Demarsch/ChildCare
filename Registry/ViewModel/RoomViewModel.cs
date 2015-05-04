@@ -90,22 +90,22 @@ namespace Registry
 
         public void BuildScheduleGrid(DateTime date, int? selectedRoomId, int? selectedRecordTypeId)
         {
-            foreach (var freeTimeSlot in TimeSlots.OfType<ScheduleCellViewModel>())
+            foreach (var freeTimeSlot in TimeSlots.OfType<FreeTimeSlotViewModel>())
             {
                 freeTimeSlot.AssignmentCreationRequested -= ScheduleCellOnAssignmentCreationRequested;
             }
             if (!selectedRecordTypeId.HasValue || (selectedRoomId.HasValue && selectedRoomId.Value != Id) || !AllowsRecordType(selectedRecordTypeId.Value))
             {
-                TimeSlots.RemoveWhere(x => x is ScheduleCellViewModel);
+                TimeSlots.RemoveWhere(x => x is FreeTimeSlotViewModel);
                 return;
             }
             var recordType = cacheService.GetItemById<RecordType>(selectedRecordTypeId.Value);
             var availableTimeIntervals = scheduleService.GetAvailableTimeIntervals(
                 workingTimes.Where(x => x.RecordTypeId == selectedRecordTypeId.Value),
-                TimeSlots.OfType<ScheduledAssignmentViewModel>(), 
+                TimeSlots.OfType<OccupiedTimeSlotViewModel>(), 
                 recordType.Duration, 
                 recordType.MinDuration);
-            var freeTimeSlots = availableTimeIntervals.Select(x => new ScheduleCellViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value)).ToArray();
+            var freeTimeSlots = availableTimeIntervals.Select(x => new FreeTimeSlotViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value)).ToArray();
             foreach (var freeTimeSlot in freeTimeSlots)
                 freeTimeSlot.AssignmentCreationRequested += ScheduleCellOnAssignmentCreationRequested;
             TimeSlots.AddRange(freeTimeSlots);
@@ -113,12 +113,12 @@ namespace Registry
 
         private void ScheduleCellOnAssignmentCreationRequested(object sender, EventArgs eventArgs)
         {
-            OnAssignmentCreationRequested(new ReturnEventArgs<ScheduleCellViewModel>(sender as ScheduleCellViewModel));
+            OnAssignmentCreationRequested(new ReturnEventArgs<FreeTimeSlotViewModel>(sender as FreeTimeSlotViewModel));
         }
 
-        public event EventHandler<ReturnEventArgs<ScheduleCellViewModel>> AssignmentCreationRequested;
+        public event EventHandler<ReturnEventArgs<FreeTimeSlotViewModel>> AssignmentCreationRequested;
 
-        protected virtual void OnAssignmentCreationRequested(ReturnEventArgs<ScheduleCellViewModel> e)
+        protected virtual void OnAssignmentCreationRequested(ReturnEventArgs<FreeTimeSlotViewModel> e)
         {
             var handler = AssignmentCreationRequested;
             if (handler != null)

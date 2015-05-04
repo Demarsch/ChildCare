@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using Core;
 using DataLib;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using Environment = System.Environment;
 
@@ -100,7 +100,15 @@ namespace Registry
                 {
                     room.OpenTime = OpenTime;
                     room.CloseTime = CloseTime;
-                    room.TimeSlots.Replace(assignments[room.Id].Select(x => new ScheduledAssignmentViewModel(x)));
+                    foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
+                    {
+                        occupiedTimeSlot.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
+                    }
+                    room.TimeSlots.Replace(assignments[room.Id].Select(x => new OccupiedTimeSlotViewModel(x, environment)));
+                    foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
+                    {
+                        occupiedTimeSlot.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
+                    }
                     room.WorkingTimes = workingTimes[room.Id].Select(x => new ScheduleItemViewModel(x, date)).ToArray();
                 }
             }
@@ -189,7 +197,7 @@ namespace Registry
 
         #region Assignments
         //TODO: worth reviewing this code to probably get rid of all type of assignment objects
-        private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<ScheduleCellViewModel> e)
+        private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
         {
             var financingSource = GetFinancingSource();
             if (financingSource == 0)
@@ -208,7 +216,7 @@ namespace Registry
                 PersonId = currentPatient.Id,
                 RecordTypeId = e.Result.RecordTypeId,
                 RoomId = selectedRoom.Id,
-                IsTemporary = true
+                IsTemporary = true,
             };
             try
             {
@@ -229,9 +237,11 @@ namespace Registry
                 RoomId = assignment.RoomId,
                 StartTime = assignment.AssignDateTime,
                 Duration = (int)e.Result.EndTime.Subtract(e.Result.StartTime).TotalMinutes,
-                IsTemporary = true
+                IsTemporary = true,
+                AssignUserId = assignment.AssignUserId
             };
-            var newAssignment = new ScheduledAssignmentViewModel(newAssignmentDTO);
+            var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment);
+            newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
             selectedRoom.TimeSlots.Remove(e.Result);
             selectedRoom.TimeSlots.Add(newAssignment);
             var isFailed = false;
@@ -248,10 +258,11 @@ namespace Registry
                         scheduleService.DeleteAssignment(assignment.Id);
                         selectedRoom.TimeSlots.Remove(newAssignment);
                         selectedRoom.TimeSlots.Add(e.Result);
+                        newAssignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Failed to delete temporary assignment", ex);
+                        log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
                         dialogService.ShowError("Не удалось удалить временное назначение. Попробуйте удалить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически");
                     }
                 }
@@ -269,13 +280,54 @@ namespace Registry
                     }
                     catch (Exception ex)
                     {
-                        log.Error("Failed to save additional data for temporary assignment", ex);
+                        log.Error(string.Format("Failed to save additional data for temporary assignment (Id ={0})", assignment.Id), ex);
                         dialogService.ShowError("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию");
                         isFailed = true;
                     }
                 }
 
             } while (isFailed);
+        }
+
+        private void RoomOnAssignmentCancelOrDeleteRequested(object sender, EventArgs e)
+        {
+            var assignment = sender as OccupiedTimeSlotViewModel;
+            if (assignment.IsTemporary)
+            {
+                try
+                {
+                    scheduleService.DeleteAssignment(assignment.Id);
+                    assignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
+                    rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
+                    ClearScheduleGrid();
+                    BuildScheduleGrid();
+                }
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
+                    dialogService.ShowError("Не удалось удалить временное назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
+                }
+            }
+            else
+            {
+                try
+                {
+                    var result = dialogService.AskUser(string.Format("Вы действительно хотите отменить назначение пациента {0} на {1:d MMMM HH:mm}?", assignment.PersonShortName, assignment.StartTime), true);
+                    if (result != true)
+                    {
+                        return;
+                    }
+                    scheduleService.CancelAssignment(assignment.Id);
+                    rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
+                    ClearScheduleGrid();
+                    BuildScheduleGrid();
+                }
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to cancel assignment (Id = {0})", assignment.Id), ex);
+                    dialogService.ShowError("Не удалось отменить назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
+                }
+            }
         }
 
         private int GetFinancingSource()
@@ -425,7 +477,7 @@ namespace Registry
         private void ClearScheduleGrid()
         {
             foreach (var room in rooms)
-                room.TimeSlots.RemoveWhere(x => x is ScheduleCellViewModel);
+                room.TimeSlots.RemoveWhere(x => x is FreeTimeSlotViewModel);
         }
 
         private bool FilterRooms(object obj)
