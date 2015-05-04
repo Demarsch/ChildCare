@@ -7,7 +7,7 @@
         xmlns:wpf="http://wpfcontrols.com/"
         xmlns:core="clr-namespace:Core;assembly=StuffLib"
         mc:Ignorable="d"
-        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStartupLocation="Manual" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}"
+        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStartupLocation="Manual" d:DataContext="{d:DesignData mainLib:PersonInsuranceDocumentsViewModel}"
         Loaded="Window_Loaded" MinWidth="300" MinHeight="150">
 
     <Window.Resources>
