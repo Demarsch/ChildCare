@@ -304,6 +304,8 @@
           <Property Name="House" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+          <Property Name="Building" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Apartment" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonNames">
           <Key>
@@ -2855,6 +2857,8 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="AddressType" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="PersonAddress" ToRole="AddressType" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Addresses_Persons" FromRole="PersonAddress" ToRole="Person" />
+          <Property Name="Building" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Apartment" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_PersonAddresses_AddressTypes">
           <End Type="DataLib.AddressType" Role="AddressType" Multiplicity="1" />
@@ -3669,6 +3673,8 @@
           <EntitySetMapping Name="PersonAddresses">
             <EntityTypeMapping TypeName="DataLib.PersonAddress">
               <MappingFragment StoreEntitySet="PersonAddresses">
+                <ScalarProperty Name="Apartment" ColumnName="Apartment" />
+                <ScalarProperty Name="Building" ColumnName="Building" />
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="House" ColumnName="House" />

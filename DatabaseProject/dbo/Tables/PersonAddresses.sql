@@ -7,10 +7,14 @@
     [House]         VARCHAR (50)  NOT NULL,
     [BeginDateTime] DATETIME      CONSTRAINT [DF_Addresses_InDateTime] DEFAULT (getdate()) NOT NULL,
     [EndDateTime]   DATETIME      NOT NULL,
+    [Building]      VARCHAR (50)  CONSTRAINT [DF_PersonAddresses_Building] DEFAULT ('') NOT NULL,
+    [Apartment]     VARCHAR (50)  CONSTRAINT [DF_PersonAddresses_Apartment] DEFAULT ('') NOT NULL,
     CONSTRAINT [PK_Addresses] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Addresses_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_PersonAddresses_AddressTypes] FOREIGN KEY ([AddressTypeId]) REFERENCES [dbo].[AddressTypes] ([Id])
 );
+
+
 
 
 GO

@@ -2,15 +2,15 @@
 <SchemaComparison>
   <Version>10</Version>
   <SourceModelProvider>
+    <ConnectionBasedModelProvider>
+      <ConnectionString>Data Source=.\sqlexpress;Initial Catalog=ChildCare;Integrated Security=True;Pooling=False;MultipleActiveResultSets=False</ConnectionString>
+    </ConnectionBasedModelProvider>
+  </SourceModelProvider>
+  <TargetModelProvider>
     <ProjectBasedModelProvider>
       <ProjectGuid>{af5b2989-48e6-42f2-be2c-b30f91f5287f}</ProjectGuid>
       <Name>DatabaseProject</Name>
     </ProjectBasedModelProvider>
-  </SourceModelProvider>
-  <TargetModelProvider>
-    <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=.\sqlexpress;Initial Catalog=ChildCare;Integrated Security=True;Pooling=False;MultipleActiveResultSets=False</ConnectionString>
-    </ConnectionBasedModelProvider>
   </TargetModelProvider>
   <SchemaCompareSettingsService>
     <SchemaCompareSettingsService>

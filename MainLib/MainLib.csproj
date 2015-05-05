@@ -126,6 +126,8 @@
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
+    <Compile Include="ViewModel\OKATOSuggestionProvider.cs" />
+    <Compile Include="ViewModel\OKATORegionSuggestionProvider.cs" />
     <Compile Include="ViewModel\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="ViewModel\ItemState.cs" />

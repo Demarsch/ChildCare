@@ -5,24 +5,82 @@ using System.Linq;
 using System.Text;
 using GalaSoft.MvvmLight;
 using System.Threading.Tasks;
+using Core;
 
 namespace MainLib
 {
     public class PersonAddressViewModel : ObservableObject
     {
+        #region Fields
+
         private readonly PersonAddress personAddress;
 
-        public PersonAddressViewModel(PersonAddress personAddress)
+        private IPersonService service;
+
+        #endregion
+
+        #region Constructors
+
+        public PersonAddressViewModel(IPersonService service, PersonAddress personAddress)
         {
             if (personAddress == null)
                 throw new ArgumentNullException("personAddress");
+            if (service == null)
+                throw new ArgumentNullException("service");
+            this.service = service;
             this.personAddress = personAddress;
+            OkatoRegionSuggestionProvider = new OKATORegionSuggestionProvider(service);
+            OkatoSuggestionProvider = new OKATOSuggestionProvider(service);
             FillData();
         }
 
+        #endregion
+
+        #region Methods
+
         private void FillData()
         {
-            throw new NotImplementedException();
+            if (!IsEmpty)
+            {
+                AddressTypeId = personAddress.AddressTypeId;
+                AddressOKATO = service.GetOKATOByCode(personAddress.OkatoText);
+                UserText = personAddress.UserText;
+                House = personAddress.House;
+                Building = personAddress.Building;
+                Apartment = personAddress.Apartment;
+                BeginDate = personAddress.BeginDateTime;
+                EndDate = personAddress.EndDateTime;
+                WithoutEndDate = personAddress.EndDateTime.Date == DateTime.MaxValue.Date;
+            }
+            else
+            {
+                AddressTypeId = 0;
+                AddressOKATO = null;
+                UserText = string.Empty;
+                House = string.Empty;
+                Building = string.Empty;
+                Apartment = string.Empty;
+                BeginDate = new DateTime(1900, 1, 1);
+                EndDate = DateTime.MaxValue.Date;
+            }
+        }
+
+        #endregion
+
+        #region Properties
+
+        private OKATOSuggestionProvider okatoSuggestionProvider;
+        public OKATOSuggestionProvider OkatoSuggestionProvider
+        {
+            get { return okatoSuggestionProvider; }
+            set { Set("OkatoSuggestionProvider", ref okatoSuggestionProvider, value); }
+        }
+
+        private OKATORegionSuggestionProvider okatoRegionSuggestionProvider;
+        public OKATORegionSuggestionProvider OkatoRegionSuggestionProvider
+        {
+            get { return okatoRegionSuggestionProvider; }
+            set { Set("OkatoRegionSuggestionProvider", ref okatoRegionSuggestionProvider, value); }
         }
 
         public bool IsEmpty
@@ -37,11 +95,18 @@ namespace MainLib
             set { Set("AddressTypeId", ref addressTypeId, value); }
         }
 
-        private Okato addressRegionOKATO = null;
-        public Okato AddressRegionOKATO
+        private Okato regionOKATO = null;
+        public Okato RegionOKATO
         {
-            get { return addressRegionOKATO; }
-            set { Set("AddressRegionOKATO", ref addressRegionOKATO, value); }
+            get { return regionOKATO; }
+            set
+            {
+                Set("RegionOKATO", ref regionOKATO, value);
+                var okatoRegion = string.Empty;
+                if (regionOKATO != null)
+                    okatoRegion = regionOKATO.CodeOKATO;
+                OkatoSuggestionProvider.OkatoRegion = okatoRegion;
+            }
         }
 
         private Okato addressOKATO = null;
@@ -65,11 +130,11 @@ namespace MainLib
             set { Set("House", ref house, value); }
         }
 
-        private string bulding = string.Empty;
-        public string Bulding
+        private string building = string.Empty;
+        public string Building
         {
-            get { return bulding; }
-            set { Set("Bulding", ref bulding, value); }
+            get { return building; }
+            set { Set("Building", ref building, value); }
         }
 
         private string apartment = string.Empty;
@@ -78,5 +143,70 @@ namespace MainLib
             get { return apartment; }
             set { Set("Apartment", ref apartment, value); }
         }
+
+        private DateTime beginDate = DateTime.MinValue;
+        public DateTime BeginDate
+        {
+            get { return beginDate; }
+            set
+            {
+                Set("BeginDate", ref beginDate, value);
+                RaisePropertyChanged("PersonAddressState");
+            }
+        }
+
+        private DateTime endDate = DateTime.MinValue;
+        public DateTime EndDate
+        {
+            get { return endDate; }
+            set
+            {
+                Set("EndDate", ref endDate, value);
+                RaisePropertyChanged("PersonAddressState");
+            }
+        }
+
+        private bool withoutEndDate;
+        public bool WithoutEndDate
+        {
+            get { return withoutEndDate; }
+            set
+            {
+                Set("WithoutEndDate", ref withoutEndDate, value);
+                EndDate = DateTime.MaxValue;
+                RaisePropertyChanged("WithEndDate");
+            }
+        }
+
+        public bool WithEndDate
+        {
+            get { return !WithoutEndDate; }
+        }
+
+        public ItemState PersonAddressState
+        {
+            get
+            {
+                var datetimeNow = DateTime.Now;
+                if (datetimeNow >= BeginDate && datetimeNow < EndDate)
+                    return ItemState.Active;
+                return ItemState.Inactive;
+            }
+        }
+
+        public string PersonAddressString
+        {
+            get
+            {
+                var addressTypeName = string.Empty;
+                var addressType = service.GetAddressType(AddressTypeId);
+                if (addressType != null)
+                    addressTypeName = addressType.Name;
+                return addressTypeName + ": " + UserText + " " + House + (Building != string.Empty ? "\"" + Building + "\"" : string.Empty) +
+                    (Apartment != string.Empty ? " " + Apartment : string.Empty) + ". Действует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по" + EndDate.ToString("dd.MM.yyyy") : string.Empty);
+            }
+        }
+
+        #endregion
     }
 }

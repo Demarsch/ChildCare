@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using System.Linq;
 
 namespace MainLib
 {
@@ -34,6 +35,8 @@ namespace MainLib
             this.dialogService = dialogService;
             this.service = service;
             this.personId = personId;
+            PersonAddresses = new ObservableCollection<PersonAddressViewModel>(service.GetPersonAddresses(this.personId).Select(x => new PersonAddressViewModel(service, x)));
+            ListAddressTypes = new ObservableCollection<AddressType>(service.GetAddressTypes());
             AddIPersonAddressCommand = new RelayCommand(AddPersonAddress);
             DeletePersonAddressCommand = new RelayCommand<PersonAddressViewModel>(DeleteInsuranceDocument);
             CloseCommand = new RelayCommand<bool>(Close);
@@ -57,63 +60,29 @@ namespace MainLib
             set { Set("PersonAddresses", ref personAddresses, value); }
         }
 
-        private DateTime beginDate = DateTime.MinValue;
-        public DateTime BeginDate
-        {
-            get { return beginDate; }
-            set
-            {
-                Set("BeginDate", ref beginDate, value);
-                RaisePropertyChanged("PersonAddressState");
-            }
-        }
-
-        private DateTime endDate = DateTime.MinValue;
-        public DateTime EndDate
-        {
-            get { return endDate; }
-            set
-            {
-                Set("EndDate", ref endDate, value);
-                RaisePropertyChanged("PersonAddressState");
-            }
-        }
-
-        private bool withoutEndDate;
-        public bool WithoutEndDate
-        {
-            get { return withoutEndDate; }
-            set
-            {
-                Set("WithoutEndDate", ref withoutEndDate, value);
-                EndDate = DateTime.MaxValue;
-                RaisePropertyChanged("WithEndDate");
-            }
-        }
-
-        public bool WithEndDate
-        {
-            get { return !WithoutEndDate; }
-        }
-
-        public ItemState PersonAddressState
+        public string PersonAddressesString
         {
             get
             {
-                var datetimeNow = DateTime.Now;
-                if (datetimeNow >= BeginDate && datetimeNow < EndDate)
-                    return ItemState.Active;
-                return ItemState.Inactive;
+                var resStr = string.Empty;
+                foreach (var personAddress in PersonAddresses)
+                {
+                    if (resStr != string.Empty)
+                        resStr += "\r\n";
+                    resStr += personAddress.PersonAddressString;
+                }
+                return resStr;
             }
         }
 
         #endregion
 
         #region Commands
+
         public ICommand AddIPersonAddressCommand { get; set; }
         private void AddPersonAddress()
         {
-            PersonAddresses.Add(new PersonAddressViewModel(new PersonAddress()));
+            PersonAddresses.Add(new PersonAddressViewModel(service, new PersonAddress()));
         }
 
         public ICommand DeletePersonAddressCommand { get; set; }

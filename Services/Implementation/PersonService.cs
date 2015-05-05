@@ -91,13 +91,50 @@ namespace Core
         {
             var words = filter.Split(' ').ToList();
             words.Remove("");
-            var list = data.Get<InsuranceCompany>(x => filter != string.Empty ? words.All(y => x.NameSMOK.Contains(y) ||  x.AddressF.Contains(y)) : true).ToList();
+            var list = data.Get<InsuranceCompany>(x => filter != string.Empty ? words.All(y => x.NameSMOK.Contains(y) || x.AddressF.Contains(y)) : true).ToList();
             return list;
         }
 
         public InsuranceDocumentType GetInsuranceDocumentTypeById(int id)
         {
-            return data.Get<InsuranceDocumentType>().FirstOrDefault(x => x.Id == id);
+            return data.Get<InsuranceDocumentType>(x => x.Id == id).FirstOrDefault();
+        }
+
+
+        public ICollection<PersonAddress> GetPersonAddresses(int personId)
+        {
+            return data.Get<PersonAddress>(x => x.PersonId == personId, x => x.AddressType);
+        }
+
+
+        public Okato GetOKATOByCode(string codeOKATO)
+        {
+            return data.Get<Okato>(x => x.CodeOKATO == codeOKATO).FirstOrDefault();
+        }
+
+        public ICollection<Okato> GetOKATOByName(string okatoName, string okatoRegion = "")
+        {
+            var okatoRegionTwoDigits = string.Empty;
+            if (okatoRegion != string.Empty)
+                okatoRegionTwoDigits = okatoRegion.Substring(0, 2);
+            return data.Get<Okato>(x => x.FullName.Contains(okatoName) &&
+                (okatoRegionTwoDigits != string.Empty ? (x.CodeOKATO.StartsWith(okatoRegionTwoDigits)) : true));
+        }
+
+        public ICollection<Okato> GetOKATORegion(string regionName)
+        {
+            return data.Get<Okato>(x => x.FullName.Contains(regionName) && (x.CodeOKATO.Substring(2, 9) == "000000000" || x.CodeOKATO.Substring(0, 1) == "c"));
+        }
+
+        public ICollection<AddressType> GetAddressTypes()
+        {
+            return data.Get<AddressType>();
+        }
+
+
+        public AddressType GetAddressType(int id)
+        {
+            return data.Get<AddressType>(x => x.Id == id).FirstOrDefault();
         }
     }
 }

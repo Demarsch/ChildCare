@@ -65,7 +65,7 @@ namespace DataLib
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<FinacingSource> FinacingSources { get; set; }
-        public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
     }
 }

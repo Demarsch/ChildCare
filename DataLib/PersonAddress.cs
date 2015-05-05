@@ -22,6 +22,8 @@ namespace DataLib
         public string House { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public string Building { get; set; }
+        public string Apartment { get; set; }
     
         public virtual AddressType AddressType { get; set; }
         public virtual Person Person { get; set; }

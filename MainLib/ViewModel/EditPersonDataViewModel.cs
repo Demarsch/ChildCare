@@ -250,13 +250,8 @@ namespace MainLib
                 personAddressesViewModel = new PersonAddressesViewModel(Id, service, dialogService);
             var dialogResult = dialogService.ShowDialog(personAddressesViewModel);
             if (dialogResult != true)
-            {
-
-            }
-            else
-            {
-
-            }
+                personAddressesViewModel = new PersonAddressesViewModel(Id, service, dialogService);
+            Addresses = personAddressesViewModel.PersonAddressesString;
         }
 
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();

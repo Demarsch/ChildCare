@@ -18,14 +18,27 @@ namespace MainLib
 
         private void FillData()
         {
-            InsuranceCompanyId = insuranceDocument.InsuranceCompanyId;
-            InsuranceDocumentTypeId = insuranceDocument.InsuranceDocumentTypeId;
-            InsuranceCompany = insuranceDocument.InsuranceCompany;
-            Series = insuranceDocument.Series;
-            Number = insuranceDocument.Number;
-            BeginDate = insuranceDocument.BeginDate;
-            EndDate = insuranceDocument.EndDate;
-            WithoutEndDate = insuranceDocument.EndDate.Date == DateTime.MaxValue.Date;
+            if (!IsEmpty)
+            {
+                InsuranceCompanyId = insuranceDocument.InsuranceCompanyId;
+                InsuranceDocumentTypeId = insuranceDocument.InsuranceDocumentTypeId;
+                InsuranceCompany = insuranceDocument.InsuranceCompany;
+                Series = insuranceDocument.Series;
+                Number = insuranceDocument.Number;
+                BeginDate = insuranceDocument.BeginDate;
+                EndDate = insuranceDocument.EndDate;
+                WithoutEndDate = insuranceDocument.EndDate.Date == DateTime.MaxValue.Date;
+            }
+            else
+            {
+                InsuranceCompanyId = 0;
+                InsuranceDocumentTypeId = 0;
+                InsuranceCompany = null;
+                Series = string.Empty;
+                Number = string.Empty;
+                BeginDate = new DateTime(1900, 1, 1);
+                EndDate = DateTime.MaxValue.Date;
+            }
         }
 
         public bool IsEmpty
