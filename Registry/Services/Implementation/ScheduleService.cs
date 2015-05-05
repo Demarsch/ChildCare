@@ -47,7 +47,7 @@ namespace Registry
                     {
                         Id = x.Id,
                         StartTime = x.AssignDateTime,
-                        Duration = x.RecordType.Duration,
+                        Duration = x.Duration ?? x.RecordType.Duration,
                         IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
                         RecordTypeId = x.RecordTypeId,
                         RoomId = x.RoomId,

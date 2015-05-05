@@ -210,6 +210,7 @@ namespace Registry
             var assignment = new Assignment
             {
                 AssignDateTime = e.Result.StartTime,
+                Duration = (int)e.Result.EndTime.Subtract(e.Result.StartTime).TotalMinutes,
                 AssignUserId = environment.CurrentUser.UserId,
                 Note = string.Empty,
                 FinancingSourceId = financingSource,
@@ -236,7 +237,7 @@ namespace Registry
                 RecordTypeId = assignment.RecordTypeId,
                 RoomId = assignment.RoomId,
                 StartTime = assignment.AssignDateTime,
-                Duration = (int)e.Result.EndTime.Subtract(e.Result.StartTime).TotalMinutes,
+                Duration = assignment.Duration.Value,
                 IsTemporary = true,
                 AssignUserId = assignment.AssignUserId
             };
@@ -248,7 +249,7 @@ namespace Registry
             do
             {
                 var viewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>());
-                viewModel.SelectedFinancingSource = viewModel.FinacingSources.Single(x => x.Id == assignment.FinancingSourceId);
+                viewModel.SelectedFinancingSource = viewModel.FinacingSources.First(x => x.Id == assignment.FinancingSourceId);
                 var dialogResult = dialogService.ShowDialog(viewModel);
                 if (dialogResult != true)
                 {

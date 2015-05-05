@@ -3,15 +3,16 @@
     [RecordTypeId]      INT            NOT NULL,
     [PersonId]          INT            NOT NULL,
     [AssignDateTime]    DATETIME       NOT NULL,
+    [Duration]          INT            NULL,
     [AssignUserId]      INT            NOT NULL,
     [RoomId]            INT            NOT NULL,
     [FinancingSourceId] INT            NOT NULL,
     [CancelUserId]      INT            NULL,
+    [CancelDateTime]    DATETIME       NULL,
     [Note]              VARCHAR (8000) CONSTRAINT [DF_Assignments_Note] DEFAULT ('') NOT NULL,
     [RecordId]          INT            NULL,
-    [IsTemporary]       BIT            DEFAULT ((0)) NOT NULL,
-    [CreationDateTime]  DATETIME       DEFAULT (getdate()) NOT NULL,
-    [CancelDateTime]    DATETIME       NULL,
+    [IsTemporary]       BIT            CONSTRAINT [DF__Assignmen__IsTem__4A8310C6] DEFAULT ((0)) NOT NULL,
+    [CreationDateTime]  DATETIME       CONSTRAINT [DF__Assignmen__Creat__498EEC8D] DEFAULT (getdate()) NOT NULL,
     CONSTRAINT [PK_Assignments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Assignments_FinacingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinacingSources] ([Id]),
     CONSTRAINT [FK_Assignments_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
@@ -21,6 +22,10 @@
     CONSTRAINT [FK_Assignments_Users] FOREIGN KEY ([AssignUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Users1] FOREIGN KEY ([CancelUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
+
+
 
 
 

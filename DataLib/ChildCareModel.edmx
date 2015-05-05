@@ -20,15 +20,16 @@
           <Property Name="RecordTypeId" Type="int" Nullable="false" />
           <Property Name="PersonId" Type="int" Nullable="false" />
           <Property Name="AssignDateTime" Type="datetime" Nullable="false" />
+          <Property Name="Duration" Type="int" />
           <Property Name="AssignUserId" Type="int" Nullable="false" />
           <Property Name="RoomId" Type="int" Nullable="false" />
           <Property Name="FinancingSourceId" Type="int" Nullable="false" />
           <Property Name="CancelUserId" Type="int" />
+          <Property Name="CancelDateTime" Type="datetime" />
           <Property Name="Note" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="RecordId" Type="int" />
           <Property Name="IsTemporary" Type="bit" Nullable="false" />
           <Property Name="CreationDateTime" Type="datetime" Nullable="false" />
-          <Property Name="CancelDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="Branches">
           <Key>
@@ -1812,6 +1813,15 @@
             <End Role="FinacingSource" EntitySet="FinacingSources" />
             <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
+          <EntitySet Name="PermissionLinks" EntityType="DataLib.PermissionLink" />
+          <AssociationSet Name="FK_PermissionLinks_Permissions" Association="DataLib.FK_PermissionLinks_Permissions">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="PermissionLink" EntitySet="PermissionLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PermissionLinks_Permissions1" Association="DataLib.FK_PermissionLinks_Permissions1">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="PermissionLink" EntitySet="PermissionLinks" />
+          </AssociationSet>
           <EntitySet Name="Assignments" EntityType="DataLib.Assignment" />
           <AssociationSet Name="FK_Assignments_FinacingSources" Association="DataLib.FK_Assignments_FinacingSources">
             <End Role="FinacingSource" EntitySet="FinacingSources" />
@@ -1840,15 +1850,6 @@
           <AssociationSet Name="FK_Assignments_Users1" Association="DataLib.FK_Assignments_Users1">
             <End Role="User" EntitySet="Users" />
             <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
-          <EntitySet Name="PermissionLinks" EntityType="DataLib.PermissionLink" />
-          <AssociationSet Name="FK_PermissionLinks_Permissions" Association="DataLib.FK_PermissionLinks_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="PermissionLink" EntitySet="PermissionLinks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PermissionLinks_Permissions1" Association="DataLib.FK_PermissionLinks_Permissions1">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="PermissionLink" EntitySet="PermissionLinks" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="PersonName">
@@ -2988,7 +2989,7 @@
           <NavigationProperty Name="UserPermissions" Relationship="DataLib.FK_Permissions_Users" FromRole="User" ToRole="UserPermission" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Users" FromRole="User" ToRole="Assignment" />
           <NavigationProperty Name="Assignments1" Relationship="DataLib.FK_Assignments_Users1" FromRole="User" ToRole="Assignment" />
-        </EntityType>
+          </EntityType>
         <Association Name="FK_CommissionProtocols_Users">
           <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
@@ -3084,43 +3085,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Assignment">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="PersonId" Type="Int32" Nullable="false" />
-          <Property Name="AssignDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="AssignUserId" Type="Int32" Nullable="false" />
-          <Property Name="RoomId" Type="Int32" Nullable="false" />
-          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
-          <Property Name="CancelUserId" Type="Int32" />
-          <Property Name="Note" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="RecordId" Type="Int32" />
-          <Property Name="IsTemporary" Type="Boolean" Nullable="false" />
-          <Property Name="CreationDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CancelDateTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="FinacingSource" Relationship="DataLib.FK_Assignments_FinacingSources" FromRole="Assignment" ToRole="FinacingSource" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_Assignments_Persons" FromRole="Assignment" ToRole="Person" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_Assignments_Records" FromRole="Assignment" ToRole="Record" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="Assignment" ToRole="RecordType" />
-          <NavigationProperty Name="Room" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Assignment" ToRole="Room" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_Assignments_Users" FromRole="Assignment" ToRole="User" />
-          <NavigationProperty Name="User1" Relationship="DataLib.FK_Assignments_Users1" FromRole="Assignment" ToRole="User" />
-        </EntityType>
-        <Association Name="FK_Assignments_FinacingSources">
-          <End Type="DataLib.FinacingSource" Role="FinacingSource" Multiplicity="1" />
-          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="FinacingSource">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Assignment">
-              <PropertyRef Name="FinancingSourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="PermissionLink">
           <Key>
             <PropertyRef Name="Id" />
@@ -3152,6 +3116,44 @@
             </Principal>
             <Dependent Role="PermissionLink">
               <PropertyRef Name="ChildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Assignment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="AssignDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Duration" Type="Int32" />
+          <Property Name="AssignUserId" Type="Int32" Nullable="false" />
+          <Property Name="RoomId" Type="Int32" Nullable="false" />
+          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
+          <Property Name="CancelUserId" Type="Int32" />
+          <Property Name="CancelDateTime" Type="DateTime" Precision="3" />
+          <Property Name="Note" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="RecordId" Type="Int32" />
+          <Property Name="IsTemporary" Type="Boolean" Nullable="false" />
+          <Property Name="CreationDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="FinacingSource" Relationship="DataLib.FK_Assignments_FinacingSources" FromRole="Assignment" ToRole="FinacingSource" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Assignments_Persons" FromRole="Assignment" ToRole="Person" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_Assignments_Records" FromRole="Assignment" ToRole="Record" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="Assignment" ToRole="RecordType" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Assignment" ToRole="Room" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_Assignments_Users" FromRole="Assignment" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="DataLib.FK_Assignments_Users1" FromRole="Assignment" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Assignments_FinacingSources">
+          <End Type="DataLib.FinacingSource" Role="FinacingSource" Multiplicity="1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinacingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3751,15 +3753,16 @@
           <EntitySetMapping Name="Assignments">
             <EntityTypeMapping TypeName="DataLib.Assignment">
               <MappingFragment StoreEntitySet="Assignments">
-                <ScalarProperty Name="CancelDateTime" ColumnName="CancelDateTime" />
                 <ScalarProperty Name="CreationDateTime" ColumnName="CreationDateTime" />
                 <ScalarProperty Name="IsTemporary" ColumnName="IsTemporary" />
                 <ScalarProperty Name="RecordId" ColumnName="RecordId" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="CancelDateTime" ColumnName="CancelDateTime" />
                 <ScalarProperty Name="CancelUserId" ColumnName="CancelUserId" />
                 <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
                 <ScalarProperty Name="RoomId" ColumnName="RoomId" />
                 <ScalarProperty Name="AssignUserId" ColumnName="AssignUserId" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
                 <ScalarProperty Name="AssignDateTime" ColumnName="AssignDateTime" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />

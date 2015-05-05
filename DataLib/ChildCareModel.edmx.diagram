@@ -102,7 +102,7 @@
         <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="12.625" PointY="3.25" />
         <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
         <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
-        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="16.625" PointY="18.375" />
+        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="16.625" PointY="17.75" />
         <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
         <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
         <AssociationConnector Association="DataLib.FK_Assignments_Records" />
