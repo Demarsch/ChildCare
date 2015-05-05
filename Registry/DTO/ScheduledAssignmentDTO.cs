@@ -1,5 +1,6 @@
 ﻿using System;
 using Core;
+using DataLib;
 
 namespace Registry
 {
@@ -24,6 +25,10 @@ namespace Registry
         public bool IsTemporary { get; set; }
 
         public int AssignUserId { get; set; }
+
+        public string Note { get; set; }
+
+        public int FinancingSourceId { get; set; }
 
         TimeSpan ITimeInterval.StartTime
         {

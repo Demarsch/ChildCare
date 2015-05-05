@@ -65,7 +65,8 @@ namespace Registry
             openTime = selectedDate.AddHours(8.0);
             closeTime = selectedDate.AddHours(17.0);
             isInReadOnlyMode = true;
-            changeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
+            ChangeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
+            CancelAssignmentMovementCommand = new RelayCommand(CancelAssignmentMovement);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
@@ -103,11 +104,15 @@ namespace Registry
                     foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
                     {
                         occupiedTimeSlot.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
+                        occupiedTimeSlot.UpdateRequested -= RoomOnAssignmentUpdateRequested;
+                        occupiedTimeSlot.MoveRequested -= RoomOnAssignmentMoveRequested;
                     }
                     room.TimeSlots.Replace(assignments[room.Id].Select(x => new OccupiedTimeSlotViewModel(x, environment)));
                     foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
                     {
                         occupiedTimeSlot.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
+                        occupiedTimeSlot.UpdateRequested += RoomOnAssignmentUpdateRequested;
+                        occupiedTimeSlot.MoveRequested += RoomOnAssignmentMoveRequested;
                     }
                     room.WorkingTimes = workingTimes[room.Id].Select(x => new ScheduleItemViewModel(x, date)).ToArray();
                 }
@@ -199,6 +204,47 @@ namespace Registry
         //TODO: worth reviewing this code to probably get rid of all type of assignment objects
         private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
         {
+            var room = sender as RoomViewModel;
+            var freeTimeSlot = e.Result;
+            if (isMovingAssignment)
+            {
+                MoveAssignment(movedAssignment, freeTimeSlot);
+            }
+            else
+            {
+                CreateNewAssignment(room, freeTimeSlot);
+            }
+        }
+
+        private void MoveAssignment(OccupiedTimeSlotViewModel whatToMove, FreeTimeSlotViewModel whereToMove)
+        {
+            try
+            {
+                scheduleService.MoveAssignment(whatToMove.Id, whereToMove.StartTime, (int)whereToMove.EndTime.Subtract(whereToMove.StartTime).TotalMinutes, whereToMove.RoomId);
+                var whereToMoveRoom = rooms.First(x => x.Id == whereToMove.RoomId);
+                var whatToMoveRoom = rooms.First(x => x.Id == whatToMove.RoomId);
+                whereToMove.AssignmentCreationRequested -= whereToMoveRoom.FreeTimeSlotOnAssignmentCreationRequested;
+                whereToMoveRoom.TimeSlots.Remove(whereToMove);
+                if (whatToMove.RoomId != whereToMove.RoomId || whatToMove.StartTime.Date != whereToMove.StartTime.Date)
+                {
+                    whatToMoveRoom.TimeSlots.Remove(whatToMove);
+                    whereToMoveRoom.TimeSlots.Add(whatToMove);
+                }
+                whatToMove.UpdateTime(whereToMove.StartTime, whereToMove.EndTime);
+                whatToMove.RoomId = whereToMove.RoomId;
+                CancelAssignmentMovement();
+                ClearScheduleGrid();
+                BuildScheduleGrid();
+            }
+            catch (Exception ex)
+            {
+                log.Error(string.Format("Failed to move assignment (Id = {0}) to the time slot {1:dd.MM HH:mm}", whatToMove.Id, whereToMove.StartTime), ex);
+                dialogService.ShowError("При попытке перенести назначение возникла ошибка. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
+            }
+        }
+
+        private void CreateNewAssignment(RoomViewModel selectedRoom, FreeTimeSlotViewModel freeTimeSlot)
+        {
             var financingSource = GetFinancingSource();
             if (financingSource == 0)
             {
@@ -206,16 +252,15 @@ namespace Registry
                 dialogService.ShowError("В базе данных отсутствует информация о доступных источниках финансирования. Обратитесь в службу поддержки");
                 return;
             }
-            var selectedRoom = sender as RoomViewModel;
             var assignment = new Assignment
             {
-                AssignDateTime = e.Result.StartTime,
-                Duration = (int)e.Result.EndTime.Subtract(e.Result.StartTime).TotalMinutes,
+                AssignDateTime = freeTimeSlot.StartTime,
+                Duration = (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
                 AssignUserId = environment.CurrentUser.UserId,
                 Note = string.Empty,
                 FinancingSourceId = financingSource,
                 PersonId = currentPatient.Id,
-                RecordTypeId = e.Result.RecordTypeId,
+                RecordTypeId = freeTimeSlot.RecordTypeId,
                 RoomId = selectedRoom.Id,
                 IsTemporary = true,
             };
@@ -226,7 +271,8 @@ namespace Registry
             catch (Exception ex)
             {
                 log.Error("Failed to save new assignment", ex);
-                dialogService.ShowError(string.Format("Не удалось создать назначение. Причина - {0}{1}Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", ex.Message, Environment.NewLine));
+                dialogService.ShowError(string.Format("Не удалось создать назначение. Причина - {0}{1}Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", ex.Message,
+                    Environment.NewLine));
                 return;
             }
             var newAssignmentDTO = new ScheduledAssignmentDTO
@@ -239,16 +285,20 @@ namespace Registry
                 StartTime = assignment.AssignDateTime,
                 Duration = assignment.Duration.Value,
                 IsTemporary = true,
-                AssignUserId = assignment.AssignUserId
+                AssignUserId = assignment.AssignUserId,
+                Note = assignment.Note,
+                FinancingSourceId = assignment.FinancingSourceId
             };
             var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment);
             newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
-            selectedRoom.TimeSlots.Remove(e.Result);
+            newAssignment.UpdateRequested += RoomOnAssignmentUpdateRequested;
+            newAssignment.MoveRequested += RoomOnAssignmentMoveRequested;
+            selectedRoom.TimeSlots.Remove(freeTimeSlot);
             selectedRoom.TimeSlots.Add(newAssignment);
             var isFailed = false;
             do
             {
-                var viewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>());
+                var viewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>(), true);
                 viewModel.SelectedFinancingSource = viewModel.FinacingSources.First(x => x.Id == assignment.FinancingSourceId);
                 var dialogResult = dialogService.ShowDialog(viewModel);
                 if (dialogResult != true)
@@ -258,13 +308,16 @@ namespace Registry
                         isFailed = false;
                         scheduleService.DeleteAssignment(assignment.Id);
                         selectedRoom.TimeSlots.Remove(newAssignment);
-                        selectedRoom.TimeSlots.Add(e.Result);
+                        selectedRoom.TimeSlots.Add(freeTimeSlot);
                         newAssignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
+                        newAssignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
+                        newAssignment.MoveRequested -= RoomOnAssignmentMoveRequested;
                     }
                     catch (Exception ex)
                     {
                         log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
-                        dialogService.ShowError("Не удалось удалить временное назначение. Попробуйте удалить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически");
+                        dialogService.ShowError(
+                            "Не удалось удалить временное назначение. Попробуйте удалить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически");
                     }
                 }
                 else
@@ -275,8 +328,9 @@ namespace Registry
                         assignment.FinancingSourceId = viewModel.SelectedFinancingSource.Id;
                         assignment.Note = viewModel.Note;
                         scheduleService.SaveAssignment(assignment);
-                        newAssignmentDTO.IsTemporary = false;
-                        newAssignment.TryUpdate(newAssignmentDTO);
+                        newAssignment.IsTemporary = false;
+                        newAssignment.FinancingSourceId = assignment.FinancingSourceId;
+                        newAssignment.Note = assignment.Note;
                         isFailed = false;
                     }
                     catch (Exception ex)
@@ -286,7 +340,6 @@ namespace Registry
                         isFailed = true;
                     }
                 }
-
             } while (isFailed);
         }
 
@@ -299,6 +352,8 @@ namespace Registry
                 {
                     scheduleService.DeleteAssignment(assignment.Id);
                     assignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
+                    assignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
+                    assignment.MoveRequested -= RoomOnAssignmentMoveRequested;
                     rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
                     ClearScheduleGrid();
                     BuildScheduleGrid();
@@ -329,6 +384,105 @@ namespace Registry
                     dialogService.ShowError("Не удалось отменить назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
                 }
             }
+        }
+
+        private void RoomOnAssignmentMoveRequested(object sender, EventArgs e)
+        {
+            var assignmentViewModel = sender as OccupiedTimeSlotViewModel;
+            movedAssignment = assignmentViewModel;
+            IsMovingAssignment = true;
+        }
+
+        private bool isMovingAssignment;
+
+        public bool IsMovingAssignment
+        {
+            get { return isMovingAssignment; }
+            set
+            {
+                if (Set("IsMovingAssignment", ref isMovingAssignment, value))
+                {
+                    CancelAssignmentMovementCommand.RaiseCanExecuteChanged();
+                    movedAssignment.IsBeingMoved = value;
+                    if (value)
+                    {
+                        
+                        wasInReadOnlyMode = isInReadOnlyMode;
+                        previousSelectedRecordType = selectedRecordType;
+                        previousSelectedRoom = selectedRoom;
+                        IsInReadOnlyMode = false;
+                        SelectedRecordType = recordTypes.First(x => x.Id == movedAssignment.RecordTypeId);
+                        CollectionViewSource.GetDefaultView(recordTypes).Filter = x => (x as RecordType).Id == SelectedRecordType.Id;
+                        SelectedRoom = null;
+                    }
+                    else
+                    {
+                        SelectedRoom = previousSelectedRoom;
+                        SelectedRecordType = previousSelectedRecordType;
+                        IsInReadOnlyMode = wasInReadOnlyMode;
+                        CollectionViewSource.GetDefaultView(recordTypes).Filter = null;
+                    }
+                    UpdateAssignmentsReadOnlyMode();
+                }
+            }
+        }
+
+        private void UpdateAssignmentsReadOnlyMode()
+        {
+            foreach (var occupiedTimeSlot in rooms.SelectMany(x => x.TimeSlots.OfType<OccupiedTimeSlotViewModel>()))
+            {
+                occupiedTimeSlot.IsInReadOnlyMode = isMovingAssignment;
+                if (isMovingAssignment && occupiedTimeSlot.Id == movedAssignment.Id)
+                {
+                    occupiedTimeSlot.IsBeingMoved = true;
+                }
+            }
+        }
+
+        private bool wasInReadOnlyMode;
+
+        private RecordType previousSelectedRecordType;
+
+        private RoomViewModel previousSelectedRoom;
+
+        private OccupiedTimeSlotViewModel movedAssignment;
+
+        public RelayCommand CancelAssignmentMovementCommand { get; private set; }
+
+        private void CancelAssignmentMovement()
+        {
+            IsMovingAssignment = false;
+            movedAssignment = null;
+        }
+
+        private void RoomOnAssignmentUpdateRequested(object sender, EventArgs e)
+        {
+            var assignmentViewModel = sender as OccupiedTimeSlotViewModel;
+            var dialogViewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>(), false);
+            dialogViewModel.Note = assignmentViewModel.Note;
+            dialogViewModel.SelectedFinancingSource = dialogViewModel.FinacingSources.FirstOrDefault(x => x.Id == assignmentViewModel.FinancingSourceId);
+            var isFailed = false;
+            do
+            {
+                var dialogResult = dialogService.ShowDialog(dialogViewModel);
+                if (dialogResult != true)
+                {
+                    return;
+                }
+                try
+                {
+                    scheduleService.UpdateAssignment(assignmentViewModel.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note);
+                    assignmentViewModel.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
+                    assignmentViewModel.Note = dialogViewModel.Note;
+                    isFailed = false;
+                }
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to update information for existing assignment (Id ={0})", assignmentViewModel.Id), ex);
+                    dialogService.ShowError("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию");
+                    isFailed = true;
+                }
+            } while (isFailed);
         }
 
         private int GetFinancingSource()
@@ -393,9 +547,7 @@ namespace Registry
             }
         }
 
-        private readonly RelayCommand changeModeCommand;
-
-        public ICommand ChangeModeCommand { get { return changeModeCommand; } }
+        public RelayCommand ChangeModeCommand { get; private set; }
 
         private void ChangeMode()
         {
@@ -457,7 +609,7 @@ namespace Registry
             set
             {
                 currentPatient = value;
-                changeModeCommand.RaiseCanExecuteChanged();
+                ChangeModeCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -472,20 +624,27 @@ namespace Registry
         private void BuildScheduleGrid()
         {
             foreach (var room in rooms)
+            {
                 room.BuildScheduleGrid(selectedDate, isRoomSelected ? (int?)selectedRoom.Id : null, isRecordTypeSelected ? (int?)selectedRecordType.Id : null);
+            }
+            UpdateAssignmentsReadOnlyMode();
         }
 
         private void ClearScheduleGrid()
         {
             foreach (var room in rooms)
+            {
                 room.TimeSlots.RemoveWhere(x => x is FreeTimeSlotViewModel);
+            }
         }
 
         private bool FilterRooms(object obj)
         {
             var room = obj as RoomViewModel;
             if (room == null || ReferenceEquals(room, unseletedRoom))
+            {
                 return false;
+            }
             return (!isRoomSelected || room.Id == selectedRoom.Id) && (!isRecordTypeSelected || room.AllowsRecordType(selectedRecordType.Id));
         }
 

@@ -10,8 +10,16 @@
             <ControlTemplate x:Key="ListBoxItem"  TargetType="{x:Type ListBoxItem}">
                 <ContentPresenter />
             </ControlTemplate>
+            <xctk:InverseBoolConverter x:Key="InverseBoolConverter" />
             <core:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Visible}">
                 <core:ConverterItem To="{x:Static Visibility.Collapsed}">
+                    <core:ConverterItem.From>
+                        <system:Boolean>True</system:Boolean>
+                    </core:ConverterItem.From>
+                </core:ConverterItem>
+            </core:UniversalConverter>
+            <core:UniversalConverter x:Key="BooleanToHiddenVisibilityConverter" DefaultValue="{x:Static Visibility.Visible}">
+                <core:ConverterItem To="{x:Static Visibility.Hidden}">
                     <core:ConverterItem.From>
                         <system:Boolean>True</system:Boolean>
                     </core:ConverterItem.From>
@@ -37,14 +45,14 @@
                 <!--Schedule filters-->
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                     <Button DockPanel.Dock="Left" MinWidth="190" Margin="5" Padding="5" Background="White" Content="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToButtonTextConverter}}"
-                            Command="{Binding ChangeModeCommand}" />
+                            Command="{Binding ChangeModeCommand}" Visibility="{Binding IsMovingAssignment, Converter={StaticResource BooleanToHiddenVisibilityConverter}}" />
                     <TextBlock DockPanel.Dock="Left" Text="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToDateSelectorTextConverter}}" MinWidth="190" Margin="5" VerticalAlignment="Center" TextAlignment="Right" />
                     <DatePicker DockPanel.Dock="Left" SelectedDateFormat="Long" Width="130" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5" 
                             IsEnabled="{Binding DataSourcesAreLoaded}" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Horizontal" Visibility="{Binding IsInReadOnlyMode, Converter={StaticResource BooleanToInversedVisibilityConverter}}">
                         <Grid Width="180" VerticalAlignment="Center">
                             <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding RecordTypes}" SelectedItem="{Binding SelectedRecordType}" DisplayMemberPath="Name"
-                                  Margin="5"/>
+                                  Margin="5" IsEnabled="{Binding IsMovingAssignment, Converter={StaticResource InverseBoolConverter}}"/>
                             <TextBlock Text="Выберите услугу" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="RecordTypeSelectionText" IsHitTestVisible="False"
                                        Margin="11 0 0 0" Visibility="Collapsed"/>
                         </Grid>
@@ -54,6 +62,9 @@
                             <TextBlock Text="Выберите кабинет" HorizontalAlignment="Left" VerticalAlignment="Center" x:Name="RoomSelectionText" IsHitTestVisible="False"
                                        Margin="11 0 0 0" Visibility="Collapsed"/>
                         </Grid>
+                        <Button Content="Отменить перенос" MinWidth="150" Margin="5" Padding="5" Background="White" Visibility="{Binding IsMovingAssignment, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Command="{Binding CancelAssignmentMovementCommand, Mode=OneTime}"/>
+                        
                     </StackPanel>
                 </DockPanel>
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

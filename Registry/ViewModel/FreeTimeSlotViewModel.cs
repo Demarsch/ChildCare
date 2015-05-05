@@ -8,7 +8,7 @@ namespace Registry
 {
     public class FreeTimeSlotViewModel : ObservableObject, ITimeInterval
     {
-        public FreeTimeSlotViewModel(DateTime startTime, DateTime endTime, int recordTypeId)
+        public FreeTimeSlotViewModel(DateTime startTime, DateTime endTime, int recordTypeId, int roomId)
         {
             if (startTime >= endTime)
             {
@@ -17,6 +17,7 @@ namespace Registry
             StartTime = startTime;
             EndTime = endTime;
             RecordTypeId = recordTypeId;
+            RoomId = roomId;
             RequestAssignmentCreationCommand = new RelayCommand<MouseButtonEventArgs>(RequestAssignmentCreation);
         }
 
@@ -25,6 +26,8 @@ namespace Registry
         public DateTime EndTime { get; private set; }
 
         public int RecordTypeId { get; private set; }
+
+        public int RoomId { get; private set; }
         
         public ICommand RequestAssignmentCreationCommand { get; private set; }
         //TODO: make it the other way so that view-model is unaware of mouse buttons

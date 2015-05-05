@@ -23,5 +23,9 @@ namespace Registry
         void DeleteAssignment(int assignmentId);
 
         void CancelAssignment(int assignmentId);
+
+        void UpdateAssignment(int assignmentId, int newFinancingSourceId, string newNote);
+
+        void MoveAssignment(int assignmentId, DateTime newTime, int newDuration, int newRoomId);
     }
 }

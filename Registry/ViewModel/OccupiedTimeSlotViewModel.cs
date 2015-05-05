@@ -25,9 +25,11 @@ namespace Registry
             this.environment = environment;
             this.assignment = assignment;
             CancelOrDeleteCommand = new RelayCommand(CancelOrDelete, CanCancelOrDelete);
+            UpdateCommand = new RelayCommand(Update, CanUpdate);
+            MoveCommand = new RelayCommand(Move, CanMove);
         }
 
-        public ICommand CancelOrDeleteCommand { get; private set; }
+        public RelayCommand CancelOrDeleteCommand { get; private set; }
 
         private void CancelOrDelete()
         {
@@ -36,6 +38,10 @@ namespace Registry
 
         private bool CanCancelOrDelete()
         {
+            if (IsCompleted)
+            {
+                return false;
+            }
             if (IsTemporary)
             {
                 return assignment.AssignUserId == environment.CurrentUser.UserId;
@@ -46,19 +52,61 @@ namespace Registry
             }
         }
 
+        public RelayCommand UpdateCommand { get; private set; }
+
+        private void Update()
+        {
+            OnUpdateRequested();
+        }
+
+        private bool CanUpdate()
+        {
+            return !IsTemporary && !IsCompleted;
+        }
+
+        public RelayCommand MoveCommand { get; private set; }
+
+        private void Move()
+        {
+            OnMoveRequested();
+        }
+
+        private bool CanMove()
+        {
+            return !IsTemporary && !IsCompleted;
+        }
+
         public int Id { get { return assignment.Id; } }
 
         public DateTime StartTime { get { return assignment.StartTime; } }
 
-        public bool IsTemporary { get { return assignment.IsTemporary; } }
-
         public DateTime EndTime { get { return assignment.EndTime; } }
+
+        public void UpdateTime(DateTime startTime, DateTime endTime)
+        {
+            assignment.StartTime = startTime;
+            assignment.Duration = (int)endTime.Subtract(startTime).TotalMinutes;
+            RaisePropertyChanged(string.Empty);
+        }
 
         public string PersonShortName { get { return assignment.PersonShortName; } }
 
         public bool IsCompleted { get { return assignment.IsCompleted; } }
 
-        public int RoomId { get { return assignment.RoomId; } }
+        public int RoomId
+        {
+            get { return assignment.RoomId; }
+            set
+            {
+                if (assignment.RoomId != value)
+                {
+                    assignment.RoomId = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public int RecordTypeId { get { return assignment.RecordTypeId; } }
 
         public bool TryUpdate(ScheduledAssignmentDTO assignment)
         {
@@ -68,7 +116,9 @@ namespace Registry
             }
             this.assignment = assignment;
             RaisePropertyChanged(string.Empty);
-            (CancelOrDeleteCommand as RelayCommand).RaiseCanExecuteChanged();
+            CancelOrDeleteCommand.RaiseCanExecuteChanged();
+            UpdateCommand.RaiseCanExecuteChanged();
+            MoveCommand.RaiseCanExecuteChanged();
             return true;
         }
 
@@ -77,6 +127,28 @@ namespace Registry
         protected virtual void OnCancelOrDeleteRequested()
         {
             var handler = CancelOrDeleteRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        public event EventHandler UpdateRequested;
+
+        protected virtual void OnUpdateRequested()
+        {
+            var handler = UpdateRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        public event EventHandler MoveRequested;
+
+        protected virtual void OnMoveRequested()
+        {
+            var handler = MoveRequested;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
@@ -105,6 +177,10 @@ namespace Registry
                 {
                     return OccupiedTimeSlotViewModelState.Completed;
                 }
+                if (IsBeingMoved)
+                {
+                    return OccupiedTimeSlotViewModelState.IsBeingMoved;
+                }
                 return OccupiedTimeSlotViewModelState.Uncompleted;
             }
         }
@@ -113,6 +189,71 @@ namespace Registry
         {
             get { return IsTemporary ? "Удалить назначение" : "Отменить назначение"; }
         }
+
+        private bool isBeingMoved;
+
+        public bool IsBeingMoved
+        {
+            get { return isBeingMoved; }
+            set
+            {
+                if (Set("IsBeingMoved", ref isBeingMoved, value))
+                {
+                    RaisePropertyChanged("State");
+                }
+            }
+        }
+
+        public bool IsTemporary
+        {
+            get { return assignment.IsTemporary; }
+            set
+            {
+                if (assignment.IsTemporary != value)
+                {
+                    assignment.IsTemporary = value;
+                    RaisePropertyChanged();
+                    RaisePropertyChanged("State");
+                    CancelOrDeleteCommand.RaiseCanExecuteChanged();
+                    UpdateCommand.RaiseCanExecuteChanged();
+                    MoveCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public string Note
+        {
+            get { return assignment.Note; }
+            set
+            {
+                if (assignment.Note != value)
+                {
+                    assignment.Note = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        public int FinancingSourceId
+        {
+            get { return assignment.FinancingSourceId; }
+            set
+            {
+                if (assignment.FinancingSourceId != value)
+                {
+                    assignment.FinancingSourceId = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        private bool isInReadOnlyMode;
+
+        public bool IsInReadOnlyMode
+        {
+            get { return isInReadOnlyMode; }
+            set { Set("IsInReadOnlyMode", ref isInReadOnlyMode, value); }
+        }
     }
 
     public enum OccupiedTimeSlotViewModelState
@@ -120,5 +261,6 @@ namespace Registry
         Temporary,
         Uncompleted,
         Completed,
+        IsBeingMoved
     }
 }

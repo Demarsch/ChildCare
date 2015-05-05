@@ -92,7 +92,7 @@ namespace Registry
         {
             foreach (var freeTimeSlot in TimeSlots.OfType<FreeTimeSlotViewModel>())
             {
-                freeTimeSlot.AssignmentCreationRequested -= ScheduleCellOnAssignmentCreationRequested;
+                freeTimeSlot.AssignmentCreationRequested -= FreeTimeSlotOnAssignmentCreationRequested;
             }
             if (!selectedRecordTypeId.HasValue || (selectedRoomId.HasValue && selectedRoomId.Value != Id) || !AllowsRecordType(selectedRecordTypeId.Value))
             {
@@ -105,13 +105,13 @@ namespace Registry
                 TimeSlots.OfType<OccupiedTimeSlotViewModel>(), 
                 recordType.Duration, 
                 recordType.MinDuration);
-            var freeTimeSlots = availableTimeIntervals.Select(x => new FreeTimeSlotViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value)).ToArray();
+            var freeTimeSlots = availableTimeIntervals.Select(x => new FreeTimeSlotViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value, Id)).ToArray();
             foreach (var freeTimeSlot in freeTimeSlots)
-                freeTimeSlot.AssignmentCreationRequested += ScheduleCellOnAssignmentCreationRequested;
+                freeTimeSlot.AssignmentCreationRequested += FreeTimeSlotOnAssignmentCreationRequested;
             TimeSlots.AddRange(freeTimeSlots);
         }
 
-        private void ScheduleCellOnAssignmentCreationRequested(object sender, EventArgs eventArgs)
+        internal void FreeTimeSlotOnAssignmentCreationRequested(object sender, EventArgs eventArgs)
         {
             OnAssignmentCreationRequested(new ReturnEventArgs<FreeTimeSlotViewModel>(sender as FreeTimeSlotViewModel));
         }

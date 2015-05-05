@@ -53,7 +53,9 @@ namespace Registry
                         RoomId = x.RoomId,
                         PersonShortName = x.Person.ShortName,
                         IsTemporary = x.IsTemporary,
-                        AssignUserId = x.AssignUserId
+                        AssignUserId = x.AssignUserId,
+                        FinancingSourceId = x.FinancingSourceId,
+                        Note = x.Note
                     })
                     .ToLookup(x => x.RoomId);
         }
@@ -222,6 +224,29 @@ namespace Registry
                 var assignment = dataContext.GetData<Assignment>().First(x => x.Id == assignmentId);
                 assignment.CancelUserId = environment.CurrentUser.UserId;
                 assignment.CancelDateTime = dataContext.GetCurrentDate();
+                dataContext.Save();
+            }
+        }
+
+        public void UpdateAssignment(int assignmentId, int newFinancingSourceId, string newNote)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                var assignment = dataContext.GetData<Assignment>().First(x => x.Id == assignmentId);
+                assignment.FinancingSourceId = newFinancingSourceId;
+                assignment.Note = newNote;
+                dataContext.Save();
+            }
+        }
+
+        public void MoveAssignment(int assignmentId, DateTime newTime, int newDuration, int newRoomId)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                var assignment = dataContext.GetData<Assignment>().First(x => x.Id == assignmentId);
+                assignment.AssignDateTime = newTime;
+                assignment.Duration = newDuration;
+                assignment.RoomId = newRoomId;
                 dataContext.Save();
             }
         }

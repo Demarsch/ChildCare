@@ -14,12 +14,15 @@ namespace Registry
     {
         private readonly DispatcherTimer timer;
 
-        public ScheduleAssignmentUpdateViewModel(IEnumerable<FinacingSource> financingSources)
+        public ScheduleAssignmentUpdateViewModel(IEnumerable<FinacingSource> financingSources, bool runCountdown)
         {
             FinacingSources = financingSources;
             CloseCommand = new RelayCommand<bool>(Close);
-            timer = new DispatcherTimer(TimeSpan.FromMinutes(10.0), DispatcherPriority.ApplicationIdle, (sender, args) => OnCloseRequested(new ReturnEventArgs<bool>(false)),
+            if (runCountdown)
+            {
+                timer = new DispatcherTimer(TimeSpan.FromMinutes(10.0), DispatcherPriority.ApplicationIdle, (sender, args) => OnCloseRequested(new ReturnEventArgs<bool>(false)),
                 Dispatcher.CurrentDispatcher);
+            }
         }
 
         private FinacingSource selectedFinancingSource;
