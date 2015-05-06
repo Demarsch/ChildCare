@@ -11,6 +11,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="WithoutEndDate" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Assignments">
           <Key>
@@ -2832,6 +2833,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="AddressType" ToRole="PersonAddress" />
+          <Property Name="WithoutEndDate" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Okato">
           <Key>
@@ -3655,6 +3657,7 @@
           <EntitySetMapping Name="AddressTypes">
             <EntityTypeMapping TypeName="DataLib.AddressType">
               <MappingFragment StoreEntitySet="AddressTypes">
+                <ScalarProperty Name="WithoutEndDate" ColumnName="WithoutEndDate" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

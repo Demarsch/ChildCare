@@ -65,7 +65,8 @@ namespace MainLib
             get
             {
                 var resStr = string.Empty;
-                foreach (var personAddress in PersonAddresses)
+                var dateTimeNow = DateTime.Now;
+                foreach (var personAddress in PersonAddresses.Where(x => dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate))
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";

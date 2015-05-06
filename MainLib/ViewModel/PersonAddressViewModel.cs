@@ -92,7 +92,13 @@ namespace MainLib
         public int AddressTypeId
         {
             get { return addressTypeId; }
-            set { Set("AddressTypeId", ref addressTypeId, value); }
+            set 
+            { 
+                Set("AddressTypeId", ref addressTypeId, value);
+                var addressType = service.GetAddressType(addressTypeId);
+                if (addressType != null)
+                    WithoutEndDate = addressType.WithoutEndDate;
+            }
         }
 
         private Okato regionOKATO = null;
@@ -105,7 +111,10 @@ namespace MainLib
                 var okatoRegion = string.Empty;
                 if (regionOKATO != null)
                     okatoRegion = regionOKATO.CodeOKATO;
+                AddressOKATO = null;
                 OkatoSuggestionProvider.OkatoRegion = okatoRegion;
+                if (AddressOKATO == null && RegionOKATO != null)
+                    UserText = RegionOKATO.FullName;
             }
         }
 
@@ -113,7 +122,12 @@ namespace MainLib
         public Okato AddressOKATO
         {
             get { return addressOKATO; }
-            set { Set("AddressOKATO", ref addressOKATO, value); }
+            set
+            { 
+                Set("AddressOKATO", ref addressOKATO, value);
+                if (addressOKATO != null)
+                    UserText = addressOKATO.FullName;
+            }
         }
 
         private string userText = string.Empty;
@@ -203,7 +217,7 @@ namespace MainLib
                 if (addressType != null)
                     addressTypeName = addressType.Name;
                 return addressTypeName + ": " + UserText + " " + House + (Building != string.Empty ? "\"" + Building + "\"" : string.Empty) +
-                    (Apartment != string.Empty ? " " + Apartment : string.Empty) + ". Действует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по" + EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                    (Apartment != string.Empty ? " " + Apartment : string.Empty) + "\r\nДействует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по" + EndDate.ToString("dd.MM.yyyy") : string.Empty);
             }
         }
 

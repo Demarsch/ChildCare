@@ -21,6 +21,7 @@ namespace DataLib
     
         public int Id { get; set; }
         public string Name { get; set; }
+        public bool WithoutEndDate { get; set; }
     
         public virtual ICollection<PersonAddress> PersonAddresses { get; set; }
     }
