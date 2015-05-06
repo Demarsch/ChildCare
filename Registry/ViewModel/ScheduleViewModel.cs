@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Navigation;
 using Core;
 using DataLib;
@@ -132,15 +129,17 @@ namespace Registry
         {
             try
             {
+                log.Info("Loading data source for schedule...");
                 Rooms = new[] { unseletedRoom }.Concat(scheduleService.GetRooms().Select(x => new RoomViewModel(x, scheduleService, cacheService))).ToArray();
                 foreach (var room in Rooms)
                     room.AssignmentCreationRequested += RoomOnAssignmentCreationRequested;
                 RecordTypes = new[] { unselectedRecordType }.Concat(scheduleService.GetRecordTypes()).ToArray();
                 DataSourcesAreLoaded = true;
+                log.InfoFormat("Loaded {0} rooms and {1} record types", (rooms as RoomViewModel[]).Length, (RecordTypes as RecordType[]).Length);
             }
             catch (Exception ex)
             {
-                log.Error("Failed to load datasources for ScheduleViewModel from database", ex);
+                log.Error("Failed to load datasources for schedule from database", ex);
                 FailReason = "При попытке загрузить списки кабинетов и услуг возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки";
             }
         }
@@ -201,7 +200,7 @@ namespace Registry
         }
 
         #region Assignments
-        //TODO: worth reviewing this code to probably get rid of all type of assignment objects
+        
         private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
         {
             var room = sender as RoomViewModel;
@@ -220,7 +219,14 @@ namespace Registry
         {
             try
             {
+                log.InfoFormat("Trying to move assignment (Id = {0}) from {1:dd.MM HH:mm} (Room Id = {2}) to {3:dd.MM HH:mm} (Room Id = {4}) ", 
+                    whatToMove.Id,
+                    whatToMove.StartTime,
+                    whatToMove.RoomId,
+                    whereToMove.StartTime,
+                    whereToMove.RoomId);
                 scheduleService.MoveAssignment(whatToMove.Id, whereToMove.StartTime, (int)whereToMove.EndTime.Subtract(whereToMove.StartTime).TotalMinutes, whereToMove.RoomId);
+                log.Info("Successfully saved to database");
                 var whereToMoveRoom = rooms.First(x => x.Id == whereToMove.RoomId);
                 var whatToMoveRoom = rooms.First(x => x.Id == whatToMove.RoomId);
                 whereToMove.AssignmentCreationRequested -= whereToMoveRoom.FreeTimeSlotOnAssignmentCreationRequested;
@@ -233,6 +239,7 @@ namespace Registry
                 whatToMove.UpdateTime(whereToMove.StartTime, whereToMove.EndTime);
                 whatToMove.RoomId = whereToMove.RoomId;
                 CancelAssignmentMovement();
+                log.Info("Movement completed");
                 ClearScheduleGrid();
                 BuildScheduleGrid();
             }
@@ -242,9 +249,14 @@ namespace Registry
                 dialogService.ShowError("При попытке перенести назначение возникла ошибка. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
             }
         }
-
+        //TODO: worth reviewing this code to probably get rid of all type of assignment objects
         private void CreateNewAssignment(RoomViewModel selectedRoom, FreeTimeSlotViewModel freeTimeSlot)
         {
+            log.InfoFormat("Trying to create new assignment: room Id  {0}, start time is {1:dd.MM HH:mm}, proposed duration {2}, record type Id {3}",
+                freeTimeSlot.RoomId,
+                freeTimeSlot.StartTime,
+                (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
+                freeTimeSlot.RecordTypeId);
             var financingSource = GetFinancingSource();
             if (financingSource == 0)
             {
@@ -267,6 +279,7 @@ namespace Registry
             try
             {
                 scheduleService.SaveAssignment(assignment);
+                log.InfoFormat("New assignment (Id = {0}) is saved as temporary", assignment.Id);
             }
             catch (Exception ex)
             {
@@ -305,6 +318,7 @@ namespace Registry
                 {
                     try
                     {
+                        log.Info("User canceled saving thus new assignment must be deleted");
                         isFailed = false;
                         scheduleService.DeleteAssignment(assignment.Id);
                         selectedRoom.TimeSlots.Remove(newAssignment);
@@ -312,6 +326,7 @@ namespace Registry
                         newAssignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                         newAssignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                         newAssignment.MoveRequested -= RoomOnAssignmentMoveRequested;
+                        log.Info("New assignment was successfully deleted");
                     }
                     catch (Exception ex)
                     {
@@ -324,6 +339,7 @@ namespace Registry
                 {
                     try
                     {
+                        log.Info("User has chosen to save assignment, trying to update assignment...");
                         assignment.IsTemporary = false;
                         assignment.FinancingSourceId = viewModel.SelectedFinancingSource.Id;
                         assignment.Note = viewModel.Note;
@@ -332,6 +348,7 @@ namespace Registry
                         newAssignment.FinancingSourceId = assignment.FinancingSourceId;
                         newAssignment.Note = assignment.Note;
                         isFailed = false;
+                        log.Info("New assignment was updated and moved from temporary state");
                     }
                     catch (Exception ex)
                     {
@@ -350,6 +367,7 @@ namespace Registry
             {
                 try
                 {
+                    log.InfoFormat("Trying to manually delete temporary assignment (Id = {0})", assignment.Id);
                     scheduleService.DeleteAssignment(assignment.Id);
                     assignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                     assignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
@@ -357,6 +375,7 @@ namespace Registry
                     rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
                     ClearScheduleGrid();
                     BuildScheduleGrid();
+                    log.Info("Temporary assignment was manually deleted");
                 }
                 catch (Exception ex)
                 {
@@ -373,10 +392,12 @@ namespace Registry
                     {
                         return;
                     }
+                    log.InfoFormat("Trying to cancel assignment (Id = {0})", assignment.Id);
                     scheduleService.CancelAssignment(assignment.Id);
                     rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
                     ClearScheduleGrid();
                     BuildScheduleGrid();
+                    log.Info("Assignment was canceled");
                 }
                 catch (Exception ex)
                 {
@@ -406,7 +427,7 @@ namespace Registry
                     movedAssignment.IsBeingMoved = value;
                     if (value)
                     {
-                        
+                        log.InfoFormat("Entering movement mode for assignment (Id = {0})", movedAssignment.Id);
                         wasInReadOnlyMode = isInReadOnlyMode;
                         previousSelectedRecordType = selectedRecordType;
                         previousSelectedRoom = selectedRoom;
@@ -421,6 +442,7 @@ namespace Registry
                         SelectedRecordType = previousSelectedRecordType;
                         IsInReadOnlyMode = wasInReadOnlyMode;
                         CollectionViewSource.GetDefaultView(recordTypes).Filter = null;
+                        log.InfoFormat("Leaving movement mode for assignment (Id = {0})", movedAssignment.Id);
                     }
                     UpdateAssignmentsReadOnlyMode();
                 }
@@ -457,10 +479,10 @@ namespace Registry
 
         private void RoomOnAssignmentUpdateRequested(object sender, EventArgs e)
         {
-            var assignmentViewModel = sender as OccupiedTimeSlotViewModel;
+            var assignment = sender as OccupiedTimeSlotViewModel;
             var dialogViewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>(), false);
-            dialogViewModel.Note = assignmentViewModel.Note;
-            dialogViewModel.SelectedFinancingSource = dialogViewModel.FinacingSources.FirstOrDefault(x => x.Id == assignmentViewModel.FinancingSourceId);
+            dialogViewModel.Note = assignment.Note;
+            dialogViewModel.SelectedFinancingSource = dialogViewModel.FinacingSources.FirstOrDefault(x => x.Id == assignment.FinancingSourceId);
             var isFailed = false;
             do
             {
@@ -471,14 +493,16 @@ namespace Registry
                 }
                 try
                 {
-                    scheduleService.UpdateAssignment(assignmentViewModel.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note);
-                    assignmentViewModel.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
-                    assignmentViewModel.Note = dialogViewModel.Note;
+                    log.InfoFormat("Trying to update information on assignment (Id = {0})", assignment.Id);
+                    scheduleService.UpdateAssignment(assignment.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note);
+                    assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
+                    assignment.Note = dialogViewModel.Note;
                     isFailed = false;
+                    log.Info("Successfully updated information");
                 }
                 catch (Exception ex)
                 {
-                    log.Error(string.Format("Failed to update information for existing assignment (Id ={0})", assignmentViewModel.Id), ex);
+                    log.Error(string.Format("Failed to update information for existing assignment (Id ={0})", assignment.Id), ex);
                     dialogService.ShowError("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию");
                     isFailed = true;
                 }
@@ -628,6 +652,7 @@ namespace Registry
                 room.BuildScheduleGrid(selectedDate, isRoomSelected ? (int?)selectedRoom.Id : null, isRecordTypeSelected ? (int?)selectedRecordType.Id : null);
             }
             UpdateAssignmentsReadOnlyMode();
+            log.Info("Schedule grid is built");
         }
 
         private void ClearScheduleGrid()
@@ -636,6 +661,7 @@ namespace Registry
             {
                 room.TimeSlots.RemoveWhere(x => x is FreeTimeSlotViewModel);
             }
+            log.Info("Schedule grid is cleared");
         }
 
         private bool FilterRooms(object obj)

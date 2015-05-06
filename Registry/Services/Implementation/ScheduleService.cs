@@ -221,7 +221,7 @@ namespace Registry
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
-                var assignment = dataContext.GetData<Assignment>().First(x => x.Id == assignmentId);
+                var assignment = dataContext.GetData<Assignment>().FirstOrDefault(x => x.Id == assignmentId);
                 assignment.CancelUserId = environment.CurrentUser.UserId;
                 assignment.CancelDateTime = dataContext.GetCurrentDate();
                 dataContext.Save();

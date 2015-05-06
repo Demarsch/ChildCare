@@ -13,7 +13,9 @@ namespace Registry
         public PatientAssignmentService(IDataContextProvider dataContextProvider)
         {
             if (dataContextProvider == null)
+            {
                 throw new ArgumentNullException("dataContextProvider");
+            }
             this.dataContextProvider = dataContextProvider;
         }
 
