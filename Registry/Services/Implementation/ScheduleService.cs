@@ -84,15 +84,15 @@ namespace Registry
         {
             if (minimumDurationInMinutes <= 0 || minimumDurationInMinutes % 5 != 0)
             {
-                throw new ArgumentException("Minimum duration must be grater than zero and be divisable by 5", "minimumDurationInMinutes");
+                throw new ArgumentException("Minimum duration must be greater than zero and be divisable by 5", "minimumDurationInMinutes");
             }
             if (nominalDurationInMinutes <= 0 || nominalDurationInMinutes % 5 != 0)
             {
-                throw new ArgumentException("Nominal duration must be grater than zero and be divisable by 5", "nominalDurationInMinutes");
+                throw new ArgumentException("Nominal duration must be greater than zero and be divisable by 5", "nominalDurationInMinutes");
             }
             if (minimumDurationInMinutes > nominalDurationInMinutes)
             {
-                throw new ArgumentException("Minimum duration must not be grater than nominal duration", "minimumDurationInMinutes");
+                throw new ArgumentException("Minimum duration must not be greater than nominal duration", "minimumDurationInMinutes");
             }
             if (workingTime == null)
             {

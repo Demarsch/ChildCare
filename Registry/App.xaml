@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="View/FreeTimeSlotView.xaml" />
                 <ResourceDictionary Source="View/OccupiedTimeSlotView.xaml" />
                 <ResourceDictionary Source="View/ScheduleAssignmentUpdateView.xaml" />
+                <ResourceDictionary Source="View/ScheduleEditorView.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <ControlTemplate x:Key="ValidationTemplate">
                 <Grid>

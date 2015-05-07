@@ -125,6 +125,8 @@
     <Compile Include="ViewModel\FreeTimeSlotViewModel.cs" />
     <Compile Include="ViewModel\ScheduleAssignmentUpdateViewModel.cs" />
     <Compile Include="ViewModel\OccupiedTimeSlotViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleEditorRoomViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleEditorViewModel.cs" />
     <Compile Include="ViewModel\ScheduleItemViewModel.cs" />
     <Compile Include="ViewModel\ScheduleViewModel.cs" />
     <Compile Include="ViewModel\TimeTickerViewModel.cs" />
@@ -169,6 +171,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\OccupiedTimeSlotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduleEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -49,6 +49,7 @@
                     <TextBlock DockPanel.Dock="Left" Text="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToDateSelectorTextConverter}}" MinWidth="190" Margin="5" VerticalAlignment="Center" TextAlignment="Right" />
                     <DatePicker DockPanel.Dock="Left" SelectedDateFormat="Long" Width="130" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5" 
                             IsEnabled="{Binding DataSourcesAreLoaded}" VerticalAlignment="Center"/>
+                    <Button DockPanel.Dock="Right" Width="150" Margin="5" Padding="5" Content="Редактировать расписание" Command="{Binding OpenScheduleEditorCommand, Mode=OneTime}" />
                     <StackPanel Orientation="Horizontal" Visibility="{Binding IsInReadOnlyMode, Converter={StaticResource BooleanToInversedVisibilityConverter}}">
                         <Grid Width="180" VerticalAlignment="Center">
                             <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding RecordTypes}" SelectedItem="{Binding SelectedRecordType}" DisplayMemberPath="Name"

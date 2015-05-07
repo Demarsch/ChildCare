@@ -64,6 +64,7 @@ namespace Registry
             isInReadOnlyMode = true;
             ChangeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
             CancelAssignmentMovementCommand = new RelayCommand(CancelAssignmentMovement);
+            OpenScheduleEditorCommand = new RelayCommand(OpenScheduleEditor);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
@@ -197,6 +198,14 @@ namespace Registry
         {
             get { return recordTypes; }
             private set { Set("RecordTypes", ref recordTypes, value); }
+        }
+
+        public RelayCommand OpenScheduleEditorCommand { get; private set; }
+
+        private void OpenScheduleEditor()
+        {
+            var scheduleEditor = new ScheduleEditorViewModel(scheduleService, log);
+            dialogService.ShowDialog(scheduleEditor);
         }
 
         #region Assignments
