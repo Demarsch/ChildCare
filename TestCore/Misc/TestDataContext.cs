@@ -45,12 +45,22 @@ namespace TestCore
             throw new NotImplementedException();
         }
 
+        public DateTime GetCurrentDate()
+        {
+            return DateTime.Now;
+        }
+        
         public void AddRange<TData>(IEnumerable<TData> obj) where TData : class
         {
             throw new NotImplementedException();
         }
 
         public void Remove<TData>(TData obj) where TData : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Attach<TData>(TData obj) where TData : class
         {
             throw new NotImplementedException();
         }

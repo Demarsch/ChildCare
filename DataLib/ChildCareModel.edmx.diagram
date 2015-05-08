@@ -5,63 +5,60 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" >
-        <EntityTypeShape EntityType="DataLib.PersonName" Width="1.5" PointX="3" PointY="1.125" />
-        <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="0.75" PointY="2.375" />
-        <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="3" PointY="4.375" />
-        <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
-        <AssociationConnector Association="DataLib.FK_Users_Persons" />
-        <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="6.75" PointY="3.25" />
-        <AssociationConnector Association="DataLib.FK_Persons_Genders" />
-        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="7.5" PointY="5.875" />
-        <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="5.25" PointY="6" />
-        <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="3" PointY="11.75" />
+        <EntityTypeShape EntityType="DataLib.AddressType" Width="1.5" PointX="6" PointY="21.25" />
+        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="7.5" PointY="50.625" />
+        <EntityTypeShape EntityType="DataLib.Branch" Width="1.5" PointX="6" PointY="42.25" />
+        <EntityTypeShape EntityType="DataLib.ChangeNameReason" Width="1.5" PointX="3" PointY="24.125" />
+        <EntityTypeShape EntityType="DataLib.ClosedDate" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="15.75" PointY="42.75" />
+        <EntityTypeShape EntityType="DataLib.CommissionDecisionsLink" Width="1.5" PointX="15.75" PointY="39.25" />
+        <EntityTypeShape EntityType="DataLib.CommissionMember" Width="1.5" PointX="10.5" PointY="32.625" />
+        <EntityTypeShape EntityType="DataLib.CommissionMemberType" Width="1.5" PointX="8.25" PointY="40.625" />
+        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="13.5" PointY="49.75" />
+        <EntityTypeShape EntityType="DataLib.CommissionQuestion" Width="1.5" PointX="10.5" PointY="37.375" />
+        <EntityTypeShape EntityType="DataLib.CommissionSource" Width="1.5" PointX="11.25" PointY="46.875" />
+        <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="8.25" PointY="37.125" />
+        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="13.5" PointY="43.125" />
+        <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="4.5" PointY="18.125" />
+        <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="0.75" PointY="29.25" />
+        <EntityTypeShape EntityType="DataLib.IdentityDocumentType" Width="1.5" PointX="6" PointY="36.375" />
+        <EntityTypeShape EntityType="DataLib.InsuranceCompany" Width="1.5" PointX="3" PointY="33.75" />
+        <EntityTypeShape EntityType="DataLib.InsuranceDocument" Width="1.5" PointX="5.25" PointY="28.5" />
+        <EntityTypeShape EntityType="DataLib.InsuranceDocumentType" Width="1.5" PointX="3" PointY="39" />
+        <EntityTypeShape EntityType="DataLib.MedicalHelpType" Width="1.5" PointX="9" PointY="18" />
+        <EntityTypeShape EntityType="DataLib.Okato" Width="1.5" PointX="4.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="7.5" PointY="69.875" />
+        <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="5.25" PointY="71.625" />
+        <EntityTypeShape EntityType="DataLib.PersonAddress" Width="1.5" PointX="8.25" PointY="24.5" />
+        <EntityTypeShape EntityType="DataLib.PersonIdentityDocument" Width="1.5" PointX="8.25" PointY="28.75" />
+        <EntityTypeShape EntityType="DataLib.PersonName" Width="1.5" PointX="5.25" PointY="24.75" />
+        <EntityTypeShape EntityType="DataLib.PersonRelative" Width="1.5" PointX="5.25" PointY="32.875" />
+        <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="3" PointY="27.625" />
+        <EntityTypeShape EntityType="DataLib.PersonStaff" Width="1.5" PointX="8.25" PointY="32.5" />
+        <EntityTypeShape EntityType="DataLib.PersonTalon" Width="1.5" PointX="11.25" PointY="28.5" />
+        <EntityTypeShape EntityType="DataLib.RecordContract" Width="1.5" PointX="6.75" PointY="17.875" />
+        <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="10.5" PointY="50.375" />
+        <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="8.25" PointY="45.5" />
+        <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="3" PointY="41.375" />
+        <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="8.25" PointY="56.625" />
+        <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="16.5" PointY="50.625" />
+        <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="6" PointY="39.375" />
+        <EntityTypeShape EntityType="DataLib.UserMessage" Width="1.5" PointX="10.5" PointY="75.25" />
+        <EntityTypeShape EntityType="DataLib.UserMessageType" Width="1.5" PointX="8.25" PointY="73" />
+        <EntityTypeShape EntityType="DataLib.UserPermission" Width="1.5" PointX="7.5" PointY="75.625" />
+        <AssociationConnector Association="DataLib.FK_PersonAddresses_AddressTypes" />
+        <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
         <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
         <AssociationConnector Association="DataLib.FK_Assignments_Records" />
         <AssociationConnector Association="DataLib.FK_Assignments_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Users" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
-        <AssociationConnector Association="DataLib.FK_Records_Persons" />
-        <AssociationConnector Association="DataLib.FK_Records_Records" />
-        <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_Records_Users" />
-        <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
-        <EntityTypeShape EntityType="DataLib.InsuranceCompany" Width="1.5" PointX="5.75" PointY="17" />
-        <EntityTypeShape EntityType="DataLib.InsuranceDocument" Width="1.5" PointX="8" PointY="0.75" />
-        <EntityTypeShape EntityType="DataLib.InsuranceDocumentType" Width="1.5" PointX="5.75" PointY="14.625" />
-        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceCompanies" />
-        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes" />
-        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_Persons" />
-        <EntityTypeShape EntityType="DataLib.ChangeNameReason" Width="1.5" PointX="10.375" PointY="9.875" />
-        <AssociationConnector Association="DataLib.FK_PersonNames_ChangeNameReasons" />
-        <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="12.625" PointY="2.75" />
-        <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="10.375" PointY="2.5" />
-        <EntityTypeShape EntityType="DataLib.UserPermission" Width="1.5" PointX="12.625" PointY="5.625" />
-        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
-        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
-        <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
-        <AssociationConnector Association="DataLib.FK_Permissions_Users" />
-        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="7.375" PointY="10.75" />
-        <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="3" PointY="8.75" />
         <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
-        <AssociationConnector Association="DataLib.FK_Records_Rooms" />
-        <EntityTypeShape EntityType="DataLib.PersonRelative" Width="1.5" PointX="3.875" PointY="0.75" />
-        <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="0.75" PointY="11.375" />
-        <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons" />
-        <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons1" />
-        <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
-        <EntityTypeShape EntityType="DataLib.Branch" Width="1.5" PointX="13.125" PointY="25.5" />
-        <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="19.875" PointY="13.625" />
-        <EntityTypeShape EntityType="DataLib.CommissionDecisionsLink" Width="1.5" PointX="14.625" PointY="13.875" />
-        <EntityTypeShape EntityType="DataLib.CommissionMember" Width="1.5" PointX="17.625" PointY="13.75" />
-        <EntityTypeShape EntityType="DataLib.CommissionMemberType" Width="1.5" PointX="12.375" PointY="14" />
-        <EntityTypeShape EntityType="DataLib.CommissionProtocolMember" Width="1.5" PointX="22.875" PointY="14.125" />
-        <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="12.375" PointY="22" />
-        <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="12.375" PointY="18.25" />
-        <EntityTypeShape EntityType="DataLib.PersonStaff" Width="1.5" PointX="15.375" PointY="26.625" />
-        <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="13.125" PointY="29" />
         <AssociationConnector Association="DataLib.FK_Branches_Branches" />
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Branches" />
+        <AssociationConnector Association="DataLib.FK_PersonNames_ChangeNameReasons" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers1" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionTypes" />
@@ -69,37 +66,52 @@
         <AssociationConnector Association="DataLib.FK_CommissionMembers_CommissionMemberTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_PersonStaffs" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocolMembers_CommissionMembers" />
-        <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
-        <AssociationConnector Association="DataLib.FK_PersonStaffs_Persons" />
-        <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
-        <EntityTypeShape EntityType="DataLib.CommissionQuestion" Width="1.5" PointX="14.625" PointY="25.5" />
-        <EntityTypeShape EntityType="DataLib.CommissionSource" Width="1.5" PointX="15.375" PointY="13.5" />
-        <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="15.375" PointY="4.875" />
-        <EntityTypeShape EntityType="DataLib.MedicalHelpType" Width="1.5" PointX="19.875" PointY="4.625" />
-        <EntityTypeShape EntityType="DataLib.RecordContract" Width="1.5" PointX="17.625" PointY="4.5" />
-        <EntityTypeShape EntityType="DataLib.UserMessage" Width="1.5" PointX="10.25" PointY="0.75" />
-        <EntityTypeShape EntityType="DataLib.UserMessageType" Width="1.5" PointX="8" PointY="18.75" />
-        <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
-        <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
-        <AssociationConnector Association="DataLib.FK_MedicalHelpTypes_RecordContracts" />
-        <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
-        <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
-        <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
-        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="22.125" PointY="5.75" />
-        <EntityTypeShape EntityType="DataLib.PersonTalon" Width="1.5" PointX="19.875" PointY="8.5" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocolMembers_CommissionProtocols" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionSources" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_MedicalHelpTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Persons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonTalons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Users" />
+        <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
+        <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
+        <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
+        <AssociationConnector Association="DataLib.FK_Persons_Genders" />
+        <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" />
+        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceCompanies" />
+        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceDocumentTypes" />
+        <AssociationConnector Association="DataLib.FK_InsuranceDocuments_Persons" />
+        <AssociationConnector Association="DataLib.FK_MedicalHelpTypes_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_MedicalHelpTypes" />
+        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
+        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
+        <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
+        <AssociationConnector Association="DataLib.FK_Addresses_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons1" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
+        <AssociationConnector Association="DataLib.FK_PersonStaffs_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_Persons" />
+        <AssociationConnector Association="DataLib.FK_Records_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_Records_Records" />
+        <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_Records_Rooms" />
+        <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_ScheduleItem_Rooms" />
+        <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
+        <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="5.25" PointY="13.375" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Users" />
+        <AssociationConnector Association="DataLib.FK_Users_Persons" />
+        <AssociationConnector Association="DataLib.FK_Records_Users" />
+        <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
+        <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
+        <AssociationConnector Association="DataLib.FK_Permissions_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

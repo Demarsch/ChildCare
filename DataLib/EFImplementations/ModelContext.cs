@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Core;
 using System.Data.Entity;
 using System.Collections.Generic;
@@ -29,7 +30,12 @@ namespace DataLib
 
         public void Add<TData>(TData obj) where TData : class
         {
-            this.Set<TData>().Add(obj);
+            Set<TData>().Add(obj);
+        }
+
+        public DateTime GetCurrentDate()
+        {
+            return Database.SqlQuery<DateTime>("SELECT GETDATE()").FirstAsync().Result;
         }
 
         public void AddRange<TData>(IEnumerable<TData> objs) where TData : class
@@ -45,6 +51,11 @@ namespace DataLib
         public void RemoveRange<TData>(IEnumerable<TData> objs) where TData : class
         {
             this.Set<TData>().RemoveRange(objs);
+        }
+
+        public void Attach<TData>(TData obj) where TData : class
+        {
+            this.Set<TData>().Attach(obj);
         }
 
         public void Save()

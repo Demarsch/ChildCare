@@ -6,9 +6,16 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:ev="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
         xmlns:admintools="clr-namespace:AdminTools"
-        Title="Панель управления" WindowStartupLocation="CenterScreen" WindowState="Maximized" Icon="/AdminTools;component/AdminTools.ico">
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        Title="Панель управления" WindowStartupLocation="CenterScreen" WindowState="Maximized" Icon="pack://application:,,,/Resources;component/Icons/AdminTools.ico">
     <Grid>
-        <Menu IsMainMenu="True">
+        <!--
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+        -->
+        <Menu Grid.Row="0" IsMainMenu="True">
             <Menu.Background>
                 <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
                     <GradientStop Color="#110F3642" Offset="1" />
@@ -17,12 +24,32 @@
             </Menu.Background>
 
             <MenuItem Header="Функции администратора" Padding="5">
-                <MenuItem Header="Учетные записи пользователей" Padding="0,5,5,5" Click="{ev:EventBinding UsersEditorCommand}">                
+                <MenuItem Header="Учетные записи пользователей" Padding="0,5,5,5" Click="{ev:EventBinding UsersEditorCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="pack://application:,,,/Resources;component/Images/UserGroup48x48.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Редактор прав" Padding="0,5,5,5" Click="{ev:EventBinding PermissionsTreeCommand}">
                     <MenuItem.Icon>
                         <Image Width="16" Height="16" Source="pack://application:,,,/Resources;component/Images/UserGroup48x48.png" />
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
         </Menu>
+
+        <!--
+            <xcad:DockingManager Grid.Row="1" x:Name="DockPanel">
+                <xcad:LayoutRoot>
+                    <xcad:LayoutPanel Orientation="Horizontal">
+                    
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="Новая вкладка" CanClose="True" CanFloat="False">
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    
+                    </xcad:LayoutPanel>
+                </xcad:LayoutRoot>
+            </xcad:DockingManager>
+        -->
     </Grid>
 </Window>

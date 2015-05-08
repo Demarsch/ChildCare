@@ -17,15 +17,17 @@ namespace DataLib
         public int Id { get; set; }
         public int CommissionProtocolId { get; set; }
         public int CommissionMemberId { get; set; }
-        public Nullable<int> DecisionId { get; set; }
-        public Nullable<System.DateTime> DecisionDate { get; set; }
         public bool IsOfficial { get; set; }
-        public bool IsAsked { get; set; }
-        public string Comment { get; set; }
+        public Nullable<int> DecisionId { get; set; }
         public Nullable<System.DateTime> DecisionInDateTime { get; set; }
+        public string Comment { get; set; }
+        public int CommissionStage { get; set; }
+        public int InitiatorMemberId { get; set; }
+        public System.DateTime InDateTime { get; set; }
     
         public virtual CommissionMember CommissionMember { get; set; }
-        public virtual Decision Decision { get; set; }
+        public virtual CommissionMember CommissionMember1 { get; set; }
         public virtual CommissionProtocol CommissionProtocol { get; set; }
+        public virtual Decision Decision { get; set; }
     }
 }

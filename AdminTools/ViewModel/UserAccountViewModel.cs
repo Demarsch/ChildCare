@@ -100,22 +100,22 @@ namespace AdminTools.ViewModel
             set { Set("CurrentUser", ref currentUser, value); }
         }
 
-        private ObservableCollection<UserSystemInfoDTO> usersAD;
-        public ObservableCollection<UserSystemInfoDTO> UsersAD
+        private ObservableCollection<UserSystemInfo> usersAD;
+        public ObservableCollection<UserSystemInfo> UsersAD
         {
             get { return usersAD; }
             set { Set("UsersAD", ref usersAD, value); }
         }
         
-        private UserSystemInfoDTO selectedUserAD;
-        public UserSystemInfoDTO SelectedUserAD
+        private UserSystemInfo selectedUserAD;
+        public UserSystemInfo SelectedUserAD
         {
             get { return selectedUserAD; }
             set { Set("SelectedUserAD", ref selectedUserAD, value); }
         }
 
-        private ObservableCollection<Person> persons;
-        public ObservableCollection<Person> Persons
+        private ObservableCollection<PersonDTO> persons;
+        public ObservableCollection<PersonDTO> Persons
         {
             get { return persons; }
             set { Set("Persons", ref persons, value); }
@@ -172,9 +172,9 @@ namespace AdminTools.ViewModel
             {
                 IsSearching = true;
                 SearchLabel = "Идет поиск ...";
-                UsersAD = new ObservableCollection<UserSystemInfoDTO>(userSystemInfoService.Find(SearchString)
-                          .Select(x => new UserSystemInfoDTO() { UserName = x.UserName, SID = x.SID, PrincipalName = x.PrincipalName, Enabled = x.Enabled, Persons = GetPersonsFromMIS(x.UserName), 
-                              PhotoSource = "pack://application:,,,/Resources;component/Images/Refresh_16x16.png"}).ToArray());  
+            //    UsersAD = new ObservableCollection<UserSystemInfo>(userSystemInfoService.Find(SearchString)
+            //              .Select(x => new UserSystemInfo() { UserName = x.UserName, SID = x.SID, PrincipalName = x.PrincipalName, Enabled = x.Enabled, Persons = GetPersonsFromMIS(x.UserName), 
+            //                  PhotoSource = "pack://application:,,,/Resources;component/Images/Refresh_16x16.png"}).ToArray());  
             }
             catch (AggregateException ex)
             {
@@ -214,14 +214,14 @@ namespace AdminTools.ViewModel
             ShowPopup = false;
             if (parameter == null) return;
 
-            if (parameter is UserSystemInfoDTO)
+            if (parameter is UserSystemInfo)
             {
-                var personInfo = parameter as UserSystemInfoDTO;
-                Persons = new ObservableCollection<Person>(personInfo.Persons);
-                if (!personInfo.Persons.Any())                
-                    CreatePerson(null);    
-                else
-                    ShowPopup = true;
+                var personInfo = parameter as UserSystemInfo;
+                //Persons = new ObservableCollection<Person>(personInfo.Persons);
+                //if (!personInfo.Persons.Any())                
+                //    CreatePerson(null);    
+                //else
+                //    ShowPopup = true;
             }            
         }
 
@@ -235,18 +235,18 @@ namespace AdminTools.ViewModel
         {
             EditPersonViewModel personViewModel = null;
 
-            if (personId == null)
-                personViewModel = new EditPersonViewModel(log, personService);
-            else
-            {
-                var existingUser = userService.GetUserByPersonId(personId.ToInt());
-                if (existingUser != null)
-                {
-                    MessageBox.Show("Выбранная учетная запись уже закреплена за пользователем: " + existingUser.Person.FullName);
-                    return;
-                }
-                personViewModel = new EditPersonViewModel(log, personService, personId.ToInt());
-            }               
+            //if (personId == null)
+            //    personViewModel = new EditPersonViewModel(log, personService);
+            //else
+            //{
+            //    var existingUser = userService.GetUserByPersonId(personId.ToInt());
+            //    if (existingUser != null)
+            //    {
+            //        MessageBox.Show("Выбранная учетная запись уже закреплена за пользователем: " + existingUser.Person.FullName);
+            //        return;
+            //    }
+            //    personViewModel = new EditPersonViewModel(log, personService, personId.ToInt());
+            //}               
 
             (new EditPersonView() { DataContext = personViewModel }).ShowDialog();
             

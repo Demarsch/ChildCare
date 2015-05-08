@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using Core;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using MainLib;
 
@@ -25,9 +21,13 @@ namespace Registry
 
         private readonly IPatientService patientService;
 
+        private readonly IPersonService personService;
+
+        private readonly IDialogService dialogService;
+
         public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
 
-        public PatientSearchViewModel(IPatientService patientService, ILog log, PatientAssignmentListViewModel patientAssignmentListViewModel)
+        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
                 throw new ArgumentNullException("patientService");
@@ -35,10 +35,17 @@ namespace Registry
                 throw new ArgumentNullException("log");
             if (patientAssignmentListViewModel == null)
                 throw new ArgumentNullException("patientAssignmentListViewModel");
+            if (personService == null)
+                throw new ArgumentNullException("personService");
+            if (dialogService == null)
+                throw new ArgumentNullException("dialogService");
+            this.dialogService = dialogService;
+            this.personService = personService;
             this.log = log;
             this.patientService = patientService;
             patients = new ObservableCollection<PersonViewModel>();
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
+            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService);
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
@@ -169,11 +176,15 @@ namespace Registry
             set { Set("NoOneisFound", ref noOneisFound, value); }
         }
 
+        private readonly EditPersonViewModel editPersonViewModel;
+
         public ICommand NewPatientCommand { get; private set; }
 
         private void NewPatient()
         {
-            MessageBox.Show("Окно для создания нового пациента");
+            editPersonViewModel.Id = 0;
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
+            editPersonDataView.ShowDialog();
         }
 
         public ICommand EditPatientCommand { get; private set; }
@@ -182,17 +193,9 @@ namespace Registry
         {
             if (currentPatient.IsEmpty)
                 return;
-            var editPersonDataViewModel = new EditPersonViewModel(log, new PersonService(new DataLib.ModelContextProvider()), currentPatient.Id);
-            var editPersonDataView = new EditPersonView() { DataContext = editPersonDataViewModel };
+            editPersonViewModel.Id = currentPatient.Id;
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
-
-            //MessageBox.Show(string.Format("Пациент {0} будет отредактирован именно в этом окне", currentPatient));
         }
-
-        #region Assignments
-
-
-
-        #endregion
     }
 }

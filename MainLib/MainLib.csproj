@@ -79,6 +79,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WpfControls">
+      <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
+    </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.4\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
@@ -99,8 +102,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data transfer objects\UserDTO.cs" />
+    <Compile Include="Exception\UserFriendlyException.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
     <Compile Include="Misc\MainContainerProvider.cs" />
+    <Compile Include="Implementations\Environment.cs" />
+    <Compile Include="Implementations\TimeInterval.cs" />
+    <Compile Include="Implementations\WindowDialogService.cs" />
+    <Compile Include="Interfaces\IDialogViewModel.cs" />
+    <Compile Include="Interfaces\IDialogService.cs" />
+    <Compile Include="Interfaces\IEnvironment.cs" />
+    <Compile Include="Interfaces\ITimeInterval.cs" />
+    <Compile Include="Misc\TimeIntervalCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -122,9 +135,20 @@
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
+    <Compile Include="ViewModel\GivenOrgSuggestionProvider.cs" />
+    <Compile Include="ViewModel\OKATOSuggestionProvider.cs" />
+    <Compile Include="ViewModel\OKATORegionSuggestionProvider.cs" />
+    <Compile Include="ViewModel\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="ViewModel\ItemState.cs" />
+    <Compile Include="ViewModel\PersonIdentityDocumentViewModel.cs" />
+    <Compile Include="ViewModel\PersonIdentityDocumentsViewModel.cs" />
+    <Compile Include="ViewModel\PersonAddressesViewModel.cs" />
+    <Compile Include="ViewModel\PersonAddressViewModel.cs" />
     <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
+    <Compile Include="View\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\EditPersonDataUserControl.xaml.cs">
       <DependentUpon>EditPersonDataUserControl.xaml</DependentUpon>
     </Compile>
@@ -164,10 +188,12 @@
       <Name>StuffLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Data transfer objects\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Page Include="View\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\EditPersonDataUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -175,6 +201,14 @@
     <Page Include="View\EditPersonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonIdentityDocumentsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonAddressesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\PersonInsuranceDocumentsView.xaml">
       <Generator>MSBuild:Compile</Generator>

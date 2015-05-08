@@ -19,13 +19,15 @@ namespace DataLib
             this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
             this.RecordTypes1 = new HashSet<RecordType>();
+            this.ScheduleItems = new HashSet<ScheduleItem>();
         }
     
         public int Id { get; set; }
         public Nullable<int> ParentId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public string ShrotName { get; set; }
+        public string ShortName { get; set; }
+        public int MinDuration { get; set; }
         public int Duration { get; set; }
         public int DisplayOrder { get; set; }
         public Nullable<bool> Assignable { get; set; }
@@ -37,5 +39,6 @@ namespace DataLib
         public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<RecordType> RecordTypes1 { get; set; }
         public virtual RecordType RecordType1 { get; set; }
+        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
     }
 }

@@ -56,6 +56,12 @@
     <Reference Include="MvvmEventBinding">
       <HintPath>..\packages\MvvmEventBinding.1.0.0\lib\net45\MvvmEventBinding.dll</HintPath>
     </Reference>
+    <Reference Include="SimpleInjector">
+      <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Diagnostics">
+      <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -73,6 +79,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WpfControls">
+      <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
+    </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.4\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
@@ -93,12 +102,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data transfer objects\UserDTO.cs" />
+    <Compile Include="Exception\UserFriendlyException.cs" />
+    <Compile Include="Helpers\ScrollViewerHelper.cs" />
 <<<<<<< HEAD
-    <Compile Include="Data transfer objects\PersonRelativeDTO.cs" />
+    <Compile Include="Misc\MainContainerProvider.cs" />
 =======
-    <Compile Include="MainInstances.cs" />
+    <Compile Include="Implementations\Environment.cs" />
+    <Compile Include="Implementations\TimeInterval.cs" />
+    <Compile Include="Implementations\WindowDialogService.cs" />
+    <Compile Include="Interfaces\IDialogViewModel.cs" />
+    <Compile Include="Interfaces\IDialogService.cs" />
+    <Compile Include="Interfaces\IEnvironment.cs" />
+    <Compile Include="Interfaces\ITimeInterval.cs" />
     <Compile Include="MainServiceLocator.cs" />
->>>>>>> Created DataAccessLayer, project for services, some projects structure changes
+    <Compile Include="Misc\TimeIntervalCollection.cs" />
+>>>>>>> e09325c9c8221fe739603bb6255d299ddd5e4d81
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -113,9 +132,36 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Services\Implementation\AssignmentService.cs" />
+    <Compile Include="Services\Implementation\CommissionService.cs" />
     <Compile Include="Services\Interface\IAssignmentService.cs" />
+    <Compile Include="Services\Interface\ICommissionService.cs" />
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
+    <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
+    <Compile Include="ViewModel\EditPersonViewModel.cs" />
+    <Compile Include="ViewModel\GivenOrgSuggestionProvider.cs" />
+    <Compile Include="ViewModel\OKATOSuggestionProvider.cs" />
+    <Compile Include="ViewModel\OKATORegionSuggestionProvider.cs" />
+    <Compile Include="ViewModel\InsuranceCompanySuggestionProvider.cs" />
+    <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
+    <Compile Include="ViewModel\ItemState.cs" />
+    <Compile Include="ViewModel\PersonIdentityDocumentViewModel.cs" />
+    <Compile Include="ViewModel\PersonIdentityDocumentsViewModel.cs" />
+    <Compile Include="ViewModel\PersonAddressesViewModel.cs" />
+    <Compile Include="ViewModel\PersonAddressViewModel.cs" />
+    <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
+    <Compile Include="View\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditPersonDataUserControl.xaml.cs">
+      <DependentUpon>EditPersonDataUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditPersonView.xaml.cs">
+      <DependentUpon>EditPersonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonInsuranceDocumentsView.xaml.cs">
+      <DependentUpon>PersonInsuranceDocumentsView.xaml</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -146,11 +192,33 @@
       <Name>StuffLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModel\" />
-    <Folder Include="View\" />
-  </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Page Include="View\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EditPersonDataUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditPersonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonIdentityDocumentsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonAddressesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PersonInsuranceDocumentsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -23,5 +23,29 @@ namespace MainLib
         {
             InitializeComponent();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            TextBox tbInShow = null;
+            foreach (var item in Application.Current.Windows)
+            {
+                var uc = (item as Window).FindName("EditPersonDataUserControl") as UserControl;
+                if (uc != null)
+                    tbInShow = uc.FindName("tbInsurance") as TextBox;
+                if (tbInShow != null)
+                    break;
+            }
+            if (tbInShow != null)
+            {
+                var pos = tbInShow.PointToScreen(new Point(0, 0));
+                this.Top = pos.Y;
+                this.Left = pos.X;
+            }
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

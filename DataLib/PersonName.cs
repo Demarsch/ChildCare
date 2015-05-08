@@ -23,7 +23,7 @@ namespace DataLib
         public Nullable<System.DateTime> EndDateTime { get; set; }
         public Nullable<int> ChangeNameReasonId { get; set; }
     
-        public virtual Person Person { get; set; }
         public virtual ChangeNameReason ChangeNameReason { get; set; }
+        public virtual Person Person { get; set; }
     }
 }

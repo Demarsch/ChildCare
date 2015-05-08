@@ -4,25 +4,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mainLib="clr-namespace:MainLib"
-    xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
     xmlns:mvvm="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
     mc:Ignorable="d"
     x:Class="MainLib.EditPersonDataUserControl"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:core="clr-namespace:Core;assembly=StuffLib"
     Height="auto" Width="600" Background="White"
-    d:DataContext="{d:DesignInstance mainLib:EditPersonDataViewModel}">
-
+    d:DataContext="{d:DesignData mainLib:EditPersonDataViewModel}">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <stuffLib:UniversalConverter x:Key="BooleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Hidden}">
-            <stuffLib:ConverterItem To="{x:Static Visibility.Visible}">
-                <stuffLib:ConverterItem.From>
+        <core:UniversalConverter x:Key="booleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Hidden}">
+            <core:ConverterItem To="{x:Static Visibility.Visible}">
+                <core:ConverterItem.From>
                     <system:Boolean>True</system:Boolean>
-                </stuffLib:ConverterItem.From>
-            </stuffLib:ConverterItem>
-        </stuffLib:UniversalConverter>
+                </core:ConverterItem.From>
+            </core:ConverterItem>
+        </core:UniversalConverter>
     </UserControl.Resources>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -32,6 +29,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -71,13 +69,13 @@
         <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Height="16" Margin="0,2">Отчество</TextBlock>
         <TextBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Margin="1" HorizontalAlignment="Stretch"  Text="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <TextBlock Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Height="16" Margin="0,5" Visibility="{Binding IsFIOChanged, Converter={StaticResource BooleanToInversedVisibilityConverter}}">Причина смены ФИО</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Height="16" Margin="0,5" Visibility="{Binding IsFIOChanged, Converter={StaticResource booleanToInversedVisibilityConverter}}">Причина смены ФИО</TextBlock>
         <ComboBox Grid.Row="4" Grid.Column="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding ChangeNameReasons}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedChangeNameReason}"
-                  Visibility="{Binding IsFIOChanged, Converter={StaticResource BooleanToInversedVisibilityConverter}}"/>
+                  Visibility="{Binding IsFIOChanged, Converter={StaticResource booleanToInversedVisibilityConverter}}"/>
         <TextBlock Grid.Row="4" Grid.Column="3" Margin="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="Дата"  
-                   Visibility="{Binding IsSelectedChangeNameReasonWithCreateNewPersonNames, Converter={StaticResource BooleanToInversedVisibilityConverter}}"/>
+                   Visibility="{Binding IsSelectedChangeNameReasonWithCreateNewPersonNames, Converter={StaticResource booleanToInversedVisibilityConverter}}"/>
         <DatePicker Grid.Row="4" Grid.Column="4" Margin="1" HorizontalAlignment="Stretch" SelectedDate="{Binding ChangeNameDate}"
-                    Visibility="{Binding IsSelectedChangeNameReasonWithCreateNewPersonNames, Converter={StaticResource BooleanToInversedVisibilityConverter}}"/>
+                    Visibility="{Binding IsSelectedChangeNameReasonWithCreateNewPersonNames, Converter={StaticResource booleanToInversedVisibilityConverter}}"/>
 
         <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Height="16" Margin="0,5">Дата рождения</TextBlock>
         <DatePicker Grid.Row="5" Grid.Column="2" Margin="1" HorizontalAlignment="Stretch" SelectedDate="{Binding BirthDate}" BorderThickness="1"/>
@@ -99,19 +97,27 @@
                  IsReadOnly="True" MouseDoubleClick="{mvvm:EventBinding EditInsuranceCommand}" />
 
         <Label Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Адрес</Label>
-        <TextBox Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding Addresses}"/>
+        <TextBox Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding Addresses}"
+                 MouseDoubleClick="{mvvm:EventBinding EditPersonAddressCommand}"/>
 
         <Label Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Удостоверение личности</Label>
-        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding IdentityDocument}"/>
+        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding IdentityDocuments}"
+                  MouseDoubleClick="{mvvm:EventBinding EditPersonIdentityDocumentsCommand}"/>
 
         <Label Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Инвалидость</Label>
         <TextBox Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" />
 
-        <Label Grid.Row="17" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Социальный статус</Label>
-        <TextBox Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" />
+        <Label Grid.Row="17" Grid.Column="0" FontWeight="Bold">Социальный статус</Label>
+        <ComboBox Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
 
-        <TextBlock Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
-        <StackPanel  Grid.Row="20" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
+        <Label Grid.Row="18" Grid.Column="0" FontWeight="Bold">Группа здоровья</Label>
+        <ComboBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
+
+        <Label Grid.Row="19" Grid.Column="0" FontWeight="Bold">Гражданство</Label>
+        <ComboBox Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
+
+        <TextBlock Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
+        <StackPanel  Grid.Row="21" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
             <Button Background="Transparent"  Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}"/>
             <Button Background="Transparent"  Margin="3"  Height="24" Padding="3" Content="Отмена" />
         </StackPanel>

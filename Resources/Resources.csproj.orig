@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SimpleInjector">
+      <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Diagnostics">
+      <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,12 +61,37 @@
     <Resource Include="Images\Loading16x16.gif" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-    <Content Include="Images\BackArrow24x24.png" />
-    <Content Include="Images\Group.png" />
-=======
+    <Resource Include="Images\BackArrow24x24.png" />
     <Resource Include="Images\UserGroup48x48.png" />
->>>>>>> origin/DatabaseProject
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Account_16x16.png" />
+    <Resource Include="Images\DB_refresh_24x24.png" />
+    <Resource Include="Images\Refresh_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+<<<<<<< HEAD
+    <None Include="packages.config" />
+=======
+    <Resource Include="Images\FolderSearch_48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\AdminTools.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SwitchOff_32x32.png" />
+    <Resource Include="Images\SwitchOn_32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\AddUser_48x48.ico" />
+    <Resource Include="Icons\Edit_48x48.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Error16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Delete24x24.png" />
+>>>>>>> e09325c9c8221fe739603bb6255d299ddd5e4d81
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

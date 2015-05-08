@@ -94,6 +94,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Assignment.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -118,6 +121,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ChildCareModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="ClosedDate.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CommissionDecision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -133,9 +139,6 @@
     <Compile Include="CommissionProtocol.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="CommissionProtocolMember.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="CommissionQuestion.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -146,16 +149,21 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataTransferObjects\UserSystemInfo.cs" />
-    <Compile Include="Decision.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="DBSetting.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Decision.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EFImplementations\ModelContext.cs" />
+    <Compile Include="EFImplementations\ModelContextProvider.cs" />
     <Compile Include="FinacingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Gender.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IdentityDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="InsuranceCompany.cs">
@@ -167,11 +175,13 @@
     <Compile Include="InsuranceDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="EFImplementations\ModelContext.cs" />
-    <Compile Include="EFImplementations\ModelContextProvider.cs" />
     <Compile Include="MedicalHelpType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Okato.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PartialClasses\InsuranceCompany.cs" />
     <Compile Include="PartialClasses\InsuranceDocument.cs" />
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="Permission.cs">
@@ -181,6 +191,12 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Person.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PersonAddress.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PersonIdentityDocument.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonName.cs">
@@ -209,6 +225,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Room.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ScheduleItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Staff.cs">

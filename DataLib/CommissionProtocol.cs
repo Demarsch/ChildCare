@@ -17,7 +17,6 @@ namespace DataLib
         public CommissionProtocol()
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
-            this.CommissionProtocolMembers = new HashSet<CommissionProtocolMember>();
         }
     
         public int Id { get; set; }
@@ -45,7 +44,6 @@ namespace DataLib
         public string Diagnos { get; set; }
     
         public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
-        public virtual ICollection<CommissionProtocolMember> CommissionProtocolMembers { get; set; }
         public virtual CommissionSource CommissionSource { get; set; }
         public virtual MedicalHelpType MedicalHelpType { get; set; }
         public virtual Person Person { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using System;
 using System.Linq;
@@ -18,28 +18,36 @@ namespace MainLib
 
         private readonly IPersonService service;
 
+        private readonly IDialogService dialogService;
+
         private Person person;
         private PersonName personName;
 
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPersonService service)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
             if (service == null)
                 throw new ArgumentNullException("service");
+            if (dialogService == null)
+                throw new ArgumentNullException("dialogService");
+            this.dialogService = dialogService;
             this.service = service;
             this.log = log;
             SaveChangesCommand = new RelayCommand(SaveChanges);
             EditInsuranceCommand = new RelayCommand(EditInsurance);
+            EditPersonAddressCommand = new RelayCommand(EditPersonAddress);
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetActualChangeNameReasons());
+            EditPersonIdentityDocumentsCommand = new RelayCommand(EditPersonIdentityDocuments);
             Genders = new ObservableCollection<Gender>(service.GetGenders());
+
         }
 
-        public EditPersonDataViewModel(ILog log, IPersonService service, int personId)
-            : this(log, service)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, int personId)
+            : this(log, service, dialogService)
         {
             Id = personId;
             this.log = log;
@@ -48,8 +56,8 @@ namespace MainLib
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPersonService service, string personData)
-            : this(log, service)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, string personData)
+            : this(log, service, dialogService)
         {
 
         }
@@ -102,13 +110,31 @@ namespace MainLib
             await task;
             FillPropertyFromPerson();
             insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
+            insuranceDocumentViewModel.PropertyChanged += insuranceDocumentViewModel_PropertyChanged;
+        }
+
+        void insuranceDocumentViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsChangesAccepted")
+            {
+                if (insuranceDocumentViewModel.IsChangesAccepted.HasValue)
+                {
+                    if (!insuranceDocumentViewModel.IsChangesAccepted.Value)
+                    {
+                        //ToDo: maybe create mo flexible method
+                        insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
+                    }
+                    Insurance = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
+                }
+            }
         }
 
         private void GetPersonDataAsync()
         {
             var dateTimeNow = DateTime.Now;
             person = service.GetPersonById(id);
-            personName = person.PersonNames.FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
+            if (!IsEmpty)
+                personName = person.PersonNames.FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
         }
 
         public ICommand SaveChangesCommand { get; private set; }
@@ -116,6 +142,7 @@ namespace MainLib
         private void SaveChanges()
         {
             List<PersonName> personNames = new List<PersonName>();
+            PersonName newPersonName = null;
             if (IsFIOChanged)
             {
                 if (SelectedChangeNameReason == null)
@@ -137,7 +164,7 @@ namespace MainLib
                 }
                 else
                 {
-                    var newPersonName = new PersonName()
+                    newPersonName = new PersonName()
                     {
                         LastName = LastName,
                         FirstName = FirstName,
@@ -181,14 +208,29 @@ namespace MainLib
             person.MedNumber = MedNumber;
             person.GenderId = GenderId.Value;
 
-            person.ShortName = LastName + " " +  FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
+            person.ShortName = LastName + " " + FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
             person.FullName = LastName + " " + FirstName + " " + MiddleName;
 
-            /*var res = service.SetPersonInfoes(person, personNames);
+            //InsuranceDocuments
+            var insuranceDocuments = insuranceDocumentViewModel.InsuranceDocuments.Select(x => new InsuranceDocument()
+                {
+                    InsuranceCompanyId = x.InsuranceCompanyId,
+                    InsuranceDocumentTypeId = x.InsuranceDocumentTypeId,
+                    Number = x.Number,
+                    Series = x.Series,
+                    BeginDate = x.BeginDate,
+                    EndDate = x.EndDate
+                }).ToList();
+            /*
+            var res = service.SetPersonInfoes(person, personNames, insuranceDocuments);
+            if (newPersonName != null)
+                personName = newPersonName;
             if (res == string.Empty)
                 TextMessage = "Данные сохранены";
             else
                 TextMessage = "Ошибка! " + res;*/
+            RaisePropertyChanged("IsFIOChanged");
+            RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
         }
 
         public ICommand EditInsuranceCommand { get; set; }
@@ -196,8 +238,33 @@ namespace MainLib
         private void EditInsurance()
         {
             //ToDo: USe better solution for using other window
+            insuranceDocumentViewModel.IsChangesAccepted = null;
             var insuranceDocumentView = new PersonInsuranceDocumentsView() { DataContext = insuranceDocumentViewModel };
             insuranceDocumentView.ShowDialog();
+        }
+
+        public ICommand EditPersonAddressCommand { get; set; }
+        private PersonAddressesViewModel personAddressesViewModel = null;
+        private void EditPersonAddress()
+        {
+            if (personAddressesViewModel == null)
+                personAddressesViewModel = new PersonAddressesViewModel(Id, service, dialogService);
+            var dialogResult = dialogService.ShowDialog(personAddressesViewModel);
+            if (dialogResult != true)
+                personAddressesViewModel = new PersonAddressesViewModel(Id, service, dialogService);
+            Addresses = personAddressesViewModel.PersonAddressesString;
+        }
+
+        public ICommand EditPersonIdentityDocumentsCommand { get; set; }
+        private PersonIdentityDocumentsViewModel personIdentityDocumentsViewModel = null;
+        private void EditPersonIdentityDocuments()
+        {
+            if (personIdentityDocumentsViewModel == null)
+                personIdentityDocumentsViewModel = new PersonIdentityDocumentsViewModel(Id, service, dialogService);
+            var dialogResult = dialogService.ShowDialog(personIdentityDocumentsViewModel);
+            if (dialogResult != true)
+                personIdentityDocumentsViewModel = new PersonIdentityDocumentsViewModel(Id, service, dialogService);
+            IdentityDocuments = personIdentityDocumentsViewModel.PersonIdentityDocumentsString;
         }
 
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();
@@ -260,9 +327,7 @@ namespace MainLib
             get { return id; }
             set
             {
-                if (id == value)
-                    return;
-                id = value;
+                Set("Id", ref id, value);
                 GetPersonData();
             }
         }
@@ -434,16 +499,16 @@ namespace MainLib
             }
         }
 
-        private string identityDocument = string.Empty;
-        public string IdentityDocument
+        private string identityDocuments = string.Empty;
+        public string IdentityDocuments
         {
             get
             {
-                return identityDocument;
+                return identityDocuments;
             }
             set
             {
-                Set("IdentityDocument", ref identityDocument, value);
+                Set("IdentityDocuments", ref identityDocuments, value);
             }
         }
 

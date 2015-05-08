@@ -13,7 +13,9 @@ namespace Registry
         public PatientAssignmentService(IDataContextProvider dataContextProvider)
         {
             if (dataContextProvider == null)
+            {
                 throw new ArgumentNullException("dataContextProvider");
+            }
             this.dataContextProvider = dataContextProvider;
         }
 
@@ -21,7 +23,7 @@ namespace Registry
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
-                return dataContext.GetData<Assignment>().Where(x => x.PersonId == patientId)
+                return dataContext.GetData<Assignment>().Where(x => x.PersonId == patientId && !x.IsTemporary)
                     .Select(x => new AssignmentDTO
                     {
                         Id = x.Id,

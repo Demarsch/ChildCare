@@ -16,13 +16,16 @@ namespace DataLib
     {
         public FinacingSource()
         {
+            this.Assignments = new HashSet<Assignment>();
             this.RecordContracts = new HashSet<RecordContract>();
         }
     
         public int Id { get; set; }
-        public int Name { get; set; }
-        public int ShortName { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public bool IsActive { get; set; }
     
+        public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<RecordContract> RecordContracts { get; set; }
     }
 }

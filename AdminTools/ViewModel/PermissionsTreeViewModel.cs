@@ -11,6 +11,8 @@ using System.Windows;
 using DataLib;
 using GalaSoft.MvvmLight;
 using Core;
+using AdminTools.View;
+using log4net;
 
 namespace AdminTools.ViewModel
 {
@@ -18,7 +20,6 @@ namespace AdminTools.ViewModel
     {
         #region PermissionData
 
-        private ObservableCollection<PermissionViewModel> permissionRoots;
         public RelayCommand SearchPermissionCommand { get; private set; }
         
         private RelayCommand<object> createPermissionCommand;
@@ -60,11 +61,13 @@ namespace AdminTools.ViewModel
         #region Constructor
 
         private IPermissionService permissionService;
+        private ILog log;
 
-        public PermissionsTreeViewModel(IPermissionService permissionService)
+        public PermissionsTreeViewModel(IPermissionService permissionService, ILog log)
         {
             this.permissionService = permissionService;
-            
+            this.log = log;
+
             permissionRoots = new ObservableCollection<PermissionViewModel>();
             foreach (var item in permissionService.GetRootPermissions())
                 permissionRoots.Add(new PermissionViewModel(permissionService, item));	        
@@ -79,15 +82,16 @@ namespace AdminTools.ViewModel
 
         #region Properties
 
-        #region FirstGeneration
+        #region PermissionRoots
 
         /// <summary>
-        /// Returns a collection containing the first permission 
-        /// in the tree, to which the TreeView can bind.
-        /// </summary>
+        /// Returns a collection of root permissions in the tree, to which the TreeView can bind.
+        /// </summary>       
+        private ObservableCollection<PermissionViewModel> permissionRoots;
         public ObservableCollection<PermissionViewModel> PermissionRoots
         {
             get { return permissionRoots; }
+            set { Set("PermissionRoots", ref permissionRoots, value); }
         }
 
         #endregion         
@@ -121,36 +125,60 @@ namespace AdminTools.ViewModel
         {
             if (parameter == null || !(parameter is PermissionViewModel))
                 return;
-            MessageBox.Show(
-                        "Удаление права " + (parameter as PermissionViewModel).Name,
-                        "Info",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                        );
+
+            var currentPermission = (parameter as PermissionViewModel);
+            if (MessageBox.Show("Удалить право \"" + currentPermission.Name + "\" и все вложенные в него права ?", "Внимание", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                var permission = permissionService.GetPermissionById(currentPermission.Id);
+                string message = string.Empty;
+                if (this.permissionService.Delete(permission, out message))
+                {
+                    if (currentPermission.Parent == null)
+                        PermissionRoots.Remove(currentPermission);
+                    else
+                        currentPermission.Parent.Children.Remove(currentPermission);
+                    MessageBox.Show("Данные удалены");
+                }
+                else
+                {
+                    MessageBox.Show("При сохранении возникла ошибка: " + message);
+                    log.Error(string.Format("Failed to Delete permission. " + message));
+                }                
+            }
         }
 
         private void EditPermission(object parameter)
         {
             if (parameter == null || !(parameter is PermissionViewModel))
                 return;
-            MessageBox.Show(
-                        "Редактирование права " + (parameter as PermissionViewModel).Name,
-                        "Info",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                        );
+
+            var currentPermission = (parameter as PermissionViewModel);
+            var editPermissionViewModel = new EditPermissionViewModel(permissionService, log, currentPermission.Parent, currentPermission);
+            EditPermissionView view = new EditPermissionView() { DataContext = editPermissionViewModel, Title = "Редактировать право" };
+            view.ShowDialog();
+
+            currentPermission.Name = editPermissionViewModel.CurrentPermission.Name;
+            currentPermission.Description = editPermissionViewModel.CurrentPermission.Description;
+            currentPermission.IsGroup = editPermissionViewModel.CurrentPermission.IsGroup;
+            currentPermission.ReadOnly = editPermissionViewModel.CurrentPermission.ReadOnly;
         }
 
         private void CreatePermission(object parameter)
         {
-            if (parameter == null || !(parameter is PermissionViewModel))
-                return;
-            MessageBox.Show(
-                        "Создание нового права. Родитель -> " + (parameter as PermissionViewModel).Name,
-                        "Info",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                        );
+            var parent = (parameter as PermissionViewModel);
+            var editPermissionViewModel = new EditPermissionViewModel(permissionService, log, parent);
+            EditPermissionView view = new EditPermissionView() { DataContext = editPermissionViewModel, Title = "Новое право" };
+            view.ShowDialog();
+
+            if (editPermissionViewModel.CurrentPermission == null) return;
+
+            if (parent == null)
+                PermissionRoots.Add(editPermissionViewModel.CurrentPermission);
+            else
+            {
+                editPermissionViewModel.CurrentPermission.Parent = parent;
+                parent.Children.Add(editPermissionViewModel.CurrentPermission);
+            }
         }
 
         #endregion

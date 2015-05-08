@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace StuffLib
+namespace Core
 {
     public class UniversalConverter : List<ConverterItem>, IValueConverter
     {

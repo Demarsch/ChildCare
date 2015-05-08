@@ -5,12 +5,38 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="View/PersonView.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonAddressesView.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonIdentityDocumentsView.xaml" />
                 <ResourceDictionary Source="View/PatientAssignmentListView.xaml" />
                 <ResourceDictionary Source="View/ScheduleView.xaml" />
                 <ResourceDictionary Source="View/TimeTickerView.xaml" />
                 <ResourceDictionary Source="View/RoomView.xaml" />
-                <ResourceDictionary Source="View/ScheduledAssignmentView.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="View/FreeTimeSlotView.xaml" />
+                <ResourceDictionary Source="View/OccupiedTimeSlotView.xaml" />
+                <ResourceDictionary Source="View/ScheduleAssignmentUpdateView.xaml" />
+                <ResourceDictionary Source="View/ScheduleEditorView.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <ControlTemplate x:Key="ValidationTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <AdornedElementPlaceholder Grid.Column="0" x:Name="placeholder" />
+                    <Image Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="16" Height="16" Source="pack://application:,,,/Resources;component/Images/Error16x16.png"
+                           ToolTip="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}" Margin="5 0 0 0" x:Name="image">
+                        <Image.Triggers>
+                            <EventTrigger RoutedEvent="Control.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard TargetName="image" TargetProperty="Opacity">
+                                        <DoubleAnimation From="0" To="1" Duration="0:0:0.4" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Image.Triggers>
+                    </Image>
+                </Grid>
+            </ControlTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

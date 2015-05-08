@@ -72,6 +72,26 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\FolderSearch_48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\AdminTools.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SwitchOff_32x32.png" />
+    <Resource Include="Images\SwitchOn_32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\AddUser_48x48.ico" />
+    <Resource Include="Icons\Edit_48x48.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Error16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Delete24x24.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

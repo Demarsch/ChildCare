@@ -17,7 +17,7 @@ namespace DataLib
         public CommissionMember()
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
-            this.CommissionProtocolMembers = new HashSet<CommissionProtocolMember>();
+            this.CommissionDecisions1 = new HashSet<CommissionDecision>();
         }
     
         public int Id { get; set; }
@@ -28,9 +28,9 @@ namespace DataLib
         public System.DateTime EndDateTime { get; set; }
     
         public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
+        public virtual ICollection<CommissionDecision> CommissionDecisions1 { get; set; }
         public virtual CommissionMemberType CommissionMemberType { get; set; }
         public virtual CommissionType CommissionType { get; set; }
         public virtual PersonStaff PersonStaff { get; set; }
-        public virtual ICollection<CommissionProtocolMember> CommissionProtocolMembers { get; set; }
     }
 }

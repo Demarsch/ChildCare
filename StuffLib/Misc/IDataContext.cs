@@ -14,11 +14,15 @@ namespace Core
         
         void Add<TData>(TData obj) where TData : class;
 
+        DateTime GetCurrentDate();
+
         void AddRange<TData>(IEnumerable<TData> objs) where TData : class;
         
         void Remove<TData>(TData obj) where TData : class;
 
         void RemoveRange<TData>(IEnumerable<TData> objs) where TData : class;
+
+        void Attach<TData>(TData obj) where TData : class;
 
         void Save();
 

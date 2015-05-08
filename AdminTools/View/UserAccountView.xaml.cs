@@ -23,5 +23,7 @@ namespace AdminTools.View
         {
             InitializeComponent();
         }
+
+        
     }
 }

@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System.Windows.Input;
+using GalaSoft.MvvmLight;
 
 namespace Core
 {
@@ -12,8 +13,10 @@ namespace Core
             set
             {
                 var isFailed = IsFailed;
-                if (Set("FailReason", ref failReason, value) && isFailed != IsFailed)
-                    RaisePropertyChanged("IsFailed");
+                if (!Set("FailReason", ref failReason, value) || isFailed == IsFailed) 
+                    return;
+                RaisePropertyChanged("IsFailed");
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -27,8 +30,10 @@ namespace Core
             set
             {
                 var isBusy = IsBusy;
-                if (Set("BusyStatus", ref busyStatus, value) && isBusy != IsBusy)
-                    RaisePropertyChanged("IsBusy");
+                if (!Set("BusyStatus", ref busyStatus, value) || isBusy == IsBusy)
+                    return;
+                RaisePropertyChanged("IsBusy");
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 

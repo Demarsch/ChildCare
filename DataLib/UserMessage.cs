@@ -24,8 +24,8 @@ namespace DataLib
         public int MessageData { get; set; }
         public int UserMessageTypeId { get; set; }
     
+        public virtual UserMessageType UserMessageType { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
-        public virtual UserMessageType UserMessageType { get; set; }
     }
 }

@@ -31,8 +31,8 @@ namespace AdminTools
             Container.Register<PermissionsTreeViewModel>();
             Container.Register<UserAccountViewModel>();
             Container.Register<UserEditorViewModel>();
-            Container.Register<UserManagerViewModel>();
             Container.Register<UserViewModel>();
+            Container.Register<EditPermissionViewModel>();
 
             MainWindow = new MainWindow { DataContext = Container.GetInstance<MainWindowViewModel>() };
             MainWindow.Show();

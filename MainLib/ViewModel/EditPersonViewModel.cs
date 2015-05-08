@@ -1,7 +1,7 @@
 ﻿using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using System;
 using System.Collections.ObjectModel;
@@ -16,10 +16,16 @@ namespace MainLib
 
         private readonly IPersonService service;
 
+        private readonly IDialogService dialogService;
+
         private EditPersonDataViewModel editPersonDataViewModel;
         public EditPersonDataViewModel EditPersonDataViewModel
         {
             get { return editPersonDataViewModel; }
+            set
+            {
+                Set("EditPersonDataViewModel", ref editPersonDataViewModel, value);
+            }
         }
 
         private EditPersonDataViewModel editPersonRelativeDataViewModel;
@@ -35,21 +41,25 @@ namespace MainLib
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
             if (service == null)
                 throw new ArgumentNullException("service");
+            if (dialogService == null)
+                throw new ArgumentNullException("dialogService");
+            this.dialogService = dialogService;
             this.service = service;
             this.log = log;
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
-            EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service);
+            EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
+            EditPersonDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
         }
 
-        public EditPersonViewModel(ILog log, IPersonService service, int personId)
-            : this(log, service)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, int personId)
+            : this(log, service, dialogService)
         {
             Id = personId;
             this.log = log;
@@ -58,11 +68,11 @@ namespace MainLib
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, string personData)
-            : this(log, service)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, string personData)
+            : this(log, service, dialogService)
         {
 
-        }                 
+        }
 
         private int id;
         public int Id
@@ -70,10 +80,8 @@ namespace MainLib
             get { return id; }
             set
             {
-                if (id == value)
-                    return;
-                id = value;
-                editPersonDataViewModel = new EditPersonDataViewModel(log, service, id);
+                Set("Id", ref id, value);
+                editPersonDataViewModel.Id = id;
                 SetRelatives();
             }
         }

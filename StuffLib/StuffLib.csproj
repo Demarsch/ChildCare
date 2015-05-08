@@ -132,6 +132,7 @@
     <Compile Include="Misc\IDataContextProvider.cs" />
     <Compile Include="Misc\EntityContext.cs" />
     <Compile Include="Misc\ObjectCache.cs" />
+    <Compile Include="Misc\ObservalbeCollectionEx.cs" />
     <Compile Include="Misc\WorkingTime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -164,6 +165,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="License.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="dlls\WpfControls.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

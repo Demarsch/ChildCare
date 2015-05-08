@@ -18,7 +18,7 @@ namespace AdminTools.View
     /// <summary>
     /// Interaction logic for UserEditorView.xaml
     /// </summary>
-    public partial class UserEditorView : UserControl
+    public partial class UserEditorView : Window
     {
         public UserEditorView()
         {

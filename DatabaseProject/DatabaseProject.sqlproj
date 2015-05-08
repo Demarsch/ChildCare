@@ -101,5 +101,12 @@
     <Build Include="dbo\Tables\CommissionQuestions.sql" />
     <Build Include="dbo\Tables\RecordContracts.sql" />
     <Build Include="dbo\Tables\MedicalHelpTypes.sql" />
+    <Build Include="dbo\Tables\ClosedDates.sql" />
+    <Build Include="dbo\Tables\PersonAddresses.sql" />
+    <Build Include="dbo\Tables\Okatos.sql" />
+    <Build Include="dbo\Tables\AddressTypes.sql" />
+    <Build Include="dbo\Tables\ScheduleItem.sql" />
+    <Build Include="dbo\Tables\PersonIdentityDocuments.sql" />
+    <Build Include="dbo\Tables\IdentityDocumentTypes.sql" />
   </ItemGroup>
 </Project>

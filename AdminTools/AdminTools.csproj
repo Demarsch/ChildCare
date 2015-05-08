@@ -49,7 +49,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>AdminTools.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -105,8 +106,12 @@
     <Reference Include="WpfAnimatedGif">
       <HintPath>..\packages\WpfAnimatedGif.1.4.12\lib\net\WpfAnimatedGif.dll</HintPath>
     </Reference>
-    <Reference Include="WPFSpark">
-      <HintPath>..\packages\WPFSpark\WPFSpark.dll</HintPath>
+    <Reference Include="WpfControls, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.4\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
     <Reference Include="Xceed.Wpf.Toolkit">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.4\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
@@ -117,14 +122,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DTO\UserSystemInfoDTO.cs" />
+    <Compile Include="DTO\PersonDTO.cs" />
+    <Compile Include="DTO\UserPermissionsDTO.cs" />
+    <Compile Include="ViewModel\EditPermissionViewModel.cs" />
+    <Compile Include="ViewModel\PersonSuggestionProvider.cs" />
     <Compile Include="ViewModel\PermissionsTreeViewModel.cs" />
     <Compile Include="ViewModel\UserAccountViewModel.cs" />
     <Compile Include="ViewModel\UserEditorViewModel.cs" />
-    <Compile Include="ViewModel\UserManagerViewModel.cs" />
     <Compile Include="ViewModel\UserViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PermissionViewModel.cs" />
+    <Compile Include="View\EditPermissionView.xaml.cs">
+      <DependentUpon>EditPermissionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PermissionsTreeView.xaml.cs">
       <DependentUpon>PermissionsTreeView.xaml</DependentUpon>
     </Compile>
@@ -134,9 +144,10 @@
     <Compile Include="View\UserEditorView.xaml.cs">
       <DependentUpon>UserEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\UserManagerView.xaml.cs">
-      <DependentUpon>UserManagerView.xaml</DependentUpon>
-    </Compile>
+    <Page Include="View\EditPermissionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -158,10 +169,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\UserEditorView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\UserManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -233,9 +240,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="AdminTools.ico" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -13,7 +13,7 @@ namespace DataLib
     {
         private ModelContext staticModelContext;
 
-        public IDataContext StaticDataContext { get { return staticModelContext ?? (staticModelContext = GetNewDataContext() as ModelContext);} }
+        public IDataContext StaticDataContext { get { return staticModelContext ?? (staticModelContext = GetNewLiteDataContext() as ModelContext);} }
 
         public IDataContext GetNewDataContext()
         {
@@ -26,6 +26,19 @@ namespace DataLib
             return result;
         }
 
+        public IDataContext GetNewLiteDataContext()
+        {
+            if (String.IsNullOrEmpty(defaultConnectionString)) PrepareConnectionString();
+            var result = new ModelContext(defaultConnectionString);
+#if DEBUG
+            result.Database.Log = x => Debug.Write(x);
+#endif
+            result.Database.CommandTimeout = 300;
+            result.Configuration.ProxyCreationEnabled = false;
+            result.Configuration.LazyLoadingEnabled = false;
+            result.Configuration.AutoDetectChangesEnabled = false;
+            return result;
+        }
         private const string ConnectionStringTemplate = "metadata=res://*/ChildCareModel.csdl|res://*/ChildCareModel.ssdl|res://*/ChildCareModel.msl;provider=System.Data.SqlClient;provider connection string=\"data source=@source@;initial catalog=ChildCare;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework\"";
 
         private static string defaultConnectionString = "";

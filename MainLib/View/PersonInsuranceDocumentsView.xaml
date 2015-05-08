@@ -4,31 +4,64 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:mainLib="clr-namespace:MainLib"
-        xmlns:stuffLib="clr-namespace:StuffLib;assembly=StuffLib"
+        xmlns:wpf="http://wpfcontrols.com/"
+        xmlns:core="clr-namespace:Core;assembly=StuffLib"
         mc:Ignorable="d"
-        Title="InsuranceDocementView" SizeToContent="WidthAndHeight" WindowStyle="None" BorderBrush="White" d:DataContext="{d:DesignInstance mainLib:PersonInsuranceDocumentsViewModel}">
-    
+        Title="Страховые документы" SizeToContent="WidthAndHeight" WindowStartupLocation="Manual" d:DataContext="{d:DesignData mainLib:PersonInsuranceDocumentsViewModel}"
+        Loaded="Window_Loaded" MinWidth="300" MinHeight="150">
+
     <Window.Resources>
-        <stuffLib:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">
-            <stuffLib:ConverterItem From="{x:Static mainLib:ItemState.Active}">
-                <stuffLib:ConverterItem.To>
+        <core:UniversalConverter x:Key="InsuranceDocementStateToBackgroundBrushConverter">
+            <core:ConverterItem From="{x:Static mainLib:ItemState.Active}">
+                <core:ConverterItem.To>
                     <SolidColorBrush Color="LightGreen" />
-                </stuffLib:ConverterItem.To>
-            </stuffLib:ConverterItem>
-            <stuffLib:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
-                <stuffLib:ConverterItem.To>
+                </core:ConverterItem.To>
+            </core:ConverterItem>
+            <core:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
+                <core:ConverterItem.To>
                     <SolidColorBrush Color="LightPink" />
-                </stuffLib:ConverterItem.To>
-            </stuffLib:ConverterItem>
-        </stuffLib:UniversalConverter>
+                </core:ConverterItem.To>
+            </core:ConverterItem>
+        </core:UniversalConverter>
+
+        <DataTemplate x:Key="AutoCompleteTemplate">
+            <Border Padding="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding Path=NameSMOK}"
+                               FontWeight="Bold" 
+                               Grid.Column="0" 
+                               Grid.Row="0"
+                               VerticalAlignment="Bottom"/>
+                    <TextBlock Text="{Binding Path=AddressF}"
+                               Foreground="Gray"
+                               Grid.Column="0" 
+                               Grid.Row="2"
+                               FontFamily="Segoe UI"
+                               VerticalAlignment="Bottom"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
     </Window.Resources>
-    
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <ListBox BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}">
-            <ListBox.ItemTemplate>
+
+    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Выбрать" Margin="3" Padding="2" Background="#FFADEE9A"  Command="{Binding AcceptCommand}" Click="button_Click"/>
+            <Button Content="Отмена" Margin="3" Padding="2" Background="#FFFFBEBE" Command="{Binding CancelCommand}" Click="button_Click"/>
+        </StackPanel>
+        <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
+        <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" Margin="5">
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1" Background="{Binding InsuranceDocumentState, Converter={StaticResource InsuranceDocementStateToBackgroundBrushConverter}}">
-                        <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch">
+                        <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="Auto" />
@@ -46,16 +79,27 @@
                             </Grid.ColumnDefinitions>
 
                             <Button  Grid.Row="0" Grid.Column="3" Margin="2" Content="x" Background="White" Width="auto" Height="auto" Padding="2" HorizontalAlignment="Right" 
-                                 Command="{Binding DataContext.DeleteInsuranceDocumentCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}"/>
+                                 Command="{Binding DataContext.DeleteInsuranceDocumentCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Вид полиса" />
-                            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListInsuranceDocumentTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
+                            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListInsuranceDocumentTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
                                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding InsuranceDocumentTypeId}" />
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Margin="2" Text="Страховая компания" />
 
-                            <!--<ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding InsuranceCompany.NameSMOK}" SelectedValue="{Binding InsuranceCompanyId}" />-->
-
+                            <wpf:AutoCompleteTextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Margin="2" Background="White"
+                                 Watermark="введите слова из названия и регион для поиска"
+                                 DisplayMember="NameSMOK"
+                                 ItemTemplate="{StaticResource AutoCompleteTemplate}"
+                                 SelectedItem="{Binding InsuranceCompany, Mode=TwoWay}"
+                                 IconPlacement="Left"
+                                 IconVisibility="Visible"
+                                 Provider="{Binding DataContext.InsuranceCompanySuggestionProvider, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                                 x:Name="Actb" TabIndex="1">
+                                <wpf:AutoCompleteTextBox.LoadingContent>
+                                    <TextBlock Text="Загрузка данных..." Margin="5" FontSize="14" />
+                                </wpf:AutoCompleteTextBox.LoadingContent>
+                            </wpf:AutoCompleteTextBox>
 
                             <TextBlock Grid.Row="4" Grid.Column="0" Margin="2" Text="Серия" />
                             <TextBox Grid.Row="4" Grid.Column="1" Margin="2" Text="{Binding Series}" />
@@ -71,8 +115,7 @@
                         </Grid>
                     </Border>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <Button HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddInsuranceDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
-    </StackPanel>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </DockPanel>
 </Window>

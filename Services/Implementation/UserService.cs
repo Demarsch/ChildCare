@@ -88,5 +88,13 @@ namespace Core
                 return db.GetData<User>().Where(x => x.BeginDateTime <= onDate && (x.BeginDateTime != x.EndDateTime ? x.EndDateTime >= onDate : true)).OrderBy(x => x.Person.FullName).ToArray();
             }
         }
+
+        public ICollection<UserPermission> GetUserPermissions(int userId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<UserPermission>().Where(x => x.UserId == userId).OrderBy(x => x.Permission.Name).ToArray();
+            }
+        }
     }
 }

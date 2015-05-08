@@ -3,10 +3,16 @@
     [PersonId]      INT           NOT NULL,
     [SID]           VARCHAR (255) NOT NULL,
     [BeginDateTime] DATETIME      NOT NULL,
-    [EndDateTime]   DATETIME      NOT NULL,
+    [EndDateTime]   DATETIME      NULL,
     CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Users_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id])
 );
+
+
+
+
+
+
 
 
 GO

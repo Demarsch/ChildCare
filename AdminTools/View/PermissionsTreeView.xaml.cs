@@ -18,7 +18,7 @@ namespace AdminTools.View
     /// <summary>
     /// Interaction logic for PermissionsTreeView.xaml
     /// </summary>
-    public partial class PermissionsTreeView : UserControl
+    public partial class PermissionsTreeView : Window
     {
         public PermissionsTreeView()
         {
@@ -43,5 +43,13 @@ namespace AdminTools.View
 
             return source as TreeViewItem;
         }
+
+        private void PermissionTree_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            TreeViewItem treeItem = (TreeViewItem)PermissionTree.ItemContainerGenerator.ContainerFromItem(PermissionTree.SelectedItem);
+            if (treeItem != null)
+                treeItem.IsSelected = false;            
+        }
+        
     }
 }

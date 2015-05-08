@@ -26,7 +26,7 @@ namespace DataLib
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual CommissionType CommissionType { get; set; }
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual CommissionType CommissionType { get; set; }
     }
 }
