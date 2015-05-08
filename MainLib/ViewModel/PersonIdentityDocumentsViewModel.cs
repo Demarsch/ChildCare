@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace MainLib
 {
-    public class PersonAddressesViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
+    public class PersonIdentityDocumentsViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
     {
         #region Fields
 
@@ -26,7 +26,7 @@ namespace MainLib
 
         #region Constructors
 
-        public PersonAddressesViewModel(int personId, IPersonService service, IDialogService dialogService)
+        public PersonIdentityDocumentsViewModel(int personId, IPersonService service, IDialogService dialogService)
         {
             if (service == null)
                 throw new ArgumentNullException("service");
@@ -35,10 +35,10 @@ namespace MainLib
             this.dialogService = dialogService;
             this.service = service;
             this.personId = personId;
-            PersonAddresses = new ObservableCollection<PersonAddressViewModel>(service.GetPersonAddresses(this.personId).Select(x => new PersonAddressViewModel(service, x)));
-            ListAddressTypes = new ObservableCollection<AddressType>(service.GetAddressTypes());
-            AddPersonAddressCommand = new RelayCommand(AddPersonAddress);
-            DeletePersonAddressCommand = new RelayCommand<PersonAddressViewModel>(DeletePersonAddress);
+            PersonIdentityDocuments = new ObservableCollection<PersonIdentityDocumentViewModel>(service.GetPersonIdentityDocuments(this.personId).Select(x => new PersonIdentityDocumentViewModel(service, x)));
+            ListIdentityDocumentTypes = new ObservableCollection<IdentityDocumentType>(service.GetIdentityDocumentTypes());
+            AddPersonIdentityDocumentCommand = new RelayCommand(AddPersonIdentityDocument);
+            DeletePersonIdentityDocumentCommand = new RelayCommand<PersonIdentityDocumentViewModel>(DeleteIdentityDocument);
             CloseCommand = new RelayCommand<bool>(Close);
         }
 
@@ -46,37 +46,36 @@ namespace MainLib
 
         #region Properties
 
-        private ObservableCollection<AddressType> listAddressTypes = new ObservableCollection<AddressType>();
-        public ObservableCollection<AddressType> ListAddressTypes
+        private ObservableCollection<IdentityDocumentType> listIdentityDocumentTypes = new ObservableCollection<IdentityDocumentType>();
+        public ObservableCollection<IdentityDocumentType> ListIdentityDocumentTypes
         {
-            get { return listAddressTypes; }
-            set { Set("ListAddressTypes", ref listAddressTypes, value); }
+            get { return listIdentityDocumentTypes; }
+            set { Set("ListIdentityDocumentTypes", ref listIdentityDocumentTypes, value); }
         }
 
-        private ObservableCollection<PersonAddressViewModel> personAddresses = new ObservableCollection<PersonAddressViewModel>();
-        public ObservableCollection<PersonAddressViewModel> PersonAddresses
+        private ObservableCollection<PersonIdentityDocumentViewModel> personIdentityDocuments = new ObservableCollection<PersonIdentityDocumentViewModel>();
+        public ObservableCollection<PersonIdentityDocumentViewModel> PersonIdentityDocuments
         {
-            get { return personAddresses; }
-            set 
-            { 
-                Set("PersonAddresses", ref personAddresses, value);
-                RaisePropertyChanged("PersonAddressesHasNoItems");
+            get { return personIdentityDocuments; }
+            set
+            {
+                Set("PersonIdentityDocuments", ref personIdentityDocuments, value);
+                RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
             }
         }
 
-        public bool PersonAddressesHasNoItems
+        public bool PersonIdentityDocumentsHasNoItems
         {
-            get { return PersonAddresses == null || PersonAddresses.Count < 1; }
+            get { return PersonIdentityDocuments == null || PersonIdentityDocuments.Count < 1; }
         }
 
-
-        public string PersonAddressesString
+        public string PersonIdentityDocumentsString
         {
             get
             {
                 var resStr = string.Empty;
                 var dateTimeNow = DateTime.Now;
-                foreach (var personAddress in PersonAddresses.Where(x => dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate))
+                foreach (var personAddress in PersonIdentityDocuments.Where(x => dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate))
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";
@@ -90,18 +89,18 @@ namespace MainLib
 
         #region Commands
 
-        public ICommand AddPersonAddressCommand { get; set; }
-        private void AddPersonAddress()
+        public ICommand AddPersonIdentityDocumentCommand { get; set; }
+        private void AddPersonIdentityDocument()
         {
-            PersonAddresses.Add(new PersonAddressViewModel(service, new PersonAddress() { EndDateTime = DateTime.MaxValue.Date }));
-            RaisePropertyChanged("PersonAddressesHasNoItems");
+            PersonIdentityDocuments.Add(new PersonIdentityDocumentViewModel(service, new PersonIdentityDocument() { EndDate = DateTime.MaxValue.Date }));
+            RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
         }
 
-        public ICommand DeletePersonAddressCommand { get; set; }
-        private void DeletePersonAddress(PersonAddressViewModel personAddressViewModel)
+        public ICommand DeletePersonIdentityDocumentCommand { get; set; }
+        private void DeleteIdentityDocument(PersonIdentityDocumentViewModel personIdentityDocumentViewModel)
         {
-            PersonAddresses.Remove(personAddressViewModel);
-            RaisePropertyChanged("PersonAddressesHasNoItems");
+            PersonIdentityDocuments.Remove(personIdentityDocumentViewModel);
+            RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
         }
 
         #endregion
@@ -110,7 +109,7 @@ namespace MainLib
 
         public string Title
         {
-            get { return "Адресные данные"; }
+            get { return "Удостоверения личности"; }
         }
 
         public string ConfirmButtonText

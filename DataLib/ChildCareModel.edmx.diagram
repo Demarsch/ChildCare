@@ -110,6 +110,10 @@
         <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
+        <EntityTypeShape EntityType="DataLib.IdentityDocumentType" Width="1.5" PointX="5.75" PointY="23.125" />
+        <EntityTypeShape EntityType="DataLib.PersonIdentityDocument" Width="1.5" PointX="8" PointY="6.375" />
+        <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" />
+        <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_Persons" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -67,5 +67,7 @@ namespace DataLib
         public virtual DbSet<FinacingSource> FinacingSources { get; set; }
         public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
+        public virtual DbSet<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
     }
 }

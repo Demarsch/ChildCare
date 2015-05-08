@@ -62,6 +62,7 @@ namespace MainLib
                 Apartment = string.Empty;
                 BeginDate = new DateTime(1900, 1, 1);
                 EndDate = DateTime.MaxValue.Date;
+                WithoutEndDate = true;
             }
         }
 
@@ -166,6 +167,7 @@ namespace MainLib
             {
                 Set("BeginDate", ref beginDate, value);
                 RaisePropertyChanged("PersonAddressState");
+                RaisePropertyChanged("PersonAddressStateString");
             }
         }
 
@@ -177,6 +179,7 @@ namespace MainLib
             {
                 Set("EndDate", ref endDate, value);
                 RaisePropertyChanged("PersonAddressState");
+                RaisePropertyChanged("PersonAddressStateString");
             }
         }
 
@@ -205,6 +208,22 @@ namespace MainLib
                 if (datetimeNow >= BeginDate && datetimeNow < EndDate)
                     return ItemState.Active;
                 return ItemState.Inactive;
+            }
+        }
+
+        public string PersonAddressStateString
+        {
+            get
+            {
+                switch (PersonAddressState)
+                {
+                    case ItemState.Active:
+                        return "Действующий адрес";
+                    case ItemState.Inactive:
+                        return "Недействующий адрес";
+                    default:
+                        return string.Empty;
+                }
             }
         }
 

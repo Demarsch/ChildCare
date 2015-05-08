@@ -103,7 +103,7 @@ namespace Core
 
         public ICollection<PersonAddress> GetPersonAddresses(int personId)
         {
-            return data.Get<PersonAddress>(x => x.PersonId == personId, x => x.AddressType);
+            return data.Get<PersonAddress>(x => x.PersonId == personId);
         }
 
 
@@ -135,6 +135,28 @@ namespace Core
         public AddressType GetAddressType(int id)
         {
             return data.Get<AddressType>(x => x.Id == id).FirstOrDefault();
+        }
+
+
+        public ICollection<PersonIdentityDocument> GetPersonIdentityDocuments(int personId)
+        {
+            return data.Get<PersonIdentityDocument>(x => x.PersonId == personId);
+        }
+
+        public ICollection<IdentityDocumentType> GetIdentityDocumentTypes()
+        {
+            return data.Get<IdentityDocumentType>();
+        }
+
+        public IdentityDocumentType GetIdentityDocumentType(int id)
+        {
+            return data.Cache<IdentityDocumentType>(id);
+        }
+
+
+        public ICollection<string> GetGivenOrgByName(string name)
+        {
+            return data.Get<PersonIdentityDocument>(x => x.GivenOrg.Contains(name)).Select(x => x.GivenOrg).Distinct().ToArray();
         }
     }
 }

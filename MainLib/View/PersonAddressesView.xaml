@@ -4,20 +4,20 @@
                     xmlns:mainLib="clr-namespace:MainLib"
                     xmlns:wpf="http://wpfcontrols.com/">
 
-    <!--<Window.Resources>-->
-
     <core:UniversalConverter x:Key="PersonAddressStateToBackgroundBrushConverter">
         <core:ConverterItem From="{x:Static mainLib:ItemState.Active}">
             <core:ConverterItem.To>
-                <SolidColorBrush Color="LightGreen" />
+                <SolidColorBrush Color="Green" />
             </core:ConverterItem.To>
         </core:ConverterItem>
         <core:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
             <core:ConverterItem.To>
-                <SolidColorBrush Color="LightPink" />
+                <SolidColorBrush Color="Red" />
             </core:ConverterItem.To>
         </core:ConverterItem>
     </core:UniversalConverter>
+
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
     <DataTemplate x:Key="AutoCompleteTemplate">
         <Border Padding="5">
@@ -47,11 +47,13 @@
     <!--</Window.Resources>-->
     <DataTemplate  DataType="{x:Type mainLib:PersonAddressesViewModel}">
         <DockPanel Width="500" VerticalAlignment="Stretch" LastChildFill="True">
-            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddIPersonAddressCommand}" Content="Добавить" Margin="5" Background="White"/>
-            <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding PersonAddresses}" Margin="5">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="Black" BorderThickness="1" Background="{Binding PersonAddressState, Converter={StaticResource PersonAddressStateToBackgroundBrushConverter}}">
+            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonAddressCommand}" Content="Добавить" Margin="5" Background="White"/>
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного адреса. Чтобы создать адрес, нажмите кнопку 'Добавить'" Foreground="Gray" Background="Aqua"
+                                           Visibility="{Binding PersonAddressesHasNoItems, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ScrollViewer MinHeight="100" MaxHeight="750" VerticalScrollBarVisibility="Auto">
+                <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding PersonAddresses}" Margin="5">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto" />
@@ -75,8 +77,13 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Button  Grid.Row="0" Grid.Column="6" Margin="2" Content="x" Background="White" Height="auto" Padding="2" HorizontalAlignment="Right" 
-                                 Command="{Binding DataContext.DeletePersonAddressCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" FontSize="14" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding PersonAddressStateString, Mode=OneWay}" 
+                                       Foreground="{Binding PersonAddressState, Converter={StaticResource PersonAddressStateToBackgroundBrushConverter}}"/>
+
+                                <Button  Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" Background="White" BorderThickness="0" ToolTip="Удалить адрес"
+                                 Command="{Binding DataContext.DeletePersonAddressCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
+                                    <Image Source="pack://application:,,,/Resources;component/Images/Delete24x24.png"  Width="16" Height="16"/>
+                                </Button>
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Вид адреса" />
                                 <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6" Margin="2" ItemsSource="{Binding DataContext.ListAddressTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
@@ -129,10 +136,10 @@
 
                                 <CheckBox Grid.Row="10" Grid.Column="4" Grid.ColumnSpan="2" Margin="2" HorizontalAlignment="Stretch" Content="Бессрочно" BorderThickness="1" IsChecked="{Binding WithoutEndDate}"/>
                             </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </DockPanel>
         <!--</Window>-->
     </DataTemplate>

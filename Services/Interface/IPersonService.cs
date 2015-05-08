@@ -19,6 +19,8 @@ namespace Core
 
         ICollection<InsuranceDocument> GetInsuranceDocuments(int personId);
 
+        ICollection<PersonIdentityDocument> GetPersonIdentityDocuments(int personId);
+
         ICollection<PersonAddress> GetPersonAddresses(int personId);
 
         ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes();
@@ -36,6 +38,12 @@ namespace Core
         ICollection<AddressType> GetAddressTypes();
 
         AddressType GetAddressType(int id);
+
+        ICollection<IdentityDocumentType> GetIdentityDocumentTypes();
+
+        IdentityDocumentType GetIdentityDocumentType(int id);
+
+        ICollection<string> GetGivenOrgByName(string name);
 
         //ToDo: Move to other service
         Okato GetOKATOByCode(string codeOKATO);

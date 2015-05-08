@@ -213,6 +213,13 @@
           <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
         </EntityType>
+        <EntityType Name="IdentityDocumentTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
         <EntityType Name="InsuranceCompanies">
           <Key>
             <PropertyRef Name="Id" />
@@ -308,6 +315,19 @@
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="Building" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Apartment" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PersonIdentityDocuments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="IdentityDocumentTypeId" Type="int" Nullable="false" />
+          <Property Name="Series" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Number" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="GivenOrg" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="BeginDate" Type="datetime" Nullable="false" />
+          <Property Name="EndDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonNames">
           <Key>
@@ -945,6 +965,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PersonIdentityDocuments_IdentityDocumentTypes">
+          <End Role="IdentityDocumentTypes" Type="Self.IdentityDocumentTypes" Multiplicity="1" />
+          <End Role="PersonIdentityDocuments" Type="Self.PersonIdentityDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IdentityDocumentTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonIdentityDocuments">
+              <PropertyRef Name="IdentityDocumentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonIdentityDocuments_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonIdentityDocuments" Type="Self.PersonIdentityDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonIdentityDocuments">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonNames_ChangeNameReasons">
           <End Role="ChangeNameReasons" Type="Self.ChangeNameReasons" Multiplicity="0..1" />
           <End Role="PersonNames" Type="Self.PersonNames" Multiplicity="*" />
@@ -1276,6 +1320,7 @@
           <EntitySet Name="Decisions" EntityType="Self.Decisions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinacingSources" EntityType="Self.FinacingSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IdentityDocumentTypes" EntityType="Self.IdentityDocumentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceCompanies" EntityType="Self.InsuranceCompanies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceDocuments" EntityType="Self.InsuranceDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceDocumentTypes" EntityType="Self.InsuranceDocumentTypes" Schema="dbo" store:Type="Tables" />
@@ -1284,6 +1329,7 @@
           <EntitySet Name="PermissionLinks" EntityType="Self.PermissionLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonAddresses" EntityType="Self.PersonAddresses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonIdentityDocuments" EntityType="Self.PersonIdentityDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonRelatives" EntityType="Self.PersonRelatives" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
@@ -1447,6 +1493,14 @@
           <AssociationSet Name="FK_PersonAddresses_AddressTypes" Association="Self.FK_PersonAddresses_AddressTypes">
             <End Role="AddressTypes" EntitySet="AddressTypes" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonIdentityDocuments_IdentityDocumentTypes" Association="Self.FK_PersonIdentityDocuments_IdentityDocumentTypes">
+            <End Role="IdentityDocumentTypes" EntitySet="IdentityDocumentTypes" />
+            <End Role="PersonIdentityDocuments" EntitySet="PersonIdentityDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonIdentityDocuments_Persons" Association="Self.FK_PersonIdentityDocuments_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonIdentityDocuments" EntitySet="PersonIdentityDocuments" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonNames_ChangeNameReasons" Association="Self.FK_PersonNames_ChangeNameReasons">
             <End Role="ChangeNameReasons" EntitySet="ChangeNameReasons" />
@@ -1852,6 +1906,16 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Assignment" EntitySet="Assignments" />
           </AssociationSet>
+          <EntitySet Name="IdentityDocumentTypes" EntityType="DataLib.IdentityDocumentType" />
+          <EntitySet Name="PersonIdentityDocuments" EntityType="DataLib.PersonIdentityDocument" />
+          <AssociationSet Name="FK_PersonIdentityDocuments_IdentityDocumentTypes" Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes">
+            <End Role="IdentityDocumentType" EntitySet="IdentityDocumentTypes" />
+            <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonIdentityDocuments_Persons" Association="DataLib.FK_PersonIdentityDocuments_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="PersonName">
           <Key>
@@ -1892,6 +1956,7 @@
           <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_Addresses_Persons" FromRole="Person" ToRole="PersonAddress" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
+          <NavigationProperty Name="PersonIdentityDocuments" Relationship="DataLib.FK_PersonIdentityDocuments_Persons" FromRole="Person" ToRole="PersonIdentityDocument" />
         </EntityType>
         <Association Name="FK_PersonNames_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
@@ -3231,6 +3296,53 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="IdentityDocumentType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonIdentityDocuments" Relationship="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" FromRole="IdentityDocumentType" ToRole="PersonIdentityDocument" />
+        </EntityType>
+        <EntityType Name="PersonIdentityDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="IdentityDocumentTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Series" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Number" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GivenOrg" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="IdentityDocumentType" Relationship="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" FromRole="PersonIdentityDocument" ToRole="IdentityDocumentType" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonIdentityDocuments_Persons" FromRole="PersonIdentityDocument" ToRole="Person" />
+        </EntityType>
+        <Association Name="FK_PersonIdentityDocuments_IdentityDocumentTypes">
+          <End Type="DataLib.IdentityDocumentType" Role="IdentityDocumentType" Multiplicity="1" />
+          <End Type="DataLib.PersonIdentityDocument" Role="PersonIdentityDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IdentityDocumentType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonIdentityDocument">
+              <PropertyRef Name="IdentityDocumentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonIdentityDocuments_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonIdentityDocument" Role="PersonIdentityDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonIdentityDocument">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3769,6 +3881,28 @@
                 <ScalarProperty Name="AssignDateTime" ColumnName="AssignDateTime" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IdentityDocumentTypes">
+            <EntityTypeMapping TypeName="DataLib.IdentityDocumentType">
+              <MappingFragment StoreEntitySet="IdentityDocumentTypes">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonIdentityDocuments">
+            <EntityTypeMapping TypeName="DataLib.PersonIdentityDocument">
+              <MappingFragment StoreEntitySet="PersonIdentityDocuments">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="GivenOrg" ColumnName="GivenOrg" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="Series" ColumnName="Series" />
+                <ScalarProperty Name="IdentityDocumentTypeId" ColumnName="IdentityDocumentTypeId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

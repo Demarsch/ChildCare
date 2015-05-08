@@ -40,6 +40,7 @@ namespace MainLib
             SaveChangesCommand = new RelayCommand(SaveChanges);
             EditInsuranceCommand = new RelayCommand(EditInsurance);
             EditPersonAddressCommand = new RelayCommand(EditPersonAddress);
+            EditPersonIdentityDocumentsCommand = new RelayCommand(EditPersonIdentityDocuments);
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetChangeNameReasons());
             Genders = new ObservableCollection<Gender>(service.GetGenders());
 
@@ -252,6 +253,18 @@ namespace MainLib
             if (dialogResult != true)
                 personAddressesViewModel = new PersonAddressesViewModel(Id, service, dialogService);
             Addresses = personAddressesViewModel.PersonAddressesString;
+        }
+
+        public ICommand EditPersonIdentityDocumentsCommand { get; set; }
+        private PersonIdentityDocumentsViewModel personIdentityDocumentsViewModel = null;
+        private void EditPersonIdentityDocuments()
+        {
+            if (personIdentityDocumentsViewModel == null)
+                personIdentityDocumentsViewModel = new PersonIdentityDocumentsViewModel(Id, service, dialogService);
+            var dialogResult = dialogService.ShowDialog(personIdentityDocumentsViewModel);
+            if (dialogResult != true)
+                personIdentityDocumentsViewModel = new PersonIdentityDocumentsViewModel(Id, service, dialogService);
+            IdentityDocuments = personIdentityDocumentsViewModel.PersonIdentityDocumentsString;
         }
 
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();
@@ -486,16 +499,16 @@ namespace MainLib
             }
         }
 
-        private string identityDocument = string.Empty;
-        public string IdentityDocument
+        private string identityDocuments = string.Empty;
+        public string IdentityDocuments
         {
             get
             {
-                return identityDocument;
+                return identityDocuments;
             }
             set
             {
-                Set("IdentityDocument", ref identityDocument, value);
+                Set("IdentityDocuments", ref identityDocuments, value);
             }
         }
 

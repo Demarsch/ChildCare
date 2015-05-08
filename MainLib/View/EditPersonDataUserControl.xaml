@@ -49,6 +49,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Личные данные</Label>
@@ -100,7 +101,8 @@
                  MouseDoubleClick="{mvvm:EventBinding EditPersonAddressCommand}"/>
 
         <Label Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Удостоверение личности</Label>
-        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding IdentityDocument}"/>
+        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding IdentityDocuments}"
+                  MouseDoubleClick="{mvvm:EventBinding EditPersonIdentityDocumentsCommand}"/>
 
         <Label Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Инвалидость</Label>
         <TextBox Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" />
@@ -111,8 +113,11 @@
         <Label Grid.Row="18" Grid.Column="0" FontWeight="Bold">Группа здоровья</Label>
         <ComboBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
 
-        <TextBlock Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
-        <StackPanel  Grid.Row="20" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
+        <Label Grid.Row="19" Grid.Column="0" FontWeight="Bold">Гражданство</Label>
+        <ComboBox Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
+
+        <TextBlock Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
+        <StackPanel  Grid.Row="21" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
             <Button Background="Transparent"  Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}"/>
             <Button Background="Transparent"  Margin="3"  Height="24" Padding="3" Content="Отмена" />
         </StackPanel>
