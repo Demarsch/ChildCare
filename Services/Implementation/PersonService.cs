@@ -9,78 +9,68 @@ namespace Core
 {
     public class PersonService : IPersonService
     {
-        private IDataAccessLayer data;
+        private IDataContextProvider provider;
 
-        public PersonService(ISimpleLocator serviceLocator)
+        public PersonService(IDataContextProvider Provider)
         {
-            data = serviceLocator.Instance<IDataAccessLayer>();
+            provider = Provider;
         }
 
-        public Person PersonById(int Id)
+        public Person GetPersonById(int Id)
         {
-            return data.Cache<Person>(Id);
-        }
-
-        public Person GetPersonInfoes(int id, DateTime toDate)
-        {
-            return data.First<Person>(x => x.Id == id, x => x.PersonRelatives, x => x.InsuranceDocuments, x => x.InsuranceDocuments.Select(y => y.InsuranceCompany), x => x.InsuranceDocuments.Select(y => y.InsuranceDocumentType),
-                x => x.PersonNames, x => x.Gender);
-        }
-
-        public string SetPersonInfoes(Person person, List<PersonName> personNames)
-        {
-            try
+            using (var db = provider.GetNewDataContext())
             {
-                data.Save<Person>(person);
-                foreach (var personName in personNames)
-                    personName.PersonId = person.Id;
-                data.Save<PersonName>(personNames.ToArray());
+                return db.GetById<Person>(Id);
             }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-            return string.Empty;
         }
 
         public ICollection<PersonRelative> GetPersonRelatives(int personId)
         {
-            return data.Get<PersonRelative>(x => x.PersonId == personId, x => x.RelativeRelationship, x => x.Person1);
-            //.Select(x => new PersonRelativeDTO()
-            //{
-            //    RelativePersonId = x.RelativeId,
-            //    ShortName = x.Person1.ShortName,
-            //    RelativeRelationName = x.RelativeRelationship.Name,
-            //    IsRepresentative = x.IsRepresentative
-            //}).ToList());
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonRelative>().Where(x => x.PersonId == personId).ToArray();
+            }
         }
 
         public ICollection<InsuranceDocument> GetInsuranceDocuments(int personId)
         {
-            return data.Get<InsuranceDocument>(x => x.PersonId == personId, x => x.InsuranceCompany, x => x.InsuranceDocumentType);
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<InsuranceDocument>().Where(x => x.PersonId == personId).ToArray();
+            }
         }
 
         public ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes()
         {
-            return data.Get<InsuranceDocumentType>();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetAll<InsuranceDocumentType>();
+            }
         }
-
-
-        public ICollection<ChangeNameReason> GetChangeNameReasons()
+        
+        public ICollection<ChangeNameReason> GetActualChangeNameReasons()
         {
-            var DateTimeNow = DateTime.Now;
-            return data.Get<ChangeNameReason>().Where(x => DateTimeNow >= x.BeginDateTime && DateTimeNow < x.EndDateTime).ToList();
+            using (var db = provider.GetNewDataContext())
+            {
+                var DateTimeNow = DateTime.Now;
+                return db.GetData<ChangeNameReason>().Where(x => DateTimeNow >= x.BeginDateTime && DateTimeNow < x.EndDateTime).ToArray();
+            }
         }
-
 
         public ICollection<Gender> GetGenders()
         {
-            return data.Get<Gender>();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetAll<Gender>();
+            }
         }
 
         public ICollection<Person> GetPersonsByFullName(string fullName)
         {
-            return data.Get<Person>().Where(x => x.FullName.ToLower().Trim() == fullName.ToLower().Trim()).ToList();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Person>().Where(x => x.FullName.ToLower().Trim() == fullName.ToLower().Trim()).ToArray();
+            }
         }
     }
 }

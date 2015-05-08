@@ -9,11 +9,7 @@ namespace Core
 {
     public interface IPersonService
     {
-        Person PersonById(int Id);
-
-        Person GetPersonInfoes(int id, DateTime toDate);
-
-        string SetPersonInfoes(Person person, List<PersonName> personNames);
+        Person GetPersonById(int Id);
 
         ICollection<PersonRelative> GetPersonRelatives(int personId);
 
@@ -21,7 +17,7 @@ namespace Core
 
         ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes();
 
-        ICollection<ChangeNameReason> GetChangeNameReasons();
+        ICollection<ChangeNameReason> GetActualChangeNameReasons();
 
         ICollection<Gender> GetGenders();
 

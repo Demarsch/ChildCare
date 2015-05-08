@@ -20,9 +20,9 @@ namespace DataLib
             this.Assignments1 = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
             this.UserPermissions = new HashSet<UserPermission>();
-            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.UserMessages = new HashSet<UserMessage>();
             this.UserMessages1 = new HashSet<UserMessage>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
         public int Id { get; set; }
@@ -36,8 +36,8 @@ namespace DataLib
         public virtual ICollection<Assignment> Assignments1 { get; set; }
         public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<UserPermission> UserPermissions { get; set; }
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual ICollection<UserMessage> UserMessages { get; set; }
         public virtual ICollection<UserMessage> UserMessages1 { get; set; }
+        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
     }
 }

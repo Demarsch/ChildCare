@@ -26,6 +26,7 @@ namespace DataLib
         public string MKB { get; set; }
         public int RecordContractId { get; set; }
         public Nullable<int> MedicalHelpTypeId { get; set; }
+        public string Address { get; set; }
     
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual MedicalHelpType MedicalHelpType { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -502,6 +503,41 @@ namespace Core
             return query.Any(resultEx);
         }
 
+        #endregion
+
+        #region Методы расширения для класса BackgroundWorker
+
+        public static void Setup(this BackgroundWorker worker, bool reportProgress = true, bool supportCancelation = true)
+        {
+            worker.WorkerSupportsCancellation = supportCancelation;
+            worker.WorkerReportsProgress = reportProgress;
+        }
+
+        public static void WaitForComplete(this BackgroundWorker worker)
+        {
+            while (worker.IsBusy) System.Threading.Thread.Sleep(100);
+        }
+        
+        public static void WaitForAbort(this BackgroundWorker worker)
+        {
+            if (worker.WorkerSupportsCancellation) worker.CancelAsync();
+            while (worker.IsBusy) System.Threading.Thread.Sleep(100);
+        }
+
+        public static void WaitForRestart(this BackgroundWorker worker)
+        {
+            if (worker.WorkerSupportsCancellation) worker.CancelAsync();
+            while (worker.IsBusy) System.Threading.Thread.Sleep(100);
+            worker.RunWorkerAsync();
+        }
+
+        public static void WaitForRestart(this BackgroundWorker worker, object argument)
+        {
+            if (worker.WorkerSupportsCancellation) worker.CancelAsync();
+            while (worker.IsBusy) System.Threading.Thread.Sleep(100);
+            worker.RunWorkerAsync(argument);
+        }
+        
         #endregion
 
         #region Методы расширений для класса Comparer

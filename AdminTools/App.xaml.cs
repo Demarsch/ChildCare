@@ -17,12 +17,25 @@ namespace AdminTools
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var mainService = new MainServiceLocator();
 
-            var mainViewModel = new MainWindowViewModel(mainService);
-            var mainWindow = new MainWindow { DataContext = mainViewModel };
-            MainWindow = mainWindow;
-            mainWindow.Show();
+            var Container = MainContainerProvider.GetContainer();
+
+            Container.RegisterSingle<IDataContextProvider, ModelContextProvider>();
+            Container.RegisterSingle<IUserSystemInfoService, ADUserSystemInfoService>();
+            Container.RegisterSingle<IUserService, UserService>();
+            Container.RegisterSingle<IPermissionService, PermissionService>();
+            Container.RegisterSingle<ILog>(new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)));
+
+            Container.Register<MainWindowViewModel>();
+            Container.Register<PermissionViewModel>();
+            Container.Register<PermissionsTreeViewModel>();
+            Container.Register<UserAccountViewModel>();
+            Container.Register<UserEditorViewModel>();
+            Container.Register<UserManagerViewModel>();
+            Container.Register<UserViewModel>();
+
+            MainWindow = new MainWindow { DataContext = Container.GetInstance<MainWindowViewModel>() };
+            MainWindow.Show();
         }
     }
 }

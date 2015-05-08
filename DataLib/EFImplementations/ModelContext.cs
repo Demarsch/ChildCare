@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Core;
 using System.Data.Entity;
+using System.Collections.Generic;
 
 namespace DataLib
 {
@@ -16,19 +17,39 @@ namespace DataLib
             return Set<TData>();
         }
 
-        public void SetState<TData>(TData obj, DataContextItemState state) where TData : class
+        public TData GetById<TData>(int id) where TData : class
         {
-            Entry(obj).State = (state == DataContextItemState.Add) ? EntityState.Added : (state == DataContextItemState.Delete ? EntityState.Deleted : (state == DataContextItemState.Update ? EntityState.Modified : EntityState.Unchanged));
+            return Set<TData>().ById(id);
         }
 
-        public void Save()
+        public ICollection<TData> GetAll<TData>() where TData : class
         {
-            SaveChanges();
+            return Set<TData>().ToArray();
         }
 
         public void Add<TData>(TData obj) where TData : class
         {
             this.Set<TData>().Add(obj);
+        }
+
+        public void AddRange<TData>(IEnumerable<TData> objs) where TData : class
+        {
+            this.Set<TData>().AddRange(objs);
+        }
+
+        public void Remove<TData>(TData obj) where TData : class
+        {
+            this.Set<TData>().Remove(obj);
+        }
+
+        public void RemoveRange<TData>(IEnumerable<TData> objs) where TData : class
+        {
+            this.Set<TData>().RemoveRange(objs);
+        }
+
+        public void Save()
+        {
+            SaveChanges();
         }
     }
 }

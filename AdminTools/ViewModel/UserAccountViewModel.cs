@@ -19,13 +19,18 @@ namespace AdminTools.ViewModel
 {
     class UserAccountViewModel : ObservableObject
     {
-        private readonly ISimpleLocator service;
-        
-        public UserAccountViewModel(ISimpleLocator service)
-        {            
-            if (service == null)
-                throw new ArgumentNullException("service");
-            this.service = service;
+        private IUserService userService;
+        private IUserSystemInfoService userSystemInfoService;
+        private ILog log;
+        private IPersonService personService;
+
+        public UserAccountViewModel(IUserService userService, IUserSystemInfoService userSystemInfoService, ILog log, IPersonService personService)
+        {
+            this.userService = userService; 
+            this.userSystemInfoService = userSystemInfoService;
+            this.log = log;
+            this.personService = personService;
+            
             this.SearchInActiveDirectoryCommand = new RelayCommand(SearchInActiveDirectory);
             this.SynchPersonCommand = new RelayCommand<object>(SynchPerson);
             this.SelectPersonCommand = new RelayCommand<object>(SelectPerson);
@@ -33,11 +38,6 @@ namespace AdminTools.ViewModel
             IsSearching = false;
             IsSearchSuccessful = false;
             SearchLabel = string.Empty;
-        }
-
-        public UserAccountViewModel(ISimpleLocator service, ILog log, int userId)
-            : this(service)
-        {
         }
 
         private string searchString = string.Empty;
@@ -172,7 +172,7 @@ namespace AdminTools.ViewModel
             {
                 IsSearching = true;
                 SearchLabel = "Идет поиск ...";
-                UsersAD = new ObservableCollection<UserSystemInfoDTO>(service.Instance<IUserSystemInfoService>().Find(SearchString)
+                UsersAD = new ObservableCollection<UserSystemInfoDTO>(userSystemInfoService.Find(SearchString)
                           .Select(x => new UserSystemInfoDTO() { UserName = x.UserName, SID = x.SID, PrincipalName = x.PrincipalName, Enabled = x.Enabled, Persons = GetPersonsFromMIS(x.UserName), 
                               PhotoSource = "pack://application:,,,/Resources;component/Images/Refresh_16x16.png"}).ToArray());  
             }
@@ -180,7 +180,7 @@ namespace AdminTools.ViewModel
             {
                 var innerException = ex.InnerExceptions[0];
                 MessageBox.Show("В процессе поиска учетной записи произошла ошибка. Возможно отсутствует доступ к Active Directory. Обратитесь в службу поддержки");
-                this.service.Instance<ILog>().Error(string.Format("Failed to find user in Active Directory"), innerException);                
+                log.Error(string.Format("Failed to find user in Active Directory"), innerException);                
             }
             finally
             {
@@ -201,7 +201,7 @@ namespace AdminTools.ViewModel
         private ICollection<Person> GetPersonsFromMIS(string personFullName)
         {
             //return service.Instance<IPatientService>().GetPatients(personFullName);
-            return service.Instance<IPersonService>().GetPersonsByFullName(personFullName);
+            return personService.GetPersonsByFullName(personFullName);
         }
 
         private void SynchPerson(object parameter)
@@ -236,16 +236,16 @@ namespace AdminTools.ViewModel
             EditPersonViewModel personViewModel = null;
 
             if (personId == null)
-                personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>());
+                personViewModel = new EditPersonViewModel(log, personService);
             else
             {
-                var existingUser = this.service.Instance<IUserService>().GetUserByPersonId(personId.ToInt());
+                var existingUser = userService.GetUserByPersonId(personId.ToInt());
                 if (existingUser != null)
                 {
                     MessageBox.Show("Выбранная учетная запись уже закреплена за пользователем: " + existingUser.Person.FullName);
                     return;
                 }
-                personViewModel = new EditPersonViewModel(this.service.Instance<ILog>(), this.service.Instance<IPersonService>(), personId.ToInt());
+                personViewModel = new EditPersonViewModel(log, personService, personId.ToInt());
             }               
 
             (new EditPersonView() { DataContext = personViewModel }).ShowDialog();
@@ -253,7 +253,7 @@ namespace AdminTools.ViewModel
             //TODO: change Save verification
             if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
            
-            User user = this.service.Instance<IUserService>().GetUserByPersonId(personViewModel.Id);
+            User user = userService.GetUserByPersonId(personViewModel.Id);
             if (user == null)
             {
                 user = new User();
@@ -263,12 +263,12 @@ namespace AdminTools.ViewModel
                 user.EndDateTime = user.BeginDateTime;
 
                 string message = string.Empty;
-                if (this.service.Instance<IUserService>().Save(user, out message))
+                if (userService.Save(user, out message))
                     MessageBox.Show("Данные сохранены");
                 else
                 {
                     MessageBox.Show("При сохранении возникла ошибка: " + message);
-                    this.service.Instance<ILog>().Error(string.Format("Failed to Save user. " + message));
+                    log.Error(string.Format("Failed to Save user. " + message));
                 }
 
                 CurrentUser = new UserViewModel(user);

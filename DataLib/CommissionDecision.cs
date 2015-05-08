@@ -25,7 +25,7 @@ namespace DataLib
         public Nullable<System.DateTime> DecisionInDateTime { get; set; }
     
         public virtual CommissionMember CommissionMember { get; set; }
-        public virtual CommissionProtocol CommissionProtocol { get; set; }
         public virtual Decision Decision { get; set; }
+        public virtual CommissionProtocol CommissionProtocol { get; set; }
     }
 }

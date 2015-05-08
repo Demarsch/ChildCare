@@ -49,7 +49,6 @@ namespace DataLib
         public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
         public virtual DbSet<CommissionMemberType> CommissionMemberTypes { get; set; }
         public virtual DbSet<CommissionProtocolMember> CommissionProtocolMembers { get; set; }
-        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
         public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
@@ -58,9 +57,10 @@ namespace DataLib
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<FinacingSource> FinacingSources { get; set; }
         public virtual DbSet<MedicalHelpType> MedicalHelpTypes { get; set; }
-        public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
+        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual DbSet<PersonTalon> PersonTalons { get; set; }
     }
 }

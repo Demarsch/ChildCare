@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Core
@@ -7,12 +8,19 @@ namespace Core
     {
         IQueryable<TData> GetData<TData>() where TData : class;
 
-        void SetState<TData>(TData obj, DataContextItemState state) where TData : class;
+        TData GetById<TData>(int id) where TData : class;
+
+        ICollection<TData> GetAll<TData>() where TData : class;
+        
+        void Add<TData>(TData obj) where TData : class;
+
+        void AddRange<TData>(IEnumerable<TData> objs) where TData : class;
+        
+        void Remove<TData>(TData obj) where TData : class;
+
+        void RemoveRange<TData>(IEnumerable<TData> objs) where TData : class;
 
         void Save();
 
-        void Add<TData>(TData obj) where TData : class;
     }
-
-    public enum DataContextItemState { Add, Update, Delete, None }
 }

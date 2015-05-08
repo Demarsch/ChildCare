@@ -34,7 +34,7 @@ namespace MainLib
             this.log = log;
             SaveChangesCommand = new RelayCommand(SaveChanges);
             EditInsuranceCommand = new RelayCommand(EditInsurance);
-            ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetChangeNameReasons());
+            ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetActualChangeNameReasons());
             Genders = new ObservableCollection<Gender>(service.GetGenders());
         }
 
@@ -107,7 +107,7 @@ namespace MainLib
         private void GetPersonDataAsync()
         {
             var dateTimeNow = DateTime.Now;
-            person = service.GetPersonInfoes(id, dateTimeNow);
+            person = service.GetPersonById(id);
             personName = person.PersonNames.FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
         }
 
@@ -184,11 +184,11 @@ namespace MainLib
             person.ShortName = LastName + " " +  FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
             person.FullName = LastName + " " + FirstName + " " + MiddleName;
 
-            var res = service.SetPersonInfoes(person, personNames);
+            /*var res = service.SetPersonInfoes(person, personNames);
             if (res == string.Empty)
                 TextMessage = "Данные сохранены";
             else
-                TextMessage = "Ошибка! " + res;
+                TextMessage = "Ошибка! " + res;*/
         }
 
         public ICommand EditInsuranceCommand { get; set; }

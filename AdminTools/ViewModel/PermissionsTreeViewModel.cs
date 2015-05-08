@@ -52,8 +52,6 @@ namespace AdminTools.ViewModel
             }
         }
 
-        private readonly ISimpleLocator service;
-
         private IEnumerator<PermissionViewModel> matchingPermissionsEnumerator;
         private string searchText = String.Empty;
 
@@ -61,15 +59,15 @@ namespace AdminTools.ViewModel
              
         #region Constructor
 
-        public PermissionsTreeViewModel(ISimpleLocator service)
+        private IPermissionService permissionService;
+
+        public PermissionsTreeViewModel(IPermissionService permissionService)
         {
-            if (service == null)
-                throw new ArgumentNullException("permissionService");
-            this.service = service;
+            this.permissionService = permissionService;
             
             permissionRoots = new ObservableCollection<PermissionViewModel>();
-            foreach (var item in service.Instance<IPermissionService>().GetRootPermissions())
-                permissionRoots.Add(new PermissionViewModel(service, item));	        
+            foreach (var item in permissionService.GetRootPermissions())
+                permissionRoots.Add(new PermissionViewModel(permissionService, item));	        
 
             this.SearchPermissionCommand = new RelayCommand(this.SearchPermission);
             this.DeletePermissionCommand = new RelayCommand<object>(DeletePermission);

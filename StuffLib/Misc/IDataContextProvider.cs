@@ -5,7 +5,5 @@
         IDataContext StaticDataContext { get; }
 
         IDataContext GetNewDataContext();
-
-        IDataContext GetNewLiteDataContext();
     }
 }

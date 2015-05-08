@@ -17,7 +17,6 @@ namespace AdminTools.ViewModel
     {
         #region UserData
 
-        private readonly ISimpleLocator service;
         private ObservableCollection<UserViewModel> users;
         public RelayCommand SearchUserCommand { get; private set; }
         private string searchText = String.Empty;
@@ -26,13 +25,20 @@ namespace AdminTools.ViewModel
 
         #region Constructor
 
-        public UserEditorViewModel(ISimpleLocator service)
-        {
-            if (service == null)
-                throw new ArgumentNullException("userService");
-            this.service = service;
+        private IUserService userService;
+        private IUserSystemInfoService userSystemInfoService;
+        private IPersonService personService;
+        private UserAccountViewModel userAccountViewModel;
 
-            users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllActiveUsers(DateTime.Now).Select(x => new UserViewModel(x)).ToArray());
+        public UserEditorViewModel(IUserService userService, IUserSystemInfoService userSystemInfoService,
+            IPersonService personService, UserAccountViewModel userAccountViewModel)
+        {
+            this.userService = userService;
+            this.userSystemInfoService = userSystemInfoService;
+            this.personService = personService;
+            this.userAccountViewModel = userAccountViewModel;
+
+            users = new ObservableCollection<UserViewModel>(userService.GetAllActiveUsers(DateTime.Now).Select(x => new UserViewModel(x)).ToArray());
             
             this.EditUserCommand = new RelayCommand<object>(EditUser);
             this.SearchUserCommand = new RelayCommand(this.SearchUser);
@@ -85,7 +91,7 @@ namespace AdminTools.ViewModel
 
         private void NewUser()
         {
-            (new UserAccountView() { DataContext = new UserAccountViewModel(this.service) }).ShowDialog();            
+            (new UserAccountView() { DataContext = userAccountViewModel }).ShowDialog();            
             /*
             MessageBox.Show(
                         "Создание учетной записи пользователя. ",
@@ -106,9 +112,9 @@ namespace AdminTools.ViewModel
         private void SearchUserAsync()
         {         
             if (searchText == string.Empty)
-                Users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllUsers().Select(x => new UserViewModel(x)).ToArray());
+                Users = new ObservableCollection<UserViewModel>(userService.GetAllUsers().Select(x => new UserViewModel(x)).ToArray());
             else if (searchText.Length >= 3)
-                Users = new ObservableCollection<UserViewModel>(service.Instance<IUserService>().GetAllUsers(searchText).Select(x => new UserViewModel(x)).ToArray());
+                Users = new ObservableCollection<UserViewModel>(userService.GetAllUsers(searchText).Select(x => new UserViewModel(x)).ToArray());
             else
             {
                 MessageBox.Show(

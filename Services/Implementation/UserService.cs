@@ -10,11 +10,11 @@ namespace Core
 {
     public class UserService : IUserService
     {
-        private IDataAccessLayer data;
+        private IDataContextProvider provider;
 
-        public UserService(ISimpleLocator serviceLocator)
+        public UserService(IDataContextProvider Provider)
         {
-            data = serviceLocator.Instance<IDataAccessLayer>();
+            provider = Provider;
         }
 
         public bool Save(User user, out string msg)
@@ -22,9 +22,17 @@ namespace Core
             string exception = string.Empty;
             try
             {
-                data.Save<User>(user);
-                msg = exception;
-                return true;
+                using (var db = provider.GetNewDataContext())
+                {
+                    var dbuser = user.Id > 0 ? db.GetById<User>(user.Id) : new User();
+                    dbuser.PersonId = user.PersonId;
+                    dbuser.SID = user.SID;
+                    dbuser.BeginDateTime = user.BeginDateTime;
+                    dbuser.EndDateTime = user.EndDateTime;
+                    db.Save();
+                    msg = exception;
+                    return true;
+                }
             }
             catch (Exception ex)
             {
@@ -35,32 +43,50 @@ namespace Core
 
         public User GetUserById(int id)
         {
-            return data.Cache<User>(id);
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetById<User>(id);
+            }
         }
 
         public User GetUserByPersonId(int personId)
         {
-            return data.Get<User>(x => x.PersonId == personId, (x => x.Person)).FirstOrDefault();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<User>().FirstOrDefault(x => x.PersonId == personId);
+            }
         }
 
         public ICollection<User> GetAllUsers()
         {
-            return data.Get<User>(x => true, (x => x.Person)).OrderBy(x => x.Person).ToArray();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<User>().OrderBy(x => x.Person.FullName).ToArray();
+            }
         }
 
         public ICollection<User> GetAllUsers(string byName)
         {
-            return data.Get<User>(x => x.Person.FullName.Contains(byName), (x => x.Person)).OrderBy(x => x.Person.FullName).ToArray();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<User>().Where(x => x.Person.FullName.Contains(byName)).OrderBy(x => x.Person.FullName).ToArray();
+            }
         }
 
         public ICollection<User> GetAllActiveUsers(DateTime from, DateTime to)
         {
-            return data.Get<User>(x => x.BeginDateTime < to && x.EndDateTime > from, (x => x.Person)).OrderBy(x => x.Person.FullName).ToArray();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<User>().Where(x => x.BeginDateTime < to && x.EndDateTime > from).OrderBy(x => x.Person.FullName).ToArray();
+            }
         }
 
         public ICollection<User> GetAllActiveUsers(DateTime onDate)
         {
-            return data.Get<User>(x => x.BeginDateTime <= onDate && (x.BeginDateTime != x.EndDateTime ? x.EndDateTime >= onDate : true), (x => x.Person)).OrderBy(x => x.Person.FullName).ToArray();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<User>().Where(x => x.BeginDateTime <= onDate && (x.BeginDateTime != x.EndDateTime ? x.EndDateTime >= onDate : true)).OrderBy(x => x.Person.FullName).ToArray();
+            }
         }
     }
 }

@@ -53,6 +53,12 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="SimpleInjector">
+      <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Diagnostics">
+      <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -143,7 +149,6 @@
     <Compile Include="Decision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="EFImplementations\ModelAccessLayer.cs" />
     <Compile Include="DBSetting.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

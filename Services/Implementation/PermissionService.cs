@@ -8,26 +8,35 @@ namespace Core
 {
     public class PermissionService : IPermissionService
     {
-        private IDataAccessLayer data;
+        private IDataContextProvider provider;
 
-        public PermissionService(ISimpleLocator serviceLocator)
+        public PermissionService(IDataContextProvider Provider)
         {
-            data = serviceLocator.Instance<IDataAccessLayer>();
+            provider = Provider;
         }
 
         public ICollection<Permission> GetRootPermissions()
         {
-            return data.Get<Permission>(x => !x.PermissionLinks1.Any()).ToArray();           
+            using(var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Permission>().Where(x => !x.PermissionLinks1.Any()).ToArray();
+            }
         }
 
         public Permission GetPermissionById(int id)
         {
-            return data.Cache<Permission>(id);
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetById<Permission>(id);
+            }
         }
 
         public ICollection<Permission> GetChildren(int parentId)
         {
-            return data.Get<PermissionLink>(x => x.ParentId == parentId, x => x.Permission1).Select(x => x.Permission1).ToArray();
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PermissionLink>().Where(x => x.ParentId == parentId).Select(x => x.Permission1).ToArray();
+            }
         }
     }
 }

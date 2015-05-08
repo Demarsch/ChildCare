@@ -25,6 +25,16 @@ namespace TestCore
             return data.TryGetValue(typeof(TData), out result) ? (result as ICollection<TData>).AsQueryable() : new TData[0].AsQueryable();
         }
 
+        public TData GetById<TData>(int id) where TData : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<TData> GetAll<TData>() where TData : class
+        {
+            throw new NotImplementedException();
+        }
+
         public void Save()
         {
             throw new NotImplementedException();
@@ -35,7 +45,17 @@ namespace TestCore
             throw new NotImplementedException();
         }
 
-        public void SetState<TData>(TData obj, DataContextItemState state) where TData : class
+        public void AddRange<TData>(IEnumerable<TData> obj) where TData : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove<TData>(TData obj) where TData : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveRange<TData>(IEnumerable<TData> obj) where TData : class
         {
             throw new NotImplementedException();
         }

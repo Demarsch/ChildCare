@@ -24,25 +24,31 @@ namespace DataLib
         public int PersonId { get; set; }
         public int CommissionTypeId { get; set; }
         public Nullable<int> DecisionId { get; set; }
-        public Nullable<int> DocumentNumber { get; set; }
-        public Nullable<System.DateTime> DocumentDate { get; set; }
+        public int ProtocolNumber { get; set; }
+        public System.DateTime ProtocolDate { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
+        public bool IsExecuting { get; set; }
+        public System.DateTime IncomeDateTime { get; set; }
+        public Nullable<System.DateTime> BeginDateTime { get; set; }
+        public Nullable<System.DateTime> CompleteDateTime { get; set; }
+        public Nullable<System.DateTime> OutcomeDateTime { get; set; }
+        public Nullable<System.DateTime> ToDoDateTime { get; set; }
         public string Comment { get; set; }
         public string MKB { get; set; }
-        public Nullable<int> InUserId { get; set; }
-        public Nullable<System.DateTime> DecisionDate { get; set; }
+        public int InUserId { get; set; }
         public int CommissionSourceId { get; set; }
         public int CommissionQuestionId { get; set; }
         public Nullable<int> PersonTalonId { get; set; }
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public Nullable<int> RecordContractId { get; set; }
+        public string Address { get; set; }
+        public string Diagnos { get; set; }
     
         public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
         public virtual ICollection<CommissionProtocolMember> CommissionProtocolMembers { get; set; }
-        public virtual Person Person { get; set; }
         public virtual CommissionSource CommissionSource { get; set; }
         public virtual MedicalHelpType MedicalHelpType { get; set; }
+        public virtual Person Person { get; set; }
         public virtual PersonTalon PersonTalon { get; set; }
         public virtual RecordContract RecordContract { get; set; }
         public virtual User User { get; set; }

@@ -1,4 +1,4 @@
-﻿<Window
+﻿<Window xmlns:Commission="clr-namespace:Commission" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:local="clr-namespace:Commission"
@@ -9,15 +9,15 @@
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
                     <xcad:LayoutAnchorablePane DockWidth="200" FloatingWidth="200">
-                        <xcad:LayoutAnchorable Title="tool1" CanClose="False" CanHide="False" CanAutoHide="True" CanFloat="False">
-                            <Grid MinWidth="200">
-                                <TextBox>
-                                </TextBox>
-                            </Grid>
+                        <xcad:LayoutAnchorable Title="Список" CanClose="False" CanHide="False" CanAutoHide="True" CanFloat="False">
+                            <DockPanel >
+                                <local:CommissionNavigatorControl DataContext="{Binding Navigator}"/>
+                            </DockPanel>
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPane>
-                        <xcad:LayoutDocument Title="doc1" CanClose="False" CanFloat="False">
+                        <xcad:LayoutDocument Title="Пациент" CanClose="False" CanFloat="False">
+                            <local:CommissionPersonFlowControl DataContext="{Binding PersonFlow}"/>
                         </xcad:LayoutDocument>
                     </xcad:LayoutDocumentPane>
                 </xcad:LayoutPanel>

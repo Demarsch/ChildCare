@@ -17,10 +17,10 @@ namespace AdminTools.ViewModel
     {
         #region Data
 
-        readonly ObservableCollection<PermissionViewModel> children;
-        readonly PermissionViewModel parent;
-        readonly Permission permission;
-        readonly ISimpleLocator service;
+        private ObservableCollection<PermissionViewModel> children;
+        private PermissionViewModel parent;
+        private Permission permission;
+        private IPermissionService permissionService;
 
         bool isExpanded;
         bool isSelected;
@@ -29,19 +29,19 @@ namespace AdminTools.ViewModel
 
         #region Constructors
 
-        public PermissionViewModel(ISimpleLocator service, Permission currentPermission)
-            : this(service, currentPermission, null)
+        public PermissionViewModel(IPermissionService permissionService, Permission currentPermission)
+            : this(permissionService, currentPermission, null)
         {
         }
 
-        private PermissionViewModel(ISimpleLocator service, Permission currentPermission, PermissionViewModel parent)
+        private PermissionViewModel(IPermissionService permissionService, Permission currentPermission, PermissionViewModel parent)
         {
-            this.service = service;
+            this.permissionService = permissionService;
             this.permission = currentPermission;
             this.parent = parent;
 
             children = new ObservableCollection<PermissionViewModel>(
-                       service.Instance<IPermissionService>().GetChildren(currentPermission.Id).Select(x => new PermissionViewModel(this.service, x, this)));
+                       permissionService.GetChildren(currentPermission.Id).Select(x => new PermissionViewModel(permissionService, x, this)));
         }
 
         #endregion // Constructors

@@ -16,8 +16,8 @@ namespace DataLib
     {
         public RecordContract()
         {
-            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.MedicalHelpTypes = new HashSet<MedicalHelpType>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.PersonTalons = new HashSet<PersonTalon>();
         }
     
@@ -26,9 +26,9 @@ namespace DataLib
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual FinacingSource FinacingSource { get; set; }
         public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
+        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual ICollection<PersonTalon> PersonTalons { get; set; }
     }
 }
