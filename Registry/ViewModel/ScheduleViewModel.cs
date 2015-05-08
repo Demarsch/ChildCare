@@ -99,7 +99,7 @@ namespace Registry
                 {
                     room.OpenTime = OpenTime;
                     room.CloseTime = CloseTime;
-                    foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
+                    foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>().Where(x => x != movedAssignment))
                     {
                         occupiedTimeSlot.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                         occupiedTimeSlot.UpdateRequested -= RoomOnAssignmentUpdateRequested;
