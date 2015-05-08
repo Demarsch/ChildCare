@@ -70,7 +70,7 @@ namespace MainLib
             private set
             {
                 if (value.Count < 1)
-                    value.Add(new InsuranceDocumentViewModel(new InsuranceDocument()));
+                    value.Add(new InsuranceDocumentViewModel(new InsuranceDocument(), service));
                 Set("InsuranceDocuments", ref insuranceDocuments, value);
             }
         }
@@ -90,8 +90,7 @@ namespace MainLib
                 MedNumber = person.MedNumber;
                 GenderId = person.GenderId;
                 PhotoURI = person.PhotoUri;
-                Insurance = person.TodayActualInsuranceDocumentStrings;
-                RaisePropertyChanged("InsuranceDocuments");
+                Insurances = service.GetActualInsuranceDocumentsString(Id);
             }
             else
             {
@@ -109,24 +108,6 @@ namespace MainLib
             var task = Task.Factory.StartNew(GetPersonDataAsync);
             await task;
             FillPropertyFromPerson();
-            insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
-            insuranceDocumentViewModel.PropertyChanged += insuranceDocumentViewModel_PropertyChanged;
-        }
-
-        void insuranceDocumentViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "IsChangesAccepted")
-            {
-                if (insuranceDocumentViewModel.IsChangesAccepted.HasValue)
-                {
-                    if (!insuranceDocumentViewModel.IsChangesAccepted.Value)
-                    {
-                        //ToDo: maybe create mo flexible method
-                        insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, service);
-                    }
-                    Insurance = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
-                }
-            }
         }
 
         private void GetPersonDataAsync()
@@ -134,7 +115,7 @@ namespace MainLib
             var dateTimeNow = DateTime.Now;
             person = service.GetPersonById(id);
             if (!IsEmpty)
-                personName = person.PersonNames.FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
+                personName = service.GetActualPersonName(id);
         }
 
         public ICommand SaveChangesCommand { get; private set; }
@@ -237,10 +218,12 @@ namespace MainLib
         private PersonInsuranceDocumentsViewModel insuranceDocumentViewModel;
         private void EditInsurance()
         {
-            //ToDo: USe better solution for using other window
-            insuranceDocumentViewModel.IsChangesAccepted = null;
-            var insuranceDocumentView = new PersonInsuranceDocumentsView() { DataContext = insuranceDocumentViewModel };
-            insuranceDocumentView.ShowDialog();
+            if (insuranceDocumentViewModel == null)
+                insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, log, service, dialogService);
+            var dialogResult = dialogService.ShowDialog(insuranceDocumentViewModel);
+            if (dialogResult != true)
+                insuranceDocumentViewModel = new PersonInsuranceDocumentsViewModel(Id, log, service, dialogService);
+            Insurances = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
         }
 
         public ICommand EditPersonAddressCommand { get; set; }
@@ -345,12 +328,12 @@ namespace MainLib
                 if (val == string.Empty)
                 {
                     //ToDo: make this property connecteted with actual value
-                    switch (person.Gender.ShortName)
+                    switch (GenderId)
                     {
-                        case "муж":
+                        case 1:
                             val = "pack://application:,,,/Resources;component/Images/Man48x48.png";
                             break;
-                        case "жен":
+                        case 2:
                             val = "pack://application:,,,/Resources;component/Images/Woman48x48.png";
                             break;
                         default:
@@ -473,16 +456,16 @@ namespace MainLib
             }
         }
 
-        private string insurance = string.Empty;
-        public string Insurance
+        private string insurances = string.Empty;
+        public string Insurances
         {
             get
             {
-                return insurance;
+                return insurances;
             }
             set
             {
-                Set("Insurance", ref insurance, value);
+                Set("Insurances", ref insurances, value);
             }
         }
 

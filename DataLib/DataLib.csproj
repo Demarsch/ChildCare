@@ -182,7 +182,6 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PartialClasses\InsuranceCompany.cs" />
-    <Compile Include="PartialClasses\InsuranceDocument.cs" />
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="Permission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>

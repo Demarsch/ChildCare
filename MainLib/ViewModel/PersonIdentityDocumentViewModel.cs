@@ -21,7 +21,7 @@ namespace MainLib
 
         #region Constructors
 
-        public PersonIdentityDocumentViewModel(IPersonService service, PersonIdentityDocument personIdentityDocument)
+        public PersonIdentityDocumentViewModel(PersonIdentityDocument personIdentityDocument, IPersonService service)
         {
             if (personIdentityDocument == null)
                 throw new ArgumentNullException("personIdentityDocument");

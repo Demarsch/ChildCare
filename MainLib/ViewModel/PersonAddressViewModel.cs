@@ -21,7 +21,7 @@ namespace MainLib
 
         #region Constructors
 
-        public PersonAddressViewModel(IPersonService service, PersonAddress personAddress)
+        public PersonAddressViewModel(PersonAddress personAddress, IPersonService service)
         {
             if (personAddress == null)
                 throw new ArgumentNullException("personAddress");

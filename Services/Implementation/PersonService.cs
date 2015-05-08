@@ -24,11 +24,18 @@ namespace Core
             }
         }
 
-        public ICollection<PersonRelative> GetPersonRelatives(int personId)
+        public ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId)
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetData<PersonRelative>().Where(x => x.PersonId == personId).ToArray();
+                return db.GetData<PersonRelative>().Where(x => x.PersonId == personId).Select(x => new PersonRelativeDTO
+                    {
+                        RelativePersonId = x.RelativeId,
+                        ShortName = x.Person1.ShortName,
+                        RelativeRelationName = x.RelativeRelationship.Name,
+                        IsRepresentative = x.IsRepresentative,
+                        PhotoUri = string.Empty
+                    }).ToList();
             }
         }
 
@@ -47,7 +54,7 @@ namespace Core
                 return db.GetAll<InsuranceDocumentType>();
             }
         }
-        
+
         public ICollection<ChangeNameReason> GetActualChangeNameReasons()
         {
             using (var db = provider.GetNewDataContext())
@@ -137,7 +144,7 @@ namespace Core
                 return db.GetAll<AddressType>();
             }
         }
-        
+
         public AddressType GetAddressType(int id)
         {
             using (var db = provider.GetNewDataContext())
@@ -145,7 +152,7 @@ namespace Core
                 return db.GetById<AddressType>(id);
             }
         }
-        
+
         public ICollection<PersonIdentityDocument> GetPersonIdentityDocuments(int personId)
         {
             using (var db = provider.GetNewDataContext())
@@ -169,12 +176,61 @@ namespace Core
                 return db.GetById<IdentityDocumentType>(id);
             }
         }
-        
+
         public ICollection<string> GetGivenOrgByName(string name)
         {
             using (var db = provider.GetNewDataContext())
             {
                 return db.GetData<PersonIdentityDocument>().Where(x => x.GivenOrg.Contains(name)).Select(x => x.GivenOrg).Distinct().ToArray();
+            }
+        }
+
+
+        public PersonName GetActualPersonName(int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var dateTimeNow = DateTime.Now;
+                return db.GetData<PersonName>().FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
+            }
+        }
+
+        public ICollection<InsuranceDocument> GetActualInsuranceDocuments(int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var dateTimeNow = DateTime.Now;
+                return db.GetData<InsuranceDocument>().Where(x => personId == x.PersonId && dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate).ToArray();
+            }
+        }
+
+
+        public string GetActualInsuranceDocumentsString(int personId)
+        {
+            var resStr = string.Empty;
+            using (var db = provider.GetNewDataContext())
+            {
+                var dateTimeNow = DateTime.Now;
+                var actualInsuranceDocuments = db.GetData<InsuranceDocument>().Where(x => personId == x.PersonId && dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate);
+
+                foreach (var insuranceDocument in actualInsuranceDocuments)
+                {
+                    if (resStr != string.Empty)
+                        resStr += "\r\n";
+                    resStr += String.Format("тип док-та: {0}\r\nстрах. орг.: {1}\r\nсерия {2} номер {3}\r\nпериод действия {4}-{5}",
+                        insuranceDocument.InsuranceDocumentType.Name, insuranceDocument.InsuranceCompany.NameSMOK, insuranceDocument.Series, insuranceDocument.Number, insuranceDocument.BeginDate.ToString("dd.MM.yyyy"),
+                        insuranceDocument.EndDate.ToString("dd.MM.yyyy"));
+                }
+            }
+            return resStr;
+        }
+
+
+        public InsuranceCompany GetInsuranceCompany(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<InsuranceCompany>().FirstOrDefault(x => x.Id == id);
             }
         }
     }

@@ -35,7 +35,7 @@ namespace MainLib
             this.dialogService = dialogService;
             this.service = service;
             this.personId = personId;
-            PersonAddresses = new ObservableCollection<PersonAddressViewModel>(service.GetPersonAddresses(this.personId).Select(x => new PersonAddressViewModel(service, x)));
+            PersonAddresses = new ObservableCollection<PersonAddressViewModel>(service.GetPersonAddresses(this.personId).Select(x => new PersonAddressViewModel(x, service)));
             ListAddressTypes = new ObservableCollection<AddressType>(service.GetAddressTypes());
             AddPersonAddressCommand = new RelayCommand(AddPersonAddress);
             DeletePersonAddressCommand = new RelayCommand<PersonAddressViewModel>(DeletePersonAddress);
@@ -57,8 +57,8 @@ namespace MainLib
         public ObservableCollection<PersonAddressViewModel> PersonAddresses
         {
             get { return personAddresses; }
-            set 
-            { 
+            set
+            {
                 Set("PersonAddresses", ref personAddresses, value);
                 RaisePropertyChanged("PersonAddressesHasNoItems");
             }
@@ -93,7 +93,7 @@ namespace MainLib
         public ICommand AddPersonAddressCommand { get; set; }
         private void AddPersonAddress()
         {
-            PersonAddresses.Add(new PersonAddressViewModel(service, new PersonAddress() { EndDateTime = DateTime.MaxValue.Date }));
+            PersonAddresses.Add(new PersonAddressViewModel(new PersonAddress() { EndDateTime = DateTime.MaxValue.Date }, service));
             RaisePropertyChanged("PersonAddressesHasNoItems");
         }
 

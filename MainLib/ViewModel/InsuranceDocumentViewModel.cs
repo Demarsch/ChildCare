@@ -1,17 +1,23 @@
 ﻿using DataLib;
 using System;
 using GalaSoft.MvvmLight;
+using Core;
+using log4net;
 
 namespace MainLib
 {
     public class InsuranceDocumentViewModel : ObservableObject
     {
+
+        private readonly IPersonService service;
+
         private readonly InsuranceDocument insuranceDocument;
 
-        public InsuranceDocumentViewModel(InsuranceDocument insuranceDocument)
+        public InsuranceDocumentViewModel(InsuranceDocument insuranceDocument, IPersonService service)
         {
-            if (insuranceDocument == null)
-                throw new ArgumentNullException("insuranceDocument");
+            if (service == null)
+                throw new ArgumentNullException("service");
+            this.service = service;
             this.insuranceDocument = insuranceDocument;
             FillData();
         }
@@ -22,7 +28,7 @@ namespace MainLib
             {
                 InsuranceCompanyId = insuranceDocument.InsuranceCompanyId;
                 InsuranceDocumentTypeId = insuranceDocument.InsuranceDocumentTypeId;
-                InsuranceCompany = insuranceDocument.InsuranceCompany;
+                InsuranceCompany = service.GetInsuranceCompany(InsuranceCompanyId);
                 Series = insuranceDocument.Series;
                 Number = insuranceDocument.Number;
                 BeginDate = insuranceDocument.BeginDate;
@@ -88,7 +94,8 @@ namespace MainLib
             set
             {
                 Set("BeginDate", ref beginDate, value);
-                RaisePropertyChanged("InsuranceDocumentState");
+                RaisePropertyChanged("PersonInsuranceDocumentState");
+                RaisePropertyChanged("PersonInsuranceDocumentStateString");
             }
         }
 
@@ -99,7 +106,8 @@ namespace MainLib
             set
             {
                 Set("EndDate", ref endDate, value);
-                RaisePropertyChanged("InsuranceDocumentState");
+                RaisePropertyChanged("PersonInsuranceDocumentState");
+                RaisePropertyChanged("PersonInsuranceDocumentStateString");
             }
         }
 
@@ -120,7 +128,7 @@ namespace MainLib
             get { return !WithoutEndDate; }
         }
 
-        public ItemState InsuranceDocumentState
+        public ItemState PersonInsuranceDocumentState
         {
             get
             {
@@ -128,6 +136,22 @@ namespace MainLib
                 if (datetimeNow >= BeginDate && datetimeNow < EndDate)
                     return ItemState.Active;
                 return ItemState.Inactive;
+            }
+        }
+
+        public string PersonInsuranceDocumentStateString
+        {
+            get
+            {
+                switch (PersonInsuranceDocumentState)
+                {
+                    case ItemState.Active:
+                        return "Действующий документ";
+                    case ItemState.Inactive:
+                        return "Недействующий документ";
+                    default:
+                        return string.Empty;
+                }
             }
         }
     }

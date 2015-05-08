@@ -92,17 +92,20 @@
         <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4" Margin="1" HorizontalAlignment="Stretch" Text="{Binding MedNumber}"/>
 
 
-        <TextBlock x:Name="tblInsurance"  Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Страховые документы</TextBlock>
-        <TextBox x:Name="tbInsurance"  Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" Height="72" HorizontalAlignment="Stretch" Text="{Binding Insurance}" 
-                 IsReadOnly="True" MouseDoubleClick="{mvvm:EventBinding EditInsuranceCommand}" />
+        <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Страховые документы</TextBlock>
+        <ScrollViewer Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="5" Height="72" Margin="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <TextBox HorizontalAlignment="Stretch" Text="{Binding Insurances}" IsReadOnly="True" MouseDoubleClick="{mvvm:EventBinding EditInsuranceCommand}" />
+        </ScrollViewer>
 
         <Label Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Адрес</Label>
-        <TextBox Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding Addresses}"
-                 MouseDoubleClick="{mvvm:EventBinding EditPersonAddressCommand}"/>
+        <ScrollViewer  Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="5" Height="72" Margin="1"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <TextBox HorizontalAlignment="Stretch" IsReadOnly="True" Text="{Binding Addresses}" MouseDoubleClick="{mvvm:EventBinding EditPersonAddressCommand}"/>
+        </ScrollViewer>
 
         <Label Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Удостоверение личности</Label>
-        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" IsReadOnly="True" Height="72"  Text="{Binding IdentityDocuments}"
-                  MouseDoubleClick="{mvvm:EventBinding EditPersonIdentityDocumentsCommand}"/>
+        <ScrollViewer Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="5" Height="72" Margin="1"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <TextBox HorizontalAlignment="Stretch" IsReadOnly="True" Text="{Binding IdentityDocuments}" MouseDoubleClick="{mvvm:EventBinding EditPersonIdentityDocumentsCommand}"/>
+        </ScrollViewer>
 
         <Label Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Инвалидость</Label>
         <TextBox Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" />

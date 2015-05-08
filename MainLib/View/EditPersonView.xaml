@@ -78,8 +78,8 @@
                                 </Border>
 
                                 <StackPanel Grid.Column="1" Margin="3">
-                                    <TextBlock Text="{Binding Person1.ShortName}"/>
-                                    <TextBlock Margin="2" Text="{Binding RelativeRelationship.Name}"/>
+                                    <TextBlock Text="{Binding ShortName}"/>
+                                    <TextBlock Margin="2" Text="{Binding RelativeRelationshipName}"/>
                                     <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}"  IsHitTestVisible="False"/>
                                 </StackPanel>
                             </Grid>

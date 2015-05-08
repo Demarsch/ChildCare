@@ -11,7 +11,13 @@ namespace Core
     {
         Person GetPersonById(int Id);
 
-        ICollection<PersonRelative> GetPersonRelatives(int personId);
+        PersonName GetActualPersonName(int personId);
+
+        ICollection<InsuranceDocument> GetActualInsuranceDocuments(int personId);
+
+        string GetActualInsuranceDocumentsString(int personId);
+
+        ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
 
         ICollection<InsuranceDocument> GetInsuranceDocuments(int personId);
 
@@ -24,6 +30,8 @@ namespace Core
         InsuranceDocumentType GetInsuranceDocumentTypeById(int id);
 
         ICollection<InsuranceCompany> GetInsuranceCompanies(string filter);
+
+        InsuranceCompany GetInsuranceCompany(int id);
 
         ICollection<ChangeNameReason> GetActualChangeNameReasons();
 

@@ -25,26 +25,6 @@ namespace DataLib
                 return lastPersonName == null ? string.Empty : lastPersonName.MiddleName;
         }
 
-        public IEnumerable<InsuranceDocument> GetActualInsuranceDocuments(DateTime date)
-        {
-            return this.InsuranceDocuments.Where(x => date >= x.BeginDate && date < x.EndDate);
-        }
-
-        public string TodayActualInsuranceDocumentStrings
-        {
-            get 
-            {
-                var resStr = string.Empty;
-                foreach (var insuranceDocument in this.GetActualInsuranceDocuments(DateTime.Now))
-                {
-                    if (resStr != string.Empty)
-                        resStr += "\r\n";
-                    resStr += insuranceDocument.InsuranceDocumentString;
-                }
-                return resStr;
-            }
-        }
-
         //ToDo: get photo from store
         public string PhotoUri
         {

@@ -35,7 +35,7 @@ namespace MainLib
             this.dialogService = dialogService;
             this.service = service;
             this.personId = personId;
-            PersonIdentityDocuments = new ObservableCollection<PersonIdentityDocumentViewModel>(service.GetPersonIdentityDocuments(this.personId).Select(x => new PersonIdentityDocumentViewModel(service, x)));
+            PersonIdentityDocuments = new ObservableCollection<PersonIdentityDocumentViewModel>(service.GetPersonIdentityDocuments(this.personId).Select(x => new PersonIdentityDocumentViewModel(x, service)));
             ListIdentityDocumentTypes = new ObservableCollection<IdentityDocumentType>(service.GetIdentityDocumentTypes());
             AddPersonIdentityDocumentCommand = new RelayCommand(AddPersonIdentityDocument);
             DeletePersonIdentityDocumentCommand = new RelayCommand<PersonIdentityDocumentViewModel>(DeleteIdentityDocument);
@@ -92,7 +92,7 @@ namespace MainLib
         public ICommand AddPersonIdentityDocumentCommand { get; set; }
         private void AddPersonIdentityDocument()
         {
-            PersonIdentityDocuments.Add(new PersonIdentityDocumentViewModel(service, new PersonIdentityDocument() { EndDate = DateTime.MaxValue.Date }));
+            PersonIdentityDocuments.Add(new PersonIdentityDocumentViewModel(new PersonIdentityDocument() { EndDate = DateTime.MaxValue.Date }, service));
             RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
         }
 

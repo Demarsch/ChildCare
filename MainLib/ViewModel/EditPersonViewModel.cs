@@ -122,21 +122,21 @@ namespace MainLib
 
         private void SetRelativesAsync()
         {
-            var listRelatives = service.GetPersonRelatives(Id);
-            //listRelatives.Add(new PersonRelativeDTO()
-            //    {
-            //        RelativePersonId = -1,
-            //        ShortName = "Новый родственник",
-            //        RelativeRelationName = string.Empty,
-            //        IsRepresentative = false,
-            //        PhotoUri = string.Empty
-            //    });
-            listRelatives.Add(new PersonRelative());
-            Relatives = new ObservableCollection<PersonRelative>(listRelatives);
+            var listRelatives = service.GetPersonRelativesDTO(Id);
+            listRelatives.Add(new PersonRelativeDTO()
+                {
+                    RelativePersonId = -1,
+                    ShortName = "Новый родственник",
+                    RelativeRelationName = string.Empty,
+                    IsRepresentative = false,
+                    PhotoUri = string.Empty
+                });
+            //listRelatives.Add(new PersonRelative());
+            Relatives = new ObservableCollection<PersonRelativeDTO>(listRelatives);
         }
 
-        private ObservableCollection<PersonRelative> relatives;
-        public ObservableCollection<PersonRelative> Relatives
+        private ObservableCollection<PersonRelativeDTO> relatives;
+        public ObservableCollection<PersonRelativeDTO> Relatives
         {
             get { return relatives; }
             set { Set("Relatives", ref relatives, value); }

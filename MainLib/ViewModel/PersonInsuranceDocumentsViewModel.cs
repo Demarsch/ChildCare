@@ -6,29 +6,52 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
 using System.Linq;
+using log4net;
+using System.ComponentModel;
+using System.Windows.Navigation;
+using System.Collections.Generic;
 
 namespace MainLib
 {
-    public class PersonInsuranceDocumentsViewModel : ObservableObject
+    public class PersonInsuranceDocumentsViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
     {
+
+        #region Fields
+
         private int personId;
 
-        private IPersonService service;
+        private readonly ILog log;
 
-        public PersonInsuranceDocumentsViewModel(int personId, IPersonService service)
+        private readonly IPersonService service;
+
+        private readonly IDialogService dialogService;
+
+        #endregion
+
+        #region Constructors
+
+        public PersonInsuranceDocumentsViewModel(int personId, ILog log, IPersonService service, IDialogService dialogService)
         {
+            if (log == null)
+                throw new ArgumentNullException("log");
             if (service == null)
                 throw new ArgumentNullException("service");
+            if (dialogService == null)
+                throw new ArgumentNullException("dialogService");
+            this.dialogService = dialogService;
+            this.log = log;
             this.service = service;
             this.personId = personId;
             ListInsuranceDocumentTypes = new ObservableCollection<InsuranceDocumentType>(service.GetInsuranceDocumentTypes());
-            InsuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetInsuranceDocuments(this.personId).Select(x => new InsuranceDocumentViewModel(x)));
+            InsuranceDocuments = new ObservableCollection<InsuranceDocumentViewModel>(service.GetInsuranceDocuments(this.personId).Select(x => new InsuranceDocumentViewModel(x, service)));
             AddInsuranceDocumentCommand = new RelayCommand(AddInsuranceDocument);
             DeleteInsuranceDocumentCommand = new RelayCommand<InsuranceDocumentViewModel>(DeleteInsuranceDocument);
-            CancelCommand = new RelayCommand(Cancel);
-            AcceptCommand = new RelayCommand(Accept);
             InsuranceCompanySuggestionProvider = new InsuranceCompanySuggestionProvider(service);
         }
+
+        #endregion
+
+        #region Properties
 
         private InsuranceCompanySuggestionProvider insuranceCompanySuggestionProvider;
         public InsuranceCompanySuggestionProvider InsuranceCompanySuggestionProvider
@@ -41,7 +64,15 @@ namespace MainLib
         public ObservableCollection<InsuranceDocumentViewModel> InsuranceDocuments
         {
             get { return insuranceDocuments; }
-            set { Set("InsuranceDocuments", ref insuranceDocuments, value); }
+            set {
+                Set("InsuranceDocuments", ref insuranceDocuments, value);
+                RaisePropertyChanged("PersonInsuranceDocumentsHasNoItems");
+            }
+        }
+
+        public bool PersonInsuranceDocumentsHasNoItems
+        {
+            get { return InsuranceDocuments == null || InsuranceDocuments.Count < 1; }
         }
 
         public string ActialInsuranceDocumentsString
@@ -73,35 +104,111 @@ namespace MainLib
             set { Set("ListInsuranceDocumentTypes", ref listInsuranceDocumentTypes, value); }
         }
 
+        #endregion
+
+        #region Commands
+
         public ICommand AddInsuranceDocumentCommand { get; set; }
         private void AddInsuranceDocument()
         {
-            InsuranceDocuments.Add(new InsuranceDocumentViewModel(new InsuranceDocument()));
+            InsuranceDocuments.Add(new InsuranceDocumentViewModel(new InsuranceDocument(), service));
+            RaisePropertyChanged("PersonInsuranceDocumentsHasNoItems");
         }
 
         public ICommand DeleteInsuranceDocumentCommand { get; set; }
         private void DeleteInsuranceDocument(InsuranceDocumentViewModel insuranceDocument)
         {
             InsuranceDocuments.Remove(insuranceDocument);
+            RaisePropertyChanged("PersonInsuranceDocumentsHasNoItems");
         }
 
-        private bool? isChangesAccepted;
-        public bool? IsChangesAccepted
+        #endregion
+
+        #region Implementation IDialogViewModel
+
+        public string Title
         {
-            get { return isChangesAccepted; }
-            set { Set("IsChangesAccepted", ref isChangesAccepted, value); }
+            get { return "Страховые документы"; }
         }
 
-        public ICommand CancelCommand { get; set; }
-        private void Cancel()
+        public string ConfirmButtonText
         {
-            IsChangesAccepted = false;
+            get { return "Применить"; }
         }
 
-        public ICommand AcceptCommand { get; set; }
-        private void Accept()
+        public string CancelButtonText
         {
-            IsChangesAccepted = true;
+            get { return "Отмена"; }
         }
+
+        private bool saveWasRequested;
+
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        public RelayCommand<bool> CloseCommand { get; set; }
+
+        private void Close(bool validate)
+        {
+            saveWasRequested = true;
+            if (validate)
+            {
+                RaisePropertyChanged(string.Empty);
+                if (invalidProperties.Count == 0)
+                {
+                    OnCloseRequested(new ReturnEventArgs<bool>(true));
+                }
+            }
+            else
+            {
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+            }
+        }
+
+        public event EventHandler<System.Windows.Navigation.ReturnEventArgs<bool>> CloseRequested;
+
+        protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        #endregion
+
+        #region Implementation IDataErrorInfo
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                //if (columnName == "SelectedFinancingSource")
+                //{
+                //    result = selectedFinancingSource == null || !selectedFinancingSource.IsActive ? "Укажите источник финансирования" : string.Empty;
+                //}
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+        #endregion
     }
 }
