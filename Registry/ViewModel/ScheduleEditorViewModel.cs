@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Navigation;
 using Core;
-using DataLib;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
@@ -35,9 +34,9 @@ namespace Registry
 
         public IEnumerable<ScheduleEditorRoomViewModel> Rooms { get; private set; }
 
-        private IEnumerable<DateTime> weekDays;
+        private IEnumerable<DayOfWeekViewModel> weekDays;
 
-        public IEnumerable<DateTime> WeekDays
+        public IEnumerable<DayOfWeekViewModel> WeekDays
         {
             get { return weekDays; }
             private set { Set("WeekDays", ref weekDays, value); }
@@ -55,7 +54,7 @@ namespace Registry
                 Set("SelectedDate", ref selectedDate, value);
                 if (differentWeek)
                 {
-                    WeekDays = Enumerable.Range(0, 7).Select(x => newWeekBegining.AddDays(x)).ToArray();
+                    WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x))).ToArray();
                 }
             }
         }

@@ -123,6 +123,7 @@
     <Compile Include="Services\Implementation\ScheduleService.cs" />
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
+    <Compile Include="ViewModel\DayOfWeekViewModel.cs" />
     <Compile Include="ViewModel\PatientAssignmentViewModel.cs" />
     <Compile Include="ViewModel\PatientAssignmentListViewModel.cs" />
     <Compile Include="ViewModel\PatientSearchViewModel.cs" />
@@ -131,6 +132,8 @@
     <Compile Include="ViewModel\FreeTimeSlotViewModel.cs" />
     <Compile Include="ViewModel\ScheduleAssignmentUpdateViewModel.cs" />
     <Compile Include="ViewModel\OccupiedTimeSlotViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleEditorRecordTypeViewModel.cs" />
+    <Compile Include="ViewModel\ScheduleEditorRoomDayViewModel.cs" />
     <Compile Include="ViewModel\ScheduleEditorRoomViewModel.cs" />
     <Compile Include="ViewModel\ScheduleEditorViewModel.cs" />
     <Compile Include="ViewModel\ScheduleItemViewModel.cs" />
@@ -177,6 +180,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\OccupiedTimeSlotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduleEditorRoomDayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduleEditorRoomView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

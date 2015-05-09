@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:registry="clr-namespace:Registry">
+    <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomDayViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition MinHeight="75" SharedSizeGroup="{Binding DayOfWeek, StringFormat='Day{0}'}" />
+            </Grid.RowDefinitions>
+            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="1" BorderBrush="Gray">
+
+            </Border>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

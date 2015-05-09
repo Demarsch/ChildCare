@@ -6,7 +6,7 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="{Binding Title}" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen"
-        d:DataContext="{d:DesignData IDialogViewModel}">
+        d:DataContext="{d:DesignData IDialogViewModel}" ResizeMode="CanMinimize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
