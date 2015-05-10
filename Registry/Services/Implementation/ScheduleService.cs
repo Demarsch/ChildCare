@@ -60,24 +60,34 @@ namespace Registry
                     .ToLookup(x => x.RoomId);
         }
 
-        public ICollection<ScheduleItemDTO> GetRoomsWorkingTime(DateTime date)
+        public ICollection<ScheduleItem> GetRoomsWorkingTime(DateTime date)
         {
-            date = date.Date;
-            var dayOfWeek = (int)date.DayOfWeek;
+            return GetRoomsWorkingTimeImpl(date, date);
+        }
+
+        private ICollection<ScheduleItem> GetRoomsWorkingTimeImpl(DateTime from, DateTime to)
+        {
+            from = from.Date;
+            to = to.Date;
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
-                var result = dataContext.GetData<ScheduleItem>().Where(x => x.BeginDate <= date && x.EndDate >= date && x.DayOfWeek == dayOfWeek);
-                return result.GroupBy(x => new { x.RoomId, x.RecordTypeId })
-                    .SelectMany(x => x.GroupBy(y => new { y.BeginDate, y.EndDate }).OrderByDescending(y => y.Key.BeginDate).ThenBy(y => y.Key.EndDate).FirstOrDefault())
-                    .Select(x => new ScheduleItemDTO
-                    {
-                        RoomId = x.RoomId, 
-                        RecordTypeId = x.RecordTypeId,
-                        StartTime = x.StartTime,
-                        EndTime = x.EndTime
-                    })
-                    .ToArray();
+                var currentDate = from;
+                var result = new List<ScheduleItem>();
+                while (currentDate <= to)
+                {
+                    var dayOfWeek = currentDate.GetDayOfWeek();
+                    var currentResult = dataContext.GetData<ScheduleItem>().Where(x => x.BeginDate <= currentDate && x.EndDate >= currentDate && x.DayOfWeek == dayOfWeek);
+                    result.AddRange(currentResult.GroupBy(x => new { x.RoomId, x.RecordTypeId })
+                        .SelectMany(x => x.GroupBy(y => new { y.BeginDate, y.EndDate }).OrderByDescending(y => y.Key.BeginDate).ThenBy(y => y.Key.EndDate).FirstOrDefault()));
+                    currentDate = currentDate.AddDays(1.0);
+                }
+                return result;
             }
+        }
+
+        public ICollection<ScheduleItem> GetRoomsWeeklyWorkingTime(DateTime date)
+        {
+            return GetRoomsWorkingTimeImpl(date.GetWeekBegininng(), date.GetWeekEnding());
         }
 
         public IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes)

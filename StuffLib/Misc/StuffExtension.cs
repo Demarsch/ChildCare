@@ -426,6 +426,11 @@ namespace Core
         {
             return thisDate.Date.AddDays((int)DayOfWeek.Monday - (thisDate.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)thisDate.DayOfWeek));
         }
+
+        public static DateTime GetWeekEnding(this DateTime thisDate)
+        {
+            return thisDate.GetWeekBegininng().AddDays(6.0);
+        }
         /// <summary>
         /// Возвращает первое число текущего месяца
         /// </summary>
@@ -445,6 +450,11 @@ namespace Core
             if (thisDate.Month >= 10 && thisDate.Month <= 12)
                 return 4;
             throw new ArgumentOutOfRangeException(thisDate.ToShortDateString() + " не относится ни к одному кварталу");
+        }
+
+        public static int GetDayOfWeek(this DateTime thisDate)
+        {
+            return thisDate.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)thisDate.DayOfWeek;
         }
 
         #endregion

@@ -1,6 +1,8 @@
-using System;
+﻿using System;
+using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 
 namespace Registry
 {
@@ -8,24 +10,33 @@ namespace Registry
     {
         private readonly Room room;
 
-        public ScheduleEditorRoomViewModel(Room room)
+        private IDialogService dialogService;
+
+        public ScheduleEditorRoomViewModel(Room room, IDialogService dialogService)
         {
             if (room == null)
             {
                 throw new ArgumentNullException("room");
             }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }
+            this.dialogService = dialogService;
             this.room = room;
             Days = new []
             {
-                new ScheduleEditorRoomDayViewModel(room.Id, 1),
-                new ScheduleEditorRoomDayViewModel(room.Id, 2),
-                new ScheduleEditorRoomDayViewModel(room.Id, 3),
-                new ScheduleEditorRoomDayViewModel(room.Id, 4),
-                new ScheduleEditorRoomDayViewModel(room.Id, 5),
-                new ScheduleEditorRoomDayViewModel(room.Id, 6),
-                new ScheduleEditorRoomDayViewModel(room.Id, 7), 
+                new ScheduleEditorRoomDayViewModel(room.Id, 1, dialogService),
+                new ScheduleEditorRoomDayViewModel(room.Id, 2, dialogService),
+                new ScheduleEditorRoomDayViewModel(room.Id, 3, dialogService),
+                new ScheduleEditorRoomDayViewModel(room.Id, 4, dialogService),
+                new ScheduleEditorRoomDayViewModel(room.Id, 5, dialogService),
+                new ScheduleEditorRoomDayViewModel(room.Id, 6, dialogService),
+                new ScheduleEditorRoomDayViewModel(room.Id, 7, dialogService), 
             };
         }
+
+        public int Id { get { return room.Id; } }
 
         public string Name { get { return room.Name; } }
 

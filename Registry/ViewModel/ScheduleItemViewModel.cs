@@ -1,15 +1,16 @@
 ﻿using System;
 using Core;
+using DataLib;
 
 namespace Registry
 {
     public class ScheduleItemViewModel : ITimeInterval
     {
-        private readonly ScheduleItemDTO scheduleItem;
+        private readonly ScheduleItem scheduleItem;
 
         private DateTime date;
 
-        public ScheduleItemViewModel(ScheduleItemDTO scheduleItem, DateTime date)
+        public ScheduleItemViewModel(ScheduleItem scheduleItem, DateTime date)
         {
             if (scheduleItem == null)
                 throw new ArgumentNullException("scheduleItem");

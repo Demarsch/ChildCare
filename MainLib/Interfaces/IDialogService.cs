@@ -6,6 +6,8 @@
 
         void ShowError(string errorMessage);
 
+        void ShowMessage(string message);
+
         bool? AskUser(string question, bool isWarning = false);
     }
 }

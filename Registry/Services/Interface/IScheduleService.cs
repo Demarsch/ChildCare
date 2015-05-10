@@ -14,8 +14,10 @@ namespace Registry
 
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
 
-        ICollection<ScheduleItemDTO> GetRoomsWorkingTime(DateTime date);
+        ICollection<ScheduleItem> GetRoomsWorkingTime(DateTime date);
 
+        ICollection<ScheduleItem> GetRoomsWeeklyWorkingTime(DateTime date);
+        
         IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
 
         void SaveAssignment(Assignment assignment);

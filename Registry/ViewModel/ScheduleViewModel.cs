@@ -81,13 +81,13 @@ namespace Registry
                 BusyStatus = "Загрузка расписания...";
                 FailReason = null;
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var workingTimes = (await Task<ICollection<ScheduleItemDTO>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).ToLookup(x => x.RoomId);
+                var workingTimes = (await Task<ICollection<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).ToLookup(x => x.RoomId);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
                 if (workingTimes.Count == 0)
                 {
                     //TODO: store these settings in DB. This are just default values used for displaying purposes
                     OpenTime = date.AddHours(8.0);
-                    closeTime = date.AddHours(17.0);
+                    CloseTime = date.AddHours(17.0);
                 }
                 else
                 {
@@ -204,7 +204,7 @@ namespace Registry
 
         private void OpenScheduleEditor()
         {
-            var scheduleEditor = new ScheduleEditorViewModel(scheduleService, log);
+            var scheduleEditor = new ScheduleEditorViewModel(scheduleService, log, cacheService, dialogService);
             dialogService.ShowDialog(scheduleEditor);
         }
 

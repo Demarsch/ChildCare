@@ -118,7 +118,6 @@
     </ApplicationDefinition>
     <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\ScheduledAssignmentDTO.cs" />
-    <Compile Include="DTO\ScheduleItemDTO.cs" />
     <Compile Include="Services\Interface\IScheduleService.cs" />
     <Compile Include="Services\Implementation\ScheduleService.cs" />
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
@@ -180,6 +179,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\OccupiedTimeSlotView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScheduleEditorRecordTypeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

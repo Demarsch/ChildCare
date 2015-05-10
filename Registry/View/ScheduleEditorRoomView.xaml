@@ -4,7 +4,6 @@
     <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
         <Border Width="200">
             <ItemsControl ItemsSource="{Binding Days}">
-                
             </ItemsControl>
         </Border>
     </DataTemplate>
