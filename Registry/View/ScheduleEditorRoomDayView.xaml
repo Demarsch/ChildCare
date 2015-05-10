@@ -6,6 +6,17 @@
             <Grid.RowDefinitions>
                 <RowDefinition MinHeight="75" SharedSizeGroup="{Binding DayOfWeek, StringFormat='Day{0}'}" />
             </Grid.RowDefinitions>
+            <Button Background="White" Padding="5" Command="{Binding AddRecordTypeCommand, Mode=OneTime}" HorizontalContentAlignment="Stretch">
+                <StackPanel Orientation="Vertical">
+                    <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding RecordTypes}" />
+                    <TextBlock Text="Актуально с Х по Y" Margin="5 5 0 0" HorizontalAlignment="Right" Foreground="DimGray" FontStyle="Italic" FontSize="10" />
+                </StackPanel>
+            </Button>
+        </Grid>
+        <!--<Grid x:Name="grid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
+            <Grid.RowDefinitions>
+                <RowDefinition MinHeight="75" SharedSizeGroup="{Binding DayOfWeek, StringFormat='Day{0}'}" />
+            </Grid.RowDefinitions>
             <Border  BorderThickness="1" BorderBrush="Gray" x:Name="border">
                 <StackPanel Orientation="Vertical">
                     <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding RecordTypes}">
@@ -20,6 +31,6 @@
                 <Setter TargetName="border" Property="Background" Value="LightBlue" />
                 <Setter TargetName="button" Property="Visibility" Value="Visible" />
             </Trigger>
-        </DataTemplate.Triggers>
+        </DataTemplate.Triggers>-->
     </DataTemplate>
 </ResourceDictionary>
