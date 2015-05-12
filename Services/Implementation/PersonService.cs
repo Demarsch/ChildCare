@@ -76,7 +76,7 @@ namespace Core
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetData<Person>().Where(x => x.FullName.ToLower().Trim() == fullName.ToLower().Trim()).ToArray();
+                return db.GetData<Person>().Where(x => x.FullName.ToLower().Trim().Contains(fullName.ToLower().Trim())).ToArray();
             }
         }
 

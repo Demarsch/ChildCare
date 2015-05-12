@@ -1,7 +1,7 @@
 ﻿using System;
 using GalaSoft.MvvmLight;
 
-namespace AdminTools.DTO
+namespace AdminTools
 {
     public class UserPermissionsDTO : ObservableObject
     {
@@ -33,6 +33,6 @@ namespace AdminTools.DTO
         {
             get { return isGranted; }
             set { Set("IsGranted", ref isGranted, value); }
-        }        
+        }
     }
 }

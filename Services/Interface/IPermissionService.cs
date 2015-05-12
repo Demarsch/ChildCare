@@ -14,7 +14,7 @@ namespace Core
         ICollection<Permission> GetChildren(int parentId);
         ICollection<Permission> GetPermissionsByName(string name);
 
-        bool Save(Permission permission, out string msg);
-        bool Delete(Permission permission, out string msg);
+        int Save(Permission permission, int? parentId);
+        void Delete(Permission permission);
     }
 }

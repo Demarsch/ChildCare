@@ -8,13 +8,16 @@ namespace AdminTools.ViewModel
     public class UserViewModel : ObservableObject
     {
         private readonly User user;
+        private IPersonService personService;
 
-        public UserViewModel(User user)
+        public UserViewModel(User user, IPersonService personService)
         {
             this.user = user;
+            this.personService = personService;
+            var person = personService.GetPersonById(user.PersonId);
             sid = !IsEmpty ? user.SID : string.Empty;
             isActive = !IsEmpty ? !user.EndDateTime.HasValue : false;
-            userFullName = !IsEmpty ? user.Person.FullName : string.Empty;
+            userFullName = !IsEmpty ? person.FullName : string.Empty;
         }
 
         public bool IsEmpty

@@ -70,7 +70,7 @@ namespace AdminTools.ViewModel
 
             permissionRoots = new ObservableCollection<PermissionViewModel>();
             foreach (var item in permissionService.GetRootPermissions())
-                permissionRoots.Add(new PermissionViewModel(permissionService, item));	        
+                permissionRoots.Add(new PermissionViewModel(permissionService, item, null));	        
 
             this.SearchPermissionCommand = new RelayCommand(this.SearchPermission);
             this.DeletePermissionCommand = new RelayCommand<object>(DeletePermission);
@@ -130,19 +130,20 @@ namespace AdminTools.ViewModel
             if (MessageBox.Show("Удалить право \"" + currentPermission.Name + "\" и все вложенные в него права ?", "Внимание", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 var permission = permissionService.GetPermissionById(currentPermission.Id);
-                string message = string.Empty;
-                if (this.permissionService.Delete(permission, out message))
+                try
                 {
+                    this.permissionService.Delete(permission);
+                
                     if (currentPermission.Parent == null)
                         PermissionRoots.Remove(currentPermission);
                     else
                         currentPermission.Parent.Children.Remove(currentPermission);
                     MessageBox.Show("Данные удалены");
                 }
-                else
+                catch(Exception ex)
                 {
-                    MessageBox.Show("При сохранении возникла ошибка: " + message);
-                    log.Error(string.Format("Failed to Delete permission. " + message));
+                    MessageBox.Show("При сохранении возникла ошибка: " + ex.Message);
+                    log.Error(string.Format("Failed to Delete permission. " + ex.Message));
                 }                
             }
         }
@@ -166,7 +167,7 @@ namespace AdminTools.ViewModel
         private void CreatePermission(object parameter)
         {
             var parent = (parameter as PermissionViewModel);
-            var editPermissionViewModel = new EditPermissionViewModel(permissionService, log, parent);
+            var editPermissionViewModel = new EditPermissionViewModel(permissionService, log, parent, null);
             EditPermissionView view = new EditPermissionView() { DataContext = editPermissionViewModel, Title = "Новое право" };
             view.ShowDialog();
 

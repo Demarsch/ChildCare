@@ -21,20 +21,17 @@ namespace AdminTools.ViewModel
         private IPermissionService permissionService;
         private ILog log;
         private PermissionViewModel parent;
-
-        public EditPermissionViewModel(IPermissionService permissionService, ILog log, PermissionViewModel parent)
-        {
+               
+        public EditPermissionViewModel(IPermissionService permissionService, ILog log, PermissionViewModel parent, PermissionViewModel permission)
+        {            
             this.permissionService = permissionService;
             this.log = log;
-            this.parent = parent;
             this.SavePermissionCommand = new RelayCommand(SavePermission);
-        }
 
-        public EditPermissionViewModel(IPermissionService permissionService, ILog log, PermissionViewModel parent, PermissionViewModel permission)
-            : this(permissionService, log, parent)
-        {
-            this.CurrentPermission = permission;
-            LoadPermission();
+            this.parent = parent;
+            this.currentPermission = permission;  
+            if (this.currentPermission != null)
+                LoadPermission();
         }
                
         private RelayCommand savePermissionCommand;
@@ -49,7 +46,7 @@ namespace AdminTools.ViewModel
         {
             get { return currentPermission; }
             set { Set("CurrentPermission", ref currentPermission, value); }
-        }
+        }        
 
         private string permissionName;
         public string PermissionName
@@ -99,13 +96,7 @@ namespace AdminTools.ViewModel
 
             Permission permission = null;
             if (this.CurrentPermission == null && MessageBox.Show("Добавить новый узел к элементу \"" + parentName + "\" ?", "Внимание", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            {
                 permission = new Permission();
-                if (parent == null)
-                    permission.PermissionLinks1.Add(new PermissionLink());
-                else
-                    permission.PermissionLinks1.Add(new PermissionLink() { ParentId = parent.Id });
-            }
             else if (this.CurrentPermission != null)
                 permission = permissionService.GetPermissionById(this.CurrentPermission.Id);
             else
@@ -115,18 +106,18 @@ namespace AdminTools.ViewModel
             permission.Description = PermissionDescription.ToSafeString();
             permission.IsGroup = IsPermissionGroup;
             permission.ReadOnly = IsPermissionReadOnly;
-
-            string message = string.Empty;
-            if (permissionService.Save(permission, out message))
+            
+            try
             {
-                this.CurrentPermission = new PermissionViewModel(permissionService, permission);
+                permission.Id = permissionService.Save(permission, parent != null ? parent.Id : (int?)null);
+                this.CurrentPermission = new PermissionViewModel(permissionService, permission, parent);
                 MessageBox.Show("Данные сохранены");
             }
-            else
+            catch(Exception ex)
             {
-                MessageBox.Show("При сохранении возникла ошибка: " + message);
-                log.Error(string.Format("Failed to Save permission. " + message));
-            }
+                MessageBox.Show("При сохранении возникла ошибка: " + ex.Message);
+                log.Error(string.Format("Failed to Save permission. " + ex.Message));
+            }            
         }
     }
 }

@@ -33,7 +33,7 @@ namespace AdminTools.DTO
         public string SynchImage { get; set; }
 
         private string sid;
-        public string SID       
+        public string SID
         {
             get { return sid; }
             set { Set("SID", ref sid, value); }

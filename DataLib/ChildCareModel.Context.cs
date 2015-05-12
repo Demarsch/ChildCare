@@ -39,7 +39,6 @@ namespace DataLib
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
-        public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<FinacingSource> FinacingSources { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
@@ -68,5 +67,6 @@ namespace DataLib
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
         public virtual DbSet<UserPermission> UserPermissions { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Decision> Decisions { get; set; }
     }
 }

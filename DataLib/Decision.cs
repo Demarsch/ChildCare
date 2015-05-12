@@ -22,7 +22,7 @@ namespace DataLib
         }
     
         public int Id { get; set; }
-        public int ParentId { get; set; }
+        public Nullable<int> ParentId { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
         public System.DateTime BeginDateTime { get; set; }

@@ -20,13 +20,8 @@ namespace AdminTools.ViewModel
         #endregion // Data
 
         #region Constructors
-
-        public PermissionViewModel(IPermissionService permissionService, Permission currentPermission)
-            : this(permissionService, currentPermission, null)
-        {
-        }
-
-        private PermissionViewModel(IPermissionService permissionService, Permission currentPermission, PermissionViewModel parent)
+                
+        public PermissionViewModel(IPermissionService permissionService, Permission currentPermission, PermissionViewModel parent)
         {
             this.permissionService = permissionService;
             this.permission = currentPermission;
@@ -36,6 +31,7 @@ namespace AdminTools.ViewModel
             description = this.permission.Description;
             isGroup = this.permission.IsGroup;
             readOnly = this.permission.ReadOnly;
+            id = this.permission.Id;
 
             children = new ObservableCollection<PermissionViewModel>(
                        permissionService.GetChildren(currentPermission.Id).Select(x => new PermissionViewModel(permissionService, x, this)));
@@ -52,9 +48,11 @@ namespace AdminTools.ViewModel
             set { Set("Children", ref children, value); }
         }
 
+        private int id;
         public int Id
         {
             get { return permission.Id; }
+            set { Set("Id", ref id, value); }
         }
         
         private string name;

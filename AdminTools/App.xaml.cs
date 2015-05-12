@@ -23,8 +23,10 @@ namespace AdminTools
             Container.RegisterSingle<IDataContextProvider, ModelContextProvider>();
             Container.RegisterSingle<IUserSystemInfoService, ADUserSystemInfoService>();
             Container.RegisterSingle<IUserService, UserService>();
+            Container.RegisterSingle<IPersonService, PersonService>();
             Container.RegisterSingle<IPermissionService, PermissionService>();
             Container.RegisterSingle<ILog>(new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)));
+            Container.RegisterSingle<IDialogService, WindowDialogService>();
 
             Container.Register<MainWindowViewModel>();
             Container.Register<PermissionViewModel>();

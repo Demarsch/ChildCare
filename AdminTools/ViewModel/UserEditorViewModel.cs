@@ -22,29 +22,34 @@ namespace AdminTools.ViewModel
 
         private ObservableCollection<UserViewModel> users;
         public RelayCommand SearchUserCommand { get; private set; }
-        private string searchText = String.Empty;
         public RelayCommand NewUserCommand { get; private set; }
         public RelayCommand AddUserPermissionsCommand { get; private set; }
-        #endregion
-
-        #region Constructor
+        private string searchText = String.Empty;
 
         private IUserService userService;
         private IUserSystemInfoService userSystemInfoService;
         private IPersonService personService;
         private UserAccountViewModel userAccountViewModel;
         private ILog log;
+        private IDialogService dialogService;
+        private IPermissionService permissionService;
+
+        #endregion
+
+        #region Constructor
 
         public UserEditorViewModel(IUserService userService, IUserSystemInfoService userSystemInfoService,
-            IPersonService personService, UserAccountViewModel userAccountViewModel, ILog log)
+            IPersonService personService, IPermissionService permissionService, UserAccountViewModel userAccountViewModel, ILog log, IDialogService dialogService)
         {
             this.userService = userService;
             this.userSystemInfoService = userSystemInfoService;
             this.personService = personService;
+            this.permissionService = permissionService;
             this.userAccountViewModel = userAccountViewModel;
             this.log = log;
+            this.dialogService = dialogService;
                        
-            users = new ObservableCollection<UserViewModel>(userService.GetAllActiveUsers(DateTime.Now).Select(x => new UserViewModel(x)).ToArray());
+            users = new ObservableCollection<UserViewModel>(userService.GetAllActiveUsers(DateTime.Now).Select(x => new UserViewModel(x, personService)).ToArray());
             this.EditUserCommand = new RelayCommand<object>(EditUser);
             this.SearchUserCommand = new RelayCommand(this.LoadUsers);
             this.NewUserCommand = new RelayCommand(this.NewUser);
@@ -78,7 +83,7 @@ namespace AdminTools.ViewModel
                     return;
                 if (value != null)
                     UserPermissions = new ObservableCollection<UserPermissionsDTO>(userService.GetUserPermissions(value.Id)
-                        .Select(x => new UserPermissionsDTO() { PermissionName = x.Permission.Name, BeginDate = x.BeginDateTime, EndDate = x.EndDateTime, IsGranted = x.IsGranted}));
+                        .Select(x => new UserPermissionsDTO() { PermissionName = permissionService.GetPermissionById(x.PermissionId).Name, BeginDate = x.BeginDateTime, EndDate = x.EndDateTime, IsGranted = x.IsGranted}));
             }
         }       
 
@@ -178,17 +183,17 @@ namespace AdminTools.ViewModel
                 MessageBox.Show("Не выбран пользователь.");
                 return;
             }
-            //var personViewModel = new EditPersonViewModel(log, personService, service.Instance<IDialogService>(), (parameter as UserViewModel).PersonId);
-            //(new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
+            var personViewModel = new EditPersonViewModel(log, personService, dialogService, (parameter as UserViewModel).PersonId);
+            (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
 
             //TODO: Change verification way
-            //if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
-            //SelectedUser.UserFullName = personViewModel.EditPersonDataViewModel.LastName + " " + personViewModel.EditPersonDataViewModel.FirstName + " " + personViewModel.EditPersonDataViewModel.MiddleName;
+            if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
+            SelectedUser.UserFullName = personViewModel.EditPersonDataViewModel.LastName + " " + personViewModel.EditPersonDataViewModel.FirstName + " " + personViewModel.EditPersonDataViewModel.MiddleName;
         }
 
         private void NewUser()
         {
-            var userAccountModelView = new UserAccountViewModel(userService, userSystemInfoService, log, personService);
+            var userAccountModelView = new UserAccountViewModel(userService, userSystemInfoService, log, personService, dialogService);
             (new UserAccountView() { DataContext = userAccountModelView }).ShowDialog();
 
             if (userAccountModelView.CurrentUser != null)
@@ -295,9 +300,9 @@ namespace AdminTools.ViewModel
         {         
             var collection = new ObservableCollection<UserViewModel>();
             if (searchText == string.Empty)
-                collection = new ObservableCollection<UserViewModel>(userService.GetAllUsers().Select(x => new UserViewModel(x)).Where(x => (ShowOnlyActiveUsers ? x.IsActive : true)).ToArray());
+                collection = new ObservableCollection<UserViewModel>(userService.GetAllUsers().Select(x => new UserViewModel(x, personService)).Where(x => (ShowOnlyActiveUsers ? x.IsActive : true)).ToArray());
             else if (searchText.Length >= 3)
-                collection = new ObservableCollection<UserViewModel>(userService.GetAllUsers(searchText).Select(x => new UserViewModel(x)).Where(x => (ShowOnlyActiveUsers ? x.IsActive : true)).ToArray());
+                collection = new ObservableCollection<UserViewModel>(userService.GetAllUsers(searchText).Select(x => new UserViewModel(x, personService)).Where(x => (ShowOnlyActiveUsers ? x.IsActive : true)).ToArray());
             else
             {
                 MessageBox.Show(
