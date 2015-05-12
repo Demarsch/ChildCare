@@ -20,7 +20,7 @@ namespace Registry
 
         public int RoomId { get { return scheduleItem.RoomId; } }
 
-        public int RecordTypeId { get { return scheduleItem.RecordTypeId; } }
+        public int RecordTypeId { get { return scheduleItem.RecordTypeId.Value; } }
 
         public DateTime StartTime { get { return date.Add(scheduleItem.StartTime); } }
 

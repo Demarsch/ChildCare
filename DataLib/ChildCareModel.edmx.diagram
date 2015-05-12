@@ -9,7 +9,7 @@
         <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="7.5" PointY="50.625" />
         <EntityTypeShape EntityType="DataLib.Branch" Width="1.5" PointX="6" PointY="42.25" />
         <EntityTypeShape EntityType="DataLib.ChangeNameReason" Width="1.5" PointX="3" PointY="24.125" />
-        <EntityTypeShape EntityType="DataLib.ClosedDate" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.ClosedDate" Width="1.5" PointX="3.625" PointY="0.875" />
         <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="15.75" PointY="42.75" />
         <EntityTypeShape EntityType="DataLib.CommissionDecisionsLink" Width="1.5" PointX="15.75" PointY="39.25" />
         <EntityTypeShape EntityType="DataLib.CommissionMember" Width="1.5" PointX="10.5" PointY="32.625" />
@@ -18,7 +18,7 @@
         <EntityTypeShape EntityType="DataLib.CommissionQuestion" Width="1.5" PointX="10.5" PointY="37.375" />
         <EntityTypeShape EntityType="DataLib.CommissionSource" Width="1.5" PointX="11.25" PointY="46.875" />
         <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="8.25" PointY="37.125" />
-        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="3.125" PointY="3.125" />
         <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="4.5" PointY="18.125" />
         <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="0.75" PointY="29.25" />
         <EntityTypeShape EntityType="DataLib.IdentityDocumentType" Width="1.5" PointX="6" PointY="36.375" />
@@ -26,7 +26,7 @@
         <EntityTypeShape EntityType="DataLib.InsuranceDocument" Width="1.5" PointX="5.25" PointY="28.5" />
         <EntityTypeShape EntityType="DataLib.InsuranceDocumentType" Width="1.5" PointX="3" PointY="39" />
         <EntityTypeShape EntityType="DataLib.MedicalHelpType" Width="1.5" PointX="9" PointY="18" />
-        <EntityTypeShape EntityType="DataLib.Okato" Width="1.5" PointX="4.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DataLib.Okato" Width="1.5" PointX="6" PointY="0.875" />
         <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="7.5" PointY="69.875" />
         <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="5.25" PointY="71.625" />
         <EntityTypeShape EntityType="DataLib.PersonAddress" Width="1.5" PointX="8.25" PointY="24.5" />
@@ -41,7 +41,6 @@
         <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="8.25" PointY="45.5" />
         <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="3" PointY="41.375" />
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="8.25" PointY="56.625" />
-        <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="16.5" PointY="50.625" />
         <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="6" PointY="39.375" />
         <EntityTypeShape EntityType="DataLib.UserMessage" Width="1.5" PointX="10.5" PointY="75.25" />
         <EntityTypeShape EntityType="DataLib.UserMessageType" Width="1.5" PointX="8.25" PointY="73" />
@@ -96,8 +95,6 @@
         <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_Records_Rooms" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_ScheduleItem_Rooms" />
         <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="5.25" PointY="13.375" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users" />
@@ -111,6 +108,9 @@
         <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="0.75" PointY="5" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
+        <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="16.5" PointY="50.625" />
+        <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_ScheduleItem_Rooms" />
         <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
         <EntityTypeShape EntityType="DataLib.DisabilityType" Width="1.5" PointX="0.75" PointY="4.75" />
         <EntityTypeShape EntityType="DataLib.PersonDisability" Width="1.5" PointX="8.25" PointY="13.375" />

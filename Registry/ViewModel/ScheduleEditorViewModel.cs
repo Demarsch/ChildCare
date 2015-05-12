@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using Core;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -41,8 +42,16 @@ namespace Registry
             this.log = log;
             this.scheduleService = scheduleService;
             CloseCommand = new RelayCommand<bool>(x => OnCloseRequested(new ReturnEventArgs<bool>(x)));
+            ChangeDateCommand = new RelayCommand<int>(ChangeDate);
             Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x, dialogService)).ToArray();
             SelectedDate = DateTime.Today;
+        }
+
+        public ICommand ChangeDateCommand { get; private set; }
+
+        private void ChangeDate(int dayCount)
+        {
+            SelectedDate = selectedDate.AddDays(dayCount);
         }
 
         public IEnumerable<ScheduleEditorRoomViewModel> Rooms { get; private set; }
@@ -78,20 +87,19 @@ namespace Registry
             try
             {
                 FailReason = null;
-                log.InfoFormat("Loading schedule editor for {0:dd.MM.yyyy}-{1:dd.MM.yyyy}", selectedDate.GetWeekBegininng(), selectedDate.GetWeekEnding());
+                var selectedWeekBegining = selectedDate.GetWeekBegininng();
+                log.InfoFormat("Loading schedule editor for {0:dd.MM.yyyy}-{1:dd.MM.yyyy}", selectedWeekBegining, selectedDate.GetWeekEnding());
                 var scheduleItems = scheduleService.GetRoomsWeeklyWorkingTime(selectedDate).ToLookup(x => x.RoomId);
                 foreach (var room in Rooms)
                 {
                     var currentRoomItems = scheduleItems[room.Id].ToLookup(x => x.DayOfWeek);
                     foreach (var day in room.Days)
                     {
-                        var currentDayItems = currentRoomItems[day.DayOfWeek]
-                            .ToLookup(x => x.RecordTypeId)
-                            .Select(x => new ScheduleEditorRecordTypeViewModel(x.Key, x.Select(y => new TimeInterval(y.StartTime, y.EndTime)), cacheService));
-                        day.RecordTypes.Replace(currentDayItems);
+                        day.ScheduleItems.Replace(currentRoomItems[day.DayOfWeek].Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)));
+                        day.RelatedDate = selectedWeekBegining.AddDays(day.DayOfWeek - 1);
                     }
                 }
-                log.Info("Successfully loaded schdule editor");
+                log.Info("Successfully loaded schedule editor");
             }
             catch (Exception ex)
             {

@@ -2,9 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:registry="clr-namespace:Registry">
     <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
-        <Border Width="200">
-            <ItemsControl ItemsSource="{Binding Days}">
-            </ItemsControl>
+        <Border Width="240">
+            <ItemsControl ItemsSource="{Binding Days}" />
         </Border>
     </DataTemplate>
 </ResourceDictionary>

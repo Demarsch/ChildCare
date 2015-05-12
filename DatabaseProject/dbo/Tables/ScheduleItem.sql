@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[ScheduleItem] (
     [Id]           INT      IDENTITY (1, 1) NOT NULL,
     [RoomId]       INT      NOT NULL,
-    [RecordTypeId] INT      NOT NULL,
+    [RecordTypeId] INT      NULL,
     [DayOfWeek]    INT      NOT NULL,
     [BeginDate]    DATE     NOT NULL,
     [EndDate]      DATE     NOT NULL,
@@ -11,4 +11,6 @@
     CONSTRAINT [FK_ScheduleItem_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]),
     CONSTRAINT [FK_ScheduleItem_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [dbo].[Rooms] ([Id])
 );
+
+
 

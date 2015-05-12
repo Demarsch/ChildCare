@@ -28,6 +28,16 @@ namespace Registry.Test.Services
                     EndDate = new DateTime(2015, 1, 31),
                     DayOfWeek = (int)date.DayOfWeek,
                     StartTime = TimeSpan.FromHours(8.0),
+                    EndTime = TimeSpan.FromHours(12.0)
+                },
+                new ScheduleItem
+                {
+                    RoomId = 1,
+                    RecordTypeId = 2,
+                    BeginDate = new DateTime(2015, 1, 1),
+                    EndDate = new DateTime(2015, 1, 31),
+                    DayOfWeek = (int)date.DayOfWeek,
+                    StartTime = TimeSpan.FromHours(13.0),
                     EndTime = TimeSpan.FromHours(17.0)
                 },
                 new ScheduleItem
@@ -37,18 +47,8 @@ namespace Registry.Test.Services
                     BeginDate = date,
                     EndDate = date,
                     DayOfWeek = (int)date.DayOfWeek,
-                    StartTime = TimeSpan.FromHours(12.0),
+                    StartTime = TimeSpan.FromHours(11.0),
                     EndTime = TimeSpan.FromHours(14.0)
-                },
-                new ScheduleItem
-                {
-                    RoomId = 1,
-                    RecordTypeId = 1,
-                    BeginDate = date,
-                    EndDate = date,
-                    DayOfWeek = (int)date.DayOfWeek,
-                    StartTime = TimeSpan.FromHours(15.0),
-                    EndTime = TimeSpan.FromHours(17.0)
                 }
             });
             var contextProvider = new TestDataContextProvider();
@@ -56,10 +56,8 @@ namespace Registry.Test.Services
             contextProvider.SetDataContext(context);
             var service = new ScheduleService(contextProvider, environment);
             var result = service.GetRoomsWorkingTime(date);
-            Assert.AreEqual(2, result.Count);
-            result = result.OrderBy(x => x.StartTime).ToArray();
-            Assert.IsTrue(result.First().StartTime == TimeSpan.FromHours(12.0) && result.First().EndTime == TimeSpan.FromHours(14.0));
-            Assert.IsTrue(result.Last().StartTime == TimeSpan.FromHours(15.0) && result.Last().EndTime == TimeSpan.FromHours(17.0));
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().StartTime == TimeSpan.FromHours(11.0) && result.First().EndTime == TimeSpan.FromHours(14.0));
         }
 
         [Test]
@@ -101,8 +99,8 @@ namespace Registry.Test.Services
                 },
                  new ScheduleItem
                 {
-                    RoomId = 1,
-                    RecordTypeId = 1,
+                    RoomId = 2,
+                    RecordTypeId = 2,
                     BeginDate = new DateTime(2015, 1, 1),
                     EndDate = new DateTime(2015, 1, 31),
                     DayOfWeek = (int)date.DayOfWeek + 1,

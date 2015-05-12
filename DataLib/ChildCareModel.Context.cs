@@ -61,13 +61,13 @@ namespace DataLib
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
-        public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
         public virtual DbSet<UserPermission> UserPermissions { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
+        public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<PersonDisability> PersonDisabilities { get; set; }
     }

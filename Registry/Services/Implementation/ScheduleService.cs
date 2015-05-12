@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Core;
 using DataLib;
 
@@ -42,7 +43,6 @@ namespace Registry
             using (var dataContext = dataContextProvider.GetNewDataContext())
                 return dataContext.GetData<Assignment>()
                     .Where(x => x.AssignDateTime >= date.Date && x.AssignDateTime < endDate && !x.CancelUserId.HasValue)
-                    .OrderBy(x => x.AssignDateTime)
                     .Select(x => new ScheduledAssignmentDTO
                     {
                         Id = x.Id,
@@ -77,7 +77,7 @@ namespace Registry
                 {
                     var dayOfWeek = currentDate.GetDayOfWeek();
                     var currentResult = dataContext.GetData<ScheduleItem>().Where(x => x.BeginDate <= currentDate && x.EndDate >= currentDate && x.DayOfWeek == dayOfWeek);
-                    result.AddRange(currentResult.GroupBy(x => new { x.RoomId, x.RecordTypeId })
+                    result.AddRange(currentResult.GroupBy(x => x.RoomId)
                         .SelectMany(x => x.GroupBy(y => new { y.BeginDate, y.EndDate }).OrderByDescending(y => y.Key.BeginDate).ThenBy(y => y.Key.EndDate).FirstOrDefault()));
                     currentDate = currentDate.AddDays(1.0);
                 }

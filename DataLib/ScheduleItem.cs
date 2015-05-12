@@ -16,7 +16,7 @@ namespace DataLib
     {
         public int Id { get; set; }
         public int RoomId { get; set; }
-        public int RecordTypeId { get; set; }
+        public Nullable<int> RecordTypeId { get; set; }
         public int DayOfWeek { get; set; }
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }

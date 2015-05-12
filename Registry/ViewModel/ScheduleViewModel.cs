@@ -81,7 +81,7 @@ namespace Registry
                 BusyStatus = "Загрузка расписания...";
                 FailReason = null;
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var workingTimes = (await Task<ICollection<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).ToLookup(x => x.RoomId);
+                var workingTimes = (await Task<ICollection<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).Where(x => x.RecordTypeId.HasValue).ToLookup(x => x.RoomId);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
                 if (workingTimes.Count == 0)
                 {
@@ -197,7 +197,7 @@ namespace Registry
         public IEnumerable<RecordType> RecordTypes
         {
             get { return recordTypes; }
-            private set { Set("RecordTypes", ref recordTypes, value); }
+            private set { Set("ScheduleItems", ref recordTypes, value); }
         }
 
         public RelayCommand OpenScheduleEditorCommand { get; private set; }

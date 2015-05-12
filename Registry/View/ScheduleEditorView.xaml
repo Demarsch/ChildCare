@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib"
-                    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+                    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
     <DataTemplate DataType="{x:Type registry:ScheduleEditorViewModel}">
         <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}" MaxHeight="700" MaxWidth="900">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.IsSharedSizeScope="True">
@@ -14,7 +15,11 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <DatePicker Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" SelectedDateFormat="Long" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" Width="130" />
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Background="White" Padding="3" Margin="3" VerticalAlignment="Center" Content="&lt;&lt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert -7, {x:Type system:Int32}}" />
+                    <DatePicker Margin="5" VerticalAlignment="Center" SelectedDateFormat="Long" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" Width="130" />
+                    <Button Background="White" Padding="3" Margin="3" VerticalAlignment="Center" Content="&gt;&gt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert 7, {x:Type system:Int32}}" />
+                </StackPanel>
                 <!--Room headers-->
                 <ScrollViewer Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" core:ScrollSynchronizer.HorizontalScrollGroup="ScheduleEditorHorizontalScroll">
                     <StackPanel Orientation="Horizontal">
@@ -26,7 +31,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
-                                    <Border Background="LightSkyBlue" BorderBrush="Black" BorderThickness="0.5" HorizontalAlignment="Stretch" Width="200" >
+                                    <Border Background="LightSkyBlue" BorderBrush="Black" BorderThickness="0.5" HorizontalAlignment="Stretch" Width="240" >
                                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                             <TextBlock HorizontalAlignment="Center" Margin="3" Text="{Binding Number, StringFormat='#{0}', Mode=OneTime}" />
                                             <TextBlock HorizontalAlignment="Center" Margin="3" Text="{Binding Name, Mode=OneTime}" />
@@ -39,9 +44,10 @@
                     </StackPanel>
                 </ScrollViewer>
                 <!--Day list-->
-                <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" core:ScrollSynchronizer.VerticalScrollGroup="ScheduleEditorHorizontalScroll">
-                    <StackPanel Orientation="Vertical">
-                        <ItemsControl Width="150" ItemsSource="{Binding WeekDays}" HorizontalContentAlignment="Stretch">
+                <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" core:ScrollSynchronizer.VerticalScrollGroup="ScheduleEditorHorizontalScroll"
+                              HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                        <ItemsControl ItemsSource="{Binding WeekDays}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type registry:DayOfWeekViewModel}">
                                     <Grid HorizontalAlignment="Stretch">
@@ -55,7 +61,6 @@
                                                <Run Text="{Binding Date, StringFormat=dd.MM.yyyy, Mode=OneTime}" FontSize="12" />
                                             </TextBlock>
                                         </Border>
-
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

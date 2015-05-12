@@ -2,35 +2,48 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:registry="clr-namespace:Registry">
     <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomDayViewModel}">
+        <DataTemplate.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </DataTemplate.Resources>
         <Grid x:Name="grid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
             <Grid.RowDefinitions>
                 <RowDefinition MinHeight="75" SharedSizeGroup="{Binding DayOfWeek, StringFormat='Day{0}'}" />
             </Grid.RowDefinitions>
-            <Button Background="White" Padding="5" Command="{Binding AddRecordTypeCommand, Mode=OneTime}" HorizontalContentAlignment="Stretch">
+            <Button Background="White" Padding="5" Command="{Binding EditRoomDayCommand, Mode=OneTime}" Width="240" HorizontalContentAlignment="Stretch">
                 <StackPanel Orientation="Vertical">
-                    <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding RecordTypes}" />
-                    <TextBlock Text="Актуально с Х по Y" Margin="5 5 0 0" HorizontalAlignment="Right" Foreground="DimGray" FontStyle="Italic" FontSize="10" />
+                    <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding ScheduleItems}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate DataType="{x:Type CollectionViewGroup}">
+                                        <TextBlock Foreground="DimGray" Margin="2" Text="{Binding Name}" />
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                                <GroupStyle.Panel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" Margin="2" />
+                                    </ItemsPanelTemplate>
+                                </GroupStyle.Panel>
+                            </GroupStyle>
+                        </ItemsControl.GroupStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type registry:ScheduleEditorScheduleItemViewModel}">
+                                <TextBlock FontWeight="SemiBold" Margin="2">
+                                    <Run Text="{Binding StartTime, Mode=OneTime, StringFormat='{}{0:hh\\:mm}'}" />
+                                    <Run Text="-" />
+                                    <Run Text="{Binding EndTime, Mode=OneTime, StringFormat='{}{0:hh\\:mm}'}" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="Только на этот день" Visibility="{Binding IsThisDayOnly, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5 5 0 0" HorizontalAlignment="Right" Foreground="DimGray" FontStyle="Italic" FontSize="10" />
                 </StackPanel>
             </Button>
         </Grid>
-        <!--<Grid x:Name="grid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
-            <Grid.RowDefinitions>
-                <RowDefinition MinHeight="75" SharedSizeGroup="{Binding DayOfWeek, StringFormat='Day{0}'}" />
-            </Grid.RowDefinitions>
-            <Border  BorderThickness="1" BorderBrush="Gray" x:Name="border">
-                <StackPanel Orientation="Vertical">
-                    <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding RecordTypes}">
-                    </ItemsControl>
-                    <Button x:Name="button" Visibility="Hidden" Background="White" Margin="3" HorizontalAlignment="Stretch" Content="Добавить услугу" Command="{Binding AddRecordTypeCommand, Mode=OneTime}" />
-                </StackPanel>
-            </Border>
-        </Grid>
-        <DataTemplate.Triggers>
-            <Trigger SourceName="grid" Property="IsMouseOver" Value="True">
-                <Setter TargetName="border" Property="BorderBrush" Value="Black" />
-                <Setter TargetName="border" Property="Background" Value="LightBlue" />
-                <Setter TargetName="button" Property="Visibility" Value="Visible" />
-            </Trigger>
-        </DataTemplate.Triggers>-->
     </DataTemplate>
 </ResourceDictionary>

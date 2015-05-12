@@ -479,7 +479,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RoomId" Type="int" Nullable="false" />
-          <Property Name="RecordTypeId" Type="int" Nullable="false" />
+          <Property Name="RecordTypeId" Type="int" />
           <Property Name="DayOfWeek" Type="int" Nullable="false" />
           <Property Name="BeginDate" Type="date" Nullable="false" />
           <Property Name="EndDate" Type="date" Nullable="false" />
@@ -1250,7 +1250,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ScheduleItem_RecordTypes">
-          <End Role="RecordTypes" Type="Self.RecordTypes" Multiplicity="1" />
+          <End Role="RecordTypes" Type="Self.RecordTypes" Multiplicity="0..1" />
           <End Role="ScheduleItem" Type="Self.ScheduleItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RecordTypes">
@@ -1685,7 +1685,6 @@
           <EntitySet Name="RecordTypes" EntityType="DataLib.RecordType" />
           <EntitySet Name="RelativeRelationships" EntityType="DataLib.RelativeRelationship" />
           <EntitySet Name="Rooms" EntityType="DataLib.Room" />
-          <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
           <EntitySet Name="Staffs" EntityType="DataLib.Staff" />
           <EntitySet Name="UserMessages" EntityType="DataLib.UserMessage" />
           <EntitySet Name="UserMessageTypes" EntityType="DataLib.UserMessageType" />
@@ -1890,14 +1889,6 @@
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordType1" EntitySet="RecordTypes" />
           </AssociationSet>
-          <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ScheduleItem_Rooms" Association="DataLib.FK_ScheduleItem_Rooms">
-            <End Role="Room" EntitySet="Rooms" />
-            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
-          </AssociationSet>
           <AssociationSet Name="FK_UserMessages_UserMessageTypes" Association="DataLib.FK_UserMessages_UserMessageTypes">
             <End Role="UserMessageType" EntitySet="UserMessageTypes" />
             <End Role="UserMessage" EntitySet="UserMessages" />
@@ -1935,10 +1926,19 @@
             <End Role="User" EntitySet="Users" />
             <End Role="UserPermission" EntitySet="UserPermissions" />
           </AssociationSet>
+          <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
           <EntitySet Name="Decisions" EntityType="DataLib.Decision" />
+          <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
+          </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisions_Decisions" Association="DataLib.FK_CommissionDecisions_Decisions">
             <End Role="Decision" EntitySet="Decisions" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ScheduleItem_Rooms" Association="DataLib.FK_ScheduleItem_Rooms">
+            <End Role="Room" EntitySet="Rooms" />
+            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisionsLinks_Decisions" Association="DataLib.FK_CommissionDecisionsLinks_Decisions">
             <End Role="Decision" EntitySet="Decisions" />
@@ -2501,21 +2501,6 @@
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Room" ToRole="Assignment" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Rooms" FromRole="Room" ToRole="Record" />
           <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_Rooms" FromRole="Room" ToRole="ScheduleItem" />
-        </EntityType>
-        <EntityType Name="ScheduleItem">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RoomId" Type="Int32" Nullable="false" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="DayOfWeek" Type="Int32" Nullable="false" />
-          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="StartTime" Type="Time" Nullable="false" Precision="7" />
-          <Property Name="EndTime" Type="Time" Nullable="false" Precision="7" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="ScheduleItem" ToRole="RecordType" />
-          <NavigationProperty Name="Room" Relationship="DataLib.FK_ScheduleItem_Rooms" FromRole="ScheduleItem" ToRole="Room" />
         </EntityType>
         <EntityType Name="Staff">
           <Key>
@@ -3169,30 +3154,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ScheduleItem_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ScheduleItem">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ScheduleItem_Rooms">
-          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
-          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Room">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ScheduleItem">
-              <PropertyRef Name="RoomId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_UserMessages_UserMessageTypes">
           <End Type="DataLib.UserMessageType" Role="UserMessageType" Multiplicity="1" />
           <End Type="DataLib.UserMessage" Role="UserMessage" Multiplicity="*" />
@@ -3334,6 +3295,21 @@
           <NavigationProperty Name="Decisions1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision" ToRole="Decision1" />
           <NavigationProperty Name="Decision1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision1" ToRole="Decision" />
         </EntityType>
+         <EntityType Name="ScheduleItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoomId" Type="Int32" Nullable="false" />
+          <Property Name="RecordTypeId" Type="Int32" />
+          <Property Name="DayOfWeek" Type="Int32" Nullable="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="StartTime" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="EndTime" Type="Time" Nullable="false" Precision="7" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="ScheduleItem" ToRole="RecordType" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_ScheduleItem_Rooms" FromRole="ScheduleItem" ToRole="Room" />
+        </EntityType>
         <Association Name="FK_CommissionDecisions_Decisions">
           <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
           <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
@@ -3346,6 +3322,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+         <Association Name="FK_ScheduleItem_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="0..1" />
+          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ScheduleItem">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommissionDecisionsLinks_Decisions">
           <End Type="DataLib.Decision" Role="Decision" Multiplicity="1" />
           <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
@@ -3355,6 +3343,18 @@
             </Principal>
             <Dependent Role="CommissionDecisionsLink">
               <PropertyRef Name="DecisionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+         <Association Name="FK_ScheduleItem_Rooms">
+          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
+          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Room">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ScheduleItem">
+              <PropertyRef Name="RoomId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3896,20 +3896,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ScheduleItems">
-            <EntityTypeMapping TypeName="DataLib.ScheduleItem">
-              <MappingFragment StoreEntitySet="ScheduleItem">
-                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
-                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
-                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Staffs">
             <EntityTypeMapping TypeName="DataLib.Staff">
               <MappingFragment StoreEntitySet="Staffs">
@@ -3974,6 +3960,20 @@
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+           <EntitySetMapping Name="ScheduleItems">
+            <EntityTypeMapping TypeName="DataLib.ScheduleItem">
+              <MappingFragment StoreEntitySet="ScheduleItem">
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

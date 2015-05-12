@@ -2,15 +2,12 @@
 using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 
 namespace Registry
 {
     public class ScheduleEditorRoomViewModel : ObservableObject
     {
         private readonly Room room;
-
-        private IDialogService dialogService;
 
         public ScheduleEditorRoomViewModel(Room room, IDialogService dialogService)
         {
@@ -22,7 +19,6 @@ namespace Registry
             {
                 throw new ArgumentNullException("dialogService");
             }
-            this.dialogService = dialogService;
             this.room = room;
             Days = new []
             {

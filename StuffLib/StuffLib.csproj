@@ -126,6 +126,7 @@
     <Compile Include="Converters\UniversalMultiBooleanConverter.cs" />
     <Compile Include="Converters\UniversalConverter.cs" />
     <Compile Include="Misc\Configuration.cs" />
+    <Compile Include="Misc\ConvertMarkupExtension.cs" />
     <Compile Include="Misc\DataContextCacheService.cs" />
     <Compile Include="Misc\ICacheService.cs" />
     <Compile Include="Misc\IDataContext.cs" />

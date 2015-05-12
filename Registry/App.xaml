@@ -19,7 +19,6 @@
                 <ResourceDictionary Source="View/ScheduleEditorView.xaml" />
                 <ResourceDictionary Source="View/ScheduleEditorRoomView.xaml" />
                 <ResourceDictionary Source="View/ScheduleEditorRoomDayView.xaml" />
-                <ResourceDictionary Source="View/ScheduleEditorRecordTypeView.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <ControlTemplate x:Key="ValidationTemplate">
                 <Grid>
