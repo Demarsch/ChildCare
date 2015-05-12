@@ -152,7 +152,7 @@ namespace AdminTools.ViewModel
 
             UsersAD = new ObservableCollection<UserSystemInfo>(data);*/
 
-            UsersAD = new ObservableCollection<UserSystemInfo>(service.Instance<IUserSystemInfoService>().Find(SelectedPerson.FullName));
+            UsersAD = new ObservableCollection<UserSystemInfo>(userSystemInfoService.Find(SelectedPerson.FullName));
             if (UsersAD.Any())
                 ShowPopup = true;
             else
