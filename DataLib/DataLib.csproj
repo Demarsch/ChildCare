@@ -155,6 +155,9 @@
     <Compile Include="Decision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DisabilityType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="EFImplementations\ModelContext.cs" />
     <Compile Include="EFImplementations\ModelContextProvider.cs" />
     <Compile Include="FinacingSource.cs">
@@ -193,6 +196,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonAddress.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PersonDisability.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonIdentityDocument.cs">

@@ -9,11 +9,11 @@ using Core;
 
 namespace MainLib
 {
-    public class PersonIdentityDocumentViewModel : ObservableObject
+    public class PersonDisabilityViewModel : ObservableObject
     {
         #region Fields
 
-        private readonly PersonIdentityDocument personIdentityDocument;
+        private readonly PersonDisability personDisability;
 
         private IPersonService service;
 
@@ -21,15 +21,15 @@ namespace MainLib
 
         #region Constructors
 
-        public PersonIdentityDocumentViewModel(PersonIdentityDocument personIdentityDocument, IPersonService service)
+        public PersonDisabilityViewModel(PersonDisability personDisability, IPersonService service)
         {
-            if (personIdentityDocument == null)
-                throw new ArgumentNullException("personIdentityDocument");
+            if (personDisability == null)
+                throw new ArgumentNullException("personDisability");
             if (service == null)
                 throw new ArgumentNullException("service");
             this.service = service;
-            this.personIdentityDocument = personIdentityDocument;
-            GivenOrgSuggestionProvider = new IdentityDocumentsGivenOrgSuggestionProvider(service);
+            this.personDisability = personDisability;
+            GivenOrgSuggestionProvider = new DisabilitiesGivenOrgSuggestionProvider(service);
             FillData();
         }
 
@@ -41,23 +41,23 @@ namespace MainLib
         {
             if (!IsEmpty)
             {
-                IdentityDocumentTypeId = personIdentityDocument.IdentityDocumentTypeId;
-                Series = personIdentityDocument.Series;
-                Number = personIdentityDocument.Number;
-                GivenOrg = personIdentityDocument.GivenOrg;
-                BeginDate = personIdentityDocument.BeginDate;
-                EndDate = personIdentityDocument.EndDate;
-                WithoutEndDate = personIdentityDocument.EndDate.Date == DateTime.MaxValue.Date;
+                DisabilityTypeId = personDisability.DisabilityTypeId;
+                Series = personDisability.Series;
+                Number = personDisability.Number;
+                GivenOrg = personDisability.GivenOrg;
+                BeginDate = personDisability.BeginDate;
+                EndDate = personDisability.EndDate;
+                WithoutEndDate = personDisability.EndDate.Date == DateTime.MaxValue.Date;
             }
             else
             {
-                IdentityDocumentTypeId = 0;
+                DisabilityTypeId = 0;
                 Series = string.Empty;
                 Number = string.Empty;
                 GivenOrg = string.Empty;
                 BeginDate = new DateTime(1900, 1, 1);
                 EndDate = DateTime.MaxValue.Date;
-                WithoutEndDate = true;
+                //WithoutEndDate = true;
             }
         }
 
@@ -65,8 +65,8 @@ namespace MainLib
 
         #region Properties
 
-        private IdentityDocumentsGivenOrgSuggestionProvider givenOrgSuggestionProvider;
-        public IdentityDocumentsGivenOrgSuggestionProvider GivenOrgSuggestionProvider
+        private DisabilitiesGivenOrgSuggestionProvider givenOrgSuggestionProvider;
+        public DisabilitiesGivenOrgSuggestionProvider GivenOrgSuggestionProvider
         {
             get { return givenOrgSuggestionProvider; }
             set { Set("GivenOrgSuggestionProvider", ref givenOrgSuggestionProvider, value); }
@@ -74,14 +74,14 @@ namespace MainLib
 
         public bool IsEmpty
         {
-            get { return personIdentityDocument == null; }
+            get { return personDisability == null; }
         }
 
-        private int identityDocumentTypeId = 0;
-        public int IdentityDocumentTypeId
+        private int disabilityTypeId = 0;
+        public int DisabilityTypeId
         {
-            get { return identityDocumentTypeId; }
-            set { Set("IdentityDocumentTypeId", ref identityDocumentTypeId, value); }
+            get { return disabilityTypeId; }
+            set { Set("DisabilityTypeId", ref disabilityTypeId, value); }
         }
 
         private string series = string.Empty;
@@ -119,8 +119,8 @@ namespace MainLib
             set
             {
                 Set("BeginDate", ref beginDate, value);
-                RaisePropertyChanged("PersonIdentityDocumentState");
-                RaisePropertyChanged("PersonIdentityDocumentStateString");
+                RaisePropertyChanged("PersonDisabilityState");
+                RaisePropertyChanged("PersonDisabilityStateString");
             }
         }
 
@@ -131,8 +131,8 @@ namespace MainLib
             set
             {
                 Set("EndDate", ref endDate, value);
-                RaisePropertyChanged("PersonIdentityDocumentState");
-                RaisePropertyChanged("PersonIdentityDocumentStateString");
+                RaisePropertyChanged("PersonDisabilityState");
+                RaisePropertyChanged("PersonDisabilityStateString");
             }
         }
 
@@ -153,7 +153,7 @@ namespace MainLib
             get { return !WithoutEndDate; }
         }
 
-        public ItemState PersonIdentityDocumentState
+        public ItemState PersonDisabilityState
         {
             get
             {
@@ -164,11 +164,11 @@ namespace MainLib
             }
         }
 
-        public string PersonIdentityDocumentStateString
+        public string PersonDisabilityStateString
         {
             get
             {
-                switch (PersonIdentityDocumentState)
+                switch (PersonDisabilityState)
                 {
                     case ItemState.Active:
                         return "Действующий документ";
@@ -180,15 +180,15 @@ namespace MainLib
             }
         }
 
-        public string PersonAddressString
+        public string PersonDisabilityString
         {
             get
             {
-                var IdentityDocumentTypeName = string.Empty;
-                var IdentityDocumentType = service.GetIdentityDocumentType(IdentityDocumentTypeId);
-                if (IdentityDocumentType != null)
-                    IdentityDocumentTypeName = IdentityDocumentType.Name;
-                return IdentityDocumentTypeName + ": Серия " + Series + " Номер " + Number + "\r\nВыдан " + (GivenOrg != null ? GivenOrg : GivenOrgText) + " " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty); ;
+                var disabilityTypeName = string.Empty;
+                var disabilityType = service.GetDisabilityType(DisabilityTypeId);
+                if (disabilityType != null)
+                    disabilityTypeName = disabilityType.Name;
+                return disabilityTypeName + ": Серия " + Series + " Номер " + Number + "\r\nВыдан " + (GivenOrg != null ? GivenOrg : GivenOrgText) + " " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
             }
         }
 

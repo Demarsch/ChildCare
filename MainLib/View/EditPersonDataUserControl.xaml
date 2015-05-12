@@ -108,7 +108,9 @@
         </ScrollViewer>
 
         <Label Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Инвалидость</Label>
-        <TextBox Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Margin="1" HorizontalAlignment="Stretch" Height="72" />
+        <ScrollViewer Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Height="72" Margin="1"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <TextBox HorizontalAlignment="Stretch" IsReadOnly="True" Text="{Binding Disabilities}" MouseDoubleClick="{mvvm:EventBinding EditPersonDisabilitiesCommand}"/>
+        </ScrollViewer>
 
         <Label Grid.Row="17" Grid.Column="0" FontWeight="Bold">Социальный статус</Label>
         <ComboBox Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>

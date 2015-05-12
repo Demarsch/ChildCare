@@ -177,7 +177,7 @@ namespace Core
             }
         }
 
-        public ICollection<string> GetGivenOrgByName(string name)
+        public ICollection<string> GetIdentityDocumentsGivenOrgByName(string name)
         {
             using (var db = provider.GetNewDataContext())
             {
@@ -185,6 +185,13 @@ namespace Core
             }
         }
 
+        public ICollection<string> GetDisabilitiesGivenOrgByName(string name)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonDisability>().Where(x => x.GivenOrg.Contains(name)).Select(x => x.GivenOrg).Distinct().ToArray();
+            }
+        }
 
         public PersonName GetActualPersonName(int personId)
         {
@@ -194,16 +201,6 @@ namespace Core
                 return db.GetData<PersonName>().FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
             }
         }
-
-        public ICollection<InsuranceDocument> GetActualInsuranceDocuments(int personId)
-        {
-            using (var db = provider.GetNewDataContext())
-            {
-                var dateTimeNow = DateTime.Now;
-                return db.GetData<InsuranceDocument>().Where(x => personId == x.PersonId && dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate).ToArray();
-            }
-        }
-
 
         public string GetActualInsuranceDocumentsString(int personId)
         {
@@ -232,6 +229,88 @@ namespace Core
             {
                 return db.GetData<InsuranceCompany>().FirstOrDefault(x => x.Id == id);
             }
+        }
+
+
+        public ICollection<PersonDisability> GetPersonDisabilities(int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonDisability>().Where(x => personId == x.PersonId).ToArray();
+            }
+        }
+
+        public ICollection<DisabilityType> GetDisabilityTypes()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<DisabilityType>().ToArray();
+            }
+        }
+
+        public DisabilityType GetDisabilityType(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<DisabilityType>().Where(x => x.Id == id).FirstOrDefault();
+            }
+        }
+
+        public string GetActualPersonAddressesString(int personId)
+        {
+            var resStr = string.Empty;
+            using (var db = provider.GetNewDataContext())
+            {
+                var dateTimeNow = DateTime.Now;
+                var actualPersonAddresses = db.GetData<PersonAddress>().Where(x => personId == x.PersonId && dateTimeNow >= x.BeginDateTime && dateTimeNow < x.EndDateTime);
+
+                foreach (var personAddress in actualPersonAddresses)
+                {
+                    if (resStr != string.Empty)
+                        resStr += "\r\n";
+                    resStr += personAddress.AddressType.Name + ": " + personAddress.UserText + " " + personAddress.House + (personAddress.Building != string.Empty ? "\"" + personAddress.Building + "\"" : string.Empty) +
+                        (personAddress.Apartment != string.Empty ? " " + personAddress.Apartment : string.Empty) + "\r\nДействует с " + personAddress.BeginDateTime.ToString("dd.MM.yyyy") + (personAddress.EndDateTime != DateTime.MaxValue ? " по" + personAddress.EndDateTime.ToString("dd.MM.yyyy") : string.Empty);
+                }
+            }
+            return resStr;
+        }
+
+
+        public string GetActualPersonIdentityDocumentsString(int personId)
+        {
+            var resStr = string.Empty;
+            using (var db = provider.GetNewDataContext())
+            {
+                var dateTimeNow = DateTime.Now;
+                var actualPersonIdentityDocuments = db.GetData<PersonIdentityDocument>().Where(x => personId == x.PersonId && dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate);
+
+                foreach (var personIdentityDocument in actualPersonIdentityDocuments)
+                {
+                    if (resStr != string.Empty)
+                        resStr += "\r\n";
+                    resStr += personIdentityDocument.IdentityDocumentType.Name + ": Серия " + personIdentityDocument.Series + " Номер " + personIdentityDocument.Number + "\r\nВыдан " + personIdentityDocument.GivenOrg + " " + personIdentityDocument.BeginDate.ToString("dd.MM.yyyy") + (personIdentityDocument.EndDate != DateTime.MaxValue ? " по " + personIdentityDocument.EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                }
+            }
+            return resStr;
+        }
+
+
+        public string GetActualPersonDisabilitiesString(int personId)
+        {
+            var resStr = string.Empty;
+            using (var db = provider.GetNewDataContext())
+            {
+                var dateTimeNow = DateTime.Now;
+                var actualPersonPersonDisabilities = db.GetData<PersonDisability>().Where(x => personId == x.PersonId && dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate);
+
+                foreach (var personDisabilities in actualPersonPersonDisabilities)
+                {
+                    if (resStr != string.Empty)
+                        resStr += "\r\n";
+                    resStr += personDisabilities.DisabilityType.Name + ": Серия " + personDisabilities.Series + " Номер " + personDisabilities.Number + "\r\nВыдан " + personDisabilities.GivenOrg + " " + personDisabilities.BeginDate.ToString("dd.MM.yyyy") + (personDisabilities.EndDate != DateTime.MaxValue ? " по " + personDisabilities.EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                }
+            }
+            return resStr;
         }
     }
 }

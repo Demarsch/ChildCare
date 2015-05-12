@@ -108,5 +108,7 @@
     <Build Include="dbo\Tables\ScheduleItem.sql" />
     <Build Include="dbo\Tables\PersonIdentityDocuments.sql" />
     <Build Include="dbo\Tables\IdentityDocumentTypes.sql" />
+    <Build Include="dbo\Tables\PersonDisabilities.sql" />
+    <Build Include="dbo\Tables\DisabilityTypes.sql" />
   </ItemGroup>
 </Project>

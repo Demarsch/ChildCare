@@ -135,12 +135,15 @@
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
     <Compile Include="ViewModel\EditPersonViewModel.cs" />
-    <Compile Include="ViewModel\GivenOrgSuggestionProvider.cs" />
+    <Compile Include="ViewModel\DisabilitiesGivenOrgSuggestionProvider.cs" />
+    <Compile Include="ViewModel\IdentityDocumentsGivenOrgSuggestionProvider.cs" />
     <Compile Include="ViewModel\OKATOSuggestionProvider.cs" />
     <Compile Include="ViewModel\OKATORegionSuggestionProvider.cs" />
     <Compile Include="ViewModel\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
     <Compile Include="ViewModel\ItemState.cs" />
+    <Compile Include="ViewModel\PersonDisabilitiesViewModel.cs" />
+    <Compile Include="ViewModel\PersonDisabilityViewModel.cs" />
     <Compile Include="ViewModel\PersonIdentityDocumentViewModel.cs" />
     <Compile Include="ViewModel\PersonIdentityDocumentsViewModel.cs" />
     <Compile Include="ViewModel\PersonAddressesViewModel.cs" />
@@ -196,6 +199,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\EditPersonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonDisabilitiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

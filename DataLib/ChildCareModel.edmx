@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DataLib.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AddressTypes">
           <Key>
             <PropertyRef Name="Id" />
@@ -193,6 +193,15 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="DisabilityTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="BeginDate" Type="datetime" Nullable="false" />
+          <Property Name="EndDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="FinacingSources">
           <Key>
             <PropertyRef Name="Id" />
@@ -312,6 +321,19 @@
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="Building" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Apartment" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PersonDisabilities">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="DisabilityTypeId" Type="int" Nullable="false" />
+          <Property Name="Series" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Number" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="GivenOrg" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="BeginDate" Type="datetime" Nullable="false" />
+          <Property Name="EndDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonIdentityDocuments">
           <Key>
@@ -951,6 +973,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PersonDisabilities_PersonDisabilities">
+          <End Role="DisabilityTypes" Type="Self.DisabilityTypes" Multiplicity="1" />
+          <End Role="PersonDisabilities" Type="Self.PersonDisabilities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DisabilityTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDisabilities">
+              <PropertyRef Name="DisabilityTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDisabilities_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonDisabilities" Type="Self.PersonDisabilities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDisabilities">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonIdentityDocuments_IdentityDocumentTypes">
           <End Role="IdentityDocumentTypes" Type="Self.IdentityDocumentTypes" Multiplicity="1" />
           <End Role="PersonIdentityDocuments" Type="Self.PersonIdentityDocuments" Multiplicity="*" />
@@ -1303,6 +1349,7 @@
           <EntitySet Name="CommissionTypes" EntityType="Self.CommissionTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Decisions" EntityType="Self.Decisions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DisabilityTypes" EntityType="Self.DisabilityTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinacingSources" EntityType="Self.FinacingSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IdentityDocumentTypes" EntityType="Self.IdentityDocumentTypes" Schema="dbo" store:Type="Tables" />
@@ -1314,6 +1361,7 @@
           <EntitySet Name="PermissionLinks" EntityType="Self.PermissionLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonAddresses" EntityType="Self.PersonAddresses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonDisabilities" EntityType="Self.PersonDisabilities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonIdentityDocuments" EntityType="Self.PersonIdentityDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonRelatives" EntityType="Self.PersonRelatives" Schema="dbo" store:Type="Tables" />
@@ -1474,6 +1522,14 @@
           <AssociationSet Name="FK_PersonAddresses_AddressTypes" Association="Self.FK_PersonAddresses_AddressTypes">
             <End Role="AddressTypes" EntitySet="AddressTypes" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDisabilities_PersonDisabilities" Association="Self.FK_PersonDisabilities_PersonDisabilities">
+            <End Role="DisabilityTypes" EntitySet="DisabilityTypes" />
+            <End Role="PersonDisabilities" EntitySet="PersonDisabilities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDisabilities_Persons" Association="Self.FK_PersonDisabilities_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonDisabilities" EntitySet="PersonDisabilities" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonIdentityDocuments_IdentityDocumentTypes" Association="Self.FK_PersonIdentityDocuments_IdentityDocumentTypes">
             <End Role="IdentityDocumentTypes" EntitySet="IdentityDocumentTypes" />
@@ -1892,7 +1948,17 @@
             <End Role="User" EntitySet="Users" />
             <End Role="UserPermission" EntitySet="UserPermissions" />
           </AssociationSet>
-        </EntityContainer>
+          <EntitySet Name="DisabilityTypes" EntityType="DataLib.DisabilityType" />
+          <EntitySet Name="PersonDisabilities" EntityType="DataLib.PersonDisability" />
+          <AssociationSet Name="FK_PersonDisabilities_PersonDisabilities" Association="DataLib.FK_PersonDisabilities_PersonDisabilities">
+            <End Role="DisabilityType" EntitySet="DisabilityTypes" />
+            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDisabilities_Persons" Association="DataLib.FK_PersonDisabilities_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
             <PropertyRef Name="Id" />
@@ -2332,6 +2398,7 @@
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="Person" ToRole="PersonTalon" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
+          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="Person" ToRole="PersonDisability" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -3303,6 +3370,55 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="DisabilityType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_PersonDisabilities" FromRole="DisabilityType" ToRole="PersonDisability" />
+        </EntityType>
+        <EntityType Name="PersonDisability">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="DisabilityTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Series" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Number" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GivenOrg" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="DisabilityType" Relationship="DataLib.FK_PersonDisabilities_PersonDisabilities" FromRole="PersonDisability" ToRole="DisabilityType" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="PersonDisability" ToRole="Person" />
+        </EntityType>
+        <Association Name="FK_PersonDisabilities_PersonDisabilities">
+          <End Type="DataLib.DisabilityType" Role="DisabilityType" Multiplicity="1" />
+          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DisabilityType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDisability">
+              <PropertyRef Name="DisabilityTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDisabilities_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDisability">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3859,6 +3975,30 @@
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="SID" ColumnName="SID" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DisabilityTypes">
+            <EntityTypeMapping TypeName="DataLib.DisabilityType">
+              <MappingFragment StoreEntitySet="DisabilityTypes">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonDisabilities">
+            <EntityTypeMapping TypeName="DataLib.PersonDisability">
+              <MappingFragment StoreEntitySet="PersonDisabilities">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="GivenOrg" ColumnName="GivenOrg" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="Series" ColumnName="Series" />
+                <ScalarProperty Name="DisabilityTypeId" ColumnName="DisabilityTypeId" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
