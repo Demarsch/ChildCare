@@ -212,7 +212,7 @@ namespace Registry
                 }
                 else
                 {
-                    dataContext.Attach<Assignment>(assignment);
+                    dataContext.Update<Assignment>(assignment);
                 }
                 dataContext.Save();
             }

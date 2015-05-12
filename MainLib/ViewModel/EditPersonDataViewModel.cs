@@ -42,6 +42,7 @@ namespace MainLib
             EditPersonAddressCommand = new RelayCommand(EditPersonAddress);
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetActualChangeNameReasons());
             EditPersonIdentityDocumentsCommand = new RelayCommand(EditPersonIdentityDocuments);
+            EditPersonDisabilitiesCommand = new RelayCommand(EditPersonDisabilities);
             Genders = new ObservableCollection<Gender>(service.GetGenders());
 
         }
@@ -91,6 +92,9 @@ namespace MainLib
                 GenderId = person.GenderId;
                 PhotoURI = person.PhotoUri;
                 Insurances = service.GetActualInsuranceDocumentsString(Id);
+                Addresses = service.GetActualPersonAddressesString(Id);
+                IdentityDocuments = service.GetActualPersonIdentityDocumentsString(Id);
+                Disabilities = service.GetActualPersonDisabilitiesString(Id);
             }
             else
             {
@@ -250,6 +254,18 @@ namespace MainLib
             IdentityDocuments = personIdentityDocumentsViewModel.PersonIdentityDocumentsString;
         }
 
+        public ICommand EditPersonDisabilitiesCommand { get; set; }
+        private PersonDisabilitiesViewModel personDisabilitiesViewModel = null;
+        private void EditPersonDisabilities()
+        {
+            if (personDisabilitiesViewModel == null)
+                personDisabilitiesViewModel = new PersonDisabilitiesViewModel(Id, service, dialogService);
+            var dialogResult = dialogService.ShowDialog(personDisabilitiesViewModel);
+            if (dialogResult != true)
+                personDisabilitiesViewModel = new PersonDisabilitiesViewModel(Id, service, dialogService);
+            Disabilities = personDisabilitiesViewModel.PersonDisabilitiesString;
+        }
+
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();
         public ObservableCollection<Gender> Genders
         {
@@ -394,118 +410,71 @@ namespace MainLib
         private DateTime birthDate;
         public DateTime BirthDate
         {
-            get
-            {
-                return IsEmpty ? DateTime.Parse("1/1/1900") : birthDate;
-            }
-            set
-            {
-                Set("BirthDate", ref birthDate, value);
-            }
+            get { return IsEmpty ? DateTime.Parse("1/1/1900") : birthDate; }
+            set { Set("BirthDate", ref birthDate, value); }
         }
 
         private string snils = string.Empty;
         public string SNILS
         {
-            get
-            {
-                return snils;
-            }
-            set
-            {
-                Set("SNILS", ref snils, value);
-            }
+            get { return snils; }
+            set { Set("SNILS", ref snils, value); }
         }
 
         private string medNumber = string.Empty;
         public string MedNumber
         {
-            get
-            {
-                return medNumber;
-            }
-            set
-            {
-                Set("MedNumber", ref medNumber, value);
-            }
+            get { return medNumber; }
+            set { Set("MedNumber", ref medNumber, value); }
         }
 
         private int? genderId = 0;
         public int? GenderId
         {
-            get
-            {
-                return genderId;
-            }
-            set
-            {
-                Set("GenderId", ref genderId, value);
-            }
+            get { return genderId; }
+            set { Set("GenderId", ref genderId, value); }
         }
 
         private string phones = string.Empty;
         public string Phones
         {
-            get
-            {
-                return phones;
-            }
-            set
-            {
-                Set("Phones", ref phones, value);
-            }
+            get { return phones; }
+            set { Set("Phones", ref phones, value); }
         }
 
         private string insurances = string.Empty;
         public string Insurances
         {
-            get
-            {
-                return insurances;
-            }
-            set
-            {
-                Set("Insurances", ref insurances, value);
-            }
+            get { return insurances; }
+            set { Set("Insurances", ref insurances, value); }
         }
 
         private string addresses = string.Empty;
         public string Addresses
         {
-            get
-            {
-                return addresses;
-            }
-            set
-            {
-                Set("Addresses", ref addresses, value);
-            }
+            get { return addresses; }
+            set { Set("Addresses", ref addresses, value); }
         }
 
         private string identityDocuments = string.Empty;
         public string IdentityDocuments
         {
-            get
-            {
-                return identityDocuments;
-            }
-            set
-            {
-                Set("IdentityDocuments", ref identityDocuments, value);
-            }
+            get { return identityDocuments; }
+            set { Set("IdentityDocuments", ref identityDocuments, value); }
+        }
+
+        private string disabilities = string.Empty;
+        public string Disabilities
+        {
+            get { return disabilities; }
+            set { Set("Disabilities", ref disabilities, value); }
         }
 
         private string relatives = string.Empty;
         public string Relatives
         {
-            get
-            {
-                return relatives;
-            }
-            set
-            {
-                Set("Relatives", ref relatives, value);
-            }
+            get { return relatives; }
+            set { Set("Relatives", ref relatives, value); }
         }
     }
 }

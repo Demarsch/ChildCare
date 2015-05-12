@@ -60,7 +60,7 @@ namespace TestCore
             throw new NotImplementedException();
         }
 
-        public void Attach<TData>(TData obj) where TData : class
+        public void Update<TData>(TData obj) where TData : class
         {
             throw new NotImplementedException();
         }

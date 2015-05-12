@@ -53,9 +53,9 @@ namespace DataLib
             this.Set<TData>().RemoveRange(objs);
         }
 
-        public void Attach<TData>(TData obj) where TData : class
+        public void Update<TData>(TData obj) where TData : class
         {
-            this.Set<TData>().Attach(obj);
+            this.Entry<TData>(obj).State = EntityState.Modified;
         }
 
         public void Save()

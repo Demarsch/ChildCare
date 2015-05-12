@@ -22,7 +22,7 @@ namespace Core
 
         void RemoveRange<TData>(IEnumerable<TData> objs) where TData : class;
 
-        void Attach<TData>(TData obj) where TData : class;
+        void Update<TData>(TData obj) where TData : class;
 
         void Save();
 

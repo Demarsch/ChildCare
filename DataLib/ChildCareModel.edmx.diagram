@@ -112,6 +112,10 @@
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
         <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
+        <EntityTypeShape EntityType="DataLib.DisabilityType" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DataLib.PersonDisability" Width="1.5" PointX="8.25" PointY="13.375" />
+        <AssociationConnector Association="DataLib.FK_PersonDisabilities_PersonDisabilities" />
+        <AssociationConnector Association="DataLib.FK_PersonDisabilities_Persons" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

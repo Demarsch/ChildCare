@@ -8,11 +8,11 @@ using WpfControls.Editors;
 
 namespace Core
 {
-    public class GivenOrgSuggestionProvider : ISuggestionProvider
+    public class DisabilitiesGivenOrgSuggestionProvider : ISuggestionProvider
     {
         private IPersonService service;
 
-        public GivenOrgSuggestionProvider(IPersonService service)
+        public DisabilitiesGivenOrgSuggestionProvider(IPersonService service)
         {
             this.service = service;
         }
@@ -21,7 +21,7 @@ namespace Core
         {
             if (string.IsNullOrEmpty(filter) || (filter.Length < 3))
                 return null;
-            return service.GetGivenOrgByName(filter);
+            return service.GetDisabilitiesGivenOrgByName(filter);
         }
     }
 }

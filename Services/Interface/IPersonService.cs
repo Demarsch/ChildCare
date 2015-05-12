@@ -13,15 +13,21 @@ namespace Core
 
         PersonName GetActualPersonName(int personId);
 
-        ICollection<InsuranceDocument> GetActualInsuranceDocuments(int personId);
-
         string GetActualInsuranceDocumentsString(int personId);
+
+        string GetActualPersonAddressesString(int personId);
+
+        string GetActualPersonIdentityDocumentsString(int personId);
+
+        string GetActualPersonDisabilitiesString(int personId);
 
         ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
 
         ICollection<InsuranceDocument> GetInsuranceDocuments(int personId);
 
         ICollection<PersonIdentityDocument> GetPersonIdentityDocuments(int personId);
+
+        ICollection<PersonDisability> GetPersonDisabilities(int personId);
 
         ICollection<PersonAddress> GetPersonAddresses(int personId);
 
@@ -41,13 +47,19 @@ namespace Core
 
         ICollection<AddressType> GetAddressTypes();
 
+        ICollection<DisabilityType> GetDisabilityTypes();
+
+        DisabilityType GetDisabilityType(int id);
+
         AddressType GetAddressType(int id);
 
         ICollection<IdentityDocumentType> GetIdentityDocumentTypes();
 
         IdentityDocumentType GetIdentityDocumentType(int id);
 
-        ICollection<string> GetGivenOrgByName(string name);
+        ICollection<string> GetDisabilitiesGivenOrgByName(string name);
+
+        ICollection<string> GetIdentityDocumentsGivenOrgByName(string name);
 
         //ToDo: Move to other service
         Okato GetOKATOByCode(string codeOKATO);

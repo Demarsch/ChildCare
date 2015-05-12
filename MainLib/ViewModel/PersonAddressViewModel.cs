@@ -236,7 +236,7 @@ namespace MainLib
                 if (addressType != null)
                     addressTypeName = addressType.Name;
                 return addressTypeName + ": " + UserText + " " + House + (Building != string.Empty ? "\"" + Building + "\"" : string.Empty) +
-                    (Apartment != string.Empty ? " " + Apartment : string.Empty) + "\r\nДействует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по" + EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                    (Apartment != string.Empty ? " " + Apartment : string.Empty) + "\r\nДействует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
             }
         }
 
