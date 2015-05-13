@@ -25,16 +25,6 @@ namespace TestCore
             return data.TryGetValue(typeof(TData), out result) ? (result as ICollection<TData>).AsQueryable() : new TData[0].AsQueryable();
         }
 
-        public TData GetById<TData>(int id) where TData : class
-        {
-            throw new NotImplementedException();
-        }
-
-        public ICollection<TData> GetAll<TData>() where TData : class
-        {
-            throw new NotImplementedException();
-        }
-
         public void Save()
         {
             throw new NotImplementedException();

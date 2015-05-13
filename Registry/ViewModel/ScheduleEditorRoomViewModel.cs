@@ -9,26 +9,22 @@ namespace Registry
     {
         private readonly Room room;
 
-        public ScheduleEditorRoomViewModel(Room room, IDialogService dialogService)
+        public ScheduleEditorRoomViewModel(Room room)
         {
             if (room == null)
             {
                 throw new ArgumentNullException("room");
             }
-            if (dialogService == null)
-            {
-                throw new ArgumentNullException("dialogService");
-            }
             this.room = room;
             Days = new []
             {
-                new ScheduleEditorRoomDayViewModel(room.Id, 1, dialogService),
-                new ScheduleEditorRoomDayViewModel(room.Id, 2, dialogService),
-                new ScheduleEditorRoomDayViewModel(room.Id, 3, dialogService),
-                new ScheduleEditorRoomDayViewModel(room.Id, 4, dialogService),
-                new ScheduleEditorRoomDayViewModel(room.Id, 5, dialogService),
-                new ScheduleEditorRoomDayViewModel(room.Id, 6, dialogService),
-                new ScheduleEditorRoomDayViewModel(room.Id, 7, dialogService), 
+                new ScheduleEditorRoomDayViewModel(room.Id, 1),
+                new ScheduleEditorRoomDayViewModel(room.Id, 2),
+                new ScheduleEditorRoomDayViewModel(room.Id, 3),
+                new ScheduleEditorRoomDayViewModel(room.Id, 4),
+                new ScheduleEditorRoomDayViewModel(room.Id, 5),
+                new ScheduleEditorRoomDayViewModel(room.Id, 6),
+                new ScheduleEditorRoomDayViewModel(room.Id, 7), 
             };
         }
 

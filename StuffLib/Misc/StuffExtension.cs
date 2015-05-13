@@ -564,7 +564,13 @@ namespace Core
 
         #endregion
 
+        #region Extensions for IDataContext
 
+        public static TData GetById<TData>(this IDataContext dataContext, int id) where TData : class
+        {
+            return dataContext.GetData<TData>().ById(id);
+        }
 
+        #endregion
     }
 }

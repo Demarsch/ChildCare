@@ -5,7 +5,7 @@ using GalaSoft.MvvmLight;
 
 namespace Registry
 {
-    public class ScheduleEditorScheduleItemViewModel : ObservableObject
+    public class ScheduleEditorScheduleItemViewModel : ObservableObject, ITimeInterval
     {
         private readonly ScheduleItem scheduleItem;
 
@@ -25,7 +25,9 @@ namespace Registry
             this.scheduleItem = scheduleItem;
         }
 
-        public string RecordType { get { return scheduleItem.RecordTypeId.HasValue ? cacheService.GetItemById<RecordType>(scheduleItem.RecordTypeId.Value).Name : string.Empty; } }
+        public string RecordTypeName { get { return scheduleItem.RecordTypeId.HasValue ? cacheService.GetItemById<RecordType>(scheduleItem.RecordTypeId.Value).Name : string.Empty; } }
+
+        public int RecordTypeId { get { return scheduleItem.RecordTypeId.GetValueOrDefault(); } }
 
         public DateTime BeginDate { get { return scheduleItem.BeginDate; } }
 

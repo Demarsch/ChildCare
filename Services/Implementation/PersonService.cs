@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataLib;
 
 namespace Core
 {
     public class PersonService : IPersonService
     {
-        private IDataContextProvider provider;
+        private readonly IDataContextProvider provider;
 
-        public PersonService(IDataContextProvider Provider)
+        public PersonService(IDataContextProvider provider)
         {
-            provider = Provider;
+            if (provider == null)
+                throw new ArgumentNullException("provider");
+            this.provider = provider;
         }
 
-        public Person GetPersonById(int Id)
+        public Person GetPersonById(int id)
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetById<Person>(Id);
+                return db.GetById<Person>(id);
             }
         }
 
@@ -51,7 +51,7 @@ namespace Core
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetAll<InsuranceDocumentType>();
+                return db.GetData<InsuranceDocumentType>().ToArray();
             }
         }
 
@@ -68,7 +68,7 @@ namespace Core
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetAll<Gender>();
+                return db.GetData<Gender>().ToArray();
             }
         }
 
@@ -86,7 +86,7 @@ namespace Core
             {
                 var words = filter.Split(' ').ToList();
                 words.Remove("");
-                var list = db.GetData<InsuranceCompany>().Where(x => filter != string.Empty ? words.All(y => x.NameSMOK.Contains(y) || x.AddressF.Contains(y)) : true).ToArray();
+                var list = db.GetData<InsuranceCompany>().Where(x => filter == string.Empty || words.All(y => x.NameSMOK.Contains(y) || x.AddressF.Contains(y))).ToArray();
                 return list;
             }
         }
@@ -141,7 +141,7 @@ namespace Core
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetAll<AddressType>();
+                return db.GetData<AddressType>().ToArray();
             }
         }
 
@@ -165,7 +165,7 @@ namespace Core
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetAll<IdentityDocumentType>();
+                return db.GetData<IdentityDocumentType>().ToArray();
             }
         }
 

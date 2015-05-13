@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using Core;
+using GalaSoft.MvvmLight;
+
+namespace Registry
+{
+    public class ScheduleEditorEditRecordTypeViewModel : ObservableObject
+    {
+        public ScheduleEditorEditRecordTypeViewModel()
+        {
+            IsChanged = true;
+        }
+
+        private bool isChanged;
+
+        public bool IsChanged
+        {
+            get { return isChanged; }
+            set { Set("IsChanged", ref isChanged, value); }
+        }
+
+        private int recordTypeId;
+
+        public int RecordTypeId
+        {
+            get { return recordTypeId; }
+            set
+            {
+                if (Set("RecordTypeId", ref recordTypeId, value))
+                {
+                    IsChanged = true;
+                };
+            }
+        }
+
+        private string times;
+
+        public string Times
+        {
+            get { return times; }
+            set
+            {
+                if (Set("Times", ref times, value))
+                {
+                    IsChanged = true;
+                }
+            }
+        }
+
+        private static readonly Regex TimeRegex = new Regex(@"\d{1,2}\:\d{2}");
+
+        public IEnumerable<ITimeInterval> TimeIntervals
+        {
+            get
+            {
+                var parsedTimes = TimeRegex.Matches(times).Cast<Match>().Select(x => TimeSpan.Parse(x.Value)).ToArray();
+                var index = 0;
+                var result = new List<ITimeInterval>();
+                while (index + 1 < parsedTimes.Length)
+                {
+                    var startTime = parsedTimes[index];
+                    var endTime = parsedTimes[index + 1];
+                    if (startTime < endTime)
+                    {
+                        result.Add(new TimeInterval(startTime, endTime));
+                    }
+                    index += 2;
+                }
+                return result;
+            }
+            set { Times = value == null ? string.Empty : string.Join(", ", value.Select(x => string.Format("{0:hh\\:mm}-{1:hh\\:mm}", x.StartTime, x.EndTime))); }
+        }
+    }
+}

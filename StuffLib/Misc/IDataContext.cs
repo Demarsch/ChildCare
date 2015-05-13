@@ -7,10 +7,6 @@ namespace Core
     public interface IDataContext : IDisposable
     {
         IQueryable<TData> GetData<TData>() where TData : class;
-
-        TData GetById<TData>(int id) where TData : class;
-
-        ICollection<TData> GetAll<TData>() where TData : class;
         
         void Add<TData>(TData obj) where TData : class;
 

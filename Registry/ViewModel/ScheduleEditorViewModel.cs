@@ -9,7 +9,7 @@ using log4net;
 
 namespace Registry
 {
-    public class ScheduleEditorViewModel : BasicViewModel, IDialogViewModel
+    public class ScheduleEditorViewModel : BasicViewModel, IDialogViewModel, IDisposable
     {
         private readonly ILog log;
 
@@ -43,8 +43,27 @@ namespace Registry
             this.scheduleService = scheduleService;
             CloseCommand = new RelayCommand<bool>(x => OnCloseRequested(new ReturnEventArgs<bool>(x)));
             ChangeDateCommand = new RelayCommand<int>(ChangeDate);
-            Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x, dialogService)).ToArray();
+            Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x)).ToArray();
             SelectedDate = DateTime.Today;
+            foreach (var roomDay in Rooms.SelectMany(x => x.Days))
+            {
+                roomDay.EditRequested += RoomDayOnEditRequested;
+            }
+        }
+
+        private void RoomDayOnEditRequested(object sender, EventArgs eventArgs)
+        {
+            var roomDay = sender as ScheduleEditorRoomDayViewModel;
+            var viewModel = new ScheduleEditorEditDayViewModel(cacheService);
+            viewModel.CurrentDate = roomDay.RelatedDate;
+            viewModel.CurrentRoomId = roomDay.RoomId;
+            viewModel.IsThisDayOnly = roomDay.IsThisDayOnly;
+            viewModel.ScheduleItems = roomDay.ScheduleItems;
+            viewModel.IsChanged = false;
+            if (dialogService.ShowDialog(viewModel) == true && (viewModel.IsChanged || !viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
+            {
+                roomDay.ScheduleItems.Replace(viewModel.ScheduleItems);
+            }
         }
 
         public ICommand ChangeDateCommand { get; private set; }
@@ -130,5 +149,13 @@ namespace Registry
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            foreach (var roomDay in Rooms.SelectMany(x => x.Days))
+            {
+                roomDay.EditRequested -= RoomDayOnEditRequested;
+            }
+        }
     }
 }

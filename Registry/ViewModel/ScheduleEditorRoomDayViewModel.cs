@@ -10,21 +10,14 @@ namespace Registry
 {
     public class ScheduleEditorRoomDayViewModel : ObservableObject
     {
-        private readonly IDialogService dialogService;
-
-        public ScheduleEditorRoomDayViewModel(int roomId, int dayOfWeek, IDialogService dialogService)
+        public ScheduleEditorRoomDayViewModel(int roomId, int dayOfWeek)
         {
-            if (dialogService == null)
-            {
-                throw new ArgumentNullException("dialogService");
-            }
-            this.dialogService = dialogService;
             RoomId = roomId;
             DayOfWeek = dayOfWeek;
             ScheduleItems = new ObservalbeCollectionEx<ScheduleEditorScheduleItemViewModel>();
             ScheduleItems.CollectionChanged += OnScheduleItemsChanged;
             var defaultView = CollectionViewSource.GetDefaultView(ScheduleItems);
-            defaultView.GroupDescriptions.Add(new PropertyGroupDescription("RecordType"));
+            defaultView.GroupDescriptions.Add(new PropertyGroupDescription("RecordTypeName"));
             defaultView.Filter = HideEmptyItems;
             EditRoomDayCommand = new RelayCommand(EditRoomDay);
         }
@@ -37,7 +30,7 @@ namespace Registry
         private bool HideEmptyItems(object obj)
         {
             var scheduleItem = obj as ScheduleEditorScheduleItemViewModel;
-            return scheduleItem != null && !string.IsNullOrEmpty(scheduleItem.RecordType);
+            return scheduleItem != null && !string.IsNullOrEmpty(scheduleItem.RecordTypeName);
         }
 
         public int RoomId { get; private set; }
@@ -60,7 +53,18 @@ namespace Registry
 
         private void EditRoomDay()
         {
-            dialogService.ShowMessage("В появившемся окне можно выбрать рекорд тайп!");
+            OnEditRequested();
+        }
+
+        public event EventHandler EditRequested;
+
+        protected virtual void OnEditRequested()
+        {
+            var handler = EditRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
     }
 }

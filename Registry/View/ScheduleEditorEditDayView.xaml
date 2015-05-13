@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:registry="clr-namespace:Registry">
+    <DataTemplate DataType="{x:Type registry:ScheduleEditorEditDayViewModel}">
+        <StackPanel Orientation="Vertical" Width="450">
+            <ToolBar>
+                <Button Content="Добавить тип услуги" />
+                <Button Content="Очистить список услуг" />
+            </ToolBar>
+            <ListBox MinHeight="150" ItemsSource="{Binding AllowedRecordTypes}" Margin="5" Grid.IsSharedSizeScope="True" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type registry:ScheduleEditorEditRecordTypeViewModel}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition SharedSizeGroup="RecordType" />
+                                <ColumnDefinition SharedSizeGroup="Times" MinWidth="100" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Grid.Row="0" Grid.Column="0" IsEditable="False" HorizontalAlignment="Stretch" DisplayMemberPath="Name" SelectedValue="{Binding RecordTypeId, UpdateSourceTrigger=PropertyChanged}" 
+                                      SelectedValuePath="Id" Margin="2" ItemsSource="{Binding DataContext.AssignableRecordTypes, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Times, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Margin="2 2 20 2"
+                                     Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <CheckBox Margin="5 0 5 5" Content="{Binding StringFormat='Указанное расписание будет действовать только {0:d mmmm}'}" />
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

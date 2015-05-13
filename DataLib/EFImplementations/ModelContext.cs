@@ -18,16 +18,6 @@ namespace DataLib
             return Set<TData>();
         }
 
-        public TData GetById<TData>(int id) where TData : class
-        {
-            return Set<TData>().ById(id);
-        }
-
-        public ICollection<TData> GetAll<TData>() where TData : class
-        {
-            return Set<TData>().ToArray();
-        }
-
         public void Add<TData>(TData obj) where TData : class
         {
             Set<TData>().Add(obj);
