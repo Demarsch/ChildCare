@@ -31,12 +31,15 @@ namespace Commission
             Container.RegisterSingle<IDataContextProvider, ModelContextProvider>();
             Container.RegisterSingle<IUserSystemInfoService, ADUserSystemInfoService>();
             Container.RegisterSingle<IUserService, UserService>();
+            Container.RegisterSingle<ICommissionService, CommissionService>();
+            Container.RegisterSingle<IDialogService, WindowDialogService>();
             Container.RegisterSingle<ILog>(new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)));
 
             Container.Register<CommissionManagementViewModel>();
             Container.Register<CommissionNavigatorViewModel>();
             Container.Register<CommissionPersonFlowViewModel>();
             Container.Register<CommissionItemViewModel>();
+            Container.Register<CommissionDecisionViewModel>();
 
             MainWindow = new CommissionManagementView() 
             { 

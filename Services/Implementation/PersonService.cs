@@ -312,5 +312,13 @@ namespace Core
             }
             return resStr;
         }
+
+        public PersonTalon GetPersonTalonById(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonTalon>().FirstOrDefault(x => x.Id == id);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" 
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
         xmlns:local="clr-namespace:Commission"
+        xmlns:localView="clr-namespace:Commission.View"
         x:Class="Commission.CommissionManagementView"
         Title="Комиссия" Height="411" Width="575" WindowState="Maximized">
     <Grid>
@@ -19,7 +20,7 @@
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPane>
                         <xcad:LayoutDocument Title="Решение для комиссии" CanClose="False" CanFloat="False">
-                            <local:CommissionPersonFlowControl DataContext="{Binding PersonFlow}"/>
+                            <localView:CommissionDecisionControl DataContext="{Binding Decision}"/>
                         </xcad:LayoutDocument>
                         <xcad:LayoutDocument Title="Пациент" CanClose="False" CanFloat="False">
                             <local:CommissionPersonFlowControl DataContext="{Binding PersonFlow}"/>

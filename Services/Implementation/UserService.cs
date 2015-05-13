@@ -29,6 +29,8 @@ namespace Core
                     dbuser.SID = user.SID;
                     dbuser.BeginDateTime = user.BeginDateTime;
                     dbuser.EndDateTime = user.EndDateTime;
+                    if (dbuser.Id == 0)
+                        db.Add<User>(dbuser);
                     db.Save();
                     msg = exception;
                     return true;
@@ -38,6 +40,16 @@ namespace Core
             {
                 msg = ex.Message;
                 return false;
+            }
+        }
+
+        // ????????????????
+        public User GetCurrentUser()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                string login = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                return db.GetData<User>().FirstOrDefault(x => x.SID == login && !x.EndDateTime.HasValue);
             }
         }
 

@@ -33,5 +33,13 @@ namespace DataLib
                 return string.Empty;
             }
         }
+
+        public string BirthYear
+        {
+            get
+            {
+                return this.BirthDate.Year + " г.р.";
+            }
+        }
     }
 }

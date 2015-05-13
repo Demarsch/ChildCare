@@ -10,7 +10,17 @@
         <ListBox ItemsSource="{Binding NavigationItems}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" MouseDoubleClick="{ev:EventBinding NavigationCommand}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="0, 5">
+                            <TextBlock Text="{Binding PatientFIO}" Margin="0, 0, 5, 0"/>
+                            <TextBlock Text="{Binding BirthDate}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Talon}" Margin="0, 0, 5, 0"/>
+                            <TextBlock Text="{Binding MKB}" Margin="0, 0, 5, 0"/>
+                            <TextBlock Text="{Binding IncomeDateTime}" />
+                        </StackPanel>
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

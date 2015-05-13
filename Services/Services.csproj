@@ -30,6 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -40,6 +47,7 @@
       <HintPath>..\packages\SimpleInjector.2.7.3\lib\net45\SimpleInjector.Diagnostics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Xml.Linq" />
@@ -51,9 +59,11 @@
   <ItemGroup>
     <Compile Include="DTO\PersonRelativeDTO.cs" />
     <Compile Include="Implementation\ADUserSystemInfoService.cs" />
+    <Compile Include="Implementation\CommissionService.cs" />
     <Compile Include="Implementation\PermissionService.cs" />
     <Compile Include="Implementation\PersonService.cs" />
     <Compile Include="Implementation\UserService.cs" />
+    <Compile Include="Interface\ICommissionService.cs" />
     <Compile Include="Interface\IPermissionService.cs" />
     <Compile Include="Interface\IPersonService.cs" />
     <Compile Include="Interface\IUserSystemInfoService.cs" />

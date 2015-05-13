@@ -67,5 +67,7 @@ namespace Core
         ICollection<Okato> GetOKATOByName(string okatoName, string okatoRegion);
 
         ICollection<Okato> GetOKATORegion(string regionName);
+
+        PersonTalon GetPersonTalonById(int id);
     }
 }
