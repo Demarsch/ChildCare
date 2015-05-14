@@ -24,7 +24,7 @@
             <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonIdentityDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного документа, удостоверяющего личность. Чтобы создать, нажмите кнопку 'Добавить'" Foreground="Gray"
                                            Visibility="{Binding PersonIdentityDocumentsHasNoItems, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <ScrollViewer MinHeight="100" MaxHeight="750" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer MinHeight="100" MaxHeight="1000" VerticalScrollBarVisibility="Auto">
                 <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding PersonIdentityDocuments}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>

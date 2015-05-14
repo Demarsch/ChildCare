@@ -3,10 +3,12 @@ using System;
 using GalaSoft.MvvmLight;
 using Core;
 using log4net;
+using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace MainLib
 {
-    public class InsuranceDocumentViewModel : ObservableObject
+    public class InsuranceDocumentViewModel : ObservableObject, IDataErrorInfo
     {
 
         private readonly IPersonService service;
@@ -154,5 +156,50 @@ namespace MainLib
                 }
             }
         }
+
+        #region Implementation IDataErrorInfo
+
+        private bool SaveWasRequested { get; set; }
+
+        public readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        public bool Invalidate()
+        {
+            SaveWasRequested = true;
+            RaisePropertyChanged(string.Empty);
+            return invalidProperties.Count > 0;
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!SaveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                if (columnName == "InsuranceCompany")
+                {
+                    result = InsuranceCompany == null ? "Укажите страховую компанию" : string.Empty;
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+        #endregion
     }
 }

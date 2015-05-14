@@ -50,11 +50,11 @@
             <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24" Command="{Binding AddInsuranceDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного стахового документа. Чтобы создать, нажмите кнопку 'Добавить'" Foreground="Gray"
                                            Visibility="{Binding PersonInsuranceDocumentsHasNoItems, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <ScrollViewer MinHeight="100" MaxHeight="750" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer MinHeight="100" VerticalScrollBarVisibility="Auto">
                 <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch" MinWidth="320" MaxWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
+                            <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto" />
                                     <RowDefinition Height="Auto" />
@@ -89,7 +89,8 @@
                                  Watermark="введите слова из названия и регион для поиска"
                                  DisplayMember="NameSMOK"
                                  ItemTemplate="{StaticResource AutoCompleteTemplate}"
-                                 SelectedItem="{Binding InsuranceCompany, Mode=TwoWay}"
+                                 SelectedItem="{Binding InsuranceCompany, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                 Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
                                  IconPlacement="Left"
                                  IconVisibility="Visible"
                                  Provider="{Binding DataContext.InsuranceCompanySuggestionProvider, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"

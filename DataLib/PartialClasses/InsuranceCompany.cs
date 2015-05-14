@@ -17,5 +17,10 @@ namespace DataLib
                 return false;
             return this.Id == insuranceCompany2.Id;
         }
+
+        public override int GetHashCode()
+        {
+            return this.Id;
+        }
     }
 }

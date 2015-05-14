@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace MainLib
 {
-    public class PersonInsuranceDocumentsViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
+    public class PersonInsuranceDocumentsViewModel : ObservableObject, IDialogViewModel
     {
 
         #region Fields
@@ -47,6 +47,7 @@ namespace MainLib
             AddInsuranceDocumentCommand = new RelayCommand(AddInsuranceDocument);
             DeleteInsuranceDocumentCommand = new RelayCommand<InsuranceDocumentViewModel>(DeleteInsuranceDocument);
             InsuranceCompanySuggestionProvider = new InsuranceCompanySuggestionProvider(service);
+            CloseCommand = new RelayCommand<bool>(Close);
         }
 
         #endregion
@@ -64,7 +65,8 @@ namespace MainLib
         public ObservableCollection<InsuranceDocumentViewModel> InsuranceDocuments
         {
             get { return insuranceDocuments; }
-            set {
+            set
+            {
                 Set("InsuranceDocuments", ref insuranceDocuments, value);
                 RaisePropertyChanged("PersonInsuranceDocumentsHasNoItems");
             }
@@ -143,8 +145,6 @@ namespace MainLib
 
         private bool saveWasRequested;
 
-        private readonly HashSet<string> invalidProperties = new HashSet<string>();
-
         public RelayCommand<bool> CloseCommand { get; set; }
 
         private void Close(bool validate)
@@ -152,8 +152,12 @@ namespace MainLib
             saveWasRequested = true;
             if (validate)
             {
-                RaisePropertyChanged(string.Empty);
-                if (invalidProperties.Count == 0)
+                var notEroors = true;
+                foreach (var insurancedocumentsViewModel in InsuranceDocuments)
+                {
+                    notEroors &= insurancedocumentsViewModel.Invalidate();
+                }
+                if (notEroors)
                 {
                     OnCloseRequested(new ReturnEventArgs<bool>(true));
                 }
@@ -175,40 +179,6 @@ namespace MainLib
             }
         }
 
-        #endregion
-
-        #region Implementation IDataErrorInfo
-
-        string IDataErrorInfo.this[string columnName]
-        {
-            get
-            {
-                if (!saveWasRequested)
-                {
-                    invalidProperties.Remove(columnName);
-                    return string.Empty;
-                }
-                var result = string.Empty;
-                //if (columnName == "SelectedFinancingSource")
-                //{
-                //    result = selectedFinancingSource == null || !selectedFinancingSource.IsActive ? "Укажите источник финансирования" : string.Empty;
-                //}
-                if (string.IsNullOrEmpty(result))
-                {
-                    invalidProperties.Remove(columnName);
-                }
-                else
-                {
-                    invalidProperties.Add(columnName);
-                }
-                return result;
-            }
-        }
-
-        string IDataErrorInfo.Error
-        {
-            get { throw new NotImplementedException(); }
-        }
         #endregion
     }
 }
