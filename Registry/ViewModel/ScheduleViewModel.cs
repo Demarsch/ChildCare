@@ -204,8 +204,10 @@ namespace Registry
 
         private void OpenScheduleEditor()
         {
-            var scheduleEditor = new ScheduleEditorViewModel(scheduleService, log, cacheService, dialogService);
-            dialogService.ShowDialog(scheduleEditor);
+            using (var scheduleEditor = new ScheduleEditorViewModel(scheduleService, log, cacheService, dialogService))
+            {
+                dialogService.ShowDialog(scheduleEditor);
+            }
         }
 
         #region Assignments

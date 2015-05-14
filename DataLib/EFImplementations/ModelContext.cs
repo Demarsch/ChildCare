@@ -30,22 +30,29 @@ namespace DataLib
 
         public void AddRange<TData>(IEnumerable<TData> objs) where TData : class
         {
-            this.Set<TData>().AddRange(objs);
+            Set<TData>().AddRange(objs);
         }
 
         public void Remove<TData>(TData obj) where TData : class
         {
-            this.Set<TData>().Remove(obj);
+            if (Entry(obj).State == EntityState.Detached)
+            {
+                Entry(obj).State = EntityState.Deleted;
+            }
+            else
+            {
+                Set<TData>().Remove(obj);
+            }
         }
 
         public void RemoveRange<TData>(IEnumerable<TData> objs) where TData : class
         {
-            this.Set<TData>().RemoveRange(objs);
+            Set<TData>().RemoveRange(objs);
         }
 
         public void Update<TData>(TData obj) where TData : class
         {
-            this.Entry<TData>(obj).State = EntityState.Modified;
+            Entry(obj).State = EntityState.Modified;
         }
 
         public void Save()

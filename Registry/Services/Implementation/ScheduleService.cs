@@ -127,7 +127,7 @@ namespace Registry
                 {
                     var intervalCount = totalFreeMinutes / nominalDurationInMinutes;
                     result.AddRange(Enumerable.Range(0, intervalCount)
-                        .Select(x => new TimeInterval(freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * x)), 
+                        .Select(x => new TimeInterval(freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * x)),
                                                       freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * (x + 1))))));
                 }
                 //If total time is less then minimum duration we can't put assignment inside it
@@ -152,7 +152,7 @@ namespace Registry
                     //If time remaining is greate than minimum duration we just fill this gap
                     if (remainingDuration >= minimumDurationInMinutes)
                     {
-                        intervals.Add(new TimeInterval(intervals[intervals.Count - 1].EndTime,  freeTime.EndTime));
+                        intervals.Add(new TimeInterval(intervals[intervals.Count - 1].EndTime, freeTime.EndTime));
                         result.AddRange(intervals);
                         continue;
                     }
@@ -257,6 +257,28 @@ namespace Registry
                 assignment.AssignDateTime = newTime;
                 assignment.Duration = newDuration;
                 assignment.RoomId = newRoomId;
+                dataContext.Save();
+            }
+        }
+
+        public void SaveSchedule(ICollection<ScheduleItem> newScheduleItems)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                var itemsToDelete = new List<int>();
+                var itemsByRoomAndDayOfWeek = newScheduleItems.ToLookup(x => new { x.RoomId, x.DayOfWeek, x.BeginDate, x.EndDate });
+                foreach (var itemGroup in itemsByRoomAndDayOfWeek)
+                {
+                    var @group = itemGroup;
+                    itemsToDelete.AddRange(dataContext.GetData<ScheduleItem>()
+                        .Where(x => x.RoomId == @group.Key.RoomId && x.DayOfWeek == @group.Key.DayOfWeek && x.BeginDate == @group.Key.BeginDate && x.EndDate == @group.Key.EndDate)
+                        .Select(x => x.Id));
+                }
+                dataContext.AddRange(newScheduleItems);
+                foreach (var itemToDelete in itemsToDelete)
+                {
+                    dataContext.Remove(new ScheduleItem { Id = itemToDelete });
+                }
                 dataContext.Save();
             }
         }

@@ -21,7 +21,7 @@
 
     <DataTemplate  DataType="{x:Type mainLib:PersonIdentityDocumentsViewModel}">
         <DockPanel Width="500" VerticalAlignment="Stretch" LastChildFill="True">
-            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonIdentityDocumentCommand}" Content="Добавить" Margin="5" Background="White"/>
+            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonIdentityDocumentCommand}" Content="Добавить" Margin="5" />
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного документа, удостоверяющего личность. Чтобы создать, нажмите кнопку 'Добавить'" Foreground="Gray"
                                            Visibility="{Binding PersonIdentityDocumentsHasNoItems, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <ScrollViewer MinHeight="100" MaxHeight="1000" VerticalScrollBarVisibility="Auto">
@@ -52,7 +52,7 @@
                                 <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" FontSize="14" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding PersonIdentityDocumentStateString, Mode=OneWay}" 
                                        Foreground="{Binding PersonIdentityDocumentState, Converter={StaticResource PersonIdentityDocumentStateToBrushConverter}}"/>
 
-                                <Button  Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" Background="White" BorderThickness="0" ToolTip="Удалить документ"
+                                <Button  Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" BorderThickness="0" ToolTip="Удалить документ"
                                  Command="{Binding DataContext.DeletePersonIdentityDocumentCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
                                     <Image Source="pack://application:,,,/Resources;component/Images/Delete24x24.png"  Width="16" Height="16"/>
                                 </Button>

@@ -32,7 +32,6 @@ namespace Registry
             
             var log = LogManager.GetLogger("Registry");
             var contextProvider = new ModelContextProvider() as IDataContextProvider;
-
             var personService = new PersonService(contextProvider);
 
             var cacheService = new DataContextCacheService(contextProvider) as ICacheService;

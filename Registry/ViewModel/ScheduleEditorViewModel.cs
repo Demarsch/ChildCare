@@ -6,6 +6,7 @@ using System.Windows.Navigation;
 using Core;
 using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
+using Environment = System.Environment;
 
 namespace Registry
 {
@@ -41,7 +42,7 @@ namespace Registry
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
-            CloseCommand = new RelayCommand<bool>(x => OnCloseRequested(new ReturnEventArgs<bool>(x)));
+            CloseCommand = new RelayCommand<bool>(Close);
             ChangeDateCommand = new RelayCommand<int>(ChangeDate);
             Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x)).ToArray();
             SelectedDate = DateTime.Today;
@@ -54,15 +55,17 @@ namespace Registry
         private void RoomDayOnEditRequested(object sender, EventArgs eventArgs)
         {
             var roomDay = sender as ScheduleEditorRoomDayViewModel;
-            var viewModel = new ScheduleEditorEditDayViewModel(cacheService);
-            viewModel.CurrentDate = roomDay.RelatedDate;
-            viewModel.CurrentRoomId = roomDay.RoomId;
-            viewModel.IsThisDayOnly = roomDay.IsThisDayOnly;
-            viewModel.ScheduleItems = roomDay.ScheduleItems;
-            viewModel.IsChanged = false;
-            if (dialogService.ShowDialog(viewModel) == true && (viewModel.IsChanged || !viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
+            using (var viewModel = new ScheduleEditorEditDayViewModel(cacheService))
             {
-                roomDay.ScheduleItems.Replace(viewModel.ScheduleItems);
+                viewModel.CurrentDate = roomDay.RelatedDate;
+                viewModel.CurrentRoomId = roomDay.RoomId;
+                viewModel.IsThisDayOnly = roomDay.IsThisDayOnly;
+                viewModel.ScheduleItems = roomDay.ScheduleItems;
+                viewModel.IsChanged = false;
+                if (dialogService.ShowDialog(viewModel) == true && (viewModel.IsChanged || viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
+                {
+                    roomDay.ScheduleItems.Replace(viewModel.ScheduleItems);
+                }
             }
         }
 
@@ -137,6 +140,28 @@ namespace Registry
 
         public RelayCommand<bool> CloseCommand { get; private set; }
 
+        private void Close(bool save)
+        {
+            if (save)
+            {
+                var newScheduleItems = Rooms.SelectMany(x => x.Days.SelectMany(y => y.ScheduleItems.Where(z => z.Id == 0).Select(z => z.GetScheduleItem()))).ToArray();
+                try
+                {
+                    log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", newScheduleItems.Length);
+                    scheduleService.SaveSchedule(newScheduleItems);
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Failed to save schedule changes", ex);
+                    dialogService.ShowError(
+                        string.Format("Не удалось сохранить изменения в расписании. Причина - {0}{1}Попробуйте еще раз или отмените изменения. Если ошибка повторится, обратитесь в службу поддержки",
+                            ex.Message, Environment.NewLine));
+                    return;
+                }
+            }
+            OnCloseRequested(new ReturnEventArgs<bool>(save));
+        }
+
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
 
         protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
@@ -155,6 +180,10 @@ namespace Registry
             foreach (var roomDay in Rooms.SelectMany(x => x.Days))
             {
                 roomDay.EditRequested -= RoomDayOnEditRequested;
+            }
+            foreach (var room in Rooms)
+            {
+                room.Dispose();
             }
         }
     }

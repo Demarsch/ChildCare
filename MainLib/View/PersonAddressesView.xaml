@@ -47,7 +47,7 @@
     <!--</Window.Resources>-->
     <DataTemplate  DataType="{x:Type mainLib:PersonAddressesViewModel}">
         <DockPanel Width="500" VerticalAlignment="Stretch" LastChildFill="True">
-            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonAddressCommand}" Content="Добавить" Margin="5" Background="White"/>
+            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonAddressCommand}" Content="Добавить" Margin="5" />
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного адреса. Чтобы создать адрес, нажмите кнопку 'Добавить'" Foreground="Gray" Background="Aqua"
                                            Visibility="{Binding PersonAddressesHasNoItems, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <ScrollViewer MinHeight="100" MaxHeight="750" VerticalScrollBarVisibility="Auto">
@@ -80,7 +80,7 @@
                                 <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" FontSize="14" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding PersonAddressStateString, Mode=OneWay}" 
                                        Foreground="{Binding PersonAddressState, Converter={StaticResource PersonAddressStateToBackgroundBrushConverter}}"/>
 
-                                <Button  Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" Background="White" BorderThickness="0" ToolTip="Удалить адрес"
+                                <Button  Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" BorderThickness="0" ToolTip="Удалить адрес"
                                  Command="{Binding DataContext.DeletePersonAddressCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
                                     <Image Source="pack://application:,,,/Resources;component/Images/Delete24x24.png"  Width="16" Height="16"/>
                                 </Button>

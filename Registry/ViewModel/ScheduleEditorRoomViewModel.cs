@@ -5,7 +5,7 @@ using GalaSoft.MvvmLight;
 
 namespace Registry
 {
-    public class ScheduleEditorRoomViewModel : ObservableObject
+    public class ScheduleEditorRoomViewModel : ObservableObject, IDisposable
     {
         private readonly Room room;
 
@@ -35,5 +35,13 @@ namespace Registry
         public string Number { get { return room.Number; } }
 
         public ScheduleEditorRoomDayViewModel[] Days { get; private set; }
+
+        public void Dispose()
+        {
+            foreach (var day in Days)
+            {
+                day.Dispose();
+            }
+        }
     }
 }

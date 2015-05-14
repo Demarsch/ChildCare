@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
 using Core;
 using GalaSoft.MvvmLight;
 
 namespace Registry
 {
-    public class ScheduleEditorEditRecordTypeViewModel : ObservableObject
+    public class ScheduleEditorEditRecordTypeViewModel : ObservableObject, IDataErrorInfo
     {
         public ScheduleEditorEditRecordTypeViewModel()
         {
@@ -72,6 +74,23 @@ namespace Registry
                 return result;
             }
             set { Times = value == null ? string.Empty : string.Join(", ", value.Select(x => string.Format("{0:hh\\:mm}-{1:hh\\:mm}", x.StartTime, x.EndTime))); }
+        }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                if (string.CompareOrdinal(columnName, "Times") == 0)
+                {
+                    return TimeIntervals.Any() ? string.Empty : "Должен быть указан хотя бы один временной промежуток (напр.10:00 - 17:00)";
+                }
+                return string.Empty;
+            }
+        }
+
+        public string Error
+        {
+            get { return this["Times"]; }
         }
     }
 }

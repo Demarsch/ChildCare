@@ -2,11 +2,20 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace Core
 {
-    public class UniversalConverter : List<ConverterItem>, IValueConverter
+    [ContentProperty("Items")]
+    public class UniversalConverter : IValueConverter
     {
+        public UniversalConverter()
+        {
+            Items = new List<ConverterItem>();
+        }
+
+        public List<ConverterItem> Items { get; private set; } 
+
         private bool useDefaultValue;
 
         private object defaultValue;
@@ -23,7 +32,7 @@ namespace Core
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            foreach (var item in this)
+            foreach (var item in Items)
                 if (Equals(item.From, value))
                     return item.To;
             if (useDefaultValue)
@@ -33,7 +42,7 @@ namespace Core
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            foreach (var item in this)
+            foreach (var item in Items)
                 if (Equals(item.To, value))
                     return item.From;
             throw new ConversionException(string.Format("Value {0} can't be converted back", value));

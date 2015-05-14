@@ -19,6 +19,7 @@
                 <ResourceDictionary Source="View/ScheduleEditorView.xaml" />
                 <ResourceDictionary Source="View/ScheduleEditorRoomView.xaml" />
                 <ResourceDictionary Source="View/ScheduleEditorRoomDayView.xaml" />
+                <ResourceDictionary Source="View/ScheduleEditorEditDayView.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <ControlTemplate x:Key="ValidationTemplate">
                 <Grid>
@@ -41,6 +42,9 @@
                     </Image>
                 </Grid>
             </ControlTemplate>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="White" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

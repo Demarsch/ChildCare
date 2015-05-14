@@ -8,7 +8,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 
 namespace Registry
 {
-    public class ScheduleEditorRoomDayViewModel : ObservableObject
+    public class ScheduleEditorRoomDayViewModel : ObservableObject, IDisposable
     {
         public ScheduleEditorRoomDayViewModel(int roomId, int dayOfWeek)
         {
@@ -20,11 +20,13 @@ namespace Registry
             defaultView.GroupDescriptions.Add(new PropertyGroupDescription("RecordTypeName"));
             defaultView.Filter = HideEmptyItems;
             EditRoomDayCommand = new RelayCommand(EditRoomDay);
+            isRoomDayClosed = true;
         }
 
         private void OnScheduleItemsChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             IsThisDayOnly = ScheduleItems.Count != 0 && ScheduleItems.Any(x => x.BeginDate == x.EndDate);
+            IsRoomDayClosed = ScheduleItems.Count == 0 || ScheduleItems.Any(x => x.RecordTypeId == 0);
         }
 
         private bool HideEmptyItems(object obj)
@@ -51,6 +53,14 @@ namespace Registry
             private set { Set("IsThisDayOnly", ref isThisDayOnly, value); }
         }
 
+        private bool isRoomDayClosed;
+
+        public bool IsRoomDayClosed
+        {
+            get { return isRoomDayClosed; }
+            private set { Set("IsRoomDayClosed", ref isRoomDayClosed, value); }
+        }
+
         private void EditRoomDay()
         {
             OnEditRequested();
@@ -65,6 +75,11 @@ namespace Registry
             {
                 handler(this, EventArgs.Empty);
             }
+        }
+
+        public void Dispose()
+        {
+            ScheduleItems.CollectionChanged -= OnScheduleItemsChanged;
         }
     }
 }

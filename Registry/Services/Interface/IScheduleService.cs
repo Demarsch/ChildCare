@@ -29,5 +29,7 @@ namespace Registry
         void UpdateAssignment(int assignmentId, int newFinancingSourceId, string newNote);
 
         void MoveAssignment(int assignmentId, DateTime newTime, int newDuration, int newRoomId);
+
+        void SaveSchedule(ICollection<ScheduleItem> newScheduleItems);
     }
 }

@@ -36,5 +36,12 @@ namespace Registry
         public TimeSpan StartTime { get { return scheduleItem.StartTime; } }
 
         public TimeSpan EndTime { get { return scheduleItem.EndTime; } }
+        
+        public int Id { get { return scheduleItem.Id; } }
+
+        public ScheduleItem GetScheduleItem()
+        {
+            return scheduleItem;
+        }
     }
 }

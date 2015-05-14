@@ -52,7 +52,7 @@
             <mainLib:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
             <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
                 <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
-                <Button DockPanel.Dock="Bottom" Background="Transparent" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
+                <Button DockPanel.Dock="Bottom" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
                         <TextBlock Margin="3" Text="К пациенту"/>
