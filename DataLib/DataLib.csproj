@@ -184,6 +184,9 @@
     <Compile Include="Okato.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Org.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PartialClasses\InsuranceCompany.cs" />
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="Permission.cs">
@@ -210,6 +213,9 @@
     <Compile Include="PersonRelative.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PersonSocialStatus.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PersonStaff.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -233,6 +239,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ScheduleItem.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SocialStatusType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Staff.cs">

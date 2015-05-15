@@ -50,6 +50,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Личные данные</Label>
@@ -113,16 +114,18 @@
         </ScrollViewer>
 
         <Label Grid.Row="17" Grid.Column="0" FontWeight="Bold">Социальный статус</Label>
-        <ComboBox Grid.Row="17" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
+        <ScrollViewer Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="5" Height="72" Margin="1"  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <TextBox HorizontalAlignment="Stretch" IsReadOnly="True" Text="{Binding SocialStatuses}" MouseDoubleClick="{mvvm:EventBinding EditPersonSocialStatusesCommand}"/>
+        </ScrollViewer>
 
-        <Label Grid.Row="18" Grid.Column="0" FontWeight="Bold">Группа здоровья</Label>
-        <ComboBox Grid.Row="18" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
-
-        <Label Grid.Row="19" Grid.Column="0" FontWeight="Bold">Гражданство</Label>
+        <Label Grid.Row="19" Grid.Column="0" FontWeight="Bold">Группа здоровья</Label>
         <ComboBox Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
 
-        <TextBlock Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
-        <StackPanel  Grid.Row="21" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
+        <Label Grid.Row="20" Grid.Column="0" FontWeight="Bold">Гражданство</Label>
+        <ComboBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
+
+        <TextBlock Grid.Row="21" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
+        <StackPanel  Grid.Row="22" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
             <Button Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}"/>
             <Button Margin="3"  Height="24" Padding="3" Content="Отмена" />
         </StackPanel>

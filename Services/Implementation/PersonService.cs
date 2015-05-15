@@ -32,7 +32,7 @@ namespace Core
                     {
                         RelativePersonId = x.RelativeId,
                         ShortName = x.Person1.ShortName,
-                        RelativeRelationName = x.RelativeRelationship.Name,
+                        RelativeRelationId = x.RelativeRelationshipId,
                         IsRepresentative = x.IsRepresentative,
                         PhotoUri = string.Empty
                     }).ToList();
@@ -318,6 +318,75 @@ namespace Core
             using (var db = provider.GetNewDataContext())
             {
                 return db.GetData<PersonTalon>().FirstOrDefault(x => x.Id == id);
+            }
+        }
+
+
+        public ICollection<RelativeRelationship> GetRelativeRelationships()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RelativeRelationship>().ToArray();
+            }
+        }
+
+        public string GetActualPersonSocialStatusesString(int personId)
+        {
+            var resStr = string.Empty;
+            using (var db = provider.GetNewDataContext())
+            {
+                var dateTimeNow = DateTime.Now;
+                var actualPersonSocialStatuses = db.GetData<PersonSocialStatus>().Where(x => personId == x.PersonId && dateTimeNow >= x.BeginDateTime && dateTimeNow < x.EndDateTime);
+
+                foreach (var personSocialStatus in actualPersonSocialStatuses)
+                {
+                    if (resStr != string.Empty)
+                        resStr += "\r\n";
+                    resStr += personSocialStatus.SocialStatusType.Name + (personSocialStatus.Org != null ? ": " + personSocialStatus.Org.Name + ", " + personSocialStatus.Office : string.Empty);
+                }
+            }
+            return resStr;
+        }
+
+        public SocialStatusType GetSocialStatusType(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<SocialStatusType>().FirstOrDefault(x => x.Id == id);
+            }
+        }
+
+
+        public ICollection<SocialStatusType> GetSocialStatusTypes()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<SocialStatusType>().ToArray();
+            }
+        }
+
+        public ICollection<Org> GetSocialStatusOrgByName(string name)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Org>().Where(x => x.Name.Contains(name)).ToArray();
+            }
+        }
+
+        public Org GetOrg(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Org>().FirstOrDefault(x => x.Id == id);
+            }
+        }
+
+
+        public ICollection<PersonSocialStatus> GetPersonSocialStatuses(int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonSocialStatus>().Where(x => x.PersonId == personId).ToArray();
             }
         }
     }

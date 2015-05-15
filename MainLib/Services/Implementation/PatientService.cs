@@ -27,7 +27,7 @@ namespace Core
                 {
                      RelativePersonId = x.RelativeId,
                      ShortName = x.Person1.ShortName,
-                     RelativeRelationName = x.RelativeRelationship.Name,
+                     RelativeRelationId = x.RelativeRelationshipId,
                      IsRepresentative = x.IsRepresentative
                 }).ToList());
         }

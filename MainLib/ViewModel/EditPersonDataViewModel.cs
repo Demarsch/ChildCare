@@ -43,6 +43,7 @@ namespace MainLib
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetActualChangeNameReasons());
             EditPersonIdentityDocumentsCommand = new RelayCommand(EditPersonIdentityDocuments);
             EditPersonDisabilitiesCommand = new RelayCommand(EditPersonDisabilities);
+            EditPersonSocialStatusesCommand = new RelayCommand(EditPersonSocialStatuses);
             Genders = new ObservableCollection<Gender>(service.GetGenders());
 
         }
@@ -95,6 +96,7 @@ namespace MainLib
                 Addresses = service.GetActualPersonAddressesString(Id);
                 IdentityDocuments = service.GetActualPersonIdentityDocumentsString(Id);
                 Disabilities = service.GetActualPersonDisabilitiesString(Id);
+                SocialStatuses = service.GetActualPersonSocialStatusesString(Id);
             }
             else
             {
@@ -264,6 +266,18 @@ namespace MainLib
             if (dialogResult != true)
                 personDisabilitiesViewModel = new PersonDisabilitiesViewModel(Id, service, dialogService);
             Disabilities = personDisabilitiesViewModel.PersonDisabilitiesString;
+        }
+
+        public ICommand EditPersonSocialStatusesCommand { get; set; }
+        private PersonSocialStatusesViewModel personSocialStatusesViewModel = null;
+        private void EditPersonSocialStatuses()
+        {
+            if (personSocialStatusesViewModel == null)
+                personSocialStatusesViewModel = new PersonSocialStatusesViewModel(Id, service, dialogService);
+            var dialogResult = dialogService.ShowDialog(personSocialStatusesViewModel);
+            if (dialogResult != true)
+                personSocialStatusesViewModel = new PersonSocialStatusesViewModel(Id, service, dialogService);
+            SocialStatuses = personSocialStatusesViewModel.PersonSocialStatusesString;
         }
 
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();
@@ -475,6 +489,13 @@ namespace MainLib
         {
             get { return relatives; }
             set { Set("Relatives", ref relatives, value); }
+        }
+
+        private string socialStatuses = string.Empty;
+        public string SocialStatuses
+        {
+            get { return socialStatuses; }
+            set { Set("SocialStatuses", ref socialStatuses, value); }
         }
     }
 }

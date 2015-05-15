@@ -79,8 +79,9 @@
 
                                 <StackPanel Grid.Column="1" Margin="3">
                                     <TextBlock Text="{Binding ShortName}"/>
-                                    <TextBlock Margin="2" Text="{Binding RelativeRelationshipName}"/>
-                                    <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}"  IsHitTestVisible="False"/>
+                                    <ComboBox Margin="2" ItemsSource="{Binding DataContext.RelativeRelations, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" 
+                                              SelectedValuePath="Id" SelectedValue="{Binding RelativeRelationId}" DisplayMemberPath="Name"/>
+                                    <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}" />
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>

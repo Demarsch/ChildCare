@@ -8,9 +8,11 @@
     [BeginDate]        DATETIME      NOT NULL,
     [EndDate]          DATETIME      NOT NULL,
     CONSTRAINT [PK_PersonDisabilities] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_PersonDisabilities_PersonDisabilities] FOREIGN KEY ([DisabilityTypeId]) REFERENCES [dbo].[PersonDisabilities] ([Id]),
+    CONSTRAINT [FK_PersonDisabilities_DisabilityTypes] FOREIGN KEY ([DisabilityTypeId]) REFERENCES [dbo].[DisabilityTypes] ([Id]),
     CONSTRAINT [FK_PersonDisabilities_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id])
 );
+
+
 
 
 
