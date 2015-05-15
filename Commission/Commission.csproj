@@ -164,7 +164,6 @@
     <Compile Include="View\Management\CommissionPersonGridControl.xaml.cs">
       <DependentUpon>CommissionPersonGridControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\CommissionNavigatorViewModel.cs" />
     <Compile Include="ViewModel\Management\CommissionManagementViewModel.cs" />
     <Compile Include="View\Management\CommissionManagementControl.xaml.cs">
       <DependentUpon>CommissionManagementControl.xaml</DependentUpon>
