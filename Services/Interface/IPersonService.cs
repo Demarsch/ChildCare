@@ -21,11 +21,17 @@ namespace Core
 
         string GetActualPersonDisabilitiesString(int personId);
 
+        string GetActualPersonSocialStatusesString(int personId);
+
         ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
+
+        ICollection<RelativeRelationship> GetRelativeRelationships();
 
         ICollection<InsuranceDocument> GetInsuranceDocuments(int personId);
 
         ICollection<PersonIdentityDocument> GetPersonIdentityDocuments(int personId);
+
+        ICollection<PersonSocialStatus> GetPersonSocialStatuses(int personId);
 
         ICollection<PersonDisability> GetPersonDisabilities(int personId);
 
@@ -61,12 +67,22 @@ namespace Core
 
         ICollection<string> GetIdentityDocumentsGivenOrgByName(string name);
 
+        SocialStatusType GetSocialStatusType(int id);
+
+        ICollection<SocialStatusType> GetSocialStatusTypes();
+
+        ICollection<Org> GetSocialStatusOrgByName(string name);
+
         //ToDo: Move to other service
         Okato GetOKATOByCode(string codeOKATO);
 
         ICollection<Okato> GetOKATOByName(string okatoName, string okatoRegion);
 
         ICollection<Okato> GetOKATORegion(string regionName);
+
+        Org GetOrg(int id);
+
+        ////////
 
         PersonTalon GetPersonTalonById(int id);
     }

@@ -4,9 +4,11 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Linq;
 
 namespace MainLib
 {
@@ -56,6 +58,7 @@ namespace MainLib
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
             EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
             EditPersonDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
+            RelativeRelations = new ObservableCollection<RelativeRelationship>(service.GetRelativeRelationships());
         }
 
         public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, int personId)
@@ -93,8 +96,8 @@ namespace MainLib
             SelectedRelative = null;
         }
 
-        private PersonRelative selectedRelative;
-        public PersonRelative SelectedRelative
+        private PersonRelativeDTO selectedRelative;
+        public PersonRelativeDTO SelectedRelative
         {
             get { return selectedRelative; }
             set
@@ -102,7 +105,7 @@ namespace MainLib
                 Set("SelectedRelative", ref selectedRelative, value);
                 IsPersonEditing = (selectedRelative == null);
                 if (selectedRelative != null)
-                    EditPersonRelativeDataViewModel.Id = selectedRelative.RelativeId;
+                    EditPersonRelativeDataViewModel.Id = selectedRelative.RelativePersonId;
             }
         }
 
@@ -127,7 +130,7 @@ namespace MainLib
                 {
                     RelativePersonId = -1,
                     ShortName = "Новый родственник",
-                    RelativeRelationName = string.Empty,
+                    RelativeRelationId = 0,
                     IsRepresentative = false,
                     PhotoUri = string.Empty
                 });
@@ -141,5 +144,7 @@ namespace MainLib
             get { return relatives; }
             set { Set("Relatives", ref relatives, value); }
         }
+
+        public ObservableCollection<RelativeRelationship> RelativeRelations { get; set; }
     }
 }

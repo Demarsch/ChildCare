@@ -12,18 +12,16 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class PersonDisability
+    public partial class Org
     {
-        public int Id { get; set; }
-        public int PersonId { get; set; }
-        public int DisabilityTypeId { get; set; }
-        public string Series { get; set; }
-        public string Number { get; set; }
-        public string GivenOrg { get; set; }
-        public System.DateTime BeginDate { get; set; }
-        public System.DateTime EndDate { get; set; }
+        public Org()
+        {
+            this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
+        }
     
-        public virtual Person Person { get; set; }
-        public virtual DisabilityType DisabilityType { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+    
+        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
     }
 }

@@ -289,6 +289,13 @@
           <Property Name="CodeOKTMO" Type="varchar" MaxLength="11" Nullable="false" />
           <Property Name="RegionCode" Type="varchar" MaxLength="2" Nullable="false" />
         </EntityType>
+        <EntityType Name="Orgs">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+        </EntityType>
         <EntityType Name="PermissionLinks">
           <Key>
             <PropertyRef Name="Id" />
@@ -383,6 +390,18 @@
           <Property Name="MedNumber" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="GenderId" Type="int" Nullable="false" />
           <Property Name="DeleteDateTime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="PersonSocialStatuses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="SocialStatusTypeId" Type="int" Nullable="false" />
+          <Property Name="Office" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="OrgId" Type="int" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonStaffs">
           <Key>
@@ -485,6 +504,16 @@
           <Property Name="EndDate" Type="date" Nullable="false" />
           <Property Name="StartTime" Type="time" Precision="7" Nullable="false" />
           <Property Name="EndTime" Type="time" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SocialStatusTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+          <Property Name="NeedPlace" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Staffs">
           <Key>
@@ -973,7 +1002,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonDisabilities_PersonDisabilities">
+        <Association Name="FK_PersonDisabilities_DisabilityTypes">
           <End Role="DisabilityTypes" Type="Self.DisabilityTypes" Multiplicity="1" />
           <End Role="PersonDisabilities" Type="Self.PersonDisabilities" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1090,6 +1119,42 @@
             </Principal>
             <Dependent Role="Persons">
               <PropertyRef Name="GenderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonSocialStatuses_Orgs">
+          <End Role="Orgs" Type="Self.Orgs" Multiplicity="0..1" />
+          <End Role="PersonSocialStatuses" Type="Self.PersonSocialStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orgs">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonSocialStatuses">
+              <PropertyRef Name="OrgId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonSocialStatuses_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonSocialStatuses" Type="Self.PersonSocialStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonSocialStatuses">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonSocialStatuses_SocialStatusTypes">
+          <End Role="SocialStatusTypes" Type="Self.SocialStatusTypes" Multiplicity="1" />
+          <End Role="PersonSocialStatuses" Type="Self.PersonSocialStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SocialStatusTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonSocialStatuses">
+              <PropertyRef Name="SocialStatusTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1358,6 +1423,7 @@
           <EntitySet Name="InsuranceDocumentTypes" EntityType="Self.InsuranceDocumentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MedicalHelpTypes" EntityType="Self.MedicalHelpTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Okatos" EntityType="Self.Okatos" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Orgs" EntityType="Self.Orgs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PermissionLinks" EntityType="Self.PermissionLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonAddresses" EntityType="Self.PersonAddresses" Schema="dbo" store:Type="Tables" />
@@ -1366,6 +1432,7 @@
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonRelatives" EntityType="Self.PersonRelatives" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonSocialStatuses" EntityType="Self.PersonSocialStatuses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonStaffs" EntityType="Self.PersonStaffs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonTalons" EntityType="Self.PersonTalons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContracts" EntityType="Self.RecordContracts" Schema="dbo" store:Type="Tables" />
@@ -1374,6 +1441,7 @@
           <EntitySet Name="RelativeRelationships" EntityType="Self.RelativeRelationships" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rooms" EntityType="Self.Rooms" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ScheduleItem" EntityType="Self.ScheduleItem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SocialStatusTypes" EntityType="Self.SocialStatusTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Staffs" EntityType="Self.Staffs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserMessages" EntityType="Self.UserMessages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserMessageTypes" EntityType="Self.UserMessageTypes" Schema="dbo" store:Type="Tables" />
@@ -1523,7 +1591,7 @@
             <End Role="AddressTypes" EntitySet="AddressTypes" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
           </AssociationSet>
-          <AssociationSet Name="FK_PersonDisabilities_PersonDisabilities" Association="Self.FK_PersonDisabilities_PersonDisabilities">
+          <AssociationSet Name="FK_PersonDisabilities_DisabilityTypes" Association="Self.FK_PersonDisabilities_DisabilityTypes">
             <End Role="DisabilityTypes" EntitySet="DisabilityTypes" />
             <End Role="PersonDisabilities" EntitySet="PersonDisabilities" />
           </AssociationSet>
@@ -1562,6 +1630,18 @@
           <AssociationSet Name="FK_Persons_Genders" Association="Self.FK_Persons_Genders">
             <End Role="Genders" EntitySet="Genders" />
             <End Role="Persons" EntitySet="Persons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonSocialStatuses_Orgs" Association="Self.FK_PersonSocialStatuses_Orgs">
+            <End Role="Orgs" EntitySet="Orgs" />
+            <End Role="PersonSocialStatuses" EntitySet="PersonSocialStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonSocialStatuses_Persons" Association="Self.FK_PersonSocialStatuses_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonSocialStatuses" EntitySet="PersonSocialStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonSocialStatuses_SocialStatusTypes" Association="Self.FK_PersonSocialStatuses_SocialStatusTypes">
+            <End Role="SocialStatusTypes" EntitySet="SocialStatusTypes" />
+            <End Role="PersonSocialStatuses" EntitySet="PersonSocialStatuses" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonStaffs_Branches" Association="Self.FK_PersonStaffs_Branches">
             <End Role="Branches" EntitySet="Branches" />
@@ -1926,19 +2006,10 @@
             <End Role="User" EntitySet="Users" />
             <End Role="UserPermission" EntitySet="UserPermissions" />
           </AssociationSet>
-          <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
           <EntitySet Name="Decisions" EntityType="DataLib.Decision" />
-          <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
-          </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisions_Decisions" Association="DataLib.FK_CommissionDecisions_Decisions">
             <End Role="Decision" EntitySet="Decisions" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ScheduleItem_Rooms" Association="DataLib.FK_ScheduleItem_Rooms">
-            <End Role="Room" EntitySet="Rooms" />
-            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisionsLinks_Decisions" Association="DataLib.FK_CommissionDecisionsLinks_Decisions">
             <End Role="Decision" EntitySet="Decisions" />
@@ -1948,15 +2019,39 @@
             <End Role="Decision" EntitySet="Decisions" />
             <End Role="Decision1" EntitySet="Decisions" />
           </AssociationSet>
-          <EntitySet Name="DisabilityTypes" EntityType="DataLib.DisabilityType" />
           <EntitySet Name="PersonDisabilities" EntityType="DataLib.PersonDisability" />
-          <AssociationSet Name="FK_PersonDisabilities_PersonDisabilities" Association="DataLib.FK_PersonDisabilities_PersonDisabilities">
-            <End Role="DisabilityType" EntitySet="DisabilityTypes" />
-            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
-          </AssociationSet>
           <AssociationSet Name="FK_PersonDisabilities_Persons" Association="DataLib.FK_PersonDisabilities_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonDisability" EntitySet="PersonDisabilities" />
+          </AssociationSet>
+          <EntitySet Name="DisabilityTypes" EntityType="DataLib.DisabilityType" />
+          <AssociationSet Name="FK_PersonDisabilities_DisabilityTypes" Association="DataLib.FK_PersonDisabilities_DisabilityTypes">
+            <End Role="DisabilityType" EntitySet="DisabilityTypes" />
+            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
+          </AssociationSet>
+          <EntitySet Name="Orgs" EntityType="DataLib.Org" />
+          <EntitySet Name="PersonSocialStatuses" EntityType="DataLib.PersonSocialStatus" />
+          <EntitySet Name="SocialStatusTypes" EntityType="DataLib.SocialStatusType" />
+          <AssociationSet Name="FK_PersonSocialStatuses_Orgs" Association="DataLib.FK_PersonSocialStatuses_Orgs">
+            <End Role="Org" EntitySet="Orgs" />
+            <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonSocialStatuses_Persons" Association="DataLib.FK_PersonSocialStatuses_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonSocialStatuses_SocialStatusTypes" Association="DataLib.FK_PersonSocialStatuses_SocialStatusTypes">
+            <End Role="SocialStatusType" EntitySet="SocialStatusTypes" />
+            <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
+          </AssociationSet>
+          <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
+          <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ScheduleItem_Rooms" Association="DataLib.FK_ScheduleItem_Rooms">
+            <End Role="Room" EntitySet="Rooms" />
+            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -2384,6 +2479,7 @@
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="Person" ToRole="PersonDisability" />
+          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="Person" ToRole="PersonSocialStatus" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -3295,21 +3391,6 @@
           <NavigationProperty Name="Decisions1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision" ToRole="Decision1" />
           <NavigationProperty Name="Decision1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision1" ToRole="Decision" />
         </EntityType>
-         <EntityType Name="ScheduleItem">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RoomId" Type="Int32" Nullable="false" />
-          <Property Name="RecordTypeId" Type="Int32" />
-          <Property Name="DayOfWeek" Type="Int32" Nullable="false" />
-          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="StartTime" Type="Time" Nullable="false" Precision="7" />
-          <Property Name="EndTime" Type="Time" Nullable="false" Precision="7" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="ScheduleItem" ToRole="RecordType" />
-          <NavigationProperty Name="Room" Relationship="DataLib.FK_ScheduleItem_Rooms" FromRole="ScheduleItem" ToRole="Room" />
-        </EntityType>
         <Association Name="FK_CommissionDecisions_Decisions">
           <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
           <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
@@ -3319,18 +3400,6 @@
             </Principal>
             <Dependent Role="CommissionDecision">
               <PropertyRef Name="DecisionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-         <Association Name="FK_ScheduleItem_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="0..1" />
-          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ScheduleItem">
-              <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3346,18 +3415,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-         <Association Name="FK_ScheduleItem_Rooms">
-          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
-          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Room">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ScheduleItem">
-              <PropertyRef Name="RoomId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Decisions_Decisions">
           <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
           <End Type="DataLib.Decision" Role="Decision1" Multiplicity="*" />
@@ -3370,16 +3427,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="DisabilityType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_PersonDisabilities" FromRole="DisabilityType" ToRole="PersonDisability" />
-        </EntityType>
         <EntityType Name="PersonDisability">
           <Key>
             <PropertyRef Name="Id" />
@@ -3392,10 +3439,32 @@
           <Property Name="GivenOrg" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="DisabilityType" Relationship="DataLib.FK_PersonDisabilities_PersonDisabilities" FromRole="PersonDisability" ToRole="DisabilityType" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="PersonDisability" ToRole="Person" />
+          <NavigationProperty Name="DisabilityType" Relationship="DataLib.FK_PersonDisabilities_DisabilityTypes" FromRole="PersonDisability" ToRole="DisabilityType" />
         </EntityType>
-        <Association Name="FK_PersonDisabilities_PersonDisabilities">
+        <Association Name="FK_PersonDisabilities_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDisability">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DisabilityType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_DisabilityTypes" FromRole="DisabilityType" ToRole="PersonDisability" />
+        </EntityType>
+        <Association Name="FK_PersonDisabilities_DisabilityTypes">
           <End Type="DataLib.DisabilityType" Role="DisabilityType" Multiplicity="1" />
           <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
           <ReferentialConstraint>
@@ -3407,15 +3476,112 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonDisabilities_Persons">
+        <EntityType Name="Org">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="Org" ToRole="PersonSocialStatus" />
+        </EntityType>
+        <EntityType Name="PersonSocialStatus">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="SocialStatusTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Office" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="OrgId" Type="Int32" />
+          <NavigationProperty Name="Org" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="PersonSocialStatus" ToRole="Org" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="PersonSocialStatus" ToRole="Person" />
+          <NavigationProperty Name="SocialStatusType" Relationship="DataLib.FK_PersonSocialStatuses_SocialStatusTypes" FromRole="PersonSocialStatus" ToRole="SocialStatusType" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="SocialStatusType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_SocialStatusTypes" FromRole="SocialStatusType" ToRole="PersonSocialStatus" />
+          <Property Name="NeedPlace" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_PersonSocialStatuses_Orgs">
+          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
+          <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Org">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonSocialStatus">
+              <PropertyRef Name="OrgId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonSocialStatuses_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
+          <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Person">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="PersonDisability">
+            <Dependent Role="PersonSocialStatus">
               <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonSocialStatuses_SocialStatusTypes">
+          <End Type="DataLib.SocialStatusType" Role="SocialStatusType" Multiplicity="1" />
+          <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SocialStatusType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonSocialStatus">
+              <PropertyRef Name="SocialStatusTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ScheduleItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoomId" Type="Int32" Nullable="false" />
+          <Property Name="RecordTypeId" Type="Int32" />
+          <Property Name="DayOfWeek" Type="Int32" Nullable="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="StartTime" Type="Time" Nullable="false" Precision="7" />
+          <Property Name="EndTime" Type="Time" Nullable="false" Precision="7" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="ScheduleItem" ToRole="RecordType" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_ScheduleItem_Rooms" FromRole="ScheduleItem" ToRole="Room" />
+        </EntityType>
+        <Association Name="FK_ScheduleItem_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="0..1" />
+          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ScheduleItem">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ScheduleItem_Rooms">
+          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
+          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Room">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ScheduleItem">
+              <PropertyRef Name="RoomId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3954,30 +4120,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="DisabilityTypes">
-            <EntityTypeMapping TypeName="DataLib.DisabilityType">
-              <MappingFragment StoreEntitySet="DisabilityTypes">
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-           <EntitySetMapping Name="ScheduleItems">
-            <EntityTypeMapping TypeName="DataLib.ScheduleItem">
-              <MappingFragment StoreEntitySet="ScheduleItem">
-                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
-                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
-                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PersonDisabilities">
             <EntityTypeMapping TypeName="DataLib.PersonDisability">
               <MappingFragment StoreEntitySet="PersonDisabilities">
@@ -4000,6 +4142,62 @@
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DisabilityTypes">
+            <EntityTypeMapping TypeName="DataLib.DisabilityType">
+              <MappingFragment StoreEntitySet="DisabilityTypes">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orgs">
+            <EntityTypeMapping TypeName="DataLib.Org">
+              <MappingFragment StoreEntitySet="Orgs">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonSocialStatuses">
+            <EntityTypeMapping TypeName="DataLib.PersonSocialStatus">
+              <MappingFragment StoreEntitySet="PersonSocialStatuses">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="OrgId" ColumnName="OrgId" />
+                <ScalarProperty Name="Office" ColumnName="Office" />
+                <ScalarProperty Name="SocialStatusTypeId" ColumnName="SocialStatusTypeId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SocialStatusTypes">
+            <EntityTypeMapping TypeName="DataLib.SocialStatusType">
+              <MappingFragment StoreEntitySet="SocialStatusTypes">
+                <ScalarProperty Name="NeedPlace" ColumnName="NeedPlace" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ScheduleItems">
+            <EntityTypeMapping TypeName="DataLib.ScheduleItem">
+              <MappingFragment StoreEntitySet="ScheduleItem">
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

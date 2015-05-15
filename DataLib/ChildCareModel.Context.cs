@@ -66,9 +66,12 @@ namespace DataLib
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
         public virtual DbSet<UserPermission> UserPermissions { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
-        public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<PersonDisability> PersonDisabilities { get; set; }
+        public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
+        public virtual DbSet<Org> Orgs { get; set; }
+        public virtual DbSet<PersonSocialStatus> PersonSocialStatuses { get; set; }
+        public virtual DbSet<SocialStatusType> SocialStatusTypes { get; set; }
+        public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
     }
 }

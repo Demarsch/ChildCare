@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Core
 {
-    public class PersonRelativeDTO
+    [PropertyChanged.ImplementPropertyChanged]
+    public class PersonRelativeDTO : ObservableObject
     {
         public int RelativePersonId { get; set; }
 
         public string ShortName { get; set; }
 
-        public string RelativeRelationName { get; set; }
+        public int RelativeRelationId { get; set; }
 
         public bool? IsRepresentative { get; set; }
 

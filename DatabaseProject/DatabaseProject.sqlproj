@@ -110,5 +110,8 @@
     <Build Include="dbo\Tables\IdentityDocumentTypes.sql" />
     <Build Include="dbo\Tables\PersonDisabilities.sql" />
     <Build Include="dbo\Tables\DisabilityTypes.sql" />
+    <Build Include="dbo\Tables\SocialStatusTypes.sql" />
+    <Build Include="dbo\Tables\PersonSocialStatuses.sql" />
+    <Build Include="dbo\Tables\Orgs.sql" />
   </ItemGroup>
 </Project>

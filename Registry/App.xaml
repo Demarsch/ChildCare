@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonIdentityDocumentsView.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonInsuranceDocumentsView.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonDisabilitiesView.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonSocialStatusesView.xaml" />
                 <ResourceDictionary Source="View/PatientAssignmentListView.xaml" />
                 <ResourceDictionary Source="View/ScheduleView.xaml" />
                 <ResourceDictionary Source="View/TimeTickerView.xaml" />
