@@ -16,18 +16,13 @@ using System.Windows.Shapes;
 namespace Commission
 {
     /// <summary>
-    /// Interaction logic for CommissionNavigatorControl.xaml
+    /// Interaction logic for CommissionMainView.xaml
     /// </summary>
-    public partial class CommissionNavigatorControl : UserControl
+    public partial class CommissionMainView : Window
     {
-        public CommissionNavigatorControl()
+        public CommissionMainView()
         {
             InitializeComponent();
-        }
-
-        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-
         }
     }
 }

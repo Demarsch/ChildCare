@@ -4,13 +4,13 @@ using GalaSoft.MvvmLight;
 namespace Commission
 {
     [PropertyChanged.ImplementPropertyChanged]
-    public class CommissionPersonFlowViewModel : ViewModelBase
+    public class CommissionPersonGridViewModel : ViewModelBase
     {
-        public CommissionPersonFlowViewModel()
+        public CommissionPersonGridViewModel()
         {
         }
 
-        public void Navigate(dynamic e)
+        public void Load(dynamic e)
         {
             Title = e.GetType().ToString() + ": " + e.Id.ToString();
         }

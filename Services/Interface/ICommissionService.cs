@@ -10,6 +10,7 @@ namespace Core
     public interface ICommissionService
     {
         ICollection<CommissionProtocol> GetCommissionsByUserId(int userId);
+        ICollection<CommissionProtocol> GetCommissionsByFilter(CommissionServiceFilter filter);
         ICollection<Decision> GetActualMainDecisions();
         ICollection<Decision> GetActualSpecificDecisions(int mainDecisionId);
 
@@ -21,5 +22,10 @@ namespace Core
         Decision GetDecisionById(int commissionDecisionId);
         
         bool Save(CommissionDecision commissionDecision, out string msg);
+    }
+
+    public class CommissionServiceFilter
+    {
+        public bool IsActive;
     }
 }

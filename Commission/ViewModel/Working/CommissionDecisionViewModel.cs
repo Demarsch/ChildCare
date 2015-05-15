@@ -27,7 +27,8 @@ namespace Commission
         private User currentUser;
         private int commissionProtocolId = 0;
 
-        public CommissionDecisionViewModel(CommissionService commissionService, UserService userService, PersonService personService, IDialogService dialogService, ILog log)
+        public CommissionDecisionViewModel(CommissionService commissionService, UserService userService, PersonService personService,
+            IDialogService dialogService, ILog log)
         {
             this.commissionService = commissionService;
             this.userService = userService;
@@ -39,9 +40,9 @@ namespace Commission
             this.SaveDecisionCommand = new RelayCommand<object>(SaveDecision);
         }
 
-        public void Navigate(dynamic selectedItem)
+        public void Load(int CommissionProtocolId)
         {
-            commissionProtocolId = (selectedItem as CommissionProtocolDTO).Id;
+            commissionProtocolId = CommissionProtocolId;
             
             MainDecisions = new ObservableCollection<Decision>(commissionService.GetActualMainDecisions());
             LoadCommissionDecisionByDefault();

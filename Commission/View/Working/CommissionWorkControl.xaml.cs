@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Commission
 {
     /// <summary>
-    /// Interaction logic for CommisionPersonFlowControl.xaml
+    /// Interaction logic for CommissionWorkControl.xaml
     /// </summary>
-    public partial class CommissionPersonFlowControl : UserControl
+    public partial class CommissionWorkControl : UserControl
     {
-        public CommissionPersonFlowControl()
+        public CommissionWorkControl()
         {
             InitializeComponent();
         }

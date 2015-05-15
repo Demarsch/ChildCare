@@ -121,5 +121,14 @@ namespace Core
                 return db.GetData<Decision>().First(x => x.Id == decisionId);
             }
         }
+
+
+        public ICollection<CommissionProtocol> GetCommissionsByFilter(CommissionServiceFilter filter)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<CommissionProtocol>().ToArray();
+            }
+        }
     }      
 }

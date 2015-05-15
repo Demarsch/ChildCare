@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="Commission.CommissionWorkControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ev ="clr-namespace:MvvmEventBinding;assembly=MvvmEventBinding"
+             xmlns:core="clr-namespace:Core;assembly=StuffLib"
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" 
+             xmlns:local="clr-namespace:Commission"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Margin="0,0,-467,0">
+        <xcad:DockingManager>
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel Orientation="Horizontal">
+                    <xcad:LayoutAnchorablePane DockWidth="200" FloatingWidth="200">
+                        <xcad:LayoutAnchorable Title="Список" CanClose="False" CanHide="False" CanAutoHide="True" CanFloat="False">
+                            <DockPanel >
+                                <ListBox ItemsSource="{Binding NavigationItems}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" MouseDoubleClick="{ev:EventBinding NavigationCommand}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Vertical">
+                                                <StackPanel Orientation="Horizontal" Margin="0, 5">
+                                                    <TextBlock Text="{Binding PatientFIO}" Margin="0, 0, 5, 0"/>
+                                                    <TextBlock Text="{Binding BirthDate}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Talon}" Margin="0, 0, 5, 0"/>
+                                                    <TextBlock Text="{Binding MKB}" Margin="0, 0, 5, 0"/>
+                                                    <TextBlock Text="{Binding IncomeDateTime}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </DockPanel>
+                        </xcad:LayoutAnchorable>
+                    </xcad:LayoutAnchorablePane>
+                    <xcad:LayoutDocumentPane>
+                        <xcad:LayoutDocument Title="Решение для комиссии" CanClose="False" CanFloat="False">
+                            <local:CommissionDecisionControl DataContext="{Binding Decision}"/>
+                        </xcad:LayoutDocument>
+                        <xcad:LayoutDocument Title="Пациент" CanClose="False" CanFloat="False">
+                            
+                        </xcad:LayoutDocument>
+                    </xcad:LayoutDocumentPane>
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+    </Grid>
+</UserControl>

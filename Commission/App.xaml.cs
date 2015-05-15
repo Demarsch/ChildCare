@@ -36,14 +36,15 @@ namespace Commission
             Container.RegisterSingle<ILog>(new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)));
 
             Container.Register<CommissionManagementViewModel>();
-            Container.Register<CommissionNavigatorViewModel>();
-            Container.Register<CommissionPersonFlowViewModel>();
+            Container.Register<CommissionMainViewModel>();
+            Container.Register<CommissionPersonGridViewModel>();
             Container.Register<CommissionItemViewModel>();
             Container.Register<CommissionDecisionViewModel>();
+            Container.Register<CommissionWorkViewModel>();
 
-            MainWindow = new CommissionManagementView() 
+            MainWindow = new CommissionMainView() 
             { 
-                DataContext = Container.GetInstance<CommissionManagementViewModel>() 
+                DataContext = Container.GetInstance<CommissionMainViewModel>() 
             };
             MainWindow.Show();
         }
