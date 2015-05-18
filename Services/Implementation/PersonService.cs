@@ -389,5 +389,43 @@ namespace Core
                 return db.GetData<PersonSocialStatus>().Where(x => x.PersonId == personId).ToArray();
             }
         }
+
+
+        public ICollection<HealthGroup> GetHealthGroups()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<HealthGroup>().ToArray();
+            }
+        }
+
+        public ICollection<Country> GetCountries()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Country>().ToArray();
+            }
+        }
+
+
+        public int GetHealthGroupId(int personId, DateTime date)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var personHealthGroup = db.GetData<PersonHealthGroup>().FirstOrDefault(x => x.PersonId == personId && date > x.BeginDateTime && date < x.EndDateTime);
+                if (personHealthGroup == null) return 0;
+                return personHealthGroup.HealthGroupId;
+            }
+        }
+
+        public int GetNationalityCountryId(int personId, DateTime date)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var personNationality = db.GetData<PersonNationality>().FirstOrDefault(x => x.PersonId == personId && date > x.BeginDateTime && date < x.EndDateTime);
+                if (personNationality == null) return 0;
+                return personNationality.CountryId;
+            }
+        }
     }
 }

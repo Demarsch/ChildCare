@@ -45,6 +45,8 @@ namespace MainLib
             EditPersonDisabilitiesCommand = new RelayCommand(EditPersonDisabilities);
             EditPersonSocialStatusesCommand = new RelayCommand(EditPersonSocialStatuses);
             Genders = new ObservableCollection<Gender>(service.GetGenders());
+            HealthGroups = new ObservableCollection<HealthGroup>(service.GetHealthGroups());
+            Countries = new ObservableCollection<Country>(service.GetCountries());
 
         }
 
@@ -91,6 +93,9 @@ namespace MainLib
                 SNILS = person.Snils;
                 MedNumber = person.MedNumber;
                 GenderId = person.GenderId;
+                var dateTimeNow = DateTime.Now;
+                HealthGroupId = service.GetHealthGroupId(person.Id, dateTimeNow);
+                NationalityId = service.GetNationalityCountryId(person.Id, dateTimeNow);
                 PhotoURI = person.PhotoUri;
                 Insurances = service.GetActualInsuranceDocumentsString(Id);
                 Addresses = service.GetActualPersonAddressesString(Id);
@@ -280,6 +285,20 @@ namespace MainLib
             SocialStatuses = personSocialStatusesViewModel.PersonSocialStatusesString;
         }
 
+        private ObservableCollection<HealthGroup> healthGroups = new ObservableCollection<HealthGroup>();
+        public ObservableCollection<HealthGroup> HealthGroups
+        {
+            get { return healthGroups; }
+            set { Set(() => HealthGroups, ref healthGroups, value); }
+        }
+
+        private ObservableCollection<Country> countries = new ObservableCollection<Country>();
+        public ObservableCollection<Country> Countries
+        {
+            get { return countries; }
+            set { Set(() => Countries, ref countries, value); }
+        }
+
         private ObservableCollection<Gender> genders = new ObservableCollection<Gender>();
         public ObservableCollection<Gender> Genders
         {
@@ -447,6 +466,20 @@ namespace MainLib
         {
             get { return genderId; }
             set { Set("GenderId", ref genderId, value); }
+        }
+
+        private int healthGroupId = 0;
+        public int HealthGroupId
+        {
+            get { return healthGroupId; }
+            set { Set(() => HealthGroupId, ref healthGroupId, value); }
+        }
+
+        private int nationalityId = 0;
+        public int NationalityId
+        {
+            get { return nationalityId; }
+            set { Set(() => NationalityId, ref nationalityId, value); }
         }
 
         private string phones = string.Empty;

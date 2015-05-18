@@ -122,6 +122,14 @@
         <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="13.5" PointY="45.625" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_Rooms" />
+        <EntityTypeShape EntityType="DataLib.Country" Width="1.5" PointX="9" PointY="7.5" />
+        <EntityTypeShape EntityType="DataLib.HealthGroup" Width="1.5" PointX="11" PointY="40.5" />
+        <EntityTypeShape EntityType="DataLib.PersonHealthGroup" Width="1.5" PointX="13.25" PointY="33.375" />
+        <EntityTypeShape EntityType="DataLib.PersonNationality" Width="1.5" PointX="11.25" PointY="21.375" />
+        <AssociationConnector Association="DataLib.FK_PersonNationalities_Countries" />
+        <AssociationConnector Association="DataLib.FK_PersonHealthGroups_HealthGroups" />
+        <AssociationConnector Association="DataLib.FK_PersonHealthGroups_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonNationalities_Persons" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

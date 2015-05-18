@@ -169,6 +169,15 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Countries">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="DBSettings">
           <Key>
             <PropertyRef Name="Id" />
@@ -218,6 +227,15 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="HealthGroups">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="IdentityDocumentTypes">
           <Key>
@@ -342,6 +360,16 @@
           <Property Name="BeginDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="PersonHealthGroups">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="HealthGroupId" Type="int" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="PersonIdentityDocuments">
           <Key>
             <PropertyRef Name="Id" />
@@ -367,6 +395,16 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" />
           <Property Name="ChangeNameReasonId" Type="int" />
+        </EntityType>
+        <EntityType Name="PersonNationalities">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="CountryId" Type="int" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonRelatives">
           <Key>
@@ -1026,6 +1064,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PersonHealthGroups_HealthGroups">
+          <End Role="HealthGroups" Type="Self.HealthGroups" Multiplicity="1" />
+          <End Role="PersonHealthGroups" Type="Self.PersonHealthGroups" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HealthGroups">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonHealthGroups">
+              <PropertyRef Name="HealthGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonHealthGroups_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonHealthGroups" Type="Self.PersonHealthGroups" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonHealthGroups">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonIdentityDocuments_IdentityDocumentTypes">
           <End Role="IdentityDocumentTypes" Type="Self.IdentityDocumentTypes" Multiplicity="1" />
           <End Role="PersonIdentityDocuments" Type="Self.PersonIdentityDocuments" Multiplicity="*" />
@@ -1070,6 +1132,30 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="PersonNames">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonNationalities_Countries">
+          <End Role="Countries" Type="Self.Countries" Multiplicity="1" />
+          <End Role="PersonNationalities" Type="Self.PersonNationalities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Countries">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonNationalities">
+              <PropertyRef Name="CountryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonNationalities_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonNationalities" Type="Self.PersonNationalities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonNationalities">
               <PropertyRef Name="PersonId" />
             </Dependent>
           </ReferentialConstraint>
@@ -1412,11 +1498,13 @@
           <EntitySet Name="CommissionQuestions" EntityType="Self.CommissionQuestions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionSources" EntityType="Self.CommissionSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionTypes" EntityType="Self.CommissionTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Countries" EntityType="Self.Countries" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Decisions" EntityType="Self.Decisions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DisabilityTypes" EntityType="Self.DisabilityTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinacingSources" EntityType="Self.FinacingSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HealthGroups" EntityType="Self.HealthGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IdentityDocumentTypes" EntityType="Self.IdentityDocumentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceCompanies" EntityType="Self.InsuranceCompanies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceDocuments" EntityType="Self.InsuranceDocuments" Schema="dbo" store:Type="Tables" />
@@ -1428,8 +1516,10 @@
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonAddresses" EntityType="Self.PersonAddresses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonDisabilities" EntityType="Self.PersonDisabilities" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonHealthGroups" EntityType="Self.PersonHealthGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonIdentityDocuments" EntityType="Self.PersonIdentityDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonNationalities" EntityType="Self.PersonNationalities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonRelatives" EntityType="Self.PersonRelatives" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Persons" EntityType="Self.Persons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonSocialStatuses" EntityType="Self.PersonSocialStatuses" Schema="dbo" store:Type="Tables" />
@@ -1599,6 +1689,14 @@
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonDisabilities" EntitySet="PersonDisabilities" />
           </AssociationSet>
+          <AssociationSet Name="FK_PersonHealthGroups_HealthGroups" Association="Self.FK_PersonHealthGroups_HealthGroups">
+            <End Role="HealthGroups" EntitySet="HealthGroups" />
+            <End Role="PersonHealthGroups" EntitySet="PersonHealthGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonHealthGroups_Persons" Association="Self.FK_PersonHealthGroups_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonHealthGroups" EntitySet="PersonHealthGroups" />
+          </AssociationSet>
           <AssociationSet Name="FK_PersonIdentityDocuments_IdentityDocumentTypes" Association="Self.FK_PersonIdentityDocuments_IdentityDocumentTypes">
             <End Role="IdentityDocumentTypes" EntitySet="IdentityDocumentTypes" />
             <End Role="PersonIdentityDocuments" EntitySet="PersonIdentityDocuments" />
@@ -1614,6 +1712,14 @@
           <AssociationSet Name="FK_PersonNames_Persons" Association="Self.FK_PersonNames_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonNames" EntitySet="PersonNames" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonNationalities_Countries" Association="Self.FK_PersonNationalities_Countries">
+            <End Role="Countries" EntitySet="Countries" />
+            <End Role="PersonNationalities" EntitySet="PersonNationalities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonNationalities_Persons" Association="Self.FK_PersonNationalities_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonNationalities" EntitySet="PersonNationalities" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonRelatives_Persons" Association="Self.FK_PersonRelatives_Persons">
             <End Role="Persons" EntitySet="Persons" />
@@ -2053,6 +2159,26 @@
             <End Role="Room" EntitySet="Rooms" />
             <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
+          <EntitySet Name="Countries" EntityType="DataLib.Country" />
+          <EntitySet Name="HealthGroups" EntityType="DataLib.HealthGroup" />
+          <EntitySet Name="PersonHealthGroups" EntityType="DataLib.PersonHealthGroup" />
+          <EntitySet Name="PersonNationalities" EntityType="DataLib.PersonNationality" />
+          <AssociationSet Name="FK_PersonNationalities_Countries" Association="DataLib.FK_PersonNationalities_Countries">
+            <End Role="Country" EntitySet="Countries" />
+            <End Role="PersonNationality" EntitySet="PersonNationalities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonHealthGroups_HealthGroups" Association="DataLib.FK_PersonHealthGroups_HealthGroups">
+            <End Role="HealthGroup" EntitySet="HealthGroups" />
+            <End Role="PersonHealthGroup" EntitySet="PersonHealthGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonHealthGroups_Persons" Association="DataLib.FK_PersonHealthGroups_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonHealthGroup" EntitySet="PersonHealthGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonNationalities_Persons" Association="DataLib.FK_PersonNationalities_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonNationality" EntitySet="PersonNationalities" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -2480,6 +2606,8 @@
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="Person" ToRole="PersonDisability" />
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="Person" ToRole="PersonSocialStatus" />
+          <NavigationProperty Name="PersonHealthGroups" Relationship="DataLib.FK_PersonHealthGroups_Persons" FromRole="Person" ToRole="PersonHealthGroup" />
+          <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Persons" FromRole="Person" ToRole="PersonNationality" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -3585,6 +3713,98 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Country">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Countries" FromRole="Country" ToRole="PersonNationality" />
+        </EntityType>
+        <EntityType Name="HealthGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PersonHealthGroups" Relationship="DataLib.FK_PersonHealthGroups_HealthGroups" FromRole="HealthGroup" ToRole="PersonHealthGroup" />
+        </EntityType>
+        <EntityType Name="PersonHealthGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="HealthGroupId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="HealthGroup" Relationship="DataLib.FK_PersonHealthGroups_HealthGroups" FromRole="PersonHealthGroup" ToRole="HealthGroup" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonHealthGroups_Persons" FromRole="PersonHealthGroup" ToRole="Person" />
+        </EntityType>
+        <EntityType Name="PersonNationality">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="CountryId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Country" Relationship="DataLib.FK_PersonNationalities_Countries" FromRole="PersonNationality" ToRole="Country" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonNationalities_Persons" FromRole="PersonNationality" ToRole="Person" />
+        </EntityType>
+        <Association Name="FK_PersonNationalities_Countries">
+          <End Type="DataLib.Country" Role="Country" Multiplicity="1" />
+          <End Type="DataLib.PersonNationality" Role="PersonNationality" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Country">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonNationality">
+              <PropertyRef Name="CountryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonHealthGroups_HealthGroups">
+          <End Type="DataLib.HealthGroup" Role="HealthGroup" Multiplicity="1" />
+          <End Type="DataLib.PersonHealthGroup" Role="PersonHealthGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HealthGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonHealthGroup">
+              <PropertyRef Name="HealthGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonHealthGroups_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonHealthGroup" Role="PersonHealthGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonHealthGroup">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonNationalities_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonNationality" Role="PersonNationality" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonNationality">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4198,6 +4418,48 @@
                 <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="RoomId" ColumnName="RoomId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Countries">
+            <EntityTypeMapping TypeName="DataLib.Country">
+              <MappingFragment StoreEntitySet="Countries">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HealthGroups">
+            <EntityTypeMapping TypeName="DataLib.HealthGroup">
+              <MappingFragment StoreEntitySet="HealthGroups">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonHealthGroups">
+            <EntityTypeMapping TypeName="DataLib.PersonHealthGroup">
+              <MappingFragment StoreEntitySet="PersonHealthGroups">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="HealthGroupId" ColumnName="HealthGroupId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonNationalities">
+            <EntityTypeMapping TypeName="DataLib.PersonNationality">
+              <MappingFragment StoreEntitySet="PersonNationalities">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

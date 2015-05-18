@@ -73,5 +73,9 @@ namespace DataLib
         public virtual DbSet<PersonSocialStatus> PersonSocialStatuses { get; set; }
         public virtual DbSet<SocialStatusType> SocialStatusTypes { get; set; }
         public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<HealthGroup> HealthGroups { get; set; }
+        public virtual DbSet<PersonHealthGroup> PersonHealthGroups { get; set; }
+        public virtual DbSet<PersonNationality> PersonNationalities { get; set; }
     }
 }

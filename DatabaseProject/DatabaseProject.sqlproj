@@ -113,5 +113,9 @@
     <Build Include="dbo\Tables\SocialStatusTypes.sql" />
     <Build Include="dbo\Tables\PersonSocialStatuses.sql" />
     <Build Include="dbo\Tables\Orgs.sql" />
+    <Build Include="dbo\Tables\PersonNationalities.sql" />
+    <Build Include="dbo\Tables\PersonHealthGroups.sql" />
+    <Build Include="dbo\Tables\HealthGroups.sql" />
+    <Build Include="dbo\Tables\Countries.sql" />
   </ItemGroup>
 </Project>

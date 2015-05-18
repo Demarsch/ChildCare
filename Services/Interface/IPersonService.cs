@@ -49,6 +49,10 @@ namespace Core
 
         ICollection<Gender> GetGenders();
 
+        ICollection<HealthGroup> GetHealthGroups();
+
+        ICollection<Country> GetCountries();
+
         ICollection<Person> GetPersonsByFullName(string fullName);
 
         ICollection<AddressType> GetAddressTypes();
@@ -72,6 +76,10 @@ namespace Core
         ICollection<SocialStatusType> GetSocialStatusTypes();
 
         ICollection<Org> GetSocialStatusOrgByName(string name);
+
+        int GetHealthGroupId(int personId, DateTime date);
+
+        int GetNationalityCountryId(int personId, DateTime date);
 
         //ToDo: Move to other service
         Okato GetOKATOByCode(string codeOKATO);

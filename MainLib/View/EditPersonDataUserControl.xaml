@@ -119,10 +119,10 @@
         </ScrollViewer>
 
         <Label Grid.Row="19" Grid.Column="0" FontWeight="Bold">Группа здоровья</Label>
-        <ComboBox Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
+        <ComboBox Grid.Row="19" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding HealthGroups}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding HealthGroupId}" />
 
         <Label Grid.Row="20" Grid.Column="0" FontWeight="Bold">Гражданство</Label>
-        <ComboBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch"/>
+        <ComboBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Countries}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding NationalityId}"/>
 
         <TextBlock Grid.Row="21" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
         <StackPanel  Grid.Row="22" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
