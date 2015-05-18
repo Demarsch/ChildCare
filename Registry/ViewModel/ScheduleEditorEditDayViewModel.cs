@@ -128,18 +128,16 @@ namespace Registry
         }
 
         #region IDialogViewModel
-
+        
         public string Title
         {
             get
             {
                 var currentRoom = cacheService.GetItemById<Room>(currentRoomId);
-                return string.Format("#{0} {1}: расписание на {2:dddd}{3} {4:d MMMM}",
-                    currentRoom.Number, 
-                    currentRoom.Name, 
-                    currentDate, 
-                    isThisDayOnly ? ", " : ", начиная с",
-                    currentDate);
+                return string.Format("{0}, {1} #{2}",
+                    currentDate.ToString("dddd d MMMM").FirstLetterToUpper(),
+                    currentRoom.Name,
+                    currentRoom.Number);
             }
         }
 

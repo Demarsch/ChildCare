@@ -86,7 +86,7 @@ namespace AdminTools.ViewModel
 
         private void SavePermission()
         {
-            if (PermissionName.HasNoData())
+            if (string.IsNullOrWhiteSpace(PermissionName))
             {
                 MessageBox.Show("Укажите название права.");
                 return;

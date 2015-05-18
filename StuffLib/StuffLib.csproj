@@ -144,6 +144,7 @@
   <ItemGroup>
     <Compile Include="Attached behaviors\DataContextPropagationBehavior.cs" />
     <Compile Include="Attached behaviors\IgnoreMouseWheelBehavior.cs" />
+    <Compile Include="Attached behaviors\MouseWheelHorizontalScroll.cs" />
     <Compile Include="Attached behaviors\ScrollSyncrhonizer.cs" />
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />

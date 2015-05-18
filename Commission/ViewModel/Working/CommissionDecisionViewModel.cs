@@ -66,7 +66,7 @@ namespace Commission
                                             DecisionText = (item.DecisionId.HasValue ? commissionService.GetDecisionNameById(item.DecisionId.Value) : string.Empty),
                                             DecisionDate = item.DecisionInDateTime,
                                             DecisionDateText = (item.DecisionInDateTime.HasValue ? "Решение от " + item.DecisionInDateTime.Value.ToShortDateString() : "на рассмотрении"),
-                                            Comment = (item.Comment.HasData() ? item.Comment : "отсутствуют"),
+                                            Comment = string.IsNullOrWhiteSpace(item.Comment) ? "отсутствуют" : item.Comment,
                                             HasDecision = item.DecisionId.HasValue
                                         };
         }

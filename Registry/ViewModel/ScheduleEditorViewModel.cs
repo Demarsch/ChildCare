@@ -78,9 +78,9 @@ namespace Registry
 
         public IEnumerable<ScheduleEditorRoomViewModel> Rooms { get; private set; }
 
-        private IEnumerable<DayOfWeekViewModel> weekDays;
+        private DayOfWeekViewModel[] weekDays;
 
-        public IEnumerable<DayOfWeekViewModel> WeekDays
+        public DayOfWeekViewModel[] WeekDays
         {
             get { return weekDays; }
             private set { Set("WeekDays", ref weekDays, value); }

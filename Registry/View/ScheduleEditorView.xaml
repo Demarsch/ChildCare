@@ -3,82 +3,121 @@
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib"
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <DataTemplate DataType="{x:Type registry:ScheduleEditorViewModel}">
-        <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}" MaxHeight="700" MaxWidth="900">
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.IsSharedSizeScope="True">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <DataTemplate.Resources>
+            <DataTemplate DataType="{x:Type registry:DayOfWeekViewModel}">
+                    <TextBlock TextAlignment="Right" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 5 5 0">
+                        <Run Text="{Binding Date, StringFormat=dddd, Mode=OneTime}" FontWeight="SemiBold" FontSize="18" />
+                        <LineBreak />
+                        <Run Text="{Binding Date, StringFormat=dd.MM.yyyy, Mode=OneTime}" FontStyle="Italic" FontSize="12" />
+                    </TextBlock>
+            </DataTemplate>
+        </DataTemplate.Resources>
+        <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}" Width="900" Height="600">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <DataGrid ItemsSource="{Binding Rooms}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
+                          AutoGenerateColumns="False">
+                    <i:Interaction.Behaviors>
+                        <core:DataContextPropagationBehavior />
+                    </i:Interaction.Behaviors>
+                    <DataGrid.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                        <Style TargetType="{x:Type ScrollViewer}">
+                            <Setter Property="core:MouseWheelHorizontalScroll.PreferHorizontalScroll" Value="{x:Null}" />
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.RowHeaderStyle>
+                        <Style TargetType="{x:Type DataGridRowHeader}">
+                            <Setter Property="Content" Value="{Binding}" />
+                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                            <Setter Property="Background" Value="LightSkyBlue" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="BorderBrush" Value="Gray" />
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
+                                        <TextBlock Margin="10 5 5 5" MinWidth="180">
+                                            <Run Text="{Binding Number, StringFormat='#{0}', Mode=OneTime}" />
+                                            <Run Text="{Binding Name, Mode=OneTime}" />
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGrid.RowHeaderStyle>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[0], RelativeSource={RelativeSource Self}}" MinWidth="180" MaxWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Days[0]}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[1], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Days[1]}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[2], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Days[2]}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[3], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Days[3]}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[4], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Days[4]}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[5], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Days[5]}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[6], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding Days[6]}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 0">
                     <Button Padding="3" Margin="3" VerticalAlignment="Center" Content="&lt;&lt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert -7, {x:Type system:Int32}}" />
                     <DatePicker Margin="5" VerticalAlignment="Center" SelectedDateFormat="Long" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" Width="130" />
                     <Button Padding="3" Margin="3" VerticalAlignment="Center" Content="&gt;&gt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert 7, {x:Type system:Int32}}" />
                 </StackPanel>
-                <!--Room headers-->
-                <ScrollViewer Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" core:ScrollSynchronizer.HorizontalScrollGroup="ScheduleEditorHorizontalScroll">
-                    <StackPanel Orientation="Horizontal">
-                        <ItemsControl ItemsSource="{Binding Rooms, Mode=OneTime}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
-                                    <Border Background="LightSkyBlue" BorderBrush="Black" BorderThickness="0.5" HorizontalAlignment="Stretch" Width="250" >
-                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <TextBlock HorizontalAlignment="Center" Margin="3" Text="{Binding Number, StringFormat='#{0}', Mode=OneTime}" />
-                                            <TextBlock HorizontalAlignment="Center" Margin="3" Text="{Binding Name, Mode=OneTime}" />
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <ScrollBar Visibility="Hidden" Orientation="Vertical" />
-                    </StackPanel>
-                </ScrollViewer>
-                <!--Day list-->
-                <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" core:ScrollSynchronizer.VerticalScrollGroup="ScheduleEditorHorizontalScroll"
-                              HorizontalAlignment="Stretch">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                        <ItemsControl ItemsSource="{Binding WeekDays}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type registry:DayOfWeekViewModel}">
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition SharedSizeGroup="{Binding DayOfWeek, StringFormat='Day{0}', Mode=OneTime}" />
-                                        </Grid.RowDefinitions>
-                                        <Border BorderThickness="1" BorderBrush="Gray">
-                                            <TextBlock TextAlignment="Right" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 5 5 0">
-                                               <Run Text="{Binding Date, StringFormat=ddd, Mode=OneTime}" FontWeight="SemiBold" FontSize="18" />
-                                               <LineBreak />
-                                               <Run Text="{Binding Date, StringFormat=dd.MM.yyyy, Mode=OneTime}" FontSize="12" />
-                                            </TextBlock>
-                                        </Border>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <ScrollBar Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Stretch" />
-                    </StackPanel>
-                </ScrollViewer>
-                <!--Record types-->
-                <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" core:ScrollSynchronizer.VerticalScrollGroup="ScheduleEditorHorizontalScroll"
-                              core:ScrollSynchronizer.HorizontalScrollGroup="ScheduleEditorHorizontalScroll">
-                    <ItemsControl ItemsSource="{Binding Rooms, Mode=OneTime}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </ScrollViewer>
             </Grid>
         </xctk:BusyIndicator>
     </DataTemplate>

@@ -7,6 +7,11 @@ namespace Core
 {
     public class DataContextPropagationBehavior : Behavior<DataGrid>
     {
+        static DataContextPropagationBehavior()
+        {
+            FrameworkElement.DataContextProperty.AddOwner(typeof(DataGridColumn));
+        }
+
         protected override void OnAttached()
         {
             base.OnAttached();

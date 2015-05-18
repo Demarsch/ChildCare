@@ -202,28 +202,6 @@ namespace Core
         }
         
         /// <summary>
-        /// Проверяет, является ли текущая строка null'ом, пустой или содержащей только пробельные символы
-        /// </summary>
-        /// <returns>true - если в строке нет полезной информации, false - если есть хотя бы один полезный символ</returns>
-        public static bool HasNoData(this string currentString)
-        {
-            if (string.IsNullOrEmpty(currentString)) return true;
-            if (currentString.Trim() == "") return true;
-            return false;
-        }
-        
-        /// <summary>
-        /// Проверяет, чтобы строка не являлась null'ом, пустой или содержащей только пробельные символы
-        /// </summary>
-        /// <returns>false - если в строке нет полезной информации, true - если есть хотя бы один полезный символ</returns>
-        public static bool HasData(this string currentString)
-        {
-            if (string.IsNullOrEmpty(currentString)) return false;
-            if (currentString.Trim() == "") return false;
-            return true;
-        }
-        
-        /// <summary>
         /// Like-нечеткое сравнение строк (возвращает степень вхождения в строку строки str)
         /// </summary>
         public static int Like(this string cur, string str)
@@ -284,6 +262,17 @@ namespace Core
             }
             r = r.Replace(" Сан ", " сан ").Replace(" Оглы ", " оглы ").Replace(" Де ", " де ").Replace(" Ибн ", " ибн ");
             return r;
+        }
+
+        public static string FirstLetterToUpper(this string source)
+        {
+            if (string.IsNullOrWhiteSpace(source) || !char.IsLetter(source[0]) || char.IsUpper(source[0]))
+            {
+                return source;
+            }
+            var result = new StringBuilder(source);
+            result[0] = char.ToUpper(result[0]);
+            return result.ToString();
         }
 
         /// <summary>

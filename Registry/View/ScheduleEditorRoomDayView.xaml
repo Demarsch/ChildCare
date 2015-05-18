@@ -9,7 +9,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition MinHeight="75" SharedSizeGroup="{Binding DayOfWeek, StringFormat='Day{0}'}" />
             </Grid.RowDefinitions>
-            <Button Padding="5" Command="{Binding EditRoomDayCommand, Mode=OneTime}" Width="250" HorizontalContentAlignment="Stretch">
+            <Button Padding="5" Command="{Binding EditRoomDayCommand, Mode=OneTime}" HorizontalContentAlignment="Stretch">
                 <StackPanel Orientation="Vertical">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding ScheduleItems}">
