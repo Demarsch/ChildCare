@@ -31,6 +31,7 @@ namespace Commission
             Container.RegisterSingle<IDataContextProvider, ModelContextProvider>();
             Container.RegisterSingle<IUserSystemInfoService, ADUserSystemInfoService>();
             Container.RegisterSingle<IUserService, UserService>();
+            Container.RegisterSingle<IPersonService, PersonService>();
             Container.RegisterSingle<ICommissionService, CommissionService>();
             Container.RegisterSingle<IDialogService, WindowDialogService>();
             Container.RegisterSingle<ILog>(new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)));

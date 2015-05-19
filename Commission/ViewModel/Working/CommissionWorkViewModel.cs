@@ -13,16 +13,18 @@ namespace Commission
     {
         private ICommissionService commissionService;
         private IUserService userService;
+        private IUserSystemInfoService userSystemInfoService;
         private IPersonService personService;
         public CommissionDecisionViewModel Decision { get; set; }
 
-        public CommissionWorkViewModel(CommissionService commissionService, UserService userService, PersonService personService,
+        public CommissionWorkViewModel(ICommissionService commissionService, IUserService userService, IUserSystemInfoService userSystemInfoService, IPersonService personService,
             CommissionDecisionViewModel decision)
         {
             Decision = decision;
             this.commissionService = commissionService;
             this.userService = userService;
             this.personService = personService;
+            this.userSystemInfoService = userSystemInfoService;
 
             NavigationItems = new ObservableCollection<CommissionProtocolDTO>();
             NavigationCommand = new RelayCommand(NavigationAction);
@@ -69,21 +71,25 @@ namespace Commission
         {
             // clear list
             worker.ReportProgress(0);
-
-            foreach (var commission in commissionService.GetCommissionsByUserId(userService.GetCurrentUser().Id))
+            int percent = 0;
+            foreach (var commission in commissionService.GetCommissionsByMemberPersonId(userService.GetCurrentUser(userSystemInfoService).PersonId, false))
             {
                 //cancelation
-                if (worker.CancellationPending) return;
+                if (worker.CancellationPending)
+                {
+                    percent = 0;
+                    return;
+                }
 
                 var person = personService.GetPersonById(commission.PersonId);
-                worker.ReportProgress(1, new CommissionProtocolDTO()
+                worker.ReportProgress(++percent, new CommissionProtocolDTO()
                 {
                     Id = commission.Id,
                     PatientFIO = person.ShortName,
                     BirthDate = person.BirthYear,
-                    Talon = commission.PersonTalonId.HasValue ? personService.GetPersonTalonById(commission.PersonTalonId.Value).TalonNumber : string.Empty,
-                    MKB = "МКБ:" + commission.MKB,
-                    IncomeDateTime = " с " + commission.IncomeDateTime.ToShortDateString()
+                    Talon = commission.PersonTalonId.HasValue ? "Талон: " + personService.GetPersonTalonById(commission.PersonTalonId.Value).TalonNumber : "(талона нет)",
+                    MKB = (!string.IsNullOrWhiteSpace(commission.MKB) ? "МКБ: " + commission.MKB : string.Empty),
+                    IncomeDateTime = " направлен с " + commission.IncomeDateTime.ToShortDateString()
                 });
             }
         }

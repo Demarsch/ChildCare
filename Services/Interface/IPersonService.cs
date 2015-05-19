@@ -93,5 +93,11 @@ namespace Core
         ////////
 
         PersonTalon GetPersonTalonById(int id);
+
+        ICollection<Staff> GetAllStaffs();
+
+        ICollection<Person> GetPersonsByStaffId(int staffId, DateTime begin, DateTime end);
+
+        PersonStaff GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end);
     }
 }

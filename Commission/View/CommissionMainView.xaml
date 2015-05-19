@@ -16,7 +16,7 @@
                         </xcad:LayoutDocument>
                         
                         <xcad:LayoutDocument Title="На комиссии" CanClose="False" CanFloat="False">
-                            <local:CommissionDecisionControl DataContext="{Binding Work}"/>
+                            <local:CommissionWorkControl DataContext="{Binding Work}"/>
                         </xcad:LayoutDocument>                        
                         
                     </xcad:LayoutDocumentPane>

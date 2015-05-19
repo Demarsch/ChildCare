@@ -8,26 +8,29 @@
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" 
              xmlns:local="clr-namespace:Commission"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Margin="0,0,-467,0">
+             d:DesignHeight="400" d:DesignWidth="800">
+    
+    <Grid>
         <xcad:DockingManager>
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
-                    <xcad:LayoutAnchorablePane DockWidth="200" FloatingWidth="200">
+                    <xcad:LayoutAnchorablePane DockWidth="250" FloatingWidth="250">
                         <xcad:LayoutAnchorable Title="Список" CanClose="False" CanHide="False" CanAutoHide="True" CanFloat="False">
-                            <DockPanel >
+                            <DockPanel>
                                 <ListBox ItemsSource="{Binding NavigationItems}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" MouseDoubleClick="{ev:EventBinding NavigationCommand}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Vertical">
-                                                <StackPanel Orientation="Horizontal" Margin="0, 5">
+                                                <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{Binding PatientFIO}" Margin="0, 0, 5, 0"/>
                                                     <TextBlock Text="{Binding BirthDate}"/>
                                                 </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Talon}" Margin="0, 0, 5, 0"/>
-                                                    <TextBlock Text="{Binding MKB}" Margin="0, 0, 5, 0"/>
-                                                    <TextBlock Text="{Binding IncomeDateTime}" />
+                                                <StackPanel Orientation="Vertical">
+                                                    <TextBlock Text="{Binding Talon}"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding MKB}" Margin="0, 0, 5, 0"/>
+                                                        <TextBlock Text="{Binding IncomeDateTime}" />
+                                                    </StackPanel>                                                    
                                                 </StackPanel>
                                             </StackPanel>
                                         </DataTemplate>
@@ -36,14 +39,26 @@
                             </DockPanel>
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
-                    <xcad:LayoutDocumentPane>
-                        <xcad:LayoutDocument Title="Решение для комиссии" CanClose="False" CanFloat="False">
-                            <local:CommissionDecisionControl DataContext="{Binding Decision}"/>
-                        </xcad:LayoutDocument>
-                        <xcad:LayoutDocument Title="Пациент" CanClose="False" CanFloat="False">
+
+                    <xcad:LayoutPanel Orientation="Vertical">
+                        <xcad:LayoutAnchorablePane DockWidth="*" DockHeight="Auto">
+                            <xcad:LayoutAnchorable Title="Информация о пациенте" CanClose="False" CanFloat="False" CanHide="False" CanAutoHide="True">
+                                <DockPanel>
+                                    <Label Content="Информация о пациенте" FontSize="20" FontWeight="Bold"></Label>
+                                </DockPanel>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                        
+                        <xcad:LayoutDocumentPane DockHeight="*">
+                            <xcad:LayoutDocument Title="Решение для комиссии" CanClose="False" CanFloat="False">
+                                <local:CommissionDecisionControl DataContext="{Binding Decision}"/>
+                            </xcad:LayoutDocument>
                             
-                        </xcad:LayoutDocument>
-                    </xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="Услуги пациента" CanClose="False" CanFloat="False"></xcad:LayoutDocument>
+                            
+                            <xcad:LayoutDocument Title="Документы пациента" CanClose="False" CanFloat="False"></xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutPanel>                    
                 </xcad:LayoutPanel>
             </xcad:LayoutRoot>
         </xcad:DockingManager>

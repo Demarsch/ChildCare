@@ -42,14 +42,22 @@ namespace Core
                 return false;
             }
         }
-
-        // ????????????????
-        public User GetCurrentUser()
+        
+        public User GetCurrentUser(IUserSystemInfoService userSystemInfoService)
         {
             using (var db = provider.GetNewDataContext())
             {
-                string login = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                return db.GetData<User>().FirstOrDefault(x => x.SID == login && !x.EndDateTime.HasValue);
+                string sid = string.Empty;
+                try
+                {
+                    sid = System.Security.Principal.WindowsIdentity.GetCurrent().Name; 
+                    //sid = userSystemInfoService.GetCurrentSID();
+                }
+                catch 
+                { 
+                    sid = System.Security.Principal.WindowsIdentity.GetCurrent().Name; 
+                }
+                return db.GetData<User>().FirstOrDefault(x => x.SID == sid && !x.EndDateTime.HasValue);
             }
         }
 

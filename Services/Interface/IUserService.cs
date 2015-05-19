@@ -12,7 +12,7 @@ namespace Core
         ICollection<User> GetAllActiveUsers(DateTime from, DateTime to);
         ICollection<UserPermission> GetUserPermissions(int userId);
         User GetUserById(int id);
-        User GetCurrentUser();
+        User GetCurrentUser(IUserSystemInfoService userSystemInfoService);
         User GetUserByPersonId(int personId);
         bool Save(User user, out string msg);
     }

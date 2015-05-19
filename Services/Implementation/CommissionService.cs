@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core;
 using DataLib;
+using System.Data.Entity.Core.Objects;
 
 namespace Core
 {
@@ -15,7 +16,7 @@ namespace Core
             provider = Provider;
         }
 
-        public bool Save(CommissionDecision commissionDecision, out string msg)
+        public int Save(CommissionDecision commissionDecision, out string msg)
         {
             string exception = string.Empty;
             try
@@ -36,39 +37,72 @@ namespace Core
                         db.Add<CommissionDecision>(decision);
                     db.Save();
                     msg = exception;
-                    return true;
+                    return decision.Id;
                 }
             }
             catch (Exception ex)
             {
                 msg = ex.Message;
-                return false;
+                return 0;
             }
         }
 
-        public ICollection<CommissionProtocol> GetCommissionsByUserId(int userId)
+        public int Save(CommissionMember commissionMember, out string msg)
         {
-            using (var db = provider.GetNewDataContext())
+            string exception = string.Empty;
+            try
             {
-                return db.GetData<CommissionProtocol>().Where(x => x.InUserId == userId).ToArray();
+                using (var db = provider.GetNewDataContext())
+                {
+                    var member = commissionMember.Id > 0 ? db.GetById<CommissionMember>(commissionMember.Id) : new CommissionMember();
+                    member.PersonStaffId = commissionMember.PersonStaffId;
+                    member.CommissionMemberTypeId = commissionMember.CommissionMemberTypeId;
+                    member.CommissionTypeId = commissionMember.CommissionTypeId;
+                    member.BeginDateTime = commissionMember.BeginDateTime;
+                    member.EndDateTime = commissionMember.EndDateTime;
+                    if (member.Id == 0)
+                        db.Add<CommissionMember>(member);
+                    db.Save();
+                    msg = exception;
+                    return member.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                return 0;
             }
         }
 
-        public ICollection<Decision> GetActualMainDecisions()
+        public ICollection<CommissionProtocol> GetCommissionsByMemberPersonId(int personId, bool isCompleted)
         {
             using (var db = provider.GetNewDataContext())
             {
-                var DateTimeNow = DateTime.Now;
-                return db.GetData<Decision>().Where(x => !x.ParentId.HasValue && DateTimeNow >= x.BeginDateTime && DateTimeNow < x.EndDateTime).ToArray();
+                return db.GetData<CommissionDecision>().Where(x => x.CommissionMember.PersonStaff.PersonId == personId && (isCompleted ? x.CommissionProtocol.IsCompleted.Value : (!x.CommissionProtocol.IsCompleted.HasValue || x.CommissionProtocol.IsCompleted == false))).Select(x => x.CommissionProtocol).Distinct().ToArray();
             }
         }
 
-        public ICollection<Decision> GetActualSpecificDecisions(int mainDecisionId)
+        public ICollection<Decision> GetActualMainDecisions(DateTime begin, DateTime end)
         {
             using (var db = provider.GetNewDataContext())
             {
-                var DateTimeNow = DateTime.Now;
-                return db.GetData<Decision>().Where(x => x.ParentId == mainDecisionId && DateTimeNow >= x.BeginDateTime && DateTimeNow < x.EndDateTime).ToArray();
+                return db.GetData<Decision>().Where(x => !x.ParentId.HasValue && EntityFunctions.TruncateTime(x.BeginDateTime) <= EntityFunctions.TruncateTime(end) && EntityFunctions.TruncateTime(x.EndDateTime) >= EntityFunctions.TruncateTime(begin)).ToArray();
+            }
+        }
+
+        public ICollection<Decision> GetActualSpecificDecisions(int mainDecisionId, DateTime begin, DateTime end)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Decision>().Where(x => x.ParentId == mainDecisionId && EntityFunctions.TruncateTime(x.BeginDateTime) <= EntityFunctions.TruncateTime(end) && EntityFunctions.TruncateTime(x.EndDateTime) >= EntityFunctions.TruncateTime(begin)).ToArray();
+            }
+        }
+
+        public Decision GetDecisionById(int decisionId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Decision>().FirstOrDefault(x => x.Id == decisionId);
             }
         }
 
@@ -76,8 +110,7 @@ namespace Core
         {
             using (var db = provider.GetNewDataContext())
             {
-                var DateTimeNow = DateTime.Now;
-                return db.GetData<CommissionDecision>().Where(x => x.CommissionProtocolId == commissionProtocolId).ToArray();
+                return db.GetData<CommissionDecision>().Where(x => x.CommissionProtocolId == commissionProtocolId).OrderBy(x => x.CommissionStage).ToArray();
             }
         }
 
@@ -85,7 +118,15 @@ namespace Core
         {
             using (var db = provider.GetNewDataContext())
             {
-                return db.GetData<CommissionDecision>().First(x => x.Id == commissionDecisionId);
+                return db.GetData<CommissionDecision>().FirstOrDefault(x => x.Id == commissionDecisionId);
+            }
+        }
+
+        public CommissionDecision GetLastCommissionDecisionByMemberPersonId(int commissionProtocolId, int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<CommissionDecision>().Where(x => x.CommissionProtocolId == commissionProtocolId && x.CommissionMember.PersonStaff.PersonId == personId).OrderByDescending(x => x.CommissionStage).FirstOrDefault();
             }
         }
 
@@ -113,21 +154,36 @@ namespace Core
                 return decision.ShortName + (decision.ShortName.ToLower().Trim() != decision.Decision1.ShortName.ToLower().Trim() ? " (" + decision.Decision1.ShortName + ")" : string.Empty);
             }
         }
-
-        public Decision GetDecisionById(int decisionId)
-        {
-            using (var db = provider.GetNewDataContext())
-            {
-                return db.GetData<Decision>().First(x => x.Id == decisionId);
-            }
-        }
-
-
+     
         public ICollection<CommissionProtocol> GetCommissionsByFilter(CommissionServiceFilter filter)
         {
             using (var db = provider.GetNewDataContext())
             {
                 return db.GetData<CommissionProtocol>().ToArray();
+            }
+        }
+
+        public CommissionProtocol GetCommissionProtocolById(int protocolId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<CommissionProtocol>().FirstOrDefault(x => x.Id == protocolId);
+            }
+        }
+
+        public CommissionType GetCommissionTypeById(int commissionTypeId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<CommissionType>().FirstOrDefault(x => x.Id == commissionTypeId);
+            }
+        }
+
+        public CommissionMember GetCommissionMemberById(int memberId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<CommissionMember>().FirstOrDefault(x => x.Id == memberId);
             }
         }
     }      

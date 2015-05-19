@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataLib;
+using System.Data.Entity.Core.Objects;
 
 namespace Core
 {
@@ -425,6 +426,30 @@ namespace Core
                 var personNationality = db.GetData<PersonNationality>().FirstOrDefault(x => x.PersonId == personId && date > x.BeginDateTime && date < x.EndDateTime);
                 if (personNationality == null) return 0;
                 return personNationality.CountryId;
+            }
+        }
+
+        public ICollection<Staff> GetAllStaffs()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Staff>().OrderBy(x => x.Name).ToArray();
+            }
+        }
+
+        public ICollection<Person> GetPersonsByStaffId(int staffId, DateTime begin, DateTime end)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonStaff>().Where(x => x.StaffId == staffId && EntityFunctions.TruncateTime(x.BeginDateTime) <= EntityFunctions.TruncateTime(end) && EntityFunctions.TruncateTime(x.EndDateTime) >= EntityFunctions.TruncateTime(begin)).Select(x => x.Person).OrderBy(x => x.ShortName).ToArray();
+            }
+        }
+
+        public PersonStaff GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonStaff>().FirstOrDefault(x => x.PersonId == personId && x.StaffId == staffId && EntityFunctions.TruncateTime(x.BeginDateTime) <= EntityFunctions.TruncateTime(end) && EntityFunctions.TruncateTime(x.EndDateTime) >= EntityFunctions.TruncateTime(begin));
             }
         }
     }

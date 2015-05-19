@@ -21,50 +21,79 @@ namespace Commission
     {
         private ICommissionService commissionService;
         private IUserService userService;
+        private IUserSystemInfoService userSystemInfoService;
         private IPersonService personService;
         private IDialogService dialogService;
         private ILog log;
-        private User currentUser;
-        private int commissionProtocolId = 0;
 
-        public CommissionDecisionViewModel(CommissionService commissionService, UserService userService, PersonService personService,
+        private User currentUser;
+        private DateTime commissionProtocolBeginDateTime;
+        private DateTime commissionProtocolEndDateTime;
+        private CommissionDecision myLastCommissionDecision;
+        private int commissionProtocolId;
+
+        public CommissionDecisionViewModel(ICommissionService commissionService, IUserService userService, IUserSystemInfoService userSystemInfoService, IPersonService personService,
             IDialogService dialogService, ILog log)
         {
             this.commissionService = commissionService;
             this.userService = userService;
+            this.userSystemInfoService = userSystemInfoService;
             this.personService = personService;
             this.dialogService = dialogService;
             this.log = log;
 
-            this.currentUser = userService.GetCurrentUser();
-            this.SaveDecisionCommand = new RelayCommand<object>(SaveDecision);
+            this.currentUser = userService.GetCurrentUser(userSystemInfoService);
+            this.SelectMembersToPreviousStageCommand = new RelayCommand(SelectMembersToPreviousStage);
+            this.SelectMembersToNextStageCommand = new RelayCommand(SelectMembersToNextStage);
+            this.SaveDecisionCommand = new RelayCommand(SaveDecision);
         }
 
-        public void Load(int CommissionProtocolId)
+        public void Load(int commissionProtocolId)
         {
-            commissionProtocolId = CommissionProtocolId;
-            
-            MainDecisions = new ObservableCollection<Decision>(commissionService.GetActualMainDecisions());
-            LoadCommissionDecisionByDefault();
-            CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>();
+            this.commissionProtocolId = commissionProtocolId;
+            var commissionProtocol = commissionService.GetCommissionProtocolById(this.commissionProtocolId);
+            commissionProtocolBeginDateTime = commissionProtocol.ProtocolDate;
+            commissionProtocolEndDateTime = commissionProtocol.ProtocolDate;
 
-            foreach (var item in commissionService.GetCommissionDecisionsByProtocolId(commissionProtocolId))            
+            CommissionName = commissionService.GetCommissionTypeById(commissionProtocol.CommissionTypeId).Name;
+            Talon = (commissionProtocol.PersonTalonId.HasValue ? personService.GetPersonTalonById(commissionProtocol.PersonTalonId.Value).NumberWithDate : string.Empty);
+
+            myLastCommissionDecision = commissionService.GetLastCommissionDecisionByMemberPersonId(commissionProtocolId, this.currentUser.PersonId);
+
+            MainDecisions = new ObservableCollection<Decision>(commissionService.GetActualMainDecisions(commissionProtocolBeginDateTime, commissionProtocolEndDateTime));
+            if (myLastCommissionDecision != null && myLastCommissionDecision.DecisionId.HasValue)
+            {
+                var specificDecision = commissionService.GetDecisionById(myLastCommissionDecision.DecisionId.Value);
+                SelectedMainDecision = mainDecisions.FirstOrDefault(x => x.Id == specificDecision.ParentId);
+                SelectedSpecificDecision = specificDecisions.FirstOrDefault(x => x.Id == specificDecision.Id);
+                Comment = myLastCommissionDecision.Comment;
+            }
+            else
+            {
+                SelectedMainDecision = mainDecisions.FirstOrDefault();
+                SelectedSpecificDecision = specificDecisions.FirstOrDefault();
+                Comment = string.Empty;
+            }
+
+            CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>();
+            var commissionDecisions = commissionService.GetCommissionDecisionsByProtocolId(commissionProtocolId);
+            foreach (var item in commissionDecisions)            
                 CommissionDecisions.Add(ConvertToCommisionDecisionDTO(item));
+
+            // ?????????????????
+            AllowSave = commissionDecisions.Where(x => x.CommissionStage < myLastCommissionDecision.CommissionStage).All(x => x.DecisionId.HasValue)
+                        && !commissionDecisions.Any(x => x.CommissionStage > myLastCommissionDecision.CommissionStage && x.DecisionId.HasValue);
         }
 
         private CommissionDecisionDTO ConvertToCommisionDecisionDTO(CommissionDecision item)
         {
             return new CommissionDecisionDTO() {
                                             Id = item.Id,
-                                            MemberPersonId = commissionService.GetCommissionMemberPersonById(item.CommissionMemberId).Id,
                                             MemberStaff = commissionService.GetCommissionMemberStaffById(item.CommissionMemberId).Name,
                                             MemberPersonName = commissionService.GetCommissionMemberPersonById(item.CommissionMemberId).ShortName + ": ",
                                             Stage = item.CommissionStage,
                                             StageText = "Этап " + item.CommissionStage + " - ",
-                                            DecisionId = item.DecisionId,
-                                            DecisionParentId = (item.DecisionId.HasValue ? commissionService.GetDecisionById(item.DecisionId.Value).ParentId : (int?)null),
                                             DecisionText = (item.DecisionId.HasValue ? commissionService.GetDecisionNameById(item.DecisionId.Value) : string.Empty),
-                                            DecisionDate = item.DecisionInDateTime,
                                             DecisionDateText = (item.DecisionInDateTime.HasValue ? "Решение от " + item.DecisionInDateTime.Value.ToShortDateString() : "на рассмотрении"),
                                             Comment = string.IsNullOrWhiteSpace(item.Comment) ? "отсутствуют" : item.Comment,
                                             HasDecision = item.DecisionId.HasValue
@@ -76,23 +105,7 @@ namespace Commission
         {
             get { return commissionDecisions; }
             set { Set("CommissionDecisions", ref commissionDecisions, value); }
-        }
-
-        private CommissionDecisionDTO selectedCommissionDecision;
-        public CommissionDecisionDTO SelectedCommissionDecision
-        {
-            get { return selectedCommissionDecision; }
-            set
-            {
-                if (!Set("SelectedCommissionDecision", ref selectedCommissionDecision, value) || value == null)
-                    return;
-
-                if (value.MemberPersonId == this.currentUser.PersonId)
-                    LoadMyCommisionDecision(value);
-                else
-                    LoadCommissionDecisionByDefault();
-            }
-        }
+        }        
         
         private ObservableCollection<Decision> mainDecisions;
         public ObservableCollection<Decision> MainDecisions
@@ -109,7 +122,7 @@ namespace Commission
             { 
                 if (!Set("SelectedMainDecision", ref selectedMainDecision, value) || value == null)
                     return;
-                SpecificDecisions = new ObservableCollection<Decision>(commissionService.GetActualSpecificDecisions(value.Id));
+                SpecificDecisions = new ObservableCollection<Decision>(commissionService.GetActualSpecificDecisions(value.Id, commissionProtocolBeginDateTime, commissionProtocolEndDateTime));
             }
         }
 
@@ -134,70 +147,174 @@ namespace Commission
             set { Set("Comment", ref comment, value); }
         }
 
-        private RelayCommand<object> saveDecisionCommand;
-        public RelayCommand<object> SaveDecisionCommand
+        private string commissionName;
+        public string CommissionName
+        {
+            get { return commissionName; }
+            set { Set("CommissionName", ref commissionName, value); }
+        }
+
+        private string talon;
+        public string Talon
+        {
+            get { return talon; }
+            set { Set("Talon", ref talon, value); }
+        }
+
+        private bool allowSave;
+        public bool AllowSave
+        {
+            get { return allowSave; }
+            set { Set("AllowSave", ref allowSave, value); }
+        }
+
+        private string previousMembers;
+        public string PreviousMembers
+        {
+            get { return previousMembers; }
+            set { Set("PreviousMembers", ref previousMembers, value); }
+        }
+
+        private string nextMembers;
+        public string NextMembers
+        {
+            get { return nextMembers; }
+            set { Set("NextMembers", ref nextMembers, value); }
+        }
+
+        private RelayCommand selectMembersToPreviousStageCommand;
+        public RelayCommand SelectMembersToPreviousStageCommand
+        {
+            get { return selectMembersToPreviousStageCommand; }
+            set { Set("SelectMembersToPreviousStageCommand", ref selectMembersToPreviousStageCommand, value); }
+        }
+
+        private RelayCommand selectMembersToNextStageCommand;
+        public RelayCommand SelectMembersToNextStageCommand
+        {
+            get { return selectMembersToNextStageCommand; }
+            set { Set("SelectMembersToNextStageCommand", ref selectMembersToNextStageCommand, value); }
+        }  
+
+        private RelayCommand saveDecisionCommand;
+        public RelayCommand SaveDecisionCommand
         {
             get { return saveDecisionCommand; }
             set { Set("SaveDecisionCommand", ref saveDecisionCommand, value); }
         }
 
-        private void LoadMyCommisionDecision(CommissionDecisionDTO myCommissionDecision)
+        private void SelectMembersToPreviousStage()
         {
-            if (myCommissionDecision.DecisionId.HasValue)
+            SelectCommissionMembersViewModel selectedMembers = GetSelectedCommissionMembers();
+            if (selectedMembers == null || !selectedMembers.resultPersonStaffs.Any()) return;
+            
+            foreach (var commissionDecisionId in commissionService.GetCommissionDecisionsByProtocolId(this.commissionProtocolId).Where(x => x.CommissionStage >= myLastCommissionDecision.CommissionStage).Select(x => x.Id))
             {
-                SelectedMainDecision = MainDecisions.FirstOrDefault(x => x.Id == myCommissionDecision.DecisionParentId);
-                SelectedSpecificDecision = SpecificDecisions.FirstOrDefault(x => x.Id == myCommissionDecision.DecisionId.Value);
+                CommissionDecision commissionDecision = commissionService.GetCommissionDecisionById(commissionDecisionId);
+                commissionDecision.CommissionStage = commissionDecision.CommissionStage + 1;
+                string message = string.Empty;
+                if (commissionService.Save(commissionDecision, out message) == 0)
+                {
+                    dialogService.ShowError("При сохранении возникла ошибка: " + message);
+                    log.Error(string.Format("Failed to update CommissionStage for CommissionDecision." + message));
+                    return;
+                }
+                CommissionDecisions.First(x => x.Id == commissionDecisionId).Stage = commissionDecision.CommissionStage;
+                CommissionDecisions.First(x => x.Id == commissionDecisionId).StageText = "Этап " + commissionDecision.CommissionStage + " - ";
             }
-            Comment = myCommissionDecision.Comment;
+
+            foreach (var personStaff in selectedMembers.resultPersonStaffs)
+            {
+                var commissionDecisionId = CreateCommissionDecision(personStaff, myLastCommissionDecision.CommissionStage);
+                CommissionDecisions.Add(ConvertToCommisionDecisionDTO(commissionService.GetCommissionDecisionById(commissionDecisionId)));
+                CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>(CommissionDecisions.OrderBy(x => x.Stage));
+            }            
         }
-        
-        private void LoadCommissionDecisionByDefault()
+                    
+        private void SelectMembersToNextStage()
         {
-            SelectedMainDecision = mainDecisions.FirstOrDefault();
-            SelectedSpecificDecision = specificDecisions.FirstOrDefault();
-            Comment = string.Empty;
+            SelectCommissionMembersViewModel selectedMembers = GetSelectedCommissionMembers();
+            if (selectedMembers == null || !selectedMembers.resultPersonStaffs.Any()) return;
+
+            foreach (var personStaff in GetSelectedCommissionMembers().resultPersonStaffs)
+            {
+                var commissionDecisionId = CreateCommissionDecision(personStaff, myLastCommissionDecision.CommissionStage);
+                CommissionDecisions.Add(ConvertToCommisionDecisionDTO(commissionService.GetCommissionDecisionById(commissionDecisionId)));
+                CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>(CommissionDecisions.OrderBy(x => x.Stage));
+            }  
         }
 
-        private void SaveDecision(object parameter)
+        private int CreateCommissionDecision(PersonStaff personStaff, int stage)
         {
-            CommissionDecision decision = null;
+            var member = commissionService.GetCommissionMemberById(myLastCommissionDecision.CommissionMemberId);
+            CommissionMember commissionMember = new CommissionMember();
+            commissionMember.PersonStaffId = personStaff.Id;
+            commissionMember.CommissionMemberTypeId = member.CommissionMemberTypeId;
+            commissionMember.CommissionTypeId = member.CommissionTypeId;
+            commissionMember.BeginDateTime = member.BeginDateTime;
+            commissionMember.EndDateTime = member.EndDateTime;
+            string message = string.Empty;
+            int memberId = commissionService.Save(commissionMember, out message);
+            if (memberId == 0)            
+            {
+                dialogService.ShowError("При сохранении возникла ошибка: " + message);
+                log.Error(string.Format("Failed to Save CommissionMember. " + message));
+                return 0;
+            }
 
-            if (SelectedCommissionDecision.MemberPersonId == currentUser.PersonId)
-                decision = commissionService.GetCommissionDecisionById(SelectedCommissionDecision.Id);
+            CommissionDecision commissionDecision = new CommissionDecision();
+            commissionDecision.CommissionProtocolId = myLastCommissionDecision.CommissionProtocolId;
+            commissionDecision.CommissionMemberId = memberId;
+            commissionDecision.IsOfficial = myLastCommissionDecision.IsOfficial;
+            commissionDecision.DecisionId = (int?)null;
+            commissionDecision.DecisionInDateTime = (DateTime?)null;
+            commissionDecision.Comment = string.Empty;
+            commissionDecision.CommissionStage = (stage == 0 ? 1 : stage);
+            commissionDecision.InitiatorMemberId = myLastCommissionDecision.CommissionMemberId;
+            commissionDecision.InDateTime = DateTime.Now;
+            message = string.Empty;
+            int commissionDecisionId = commissionService.Save(commissionDecision, out message);
+            if (commissionDecisionId != 0)
+                return commissionDecisionId;            
             else
-                decision = new CommissionDecision();
-            decision.CommissionProtocolId = this.commissionProtocolId;
-            decision.CommissionMemberId = 1;// ?????
-            decision.IsOfficial = true; //?????
-            decision.DecisionId = selectedSpecificDecision.Id;
-            decision.DecisionInDateTime = DateTime.Now; //????
-            decision.Comment = comment;
-            decision.CommissionStage = 1; // ??????
-            decision.InitiatorMemberId = 1; //??????
-            decision.InDateTime = DateTime.Now; //?????
+            {
+                dialogService.ShowError("При сохранении возникла ошибка: " + message);
+                log.Error(string.Format("Failed to Save CommissionDecision. " + message));
+                return 0;
+            }
+        }
+          
+        private SelectCommissionMembersViewModel GetSelectedCommissionMembers()
+        {
+            if (commissionProtocolId == 0) return null;
+            var selectMembersModelView = new SelectCommissionMembersViewModel(commissionProtocolBeginDateTime, commissionProtocolEndDateTime, commissionService, personService, dialogService, log);
+            var dialogResult = dialogService.ShowDialog(selectMembersModelView);
+            if (dialogResult != true)
+                return null;
+            return selectMembersModelView;
+        }
+
+        private void SaveDecision()
+        {
+            CommissionDecision commissionDecision = commissionService.GetCommissionDecisionById(myLastCommissionDecision.Id);
+            commissionDecision.DecisionId = selectedSpecificDecision.Id;
+            commissionDecision.DecisionInDateTime = DateTime.Now;
+            commissionDecision.Comment = comment;
 
             string message = string.Empty;
-            if (commissionService.Save(decision, out message))
+            if (commissionService.Save(commissionDecision, out message) != 0)
             {
                 dialogService.ShowMessage("Данные сохранены");
-                if (CommissionDecisions.Any(x => x.Id == decision.Id))
-                {
-                    var dto = ConvertToCommisionDecisionDTO(decision);
-                    SelectedCommissionDecision.StageText = dto.StageText;
-                    SelectedCommissionDecision.MemberStaff = dto.MemberStaff;
-                    SelectedCommissionDecision.MemberPersonName = dto.MemberPersonName;
-                    SelectedCommissionDecision.DecisionText = dto.DecisionText;
-                    SelectedCommissionDecision.Comment = dto.Comment;
-                    SelectedCommissionDecision.DecisionDateText = dto.DecisionDateText;
-                }
-                else
-                    CommissionDecisions.Add(ConvertToCommisionDecisionDTO(decision));
+                var savedDecision = CommissionDecisions.First(x => x.Id == commissionDecision.Id);
+                savedDecision.DecisionText = commissionService.GetDecisionNameById(commissionDecision.DecisionId.Value);
+                savedDecision.DecisionDateText = "Решение от " + commissionDecision.DecisionInDateTime.Value.ToShortDateString();
+                savedDecision.Comment = string.IsNullOrWhiteSpace(commissionDecision.Comment) ? "отсутствуют" : commissionDecision.Comment;                                             
             }
             else
             {
                 dialogService.ShowError("При сохранении возникла ошибка: " + message);
-                log.Error(string.Format("Failed to Save user. " + message));
-            }            
+                log.Error(string.Format("Failed to Save CommissionDecision. " + message));
+            }
         }
     }
 

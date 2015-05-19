@@ -13,7 +13,7 @@
         <xcad:DockingManager>
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
-                    <xcad:LayoutAnchorablePane DockWidth="200" FloatingWidth="200">
+                    <xcad:LayoutAnchorablePane DockWidth="250" FloatingWidth="250">
                         <xcad:LayoutAnchorable Title="Список пациентов" CanClose="False" CanHide="False" CanAutoHide="True" CanFloat="False">
                             <DockPanel >
                                 <ListBox ItemsSource="{Binding NavigationItems}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" MouseDoubleClick="{ev:EventBinding NavigationCommand}">
