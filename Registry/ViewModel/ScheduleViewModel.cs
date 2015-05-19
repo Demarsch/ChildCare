@@ -202,11 +202,15 @@ namespace Registry
 
         public RelayCommand OpenScheduleEditorCommand { get; private set; }
 
-        private void OpenScheduleEditor()
+        private async void OpenScheduleEditor()
         {
             using (var scheduleEditor = new ScheduleEditorViewModel(scheduleService, log, cacheService, dialogService))
             {
-                dialogService.ShowDialog(scheduleEditor);
+                if (dialogService.ShowDialog(scheduleEditor) == true)
+                {
+                    await LoadAssignmentsAsync(selectedDate);
+                    UpdateRoomFilter();
+                }
             }
         }
 

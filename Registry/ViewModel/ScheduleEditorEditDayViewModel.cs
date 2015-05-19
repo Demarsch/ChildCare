@@ -59,7 +59,7 @@ namespace Registry
                 foreach (var scheduleItem in scheduleItems)
                 {
                     scheduleItem.BeginDate = currentDate;
-                    scheduleItem.EndDate = isThisDayOnly ? currentDate : DateTime.MaxValue;
+                    scheduleItem.EndDate = isThisDayOnly ? currentDate : DateTime.MaxValue.Date;
                     scheduleItem.RoomId = currentRoomId;
                     scheduleItem.DayOfWeek = currentDate.GetDayOfWeek();
                 }
@@ -68,7 +68,7 @@ namespace Registry
                     scheduleItems.Add(new ScheduleItem
                     {
                         BeginDate = currentDate,
-                        EndDate = isThisDayOnly ? currentDate : DateTime.MaxValue,
+                        EndDate = isThisDayOnly ? currentDate : DateTime.MaxValue.Date,
                         RoomId = currentRoomId,
                         DayOfWeek = currentDate.GetDayOfWeek(),
                         StartTime = TimeSpan.Zero,

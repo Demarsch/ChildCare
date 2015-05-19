@@ -271,7 +271,7 @@ namespace Registry
                 {
                     var @group = itemGroup;
                     itemsToDelete.AddRange(dataContext.GetData<ScheduleItem>()
-                        .Where(x => x.RoomId == @group.Key.RoomId && x.DayOfWeek == @group.Key.DayOfWeek && x.BeginDate == @group.Key.BeginDate && x.EndDate == @group.Key.EndDate)
+                        .Where(x => x.RoomId == @group.Key.RoomId && x.DayOfWeek == @group.Key.DayOfWeek && x.BeginDate == @group.Key.BeginDate && (x.EndDate == @group.Key.EndDate || x.EndDate == x.BeginDate))
                         .Select(x => x.Id));
                 }
                 dataContext.AddRange(newScheduleItems);

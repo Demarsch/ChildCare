@@ -561,5 +561,34 @@ namespace Core
         }
 
         #endregion
+
+        #region Extensions for IList<T>
+        /// <summary>
+        /// Removes all items from the list that matches the specified predicate
+        /// </summary>
+        /// <typeparam name="TItem">Type of items in the list</typeparam>
+        /// <param name="source">The list to remove items from</param>
+        /// <param name="predicate">Predicate for removed items</param>
+        /// <returns>True if at least one item was removed, otherwise false</returns>
+        public static bool RemoveWhere<TItem>(this IList<TItem> source, Func<TItem, bool> predicate)
+        {
+            if (source == null || predicate == null)
+            {
+                return false;
+            }
+            var result = false;
+            for (var index = source.Count - 1; index >= 0; index--)
+            {
+                var item = source[index];
+                if (predicate(item))
+                {
+                    result = true;
+                    source.RemoveAt(index);
+                }
+            }
+            return result;
+        }
+
+        #endregion
     }
 }

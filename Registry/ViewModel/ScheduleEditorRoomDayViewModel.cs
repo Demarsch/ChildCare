@@ -27,6 +27,7 @@ namespace Registry
         {
             IsThisDayOnly = ScheduleItems.Count != 0 && ScheduleItems.Any(x => x.BeginDate == x.EndDate);
             IsRoomDayClosed = ScheduleItems.Count == 0 || ScheduleItems.Any(x => x.RecordTypeId == 0);
+            State = RoomDayState.ChangedDirectly;
         }
 
         private bool HideEmptyItems(object obj)
@@ -81,5 +82,20 @@ namespace Registry
         {
             ScheduleItems.CollectionChanged -= OnScheduleItemsChanged;
         }
+
+        private RoomDayState state;
+
+        public RoomDayState State
+        {
+            get { return state; }
+            set { Set("State", ref state, value); }
+        }
+    }
+
+    public enum RoomDayState
+    {
+        Unchanged,
+        ChangedDirectly,
+        ChangedIndirectly
     }
 }

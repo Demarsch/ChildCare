@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using Core;
+using DataLib;
 using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
 using Environment = System.Environment;
@@ -19,6 +20,8 @@ namespace Registry
         private readonly ICacheService cacheService;
 
         private readonly IDialogService dialogService;
+
+        private readonly HashSet<ScheduleItem> unsavedItems; 
 
         public ScheduleEditorViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IDialogService dialogService)
         {
@@ -42,6 +45,7 @@ namespace Registry
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
+            unsavedItems = new HashSet<ScheduleItem>();
             CloseCommand = new RelayCommand<bool>(Close);
             ChangeDateCommand = new RelayCommand<int>(ChangeDate);
             Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x)).ToArray();
@@ -64,7 +68,11 @@ namespace Registry
                 viewModel.IsChanged = false;
                 if (dialogService.ShowDialog(viewModel) == true && (viewModel.IsChanged || viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
                 {
-                    roomDay.ScheduleItems.Replace(viewModel.ScheduleItems);
+                    var newScheduleItems = viewModel.ScheduleItems.ToArray();
+                    var sampleItem = newScheduleItems.First();
+                    unsavedItems.RemoveWhere(x => x.RoomId == roomDay.RoomId && x.DayOfWeek == roomDay.DayOfWeek && x.BeginDate == sampleItem.BeginDate);
+                    roomDay.ScheduleItems.Replace(newScheduleItems);
+                    unsavedItems.UnionWith(newScheduleItems.Select(x => x.GetScheduleItem().Clone()).Cast<ScheduleItem>());
                 }
             }
         }
@@ -117,8 +125,29 @@ namespace Registry
                     var currentRoomItems = scheduleItems[room.Id].ToLookup(x => x.DayOfWeek);
                     foreach (var day in room.Days)
                     {
-                        day.ScheduleItems.Replace(currentRoomItems[day.DayOfWeek].Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)));
                         day.RelatedDate = selectedWeekBegining.AddDays(day.DayOfWeek - 1);
+                        //First we check if we previously changed schedule for the given day-room
+                        var currentDayUnsavedItems = unsavedItems.Where(x => x.RoomId == day.RoomId && x.DayOfWeek == day.DayOfWeek && x.BeginDate == day.RelatedDate).ToArray();
+                        if (currentDayUnsavedItems.Length != 0)
+                        {
+                            day.ScheduleItems.Replace(currentDayUnsavedItems.Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)));
+                            day.State = RoomDayState.ChangedDirectly;
+                            continue;
+                        }
+                        //Now we check if we made changes for different day that influe current day
+                        var previousDayUnsavedItems = unsavedItems.Where(x => x.RoomId == day.RoomId && x.DayOfWeek == day.DayOfWeek && x.BeginDate < day.RelatedDate && x.EndDate >= day.RelatedDate)
+                            .GroupBy(x => x.BeginDate)
+                            .OrderByDescending(x => x.Key)
+                            .FirstOrDefault();
+                        if (previousDayUnsavedItems != null)
+                        {
+                            day.ScheduleItems.Replace(previousDayUnsavedItems.Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)));
+                            day.State = RoomDayState.ChangedIndirectly;
+                            continue;
+                        }
+                        //Otherwise we just get data from database
+                        day.ScheduleItems.Replace(currentRoomItems[day.DayOfWeek].Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)));
+                        day.State = RoomDayState.Unchanged;
                     }
                 }
                 log.Info("Successfully loaded schedule editor");
@@ -142,13 +171,13 @@ namespace Registry
 
         private void Close(bool save)
         {
+            save = save && unsavedItems.Count > 0;
             if (save)
             {
-                var newScheduleItems = Rooms.SelectMany(x => x.Days.SelectMany(y => y.ScheduleItems.Where(z => z.Id == 0).Select(z => z.GetScheduleItem()))).ToArray();
                 try
                 {
-                    log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", newScheduleItems.Length);
-                    scheduleService.SaveSchedule(newScheduleItems);
+                    log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", unsavedItems.Count);
+                    scheduleService.SaveSchedule(unsavedItems);
                 }
                 catch (Exception ex)
                 {
