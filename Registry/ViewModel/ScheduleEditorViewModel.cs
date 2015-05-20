@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using Core;
@@ -107,19 +108,21 @@ namespace Registry
                 if (differentWeek)
                 {
                     WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x))).ToArray();
-                    LoadSchedule();
+                    LoadScheduleAsync();
                 }
             }
         }
 
-        public void LoadSchedule()
+        public async Task LoadScheduleAsync()
         {
             try
             {
                 FailReason = null;
+                BusyStatus = "Загрузка расписания";
                 var selectedWeekBegining = selectedDate.GetWeekBegininng();
                 log.InfoFormat("Loading schedule editor for {0:dd.MM.yyyy}-{1:dd.MM.yyyy}", selectedWeekBegining, selectedDate.GetWeekEnding());
-                var scheduleItems = scheduleService.GetRoomsWeeklyWorkingTime(selectedDate).ToLookup(x => x.RoomId);
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
+                var scheduleItems = (await Task<ICollection<ScheduleItem>>.Factory.StartNew(() => scheduleService.GetRoomsWeeklyWorkingTime(selectedDate))).ToLookup(x => x.RoomId);
                 foreach (var room in Rooms)
                 {
                     var currentRoomItems = scheduleItems[room.Id].ToLookup(x => x.DayOfWeek);
@@ -157,6 +160,10 @@ namespace Registry
                 log.Error("Failed to load schedule editor", ex);
                 FailReason = string.Format("Не удалось загрузить расписание. Попробуйте выбрать другие даты. Если ошибка повторится, обратитесь в службу поддержки");
             }
+            finally
+            {
+                BusyStatus = null;
+            }
         }
 
         #region IDialogViewModel
@@ -172,23 +179,42 @@ namespace Registry
         private void Close(bool save)
         {
             save = save && unsavedItems.Count > 0;
-            if (save)
+            if (TryClose(save))
             {
-                try
-                {
-                    log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", unsavedItems.Count);
-                    scheduleService.SaveSchedule(unsavedItems);
-                }
-                catch (Exception ex)
-                {
-                    log.Error("Failed to save schedule changes", ex);
-                    dialogService.ShowError(
-                        string.Format("Не удалось сохранить изменения в расписании. Причина - {0}{1}Попробуйте еще раз или отмените изменения. Если ошибка повторится, обратитесь в службу поддержки",
-                            ex.Message, Environment.NewLine));
-                    return;
-                }
+                OnCloseRequested(new ReturnEventArgs<bool>(save));
             }
-            OnCloseRequested(new ReturnEventArgs<bool>(save));
+        }
+
+        public bool CanBeClosed()
+        {
+            if (unsavedItems.Count == 0)
+            {
+                return true;
+            }
+            var userPreferedToSaveChanges = dialogService.AskUser("Имеются несохраненные изменения в расписании. Сохранить их?") ?? false;
+            return !userPreferedToSaveChanges || TryClose(true);
+        }
+
+        private bool TryClose(bool save)
+        {
+            if (!save)
+            {
+                return true;
+            }
+            try
+            {
+                log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", unsavedItems.Count);
+                scheduleService.SaveSchedule(unsavedItems);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Failed to save schedule changes", ex);
+                dialogService.ShowError(
+                    string.Format("Не удалось сохранить изменения в расписании. Причина - {0}{1}Попробуйте еще раз или отмените изменения. Если ошибка повторится, обратитесь в службу поддержки",
+                        ex.Message, Environment.NewLine));
+                return false;
+            }
         }
 
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;

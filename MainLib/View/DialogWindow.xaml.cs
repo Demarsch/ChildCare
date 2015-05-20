@@ -28,18 +28,29 @@ namespace Core
 
         private void OnCloseRequested(object sender, ReturnEventArgs<bool> returnEventArgs)
         {
+            viewModelRequestedClose = true;
             DialogResult = returnEventArgs.Result;
             Close();
         }
 
+        private bool viewModelRequestedClose;
+
         protected override void OnClosing(CancelEventArgs e)
         {
-            base.OnClosing(e);
             var viewModel = DataContext as IDialogViewModel;
             if (viewModel != null)
             {
-                viewModel.CloseRequested -= OnCloseRequested;
+                e.Cancel = !viewModelRequestedClose && !viewModel.CanBeClosed();
+                if (!e.Cancel)
+                {
+                    if (DialogResult == null)
+                    {
+                        DialogResult = true;
+                    }
+                    viewModel.CloseRequested -= OnCloseRequested;
+                }
             }
+            base.OnClosing(e);
         }
     }
 }

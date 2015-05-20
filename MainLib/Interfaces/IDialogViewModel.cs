@@ -15,6 +15,8 @@ namespace Core
 
         RelayCommand<bool> CloseCommand { get; }
 
+        bool CanBeClosed();
+
         event EventHandler<ReturnEventArgs<bool>> CloseRequested;
     }
 }

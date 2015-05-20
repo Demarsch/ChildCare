@@ -145,6 +145,12 @@ namespace MainLib
             }
         }
 
+        public bool CanBeClosed()
+        {
+            //TODO: put logic here if you want to respond to window close event and save your changes
+            return true;
+        }
+
         public event EventHandler<System.Windows.Navigation.ReturnEventArgs<bool>> CloseRequested;
 
         protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
