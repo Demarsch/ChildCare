@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Windows.Input;
 using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
 
 namespace Registry
 {
@@ -26,15 +28,59 @@ namespace Registry
                 new ScheduleEditorRoomDayViewModel(room.Id, 6),
                 new ScheduleEditorRoomDayViewModel(room.Id, 7), 
             };
+            CloseRoomThisWeekCommand = new RelayCommand(CloseRoomThisWeek, CanCloseRoomThisWeek);
+            CloseRoomCommand = new RelayCommand(CloseRoom, CanCloseRoom);
         }
 
         public int Id { get { return room.Id; } }
 
         public string Name { get { return room.Name; } }
 
-        public string Number { get { return room.Number; } }
+        public string Number { get { return "№" + room.Number; } }
 
         public ScheduleEditorRoomDayViewModel[] Days { get; private set; }
+
+        public ICommand CloseRoomThisWeekCommand { get; private set; }
+
+        private void CloseRoomThisWeek()
+        {
+            Close(true);
+        }
+
+        private bool CanCloseRoomThisWeek()
+        {
+            return CanClose(true);
+        }
+
+        public ICommand CloseRoomCommand { get; private set; }
+
+        private void CloseRoom()
+        {
+            Close(false);
+        }
+
+        private bool CanCloseRoom()
+        {
+            return CanClose(false);
+        }
+
+        private void Close(bool thisWeek)
+        {
+            foreach (var day in Days)
+            {
+                day.CloseCommand.Execute(thisWeek);
+            }
+        }
+
+        private bool CanClose(bool thisWeek)
+        {
+            var result = false;
+            foreach (var day in Days)
+            {
+                result = result || day.CloseCommand.CanExecute(thisWeek);
+            }
+            return result;
+        }
 
         public void Dispose()
         {

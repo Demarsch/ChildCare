@@ -8,14 +8,14 @@
     <DataTemplate DataType="{x:Type registry:ScheduleEditorViewModel}">
         <DataTemplate.Resources>
             <DataTemplate DataType="{x:Type registry:DayOfWeekViewModel}">
-                    <TextBlock TextAlignment="Right" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 5 5 0">
-                        <Run Text="{Binding Date, StringFormat=dddd, Mode=OneTime}" FontWeight="SemiBold" FontSize="18" />
-                        <LineBreak />
-                        <Run Text="{Binding Date, StringFormat=dd.MM.yyyy, Mode=OneTime}" FontStyle="Italic" FontSize="12" />
-                    </TextBlock>
+                <TextBlock TextAlignment="Right" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0 5 5 0">
+                    <Run Text="{Binding Date, StringFormat=dddd, Mode=OneTime}" FontWeight="SemiBold" FontSize="18" />
+                    <LineBreak />
+                    <Run Text="{Binding Date, StringFormat=dd.MM.yyyy, Mode=OneTime}" FontStyle="Italic" FontSize="12" />
+                </TextBlock>
             </DataTemplate>
         </DataTemplate.Resources>
-        <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}" Width="900" Height="600">
+        <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}" Width="1100" Height="600">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <DataGrid ItemsSource="{Binding Rooms}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
                           AutoGenerateColumns="False">
@@ -41,10 +41,34 @@
                                 <Setter.Value>
                                     <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
                                         <TextBlock Margin="10 5 5 5" MinWidth="180">
-                                            <Run Text="{Binding Number, StringFormat='#{0}', Mode=OneTime}" />
+                                            <Run Text="{Binding Number, Mode=OneTime}" />
                                             <Run Text="{Binding Name, Mode=OneTime}" />
                                         </TextBlock>
                                     </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Command="{Binding CloseRoomThisWeekCommand, Mode=OneTime}" CommandParameter="{Binding RoomId, Mode=OneTime}">
+                                            <MenuItem.Header>
+                                                <TextBlock>
+                                                    <Run Text="Закрыть кабинет" />
+                                                    <Run Text="{Binding Number, Mode=OneTime}" />
+                                                    <Run Text="только на этой неделе" />
+                                                </TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <MenuItem Command="{Binding CloseRoomCommand, Mode=OneTime}" CommandParameter="{Binding RoomId, Mode=OneTime}">
+                                            <MenuItem.Header>
+                                                <TextBlock>
+                                                    <Run Text="Закрыть кабинет" />
+                                                    <Run Text="{Binding Number, StringFormat='{}{0},', Mode=OneTime}" />
+                                                    <Run Text="начиная с этой недели" />
+                                                </TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                    </ContextMenu>
                                 </Setter.Value>
                             </Setter>
                         </Style>
@@ -59,13 +83,37 @@
                         <Style TargetType="{x:Type DataGridColumnHeader}">
                             <Setter Property="HorizontalAlignment" Value="Stretch" />
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Command="{Binding CloseDayThisWeekCommand, Mode=OneTime}" CommandParameter="{Binding DayOfWeek}">
+                                            <MenuItem.Header>
+                                                <TextBlock>
+                                                    <Run Text="Закрыть" />
+                                                    <Run Text="{Binding DayOfWeekProperName, Mode=OneTime}" />
+                                                    <Run Text="только на этой неделе" />
+                                                </TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                        <MenuItem Command="{Binding CloseDayCommand, Mode=OneTime}" CommandParameter="{Binding DayOfWeek}">
+                                            <MenuItem.Header>
+                                                <TextBlock>
+                                                    <Run Text="Закрыть" />
+                                                    <Run Text="{Binding DayOfWeekProperName, StringFormat='{}{0},', Mode=OneTime}" />
+                                                    <Run Text="начиная с этой недели" />
+                                                </TextBlock>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </DataGrid.ColumnHeaderStyle>
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[0], RelativeSource={RelativeSource Self}}" MinWidth="180" MaxWidth="300">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ContentControl Content="{Binding Days[0]}" />
+                                    <ContentControl Content="{Binding Days[0]}" Background="Transparent" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

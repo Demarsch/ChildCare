@@ -2,6 +2,8 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Navigation;
 using Core;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -20,6 +22,7 @@ namespace Registry
             defaultView.GroupDescriptions.Add(new PropertyGroupDescription("RecordTypeName"));
             defaultView.Filter = HideEmptyItems;
             EditRoomDayCommand = new RelayCommand(EditRoomDay);
+            CloseCommand = new RelayCommand<bool>(Close, CanClose);
             isRoomDayClosed = true;
         }
 
@@ -44,7 +47,13 @@ namespace Registry
 
         public RelayCommand EditRoomDayCommand { get; private set; }
 
-        public DateTime RelatedDate { get; set; }
+        private DateTime relatedDate;
+
+        public DateTime RelatedDate
+        {
+            get { return relatedDate; }
+            set { Set("RelatedDate", ref relatedDate, value); }
+        }
 
         private bool isThisDayOnly;
 
@@ -65,6 +74,29 @@ namespace Registry
         private void EditRoomDay()
         {
             OnEditRequested();
+        }
+
+        public ICommand CloseCommand { get; private set; }
+
+        private void Close(bool thisWeekOnly)
+        {
+            OnCloseRequested(thisWeekOnly);
+        }
+
+        private bool CanClose(bool thisWeekOnly)
+        {
+            return thisWeekOnly ? !isRoomDayClosed : !isRoomDayClosed || isThisDayOnly;
+        }
+
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
+
+        protected virtual void OnCloseRequested(bool thisDayOnly)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, new ReturnEventArgs<bool>(thisDayOnly));
+            }
         }
 
         public event EventHandler EditRequested;

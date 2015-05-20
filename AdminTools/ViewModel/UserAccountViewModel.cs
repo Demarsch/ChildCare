@@ -215,7 +215,7 @@ namespace AdminTools.ViewModel
             {
                 user = new User();
                 user.Person = personService.GetPersonById(SelectedPerson.Id);
-                user.SID = (SelectedUserAD != null && !string.IsNullOrWhiteSpace(SelectedUserAD.SID) ? SelectedUserAD.SID : string.Empty));
+                user.SID = (SelectedUserAD != null && !string.IsNullOrWhiteSpace(SelectedUserAD.SID) ? SelectedUserAD.SID : string.Empty);
                 user.BeginDateTime = DateTime.Now;
                 user.EndDateTime = (DateTime?)null;
 

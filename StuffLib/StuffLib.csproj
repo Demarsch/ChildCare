@@ -148,7 +148,7 @@
     <Compile Include="Attached behaviors\ScrollSyncrhonizer.cs" />
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
-    <Compile Include="Converters\ToSharedSizeGroupConverter.cs" />
+    <Compile Include="Converters\DiagnosticsConverter.cs" />
     <Compile Include="Converters\UniversalMultiBooleanConverter.cs" />
     <Compile Include="Converters\UniversalConverter.cs" />
     <Compile Include="Misc\CheckedListItem.cs" />

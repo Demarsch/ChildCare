@@ -49,15 +49,18 @@ namespace Registry
             unsavedItems = new HashSet<ScheduleItem>();
             CloseCommand = new RelayCommand<bool>(Close);
             ChangeDateCommand = new RelayCommand<int>(ChangeDate);
+            CloseDayThisWeekCommand = new RelayCommand<int>(CloseDayThisWeek, CanCloseDayThisWeek);
+            CloseDayCommand = new RelayCommand<int>(CloseDay, CanCloseDay);
             Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x)).ToArray();
             SelectedDate = DateTime.Today;
             foreach (var roomDay in Rooms.SelectMany(x => x.Days))
             {
                 roomDay.EditRequested += RoomDayOnEditRequested;
+                roomDay.CloseRequested += RoomDayOnCloseRequested;
             }
         }
 
-        private void RoomDayOnEditRequested(object sender, EventArgs eventArgs)
+        private void RoomDayOnEditRequested(object sender, EventArgs e)
         {
             var roomDay = sender as ScheduleEditorRoomDayViewModel;
             using (var viewModel = new ScheduleEditorEditDayViewModel(cacheService))
@@ -69,15 +72,86 @@ namespace Registry
                 viewModel.IsChanged = false;
                 if (dialogService.ShowDialog(viewModel) == true && (viewModel.IsChanged || viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
                 {
-                    var newScheduleItems = viewModel.ScheduleItems.ToArray();
-                    var sampleItem = newScheduleItems.First();
-                    unsavedItems.RemoveWhere(x => x.RoomId == roomDay.RoomId && x.DayOfWeek == roomDay.DayOfWeek && x.BeginDate == sampleItem.BeginDate);
-                    roomDay.ScheduleItems.Replace(newScheduleItems);
-                    unsavedItems.UnionWith(newScheduleItems.Select(x => x.GetScheduleItem().Clone()).Cast<ScheduleItem>());
+                    UpdateUnsaveItems(viewModel.ScheduleItems.ToArray(), roomDay);
                 }
             }
         }
 
+        private void UpdateUnsaveItems(ICollection<ScheduleEditorScheduleItemViewModel> newScheduleItems, ScheduleEditorRoomDayViewModel roomDay)
+        {
+            var sampleItem = newScheduleItems.First();
+            unsavedItems.RemoveWhere(x => x.RoomId == roomDay.RoomId && x.DayOfWeek == roomDay.DayOfWeek && x.BeginDate == sampleItem.BeginDate);
+            roomDay.ScheduleItems.Replace(newScheduleItems);
+            unsavedItems.UnionWith(newScheduleItems.Select(x => x.GetScheduleItem().Clone()).Cast<ScheduleItem>());
+        }
+
+        private void RoomDayOnCloseRequested(object sender, ReturnEventArgs<bool> e)
+        {
+            var roomDay = sender as ScheduleEditorRoomDayViewModel;
+            var thisDayOnly = e.Result;
+            var scheduleItem = new ScheduleItem
+            {
+                BeginDate = roomDay.RelatedDate,
+                EndDate = thisDayOnly ? roomDay.RelatedDate : DateTime.MaxValue.Date,
+                DayOfWeek = roomDay.DayOfWeek,
+                RecordTypeId = null,
+                RoomId = roomDay.RoomId,
+            };
+            var newScheduleItems = new[] { new ScheduleEditorScheduleItemViewModel(scheduleItem, cacheService) };
+            roomDay.ScheduleItems.Replace(newScheduleItems);
+            UpdateUnsaveItems(newScheduleItems, roomDay);
+        }
+
+        public ICommand CloseDayThisWeekCommand { get; private set; }
+
+        private void CloseDayThisWeek(int dayOfWeek)
+        {
+            CloseSchedule(dayOfWeek, true);
+        }
+
+        private bool CanCloseDayThisWeek(int dayOfWeek)
+        {
+            return CanCloseSchedule(dayOfWeek, true);
+        }
+
+        public ICommand CloseDayCommand { get; private set; }
+
+        private void CloseDay(int dayOfWeek)
+        {
+            CloseSchedule(dayOfWeek, false);
+        }
+
+        private bool CanCloseDay(int dayOfWeek)
+        {
+            return CanCloseSchedule(dayOfWeek, false);
+        }
+
+        private void CloseSchedule(int dayOfWeek, bool thisWeek)
+        {
+            if (dayOfWeek == 0)
+            {
+                return;
+            }
+            foreach (var day in Rooms.Select(x => x.Days[dayOfWeek - 1]))
+            {
+                day.CloseCommand.Execute(thisWeek);
+            }
+        }
+
+        private bool CanCloseSchedule(int dayOfWeek, bool thisWeek)
+        {
+            if (dayOfWeek == 0)
+            {
+                return false;
+            }
+            var result = false;
+            foreach (var day in Rooms.Select(x => x.Days[dayOfWeek - 1]))
+            {
+                result = result || day.CloseCommand.CanExecute(thisWeek);
+            }
+            return result;
+        }
+        
         public ICommand ChangeDateCommand { get; private set; }
 
         private void ChangeDate(int dayCount)
@@ -107,7 +181,7 @@ namespace Registry
                 Set("SelectedDate", ref selectedDate, value);
                 if (differentWeek)
                 {
-                    WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x))).ToArray();
+                    WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x)) { CloseDayCommand = CloseDayCommand, CloseDayThisWeekCommand = CloseDayThisWeekCommand}).ToArray();
                     LoadScheduleAsync();
                 }
             }
@@ -235,6 +309,7 @@ namespace Registry
             foreach (var roomDay in Rooms.SelectMany(x => x.Days))
             {
                 roomDay.EditRequested -= RoomDayOnEditRequested;
+                roomDay.CloseRequested -= RoomDayOnCloseRequested;
             }
             foreach (var room in Rooms)
             {
