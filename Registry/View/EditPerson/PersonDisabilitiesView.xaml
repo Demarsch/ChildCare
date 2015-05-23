@@ -1,16 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib"
-                    xmlns:mainLib="clr-namespace:MainLib"
+                    xmlns:registry="clr-namespace:Registry"
                     xmlns:wpf="http://wpfcontrols.com/">
 
-    <core:UniversalConverter x:Key="PersonSocialStatusStateToBrushConverter">
-        <core:ConverterItem From="{x:Static mainLib:ItemState.Active}">
+    <core:UniversalConverter x:Key="PersonDisabilityStateToBrushConverter">
+        <core:ConverterItem From="{x:Static registry:ItemState.Active}">
             <core:ConverterItem.To>
                 <SolidColorBrush Color="Green" />
             </core:ConverterItem.To>
         </core:ConverterItem>
-        <core:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
+        <core:ConverterItem From="{x:Static registry:ItemState.Inactive}">
             <core:ConverterItem.To>
                 <SolidColorBrush Color="Red" />
             </core:ConverterItem.To>
@@ -19,13 +19,13 @@
 
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-    <DataTemplate  DataType="{x:Type mainLib:PersonSocialStatusesViewModel}">
+    <DataTemplate  DataType="{x:Type registry:PersonDisabilitiesViewModel}">
         <DockPanel Width="500" VerticalAlignment="Stretch" LastChildFill="True">
-            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonSocialStatusCommand}" Content="Добавить" Margin="5" />
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного социального статуса. Чтобы создать, нажмите кнопку 'Добавить'" Foreground="Gray"
-                                           Visibility="{Binding PersonSocialStatusesHasNoItems, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <ScrollViewer MinHeight="100" MaxHeight="1000" VerticalScrollBarVisibility="Auto">
-                <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding PersonSocialStatuses}" Margin="5">
+            <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonDisabilityCommand}" Content="Добавить" Margin="5"/>
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного документа об инвалидности. Чтобы создать, нажмите кнопку 'Добавить'" Foreground="Gray"
+                                           Visibility="{Binding PersonDisabilitiesHasNoItems, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ScrollViewer MinHeight="100" MaxHeight="750" VerticalScrollBarVisibility="Auto">
+                <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding PersonDisabilities}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
@@ -49,27 +49,30 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" FontSize="14" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding PersonSocialStatusStateString, Mode=OneWay}" 
-                                       Foreground="{Binding PersonSocialStatusState, Converter={StaticResource PersonSocialStatusStateToBrushConverter}}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" FontSize="14" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding PersonDisabilityStateString, Mode=OneWay}" 
+                                       Foreground="{Binding PersonDisabilityState, Converter={StaticResource PersonDisabilityStateToBrushConverter}}"/>
 
-                                <Button  Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" BorderThickness="0" ToolTip="Удалить статус"
-                                 Command="{Binding DataContext.DeletePersonSocialStatusCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
+                                <Button  Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" BorderThickness="0" ToolTip="Удалить документ"
+                                 Command="{Binding DataContext.DeletePersonDisabilityCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding DataContext, RelativeSource={RelativeSource Self}}">
                                     <Image Source="pack://application:,,,/Resources;component/Images/Delete24x24.png"  Width="16" Height="16"/>
                                 </Button>
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Тип" />
-                                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListSocialStatusTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
-                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SocialStatusTypeId}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Тип документа" />
+                                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListDisabilityTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding DisabilityTypeId}" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="2" Text="Должность" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" Text="{Binding Office}" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="2" Text="Серия" />
+                                <TextBox Grid.Row="2" Grid.Column="1" Margin="2" Text="{Binding Series}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2" Margin="2" Text="Номер" />
+                                <TextBox Grid.Row="2" Grid.Column="3" Margin="2" Text="{Binding Number}" />
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Margin="2" Text="Организация" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                <wpf:AutoCompleteTextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" Background="White" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                 Watermark="введите слова из названия организации"
-                                 SelectedItem="{Binding Org, Mode=TwoWay}"
+                                <TextBlock Grid.Row="3" Grid.Column="0" Margin="2" Text="Выдано"/>
+                                <wpf:AutoCompleteTextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" Background="White" Height="115"
+                                 Watermark="введите слова из названия выдавшей организации"
+                                 SelectedItem="{Binding GivenOrg, Mode=TwoWay}"
+                                 Text="{Binding GivenOrgText, Mode=TwoWay}"
                                  IconVisibility="Visible"
-                                 Provider="{Binding SocialStatusOrgSuggestionProvider}"
+                                 Provider="{Binding DisabilitiesGivenOrgSuggestionProvider}"
                                  TabIndex="1"
                                  VerticalContentAlignment="Top">
                                     <wpf:AutoCompleteTextBox.LoadingContent>
@@ -89,7 +92,6 @@
                 </ItemsControl>
             </ScrollViewer>
         </DockPanel>
-        <!--</Window>-->
     </DataTemplate>
 </ResourceDictionary>
 

@@ -183,21 +183,21 @@ namespace AdminTools.ViewModel
 
         private void EditPerson(object personId)
         {
-            EditPersonViewModel personViewModel = null;
+            //EditPersonViewModel personViewModel = null;
 
-            if (personId == null)            
-                personViewModel = new EditPersonViewModel(log, personService, dialogService);
-            else
-                personViewModel = new EditPersonViewModel(log, personService, dialogService, personId.ToInt());
+            //if (personId == null)            
+            //    personViewModel = new EditPersonViewModel(log, personService, dialogService);
+            //else
+            //    personViewModel = new EditPersonViewModel(log, personService, dialogService, personId.ToInt());
 
-            (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
+            //(new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
 
-            //TODO: Change verification way
-            if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
+            ////TODO: Change verification way
+            //if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
 
-            SelectedPerson.FullName = personViewModel.EditPersonDataViewModel.LastName + " " + personViewModel.EditPersonDataViewModel.FirstName + " " + personViewModel.EditPersonDataViewModel.MiddleName;
-            SelectedPerson.BirthDate = personViewModel.EditPersonDataViewModel.BirthDate;
-            SelectedPerson.Snils = personViewModel.EditPersonDataViewModel.SNILS;
+            //SelectedPerson.FullName = personViewModel.PersonFullName;
+            //SelectedPerson.BirthDate = personViewModel.EditPersonDataViewModel.CommonPersonData.BirthDate;
+            //SelectedPerson.Snils = personViewModel.EditPersonDataViewModel.CommonPersonData.SNILS;
         }
 
         private void SaveUser()

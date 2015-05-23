@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using System.Linq;
 
-namespace MainLib
+namespace Registry
 {
     public class PersonAddressesViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
     {

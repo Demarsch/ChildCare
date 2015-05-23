@@ -1,16 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib"
-                    xmlns:mainLib="clr-namespace:MainLib"
+                    xmlns:registry="clr-namespace:Registry"
                     xmlns:wpf="http://wpfcontrols.com/">
 
     <core:UniversalConverter x:Key="PersonAddressStateToBackgroundBrushConverter">
-        <core:ConverterItem From="{x:Static mainLib:ItemState.Active}">
+        <core:ConverterItem From="{x:Static registry:ItemState.Active}">
             <core:ConverterItem.To>
                 <SolidColorBrush Color="Green" />
             </core:ConverterItem.To>
         </core:ConverterItem>
-        <core:ConverterItem From="{x:Static mainLib:ItemState.Inactive}">
+        <core:ConverterItem From="{x:Static registry:ItemState.Inactive}">
             <core:ConverterItem.To>
                 <SolidColorBrush Color="Red" />
             </core:ConverterItem.To>
@@ -45,7 +45,7 @@
         </Border>
     </DataTemplate>
     <!--</Window.Resources>-->
-    <DataTemplate  DataType="{x:Type mainLib:PersonAddressesViewModel}">
+    <DataTemplate  DataType="{x:Type registry:PersonAddressesViewModel}">
         <DockPanel Width="500" VerticalAlignment="Stretch" LastChildFill="True">
             <Button DockPanel.Dock="Bottom"  HorizontalAlignment="Stretch" Height="24"  Command="{Binding AddPersonAddressCommand}" Content="Добавить" Margin="5" />
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Height="46" Text="Нет ни одного адреса. Чтобы создать адрес, нажмите кнопку 'Добавить'" Foreground="Gray" Background="Aqua"

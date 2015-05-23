@@ -6,7 +6,7 @@ using log4net;
 using System.ComponentModel;
 using System.Collections.Generic;
 
-namespace MainLib
+namespace Registry
 {
     public class InsuranceDocumentViewModel : ObservableObject, IDataErrorInfo
     {

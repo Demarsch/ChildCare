@@ -1,8 +1,9 @@
-﻿<Window x:Class="MainLib.EditPersonView"
+﻿<Window x:Class="Registry.EditPersonView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        xmlns:mainLib="clr-namespace:MainLib"
+        xmlns:mainLib="clr-namespace:MainLib;assembly=MainLib"
+        xmlns:registry="clr-namespace:Registry"
         xmlns:core="clr-namespace:Core;assembly=StuffLib"
         Width="920" SizeToContent="Height" ResizeMode="NoResize">
 
@@ -49,7 +50,7 @@
                 <RowDefinition  Height="auto"/>
             </Grid.RowDefinitions>
 
-            <mainLib:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
+            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
             <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
                 <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
                 <Button DockPanel.Dock="Bottom" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
@@ -88,7 +89,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </DockPanel>
-            <mainLib:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
+            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
         </Grid>
     </ScrollViewer>
 </Window>

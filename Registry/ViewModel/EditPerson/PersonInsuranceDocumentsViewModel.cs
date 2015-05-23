@@ -11,7 +11,7 @@ using System.ComponentModel;
 using System.Windows.Navigation;
 using System.Collections.Generic;
 
-namespace MainLib
+namespace Registry
 {
     public class PersonInsuranceDocumentsViewModel : ObservableObject, IDialogViewModel
     {

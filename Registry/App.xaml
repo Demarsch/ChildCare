@@ -5,11 +5,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="View/PersonView.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonAddressesView.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonIdentityDocumentsView.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonInsuranceDocumentsView.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonDisabilitiesView.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/PersonSocialStatusesView.xaml" />
+                <ResourceDictionary Source="View/EditPerson/PersonAddressesView.xaml" />
+                <ResourceDictionary Source="View/EditPerson/PersonIdentityDocumentsView.xaml" />
+                <ResourceDictionary Source="View/EditPerson/PersonInsuranceDocumentsView.xaml" />
+                <ResourceDictionary Source="View/EditPerson/PersonDisabilitiesView.xaml" />
+                <ResourceDictionary Source="View/EditPerson/PersonSocialStatusesView.xaml" />
                 <ResourceDictionary Source="View/PatientAssignmentListView.xaml" />
                 <ResourceDictionary Source="View/ScheduleView.xaml" />
                 <ResourceDictionary Source="View/TimeTickerView.xaml" />

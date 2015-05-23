@@ -10,9 +10,9 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using System.Linq;
 
-namespace MainLib
+namespace Registry
 {
-    public class PersonDisabilitiesViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
+    public class PersonIdentityDocumentsViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
     {
         #region Fields
 
@@ -26,7 +26,7 @@ namespace MainLib
 
         #region Constructors
 
-        public PersonDisabilitiesViewModel(int personId, IPersonService service, IDialogService dialogService)
+        public PersonIdentityDocumentsViewModel(int personId, IPersonService service, IDialogService dialogService)
         {
             if (service == null)
                 throw new ArgumentNullException("service");
@@ -35,10 +35,10 @@ namespace MainLib
             this.dialogService = dialogService;
             this.service = service;
             this.personId = personId;
-            PersonDisabilities = new ObservableCollection<PersonDisabilityViewModel>(service.GetPersonDisabilities(this.personId).Select(x => new PersonDisabilityViewModel(x, service)));
-            ListDisabilityTypes = new ObservableCollection<DisabilityType>(service.GetDisabilityTypes());
-            AddPersonDisabilityCommand = new RelayCommand(AddPersonDisability);
-            DeletePersonDisabilityCommand = new RelayCommand<PersonDisabilityViewModel>(DeletePersonDisability);
+            PersonIdentityDocuments = new ObservableCollection<PersonIdentityDocumentViewModel>(service.GetPersonIdentityDocuments(this.personId).Select(x => new PersonIdentityDocumentViewModel(x, service)));
+            ListIdentityDocumentTypes = new ObservableCollection<IdentityDocumentType>(service.GetIdentityDocumentTypes());
+            AddPersonIdentityDocumentCommand = new RelayCommand(AddPersonIdentityDocument);
+            DeletePersonIdentityDocumentCommand = new RelayCommand<PersonIdentityDocumentViewModel>(DeleteIdentityDocument);
             CloseCommand = new RelayCommand<bool>(Close);
         }
 
@@ -46,40 +46,40 @@ namespace MainLib
 
         #region Properties
 
-        private ObservableCollection<DisabilityType> listDisabilityTypes = new ObservableCollection<DisabilityType>();
-        public ObservableCollection<DisabilityType> ListDisabilityTypes
+        private ObservableCollection<IdentityDocumentType> listIdentityDocumentTypes = new ObservableCollection<IdentityDocumentType>();
+        public ObservableCollection<IdentityDocumentType> ListIdentityDocumentTypes
         {
-            get { return listDisabilityTypes; }
-            set { Set("ListDisabilityTypes", ref listDisabilityTypes, value); }
+            get { return listIdentityDocumentTypes; }
+            set { Set("ListIdentityDocumentTypes", ref listIdentityDocumentTypes, value); }
         }
 
-        private ObservableCollection<PersonDisabilityViewModel> personDisabilities = new ObservableCollection<PersonDisabilityViewModel>();
-        public ObservableCollection<PersonDisabilityViewModel> PersonDisabilities
+        private ObservableCollection<PersonIdentityDocumentViewModel> personIdentityDocuments = new ObservableCollection<PersonIdentityDocumentViewModel>();
+        public ObservableCollection<PersonIdentityDocumentViewModel> PersonIdentityDocuments
         {
-            get { return personDisabilities; }
+            get { return personIdentityDocuments; }
             set
             {
-                Set("PersonDisabilities", ref personDisabilities, value);
-                RaisePropertyChanged("PersonDisabilitiesHasNoItems");
+                Set("PersonIdentityDocuments", ref personIdentityDocuments, value);
+                RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
             }
         }
 
-        public bool PersonDisabilitiesHasNoItems
+        public bool PersonIdentityDocumentsHasNoItems
         {
-            get { return PersonDisabilities == null || PersonDisabilities.Count < 1; }
+            get { return PersonIdentityDocuments == null || PersonIdentityDocuments.Count < 1; }
         }
 
-        public string PersonDisabilitiesString
+        public string PersonIdentityDocumentsString
         {
             get
             {
                 var resStr = string.Empty;
                 var dateTimeNow = DateTime.Now;
-                foreach (var personDisability in PersonDisabilities.Where(x => dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate))
+                foreach (var personAddress in PersonIdentityDocuments.Where(x => dateTimeNow >= x.BeginDate && dateTimeNow < x.EndDate))
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";
-                    resStr += personDisability.PersonDisabilityString;
+                    resStr += personAddress.PersonAddressString;
                 }
                 return resStr;
             }
@@ -89,18 +89,18 @@ namespace MainLib
 
         #region Commands
 
-        public ICommand AddPersonDisabilityCommand { get; set; }
-        private void AddPersonDisability()
+        public ICommand AddPersonIdentityDocumentCommand { get; set; }
+        private void AddPersonIdentityDocument()
         {
-            PersonDisabilities.Add(new PersonDisabilityViewModel(new PersonDisability(), service));
-            RaisePropertyChanged("PersonDisabilitiesHasNoItems");
+            PersonIdentityDocuments.Add(new PersonIdentityDocumentViewModel(new PersonIdentityDocument() { EndDate = DateTime.MaxValue.Date }, service));
+            RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
         }
 
-        public ICommand DeletePersonDisabilityCommand { get; set; }
-        private void DeletePersonDisability(PersonDisabilityViewModel personDisabilityViewModel)
+        public ICommand DeletePersonIdentityDocumentCommand { get; set; }
+        private void DeleteIdentityDocument(PersonIdentityDocumentViewModel personIdentityDocumentViewModel)
         {
-            PersonDisabilities.Remove(personDisabilityViewModel);
-            RaisePropertyChanged("PersonDisabilitiesHasNoItems");
+            PersonIdentityDocuments.Remove(personIdentityDocumentViewModel);
+            RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
         }
 
         #endregion
@@ -109,7 +109,7 @@ namespace MainLib
 
         public string Title
         {
-            get { return "Инвалидность"; }
+            get { return "Удостоверения личности"; }
         }
 
         public string ConfirmButtonText

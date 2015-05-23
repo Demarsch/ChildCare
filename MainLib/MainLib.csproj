@@ -136,33 +136,12 @@
     <Compile Include="Services\Interface\IAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
-    <Compile Include="ViewModel\EditPersonDataViewModel.cs" />
-    <Compile Include="ViewModel\EditPersonViewModel.cs" />
-    <Compile Include="ViewModel\DisabilitiesGivenOrgSuggestionProvider.cs" />
-    <Compile Include="ViewModel\SocialStatusOrgSuggestionProvider.cs" />
-    <Compile Include="ViewModel\IdentityDocumentsGivenOrgSuggestionProvider.cs" />
-    <Compile Include="ViewModel\OKATOSuggestionProvider.cs" />
-    <Compile Include="ViewModel\OKATORegionSuggestionProvider.cs" />
-    <Compile Include="ViewModel\InsuranceCompanySuggestionProvider.cs" />
-    <Compile Include="ViewModel\InsuranceDocumentViewModel.cs" />
-    <Compile Include="ViewModel\ItemState.cs" />
-    <Compile Include="ViewModel\PersonSocialStatusViewModel.cs" />
-    <Compile Include="ViewModel\PersonSocialStatusesViewModel.cs" />
-    <Compile Include="ViewModel\PersonDisabilitiesViewModel.cs" />
-    <Compile Include="ViewModel\PersonDisabilityViewModel.cs" />
-    <Compile Include="ViewModel\PersonIdentityDocumentViewModel.cs" />
-    <Compile Include="ViewModel\PersonIdentityDocumentsViewModel.cs" />
-    <Compile Include="ViewModel\PersonAddressesViewModel.cs" />
-    <Compile Include="ViewModel\PersonAddressViewModel.cs" />
-    <Compile Include="ViewModel\PersonInsuranceDocumentsViewModel.cs" />
+    <Compile Include="ViewModel\EditPersonCommonDataViewModel.cs" />
     <Compile Include="View\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditPersonDataUserControl.xaml.cs">
-      <DependentUpon>EditPersonDataUserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\EditPersonView.xaml.cs">
-      <DependentUpon>EditPersonView.xaml</DependentUpon>
+    <Compile Include="View\EditPersonCommonDataView.xaml.cs">
+      <DependentUpon>EditPersonCommonDataView.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -202,33 +181,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EditPersonDataUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\EditPersonView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\PersonDisabilitiesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\PersonSocialStatusesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\PersonIdentityDocumentsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\PersonAddressesView.xaml">
+    <Page Include="View\EditPersonCommonDataView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\PersonInsuranceDocumentsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -178,17 +178,17 @@ namespace AdminTools.ViewModel
 
         private void EditUser(object parameter)
         {
-            if (parameter == null)
-            {
-                MessageBox.Show("Не выбран пользователь.");
-                return;
-            }
-            var personViewModel = new EditPersonViewModel(log, personService, dialogService, (parameter as UserViewModel).PersonId);
-            (new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
+            //if (parameter == null)
+            //{
+            //    MessageBox.Show("Не выбран пользователь.");
+            //    return;
+            //}
+            //var personViewModel = new EditPersonViewModel(log, personService, dialogService, (parameter as UserViewModel).PersonId);
+            //(new EditPersonView() { DataContext = personViewModel, WindowStartupLocation = WindowStartupLocation.CenterScreen }).ShowDialog();
 
-            //TODO: Change verification way
-            if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
-            SelectedUser.UserFullName = personViewModel.EditPersonDataViewModel.LastName + " " + personViewModel.EditPersonDataViewModel.FirstName + " " + personViewModel.EditPersonDataViewModel.MiddleName;
+            ////TODO: Change verification way
+            //if (personViewModel.EditPersonDataViewModel == null || personViewModel.EditPersonDataViewModel.TextMessage != "Данные сохранены") return;
+            //SelectedUser.UserFullName = personViewModel.PersonFullName;
         }
 
         private void NewUser()

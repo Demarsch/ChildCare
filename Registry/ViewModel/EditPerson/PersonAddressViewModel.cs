@@ -7,7 +7,7 @@ using GalaSoft.MvvmLight;
 using System.Threading.Tasks;
 using Core;
 
-namespace MainLib
+namespace Registry
 {
     public class PersonAddressViewModel : ObservableObject
     {

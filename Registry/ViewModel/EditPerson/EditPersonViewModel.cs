@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Linq;
 
-namespace MainLib
+namespace Registry
 {
     public class EditPersonViewModel : ObservableObject
     {
@@ -143,6 +143,11 @@ namespace MainLib
         {
             get { return relatives; }
             set { Set("Relatives", ref relatives, value); }
+        }
+
+        public string PersonFullName
+        {
+            get { return EditPersonDataViewModel.PersonFullName; }
         }
 
         public ObservableCollection<RelativeRelationship> RelativeRelations { get; set; }

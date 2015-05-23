@@ -10,28 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace MainLib
 {
     /// <summary>
-    /// Interaction logic for EditPersonData.xaml
+    /// Interaction logic for EditPersonCommonDataView.xaml
     /// </summary>
-    public partial class EditPersonDataUserControl : UserControl
+    public partial class EditPersonCommonDataView : UserControl
     {
-        public EditPersonDataUserControl()
+        public EditPersonCommonDataView()
         {
             InitializeComponent();
-        }
-
-        private void tbInsurance_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }

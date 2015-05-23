@@ -1,4 +1,5 @@
-﻿using DataLib;
+﻿using Core;
+using DataLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,13 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using WpfControls.Editors;
 
-namespace Core
+namespace Registry
 {
-    public class IdentityDocumentsGivenOrgSuggestionProvider : ISuggestionProvider
+    public class SocialStatusOrgSuggestionProvider : ISuggestionProvider
     {
         private IPersonService service;
 
-        public IdentityDocumentsGivenOrgSuggestionProvider(IPersonService service)
+        public SocialStatusOrgSuggestionProvider(IPersonService service)
         {
             this.service = service;
         }
@@ -21,7 +22,7 @@ namespace Core
         {
             if (string.IsNullOrEmpty(filter) || (filter.Length < 3))
                 return null;
-            return service.GetIdentityDocumentsGivenOrgByName(filter);
+            return service.GetSocialStatusOrgByName(filter);
         }
     }
 }
