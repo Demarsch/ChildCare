@@ -92,7 +92,7 @@ namespace Registry
                     if (insuranceDocumentType != null)
                         insuranceDocumentTypeName = insuranceDocumentType.Name;
                     resStr += String.Format("тип док-та: {0}\r\nстрах. орг.: {1}\r\nсерия {2} номер {3}\r\nпериод действия {4}-{5}",
-                         insuranceDocumentTypeName, insuranceDocument.InsuranceCompany.NameSMOK, insuranceDocument.Series, insuranceDocument.Number, insuranceDocument.BeginDate.ToString("dd.MM.yyyy"),
+                         insuranceDocumentTypeName, (insuranceDocument.InsuranceCompany != null ? insuranceDocument.InsuranceCompany.NameSMOK : string.Empty), insuranceDocument.Series, insuranceDocument.Number, insuranceDocument.BeginDate.ToString("dd.MM.yyyy"),
                          insuranceDocument.EndDate.ToString("dd.MM.yyyy"));
                 }
                 return resStr;

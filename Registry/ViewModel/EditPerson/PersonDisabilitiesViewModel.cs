@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Registry
 {
-    public class PersonDisabilitiesViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
+    public class PersonDisabilitiesViewModel : ObservableObject, IDialogViewModel
     {
         #region Fields
 
@@ -133,8 +133,12 @@ namespace Registry
             saveWasRequested = true;
             if (validate)
             {
-                RaisePropertyChanged(string.Empty);
-                if (invalidProperties.Count == 0)
+                var notEroors = true;
+                foreach (var personDisabilitiesDocumentsViewModel in PersonDisabilities)
+                {
+                    notEroors &= personDisabilitiesDocumentsViewModel.Invalidate();
+                }
+                if (notEroors)
                 {
                     OnCloseRequested(new ReturnEventArgs<bool>(true));
                 }
@@ -162,40 +166,6 @@ namespace Registry
             }
         }
 
-        #endregion
-
-        #region Implementation IDataErrorInfo
-
-        string IDataErrorInfo.this[string columnName]
-        {
-            get
-            {
-                if (!saveWasRequested)
-                {
-                    invalidProperties.Remove(columnName);
-                    return string.Empty;
-                }
-                var result = string.Empty;
-                //if (columnName == "SelectedFinancingSource")
-                //{
-                //    result = selectedFinancingSource == null || !selectedFinancingSource.IsActive ? "Укажите источник финансирования" : string.Empty;
-                //}
-                if (string.IsNullOrEmpty(result))
-                {
-                    invalidProperties.Remove(columnName);
-                }
-                else
-                {
-                    invalidProperties.Add(columnName);
-                }
-                return result;
-            }
-        }
-
-        string IDataErrorInfo.Error
-        {
-            get { throw new NotImplementedException(); }
-        }
         #endregion
     }
 }

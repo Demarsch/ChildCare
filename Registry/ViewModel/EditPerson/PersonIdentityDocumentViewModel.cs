@@ -6,10 +6,11 @@ using System.Text;
 using GalaSoft.MvvmLight;
 using System.Threading.Tasks;
 using Core;
+using System.ComponentModel;
 
 namespace Registry
 {
-    public class PersonIdentityDocumentViewModel : ObservableObject
+    public class PersonIdentityDocumentViewModel : ObservableObject, IDataErrorInfo
     {
         #region Fields
 
@@ -192,6 +193,67 @@ namespace Registry
             }
         }
 
+        #endregion
+
+        #region Implementation IDataErrorInfo
+
+        private bool saveWasRequested { get; set; }
+
+        public readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        public bool Invalidate()
+        {
+            saveWasRequested = true;
+            RaisePropertyChanged(string.Empty);
+            return invalidProperties.Count < 1;
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                if (columnName == "IdentityDocumentTypeId")
+                {
+                    result = IdentityDocumentTypeId < 1 ? "Укажите тип документа" : string.Empty;
+                }
+                if (columnName == "Series")
+                {
+                    result = string.IsNullOrEmpty(Series) ? "Укажите серию документа" : string.Empty;
+                }
+                if (columnName == "Number")
+                {
+                    result = string.IsNullOrEmpty(Number) ? "Укажите номер документа" : string.Empty;
+                }
+                if (columnName == "GivenOrg" || columnName == "GivenOrgText")
+                {
+                    result = string.IsNullOrEmpty(GivenOrgText) && GivenOrg == null ? "Укажите нвзвание выдавшей организации" : string.Empty;
+                }
+                if (columnName == "BeginDate" || columnName == "EndDate")
+                {
+                    result = BeginDate > EndDate ? "Дата начала не может быть больше даты окончания" : string.Empty;
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
         #endregion
     }
 }

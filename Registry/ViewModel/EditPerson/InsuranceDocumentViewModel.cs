@@ -159,22 +159,22 @@ namespace Registry
 
         #region Implementation IDataErrorInfo
 
-        private bool SaveWasRequested { get; set; }
+        private bool saveWasRequested { get; set; }
 
         public readonly HashSet<string> invalidProperties = new HashSet<string>();
 
         public bool Invalidate()
         {
-            SaveWasRequested = true;
+            saveWasRequested = true;
             RaisePropertyChanged(string.Empty);
-            return invalidProperties.Count > 0;
+            return invalidProperties.Count < 1;
         }
 
         string IDataErrorInfo.this[string columnName]
         {
             get
             {
-                if (!SaveWasRequested)
+                if (!saveWasRequested)
                 {
                     invalidProperties.Remove(columnName);
                     return string.Empty;
@@ -183,6 +183,14 @@ namespace Registry
                 if (columnName == "InsuranceCompany")
                 {
                     result = InsuranceCompany == null ? "Укажите страховую компанию" : string.Empty;
+                }
+                if (columnName == "Number")
+                {
+                    result = Number == string.Empty ? "Укажите номер полиса" : string.Empty;
+                }
+                if (columnName == "BeginDate" || columnName == "EndDate")
+                {
+                    result = BeginDate > EndDate ? "Дата начала не может быть больше даты окончания" : string.Empty;
                 }
                 if (string.IsNullOrEmpty(result))
                 {

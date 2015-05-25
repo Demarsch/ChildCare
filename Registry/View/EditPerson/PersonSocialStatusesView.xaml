@@ -28,7 +28,7 @@
                 <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding PersonSocialStatuses}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
+                            <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" Margin="0,0,20,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto" />
                                     <RowDefinition Height="Auto" />
@@ -59,15 +59,17 @@
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="Тип" />
                                 <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" ItemsSource="{Binding DataContext.ListSocialStatusTypes, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
-                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SocialStatusTypeId}" />
+                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding SocialStatusTypeId, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
 
                                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="2" Text="Должность" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" Text="{Binding Office}" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" Text="{Binding Office, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                                         Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                                 <TextBlock Grid.Row="3" Grid.Column="0" Margin="2" Text="Организация" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 <wpf:AutoCompleteTextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="2" Background="White" Visibility="{Binding NeedPlace, Converter={StaticResource BooleanToVisibilityConverter}}"
                                  Watermark="введите слова из названия организации"
-                                 SelectedItem="{Binding Org, Mode=TwoWay}"
+                                 SelectedItem="{Binding Org, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                 Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
                                  IconVisibility="Visible"
                                  Provider="{Binding SocialStatusOrgSuggestionProvider}"
                                  TabIndex="1"
@@ -78,9 +80,11 @@
                                 </wpf:AutoCompleteTextBox>
 
                                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="2"  Text="С "/>
-                                <DatePicker Grid.Row="4" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate}" BorderThickness="1"/>
-                                <TextBlock Grid.Row="4" Grid.Column="2" Margin="2" Text="по" />
-                                <DatePicker Grid.Row="4" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate}" BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
+                                <DatePicker Grid.Row="4" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" 
+                                            BorderThickness="1"/>
+                                <TextBlock Grid.Row="4" Grid.Column="2" Margin="2" Text="по" HorizontalAlignment="Right"/>
+                                <DatePicker Grid.Row="4" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" 
+                                            BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
 
                                 <CheckBox Grid.Row="5" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch" Content="Бессрочно" BorderThickness="1" IsChecked="{Binding WithoutEndDate}"/>
                             </Grid>

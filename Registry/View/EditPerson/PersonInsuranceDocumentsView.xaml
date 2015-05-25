@@ -54,7 +54,7 @@
                 <ItemsControl BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding InsuranceDocuments}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" >
+                            <Grid HorizontalAlignment="Stretch" MinWidth="320" MinHeight="54" VerticalAlignment="Stretch" Margin="0,0,20,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto" />
                                     <RowDefinition Height="Auto" />
@@ -101,14 +101,14 @@
                                 </wpf:AutoCompleteTextBox>
 
                                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="2" Text="Серия" />
-                                <TextBox Grid.Row="4" Grid.Column="1" Margin="2" Text="{Binding Series}" />
+                                <TextBox Grid.Row="4" Grid.Column="1" Margin="2" Text="{Binding Series}"/>
                                 <TextBlock Grid.Row="4" Grid.Column="2" Margin="2" Text="Номер"/>
-                                <TextBox Grid.Row="4" Grid.Column="3" Margin="2" Text="{Binding Number}"/>
+                                <TextBox Grid.Row="4" Grid.Column="3" Margin="2" Text="{Binding Number, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
 
                                 <TextBlock Grid.Row="5" Grid.Column="0" Margin="2"  Text="С "/>
-                                <DatePicker Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate}" BorderThickness="1"/>
-                                <TextBlock Grid.Row="5" Grid.Column="2" Margin="2" Text="по" />
-                                <DatePicker Grid.Row="5" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate}" BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
+                                <DatePicker Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" BorderThickness="1"/>
+                                <TextBlock Grid.Row="5" Grid.Column="2" Margin="2" Text="по" HorizontalAlignment="Right"/>
+                                <DatePicker Grid.Row="5" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
 
                                 <CheckBox Grid.Row="6" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch" Content="Бессрочно" BorderThickness="1" IsChecked="{Binding WithoutEndDate}"/>
                             </Grid>

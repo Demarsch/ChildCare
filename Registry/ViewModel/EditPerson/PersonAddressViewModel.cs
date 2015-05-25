@@ -6,10 +6,11 @@ using System.Text;
 using GalaSoft.MvvmLight;
 using System.Threading.Tasks;
 using Core;
+using System.ComponentModel;
 
 namespace Registry
 {
-    public class PersonAddressViewModel : ObservableObject
+    public class PersonAddressViewModel : ObservableObject, IDataErrorInfo
     {
         #region Fields
 
@@ -93,8 +94,8 @@ namespace Registry
         public int AddressTypeId
         {
             get { return addressTypeId; }
-            set 
-            { 
+            set
+            {
                 Set("AddressTypeId", ref addressTypeId, value);
                 var addressType = service.GetAddressType(addressTypeId);
                 if (addressType != null)
@@ -124,7 +125,7 @@ namespace Registry
         {
             get { return addressOKATO; }
             set
-            { 
+            {
                 Set("AddressOKATO", ref addressOKATO, value);
                 if (addressOKATO != null)
                     UserText = addressOKATO.FullName;
@@ -235,11 +236,76 @@ namespace Registry
                 var addressType = service.GetAddressType(AddressTypeId);
                 if (addressType != null)
                     addressTypeName = addressType.Name;
-                return addressTypeName + ": " + UserText + " " + House + (Building != string.Empty ? "\"" + Building + "\"" : string.Empty) +
-                    (Apartment != string.Empty ? " " + Apartment : string.Empty) + "\r\nДействует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                return addressTypeName + ": " + UserText + " " + House + (!string.IsNullOrEmpty(Building) ? "\"" + Building + "\"" : string.Empty) +
+                    (!string.IsNullOrEmpty(Apartment) ? " " + Apartment : string.Empty) + "\r\nДействует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
             }
         }
 
+        #endregion
+
+        #region Implementation IDataErrorInfo
+
+        private bool saveWasRequested { get; set; }
+
+        public readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        public bool Invalidate()
+        {
+            saveWasRequested = true;
+            RaisePropertyChanged(string.Empty);
+            return invalidProperties.Count < 1;
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                if (columnName == "AddressTypeId")
+                {
+                    result = AddressTypeId < 1 ? "Укажите вид адреса" : string.Empty;
+                }
+                if (columnName == "RegionOKATO")
+                {
+                    result = RegionOKATO == null ? "Укажите регион или иностранное государство" : string.Empty;
+                }
+                if (columnName == "AddressOKATO")
+                {
+                    result = RegionOKATO != null && RegionOKATO.CodeOKATO.Substring(0, 1) != "c" && AddressOKATO == null ? "Укажите адрес по ОКАТО" : string.Empty;
+                }
+                if (columnName == "UserText")
+                {
+                    result = string.IsNullOrEmpty(UserText) ? "Укажите адрес по документу" : string.Empty;
+                }
+                if (columnName == "House")
+                {
+                    result = string.IsNullOrEmpty(House) ? "Укажите номер дома" : string.Empty;
+                }
+                if (columnName == "BeginDate" || columnName == "EndDate")
+                {
+                    result = BeginDate > EndDate ? "Дата начала не может быть больше даты окончания" : string.Empty;
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
         #endregion
     }
 }
