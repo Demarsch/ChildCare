@@ -497,6 +497,7 @@ namespace Registry
         {
             if (!save)
             {
+                log.Info("Save was not performed");
                 return true;
             }
             try

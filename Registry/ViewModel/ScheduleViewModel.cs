@@ -29,7 +29,9 @@ namespace Registry
 
         private readonly IDialogService dialogService;
 
-        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment, IDialogService dialogService)
+        private readonly ISecurityService securityService;
+
+        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment, IDialogService dialogService, ISecurityService securityService)
         {
             if (scheduleService == null)
             {
@@ -51,20 +53,24 @@ namespace Registry
             {
                 throw new ArgumentNullException("dialogService");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            this.securityService = securityService;
             this.dialogService = dialogService;
             this.environment = environment;
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
             filteredRooms = new CollectionViewSource();
-            //TODO: remove this fake data
-            selectedDate = new DateTime(2015, 4, 1);
+            selectedDate = DateTime.Today;
             openTime = selectedDate.AddHours(8.0);
             closeTime = selectedDate.AddHours(17.0);
             isInReadOnlyMode = true;
             ChangeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
             CancelAssignmentMovementCommand = new RelayCommand(CancelAssignmentMovement);
-            OpenScheduleEditorCommand = new RelayCommand(OpenScheduleEditor);
+            OpenScheduleEditorCommand = new RelayCommand(OpenScheduleEditor, CanOpenScheduleEditor);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
@@ -105,7 +111,7 @@ namespace Registry
                         occupiedTimeSlot.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                         occupiedTimeSlot.MoveRequested -= RoomOnAssignmentMoveRequested;
                     }
-                    room.TimeSlots.Replace(assignments[room.Id].Select(x => new OccupiedTimeSlotViewModel(x, environment)));
+                    room.TimeSlots.Replace(assignments[room.Id].Select(x => new OccupiedTimeSlotViewModel(x, environment, securityService)));
                     foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
                     {
                         occupiedTimeSlot.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
@@ -214,6 +220,11 @@ namespace Registry
             }
         }
 
+        private bool CanOpenScheduleEditor()
+        {
+            return securityService.HasPrivilege(Privileges.EditSchedule);
+        }
+
         #region Assignments
         
         private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
@@ -317,7 +328,7 @@ namespace Registry
                 Note = assignment.Note,
                 FinancingSourceId = assignment.FinancingSourceId
             };
-            var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment);
+            var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment, securityService);
             newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
             newAssignment.UpdateRequested += RoomOnAssignmentUpdateRequested;
             newAssignment.MoveRequested += RoomOnAssignmentMoveRequested;
@@ -595,7 +606,7 @@ namespace Registry
 
         private bool CanChangeMode()
         {
-            return currentPatient != null;
+            return currentPatient != null && securityService.HasPrivilege(Privileges.EditAssignments);
         }
 
         private RoomViewModel selectedRoom;
