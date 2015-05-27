@@ -575,7 +575,7 @@ namespace Registry
                         {
                             if (!IsInReadOnlyMode)
                             {
-                                BuildScheduleGrid();
+                                UpdateRoomFilter();
                             }
                         }, TaskScheduler.FromCurrentSynchronizationContext());
                 }
