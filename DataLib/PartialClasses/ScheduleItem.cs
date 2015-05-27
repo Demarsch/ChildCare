@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace DataLib
 {
@@ -7,7 +6,17 @@ namespace DataLib
     {
         public object Clone()
         {
-            return MemberwiseClone();
+            return new ScheduleItem
+            {
+                BeginDate = BeginDate,
+                DayOfWeek = DayOfWeek,
+                EndDate = EndDate,
+                EndTime = EndTime,
+                Id = Id,
+                RecordTypeId = RecordTypeId,
+                RoomId = RoomId,
+                StartTime = StartTime
+            };
         }
     }
 }

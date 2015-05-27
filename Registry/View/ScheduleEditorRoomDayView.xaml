@@ -31,6 +31,9 @@
                                 </TextBlock>
                             </MenuItem.Header>
                         </MenuItem>
+                        <Separator />
+                        <MenuItem Command="{Binding CopyCommand, Mode=OneTime}" CommandParameter="{Binding}" Header="Копировать" />
+                        <MenuItem Command="{Binding PasteCommand, Mode=OneTime}" CommandParameter="{Binding}" Header="Вставить" />
                     </ContextMenu>
                 </Button.ContextMenu>
                 <StackPanel Orientation="Vertical">
