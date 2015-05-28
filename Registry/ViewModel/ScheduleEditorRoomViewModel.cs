@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Input;
-using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -81,6 +80,10 @@ namespace Registry
             }
             return result;
         }
+
+        public ICommand CopyCommand { get; set; }
+
+        public ICommand PasteCommand { get; set; }
 
         public void Dispose()
         {

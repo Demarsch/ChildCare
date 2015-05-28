@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Navigation;
@@ -22,7 +24,7 @@ namespace Registry
 
         private readonly IDialogService dialogService;
 
-        private readonly HashSet<ScheduleItem> unsavedItems; 
+        private readonly HashSet<ScheduleItem> unsavedItems;
 
         public ScheduleEditorViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IDialogService dialogService)
         {
@@ -51,13 +53,31 @@ namespace Registry
             ChangeDateCommand = new RelayCommand<int>(ChangeDate);
             CloseDayThisWeekCommand = new RelayCommand<int>(CloseDayThisWeek, CanCloseDayThisWeek);
             CloseDayCommand = new RelayCommand<int>(CloseDay, CanCloseDay);
-            Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x)).ToArray();
+            CopyCommand = new RelayCommand<object>(Copy);
+            PasteCommand = new RelayCommand<object>(Paste, CanPaste);
+            Rooms = scheduleService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x) { CopyCommand = CopyCommand, PasteCommand = PasteCommand }).ToArray();
+            log.Info("Started editing schedule");
             SelectedDate = DateTime.Today;
             foreach (var roomDay in Rooms.SelectMany(x => x.Days))
             {
+                roomDay.CopyCommand = CopyCommand;
+                roomDay.PasteCommand = PasteCommand;
                 roomDay.EditRequested += RoomDayOnEditRequested;
                 roomDay.CloseRequested += RoomDayOnCloseRequested;
             }
+            clipboardContentDescription = "Буфер обмена пуст";
+        }
+
+        private ScheduleItem[] clipboardContent;
+
+        private Type clipboardContentType;
+
+        private string clipboardContentDescription;
+
+        public string ClipboardContentDescription
+        {
+            get { return clipboardContentDescription; }
+            private set { Set("ClipboardContentDescription", ref clipboardContentDescription, value); }
         }
 
         private void RoomDayOnEditRequested(object sender, EventArgs e)
@@ -72,17 +92,37 @@ namespace Registry
                 viewModel.IsChanged = false;
                 if (dialogService.ShowDialog(viewModel) == true && (viewModel.IsChanged || viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
                 {
-                    UpdateUnsaveItems(viewModel.ScheduleItems.ToArray(), roomDay);
+                    var newItems = viewModel.ScheduleItems.ToArray();
+                    UpdateUnsavedItems(newItems, roomDay);
+                    if (newItems.Length == 1 && newItems[0].RecordTypeId == 0)
+                    {
+                        log.InfoFormat("Manually closed {0:dd.MM.yy}{1} for room (Id = {2})", 
+                            roomDay.RelatedDate,
+                            roomDay.IsThisDayOnly ? " (this day only)" : string.Empty, 
+                            roomDay.RoomId);
+                    }
+                    log.InfoFormat("Updated {0:dd.MM.yy}{1} with {2} schedule items for room (Id = {3})",
+                        roomDay.RelatedDate,
+                        roomDay.IsThisDayOnly ? " (this day only)" : string.Empty, 
+                        newItems.Length,
+                        roomDay.RoomId);
                 }
             }
         }
 
-        private void UpdateUnsaveItems(ICollection<ScheduleEditorScheduleItemViewModel> newScheduleItems, ScheduleEditorRoomDayViewModel roomDay)
+        private void UpdateUnsavedItems(ICollection<ScheduleEditorScheduleItemViewModel> newScheduleItems, ScheduleEditorRoomDayViewModel roomDay)
         {
             var sampleItem = newScheduleItems.First();
+            var oldCount = unsavedItems.Count;
             unsavedItems.RemoveWhere(x => x.RoomId == roomDay.RoomId && x.DayOfWeek == roomDay.DayOfWeek && x.BeginDate == sampleItem.BeginDate);
             roomDay.ScheduleItems.Replace(newScheduleItems);
             unsavedItems.UnionWith(newScheduleItems.Select(x => x.GetScheduleItem().Clone()).Cast<ScheduleItem>());
+            var newCount = unsavedItems.Count;
+            log.Info(oldCount == newCount
+                ? "Unsaved item count remains the same"
+                : oldCount > newCount
+                    ? string.Format("Removed {0} items from unsaved collection", oldCount - newCount)
+                    : string.Format("Added {0} items to unsaved collection", newCount - oldCount));
         }
 
         private void RoomDayOnCloseRequested(object sender, ReturnEventArgs<bool> e)
@@ -99,7 +139,8 @@ namespace Registry
             };
             var newScheduleItems = new[] { new ScheduleEditorScheduleItemViewModel(scheduleItem, cacheService) };
             roomDay.ScheduleItems.Replace(newScheduleItems);
-            UpdateUnsaveItems(newScheduleItems, roomDay);
+            log.InfoFormat("Closed {0:dd.MM.yy} for room (Id = {1}){2} via menu", roomDay.RelatedDate, roomDay.RoomId, thisDayOnly ? " (this day only)" : string.Empty);
+            UpdateUnsavedItems(newScheduleItems, roomDay);
         }
 
         public ICommand CloseDayThisWeekCommand { get; private set; }
@@ -132,6 +173,11 @@ namespace Registry
             {
                 return;
             }
+            log.InfoFormat("Closing {0} day of week ({1:dd.MM} - {2:dd.MM}){3}",
+                dayOfWeek,
+                selectedDate.GetWeekBegininng(),
+                selectedDate.GetWeekEnding(),
+                thisWeek ? " (this week only)" : string.Empty);
             foreach (var day in Rooms.Select(x => x.Days[dayOfWeek - 1]))
             {
                 day.CloseCommand.Execute(thisWeek);
@@ -151,7 +197,178 @@ namespace Registry
             }
             return result;
         }
-        
+
+        public ICommand CopyCommand { get; private set; }
+
+        private void Copy(object source)
+        {
+            clipboardContentType = source == null ? null : source.GetType();
+            var roomDay = source as ScheduleEditorRoomDayViewModel;
+            if (roomDay != null)
+            {
+                clipboardContent = roomDay.ScheduleItems.Select(x => x.GetScheduleItem()).ToArray();
+                var roomObject = cacheService.GetItemById<Room>(roomDay.RoomId);
+                ClipboardContentDescription = string.Format("В буфере обмена находится {0:dd.MM.yyyy}/{1}", roomDay.RelatedDate, roomObject.Name);
+                log.InfoFormat("Copied {0:dd.MM.yy}/{1} to clipboard", roomDay.RelatedDate, roomObject.Name);
+                return;
+            }
+            var dayOfWeek = source as DayOfWeekViewModel;
+            if (dayOfWeek != null)
+            {
+                clipboardContent = Rooms.SelectMany(x => x.Days[dayOfWeek.DayOfWeek - 1].ScheduleItems).Select(x => x.GetScheduleItem()).ToArray();
+                ClipboardContentDescription = string.Format("В буфере обмена находится {0:dddd dd.MM.yyyy}", dayOfWeek.Date);
+                log.InfoFormat("Copied {0:dd.MM.yy} to clipboard", dayOfWeek.Date);
+                return;
+            }
+            var room = source as ScheduleEditorRoomViewModel;
+            if (room != null)
+            {
+                clipboardContent = room.Days.SelectMany(x => x.ScheduleItems).Select(x => x.GetScheduleItem()).ToArray();
+                ClipboardContentDescription = string.Format("В буфере обмена находится {0} {1}", room.Name, room.Number);
+                log.InfoFormat("Copied room (Id = {0}) to clipboard", room.Id);
+                return;
+            }
+            log.ErrorFormat("Failed to copy part of schedule. Unexpected type of content - {0}", clipboardContentType);
+            dialogService.ShowError("Не удалось скопировать часть расписания. Тип содержимого неизвестен");
+        }
+
+        public ICommand PasteCommand { get; private set; }
+
+        private void Paste(object destination)
+        {
+            var roomDay = destination as ScheduleEditorRoomDayViewModel;
+            if (roomDay != null)
+            {
+                PasteRoomDay(roomDay);
+                return;
+            }
+            var dayOfWeek = destination as DayOfWeekViewModel;
+            if (dayOfWeek != null)
+            {
+                PasteDayOfWeek(dayOfWeek);
+                return;
+            }
+            var room = destination as ScheduleEditorRoomViewModel;
+            if (room != null)
+            {
+                PasteRoom(room);
+                return;
+            }
+            log.ErrorFormat("Failed to copy part of schedule. Unexpected type of content - {0}", clipboardContentType);
+            dialogService.ShowError("Не удалось скопировать часть расписания. Тип содержимого неизвестен");
+        }
+
+        private void PasteRoom(ScheduleEditorRoomViewModel destinationRoom)
+        {
+            log.InfoFormat("Pasted clipboard content to room (Id = {0})", destinationRoom.Id);
+            var currentWeekBeginning = selectedDate.GetWeekBegininng();
+            var newItems = clipboardContent.Select(x => x.Clone() as ScheduleItem).ToArray();
+            foreach (var newItem in newItems)
+            {
+                var isThisDayOnly = newItem.BeginDate == newItem.EndDate;
+                var currentDay = currentWeekBeginning.AddDays(newItem.DayOfWeek - 1);
+                newItem.BeginDate = currentDay;
+                if (isThisDayOnly)
+                {
+                    newItem.EndDate = currentDay;
+                }
+                newItem.DayOfWeek = currentDay.GetDayOfWeek();
+                newItem.RoomId = destinationRoom.Id;
+            }
+            var groupedItems = newItems.ToLookup(x => x.DayOfWeek);
+            foreach (var destinationRoomDay in Rooms.First(x => x.Id == destinationRoom.Id).Days)
+            {
+                var newDayItems = groupedItems[destinationRoomDay.DayOfWeek].Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)).ToList();
+                if (newDayItems.Count == 0)
+                {
+                    newDayItems.Add(new ScheduleEditorScheduleItemViewModel(new ScheduleItem
+                    {
+                        BeginDate = destinationRoomDay.RelatedDate,
+                        EndDate = DateTime.MaxValue.Date,
+                        DayOfWeek = destinationRoomDay.DayOfWeek,
+                        RecordTypeId = null,
+                        StartTime = TimeSpan.Zero,
+                        EndTime = TimeSpan.Zero,
+                        RoomId = destinationRoomDay.RoomId
+                    }, cacheService));
+                }
+                UpdateUnsavedItems(newDayItems, destinationRoomDay);
+            }
+        }
+
+        private void PasteDayOfWeek(DayOfWeekViewModel destinationDayOfWeek)
+        {
+            log.InfoFormat("Pasted clipboard content to {0:dd.MM.yy} day", destinationDayOfWeek.Date);
+            var newItems = clipboardContent.Select(x => x.Clone() as ScheduleItem).ToArray();
+            foreach (var newItem in newItems)
+            {
+                var isThisDayOnly = newItem.BeginDate == newItem.EndDate;
+                newItem.BeginDate = destinationDayOfWeek.Date;
+                if (isThisDayOnly)
+                {
+                    newItem.EndDate = destinationDayOfWeek.Date;
+                }
+                newItem.DayOfWeek = destinationDayOfWeek.DayOfWeek;
+            }
+            var groupedItems = newItems.ToLookup(x => x.RoomId);
+            foreach (var destinationRoomDay in Rooms.Select(x => x.Days[destinationDayOfWeek.DayOfWeek - 1]))
+            {
+                var newDayItems = groupedItems[destinationRoomDay.RoomId].Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)).ToList();
+                if (newDayItems.Count == 0)
+                {
+                    newDayItems.Add(new ScheduleEditorScheduleItemViewModel(new ScheduleItem
+                    {
+                        BeginDate = destinationRoomDay.RelatedDate,
+                        EndDate = DateTime.MaxValue.Date,
+                        DayOfWeek = destinationRoomDay.DayOfWeek,
+                        RecordTypeId = null,
+                        StartTime = TimeSpan.Zero,
+                        EndTime = TimeSpan.Zero,
+                        RoomId = destinationRoomDay.RoomId
+                    }, cacheService));
+                }
+                UpdateUnsavedItems(newDayItems, destinationRoomDay);
+            }
+        }
+
+        private void PasteRoomDay(ScheduleEditorRoomDayViewModel destinationRoomDay)
+        {
+            log.InfoFormat("Pasted clipboard content to day/room {0:dd.MM.yy}/{1}", destinationRoomDay.RelatedDate, destinationRoomDay.RoomId);
+            var newItems = clipboardContent.Select(x => x.Clone() as ScheduleItem).ToArray();
+            foreach (var newItem in newItems)
+            {
+                var isThisDayOnly = newItem.BeginDate == newItem.EndDate;
+                newItem.BeginDate = destinationRoomDay.RelatedDate;
+                if (isThisDayOnly)
+                {
+                    newItem.EndDate = destinationRoomDay.RelatedDate;
+                }
+                newItem.DayOfWeek = destinationRoomDay.DayOfWeek;
+                newItem.RoomId = destinationRoomDay.RoomId;
+            }
+            var newDayItems = newItems.Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)).ToList();
+            if (newDayItems.Count == 0)
+            {
+                newDayItems.Add(new ScheduleEditorScheduleItemViewModel(new ScheduleItem
+                {
+                    BeginDate = destinationRoomDay.RelatedDate,
+                    EndDate = DateTime.MaxValue.Date,
+                    DayOfWeek = destinationRoomDay.DayOfWeek,
+                    RecordTypeId = null,
+                    StartTime = TimeSpan.Zero,
+                    EndTime = TimeSpan.Zero,
+                    RoomId = destinationRoomDay.RoomId
+                }, cacheService));
+            }
+            UpdateUnsavedItems(newDayItems, destinationRoomDay);
+        }
+
+        private bool CanPaste(object destination)
+        {
+            var newContentType = destination == null ? null : destination.GetType();
+            return clipboardContentType != null && newContentType == clipboardContentType;
+        }
+
         public ICommand ChangeDateCommand { get; private set; }
 
         private void ChangeDate(int dayCount)
@@ -181,7 +398,14 @@ namespace Registry
                 Set("SelectedDate", ref selectedDate, value);
                 if (differentWeek)
                 {
-                    WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x)) { CloseDayCommand = CloseDayCommand, CloseDayThisWeekCommand = CloseDayThisWeekCommand}).ToArray();
+                    log.InfoFormat("New selected date is {0:dd.MM.yy}", value);
+                    WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x))
+                    {
+                        CloseDayCommand = CloseDayCommand,
+                        CloseDayThisWeekCommand = CloseDayThisWeekCommand,
+                        CopyCommand = CopyCommand,
+                        PasteCommand = PasteCommand
+                    }).ToArray();
                     LoadScheduleAsync();
                 }
             }
@@ -273,12 +497,14 @@ namespace Registry
         {
             if (!save)
             {
+                log.Info("Save was not performed");
                 return true;
             }
             try
             {
                 log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", unsavedItems.Count);
                 scheduleService.SaveSchedule(unsavedItems);
+                log.Info("Successfully saved");
                 return true;
             }
             catch (Exception ex)

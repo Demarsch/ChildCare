@@ -122,6 +122,10 @@ namespace Registry
             get { return state; }
             set { Set("State", ref state, value); }
         }
+
+        public ICommand CopyCommand { get; set; }
+
+        public ICommand PasteCommand { get; set; }
     }
 
     public enum RoomDayState

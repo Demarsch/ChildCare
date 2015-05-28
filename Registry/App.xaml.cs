@@ -33,6 +33,7 @@ namespace Registry
             var log = LogManager.GetLogger("Registry");
             var contextProvider = new ModelContextProvider() as IDataContextProvider;
             var personService = new PersonService(contextProvider);
+            var securityService = new SecurityService(true) as ISecurityService;
 
             var cacheService = new DataContextCacheService(contextProvider) as ICacheService;
             var environment = new Environment(contextProvider) as IEnvironment;
@@ -42,7 +43,7 @@ namespace Registry
             var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log, cacheService);
 
             var scheduleService = new ScheduleService(contextProvider, environment);
-            var scheduleViewModel = new ScheduleViewModel(scheduleService, log, cacheService, environment, dialogService);
+            var scheduleViewModel = new ScheduleViewModel(scheduleService, log, cacheService, environment, dialogService, securityService);
 
             var patientService = new PatientService(contextProvider) as IPatientService;
             var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, dialogService, patientAssignmentListViewModel);

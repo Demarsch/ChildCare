@@ -16,157 +16,166 @@
             </DataTemplate>
         </DataTemplate.Resources>
         <xctk:BusyIndicator IsBusy="{Binding IsBusy}" BusyContent="{Binding BusyStatus}" Width="1100" Height="600">
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <DataGrid ItemsSource="{Binding Rooms}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+                <TextBlock DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="5" Text="{Binding ClipboardContentDescription}" FontWeight="SemiBold" />
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <DataGrid ItemsSource="{Binding Rooms}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
                           AutoGenerateColumns="False">
-                    <i:Interaction.Behaviors>
-                        <core:DataContextPropagationBehavior />
-                    </i:Interaction.Behaviors>
-                    <DataGrid.Resources>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White" />
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-                        <Style TargetType="{x:Type ScrollViewer}">
-                            <Setter Property="core:MouseWheelHorizontalScroll.PreferHorizontalScroll" Value="{x:Null}" />
-                        </Style>
-                    </DataGrid.Resources>
-                    <DataGrid.RowHeaderStyle>
-                        <Style TargetType="{x:Type DataGridRowHeader}">
-                            <Setter Property="Content" Value="{Binding}" />
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                            <Setter Property="Background" Value="LightSkyBlue" />
-                            <Setter Property="BorderThickness" Value="1" />
-                            <Setter Property="BorderBrush" Value="Gray" />
-                            <Setter Property="ContentTemplate">
-                                <Setter.Value>
-                                    <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
-                                        <TextBlock Margin="10 5 5 5" MinWidth="180">
+                        <i:Interaction.Behaviors>
+                            <core:DataContextPropagationBehavior />
+                        </i:Interaction.Behaviors>
+                        <DataGrid.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="White" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                            <Style TargetType="{x:Type ScrollViewer}">
+                                <Setter Property="core:MouseWheelHorizontalScroll.PreferHorizontalScroll" Value="{x:Null}" />
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.RowHeaderStyle>
+                            <Style TargetType="{x:Type DataGridRowHeader}">
+                                <Setter Property="Content" Value="{Binding}" />
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
+                                <Setter Property="Background" Value="LightSkyBlue" />
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Setter Property="BorderBrush" Value="Gray" />
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomViewModel}">
+                                            <TextBlock Margin="10 5 5 5" MinWidth="180">
                                             <Run Text="{Binding Number, Mode=OneTime}" />
                                             <Run Text="{Binding Name, Mode=OneTime}" />
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="ContextMenu">
-                                <Setter.Value>
-                                    <ContextMenu>
-                                        <MenuItem Command="{Binding CloseRoomThisWeekCommand, Mode=OneTime}" CommandParameter="{Binding RoomId, Mode=OneTime}">
-                                            <MenuItem.Header>
-                                                <TextBlock>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu>
+                                            <MenuItem Command="{Binding CloseRoomThisWeekCommand, Mode=OneTime}" CommandParameter="{Binding RoomId, Mode=OneTime}">
+                                                <MenuItem.Header>
+                                                    <TextBlock>
                                                     <Run Text="Закрыть кабинет" />
                                                     <Run Text="{Binding Number, Mode=OneTime}" />
                                                     <Run Text="только на этой неделе" />
-                                                </TextBlock>
-                                            </MenuItem.Header>
-                                        </MenuItem>
-                                        <MenuItem Command="{Binding CloseRoomCommand, Mode=OneTime}" CommandParameter="{Binding RoomId, Mode=OneTime}">
-                                            <MenuItem.Header>
-                                                <TextBlock>
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                            </MenuItem>
+                                            <MenuItem Command="{Binding CloseRoomCommand, Mode=OneTime}" CommandParameter="{Binding RoomId, Mode=OneTime}">
+                                                <MenuItem.Header>
+                                                    <TextBlock>
                                                     <Run Text="Закрыть кабинет" />
                                                     <Run Text="{Binding Number, StringFormat='{}{0},', Mode=OneTime}" />
                                                     <Run Text="начиная с этой недели" />
-                                                </TextBlock>
-                                            </MenuItem.Header>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </DataGrid.RowHeaderStyle>
-                    <DataGrid.CellStyle>
-                        <Style TargetType="{x:Type DataGridCell}">
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                        </Style>
-                    </DataGrid.CellStyle>
-                    <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="{x:Type DataGridColumnHeader}">
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="ContextMenu">
-                                <Setter.Value>
-                                    <ContextMenu>
-                                        <MenuItem Command="{Binding CloseDayThisWeekCommand, Mode=OneTime}" CommandParameter="{Binding DayOfWeek}">
-                                            <MenuItem.Header>
-                                                <TextBlock>
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Command="{Binding CopyCommand, Mode=OneTime}" CommandParameter="{Binding Mode=OneTime}" Header="Копировать" />
+                                            <MenuItem Command="{Binding PasteCommand, Mode=OneTime}" CommandParameter="{Binding Mode=OneTime}" Header="Вставить" />
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.RowHeaderStyle>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="ContextMenu">
+                                    <Setter.Value>
+                                        <ContextMenu>
+                                            <MenuItem Command="{Binding CloseDayThisWeekCommand, Mode=OneTime}" CommandParameter="{Binding DayOfWeek}">
+                                                <MenuItem.Header>
+                                                    <TextBlock>
                                                     <Run Text="Закрыть" />
                                                     <Run Text="{Binding DayOfWeekProperName, Mode=OneTime}" />
                                                     <Run Text="только на этой неделе" />
-                                                </TextBlock>
-                                            </MenuItem.Header>
-                                        </MenuItem>
-                                        <MenuItem Command="{Binding CloseDayCommand, Mode=OneTime}" CommandParameter="{Binding DayOfWeek}">
-                                            <MenuItem.Header>
-                                                <TextBlock>
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                            </MenuItem>
+                                            <MenuItem Command="{Binding CloseDayCommand, Mode=OneTime}" CommandParameter="{Binding DayOfWeek}">
+                                                <MenuItem.Header>
+                                                    <TextBlock>
                                                     <Run Text="Закрыть" />
                                                     <Run Text="{Binding DayOfWeekProperName, StringFormat='{}{0},', Mode=OneTime}" />
                                                     <Run Text="начиная с этой недели" />
-                                                </TextBlock>
-                                            </MenuItem.Header>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </DataGrid.ColumnHeaderStyle>
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[0], RelativeSource={RelativeSource Self}}" MinWidth="180" MaxWidth="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Days[0]}" Background="Transparent" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[1], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Days[1]}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[2], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Days[2]}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[3], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Days[3]}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[4], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Days[4]}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[5], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Days[5]}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[6], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ContentControl Content="{Binding Days[6]}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 0">
-                    <Button Padding="3" Margin="3" VerticalAlignment="Center" Content="&lt;&lt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert -7, {x:Type system:Int32}}" />
-                    <DatePicker Margin="5" VerticalAlignment="Center" SelectedDateFormat="Long" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" Width="130" />
-                    <Button Padding="3" Margin="3" VerticalAlignment="Center" Content="&gt;&gt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert 7, {x:Type system:Int32}}" />
-                </StackPanel>
-            </Grid>
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Command="{Binding CopyCommand, Mode=OneTime}" CommandParameter="{Binding Mode=OneTime}" Header="Копировать" />
+                                            <MenuItem Command="{Binding PasteCommand, Mode=OneTime}" CommandParameter="{Binding Mode=OneTime}" Header="Вставить" />
+                                        </ContextMenu>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[0], RelativeSource={RelativeSource Self}}" MinWidth="180" MaxWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Days[0]}" Background="Transparent" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[1], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Days[1]}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[2], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Days[2]}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[3], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Days[3]}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[4], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Days[4]}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[5], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Days[5]}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{Binding DataContext.WeekDays[6], RelativeSource={RelativeSource Self}}"  MinWidth="180" MaxWidth="300">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Days[6]}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 0">
+                        <Button Padding="3" Margin="3" VerticalAlignment="Center" Content="&lt;&lt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert -7, {x:Type system:Int32}}" />
+                        <DatePicker Margin="5" VerticalAlignment="Center" SelectedDateFormat="Long" SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}" Width="130" />
+                        <Button Padding="3" Margin="3" VerticalAlignment="Center" Content="&gt;&gt;" Command="{Binding ChangeDateCommand, Mode=OneTime}" CommandParameter="{core:Convert 7, {x:Type system:Int32}}" />
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
         </xctk:BusyIndicator>
     </DataTemplate>
 </ResourceDictionary>

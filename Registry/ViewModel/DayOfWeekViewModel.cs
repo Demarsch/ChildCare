@@ -45,5 +45,9 @@ namespace Registry
         public ICommand CloseDayThisWeekCommand { get; set; }
 
         public ICommand CloseDayCommand { get; set; }
+
+        public ICommand CopyCommand { get; set; }
+
+        public ICommand PasteCommand { get; set; }
     }
 }

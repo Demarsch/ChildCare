@@ -12,7 +12,9 @@ namespace Registry
 
         private readonly IEnvironment environment;
 
-        public OccupiedTimeSlotViewModel(ScheduledAssignmentDTO assignment, IEnvironment environment)
+        private readonly ISecurityService securityService;
+
+        public OccupiedTimeSlotViewModel(ScheduledAssignmentDTO assignment, IEnvironment environment, ISecurityService securityService)
         {
             if (assignment == null)
             {
@@ -22,11 +24,16 @@ namespace Registry
             {
                 throw new ArgumentNullException("environment");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            this.securityService = securityService;
             this.environment = environment;
             this.assignment = assignment;
             CancelOrDeleteCommand = new RelayCommand(CancelOrDelete, CanCancelOrDelete);
-            UpdateCommand = new RelayCommand(Update, CanUpdate);
-            MoveCommand = new RelayCommand(Move, CanMove);
+            UpdateCommand = new RelayCommand(Update, CanUpdateOrMove);
+            MoveCommand = new RelayCommand(Move, CanUpdateOrMove);
         }
 
         public RelayCommand CancelOrDeleteCommand { get; private set; }
@@ -44,11 +51,11 @@ namespace Registry
             }
             if (IsTemporary)
             {
-                return assignment.AssignUserId == environment.CurrentUser.UserId;
+                return assignment.AssignUserId == environment.CurrentUser.UserId || securityService.HasPrivilege(Privileges.DeleteTemporaryAssignments);
             }
             else
             {
-                return true;
+                return securityService.HasPrivilege(Privileges.EditAssignments);
             }
         }
 
@@ -59,9 +66,17 @@ namespace Registry
             OnUpdateRequested();
         }
 
-        private bool CanUpdate()
+        private bool CanUpdateOrMove()
         {
-            return !IsTemporary && !IsCompleted;
+            if (IsCompleted)
+            {
+                return false;
+            }
+            if (IsTemporary)
+            {
+                return false;
+            }
+            return securityService.HasPrivilege(Privileges.EditAssignments);
         }
 
         public RelayCommand MoveCommand { get; private set; }
@@ -69,11 +84,6 @@ namespace Registry
         private void Move()
         {
             OnMoveRequested();
-        }
-
-        private bool CanMove()
-        {
-            return !IsTemporary && !IsCompleted;
         }
 
         public int Id { get { return assignment.Id; } }
