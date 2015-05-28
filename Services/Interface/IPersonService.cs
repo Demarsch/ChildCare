@@ -81,6 +81,8 @@ namespace Core
 
         int GetNationalityCountryId(int personId, DateTime date);
 
+        int GetDefaultNationalityCountryId();
+
         //ToDo: Move to other service
         Okato GetOKATOByCode(string codeOKATO);
 

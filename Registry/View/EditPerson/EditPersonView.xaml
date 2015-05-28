@@ -17,79 +17,86 @@
         </core:UniversalConverter>
     </Window.Resources>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="viewer">
-        <ScrollViewer.Style>
-            <Style TargetType="{x:Type ScrollViewer}">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
-                        <DataTrigger.EnterActions>
-                            <BeginStoryboard>
-                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
-                                    <DoubleAnimation To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </DataTrigger.EnterActions>
-                        <DataTrigger.ExitActions>
-                            <BeginStoryboard>
-                                <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
-                                    <DoubleAnimation To="650" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </DataTrigger.ExitActions>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </ScrollViewer.Style>
-        <Grid>
-            <Grid.ColumnDefinitions >
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition  Height="auto"/>
-            </Grid.RowDefinitions>
+    <StackPanel>
+        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="viewer">
+            <ScrollViewer.Style>
+                <Style TargetType="{x:Type ScrollViewer}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
+                                        <DoubleAnimation To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
+                                        <DoubleAnimation To="650" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+            <Grid>
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition  Height="auto"/>
+                </Grid.RowDefinitions>
 
-            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
-            <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
-                <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
-                <Button DockPanel.Dock="Bottom" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
-                        <TextBlock Margin="3" Text="К пациенту"/>
-                    </StackPanel>
-                </Button>
-                <ListBox Width="300" ItemsSource="{Binding Relatives}" SelectedItem="{Binding SelectedRelative}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition  Width="auto"/>
-                                    <ColumnDefinition  Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
+                <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
+                    <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
+                    <Button DockPanel.Dock="Bottom" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
+                            <TextBlock Margin="3" Text="К пациенту"/>
+                        </StackPanel>
+                    </Button>
+                    <ListBox Width="300" ItemsSource="{Binding Relatives}" SelectedItem="{Binding SelectedRelative}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition  Width="auto"/>
+                                        <ColumnDefinition  Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
-                                    <StackPanel>
-                                        <Image Source="{Binding PhotoUri}"/>
-                                        <TextBlock Height="48">Нажмите, чтобы сделать фото</TextBlock>
-                                    </StackPanel>
-                                </Border>
+                                    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Padding="3" Height="120" Width="100">
+                                        <StackPanel>
+                                            <Image Source="{Binding PhotoUri}"/>
+                                            <TextBlock Height="48">Нажмите, чтобы сделать фото</TextBlock>
+                                        </StackPanel>
+                                    </Border>
 
-                                <StackPanel Grid.Column="1" Margin="3">
-                                    <TextBlock Text="{Binding ShortName}"/>
-                                    <ComboBox Margin="2" ItemsSource="{Binding DataContext.RelativeRelations, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" 
+                                    <StackPanel Grid.Column="1" Margin="3">
+                                        <TextBlock Text="{Binding ShortName}"/>
+                                        <ComboBox Margin="2" ItemsSource="{Binding DataContext.RelativeRelations, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" 
                                               SelectedValuePath="Id" SelectedValue="{Binding RelativeRelationId}" DisplayMemberPath="Name"/>
-                                    <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}" />
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </DockPanel>
-            <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
-        </Grid>
-    </ScrollViewer>
+                                        <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+                <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
+
+            </Grid>
+        </ScrollViewer>
+        <StackPanel  Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
+            <Button Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}"/>
+            <Button Margin="3"  Height="24" Padding="3" Content="Отмена" />
+        </StackPanel>
+    </StackPanel>
 </Window>

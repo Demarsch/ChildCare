@@ -23,6 +23,7 @@ namespace DataLib
         public string Name { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public bool IsDefaultNationality { get; set; }
     
         public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
     }

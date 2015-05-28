@@ -175,6 +175,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="IsDefaultNationality" Type="bit" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
@@ -3722,6 +3723,7 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Countries" FromRole="Country" ToRole="PersonNationality" />
+          <Property Name="IsDefaultNationality" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="HealthGroup">
           <Key>
@@ -4425,6 +4427,7 @@
           <EntitySetMapping Name="Countries">
             <EntityTypeMapping TypeName="DataLib.Country">
               <MappingFragment StoreEntitySet="Countries">
+                <ScalarProperty Name="IsDefaultNationality" ColumnName="IsDefaultNationality" />
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="Name" ColumnName="Name" />

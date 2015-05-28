@@ -452,5 +452,16 @@ namespace Core
                 return db.GetData<PersonStaff>().FirstOrDefault(x => x.PersonId == personId && x.StaffId == staffId && EntityFunctions.TruncateTime(x.BeginDateTime) <= EntityFunctions.TruncateTime(end) && EntityFunctions.TruncateTime(x.EndDateTime) >= EntityFunctions.TruncateTime(begin));
             }
         }
+
+
+        public int GetDefaultNationalityCountryId()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var defaultNationality = db.GetData<Country>().FirstOrDefault(x => x.IsDefaultNationality);
+                if (defaultNationality == null) return 0;
+                return defaultNationality.Id;
+            }
+        }
     }
 }
