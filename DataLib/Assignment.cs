@@ -18,7 +18,7 @@ namespace DataLib
         public int RecordTypeId { get; set; }
         public int PersonId { get; set; }
         public System.DateTime AssignDateTime { get; set; }
-        public Nullable<int> Duration { get; set; }
+        public int Duration { get; set; }
         public int AssignUserId { get; set; }
         public int RoomId { get; set; }
         public int FinancingSourceId { get; set; }

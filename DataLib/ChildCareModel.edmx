@@ -2198,7 +2198,7 @@
           <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
           <Property Name="PersonId" Type="Int32" Nullable="false" />
           <Property Name="AssignDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Duration" Type="Int32" />
+          <Property Name="Duration" Type="Int32" Nullable="false" />
           <Property Name="AssignUserId" Type="Int32" Nullable="false" />
           <Property Name="RoomId" Type="Int32" Nullable="false" />
           <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />

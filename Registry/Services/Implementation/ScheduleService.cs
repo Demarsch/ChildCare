@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Core;
@@ -47,7 +48,7 @@ namespace Registry
                     {
                         Id = x.Id,
                         StartTime = x.AssignDateTime,
-                        Duration = x.Duration ?? x.RecordType.Duration,
+                        Duration = x.Duration,
                         IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
                         RecordTypeId = x.RecordTypeId,
                         RoomId = x.RoomId,
@@ -212,17 +213,47 @@ namespace Registry
                 }
                 else
                 {
-                    dataContext.Update<Assignment>(assignment);
+                    dataContext.Update(assignment);
                 }
+                CheckForAssignmentConflicts(dataContext, assignment);
                 dataContext.Save();
             }
+        }
+
+        internal void CheckForAssignmentConflicts(IDataContext dataContext, Assignment newAssignment)
+        {
+            var startTime = newAssignment.AssignDateTime;
+            var endTime = newAssignment.AssignDateTime.AddMinutes(newAssignment.Duration);
+            var conflictedAssignment = dataContext.GetData<Assignment>()
+                .Where(x => !x.CancelUserId.HasValue && x.Id != newAssignment.Id && (x.RoomId == newAssignment.RoomId || x.PersonId == newAssignment.PersonId))
+                .Select(x => new 
+                { 
+                    Room = x.Room.Name + " №" + x.Room.Number, 
+                    Patient = x.Person.ShortName,
+                    IsSamePatient = x.PersonId == newAssignment.PersonId, 
+                    StartTime = x.AssignDateTime, 
+                    EndTime = DbFunctions.AddMinutes(x.AssignDateTime, x.Duration) 
+                })
+                .FirstOrDefault(x => (x.StartTime >= startTime && x.StartTime < endTime)
+                                     || (x.EndTime > startTime && x.EndTime <= endTime)
+                                     || (startTime >= x.StartTime && startTime < x.EndTime)
+                                     || (endTime > x.StartTime && endTime < x.EndTime));
+            if (conflictedAssignment == null)
+            {
+                return;
+            }
+            if (conflictedAssignment.IsSamePatient)
+            {
+                throw new SamePatientAssignmentConflictException(conflictedAssignment.Room, conflictedAssignment.StartTime, conflictedAssignment.Patient);
+            }
+            throw new AssignmentConflictException(conflictedAssignment.Room, conflictedAssignment.StartTime, conflictedAssignment.Patient);
         }
 
         public void DeleteAssignment(int assignmentId)
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
-                dataContext.Remove<Assignment>(new Assignment { Id = assignmentId });
+                dataContext.Remove(new Assignment { Id = assignmentId });
                 dataContext.Save();
             }
         }
@@ -257,6 +288,7 @@ namespace Registry
                 assignment.AssignDateTime = newTime;
                 assignment.Duration = newDuration;
                 assignment.RoomId = newRoomId;
+                CheckForAssignmentConflicts(dataContext, assignment);
                 dataContext.Save();
             }
         }

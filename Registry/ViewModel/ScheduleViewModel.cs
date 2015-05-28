@@ -245,7 +245,7 @@ namespace Registry
         {
             try
             {
-                log.InfoFormat("Trying to move assignment (Id = {0}) from {1:dd.MM HH:mm} (Room Id = {2}) to {3:dd.MM HH:mm} (Room Id = {4}) ", 
+                log.InfoFormat("Trying to move assignment (Id = {0}) from {1:dd.MM HH:mm} (Room Id = {2}) to {3:dd.MM HH:mm} (Room Id = {4}) ",
                     whatToMove.Id,
                     whatToMove.StartTime,
                     whatToMove.RoomId,
@@ -268,6 +268,10 @@ namespace Registry
                 log.Info("Movement completed");
                 ClearScheduleGrid();
                 BuildScheduleGrid();
+            }
+            catch (AssignmentConflictException ex)
+            {
+                dialogService.ShowError(ex.Message);
             }
             catch (Exception ex)
             {
@@ -307,6 +311,11 @@ namespace Registry
                 scheduleService.SaveAssignment(assignment);
                 log.InfoFormat("New assignment (Id = {0}) is saved as temporary", assignment.Id);
             }
+            catch (AssignmentConflictException ex)
+            {
+                dialogService.ShowError(ex.Message);
+                return;
+            }
             catch (Exception ex)
             {
                 log.Error("Failed to save new assignment", ex);
@@ -322,7 +331,7 @@ namespace Registry
                 RecordTypeId = assignment.RecordTypeId,
                 RoomId = assignment.RoomId,
                 StartTime = assignment.AssignDateTime,
-                Duration = assignment.Duration.Value,
+                Duration = assignment.Duration,
                 IsTemporary = true,
                 AssignUserId = assignment.AssignUserId,
                 Note = assignment.Note,

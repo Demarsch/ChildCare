@@ -3,7 +3,7 @@
     [RecordTypeId]      INT            NOT NULL,
     [PersonId]          INT            NOT NULL,
     [AssignDateTime]    DATETIME       NOT NULL,
-    [Duration]          INT            NULL,
+    [Duration]          INT            NOT NULL,
     [AssignUserId]      INT            NOT NULL,
     [RoomId]            INT            NOT NULL,
     [FinancingSourceId] INT            NOT NULL,
@@ -22,6 +22,8 @@
     CONSTRAINT [FK_Assignments_Users] FOREIGN KEY ([AssignUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Users1] FOREIGN KEY ([CancelUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 
