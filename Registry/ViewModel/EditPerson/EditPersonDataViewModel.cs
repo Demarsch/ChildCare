@@ -38,7 +38,7 @@ namespace Registry
             this.dialogService = dialogService;
             this.service = service;
             this.log = log;
-            commonPersonData = new EditPersonCommonDataViewModel(null, service);
+            commonPersonData = new EditPersonCommonDataViewModel(null, service, dialogService);
             CommonPersonData.PropertyChanged += CommonPersonData_PropertyChanged;
             SaveChangesCommand = new RelayCommand(SaveChanges);
             EditInsuranceCommand = new RelayCommand(EditInsurance);

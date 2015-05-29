@@ -108,6 +108,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.1.1.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -150,9 +151,19 @@
     <Compile Include="Attached behaviors\ScrollSyncrhonizer.cs" />
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
+    <Compile Include="CmdBehavior\ActionExecutionStrategy.cs" />
+    <Compile Include="CmdBehavior\BehaviorBinding.cs" />
+    <Compile Include="CmdBehavior\BehaviorBindingCollection.cs" />
+    <Compile Include="CmdBehavior\CommandBehaviorBinding.cs" />
+    <Compile Include="CmdBehavior\CommandBehaviorCollection.cs" />
+    <Compile Include="CmdBehavior\CommandExecutionStrategy.cs" />
+    <Compile Include="CmdBehavior\EventHandlerGenerator.cs" />
+    <Compile Include="CmdBehavior\IExecutionStrategy.cs" />
     <Compile Include="Converters\DiagnosticsConverter.cs" />
     <Compile Include="Converters\UniversalMultiBooleanConverter.cs" />
     <Compile Include="Converters\UniversalConverter.cs" />
+    <Compile Include="Interfaces\IDialogService.cs" />
+    <Compile Include="Interfaces\IDialogViewModel.cs" />
     <Compile Include="Misc\CheckedListItem.cs" />
     <Compile Include="Misc\Configuration.cs" />
     <Compile Include="Misc\ConvertMarkupExtension.cs" />
@@ -180,9 +191,7 @@
     <Compile Include="ViewModel\BasicViewModel.cs" />
     <Compile Include="ViewModel\MediaInformation.cs" />
     <Compile Include="ViewModel\PhotoViewModel.cs" />
-    <Compile Include="View\PhotoView.xaml.cs">
-      <DependentUpon>PhotoView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModel\TakeSnapshotCommand.cs" />
     <Compile Include="View\WebcamDevice.xaml.cs">
       <DependentUpon>WebcamDevice.xaml</DependentUpon>
     </Compile>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StuffLib
 {
-    class MediaInformation
+    public class MediaInformation
     {
         public string DisplayName { get; set; }
         public string UsbId { get; set; }

@@ -4,6 +4,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/StuffLib;component/View/PhotoView.xaml" />
                 <ResourceDictionary Source="View/PersonView.xaml" />
                 <ResourceDictionary Source="View/EditPerson/PersonAddressesView.xaml" />
                 <ResourceDictionary Source="View/EditPerson/PersonIdentityDocumentsView.xaml" />

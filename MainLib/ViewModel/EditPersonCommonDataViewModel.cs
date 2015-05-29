@@ -1,12 +1,15 @@
 ﻿using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using StuffLib;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MainLib
 {
@@ -16,6 +19,7 @@ namespace MainLib
 
         private readonly IPersonService service;
 
+        private readonly IDialogService dialogService;
 
         private PersonName personName;
 
@@ -23,16 +27,20 @@ namespace MainLib
 
         #region Constructors
 
-        public EditPersonCommonDataViewModel(Person person, IPersonService service)
+        public EditPersonCommonDataViewModel(Person person, IPersonService service, IDialogService dialogService)
         {
             if (service == null)
                 throw new ArgumentNullException("service");
+            if (dialogService == null)
+                throw new ArgumentNullException("dialogService");
 
+            this.dialogService = dialogService;
             this.service = service;
             this.person = person;
 
             ChangeNameReasons = new ObservableCollection<ChangeNameReason>(service.GetActualChangeNameReasons());
             Genders = new ObservableCollection<Gender>(service.GetGenders());
+            TakePhotoCommand = new RelayCommand(TakePhoto);
         }
 
         #endregion
@@ -208,6 +216,22 @@ namespace MainLib
         {
             //ToDo: Maybe get current values of LastName, FirstName, MiddleName
             get { return !IsEmpty ? person.FullName : string.Empty; }
+        }
+
+        #endregion
+
+        #region Commands
+
+        public ICommand TakePhotoCommand { get; set; }
+        private PhotoViewModel photoViewModel;
+        private void TakePhoto()
+        {
+            if (photoViewModel == null)
+                photoViewModel = new PhotoViewModel();
+            var dialogResult = dialogService.ShowDialog(photoViewModel);
+            //if (dialogResult != true)
+            //    photoViewModel = new PersonInsuranceDocumentsViewModel(Id, log, service, dialogService);
+            //Insurances = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
         }
 
         #endregion

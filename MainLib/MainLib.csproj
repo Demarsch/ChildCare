@@ -114,8 +114,6 @@
     <Compile Include="Implementations\Environment.cs" />
     <Compile Include="Implementations\TimeInterval.cs" />
     <Compile Include="Implementations\WindowDialogService.cs" />
-    <Compile Include="Interfaces\IDialogViewModel.cs" />
-    <Compile Include="Interfaces\IDialogService.cs" />
     <Compile Include="Interfaces\IEnvironment.cs" />
     <Compile Include="Interfaces\ITimeInterval.cs" />
     <Compile Include="Misc\TimeIntervalCollection.cs" />
