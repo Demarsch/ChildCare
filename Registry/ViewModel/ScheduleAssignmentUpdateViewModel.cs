@@ -17,7 +17,7 @@ namespace Registry
         public ScheduleAssignmentUpdateViewModel(IEnumerable<FinacingSource> financingSources, bool runCountdown)
         {
             FinacingSources = financingSources;
-            CloseCommand = new RelayCommand<bool>(Close);
+            CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
             if (runCountdown)
             {
                 timer = new DispatcherTimer(TimeSpan.FromMinutes(10.0), DispatcherPriority.ApplicationIdle, (sender, args) => OnCloseRequested(new ReturnEventArgs<bool>(false)),
@@ -49,12 +49,12 @@ namespace Registry
 
         public string CancelButtonText { get { return "Отменить"; } }
 
-        public RelayCommand<bool> CloseCommand { get; private set; }
+        public RelayCommand<object> CloseCommand { get; private set; }
 
-        private void Close(bool validate)
+        private void Close(bool? validate)
         {
             saveWasRequested = true;
-            if (validate)
+            if (validate == true)
             {
                 RaisePropertyChanged(string.Empty);
                 if (invalidProperties.Count == 0)
@@ -66,12 +66,6 @@ namespace Registry
             {
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
             }
-        }
-
-        public bool CanBeClosed()
-        {
-            //TODO: put logic here if you want to respond to window close event and save your changes
-            return true;
         }
 
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;

@@ -23,7 +23,7 @@
                  ItemsSource="{Binding Persons}" >
                 <ListBox.ItemTemplate>
                     <HierarchicalDataTemplate>
-                        <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked}"/>
+                        <CheckBox Content="{Binding Name, Mode=OneTime}" IsChecked="{Binding IsChecked}"/>
                     </HierarchicalDataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>          

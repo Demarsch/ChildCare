@@ -39,7 +39,7 @@ namespace Registry
             ListSocialStatusTypes = new ObservableCollection<SocialStatusType>(service.GetSocialStatusTypes());
             AddPersonSocialStatusCommand = new RelayCommand(AddPersonSocialStatus);
             DeletePersonSocialStatusCommand = new RelayCommand<PersonSocialStatusViewModel>(DeletePersonSocialStatus);
-            CloseCommand = new RelayCommand<bool>(Close);
+            CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
         }
 
         #endregion
@@ -126,12 +126,12 @@ namespace Registry
 
         private readonly HashSet<string> invalidProperties = new HashSet<string>();
 
-        public RelayCommand<bool> CloseCommand { get; set; }
+        public RelayCommand<object> CloseCommand { get; set; }
 
-        private void Close(bool validate)
+        private void Close(bool? validate)
         {
             saveWasRequested = true;
-            if (validate)
+            if (validate == true)
             {
                 var notEroors = true;
                 foreach (var personSocialStatusesViewModel in PersonSocialStatuses)
@@ -149,13 +149,7 @@ namespace Registry
             }
         }
 
-        public bool CanBeClosed()
-        {
-            //TODO: put logic here if you want to respond to window close event and save your changes
-            return true;
-        }
-
-        public event EventHandler<System.Windows.Navigation.ReturnEventArgs<bool>> CloseRequested;
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
 
         protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
         {

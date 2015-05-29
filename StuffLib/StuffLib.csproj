@@ -172,6 +172,7 @@
     <Compile Include="Misc\IDataContext.cs" />
     <Compile Include="Misc\IDataContextProvider.cs" />
     <Compile Include="Misc\EntityContext.cs" />
+    <Compile Include="Misc\NullableBooleanExtension.cs" />
     <Compile Include="Misc\ObjectCache.cs" />
     <Compile Include="Misc\ObservalbeCollectionEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

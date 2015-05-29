@@ -12,10 +12,8 @@ namespace Core
         string ConfirmButtonText { get; }
 
         string CancelButtonText { get; }
-
-        RelayCommand<bool> CloseCommand { get; }
-
-        bool CanBeClosed();
+        //The real value should be of type bool? but this type has problems with boxing/unboxing
+        RelayCommand<object> CloseCommand { get; }
 
         event EventHandler<ReturnEventArgs<bool>> CloseRequested;
     }

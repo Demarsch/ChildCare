@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 namespace Core
 {
@@ -38,19 +39,20 @@ namespace Core
         protected override void OnClosing(CancelEventArgs e)
         {
             var viewModel = DataContext as IDialogViewModel;
-            if (viewModel != null)
+            if (viewModel != null && !viewModelRequestedClose)
             {
-                e.Cancel = !viewModelRequestedClose && !viewModel.CanBeClosed();
-                if (!e.Cancel)
-                {
-                    if (DialogResult == null)
-                    {
-                        DialogResult = true;
-                    }
-                    viewModel.CloseRequested -= OnCloseRequested;
-                }
+                e.Cancel = true;
+                new DispatcherTimer(TimeSpan.FromMilliseconds(100.0), DispatcherPriority.ApplicationIdle, CallViewModelClose, Dispatcher);
             }
             base.OnClosing(e);
+        }
+
+        private void CallViewModelClose(object sender, EventArgs eventArgs)
+        {
+            var dispatcherTimer = (sender as DispatcherTimer);
+            dispatcherTimer.Tick -= CallViewModelClose;
+            dispatcherTimer.Stop();
+            (DataContext as IDialogViewModel).CloseCommand.Execute(null);
         }
     }
 }

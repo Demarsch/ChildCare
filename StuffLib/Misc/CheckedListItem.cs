@@ -1,15 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GalaSoft.MvvmLight;
 
 namespace Core
 {
-    public class CheckedListItem
+    public class CheckedListItem : ObservableObject
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
-        public bool IsChecked { get; set; }
+
+        private bool isChecked;
+
+        public bool IsChecked
+        {
+            get { return isChecked; }
+            set { Set("IsChecked", ref isChecked, value); }
+        }
     }
 }

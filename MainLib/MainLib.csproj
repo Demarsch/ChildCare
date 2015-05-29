@@ -117,6 +117,7 @@
     <Compile Include="Interfaces\IEnvironment.cs" />
     <Compile Include="Interfaces\ITimeInterval.cs" />
     <Compile Include="Misc\TimeIntervalCollection.cs" />
+    <Compile Include="NullableWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

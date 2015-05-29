@@ -23,7 +23,7 @@ namespace Registry
             AllowedRecordTypes = new ObservalbeCollectionEx<ScheduleEditorEditRecordTypeViewModel>();
             AllowedRecordTypes.CollectionChanged += OnAllowedRecordTypesChanged;
             AssignableRecordTypes = cacheService.GetItems<RecordType>().Where(x => x.Assignable.GetValueOrDefault()).ToArray();
-            CloseCommand = new RelayCommand<bool>(Close);
+            CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
             AddRecordTypeCommand = new RelayCommand(AddRecordType, CanAddRecordType);
             ClearRecordTypesCommand = new RelayCommand(ClearRecordTypes);
             RemoveRecordTypeCommand = new RelayCommand<ScheduleEditorEditRecordTypeViewModel>(RemoveRecordType);
@@ -151,11 +151,11 @@ namespace Registry
             get { return "Отмена"; }
         }
 
-        public RelayCommand<bool> CloseCommand { get; private set; }
+        public RelayCommand<object> CloseCommand { get; private set; }
         
-        private void Close(bool validate)
+        private void Close(bool? validate)
         {
-            if (validate)
+            if (validate == true)
             {
                 if (AllowedRecordTypes.Any(x => !string.IsNullOrEmpty(x.Error)))
                 {
@@ -196,12 +196,6 @@ namespace Registry
         private void RemoveRecordType(ScheduleEditorEditRecordTypeViewModel recordType)
         {
             AllowedRecordTypes.Remove(recordType);
-        }
-
-        public bool CanBeClosed()
-        {
-            //TODO: put logic here if you want to respond to window close event and save your changes
-            return true;
         }
 
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;

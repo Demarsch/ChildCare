@@ -37,7 +37,7 @@ namespace Commission
             this.log = log;
             this.commissionBegin = commissionBegin;
             this.commissionEnd = commissionEnd;
-            this.CloseCommand = new RelayCommand<bool>(Close);
+            this.CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
 
             Staffs = new ObservableCollection<Staff>(personService.GetAllStaffs());
         }             
@@ -85,11 +85,11 @@ namespace Commission
             get { return "Отмена"; }
         }
         
-        public RelayCommand<bool> CloseCommand { get; set; }
+        public RelayCommand<object> CloseCommand { get; set; }
 
-        private void Close(bool validate)
+        private void Close(bool? validate)
         {
-            if (validate)
+            if (validate == true)
             {
                 foreach (var person in Persons.Where(x => x.IsChecked))
                     resultPersonStaffs.Add(personService.GetPersonStaff(person.Id, selectedStaff.Id, commissionBegin, commissionEnd));
@@ -100,13 +100,7 @@ namespace Commission
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
         }
 
-        public bool CanBeClosed()
-        {
-            //TODO: put logic here if you want to respond to window close event and save your changes
-            return true;
-        }
-
-        public event EventHandler<System.Windows.Navigation.ReturnEventArgs<bool>> CloseRequested;
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
 
         protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
         {

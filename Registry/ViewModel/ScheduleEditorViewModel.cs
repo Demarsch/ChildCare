@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Navigation;
@@ -49,7 +50,7 @@ namespace Registry
             this.log = log;
             this.scheduleService = scheduleService;
             unsavedItems = new HashSet<ScheduleItem>();
-            CloseCommand = new RelayCommand<bool>(Close);
+            CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
             ChangeDateCommand = new RelayCommand<int>(ChangeDate);
             CloseDayThisWeekCommand = new RelayCommand<int>(CloseDayThisWeek, CanCloseDayThisWeek);
             CloseDayCommand = new RelayCommand<int>(CloseDay, CanCloseDay);
@@ -96,14 +97,14 @@ namespace Registry
                     UpdateUnsavedItems(newItems, roomDay);
                     if (newItems.Length == 1 && newItems[0].RecordTypeId == 0)
                     {
-                        log.InfoFormat("Manually closed {0:dd.MM.yy}{1} for room (Id = {2})", 
+                        log.InfoFormat("Manually closed {0:dd.MM.yy}{1} for room (Id = {2})",
                             roomDay.RelatedDate,
-                            roomDay.IsThisDayOnly ? " (this day only)" : string.Empty, 
+                            roomDay.IsThisDayOnly ? " (this day only)" : string.Empty,
                             roomDay.RoomId);
                     }
                     log.InfoFormat("Updated {0:dd.MM.yy}{1} with {2} schedule items for room (Id = {3})",
                         roomDay.RelatedDate,
-                        roomDay.IsThisDayOnly ? " (this day only)" : string.Empty, 
+                        roomDay.IsThisDayOnly ? " (this day only)" : string.Empty,
                         newItems.Length,
                         roomDay.RoomId);
                 }
@@ -472,49 +473,52 @@ namespace Registry
 
         public string CancelButtonText { get { return "Отменить"; } }
 
-        public RelayCommand<bool> CloseCommand { get; private set; }
+        public RelayCommand<object> CloseCommand { get; private set; }
 
-        private void Close(bool save)
+        private bool closingIsInProgress;
+
+        private void Close(bool? save)
         {
-            save = save && unsavedItems.Count > 0;
-            if (TryClose(save))
+            if (closingIsInProgress)
             {
-                OnCloseRequested(new ReturnEventArgs<bool>(save));
+                return;
             }
-        }
-
-        public bool CanBeClosed()
-        {
-            if (unsavedItems.Count == 0)
+            closingIsInProgress = true;
+            //That means that window was closed manually and we need to check if there is anything to save
+            if (save == null)
             {
-                return true;
+                save = unsavedItems.Count != 0 && (dialogService.AskUser("Имеются несохраненные изменения в расписании. Сохранить их?") ?? false);
             }
-            var userPreferedToSaveChanges = dialogService.AskUser("Имеются несохраненные изменения в расписании. Сохранить их?") ?? false;
-            return !userPreferedToSaveChanges || TryClose(true);
-        }
-
-        private bool TryClose(bool save)
-        {
-            if (!save)
+            var reallySave = save.Value && unsavedItems.Count > 0;
+            if (!reallySave)
             {
                 log.Info("Save was not performed");
-                return true;
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+                return;
             }
-            try
-            {
-                log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", unsavedItems.Count);
-                scheduleService.SaveSchedule(unsavedItems);
-                log.Info("Successfully saved");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Failed to save schedule changes", ex);
-                dialogService.ShowError(
-                    string.Format("Не удалось сохранить изменения в расписании. Причина - {0}{1}Попробуйте еще раз или отмените изменения. Если ошибка повторится, обратитесь в службу поддержки",
-                        ex.Message, Environment.NewLine));
-                return false;
-            }
+            log.InfoFormat("Trying to save schedule changes (Schedule items count = {0})...", unsavedItems.Count);
+            BusyStatus = "Сохранение расписания";
+            var saveTask = Task.Delay(TimeSpan.FromSeconds(0.5)).ContinueWith(x => scheduleService.SaveSchedule(unsavedItems));
+            saveTask.ContinueWith(x => SaveSucceeded(), CancellationToken.None, TaskContinuationOptions.NotOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+            saveTask.ContinueWith(SaveFailed, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private void SaveFailed(Task sourceTask)
+        {
+            BusyStatus = null;
+            closingIsInProgress = false;
+            var innerException = sourceTask.Exception.InnerExceptions[0];
+            log.Error("Failed to save schedule changes", innerException);
+            dialogService.ShowError(
+                string.Format("Не удалось сохранить изменения в расписании. Причина - {0}{1}Попробуйте еще раз или отмените изменения. Если ошибка повторится, обратитесь в службу поддержки",
+                    innerException.Message, Environment.NewLine));
+        }
+
+        private void SaveSucceeded()
+        {
+            log.Info("Save succeeded");
+            BusyStatus = null;
+            OnCloseRequested(new ReturnEventArgs<bool>(true));
         }
 
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
