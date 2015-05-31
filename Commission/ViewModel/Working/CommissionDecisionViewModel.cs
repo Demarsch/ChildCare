@@ -43,9 +43,8 @@ namespace Commission
             this.log = log;
 
             this.currentUser = userService.GetCurrentUser(userSystemInfoService);
-            this.SelectMembersToPreviousStageCommand = new RelayCommand(SelectMembersToPreviousStage);
-            this.SelectMembersToNextStageCommand = new RelayCommand(SelectMembersToNextStage);
-            this.SaveDecisionCommand = new RelayCommand(SaveDecision);
+            this.RequestMembersCommand = new RelayCommand(RequestMembers);
+            this.SaveDecisionCommand = new RelayCommand(SaveCommissionDecision);
         }
 
         public void Load(int commissionProtocolId)
@@ -78,14 +77,13 @@ namespace Commission
             CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>();
             var commissionDecisions = commissionService.GetCommissionDecisionsByProtocolId(commissionProtocolId);
             foreach (var item in commissionDecisions)            
-                CommissionDecisions.Add(ConvertToCommisionDecisionDTO(item));
+                CommissionDecisions.Add(ConvertToCommissionDecisionDTO(item));
 
             // ?????????????????
-            AllowSave = commissionDecisions.Where(x => x.CommissionStage < myLastCommissionDecision.CommissionStage).All(x => x.DecisionId.HasValue)
-                        && !commissionDecisions.Any(x => x.CommissionStage > myLastCommissionDecision.CommissionStage && x.DecisionId.HasValue);
+            AllowSave = !commissionDecisions.Any(x => x.CommissionStage > myLastCommissionDecision.CommissionStage && x.DecisionId.HasValue);
         }
 
-        private CommissionDecisionDTO ConvertToCommisionDecisionDTO(CommissionDecision item)
+        private CommissionDecisionDTO ConvertToCommissionDecisionDTO(CommissionDecision item)
         {
             return new CommissionDecisionDTO() {
                                             Id = item.Id,
@@ -168,32 +166,18 @@ namespace Commission
             set { Set("AllowSave", ref allowSave, value); }
         }
 
-        private string previousMembers;
-        public string PreviousMembers
+        private string requestedMembersLabel;
+        public string RequestedMembersLabel
         {
-            get { return previousMembers; }
-            set { Set("PreviousMembers", ref previousMembers, value); }
+            get { return requestedMembersLabel; }
+            set { Set("RequestedMembersLabel", ref requestedMembersLabel, value); }
         }
 
-        private string nextMembers;
-        public string NextMembers
+        private RelayCommand requestMembersCommand;
+        public RelayCommand RequestMembersCommand
         {
-            get { return nextMembers; }
-            set { Set("NextMembers", ref nextMembers, value); }
-        }
-
-        private RelayCommand selectMembersToPreviousStageCommand;
-        public RelayCommand SelectMembersToPreviousStageCommand
-        {
-            get { return selectMembersToPreviousStageCommand; }
-            set { Set("SelectMembersToPreviousStageCommand", ref selectMembersToPreviousStageCommand, value); }
-        }
-
-        private RelayCommand selectMembersToNextStageCommand;
-        public RelayCommand SelectMembersToNextStageCommand
-        {
-            get { return selectMembersToNextStageCommand; }
-            set { Set("SelectMembersToNextStageCommand", ref selectMembersToNextStageCommand, value); }
+            get { return requestMembersCommand; }
+            set { Set("RequestMembersCommand", ref requestMembersCommand, value); }
         }  
 
         private RelayCommand saveDecisionCommand;
@@ -203,45 +187,20 @@ namespace Commission
             set { Set("SaveDecisionCommand", ref saveDecisionCommand, value); }
         }
 
-        private void SelectMembersToPreviousStage()
+        private void RequestMembers()        
         {
-            SelectCommissionMembersViewModel selectedMembers = GetSelectedCommissionMembers();
-            if (selectedMembers == null || !selectedMembers.resultPersonStaffs.Any()) return;
-            
-            foreach (var commissionDecisionId in commissionService.GetCommissionDecisionsByProtocolId(this.commissionProtocolId).Where(x => x.CommissionStage >= myLastCommissionDecision.CommissionStage).Select(x => x.Id))
+            SelectCommissionMembersViewModel requestedMembers = GetRequestedCommissionMembers();
+            if (requestedMembers == null || !requestedMembers.resultPersonStaffs.Any()) return;
+
+            foreach (var personStaff in requestedMembers.resultPersonStaffs)
             {
-                CommissionDecision commissionDecision = commissionService.GetCommissionDecisionById(commissionDecisionId);
-                commissionDecision.CommissionStage = commissionDecision.CommissionStage + 1;
-                string message = string.Empty;
-                if (commissionService.Save(commissionDecision, out message) == 0)
-                {
-                    dialogService.ShowError("При сохранении возникла ошибка: " + message);
-                    log.Error(string.Format("Failed to update CommissionStage for CommissionDecision." + message));
-                    return;
-                }
-                CommissionDecisions.First(x => x.Id == commissionDecisionId).Stage = commissionDecision.CommissionStage;
-                CommissionDecisions.First(x => x.Id == commissionDecisionId).StageText = "Этап " + commissionDecision.CommissionStage + " - ";
+                var commissionDecisionId = CreateCommissionDecision(personStaff, myLastCommissionDecision.CommissionStage);
+                CommissionDecisions.Add(ConvertToCommissionDecisionDTO(commissionService.GetCommissionDecisionById(commissionDecisionId)));
+                CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>(CommissionDecisions.OrderBy(x => x.Stage));
             }
 
-            foreach (var personStaff in selectedMembers.resultPersonStaffs)
-            {
-                var commissionDecisionId = CreateCommissionDecision(personStaff, myLastCommissionDecision.CommissionStage);
-                CommissionDecisions.Add(ConvertToCommisionDecisionDTO(commissionService.GetCommissionDecisionById(commissionDecisionId)));
-                CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>(CommissionDecisions.OrderBy(x => x.Stage));
-            }            
-        }
-                    
-        private void SelectMembersToNextStage()
-        {
-            SelectCommissionMembersViewModel selectedMembers = GetSelectedCommissionMembers();
-            if (selectedMembers == null || !selectedMembers.resultPersonStaffs.Any()) return;
-
-            foreach (var personStaff in GetSelectedCommissionMembers().resultPersonStaffs)
-            {
-                var commissionDecisionId = CreateCommissionDecision(personStaff, myLastCommissionDecision.CommissionStage);
-                CommissionDecisions.Add(ConvertToCommisionDecisionDTO(commissionService.GetCommissionDecisionById(commissionDecisionId)));
-                CommissionDecisions = new ObservableCollection<CommissionDecisionDTO>(CommissionDecisions.OrderBy(x => x.Stage));
-            }  
+            RequestedMembersLabel += (string.IsNullOrWhiteSpace(RequestedMembersLabel) ? "Запрос отправлен: " : "; ") 
+                                        + requestedMembers.resultPersonStaffs.Select(x => personService.GetPersonById(x.PersonId).ShortName).Aggregate((x, y) => x + "; " + y);
         }
 
         private int CreateCommissionDecision(PersonStaff personStaff, int stage)
@@ -269,7 +228,7 @@ namespace Commission
             commissionDecision.DecisionId = (int?)null;
             commissionDecision.DecisionInDateTime = (DateTime?)null;
             commissionDecision.Comment = string.Empty;
-            commissionDecision.CommissionStage = (stage == 0 ? 1 : stage);
+            commissionDecision.CommissionStage = stage;
             commissionDecision.InitiatorMemberId = myLastCommissionDecision.CommissionMemberId;
             commissionDecision.InDateTime = DateTime.Now;
             message = string.Empty;
@@ -283,8 +242,8 @@ namespace Commission
                 return 0;
             }
         }
-          
-        private SelectCommissionMembersViewModel GetSelectedCommissionMembers()
+
+        private SelectCommissionMembersViewModel GetRequestedCommissionMembers()
         {
             if (commissionProtocolId == 0) return null;
             var selectMembersModelView = new SelectCommissionMembersViewModel(commissionProtocolBeginDateTime, commissionProtocolEndDateTime, commissionService, personService, dialogService, log);
@@ -294,7 +253,7 @@ namespace Commission
             return selectMembersModelView;
         }
 
-        private void SaveDecision()
+        private void SaveCommissionDecision()
         {
             CommissionDecision commissionDecision = commissionService.GetCommissionDecisionById(myLastCommissionDecision.Id);
             commissionDecision.DecisionId = selectedSpecificDecision.Id;
