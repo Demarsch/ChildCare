@@ -77,6 +77,13 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
+                    <CheckBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="195" Margin="5 0 0 0"
+                              Visibility="{Binding CurrentPatientAssignmentsViewModel.CanShowCurrentPatientAssignments, Converter={StaticResource BooleanToVisibilityConverter}}"
+                              IsChecked="{Binding CurrentPatientAssignmentsViewModel.ShowCurrentPatientAssignments, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Stretch">
+                        <TextBlock Text="Отображать назначения выбранного пациента" TextWrapping="Wrap" />
+                    </CheckBox>
+                    <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Text="Нет назначений" Foreground="DimGray" FontStyle="Italic" Margin="25 0 0 0" FontWeight="SemiBold" 
+                               Visibility="{Binding CurrentPatientAssignmentsViewModel.ShowThatCurrentPatientHasNoAssignments, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <!--Time tickers-->
                     <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" core:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll">
                         <ListBox IsHitTestVisible="False" ItemsSource="{Binding TimeTickers}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent"

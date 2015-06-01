@@ -31,7 +31,7 @@ namespace Registry
 
         private readonly ISecurityService securityService;
 
-        public ScheduleViewModel(IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment, IDialogService dialogService, ISecurityService securityService)
+        public ScheduleViewModel(CurrentPatientAssignmentsViewModel currentPatientAssignmentsViewModel, IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment, IDialogService dialogService, ISecurityService securityService)
         {
             if (scheduleService == null)
             {
@@ -57,6 +57,11 @@ namespace Registry
             {
                 throw new ArgumentNullException("securityService");
             }
+            if (currentPatientAssignmentsViewModel == null)
+            {
+                throw new ArgumentNullException("currentPatientAssignmentsViewModel");
+            }
+            CurrentPatientAssignmentsViewModel = currentPatientAssignmentsViewModel;
             this.securityService = securityService;
             this.dialogService = dialogService;
             this.environment = environment;
@@ -76,6 +81,8 @@ namespace Registry
             LoadDataSources();
             LoadAssignmentsAsync(selectedDate);
         }
+
+        public CurrentPatientAssignmentsViewModel CurrentPatientAssignmentsViewModel { get; private set; }
 
         private async Task LoadAssignmentsAsync(DateTime date)
         {
@@ -668,6 +675,7 @@ namespace Registry
             set
             {
                 currentPatient = value;
+                CurrentPatientAssignmentsViewModel.CurrentPatient = value;
                 ChangeModeCommand.RaiseCanExecuteChanged();
             }
         }

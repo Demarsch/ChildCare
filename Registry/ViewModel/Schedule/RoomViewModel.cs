@@ -33,7 +33,7 @@ namespace Registry
             this.cacheService = cacheService;
             this.scheduleService = scheduleService;
             this.room = room;
-            //TODO: these values are used to avoid exception when TimelinePanel.Height becomes there when bound to the same default DateTime value
+            //TODO: these values are used to avoid exception when TimelinePanel.Height becomes negative when bound to the same default DateTime value
             //TODO: probably worth using fallback value on binding side
             openTime = DateTime.Today.AddHours(8.0);
             closeTime = DateTime.Today.AddHours(17.0);
