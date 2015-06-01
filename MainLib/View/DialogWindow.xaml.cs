@@ -54,5 +54,15 @@ namespace Core
             dispatcherTimer.Stop();
             (DataContext as IDialogViewModel).CloseCommand.Execute(null);
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            var viewModel = DataContext as IDialogViewModel;
+            if (viewModel != null)
+            {
+                viewModel.CloseRequested -= OnCloseRequested;
+            }
+            base.OnClosed(e);
+        }
     }
 }
