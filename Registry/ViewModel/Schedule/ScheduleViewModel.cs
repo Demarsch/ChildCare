@@ -69,9 +69,9 @@ namespace Registry
             this.log = log;
             this.scheduleService = scheduleService;
             filteredRooms = new CollectionViewSource();
-            selectedDate = DateTime.Today;
-            openTime = selectedDate.AddHours(8.0);
-            closeTime = selectedDate.AddHours(17.0);
+            selectedDate = currentPatientAssignmentsViewModel.CurrentDate = DateTime.Today;
+            openTime = currentPatientAssignmentsViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(8.0);
+            closeTime = currentPatientAssignmentsViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(17.0);
             isInReadOnlyMode = true;
             ChangeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
             CancelAssignmentMovementCommand = new RelayCommand(CancelAssignmentMovement);
@@ -99,13 +99,13 @@ namespace Registry
                 if (workingTimes.Count == 0)
                 {
                     //TODO: store these settings in DB. This are just default values used for displaying purposes
-                    OpenTime = date.AddHours(8.0);
-                    CloseTime = date.AddHours(17.0);
+                    OpenTime = CurrentPatientAssignmentsViewModel.CurrentDateRoomsOpenTime = date.AddHours(8.0);
+                    CloseTime = CurrentPatientAssignmentsViewModel.CurrentDateRoomsCloseTime = date.AddHours(17.0);
                 }
                 else
                 {
-                    OpenTime = date.Add(workingTimes.Min(x => x.Min(y => y.StartTime)));
-                    CloseTime = date.Add(workingTimes.Max(x => x.Max(y => y.EndTime)));
+                    OpenTime = CurrentPatientAssignmentsViewModel.CurrentDateRoomsOpenTime = date.Add(workingTimes.Min(x => x.Min(y => y.StartTime)));
+                    CloseTime = CurrentPatientAssignmentsViewModel.CurrentDateRoomsCloseTime = date.Add(workingTimes.Max(x => x.Max(y => y.EndTime)));
                 }
                 UpdateTimeTickers();
                 foreach (var room in rooms)
@@ -275,6 +275,7 @@ namespace Registry
                 log.Info("Movement completed");
                 ClearScheduleGrid();
                 BuildScheduleGrid();
+                CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(whatToMove.Id);
             }
             catch (AssignmentConflictException ex)
             {
@@ -330,6 +331,7 @@ namespace Registry
                     Environment.NewLine));
                 return;
             }
+            CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
             var newAssignmentDTO = new ScheduledAssignmentDTO
             {
                 Id = assignment.Id,
@@ -369,6 +371,7 @@ namespace Registry
                         newAssignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                         newAssignment.MoveRequested -= RoomOnAssignmentMoveRequested;
                         log.Info("New assignment was successfully deleted");
+                        CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
                     }
                     catch (Exception ex)
                     {
@@ -391,6 +394,7 @@ namespace Registry
                         newAssignment.Note = assignment.Note;
                         isFailed = false;
                         log.Info("New assignment was updated and moved from temporary state");
+                        CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
                     }
                     catch (Exception ex)
                     {
@@ -418,6 +422,7 @@ namespace Registry
                     ClearScheduleGrid();
                     BuildScheduleGrid();
                     log.Info("Temporary assignment was manually deleted");
+                    CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
                 }
                 catch (Exception ex)
                 {
@@ -440,6 +445,7 @@ namespace Registry
                     ClearScheduleGrid();
                     BuildScheduleGrid();
                     log.Info("Assignment was canceled");
+                    CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
                 }
                 catch (Exception ex)
                 {
@@ -582,6 +588,7 @@ namespace Registry
             {
                 if (Set("SelectedDate", ref selectedDate, value))
                 {
+                    CurrentPatientAssignmentsViewModel.CurrentDate = value;
                     if (!IsInReadOnlyMode)
                     {
                         ClearScheduleGrid();

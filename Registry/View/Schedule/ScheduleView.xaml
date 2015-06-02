@@ -65,7 +65,7 @@
                         </Grid>
                         <Button Content="Отменить перенос" MinWidth="150" Margin="5" Padding="5" Background="White" Visibility="{Binding IsMovingAssignment, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Command="{Binding CancelAssignmentMovementCommand, Mode=OneTime}"/>
-                        
+
                     </StackPanel>
                 </DockPanel>
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -86,22 +86,25 @@
                                Visibility="{Binding CurrentPatientAssignmentsViewModel.ShowThatCurrentPatientHasNoAssignments, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <!--Time tickers-->
                     <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" core:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll">
-                        <ListBox IsHitTestVisible="False" ItemsSource="{Binding TimeTickers}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent"
+                        <Grid>
+                            <ListBox IsHitTestVisible="False" ItemsSource="{Binding TimeTickers}" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent"
                                  BorderThickness="0 1 0 1">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
                                                         UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"/>
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="xctk:TimelinePanel.Date" Value="{Binding StartTime, Mode=OneTime}" />
-                                    <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding EndTime, Mode=OneTime}" />
-                                    <Setter Property="Template" Value="{StaticResource ListBoxItem}" />
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                        </ListBox>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="{x:Type ListBoxItem}">
+                                        <Setter Property="xctk:TimelinePanel.Date" Value="{Binding StartTime, Mode=OneTime}" />
+                                        <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding EndTime, Mode=OneTime}" />
+                                        <Setter Property="Template" Value="{StaticResource ListBoxItem}" />
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                            </ListBox>
+                            <ContentControl Content="{Binding CurrentPatientAssignmentsViewModel, Mode=OneTime}" IsHitTestVisible="False" />
+                        </Grid>
                     </ScrollViewer>
                     <!--Room headers-->
                     <ScrollViewer Grid.Row="0" Grid.Column="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Hidden" core:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll">

@@ -53,10 +53,7 @@ namespace Registry
             {
                 return assignment.AssignUserId == environment.CurrentUser.UserId || securityService.HasPrivilege(Privileges.DeleteTemporaryAssignments);
             }
-            else
-            {
-                return securityService.HasPrivilege(Privileges.EditAssignments);
-            }
+            return securityService.HasPrivilege(Privileges.EditAssignments);
         }
 
         public RelayCommand UpdateCommand { get; private set; }

@@ -129,6 +129,7 @@
     <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
     <Compile Include="ViewModel\Schedule\CurrentPatientAssignmentsViewModel.cs" />
+    <Compile Include="ViewModel\Schedule\CurrentPatientAssignmentViewModel.cs" />
     <Compile Include="ViewModel\Schedule\DayOfWeekViewModel.cs" />
     <Compile Include="ViewModel\EditPerson\ItemState.cs" />
     <Compile Include="ViewModel\EditPerson\SuggestionProviders\DisabilitiesGivenOrgSuggestionProvider.cs" />
@@ -225,6 +226,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Patient List\PersonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Schedule\CurrentPatientAssignmentsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

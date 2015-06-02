@@ -12,8 +12,12 @@ namespace Registry
 
         public int RoomId { get; set; }
 
+        public int Duration { get; set; }
+
         public bool IsCanceled { get; set; }
 
         public bool IsCompleted { get; set; }
+
+        public bool IsTemporary { get; set; }
     }
 }

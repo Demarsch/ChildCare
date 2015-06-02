@@ -17,6 +17,7 @@
                 <ResourceDictionary Source="View/Schedule/RoomView.xaml" />
                 <ResourceDictionary Source="View/Schedule/FreeTimeSlotView.xaml" />
                 <ResourceDictionary Source="View/Schedule/OccupiedTimeSlotView.xaml" />
+                <ResourceDictionary Source="View/Schedule/CurrentPatientAssignmentsView.xaml" />
                 <ResourceDictionary Source="View/Schedule Editor/ScheduleAssignmentUpdateView.xaml" />
                 <ResourceDictionary Source="View/Schedule Editor/ScheduleEditorView.xaml" />
                 <ResourceDictionary Source="View/Schedule Editor/ScheduleEditorRoomView.xaml" />

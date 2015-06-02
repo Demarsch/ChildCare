@@ -16,9 +16,9 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2 2 0 0" FontSize="8" Text="{Binding StartTime, StringFormat='HH:mm'}" Foreground="DimGray"
+                <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2 2 0 0" FontSize="9" Text="{Binding StartTime, StringFormat='HH:mm'}" Foreground="DimGray"
                            x:Name="startTimeText"/>
-                <TextBlock Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 2 2" FontSize="8" Text="{Binding EndTime, StringFormat='HH:mm'}" Foreground="DimGray"
+                <TextBlock Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 2 2" FontSize="9" Text="{Binding EndTime, StringFormat='HH:mm'}" Foreground="DimGray"
                            x:Name="endTimeText"/>
             </Grid>
         </Border>
