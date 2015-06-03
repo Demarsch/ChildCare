@@ -14,7 +14,7 @@ namespace Registry
     {
         #region Fields
 
-        private readonly PersonDisability personDisability;
+        private PersonDisability personDisability;
 
         private IPersonService service;
 
@@ -37,6 +37,20 @@ namespace Registry
         #endregion
 
         #region Methods
+
+        public PersonDisability SetData()
+        {
+            if (personDisability == null)
+                personDisability = new PersonDisability();
+            personDisability.DisabilityTypeId = DisabilityTypeId;
+            personDisability.Series = Series;
+            personDisability.Number = Number;
+            personDisability.GivenOrg = GivenOrg;
+            personDisability.BeginDate = BeginDate;
+            personDisability.EndDate = endDate;
+
+            return personDisability;
+        }
 
         private void FillData()
         {

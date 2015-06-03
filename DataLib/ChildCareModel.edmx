@@ -21,7 +21,7 @@
           <Property Name="RecordTypeId" Type="int" Nullable="false" />
           <Property Name="PersonId" Type="int" Nullable="false" />
           <Property Name="AssignDateTime" Type="datetime" Nullable="false" />
-          <Property Name="Duration" Type="int" />
+          <Property Name="Duration" Type="int" Nullable="false" />
           <Property Name="AssignUserId" Type="int" Nullable="false" />
           <Property Name="RoomId" Type="int" Nullable="false" />
           <Property Name="FinancingSourceId" Type="int" Nullable="false" />
@@ -428,6 +428,8 @@
           <Property Name="Snils" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="MedNumber" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="GenderId" Type="int" Nullable="false" />
+          <Property Name="Phones" Type="varchar(max)" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DeleteDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="PersonSocialStatuses">
@@ -2609,6 +2611,8 @@
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="Person" ToRole="PersonSocialStatus" />
           <NavigationProperty Name="PersonHealthGroups" Relationship="DataLib.FK_PersonHealthGroups_Persons" FromRole="Person" ToRole="PersonHealthGroup" />
           <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Persons" FromRole="Person" ToRole="PersonNationality" />
+          <Property Name="Phones" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -4177,6 +4181,8 @@
           <EntitySetMapping Name="Persons">
             <EntityTypeMapping TypeName="DataLib.Person">
               <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phones" ColumnName="Phones" />
                 <ScalarProperty Name="DeleteDateTime" ColumnName="DeleteDateTime" />
                 <ScalarProperty Name="GenderId" ColumnName="GenderId" />
                 <ScalarProperty Name="MedNumber" ColumnName="MedNumber" />

@@ -14,7 +14,7 @@ namespace Registry
     {
         #region Fields
 
-        private readonly PersonAddress personAddress;
+        private PersonAddress personAddress;
 
         private IPersonService service;
 
@@ -38,6 +38,22 @@ namespace Registry
         #endregion
 
         #region Methods
+
+        public PersonAddress SetData()
+        {
+            if (personAddress == null)
+                personAddress = new PersonAddress();
+            personAddress.AddressTypeId = AddressTypeId;
+            personAddress.OkatoText = AddressOKATO.CodeOKATO;
+            personAddress.UserText = UserText;
+            personAddress.House = House;
+            personAddress.Building = Building;
+            personAddress.Apartment = Apartment;
+            personAddress.BeginDateTime = BeginDate;
+            personAddress.EndDateTime = endDate;
+
+            return personAddress;
+        }
 
         private void FillData()
         {

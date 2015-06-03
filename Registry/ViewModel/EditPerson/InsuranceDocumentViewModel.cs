@@ -13,7 +13,7 @@ namespace Registry
 
         private readonly IPersonService service;
 
-        private readonly InsuranceDocument insuranceDocument;
+        private InsuranceDocument insuranceDocument;
 
         public InsuranceDocumentViewModel(InsuranceDocument insuranceDocument, IPersonService service)
         {
@@ -22,6 +22,24 @@ namespace Registry
             this.service = service;
             this.insuranceDocument = insuranceDocument;
             FillData();
+        }
+
+        public InsuranceDocument SetData()
+        {
+            if (insuranceDocument == null)
+                insuranceDocument = new InsuranceDocument();
+            insuranceDocument.InsuranceCompanyId = InsuranceCompanyId;
+            insuranceDocument.InsuranceDocumentTypeId = InsuranceDocumentTypeId;
+            if (InsuranceCompany == null)
+                insuranceDocument.InsuranceCompany = null;
+            else
+                insuranceDocument.InsuranceCompanyId = InsuranceCompany.Id;
+            insuranceDocument.Series = Series;
+            insuranceDocument.Number = Number;
+            insuranceDocument.BeginDate = BeginDate;
+            insuranceDocument.EndDate = EndDate;
+
+            return insuranceDocument;
         }
 
         private void FillData()
@@ -120,7 +138,10 @@ namespace Registry
             set
             {
                 Set("WithoutEndDate", ref withoutEndDate, value);
-                EndDate = DateTime.MaxValue;
+                if (withoutEndDate)
+                    EndDate = DateTime.MaxValue;
+                else
+                    EndDate = new DateTime(DateTime.Now.Year + 1, 1, 1);
                 RaisePropertyChanged("WithEndDate");
             }
         }

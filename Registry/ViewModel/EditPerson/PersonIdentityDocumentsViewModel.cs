@@ -86,6 +86,23 @@ namespace Registry
 
         #endregion
 
+        #region Methods
+
+        public List<PersonIdentityDocument> GetUnsavedPersonIdentityDocuments()
+        {
+            List<PersonIdentityDocument> listPersonIdentityDocument = new List<PersonIdentityDocument>();
+            PersonIdentityDocument personIdentityDocument = null;
+            foreach (var personIdentityDocumentViewModel in PersonIdentityDocuments)
+            {
+                personIdentityDocument = personIdentityDocumentViewModel.SetData();
+                personIdentityDocument.PersonId = personId;
+                listPersonIdentityDocument.Add(personIdentityDocument);
+            }
+            return listPersonIdentityDocument;
+        }
+
+        #endregion
+
         #region Commands
 
         public ICommand AddPersonIdentityDocumentCommand { get; set; }

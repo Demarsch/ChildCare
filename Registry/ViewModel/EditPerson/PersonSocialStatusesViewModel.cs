@@ -87,6 +87,23 @@ namespace Registry
 
         #endregion
 
+        #region Methods
+
+        public List<PersonSocialStatus> GetUnsavedPersonSocialStatuses()
+        {
+            List<PersonSocialStatus> listPersonSocialStatuses = new List<PersonSocialStatus>();
+            PersonSocialStatus personSocialStatus = null;
+            foreach (var personSocialStatusesViewModel in PersonSocialStatuses)
+            {
+                personSocialStatus = personSocialStatusesViewModel.SetData();
+                personSocialStatus.PersonId = personId;
+                listPersonSocialStatuses.Add(personSocialStatus);
+            }
+            return listPersonSocialStatuses;
+        }
+
+        #endregion
+
         #region Commands
 
         public ICommand AddPersonSocialStatusCommand { get; set; }

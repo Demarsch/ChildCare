@@ -14,7 +14,7 @@ namespace Registry
     {
         #region Fields
 
-        private readonly PersonIdentityDocument personIdentityDocument;
+        private PersonIdentityDocument personIdentityDocument;
 
         private IPersonService service;
 
@@ -37,6 +37,21 @@ namespace Registry
         #endregion
 
         #region Methods
+
+        public PersonIdentityDocument SetData()
+        {
+            if (personIdentityDocument == null)
+                personIdentityDocument = new PersonIdentityDocument();
+            personIdentityDocument.IdentityDocumentTypeId = IdentityDocumentTypeId;
+            personIdentityDocument.Series = Series;
+            personIdentityDocument.Number = Number;
+            personIdentityDocument.GivenOrg = GivenOrg;
+            personIdentityDocument.BeginDate = BeginDate;
+            personIdentityDocument.EndDate = endDate;
+
+            return personIdentityDocument;
+        }
+
 
         private void FillData()
         {

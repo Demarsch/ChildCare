@@ -15,7 +15,7 @@ namespace Registry
     {
         #region Fields
 
-        private readonly PersonSocialStatus personSocialStatus;
+        private PersonSocialStatus personSocialStatus;
 
         private IPersonService service;
 
@@ -38,6 +38,22 @@ namespace Registry
         #endregion
 
         #region Methods
+
+        public PersonSocialStatus SetData()
+        {
+            if (personSocialStatus == null)
+                personSocialStatus = new PersonSocialStatus();
+            personSocialStatus.SocialStatusTypeId = SocialStatusTypeId;
+            personSocialStatus.Office = Office;
+            if (Org == null)
+                personSocialStatus.Org = null;
+            else
+                personSocialStatus.OrgId = Org.Id;
+            personSocialStatus.BeginDateTime = BeginDate;
+            personSocialStatus.EndDateTime = endDate;
+
+            return personSocialStatus;
+        }
 
         private void FillData()
         {

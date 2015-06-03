@@ -113,7 +113,7 @@ namespace Registry
         public ICommand AddInsuranceDocumentCommand { get; set; }
         private void AddInsuranceDocument()
         {
-            InsuranceDocuments.Add(new InsuranceDocumentViewModel(new InsuranceDocument(), service));
+            InsuranceDocuments.Add(new InsuranceDocumentViewModel(new InsuranceDocument() {BeginDate = new DateTime(DateTime.Now.Year, 1, 1) }, service));
             RaisePropertyChanged("PersonInsuranceDocumentsHasNoItems");
         }
 
@@ -166,6 +166,19 @@ namespace Registry
             {
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
             }
+        }
+
+        public List<InsuranceDocument> GetUnsavedPersonInsuranceDocuments()
+        {
+            List<InsuranceDocument> listInsuranceDocument = new List<InsuranceDocument>();
+            InsuranceDocument personInsuranceDocument = null;
+            foreach (var insurancedocumentsViewModel in InsuranceDocuments)
+            {
+                personInsuranceDocument = insurancedocumentsViewModel.SetData();
+                personInsuranceDocument.PersonId = personId;
+                listInsuranceDocument.Add(personInsuranceDocument);
+            }
+            return listInsuranceDocument;
         }
 
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;

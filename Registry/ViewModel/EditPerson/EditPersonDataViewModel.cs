@@ -40,7 +40,6 @@ namespace Registry
             this.log = log;
             commonPersonData = new EditPersonCommonDataViewModel(null, service, dialogService);
             CommonPersonData.PropertyChanged += CommonPersonData_PropertyChanged;
-            SaveChangesCommand = new RelayCommand(SaveChanges);
             EditInsuranceCommand = new RelayCommand(EditInsurance);
             EditPersonAddressCommand = new RelayCommand(EditPersonAddress);
             EditPersonIdentityDocumentsCommand = new RelayCommand(EditPersonIdentityDocuments);
@@ -65,18 +64,6 @@ namespace Registry
             : this(log, service, dialogService)
         {
 
-        }
-
-        private ObservableCollection<InsuranceDocumentViewModel> insuranceDocuments;
-        public ObservableCollection<InsuranceDocumentViewModel> InsuranceDocuments
-        {
-            get { return insuranceDocuments; }
-            private set
-            {
-                if (value.Count < 1)
-                    value.Add(new InsuranceDocumentViewModel(new InsuranceDocument(), service));
-                Set("InsuranceDocuments", ref insuranceDocuments, value);
-            }
         }
 
         private EditPersonCommonDataViewModel commonPersonData = null;
@@ -123,102 +110,6 @@ namespace Registry
             {
                 RaisePropertyChanged(() => IsChild);
             }
-        }
-
-        public ICommand SaveChangesCommand { get; private set; }
-
-        private void SaveChanges()
-        {
-            //List<PersonName> personNames = new List<PersonName>();
-            //PersonName newPersonName = null;
-            //if (IsFIOChanged)
-            //{
-            //    if (SelectedChangeNameReason == null)
-            //    {
-            //        TextMessage = "Не указана причина изменения ФИО";
-            //        return;
-            //    }
-            //    if (SelectedChangeNameReason.NeedCreateNewPersonName && ChangeNameDate == null)
-            //    {
-            //        TextMessage = "Не указана дата изменения ФИО";
-            //        return;
-            //    }
-
-            //    if (!SelectedChangeNameReason.NeedCreateNewPersonName)
-            //    {
-            //        personName.LastName = LastName;
-            //        personName.FirstName = FirstName;
-            //        personName.MiddleName = MiddleName;
-            //    }
-            //    else
-            //    {
-            //        newPersonName = new PersonName()
-            //        {
-            //            LastName = LastName,
-            //            FirstName = FirstName,
-            //            MiddleName = MiddleName,
-            //            BeginDateTime = ChangeNameDate,
-            //            EndDateTime = new DateTime(9000, 1, 1)
-            //        };
-            //        personNames.Add(newPersonName);
-
-            //        personName.EndDateTime = ChangeNameDate;
-            //        personName.ChangeNameReasonId = SelectedChangeNameReason.Id;
-            //    }
-            //}
-            //else
-            //{
-            //    if (personName == null)
-            //    {
-            //        personName = new PersonName()
-            //        {
-            //            LastName = LastName,
-            //            FirstName = FirstName,
-            //            MiddleName = MiddleName,
-            //            BeginDateTime = new DateTime(1900, 1, 1),
-            //            EndDateTime = new DateTime(9000, 1, 1)
-            //        };
-
-            //    }
-            //}
-            //personNames.Add(personName);
-            //if (!GenderId.HasValue)
-            //{
-            //    TextMessage = "Не указана пол";
-            //    return;
-            //}
-            //if (IsEmpty)
-            //{
-            //    person = new Person();
-            //}
-            //person.BirthDate = BirthDate;
-            //person.Snils = SNILS;
-            //person.MedNumber = MedNumber;
-            //person.GenderId = GenderId.Value;
-
-            //person.ShortName = LastName + " " + FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
-            //person.FullName = LastName + " " + FirstName + " " + MiddleName;
-
-            ////InsuranceDocuments
-            //var insuranceDocuments = insuranceDocumentViewModel.InsuranceDocuments.Select(x => new InsuranceDocument()
-            //    {
-            //        InsuranceCompanyId = x.InsuranceCompanyId,
-            //        InsuranceDocumentTypeId = x.InsuranceDocumentTypeId,
-            //        Number = x.Number,
-            //        Series = x.Series,
-            //        BeginDate = x.BeginDate,
-            //        EndDate = x.EndDate
-            //    }).ToList();
-            ///*
-            //var res = service.SetPersonInfoes(person, personNames, insuranceDocuments);
-            //if (newPersonName != null)
-            //    personName = newPersonName;
-            //if (res == string.Empty)
-            //    TextMessage = "Данные сохранены";
-            //else
-            //    TextMessage = "Ошибка! " + res;*/
-            //RaisePropertyChanged("IsFIOChanged");
-            //RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
         }
 
         public ICommand EditInsuranceCommand { get; set; }
@@ -389,7 +280,7 @@ namespace Registry
 
         public bool IsChild
         {
-            get 
+            get
             {
                 var isChild = CommonPersonData.BirthDate.AddYears(18) > DateTime.Now;
                 if (!isChild)
@@ -397,6 +288,40 @@ namespace Registry
                 return isChild;
             }
         }
+
+        #region Methods
+
+        public List<InsuranceDocument> GetUnsavedPersonInsuranceDocuments()
+        {
+            return insuranceDocumentViewModel.GetUnsavedPersonInsuranceDocuments();
+        }
+
+        public List<PersonAddress> GetUnsavedPersonAddresses()
+        {
+            return personAddressesViewModel.GetUnsavedPersonAddresses();
+        }
+
+        public Person GetUnsavedPerson(out List<PersonName> personNames)
+        {
+            return CommonPersonData.SetPerson(out personNames);
+        }
+
+        public List<PersonIdentityDocument> GetUnsavedPersonIdentityDocuments()
+        {
+            return personIdentityDocumentsViewModel.GetUnsavedPersonIdentityDocuments();
+        }
+
+        public List<PersonDisability> GetUnsavedPersonDisabilities()
+        {
+            return personDisabilitiesViewModel.GetUnsavedPersonDisabilities();
+        }
+
+        public List<PersonSocialStatus> GetUnsavedPersonSocialStatuses()
+        {
+            return personSocialStatusesViewModel.GetUnsavedPersonSocialStatuses();
+        }
+        
+        #endregion
 
         #region Inplementation IDataErrorInfo
 

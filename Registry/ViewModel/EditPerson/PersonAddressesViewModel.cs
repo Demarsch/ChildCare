@@ -106,6 +106,23 @@ namespace Registry
 
         #endregion
 
+        #region Methods
+
+        public List<PersonAddress> GetUnsavedPersonAddresses()
+        {
+            List<PersonAddress> listPersonAddresses = new List<PersonAddress>();
+            PersonAddress personAddress = null;
+            foreach (var personAddressViewModel in PersonAddresses)
+            {
+                personAddress = personAddressViewModel.SetData();
+                personAddress.PersonId = personId;
+                listPersonAddresses.Add(personAddress);
+            }
+            return listPersonAddresses;
+        }
+
+        #endregion
+
         #region Implementation IDialogViewModel
 
         public string Title

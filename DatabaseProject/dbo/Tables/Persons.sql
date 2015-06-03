@@ -6,10 +6,14 @@
     [Snils]          VARCHAR (50)  NOT NULL,
     [MedNumber]      VARCHAR (50)  NOT NULL,
     [GenderId]       INT           NOT NULL,
+    [Phones]         VARCHAR (MAX) CONSTRAINT [DF_Persons_Phones] DEFAULT ('') NOT NULL,
+    [Email]          VARCHAR (255) CONSTRAINT [DF_Persons_Email] DEFAULT ('') NOT NULL,
     [DeleteDateTime] DATETIME      NULL,
     CONSTRAINT [PK_Persons] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Persons_Genders] FOREIGN KEY ([GenderId]) REFERENCES [dbo].[Genders] ([Id])
 );
+
+
 
 
 

@@ -42,6 +42,8 @@ namespace DataLib
         public string MedNumber { get; set; }
         public int GenderId { get; set; }
         public Nullable<System.DateTime> DeleteDateTime { get; set; }
+        public string Phones { get; set; }
+        public string Email { get; set; }
     
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }

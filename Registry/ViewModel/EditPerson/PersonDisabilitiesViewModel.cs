@@ -87,6 +87,22 @@ namespace Registry
 
         #endregion
 
+        #region Methods
+
+        public List<PersonDisability> GetUnsavedPersonDisabilities()
+        {
+            List<PersonDisability> listPersonDisabilities = new List<PersonDisability>();
+            PersonDisability personDisability = null;
+            foreach (var personDisabilitiesViewModel in PersonDisabilities)
+            {
+                personDisability = personDisabilitiesViewModel.SetData();
+                personDisability.PersonId = personId;
+                listPersonDisabilities.Add(personDisability);
+            }
+            return listPersonDisabilities;
+        }
+        #endregion
+
         #region Commands
 
         public ICommand AddPersonDisabilityCommand { get; set; }

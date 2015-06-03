@@ -23,6 +23,9 @@ namespace Core
 
         string GetActualPersonSocialStatusesString(int personId);
 
+        bool SavePersonData(Person person, IList<PersonName> personNames, IList<InsuranceDocument> personInsuranceDocuments, IList<PersonAddress> PersonAddresses, IList<PersonIdentityDocument> personIdentityDocuments,
+            IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses);
+
         ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
 
         ICollection<RelativeRelationship> GetRelativeRelationships();

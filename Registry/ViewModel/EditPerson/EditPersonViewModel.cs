@@ -59,6 +59,7 @@ namespace Registry
             EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
             EditPersonDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
             RelativeRelations = new ObservableCollection<RelativeRelationship>(service.GetRelativeRelationships());
+            SaveChangesCommand = new RelayCommand(SaveChanges);
         }
 
         public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, int personId)
@@ -94,6 +95,20 @@ namespace Registry
         private void ReturnToPersonEditing()
         {
             SelectedRelative = null;
+        }
+
+        public ICommand SaveChangesCommand { get; set; }
+        private void SaveChanges()
+        {
+            var personNames = new List<PersonName>();
+            var person = editPersonDataViewModel.GetUnsavedPerson(out personNames);
+            var personInsuranceDocuments = editPersonDataViewModel.GetUnsavedPersonInsuranceDocuments();
+            var personAddresses = editPersonDataViewModel.GetUnsavedPersonAddresses();
+            var personIdentityDocuments = editPersonDataViewModel.GetUnsavedPersonIdentityDocuments();
+            var personDisabilities = editPersonDataViewModel.GetUnsavedPersonDisabilities();
+            var personSocialStatuses = editPersonDataViewModel.GetUnsavedPersonSocialStatuses();
+
+            service.SavePersonData(person, personNames, personInsuranceDocuments, personAddresses, personIdentityDocuments, personDisabilities, personSocialStatuses);
         }
 
         private PersonRelativeDTO selectedRelative;

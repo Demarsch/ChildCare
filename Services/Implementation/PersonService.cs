@@ -463,5 +463,234 @@ namespace Core
                 return defaultNationality.Id;
             }
         }
+
+
+        public bool SavePersonData(Person person, IList<PersonName> personNames, IList<InsuranceDocument> personInsuranceDocuments, IList<PersonAddress> personAddresses, IList<PersonIdentityDocument> personIdentityDocuments,
+            IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                if (person.Id == 0)
+                    db.Add(person);
+                else
+                    db.Update(person);
+                SetPersonNames(person, personNames, db);
+                SetPersonInsuranceDocuments(person, personInsuranceDocuments, db);
+                SetPersonAddresses(person, personAddresses, db);
+                SetPersonIdentityDocuments(person, personIdentityDocuments, db);
+                SetPersonDisabilities(person, personDisabilities, db);
+                SetPersonSocialStatuses(person, personSocialStatuses, db);
+
+
+                try
+                {
+                    db.Save();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+        }
+
+        private void SetPersonSocialStatuses(Person person, IList<PersonSocialStatus> changedPersonSocialStatuses, IDataContext db)
+        {
+            PersonSocialStatus changedPersonSocialStatus;
+            PersonSocialStatus personSocialStatus;
+            var personSocialStatusesList = person.PersonSocialStatuses.ToList();
+            int personSocialStatusesCount = personSocialStatusesList.Count;
+            for (int i = 0; i < personSocialStatusesCount; i++)
+            {
+                personSocialStatus = personSocialStatusesList[i];
+                if (changedPersonSocialStatuses.Count > i)
+                {
+                    changedPersonSocialStatus = changedPersonSocialStatuses[i];
+                    personSocialStatus.SocialStatusTypeId = changedPersonSocialStatus.SocialStatusTypeId;
+                    personSocialStatus.Office = changedPersonSocialStatus.Office;
+                    personSocialStatus.OrgId = changedPersonSocialStatus.OrgId;
+                    personSocialStatus.BeginDateTime = changedPersonSocialStatus.BeginDateTime;
+                    personSocialStatus.EndDateTime = changedPersonSocialStatus.EndDateTime;
+                }
+                else
+                {
+                    db.Remove(personSocialStatus);
+                }
+            }
+            if (changedPersonSocialStatuses.Count > personSocialStatusesCount - 1)
+            {
+                for (int j = personSocialStatusesCount - 1; j < changedPersonSocialStatuses.Count; j++)
+                {
+                    db.Add(changedPersonSocialStatuses[j]);
+                }
+            }
+        }
+
+        private void SetPersonDisabilities(Person person, IList<PersonDisability> changedPersonDisabilities, IDataContext db)
+        {
+            PersonDisability changedPersonDisability;
+            PersonDisability personDisability;
+            var personDisabilitiesList = person.PersonDisabilities.ToList();
+            int personDisabilitiesCount = personDisabilitiesList.Count;
+            for (int i = 0; i < personDisabilitiesCount; i++)
+            {
+                personDisability = personDisabilitiesList[i];
+                if (changedPersonDisabilities.Count > i)
+                {
+                    changedPersonDisability = changedPersonDisabilities[i];
+                    personDisability.DisabilityTypeId = changedPersonDisability.DisabilityTypeId;
+                    personDisability.Series = changedPersonDisability.Series;
+                    personDisability.Number = changedPersonDisability.Number;
+                    personDisability.GivenOrg = changedPersonDisability.GivenOrg;
+                    personDisability.BeginDate = changedPersonDisability.BeginDate;
+                    personDisability.EndDate = changedPersonDisability.EndDate;
+                }
+                else
+                {
+                    db.Remove(personDisability);
+                }
+            }
+            if (changedPersonDisabilities.Count > personDisabilitiesCount - 1)
+            {
+                for (int j = personDisabilitiesCount - 1; j < changedPersonDisabilities.Count; j++)
+                {
+                    db.Add(changedPersonDisabilities[j]);
+                }
+            }
+        }
+
+        private void SetPersonIdentityDocuments(Person person, IList<PersonIdentityDocument> changedPersonIdentityDocuments, IDataContext db)
+        {
+            PersonIdentityDocument changedPersonIdentityDocument;
+            PersonIdentityDocument personIdentityDocument;
+            var personIdentityDocumentsList = person.PersonIdentityDocuments.ToList();
+            int personIdentityDocumentsCount = personIdentityDocumentsList.Count;
+            for (int i = 0; i < personIdentityDocumentsCount; i++)
+            {
+                personIdentityDocument = personIdentityDocumentsList[i];
+                if (changedPersonIdentityDocuments.Count > i)
+                {
+                    changedPersonIdentityDocument = changedPersonIdentityDocuments[i];
+                    personIdentityDocument.IdentityDocumentTypeId = changedPersonIdentityDocument.IdentityDocumentTypeId;
+                    personIdentityDocument.Series = changedPersonIdentityDocument.Series;
+                    personIdentityDocument.Number = changedPersonIdentityDocument.Number;
+                    personIdentityDocument.GivenOrg = changedPersonIdentityDocument.GivenOrg;
+                    personIdentityDocument.BeginDate = changedPersonIdentityDocument.BeginDate;
+                    personIdentityDocument.EndDate = changedPersonIdentityDocument.EndDate;
+                }
+                else
+                {
+                    db.Remove(personIdentityDocument);
+                }
+            }
+            if (changedPersonIdentityDocuments.Count > personIdentityDocumentsCount - 1)
+            {
+                for (int j = personIdentityDocumentsCount - 1; j < changedPersonIdentityDocuments.Count; j++)
+                {
+                    db.Add(changedPersonIdentityDocuments[j]);
+                }
+            }
+        }
+
+        private void SetPersonAddresses(Person person, IList<PersonAddress> changedPersonAddresses, IDataContext db)
+        {
+            PersonAddress changedPersonAddress;
+            PersonAddress personAddress;
+            var personAddressesList = person.PersonAddresses.ToList();
+            int personAddressesCount = personAddressesList.Count;
+            for (int i = 0; i < personAddressesCount; i++)
+            {
+                personAddress = personAddressesList[i];
+                if (changedPersonAddresses.Count > i)
+                {
+                    changedPersonAddress = changedPersonAddresses[i];
+                    personAddress.AddressTypeId = changedPersonAddress.AddressTypeId;
+                    personAddress.OkatoText = changedPersonAddress.OkatoText;
+                    personAddress.UserText = changedPersonAddress.UserText;
+                    personAddress.House = changedPersonAddress.House;
+                    personAddress.Building = changedPersonAddress.Building;
+                    personAddress.Apartment = changedPersonAddress.Apartment;
+                    personAddress.BeginDateTime = changedPersonAddress.BeginDateTime;
+                    personAddress.EndDateTime = changedPersonAddress.EndDateTime;
+                }
+                else
+                {
+                    db.Remove(personAddress);
+                }
+            }
+            if (changedPersonAddresses.Count > personAddressesCount - 1)
+            {
+                for (int j = personAddressesCount - 1; j < changedPersonAddresses.Count; j++)
+                {
+                    db.Add(changedPersonAddresses[j]);
+                }
+            }
+        }
+
+        private void SetPersonNames(Person person, IList<PersonName> changedPersonNames, IDataContext db)
+        {
+            PersonName changedPersonName;
+            PersonName personName;
+            var personNamesList = person.PersonNames.ToList();
+            int personInsuranceDocumentsCount = personNamesList.Count;
+            for (int i = 0; i < personInsuranceDocumentsCount; i++)
+            {
+                personName = personNamesList[i];
+                if (changedPersonNames.Count > i)
+                {
+                    changedPersonName = changedPersonNames[i];
+                    personName.LastName = changedPersonName.LastName;
+                    personName.FirstName = changedPersonName.FirstName;
+                    personName.MiddleName = changedPersonName.MiddleName;
+                    personName.ChangeNameReasonId = changedPersonName.ChangeNameReasonId;
+                    personName.BeginDateTime = changedPersonName.BeginDateTime;
+                    personName.EndDateTime = changedPersonName.EndDateTime;
+                }
+                else
+                {
+                    db.Remove(personName);
+                }
+            }
+            if (changedPersonNames.Count > personInsuranceDocumentsCount - 1)
+            {
+                for (int j = personInsuranceDocumentsCount - 1; j < changedPersonNames.Count; j++)
+                {
+                    db.Add(changedPersonNames[j]);
+                }
+            }
+        }
+
+        private void SetPersonInsuranceDocuments(Person person, IList<InsuranceDocument> changedPersonInsuranceDocuments, IDataContext db)
+        {
+            InsuranceDocument changedPersonInsuranceDocument;
+            InsuranceDocument personInsuranceDocument;
+            var personInsuranceDocumentsList = person.InsuranceDocuments.ToList();
+            int personInsuranceDocumentsCount = personInsuranceDocumentsList.Count;
+            for (int i = 0; i < personInsuranceDocumentsCount; i++)
+            {
+                personInsuranceDocument = personInsuranceDocumentsList[i];
+                if (changedPersonInsuranceDocuments.Count > i)
+                {
+                    changedPersonInsuranceDocument = changedPersonInsuranceDocuments[i];
+                    personInsuranceDocument.InsuranceCompanyId = changedPersonInsuranceDocument.InsuranceCompanyId;
+                    personInsuranceDocument.InsuranceDocumentTypeId = changedPersonInsuranceDocument.InsuranceDocumentTypeId;
+                    personInsuranceDocument.Series = changedPersonInsuranceDocument.Series;
+                    personInsuranceDocument.Number = changedPersonInsuranceDocument.Number;
+                    personInsuranceDocument.BeginDate = changedPersonInsuranceDocument.BeginDate;
+                    personInsuranceDocument.EndDate = changedPersonInsuranceDocument.EndDate;
+                }
+                else
+                {
+                    db.Remove(personInsuranceDocument);
+                }
+            }
+            if (changedPersonInsuranceDocuments.Count > personInsuranceDocumentsCount - 1)
+            {
+                for (int j = personInsuranceDocumentsCount - 1; j < changedPersonInsuranceDocuments.Count; j++)
+                {
+                    db.Add(changedPersonInsuranceDocuments[j]);
+                }
+            }
+        }
     }
 }
