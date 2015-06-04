@@ -70,6 +70,10 @@
     <Reference Include="GalaSoft.MvvmLight.Platform">
       <HintPath>..\packages\MvvmLightLibs.5.1.1.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="Interop.WIA">
+      <HintPath>..\packages\Interop.WIA\Interop.WIA.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -122,11 +126,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DTO\ThumbnailDTO.cs" />
     <Compile Include="DTO\PersonDTO.cs" />
     <Compile Include="DTO\UserPermissionsDTO.cs" />
+    <Compile Include="Helpers\WIAScanner.cs" />
     <Compile Include="ViewModel\EditPermissionViewModel.cs" />
     <Compile Include="ViewModel\PersonSuggestionProvider.cs" />
     <Compile Include="ViewModel\PermissionsTreeViewModel.cs" />
+    <Compile Include="ViewModel\ScanDocumentsViewModel.cs" />
     <Compile Include="ViewModel\UserAccountViewModel.cs" />
     <Compile Include="ViewModel\UserEditorViewModel.cs" />
     <Compile Include="ViewModel\UserViewModel.cs" />
@@ -137,6 +144,9 @@
     </Compile>
     <Compile Include="View\PermissionsTreeView.xaml.cs">
       <DependentUpon>PermissionsTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ScanDocumentsView.xaml.cs">
+      <DependentUpon>ScanDocumentsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\UserAccountView.xaml.cs">
       <DependentUpon>UserAccountView.xaml</DependentUpon>
@@ -161,6 +171,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\PermissionsTreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScanDocumentsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

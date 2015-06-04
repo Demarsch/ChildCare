@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTO\PersonRelativeDTO.cs" />
+    <Compile Include="Implementation\ScannerService.cs" />
     <Compile Include="Implementation\ADUserSystemInfoService.cs" />
     <Compile Include="Implementation\CommissionService.cs" />
     <Compile Include="Implementation\PermissionService.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Interface\IPermissionService.cs" />
     <Compile Include="Interface\IPersonService.cs" />
     <Compile Include="Interface\ISecurityService.cs" />
+    <Compile Include="Interface\IScannerService.cs" />
     <Compile Include="Interface\IUserSystemInfoService.cs" />
     <Compile Include="Interface\IUserService.cs" />
     <Compile Include="Implementation\SecurityService.cs" />
