@@ -6,15 +6,25 @@
              xmlns:core="clr-namespace:Core;assembly=StuffLib"
              xmlns:admintool="clr-namespace:AdminTools.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance admintool:ScanDocumentsViewModel}">
+             d:DesignHeight="500" d:DesignWidth="600"
+             d:DataContext="{d:DesignInstance admintool:ScanDocumentsViewModel}" 
+             SizeToContent="Width" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <core:ImageConverter x:Key="imageConverter" />
         <DataTemplate x:Key="ImageTemplate">
-            <StackPanel Orientation="Vertical">
-                <Image Source="{Binding Path=ImageSource, Converter={StaticResource imageConverter}}" Stretch="Fill" Height="96" Width="72"/>
-                <TextBlock Text="{Binding Path=Description}" Margin="5" />
-            </StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding Path=ThumbnailChecked}" VerticalAlignment="Top" Margin="2" HorizontalAlignment="Left"/>
+                <Image Grid.Row="0" Grid.Column="1" Source="{Binding Path=ImageSource, Converter={StaticResource imageConverter}}" Stretch="Fill" Height="96" Width="72" Margin="2" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Path=DocumentType, Mode=TwoWay}" Margin="5" HorizontalAlignment="Center" />
+            </Grid>
         </DataTemplate>
     </Window.Resources>
     
@@ -25,29 +35,57 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <Button Content="Сканировать" Command="{Binding ScanCommand}" Height="23" HorizontalAlignment="Left" Name="ScanButton" VerticalAlignment="Top" Margin="0,0,10,0" />
+            <Button Content="Сканировать" Command="{Binding ScanCommand}" 
+                    Height="23" HorizontalAlignment="Left" Name="ScanButton" 
+                    VerticalAlignment="Top" Margin="0,0,10,0" />
             <Button Content="Сохранить" Height="23" Name="Upload" VerticalAlignment="Top" HorizontalAlignment="Left" />
         </StackPanel>
 
         <Border BorderThickness="1" Grid.Row="1" BorderBrush="#FF6E789A" Margin="10" >
-            <Grid  Name="imageGrid"  >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-                
-            <GridSplitter HorizontalAlignment="Stretch" 
-                VerticalAlignment="Stretch" 
-                Grid.Column="1" ResizeBehavior="PreviousAndNext"
-                Width="Auto" Background="#FF787896" Height="Auto" />
+            <Grid  Name="scanPanelGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                <ListBox ItemsSource="{Binding PreviewImages, Mode=TwoWay}" 
+                <ListBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" 
+                         ItemsSource="{Binding PreviewImages, Mode=TwoWay}" 
                          ItemTemplate="{DynamicResource ImageTemplate}"
                          SelectedItem="{Binding SelectedThumbnail}"/>
 
-                <Image Source="{Binding ZoomImage, Converter={StaticResource imageConverter}}" Grid.Column="2" HorizontalAlignment="Left" Name="zoomImage" Stretch="Uniform" VerticalAlignment="Top" />
-        </Grid>
+                <GridSplitter Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" />
+
+                <Image Grid.Row="0" Grid.Column="2" Name="zoomImage" 
+                       Source="{Binding ZoomImage, Converter={StaticResource imageConverter}}" 
+                       HorizontalAlignment="Left" Stretch="Uniform" VerticalAlignment="Top" Margin="10"/>
+
+                <Grid Name="descriptionGrid" Grid.Row="1" Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Вид документа" Margin="10,10,0,10"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding DocumentTypes, Mode=TwoWay}" 
+                        SelectedItem="{Binding SelectedDocumentType}" 
+                        DisplayMemberPath="Name"
+                        Margin="10" Width="300" HorizontalAlignment="Left"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Комментарии" Margin="10,10,0,10"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="10" Width="300" HorizontalAlignment="Left"
+                             Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>     
+
+            </Grid>
         </Border>        
     </Grid>
 </Window>

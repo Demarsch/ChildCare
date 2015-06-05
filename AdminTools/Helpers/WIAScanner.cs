@@ -103,6 +103,7 @@ namespace AdminTools
                     // save to temp file
                     string fileName = Path.GetTempFileName();
                     File.Delete(fileName);
+                    if (image == null) return images;
                     image.SaveFile(fileName);
                     image = null;
 
