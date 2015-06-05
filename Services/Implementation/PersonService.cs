@@ -215,9 +215,9 @@ namespace Core
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";
-                    resStr += String.Format("тип док-та: {0}\r\nстрах. орг.: {1}\r\nсерия {2} номер {3}\r\nпериод действия {4}-{5}",
+                    resStr += String.Format("тип док-та: {0}\r\nстрах. орг.: {1}\r\nсерия {2} номер {3}\r\nдействует с {4} {5}",
                         insuranceDocument.InsuranceDocumentType.Name, insuranceDocument.InsuranceCompany.NameSMOK, insuranceDocument.Series, insuranceDocument.Number, insuranceDocument.BeginDate.ToString("dd.MM.yyyy"),
-                        insuranceDocument.EndDate.ToString("dd.MM.yyyy"));
+                        (insuranceDocument.EndDate != DateTime.MaxValue ? " по " + insuranceDocument.EndDate.ToString("dd.MM.yyyy") : string.Empty));
                 }
             }
             return resStr;
@@ -466,7 +466,7 @@ namespace Core
 
 
         public bool SavePersonData(Person person, IList<PersonName> personNames, IList<InsuranceDocument> personInsuranceDocuments, IList<PersonAddress> personAddresses, IList<PersonIdentityDocument> personIdentityDocuments,
-            IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses)
+            IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses, int healthGroupId, int nationalityId)
         {
             using (var db = provider.GetNewDataContext())
             {
@@ -475,13 +475,18 @@ namespace Core
                 else
                     db.Update(person);
                 SetPersonNames(person, personNames, db);
-                SetPersonInsuranceDocuments(person, personInsuranceDocuments, db);
-                SetPersonAddresses(person, personAddresses, db);
-                SetPersonIdentityDocuments(person, personIdentityDocuments, db);
-                SetPersonDisabilities(person, personDisabilities, db);
-                SetPersonSocialStatuses(person, personSocialStatuses, db);
-
-
+                if (personInsuranceDocuments != null)
+                    SetPersonInsuranceDocuments(person, personInsuranceDocuments, db);
+                if (personAddresses != null)
+                    SetPersonAddresses(person, personAddresses, db);
+                if (personIdentityDocuments != null)
+                    SetPersonIdentityDocuments(person, personIdentityDocuments, db);
+                if (personDisabilities != null)
+                    SetPersonDisabilities(person, personDisabilities, db);
+                if (personSocialStatuses != null)
+                    SetPersonSocialStatuses(person, personSocialStatuses, db);
+                SetPersonHealthGroup(person, healthGroupId, db);
+                SetPersonNationality(person, nationalityId, db);
                 try
                 {
                     db.Save();
@@ -492,6 +497,40 @@ namespace Core
                     return false;
                 }
             }
+        }
+
+        private void SetPersonNationality(Person person, int nationalityId, IDataContext db)
+        {
+            if (nationalityId < 1)
+                return;
+            PersonNationality personNationality = person.PersonNationalities.FirstOrDefault(x => x.EndDateTime == DateTime.MaxValue);
+            DateTime dateTimeNow = DateTime.Now;
+            if (personNationality != null)
+                personNationality.EndDateTime = dateTimeNow;
+            var newPersonNationality = new PersonNationality()
+            {
+                Person = person,
+                CountryId = nationalityId,
+                BeginDateTime = dateTimeNow,
+                EndDateTime = DateTime.MaxValue
+            };
+        }
+
+        private void SetPersonHealthGroup(Person person, int healthGroupId, IDataContext db)
+        {
+            if (healthGroupId < 1)
+                return;
+            PersonHealthGroup personHealthGroup = person.PersonHealthGroups.FirstOrDefault(x => x.EndDateTime == DateTime.MaxValue);
+            DateTime dateTimeNow = DateTime.Now;
+            if (personHealthGroup != null)
+                personHealthGroup.EndDateTime = dateTimeNow;
+            var newPersonHealthGroup = new PersonHealthGroup()
+            {
+                Person = person,
+                HealthGroupId = healthGroupId,
+                BeginDateTime = dateTimeNow,
+                EndDateTime = DateTime.MaxValue
+            };
         }
 
         private void SetPersonSocialStatuses(Person person, IList<PersonSocialStatus> changedPersonSocialStatuses, IDataContext db)
@@ -517,10 +556,11 @@ namespace Core
                     db.Remove(personSocialStatus);
                 }
             }
-            if (changedPersonSocialStatuses.Count > personSocialStatusesCount - 1)
+            if (changedPersonSocialStatuses.Count > personSocialStatusesCount)
             {
-                for (int j = personSocialStatusesCount - 1; j < changedPersonSocialStatuses.Count; j++)
+                for (int j = personSocialStatusesCount; j < changedPersonSocialStatuses.Count; j++)
                 {
+                    changedPersonSocialStatuses[j].Person = person;
                     db.Add(changedPersonSocialStatuses[j]);
                 }
             }
@@ -550,10 +590,11 @@ namespace Core
                     db.Remove(personDisability);
                 }
             }
-            if (changedPersonDisabilities.Count > personDisabilitiesCount - 1)
+            if (changedPersonDisabilities.Count > personDisabilitiesCount)
             {
-                for (int j = personDisabilitiesCount - 1; j < changedPersonDisabilities.Count; j++)
+                for (int j = personDisabilitiesCount; j < changedPersonDisabilities.Count; j++)
                 {
+                    changedPersonDisabilities[j].Person = person;
                     db.Add(changedPersonDisabilities[j]);
                 }
             }
@@ -583,10 +624,11 @@ namespace Core
                     db.Remove(personIdentityDocument);
                 }
             }
-            if (changedPersonIdentityDocuments.Count > personIdentityDocumentsCount - 1)
+            if (changedPersonIdentityDocuments.Count > personIdentityDocumentsCount)
             {
-                for (int j = personIdentityDocumentsCount - 1; j < changedPersonIdentityDocuments.Count; j++)
+                for (int j = personIdentityDocumentsCount; j < changedPersonIdentityDocuments.Count; j++)
                 {
+                    changedPersonIdentityDocuments[j].Person = person;
                     db.Add(changedPersonIdentityDocuments[j]);
                 }
             }
@@ -618,10 +660,11 @@ namespace Core
                     db.Remove(personAddress);
                 }
             }
-            if (changedPersonAddresses.Count > personAddressesCount - 1)
+            if (changedPersonAddresses.Count > personAddressesCount)
             {
-                for (int j = personAddressesCount - 1; j < changedPersonAddresses.Count; j++)
+                for (int j = personAddressesCount; j < changedPersonAddresses.Count; j++)
                 {
+                    changedPersonAddresses[j].Person = person;
                     db.Add(changedPersonAddresses[j]);
                 }
             }
@@ -651,10 +694,11 @@ namespace Core
                     db.Remove(personName);
                 }
             }
-            if (changedPersonNames.Count > personInsuranceDocumentsCount - 1)
+            if (changedPersonNames.Count > personInsuranceDocumentsCount)
             {
-                for (int j = personInsuranceDocumentsCount - 1; j < changedPersonNames.Count; j++)
+                for (int j = personInsuranceDocumentsCount; j < changedPersonNames.Count; j++)
                 {
+                    changedPersonNames[j].Person = person;
                     db.Add(changedPersonNames[j]);
                 }
             }
@@ -684,10 +728,11 @@ namespace Core
                     db.Remove(personInsuranceDocument);
                 }
             }
-            if (changedPersonInsuranceDocuments.Count > personInsuranceDocumentsCount - 1)
+            if (changedPersonInsuranceDocuments.Count > personInsuranceDocumentsCount)
             {
-                for (int j = personInsuranceDocumentsCount - 1; j < changedPersonInsuranceDocuments.Count; j++)
+                for (int j = personInsuranceDocumentsCount; j < changedPersonInsuranceDocuments.Count; j++)
                 {
+                    changedPersonInsuranceDocuments[j].Person = person;
                     db.Add(changedPersonInsuranceDocuments[j]);
                 }
             }

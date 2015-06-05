@@ -95,7 +95,7 @@
             </Grid>
         </ScrollViewer>
         <StackPanel  Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
-            <Button Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}"/>
+            <Button Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}" IsEnabled="{Binding IsSaveEnabled}"/>
             <Button Margin="3"  Height="24" Padding="3" Content="Отмена" />
         </StackPanel>
     </StackPanel>

@@ -95,7 +95,7 @@ namespace Registry
             foreach (var personIdentityDocumentViewModel in PersonIdentityDocuments)
             {
                 personIdentityDocument = personIdentityDocumentViewModel.SetData();
-                personIdentityDocument.PersonId = personId;
+                //personIdentityDocument.PersonId = personId;
                 listPersonIdentityDocument.Add(personIdentityDocument);
             }
             return listPersonIdentityDocument;
@@ -108,7 +108,7 @@ namespace Registry
         public ICommand AddPersonIdentityDocumentCommand { get; set; }
         private void AddPersonIdentityDocument()
         {
-            PersonIdentityDocuments.Add(new PersonIdentityDocumentViewModel(new PersonIdentityDocument() { EndDate = DateTime.MaxValue.Date }, service));
+            PersonIdentityDocuments.Add(new PersonIdentityDocumentViewModel(new PersonIdentityDocument() { BeginDate = new DateTime(DateTime.Now.Year, 1, 1), EndDate = DateTime.MaxValue.Date }, service));
             RaisePropertyChanged("PersonIdentityDocumentsHasNoItems");
         }
 

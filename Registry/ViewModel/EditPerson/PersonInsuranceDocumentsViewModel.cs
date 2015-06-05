@@ -175,7 +175,7 @@ namespace Registry
             foreach (var insurancedocumentsViewModel in InsuranceDocuments)
             {
                 personInsuranceDocument = insurancedocumentsViewModel.SetData();
-                personInsuranceDocument.PersonId = personId;
+                //personInsuranceDocument.PersonId = personId;
                 listInsuranceDocument.Add(personInsuranceDocument);
             }
             return listInsuranceDocument;

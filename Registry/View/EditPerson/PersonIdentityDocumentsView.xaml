@@ -83,10 +83,10 @@
 
                                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="2"  Text="С "/>
                                 <DatePicker Grid.Row="4" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" 
-                                            BorderThickness="1"/>
+                                            BorderThickness="1" DisplayDateStart="1900-01-01"/>
                                 <TextBlock Grid.Row="4" Grid.Column="2" Margin="2" Text="по" HorizontalAlignment="Right"/>
                                 <DatePicker Grid.Row="4" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
-                                            BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
+                                            BorderThickness="1" DisplayDateStart="1900-01-01" IsEnabled="{Binding WithEndDate}"/>
 
                                 <CheckBox Grid.Row="5" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch" Content="Бессрочно" BorderThickness="1" IsChecked="{Binding WithoutEndDate}"/>
                             </Grid>

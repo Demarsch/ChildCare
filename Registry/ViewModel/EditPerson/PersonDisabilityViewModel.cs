@@ -158,7 +158,10 @@ namespace Registry
             set
             {
                 Set("WithoutEndDate", ref withoutEndDate, value);
-                EndDate = DateTime.MaxValue;
+                if (withoutEndDate)
+                    EndDate = DateTime.MaxValue;
+                else
+                    EndDate = new DateTime(DateTime.Now.Year + 1, 1, 1);
                 RaisePropertyChanged("WithEndDate");
             }
         }

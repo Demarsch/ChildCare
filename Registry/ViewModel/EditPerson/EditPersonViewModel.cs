@@ -98,17 +98,32 @@ namespace Registry
         }
 
         public ICommand SaveChangesCommand { get; set; }
-        private void SaveChanges()
+        private async void SaveChanges()
+        {
+            var task = Task.Factory.StartNew(SaveData);
+            IsSaveEnabled = false;
+            await task;
+            IsSaveEnabled = true;
+        }
+
+        private void SaveData()
         {
             var personNames = new List<PersonName>();
-            var person = editPersonDataViewModel.GetUnsavedPerson(out personNames);
-            var personInsuranceDocuments = editPersonDataViewModel.GetUnsavedPersonInsuranceDocuments();
-            var personAddresses = editPersonDataViewModel.GetUnsavedPersonAddresses();
-            var personIdentityDocuments = editPersonDataViewModel.GetUnsavedPersonIdentityDocuments();
-            var personDisabilities = editPersonDataViewModel.GetUnsavedPersonDisabilities();
-            var personSocialStatuses = editPersonDataViewModel.GetUnsavedPersonSocialStatuses();
+            var person = EditPersonDataViewModel.GetUnsavedPerson(out personNames);
+            var personInsuranceDocuments = EditPersonDataViewModel.GetUnsavedPersonInsuranceDocuments();
+            var personAddresses = EditPersonDataViewModel.GetUnsavedPersonAddresses();
+            var personIdentityDocuments = EditPersonDataViewModel.GetUnsavedPersonIdentityDocuments();
+            var personDisabilities = EditPersonDataViewModel.GetUnsavedPersonDisabilities();
+            var personSocialStatuses = EditPersonDataViewModel.GetUnsavedPersonSocialStatuses();
 
-            service.SavePersonData(person, personNames, personInsuranceDocuments, personAddresses, personIdentityDocuments, personDisabilities, personSocialStatuses);
+            service.SavePersonData(person, personNames, personInsuranceDocuments, personAddresses, personIdentityDocuments, personDisabilities, personSocialStatuses, EditPersonDataViewModel.HealthGroupId, EditPersonDataViewModel.NationalityId);
+        }
+
+        private bool isSaveEnabled = true;
+        public bool IsSaveEnabled
+        {
+            get { return isSaveEnabled; }
+            set { Set(() => IsSaveEnabled, ref isSaveEnabled, value); }
         }
 
         private PersonRelativeDTO selectedRelative;

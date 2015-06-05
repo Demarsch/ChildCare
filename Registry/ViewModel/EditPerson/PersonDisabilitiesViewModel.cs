@@ -96,7 +96,7 @@ namespace Registry
             foreach (var personDisabilitiesViewModel in PersonDisabilities)
             {
                 personDisability = personDisabilitiesViewModel.SetData();
-                personDisability.PersonId = personId;
+                //personDisability.PersonId = personId;
                 listPersonDisabilities.Add(personDisability);
             }
             return listPersonDisabilities;
@@ -108,7 +108,7 @@ namespace Registry
         public ICommand AddPersonDisabilityCommand { get; set; }
         private void AddPersonDisability()
         {
-            PersonDisabilities.Add(new PersonDisabilityViewModel(new PersonDisability(), service));
+            PersonDisabilities.Add(new PersonDisabilityViewModel(new PersonDisability() { BeginDate = new DateTime(DateTime.Now.Year, 1, 1) }, service));
             RaisePropertyChanged("PersonDisabilitiesHasNoItems");
         }
 

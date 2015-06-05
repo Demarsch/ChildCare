@@ -67,7 +67,7 @@ namespace Registry
                     Org = null;
                 BeginDate = personSocialStatus.BeginDateTime;
                 EndDate = personSocialStatus.EndDateTime;
-                WithoutEndDate = personSocialStatus.EndDateTime.Date == DateTime.MaxValue.Date;
+                WithoutEndDate = personSocialStatus.EndDateTime == DateTime.MaxValue;
             }
             else
             {
@@ -75,7 +75,7 @@ namespace Registry
                 Office = string.Empty;
                 Org = null;
                 BeginDate = new DateTime(1900, 1, 1);
-                EndDate = DateTime.MaxValue.Date;
+                EndDate = DateTime.MaxValue;
                 WithoutEndDate = true;
             }
         }
@@ -133,7 +133,7 @@ namespace Registry
             }
         }
 
-        private DateTime endDate = DateTime.MaxValue.Date;
+        private DateTime endDate = DateTime.MaxValue;
         public DateTime EndDate
         {
             get { return endDate; }
@@ -152,7 +152,10 @@ namespace Registry
             set
             {
                 Set(() => WithoutEndDate, ref withoutEndDate, value);
-                EndDate = DateTime.MaxValue;
+                if (withoutEndDate)
+                    EndDate = DateTime.MaxValue;
+                else
+                    EndDate = new DateTime(DateTime.Now.Year + 1, 1, 1);
                 RaisePropertyChanged(() => WithEndDate);
             }
         }

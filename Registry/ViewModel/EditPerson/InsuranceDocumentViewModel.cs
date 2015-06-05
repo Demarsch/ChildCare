@@ -53,7 +53,7 @@ namespace Registry
                 Number = insuranceDocument.Number;
                 BeginDate = insuranceDocument.BeginDate;
                 EndDate = insuranceDocument.EndDate;
-                WithoutEndDate = insuranceDocument.EndDate.Date == DateTime.MaxValue.Date;
+                WithoutEndDate = insuranceDocument.EndDate == DateTime.MaxValue;
             }
             else
             {
@@ -63,7 +63,7 @@ namespace Registry
                 Series = string.Empty;
                 Number = string.Empty;
                 BeginDate = new DateTime(1900, 1, 1);
-                EndDate = DateTime.MaxValue.Date;
+                EndDate = DateTime.MaxValue;
             }
         }
 

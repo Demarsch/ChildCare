@@ -293,12 +293,16 @@ namespace Registry
 
         public List<InsuranceDocument> GetUnsavedPersonInsuranceDocuments()
         {
-            return insuranceDocumentViewModel.GetUnsavedPersonInsuranceDocuments();
+            if (insuranceDocumentViewModel != null)
+                return insuranceDocumentViewModel.GetUnsavedPersonInsuranceDocuments();
+            return null;
         }
 
         public List<PersonAddress> GetUnsavedPersonAddresses()
         {
-            return personAddressesViewModel.GetUnsavedPersonAddresses();
+            if (personAddressesViewModel != null)
+                return personAddressesViewModel.GetUnsavedPersonAddresses();
+            return null;
         }
 
         public Person GetUnsavedPerson(out List<PersonName> personNames)
@@ -308,19 +312,25 @@ namespace Registry
 
         public List<PersonIdentityDocument> GetUnsavedPersonIdentityDocuments()
         {
-            return personIdentityDocumentsViewModel.GetUnsavedPersonIdentityDocuments();
+            if (personIdentityDocumentsViewModel != null)
+                return personIdentityDocumentsViewModel.GetUnsavedPersonIdentityDocuments();
+            return null;
         }
 
         public List<PersonDisability> GetUnsavedPersonDisabilities()
         {
-            return personDisabilitiesViewModel.GetUnsavedPersonDisabilities();
+            if (personDisabilitiesViewModel != null)
+                return personDisabilitiesViewModel.GetUnsavedPersonDisabilities();
+            return null;
         }
 
         public List<PersonSocialStatus> GetUnsavedPersonSocialStatuses()
         {
-            return personSocialStatusesViewModel.GetUnsavedPersonSocialStatuses();
+            if (personSocialStatusesViewModel != null)
+                return personSocialStatusesViewModel.GetUnsavedPersonSocialStatuses();
+            return null;
         }
-        
+
         #endregion
 
         #region Inplementation IDataErrorInfo

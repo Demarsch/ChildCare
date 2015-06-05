@@ -160,6 +160,7 @@
     <Compile Include="CmdBehavior\EventHandlerGenerator.cs" />
     <Compile Include="CmdBehavior\IExecutionStrategy.cs" />
     <Compile Include="Converters\DiagnosticsConverter.cs" />
+    <Compile Include="Converters\ImageConverter.cs" />
     <Compile Include="Converters\UniversalMultiBooleanConverter.cs" />
     <Compile Include="Converters\UniversalConverter.cs" />
     <Compile Include="Interfaces\IDialogService.cs" />

@@ -106,9 +106,11 @@
                                 <TextBox Grid.Row="4" Grid.Column="3" Margin="2" Text="{Binding Number, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
 
                                 <TextBlock Grid.Row="5" Grid.Column="0" Margin="2"  Text="С "/>
-                                <DatePicker Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" SelectedDate="{Binding BeginDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" BorderThickness="1"/>
+                                <DatePicker Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" DisplayDateStart="1900-01-01" 
+                                            SelectedDate="{Binding BeginDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" BorderThickness="1"/>
                                 <TextBlock Grid.Row="5" Grid.Column="2" Margin="2" Text="по" HorizontalAlignment="Right"/>
-                                <DatePicker Grid.Row="5" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"  SelectedDate="{Binding EndDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
+                                <DatePicker Grid.Row="5" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch"   DisplayDateStart="1900-01-01"
+                                            SelectedDate="{Binding EndDate, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" BorderThickness="1" IsEnabled="{Binding WithEndDate}"/>
 
                                 <CheckBox Grid.Row="6" Grid.Column="3" Margin="2" HorizontalAlignment="Stretch" Content="Бессрочно" BorderThickness="1" IsChecked="{Binding WithoutEndDate}"/>
                             </Grid>
