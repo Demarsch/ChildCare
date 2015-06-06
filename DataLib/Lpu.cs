@@ -12,10 +12,16 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class ClosedDate
+    public partial class Lpu
     {
+        public Lpu()
+        {
+            this.Assignments = new HashSet<Assignment>();
+        }
+    
         public int Id { get; set; }
-        public System.DateTime ClosedDate1 { get; set; }
-        public Nullable<System.DateTime> MoveToDate { get; set; }
+        public string Name { get; set; }
+    
+        public virtual ICollection<Assignment> Assignments { get; set; }
     }
 }

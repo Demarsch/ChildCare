@@ -56,6 +56,7 @@ namespace Registry
                         PersonShortName = x.Person.ShortName,
                         IsTemporary = x.IsTemporary,
                         AssignUserId = x.AssignUserId,
+                        AssignLpuId = x.AssignLpuId,
                         FinancingSourceId = x.FinancingSourceId,
                         Note = x.Note
                     })
@@ -270,13 +271,14 @@ namespace Registry
             }
         }
 
-        public void UpdateAssignment(int assignmentId, int newFinancingSourceId, string newNote)
+        public void UpdateAssignment(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId)
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
                 var assignment = dataContext.GetData<Assignment>().First(x => x.Id == assignmentId);
                 assignment.FinancingSourceId = newFinancingSourceId;
                 assignment.Note = newNote;
+                assignment.AssignLpuId = newAssignLpuId;
                 dataContext.Save();
             }
         }

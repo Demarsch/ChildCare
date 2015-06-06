@@ -138,12 +138,17 @@ namespace Registry
         {
             try
             {
-                var assignment = await Task<AssignmentDTO>.Factory.StartNew(() => patientAssignmentService.GetAssignment(assignmentId));
+                if (currentPatient == null)
+                {
+                    return;
+                }
+                var assignment = await Task<AssignmentDTO>.Factory.StartNew(() => patientAssignmentService.GetAssignment(assignmentId, currentPatient.Id));
                 Assignments.RemoveWhere(x => x.Id == assignmentId);
                 if (assignment != null && !assignment.IsCanceled)
                 {
                     Assignments.Add(new CurrentPatientAssignmentViewModel(assignment, cacheService));
                 }
+                ShowThatCurrentPatientHasNoAssignments = CanShowCurrentPatientAssignments && Assignments.Count == 0;
             }
             catch (Exception ex)
             {

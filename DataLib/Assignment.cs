@@ -20,6 +20,7 @@ namespace DataLib
         public System.DateTime AssignDateTime { get; set; }
         public int Duration { get; set; }
         public int AssignUserId { get; set; }
+        public Nullable<int> AssignLpuId { get; set; }
         public int RoomId { get; set; }
         public int FinancingSourceId { get; set; }
         public Nullable<int> CancelUserId { get; set; }
@@ -30,6 +31,7 @@ namespace DataLib
         public System.DateTime CreationDateTime { get; set; }
     
         public virtual FinacingSource FinacingSource { get; set; }
+        public virtual Lpu Lpu { get; set; }
         public virtual Person Person { get; set; }
         public virtual Record Record { get; set; }
         public virtual RecordType RecordType { get; set; }

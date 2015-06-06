@@ -60,11 +60,11 @@ namespace Registry
             }
         }
 
-        public AssignmentDTO GetAssignment(int assignmentId)
+        public AssignmentDTO GetAssignment(int assignmentId, int patientId)
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
-                return dataContext.GetData<Assignment>().Where(x => x.Id == assignmentId)
+                return dataContext.GetData<Assignment>().Where(x => x.Id == assignmentId && x.PersonId == patientId)
                     .Select(x => new AssignmentDTO
                     {
                         Id = x.Id,

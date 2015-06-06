@@ -9,6 +9,6 @@ namespace Registry
 
         ICollection<AssignmentDTO> GetActualAssignments(int patientId, DateTime date);
 
-        AssignmentDTO GetAssignment(int assignmentId);
+        AssignmentDTO GetAssignment(int assignmentId, int patientId);
     }
 }

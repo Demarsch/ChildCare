@@ -26,10 +26,8 @@ namespace DataLib
         }
     
         public virtual DbSet<AddressType> AddressTypes { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Branch> Branches { get; set; }
         public virtual DbSet<ChangeNameReason> ChangeNameReasons { get; set; }
-        public virtual DbSet<ClosedDate> ClosedDates { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
         public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
@@ -77,5 +75,7 @@ namespace DataLib
         public virtual DbSet<HealthGroup> HealthGroups { get; set; }
         public virtual DbSet<PersonHealthGroup> PersonHealthGroups { get; set; }
         public virtual DbSet<PersonNationality> PersonNationalities { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<Lpu> Lpus { get; set; }
     }
 }

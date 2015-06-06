@@ -254,6 +254,19 @@ namespace Registry
             }
         }
 
+        public int? AssignLpuId
+        {
+            get { return assignment.AssignLpuId; }
+            set
+            {
+                if (assignment.AssignLpuId != value)
+                {
+                    assignment.AssignLpuId = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         private bool isInReadOnlyMode;
 
         public bool IsInReadOnlyMode

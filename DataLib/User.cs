@@ -16,13 +16,13 @@ namespace DataLib
     {
         public User()
         {
-            this.Assignments = new HashSet<Assignment>();
-            this.Assignments1 = new HashSet<Assignment>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.Records = new HashSet<Record>();
             this.UserMessages = new HashSet<UserMessage>();
             this.UserMessages1 = new HashSet<UserMessage>();
             this.UserPermissions = new HashSet<UserPermission>();
+            this.Assignments = new HashSet<Assignment>();
+            this.Assignments1 = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -31,13 +31,13 @@ namespace DataLib
         public System.DateTime BeginDateTime { get; set; }
         public Nullable<System.DateTime> EndDateTime { get; set; }
     
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        public virtual ICollection<Assignment> Assignments1 { get; set; }
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual Person Person { get; set; }
         public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<UserMessage> UserMessages { get; set; }
         public virtual ICollection<UserMessage> UserMessages1 { get; set; }
         public virtual ICollection<UserPermission> UserPermissions { get; set; }
+        public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<Assignment> Assignments1 { get; set; }
     }
 }

@@ -343,6 +343,7 @@ namespace Registry
                 Duration = assignment.Duration,
                 IsTemporary = true,
                 AssignUserId = assignment.AssignUserId,
+                AssignLpuId = assignment.AssignLpuId,
                 Note = assignment.Note,
                 FinancingSourceId = assignment.FinancingSourceId
             };
@@ -355,8 +356,9 @@ namespace Registry
             var isFailed = false;
             do
             {
-                var viewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>(), true);
+                var viewModel = new ScheduleAssignmentUpdateViewModel(cacheService, true);
                 viewModel.SelectedFinancingSource = viewModel.FinacingSources.First(x => x.Id == assignment.FinancingSourceId);
+                viewModel.SelectedAssignLpu = viewModel.AssignLpuList.FirstOrDefault(x => x.Id == assignment.AssignLpuId);
                 var dialogResult = dialogService.ShowDialog(viewModel);
                 if (dialogResult != true)
                 {
@@ -528,10 +530,11 @@ namespace Registry
         private void RoomOnAssignmentUpdateRequested(object sender, EventArgs e)
         {
             var assignment = sender as OccupiedTimeSlotViewModel;
-            var dialogViewModel = new ScheduleAssignmentUpdateViewModel(cacheService.GetItems<FinacingSource>(), false);
+            var dialogViewModel = new ScheduleAssignmentUpdateViewModel(cacheService, false);
             dialogViewModel.Note = assignment.Note;
             dialogViewModel.SelectedFinancingSource = dialogViewModel.FinacingSources.FirstOrDefault(x => x.Id == assignment.FinancingSourceId);
-            var isFailed = false;
+            dialogViewModel.SelectedAssignLpu = dialogViewModel.AssignLpuList.FirstOrDefault(x => x.Id == assignment.AssignLpuId);
+            bool isFailed;
             do
             {
                 var dialogResult = dialogService.ShowDialog(dialogViewModel);
@@ -542,9 +545,11 @@ namespace Registry
                 try
                 {
                     log.InfoFormat("Trying to update information on assignment (Id = {0})", assignment.Id);
-                    scheduleService.UpdateAssignment(assignment.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note);
+                    var newAssignLpuId = dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
+                    scheduleService.UpdateAssignment(assignment.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note, newAssignLpuId);
                     assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
                     assignment.Note = dialogViewModel.Note;
+                    assignment.AssignLpuId = newAssignLpuId;
                     isFailed = false;
                     log.Info("Successfully updated information");
                 }

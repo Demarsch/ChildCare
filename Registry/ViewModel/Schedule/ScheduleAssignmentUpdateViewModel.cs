@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using Core;
@@ -14,14 +15,17 @@ namespace Registry
     {
         private readonly DispatcherTimer timer;
 
-        public ScheduleAssignmentUpdateViewModel(IEnumerable<FinacingSource> financingSources, bool runCountdown)
+        private static readonly Lpu EmptyLpu = new Lpu();
+
+        public ScheduleAssignmentUpdateViewModel(ICacheService cacheService, bool runCountdown)
         {
-            FinacingSources = financingSources;
+            FinacingSources = cacheService.GetItems<FinacingSource>().OrderBy(x => x.Name).ToArray();
+            AssignLpuList = new[] { EmptyLpu }.Concat(cacheService.GetItems<Lpu>().OrderBy(x => x.Name)).ToArray();
             CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
             if (runCountdown)
             {
                 timer = new DispatcherTimer(TimeSpan.FromMinutes(10.0), DispatcherPriority.ApplicationIdle, (sender, args) => OnCloseRequested(new ReturnEventArgs<bool>(false)),
-                Dispatcher.CurrentDispatcher);
+                    Dispatcher.CurrentDispatcher);
             }
         }
 
@@ -33,6 +37,21 @@ namespace Registry
             set { Set("SelectedFinancingSource", ref selectedFinancingSource, value); }
         }
 
+        private Lpu selectedAssignLpu;
+
+        public Lpu SelectedAssignLpu
+        {
+            get { return selectedAssignLpu; }
+            set
+            {
+                if (value == EmptyLpu)
+                {
+                    value = null;
+                }
+                Set("SelectedAssignLpu", ref selectedAssignLpu, value);
+            }
+        }
+
         private string note;
 
         public string Note
@@ -42,6 +61,8 @@ namespace Registry
         }
 
         public IEnumerable<FinacingSource> FinacingSources { get; private set; }
+
+        public IEnumerable<Lpu> AssignLpuList { get; private set; }
 
         public string Title { get { return "Дополнительные детали назначения"; } }
 

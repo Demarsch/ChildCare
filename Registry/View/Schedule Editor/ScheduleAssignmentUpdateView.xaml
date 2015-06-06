@@ -11,14 +11,18 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Источник финансирования" Margin="5" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False" ItemsSource="{Binding FinacingSources}" SelectedItem="{Binding SelectedFinancingSource, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                      DisplayMemberPath="ShortName" Margin="5"  HorizontalAlignment="Stretch" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" x:Name="comboBox"
-                      Width="150"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Примечания (необязательно)" Margin="5" />
-            <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Width="350" MinHeight="150" Text="{Binding Note, UpdateSourceTrigger=LostFocus}" Margin="5" />
+            <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False" Grid.ColumnSpan="2" ItemsSource="{Binding FinacingSources, Mode=OneTime}" SelectedItem="{Binding SelectedFinancingSource, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                      DisplayMemberPath="ShortName" Margin="5"  HorizontalAlignment="Stretch" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" x:Name="comboBox"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="Направившее ЛПУ" Margin="5" />
+            <ComboBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" IsEditable="False" ItemsSource="{Binding AssignLpuList, Mode=OneTime}" SelectedItem="{Binding SelectedAssignLpu, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="Name" Margin="5" HorizontalAlignment="Stretch" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Text="Примечания (необязательно)" Margin="5" />
+            <TextBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Width="280" MinHeight="150" Text="{Binding Note, UpdateSourceTrigger=LostFocus}" Margin="5" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

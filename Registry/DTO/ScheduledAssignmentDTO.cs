@@ -25,6 +25,8 @@ namespace Registry
 
         public int AssignUserId { get; set; }
 
+        public int? AssignLpuId { get; set; }
+        
         public string Note { get; set; }
 
         public int FinancingSourceId { get; set; }
