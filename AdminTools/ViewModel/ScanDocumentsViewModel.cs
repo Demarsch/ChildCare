@@ -28,7 +28,7 @@ namespace AdminTools.ViewModel
 
             this.ScanCommand = new RelayCommand(Scan);
             PreviewImages = new ObservableCollection<ThumbnailDTO>();
-            DocumentTypes = new ObservableCollection<IdentityDocumentType>(personService.GetIdentityDocumentTypes());
+            DocumentTypes = new ObservableCollection<IdentityDocumentType>(/*personService.GetIdentityDocumentTypes()*/);
         }
 
         private void Scan()

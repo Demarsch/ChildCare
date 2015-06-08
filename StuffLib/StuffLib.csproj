@@ -215,6 +215,9 @@
     <Resource Include="License.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="dlls\Interop.WIA.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="dlls\WpfControls.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
