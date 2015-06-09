@@ -116,6 +116,5 @@
     <Build Include="dbo\Tables\PersonHealthGroups.sql" />
     <Build Include="dbo\Tables\HealthGroups.sql" />
     <Build Include="dbo\Tables\Countries.sql" />
-    <Build Include="dbo\Tables\Lpu.sql" />
   </ItemGroup>
 </Project>

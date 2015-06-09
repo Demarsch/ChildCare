@@ -16,7 +16,7 @@
     [CreationDateTime]  DATETIME       CONSTRAINT [DF__Assignmen__Creat__498EEC8D] DEFAULT (getdate()) NOT NULL,
     CONSTRAINT [PK_Assignments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Assignments_FinacingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinacingSources] ([Id]),
-    CONSTRAINT [FK_Assignments_Lpu] FOREIGN KEY ([AssignLpuId]) REFERENCES [dbo].[Lpu] ([Id]),
+    CONSTRAINT [FK_Assignments_Orgs] FOREIGN KEY ([AssignLpuId]) REFERENCES [dbo].[Orgs] ([Id]),
     CONSTRAINT [FK_Assignments_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
     CONSTRAINT [FK_Assignments_Records] FOREIGN KEY ([RecordId]) REFERENCES [dbo].[Records] ([Id]),
     CONSTRAINT [FK_Assignments_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]),
@@ -24,6 +24,8 @@
     CONSTRAINT [FK_Assignments_Users] FOREIGN KEY ([AssignUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Users1] FOREIGN KEY ([CancelUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

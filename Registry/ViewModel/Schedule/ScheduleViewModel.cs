@@ -356,10 +356,9 @@ namespace Registry
             var isFailed = false;
             do
             {
-                var viewModel = new ScheduleAssignmentUpdateViewModel(cacheService, true);
-                viewModel.SelectedFinancingSource = viewModel.FinacingSources.First(x => x.Id == assignment.FinancingSourceId);
-                viewModel.SelectedAssignLpu = viewModel.AssignLpuList.FirstOrDefault(x => x.Id == assignment.AssignLpuId);
-                var dialogResult = dialogService.ShowDialog(viewModel);
+                var dialogViewModel = new ScheduleAssignmentUpdateViewModel(cacheService, true);
+                dialogViewModel.SelectedFinancingSource = dialogViewModel.FinacingSources.First(x => x.Id == assignment.FinancingSourceId);
+                var dialogResult = dialogService.ShowDialog(dialogViewModel);
                 if (dialogResult != true)
                 {
                     try
@@ -388,12 +387,14 @@ namespace Registry
                     {
                         log.Info("User has chosen to save assignment, trying to update assignment...");
                         assignment.IsTemporary = false;
-                        assignment.FinancingSourceId = viewModel.SelectedFinancingSource.Id;
-                        assignment.Note = viewModel.Note;
+                        assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
+                        assignment.Note = dialogViewModel.Note;
+                        assignment.AssignLpuId = dialogViewModel.IsSelfAssigned || dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
                         scheduleService.SaveAssignment(assignment);
                         newAssignment.IsTemporary = false;
                         newAssignment.FinancingSourceId = assignment.FinancingSourceId;
                         newAssignment.Note = assignment.Note;
+                        newAssignment.AssignLpuId = assignment.AssignLpuId;
                         isFailed = false;
                         log.Info("New assignment was updated and moved from temporary state");
                         CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
@@ -545,7 +546,7 @@ namespace Registry
                 try
                 {
                     log.InfoFormat("Trying to update information on assignment (Id = {0})", assignment.Id);
-                    var newAssignLpuId = dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
+                    var newAssignLpuId = dialogViewModel.IsSelfAssigned || dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
                     scheduleService.UpdateAssignment(assignment.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note, newAssignLpuId);
                     assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
                     assignment.Note = dialogViewModel.Note;

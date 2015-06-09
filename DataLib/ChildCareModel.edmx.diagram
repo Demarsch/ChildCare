@@ -104,10 +104,8 @@
         <AssociationConnector Association="DataLib.FK_PersonDisabilities_Persons" />
         <EntityTypeShape EntityType="DataLib.DisabilityType" Width="1.5" PointX="8.375" PointY="3.25" />
         <AssociationConnector Association="DataLib.FK_PersonDisabilities_DisabilityTypes" />
-        <EntityTypeShape EntityType="DataLib.Org" Width="1.5" PointX="9" PointY="21.125" />
         <EntityTypeShape EntityType="DataLib.PersonSocialStatus" Width="1.5" PointX="11.25" PointY="25.125" />
         <EntityTypeShape EntityType="DataLib.SocialStatusType" Width="1.5" PointX="9" PointY="10.5" />
-        <AssociationConnector Association="DataLib.FK_PersonSocialStatuses_Orgs" />
         <AssociationConnector Association="DataLib.FK_PersonSocialStatuses_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonSocialStatuses_SocialStatusTypes" />
         <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="13.5" PointY="45.625" />
@@ -122,16 +120,17 @@
         <AssociationConnector Association="DataLib.FK_PersonHealthGroups_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonNationalities_Persons" />
         <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="15.75" PointY="32.375" />
-        <EntityTypeShape EntityType="DataLib.Lpu" Width="1.5" PointX="13.5" PointY="37.25" />
+        <EntityTypeShape EntityType="DataLib.Org" Width="1.5" PointX="9" PointY="21.625" />
         <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Lpu" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Orgs" />
         <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
         <AssociationConnector Association="DataLib.FK_Assignments_Records" />
         <AssociationConnector Association="DataLib.FK_Assignments_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
-      </Diagram>
+        <AssociationConnector Association="DataLib.FK_PersonSocialStatuses_Orgs" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

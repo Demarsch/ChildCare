@@ -181,9 +181,6 @@
     <Compile Include="InsuranceDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Lpu.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="MedicalHelpType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

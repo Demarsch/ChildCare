@@ -281,13 +281,6 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
-        <EntityType Name="Lpu">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
-        </EntityType>
         <EntityType Name="MedicalHelpTypes">
           <Key>
             <PropertyRef Name="Id" />
@@ -314,6 +307,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="IsLpu" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="PermissionLinks">
           <Key>
@@ -635,11 +629,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Assignments_Lpu">
-          <End Role="Lpu" Type="Self.Lpu" Multiplicity="0..1" />
+        <Association Name="FK_Assignments_Orgs">
+          <End Role="Orgs" Type="Self.Orgs" Multiplicity="0..1" />
           <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Lpu">
+            <Principal Role="Orgs">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Assignments">
@@ -1523,7 +1517,6 @@
           <EntitySet Name="InsuranceCompanies" EntityType="Self.InsuranceCompanies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceDocuments" EntityType="Self.InsuranceDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceDocumentTypes" EntityType="Self.InsuranceDocumentTypes" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Lpu" EntityType="Self.Lpu" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MedicalHelpTypes" EntityType="Self.MedicalHelpTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Okatos" EntityType="Self.Okatos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orgs" EntityType="Self.Orgs" Schema="dbo" store:Type="Tables" />
@@ -1560,8 +1553,8 @@
             <End Role="FinacingSources" EntitySet="FinacingSources" />
             <End Role="Assignments" EntitySet="Assignments" />
           </AssociationSet>
-          <AssociationSet Name="FK_Assignments_Lpu" Association="Self.FK_Assignments_Lpu">
-            <End Role="Lpu" EntitySet="Lpu" />
+          <AssociationSet Name="FK_Assignments_Orgs" Association="Self.FK_Assignments_Orgs">
+            <End Role="Orgs" EntitySet="Orgs" />
             <End Role="Assignments" EntitySet="Assignments" />
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_Persons" Association="Self.FK_Assignments_Persons">
@@ -2124,13 +2117,8 @@
             <End Role="DisabilityType" EntitySet="DisabilityTypes" />
             <End Role="PersonDisability" EntitySet="PersonDisabilities" />
           </AssociationSet>
-          <EntitySet Name="Orgs" EntityType="DataLib.Org" />
           <EntitySet Name="PersonSocialStatuses" EntityType="DataLib.PersonSocialStatus" />
           <EntitySet Name="SocialStatusTypes" EntityType="DataLib.SocialStatusType" />
-          <AssociationSet Name="FK_PersonSocialStatuses_Orgs" Association="DataLib.FK_PersonSocialStatuses_Orgs">
-            <End Role="Org" EntitySet="Orgs" />
-            <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
-          </AssociationSet>
           <AssociationSet Name="FK_PersonSocialStatuses_Persons" Association="DataLib.FK_PersonSocialStatuses_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
@@ -2169,13 +2157,13 @@
             <End Role="PersonNationality" EntitySet="PersonNationalities" />
           </AssociationSet>
           <EntitySet Name="Assignments" EntityType="DataLib.Assignment" />
-          <EntitySet Name="Lpus" EntityType="DataLib.Lpu" />
+          <EntitySet Name="Orgs" EntityType="DataLib.Org" />
           <AssociationSet Name="FK_Assignments_FinacingSources" Association="DataLib.FK_Assignments_FinacingSources">
             <End Role="FinacingSource" EntitySet="FinacingSources" />
             <End Role="Assignment" EntitySet="Assignments" />
           </AssociationSet>
-          <AssociationSet Name="FK_Assignments_Lpu" Association="DataLib.FK_Assignments_Lpu">
-            <End Role="Lpu" EntitySet="Lpus" />
+          <AssociationSet Name="FK_Assignments_Orgs" Association="DataLib.FK_Assignments_Orgs">
+            <End Role="Org" EntitySet="Orgs" />
             <End Role="Assignment" EntitySet="Assignments" />
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_Persons" Association="DataLib.FK_Assignments_Persons">
@@ -2201,6 +2189,10 @@
           <AssociationSet Name="FK_Assignments_Users1" Association="DataLib.FK_Assignments_Users1">
             <End Role="User" EntitySet="Users" />
             <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonSocialStatuses_Orgs" Association="DataLib.FK_PersonSocialStatuses_Orgs">
+            <End Role="Org" EntitySet="Orgs" />
+            <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -3338,7 +3330,7 @@
           <NavigationProperty Name="UserPermissions" Relationship="DataLib.FK_Permissions_Users" FromRole="User" ToRole="UserPermission" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Users" FromRole="User" ToRole="Assignment" />
           <NavigationProperty Name="Assignments1" Relationship="DataLib.FK_Assignments_Users1" FromRole="User" ToRole="Assignment" />
-        </EntityType>
+          </EntityType>
         <Association Name="FK_CommissionProtocols_Users">
           <End Type="DataLib.User" Role="User" Multiplicity="1" />
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
@@ -3511,14 +3503,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Org">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="Org" ToRole="PersonSocialStatus" />
-        </EntityType>
         <EntityType Name="PersonSocialStatus">
           <Key>
             <PropertyRef Name="Id" />
@@ -3528,11 +3512,11 @@
           <Property Name="SocialStatusTypeId" Type="Int32" Nullable="false" />
           <Property Name="Office" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="OrgId" Type="Int32" />
-          <NavigationProperty Name="Org" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="PersonSocialStatus" ToRole="Org" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="PersonSocialStatus" ToRole="Person" />
           <NavigationProperty Name="SocialStatusType" Relationship="DataLib.FK_PersonSocialStatuses_SocialStatusTypes" FromRole="PersonSocialStatus" ToRole="SocialStatusType" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Org" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="PersonSocialStatus" ToRole="Org" />
         </EntityType>
         <EntityType Name="SocialStatusType">
           <Key>
@@ -3545,18 +3529,6 @@
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_SocialStatusTypes" FromRole="SocialStatusType" ToRole="PersonSocialStatus" />
           <Property Name="NeedPlace" Type="Boolean" Nullable="false" />
         </EntityType>
-        <Association Name="FK_PersonSocialStatuses_Orgs">
-          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
-          <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Org">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonSocialStatus">
-              <PropertyRef Name="OrgId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PersonSocialStatuses_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
           <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
@@ -3733,7 +3705,7 @@
           <Property Name="IsTemporary" Type="Boolean" Nullable="false" />
           <Property Name="CreationDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="FinacingSource" Relationship="DataLib.FK_Assignments_FinacingSources" FromRole="Assignment" ToRole="FinacingSource" />
-          <NavigationProperty Name="Lpu" Relationship="DataLib.FK_Assignments_Lpu" FromRole="Assignment" ToRole="Lpu" />
+          <NavigationProperty Name="Org" Relationship="DataLib.FK_Assignments_Orgs" FromRole="Assignment" ToRole="Org" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Assignments_Persons" FromRole="Assignment" ToRole="Person" />
           <NavigationProperty Name="Record" Relationship="DataLib.FK_Assignments_Records" FromRole="Assignment" ToRole="Record" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="Assignment" ToRole="RecordType" />
@@ -3741,13 +3713,15 @@
           <NavigationProperty Name="User" Relationship="DataLib.FK_Assignments_Users" FromRole="Assignment" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DataLib.FK_Assignments_Users1" FromRole="Assignment" ToRole="User" />
         </EntityType>
-        <EntityType Name="Lpu">
+        <EntityType Name="Org">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Lpu" FromRole="Lpu" ToRole="Assignment" />
+          <Property Name="IsLpu" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Orgs" FromRole="Org" ToRole="Assignment" />
+          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="Org" ToRole="PersonSocialStatus" />
         </EntityType>
         <Association Name="FK_Assignments_FinacingSources">
           <End Type="DataLib.FinacingSource" Role="FinacingSource" Multiplicity="1" />
@@ -3761,11 +3735,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Assignments_Lpu">
-          <End Type="DataLib.Lpu" Role="Lpu" Multiplicity="0..1" />
+        <Association Name="FK_Assignments_Orgs">
+          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
           <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Lpu">
+            <Principal Role="Org">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Assignment">
@@ -3842,6 +3816,18 @@
             </Principal>
             <Dependent Role="Assignment">
               <PropertyRef Name="CancelUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonSocialStatuses_Orgs">
+          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
+          <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Org">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonSocialStatus">
+              <PropertyRef Name="OrgId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4389,14 +4375,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Orgs">
-            <EntityTypeMapping TypeName="DataLib.Org">
-              <MappingFragment StoreEntitySet="Orgs">
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PersonSocialStatuses">
             <EntityTypeMapping TypeName="DataLib.PersonSocialStatus">
               <MappingFragment StoreEntitySet="PersonSocialStatuses">
@@ -4499,9 +4477,10 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Lpus">
-            <EntityTypeMapping TypeName="DataLib.Lpu">
-              <MappingFragment StoreEntitySet="Lpu">
+          <EntitySetMapping Name="Orgs">
+            <EntityTypeMapping TypeName="DataLib.Org">
+              <MappingFragment StoreEntitySet="Orgs">
+                <ScalarProperty Name="IsLpu" ColumnName="IsLpu" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

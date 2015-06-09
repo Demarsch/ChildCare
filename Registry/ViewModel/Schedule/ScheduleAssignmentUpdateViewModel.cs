@@ -13,20 +13,26 @@ namespace Registry
 {
     public class ScheduleAssignmentUpdateViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
     {
-        private readonly DispatcherTimer timer;
+        private DispatcherTimer timer;
 
-        private static readonly Lpu EmptyLpu = new Lpu();
+        private static readonly Org SelfAssigned = new Org { Name = "Самообращение" };
 
         public ScheduleAssignmentUpdateViewModel(ICacheService cacheService, bool runCountdown)
         {
             FinacingSources = cacheService.GetItems<FinacingSource>().OrderBy(x => x.Name).ToArray();
-            AssignLpuList = new[] { EmptyLpu }.Concat(cacheService.GetItems<Lpu>().OrderBy(x => x.Name)).ToArray();
+            AssignLpuList = new[] { SelfAssigned }.Concat(cacheService.GetItems<Org>().Where(x => x.IsLpu).OrderBy(x => x.Name)).ToArray();
             CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
             if (runCountdown)
             {
-                timer = new DispatcherTimer(TimeSpan.FromMinutes(10.0), DispatcherPriority.ApplicationIdle, (sender, args) => OnCloseRequested(new ReturnEventArgs<bool>(false)),
+                timer = new DispatcherTimer(TimeSpan.FromMinutes(10.0), DispatcherPriority.ApplicationIdle, (sender, args) =>
+                {
+                    timer.Stop();
+                    timer = null;
+                    OnCloseRequested(new ReturnEventArgs<bool>(false));
+                },
                     Dispatcher.CurrentDispatcher);
             }
+            SelectedAssignLpu = AssignLpuList.FirstOrDefault(x => x.Name == Configuration.CurrentLpuName);
         }
 
         private FinacingSource selectedFinancingSource;
@@ -37,19 +43,28 @@ namespace Registry
             set { Set("SelectedFinancingSource", ref selectedFinancingSource, value); }
         }
 
-        private Lpu selectedAssignLpu;
+        private Org selectedAssignLpu;
 
-        public Lpu SelectedAssignLpu
+        public Org SelectedAssignLpu
         {
             get { return selectedAssignLpu; }
             set
             {
-                if (value == EmptyLpu)
+                if (value == null)
                 {
-                    value = null;
+                    value = SelfAssigned;
                 }
                 Set("SelectedAssignLpu", ref selectedAssignLpu, value);
+                IsSelfAssigned = value == SelfAssigned;
             }
+        }
+
+        private bool isSelfAssigned;
+
+        public bool IsSelfAssigned
+        {
+            get { return isSelfAssigned; }
+            private set { Set("IsSelfAssigned", ref isSelfAssigned, value); }
         }
 
         private string note;
@@ -62,7 +77,7 @@ namespace Registry
 
         public IEnumerable<FinacingSource> FinacingSources { get; private set; }
 
-        public IEnumerable<Lpu> AssignLpuList { get; private set; }
+        public IEnumerable<Org> AssignLpuList { get; private set; }
 
         public string Title { get { return "Дополнительные детали назначения"; } }
 

@@ -31,7 +31,7 @@ namespace DataLib
         public System.DateTime CreationDateTime { get; set; }
     
         public virtual FinacingSource FinacingSource { get; set; }
-        public virtual Lpu Lpu { get; set; }
+        public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
         public virtual Record Record { get; set; }
         public virtual RecordType RecordType { get; set; }
