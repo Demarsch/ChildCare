@@ -26,17 +26,17 @@ namespace Registry
             get { return editPersonDataViewModel; }
             set
             {
-                Set("EditPersonDataViewModel", ref editPersonDataViewModel, value);
+                Set(() => EditPersonDataViewModel, ref editPersonDataViewModel, value);
             }
         }
 
-        private EditPersonDataViewModel editPersonRelativeDataViewModel;
-        public EditPersonDataViewModel EditPersonRelativeDataViewModel
+        private ObservableCollection<EditPersonDataViewModel> editPersonRelativeDataViewModels;
+        public ObservableCollection<EditPersonDataViewModel> EditPersonRelativeDataViewModels
         {
-            get { return editPersonRelativeDataViewModel; }
+            get { return editPersonRelativeDataViewModels; }
             set
             {
-                Set("EditPersonRelativeDataViewModel", ref editPersonRelativeDataViewModel, value);
+                Set(() => EditPersonRelativeDataViewModels, ref editPersonRelativeDataViewModels, value);
             }
         }
 
@@ -56,7 +56,7 @@ namespace Registry
             this.log = log;
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
-            EditPersonRelativeDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
+            EditPersonRelativeDataViewModels = new ObservableCollection<EditPersonDataViewModel>();
             EditPersonDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
             RelativeRelations = new ObservableCollection<RelativeRelationship>(service.GetRelativeRelationships());
             SaveChangesCommand = new RelayCommand(SaveChanges);
@@ -135,8 +135,16 @@ namespace Registry
                 Set("SelectedRelative", ref selectedRelative, value);
                 IsPersonEditing = (selectedRelative == null);
                 if (selectedRelative != null)
-                    EditPersonRelativeDataViewModel.Id = selectedRelative.RelativePersonId;
+                    SelectedRelativeViewModel = EditPersonRelativeDataViewModels.FirstOrDefault(x => x.Id == selectedRelative.RelativePersonId);
+                //EditPersonRelativeDataViewModels.Id = selectedRelative.RelativePersonId;
             }
+        }
+
+        private EditPersonDataViewModel selectedRelativeViewModel;
+        public EditPersonDataViewModel SelectedRelativeViewModel
+        {
+            get { return selectedRelativeViewModel; }
+            set { Set(() => SelectedRelativeViewModel, ref selectedRelativeViewModel, value); }
         }
 
         private bool isPersonEditing;
@@ -166,6 +174,8 @@ namespace Registry
                 });
             //listRelatives.Add(new PersonRelative());
             Relatives = new ObservableCollection<PersonRelativeDTO>(listRelatives);
+            foreach (var item in listRelatives)
+                editPersonRelativeDataViewModels.Add(new EditPersonDataViewModel(log, service, dialogService) { Id = item.RelativePersonId });
         }
 
         private ObservableCollection<PersonRelativeDTO> relatives;

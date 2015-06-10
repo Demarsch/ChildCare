@@ -4,6 +4,8 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:mainLib="clr-namespace:MainLib;assembly=MainLib"
         xmlns:registry="clr-namespace:Registry"
+        xmlns:stuffLib ="clr-namespace:StuffLib;assembly=StuffLib"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:core="clr-namespace:Core;assembly=StuffLib"
         Width="920" SizeToContent="Height" ResizeMode="NoResize">
 
@@ -83,14 +85,15 @@
                                         <TextBlock Text="{Binding ShortName}"/>
                                         <ComboBox Margin="2" ItemsSource="{Binding DataContext.RelativeRelations, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" 
                                               SelectedValuePath="Id" SelectedValue="{Binding RelativeRelationId}" DisplayMemberPath="Name"/>
-                                        <CheckBox Content="Представитель" IsChecked="{Binding IsRepresentative}" />
+                                        <stuffLib:CheckBoxExtentions Content="Представитель" IsChecked="{Binding IsRepresentative}" GroupName="PersonRelatives">
+                                        </stuffLib:CheckBoxExtentions>
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </DockPanel>
-                <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding EditPersonRelativeDataViewModel, Mode=OneWay}"/>
+                <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding SelectedRelativeViewModel, Mode=OneWay}"/>
 
             </Grid>
         </ScrollViewer>

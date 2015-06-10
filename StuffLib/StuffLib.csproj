@@ -194,6 +194,7 @@
     <Compile Include="ViewModel\MediaInformation.cs" />
     <Compile Include="ViewModel\PhotoViewModel.cs" />
     <Compile Include="ViewModel\TakeSnapshotCommand.cs" />
+    <Compile Include="ViewModel\CheckBoxExtentions.cs" />
     <Compile Include="View\WebcamDevice.xaml.cs">
       <DependentUpon>WebcamDevice.xaml</DependentUpon>
     </Compile>
