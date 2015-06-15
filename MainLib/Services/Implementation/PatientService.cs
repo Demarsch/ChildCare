@@ -25,10 +25,11 @@ namespace Core
             return (context.GetData<PersonRelative>().Where(x => x.PersonId == personId)
                 .Select(x => new PersonRelativeDTO()
                 {
-                     RelativePersonId = x.RelativeId,
-                     ShortName = x.Person1.ShortName,
-                     RelativeRelationId = x.RelativeRelationshipId,
-                     IsRepresentative = x.IsRepresentative
+                    PersonId = x.PersonId,
+                    RelativePersonId = x.RelativeId,
+                    ShortName = x.Person1.ShortName,
+                    RelativeRelationId = x.RelativeRelationshipId,
+                    IsRepresentative = x.IsRepresentative
                 }).ToList());
         }
 
@@ -44,7 +45,7 @@ namespace Core
             var context = dataContextProvider.GetNewDataContext();
             if (!context.GetData<Person>().Any(x => x.Id == personId))
                 return "Данный человек не найден!";
-            
+
             var currentPersonName = context.GetData<PersonName>().FirstOrDefault(x => fromDateTime >= x.BeginDateTime && fromDateTime < x.EndDateTime);
             var changeNameReason = context.GetData<ChangeNameReason>().FirstOrDefault(x => x.Id == changeNameReasonId);
             if (currentPersonName != null)
@@ -75,15 +76,15 @@ namespace Core
             }
             else
             {
-               var newPersonName = new PersonName()
-               {
-                   PersonId = personId,
-                   FirstName = firstName,
-                   LastName = lastName,
-                   MiddleName = middleName,
-                   BeginDateTime = DateTime.Now,
-                   EndDateTime = new DateTime(9000, 1, 1)
-               };
+                var newPersonName = new PersonName()
+                {
+                    PersonId = personId,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    MiddleName = middleName,
+                    BeginDateTime = DateTime.Now,
+                    EndDateTime = new DateTime(9000, 1, 1)
+                };
                 context.Add<PersonName>(newPersonName);
             }
             context.Save();

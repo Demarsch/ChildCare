@@ -110,13 +110,39 @@ namespace Registry
         {
             var personNames = new List<PersonName>();
             var person = EditPersonDataViewModel.GetUnsavedPerson(out personNames);
-            var personInsuranceDocuments = EditPersonDataViewModel.GetUnsavedPersonInsuranceDocuments();
-            var personAddresses = EditPersonDataViewModel.GetUnsavedPersonAddresses();
-            var personIdentityDocuments = EditPersonDataViewModel.GetUnsavedPersonIdentityDocuments();
-            var personDisabilities = EditPersonDataViewModel.GetUnsavedPersonDisabilities();
-            var personSocialStatuses = EditPersonDataViewModel.GetUnsavedPersonSocialStatuses();
+            var personDataSaveDTO = new PersonDataSaveDTO()
+            {
+                Person = person,
+                PersonNames = personNames,
+                PersonInsuranceDocuments = EditPersonDataViewModel.GetUnsavedPersonInsuranceDocuments(),
+                PersonAddresses = EditPersonDataViewModel.GetUnsavedPersonAddresses(),
+                PersonIdentityDocuments = EditPersonDataViewModel.GetUnsavedPersonIdentityDocuments(),
+                PersonDisabilities = EditPersonDataViewModel.GetUnsavedPersonDisabilities(),
+                PersonSocialStatuses = EditPersonDataViewModel.GetUnsavedPersonSocialStatuses(),
+                HealthGroupId = EditPersonDataViewModel.HealthGroupId,
+                NationalityId = EditPersonDataViewModel.NationalityId
+            };
 
-            service.SavePersonData(person, personNames, personInsuranceDocuments, personAddresses, personIdentityDocuments, personDisabilities, personSocialStatuses, EditPersonDataViewModel.HealthGroupId, EditPersonDataViewModel.NationalityId);
+            var personRelativesDataSaveDTO = new List<PersonDataSaveDTO>();
+            foreach (var personRelativeDataViewModels in EditPersonRelativeDataViewModels)
+            {
+                personNames = new List<PersonName>();
+                person = personRelativeDataViewModels.GetUnsavedPerson(out personNames);
+                personRelativesDataSaveDTO.Add(new PersonDataSaveDTO()
+                {
+                    Person = person,
+                    PersonNames = personNames,
+                    PersonInsuranceDocuments = personRelativeDataViewModels.GetUnsavedPersonInsuranceDocuments(),
+                    PersonAddresses = personRelativeDataViewModels.GetUnsavedPersonAddresses(),
+                    PersonIdentityDocuments = personRelativeDataViewModels.GetUnsavedPersonIdentityDocuments(),
+                    PersonDisabilities = personRelativeDataViewModels.GetUnsavedPersonDisabilities(),
+                    PersonSocialStatuses = personRelativeDataViewModels.GetUnsavedPersonSocialStatuses(),
+                    HealthGroupId = personRelativeDataViewModels.HealthGroupId,
+                    NationalityId = personRelativeDataViewModels.NationalityId
+                });
+            }
+
+            service.SavePersonData(personDataSaveDTO, personRelativesDataSaveDTO);
         }
 
         private bool isSaveEnabled = true;
