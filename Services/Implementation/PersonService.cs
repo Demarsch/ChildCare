@@ -200,7 +200,7 @@ namespace Core
             using (var db = provider.GetNewDataContext())
             {
                 var dateTimeNow = DateTime.Now;
-                return db.GetData<PersonName>().FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
+                return db.GetData<PersonName>().FirstOrDefault(y => y.PersonId == personId && dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
             }
         }
 
@@ -475,9 +475,9 @@ namespace Core
                 {
                     SetPersonData(personRelative, db);
                     //set relation between person and relative
-                    if (personRelative.PersonRelative != null)
+                    if (personRelative.RelativeToPersonId > 0)
                     {
-                        var curPersonRelative = db.GetData<PersonRelative>().FirstOrDefault(x => x.PersonId == personRelative.PersonRelative.PersonId && x.RelativeId == personRelative.PersonRelative.RelativePersonId);
+                        var curPersonRelative = db.GetData<PersonRelative>().FirstOrDefault(x => x.PersonId == person.Person.Id && x.RelativeId == personRelative.Person.Id);
                         if (curPersonRelative == null)
                         {
                             curPersonRelative = new PersonRelative()
@@ -487,8 +487,8 @@ namespace Core
                             };
                             db.Add<PersonRelative>(curPersonRelative);
                         }
-                        curPersonRelative.IsRepresentative = personRelative.PersonRelative.IsRepresentative;
-                        curPersonRelative.RelativeRelationshipId = personRelative.PersonRelative.RelativeRelationId;
+                        curPersonRelative.IsRepresentative = personRelative.IsRepresentative;
+                        curPersonRelative.RelativeRelationshipId = personRelative.RelativeRelationId;
                     }
                 }
                 try
@@ -760,6 +760,15 @@ namespace Core
                     changedPersonInsuranceDocuments[j].Person = person;
                     db.Add(changedPersonInsuranceDocuments[j]);
                 }
+            }
+        }
+
+
+        public PersonRelative GetPersonRelative(int personId, int relativePersonId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonRelative>().FirstOrDefault(x => x.PersonId == personId && x.RelativeId == relativePersonId);
             }
         }
     }

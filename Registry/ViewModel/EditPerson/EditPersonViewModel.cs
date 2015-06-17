@@ -94,7 +94,7 @@ namespace Registry
 
         private void ReturnToPersonEditing()
         {
-            SelectedRelative = null;
+            SelectedRelativeViewModel = null;
         }
 
         public ICommand SaveChangesCommand { get; set; }
@@ -120,7 +120,8 @@ namespace Registry
                 PersonDisabilities = EditPersonDataViewModel.GetUnsavedPersonDisabilities(),
                 PersonSocialStatuses = EditPersonDataViewModel.GetUnsavedPersonSocialStatuses(),
                 HealthGroupId = EditPersonDataViewModel.HealthGroupId,
-                NationalityId = EditPersonDataViewModel.NationalityId
+                NationalityId = EditPersonDataViewModel.NationalityId,
+                RelativeToPersonId = 0
             };
 
             var personRelativesDataSaveDTO = new List<PersonDataSaveDTO>();
@@ -138,7 +139,10 @@ namespace Registry
                     PersonDisabilities = personRelativeDataViewModels.GetUnsavedPersonDisabilities(),
                     PersonSocialStatuses = personRelativeDataViewModels.GetUnsavedPersonSocialStatuses(),
                     HealthGroupId = personRelativeDataViewModels.HealthGroupId,
-                    NationalityId = personRelativeDataViewModels.NationalityId
+                    NationalityId = personRelativeDataViewModels.NationalityId,
+                    RelativeToPersonId = personRelativeDataViewModels.RelativeToPersonId,
+                    IsRepresentative = personRelativeDataViewModels.IsRepresentative,
+                    RelativeRelationId = personRelativeDataViewModels.RelativeRelationId
                 });
             }
 
@@ -152,25 +156,15 @@ namespace Registry
             set { Set(() => IsSaveEnabled, ref isSaveEnabled, value); }
         }
 
-        private PersonRelativeDTO selectedRelative;
-        public PersonRelativeDTO SelectedRelative
-        {
-            get { return selectedRelative; }
-            set
-            {
-                Set("SelectedRelative", ref selectedRelative, value);
-                IsPersonEditing = (selectedRelative == null);
-                if (selectedRelative != null)
-                    SelectedRelativeViewModel = EditPersonRelativeDataViewModels.FirstOrDefault(x => x.Id == selectedRelative.RelativePersonId);
-                //EditPersonRelativeDataViewModels.Id = selectedRelative.RelativePersonId;
-            }
-        }
-
         private EditPersonDataViewModel selectedRelativeViewModel;
         public EditPersonDataViewModel SelectedRelativeViewModel
         {
             get { return selectedRelativeViewModel; }
-            set { Set(() => SelectedRelativeViewModel, ref selectedRelativeViewModel, value); }
+            set
+            {
+                Set(() => SelectedRelativeViewModel, ref selectedRelativeViewModel, value);
+                IsPersonEditing = (selectedRelativeViewModel == null);
+            }
         }
 
         private bool isPersonEditing;
@@ -190,25 +184,20 @@ namespace Registry
         private void SetRelativesAsync()
         {
             var listRelatives = service.GetPersonRelativesDTO(Id);
-            listRelatives.Add(new PersonRelativeDTO()
-                {
-                    RelativePersonId = -1,
-                    ShortName = "Новый родственник",
-                    RelativeRelationId = 0,
-                    IsRepresentative = false,
-                    PhotoUri = string.Empty
-                });
-            //listRelatives.Add(new PersonRelative());
-            Relatives = new ObservableCollection<PersonRelativeDTO>(listRelatives);
-            foreach (var item in listRelatives)
-                editPersonRelativeDataViewModels.Add(new EditPersonDataViewModel(log, service, dialogService) { Id = item.RelativePersonId });
-        }
+            //listRelatives.Add(new PersonRelativeDTO()
+            //    {
+            //        PersonId = Id,
+            //        RelativePersonId = -1,
+            //        ShortName = "Новый родственник",
+            //        RelativeRelationId = 0,
+            //        IsRepresentative = false,
+            //        PhotoUri = string.Empty
+            //    });
 
-        private ObservableCollection<PersonRelativeDTO> relatives;
-        public ObservableCollection<PersonRelativeDTO> Relatives
-        {
-            get { return relatives; }
-            set { Set("Relatives", ref relatives, value); }
+            var listViewModels = new List<EditPersonDataViewModel>();
+            foreach (var item in listRelatives)
+                listViewModels.Add(new EditPersonDataViewModel(log, service, dialogService) { Id = item.RelativePersonId, RelativeToPersonId = this.Id });
+            EditPersonRelativeDataViewModels = new ObservableCollection<EditPersonDataViewModel>(listViewModels);
         }
 
         public string PersonFullName

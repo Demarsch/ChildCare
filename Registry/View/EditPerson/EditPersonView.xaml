@@ -62,7 +62,7 @@
                             <TextBlock Margin="3" Text="К пациенту"/>
                         </StackPanel>
                     </Button>
-                    <ListBox Width="300" ItemsSource="{Binding Relatives}" SelectedItem="{Binding SelectedRelative}">
+                    <ListBox Width="300" ItemsSource="{Binding EditPersonRelativeDataViewModels}" SelectedItem="{Binding SelectedRelativeViewModel}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>

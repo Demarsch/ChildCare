@@ -30,6 +30,8 @@ namespace Core
 
         ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
 
+        PersonRelative GetPersonRelative(int personId, int relativePersonId);
+
         ICollection<RelativeRelationship> GetRelativeRelationships();
 
         ICollection<InsuranceDocument> GetInsuranceDocuments(int personId);

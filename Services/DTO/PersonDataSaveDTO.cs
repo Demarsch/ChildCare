@@ -28,6 +28,10 @@ namespace Core
 
         public int NationalityId { get; set; }
 
-        public PersonRelativeDTO PersonRelative { get; set; }
+        public int RelativeToPersonId { get; set; }
+
+        public int RelativeRelationId { get; set; }
+
+        public bool IsRepresentative { get; set; }
     }
 }
