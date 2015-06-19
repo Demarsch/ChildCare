@@ -5,6 +5,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Commission;component/View/Working/SelectCommissionMembersView.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/SelectPersonDocumentTypeView.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

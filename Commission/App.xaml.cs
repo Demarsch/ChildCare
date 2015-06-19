@@ -2,6 +2,7 @@
 using DataLib;
 using log4net;
 using log4net.Core;
+using MainLib.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -34,6 +35,7 @@ namespace Commission
             Container.RegisterSingle<IPersonService, PersonService>();
             Container.RegisterSingle<ICommissionService, CommissionService>();
             Container.RegisterSingle<IDialogService, WindowDialogService>();
+            Container.RegisterSingle<IDocumentService, DocumentService>();
             Container.RegisterSingle<ILog>(new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)));
 
             Container.Register<CommissionManagementViewModel>();
@@ -42,6 +44,8 @@ namespace Commission
             Container.Register<CommissionItemViewModel>();
             Container.Register<CommissionDecisionViewModel>();
             Container.Register<CommissionWorkViewModel>();
+            Container.Register<PersonDocumentsViewModel>();
+            Container.Register<ScanDocumentsViewModel>();
 
             MainWindow = new CommissionMainView() 
             { 

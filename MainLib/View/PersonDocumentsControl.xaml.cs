@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AdminTools.View
+namespace MainLib.View
 {
     /// <summary>
-    /// Interaction logic for ScanDocumentsView.xaml
+    /// Interaction logic for PersonDocumentsControl.xaml
     /// </summary>
-    public partial class ScanDocumentsView : Window
+    public partial class PersonDocumentsControl : UserControl
     {
-        public ScanDocumentsView()
+        public PersonDocumentsControl()
         {
             InitializeComponent();
         }

@@ -7,6 +7,8 @@ namespace Commission
     {
         public int Id { get; set; }
 
+        public int PersonId { get; set; }
+
         private string patientFIO;
         public string PatientFIO
         {

@@ -116,5 +116,8 @@
     <Build Include="dbo\Tables\PersonHealthGroups.sql" />
     <Build Include="dbo\Tables\HealthGroups.sql" />
     <Build Include="dbo\Tables\Countries.sql" />
+    <Build Include="dbo\Tables\PersonOuterDocuments.sql" />
+    <Build Include="dbo\Tables\OuterDocumentTypes.sql" />
+    <Build Include="dbo\Tables\Documents.sql" />
   </ItemGroup>
 </Project>

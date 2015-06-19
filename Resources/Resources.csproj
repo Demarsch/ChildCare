@@ -99,6 +99,24 @@
     <Resource Include="Images\Accepted_32x32.png" />
     <Resource Include="Images\Edited_32x32.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Scanner.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Save_48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Attachments.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\AddDocument32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\RemoveDocument32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SaveAccept32x32.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

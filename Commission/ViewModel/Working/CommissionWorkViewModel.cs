@@ -1,6 +1,7 @@
 ﻿using Core;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using MainLib.ViewModel;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,11 +17,13 @@ namespace Commission
         private IUserSystemInfoService userSystemInfoService;
         private IPersonService personService;
         public CommissionDecisionViewModel Decision { get; set; }
+        public PersonDocumentsViewModel PersonDocuments { get; set; }
 
         public CommissionWorkViewModel(ICommissionService commissionService, IUserService userService, IUserSystemInfoService userSystemInfoService, IPersonService personService,
-            CommissionDecisionViewModel decision)
+                                       IDocumentService documentService, CommissionDecisionViewModel decision, PersonDocumentsViewModel personDocuments)
         {
             Decision = decision;
+            PersonDocuments = personDocuments;
             this.commissionService = commissionService;
             this.userService = userService;
             this.personService = personService;
@@ -37,7 +40,11 @@ namespace Commission
 
         void NavigationAction()
         {
-            if (SelectedItem != null) Decision.Load(SelectedItem.Id);
+            if (SelectedItem != null)
+            {
+                Decision.Load(SelectedItem.Id);
+                PersonDocuments.Load(SelectedItem.PersonId);
+            }
         }
 
         BackgroundWorker worker;
@@ -85,6 +92,7 @@ namespace Commission
                 worker.ReportProgress(++percent, new CommissionProtocolDTO()
                 {
                     Id = commission.Id,
+                    PersonId = commission.PersonId,
                     PatientFIO = person.ShortName,
                     BirthDate = person.BirthYear,
                     Talon = commission.PersonTalonId.HasValue ? "Талон: " + personService.GetPersonTalonById(commission.PersonTalonId.Value).TalonNumber : "(талона нет)",

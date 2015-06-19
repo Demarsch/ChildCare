@@ -158,6 +158,9 @@
     <Compile Include="DisabilityType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Document.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="EFImplementations\ModelContext.cs" />
     <Compile Include="EFImplementations\ModelContextProvider.cs" />
     <Compile Include="FinacingSource.cs">
@@ -190,6 +193,9 @@
     <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="OuterDocumentType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PartialClasses\InsuranceCompany.cs" />
     <Compile Include="PartialClasses\PersonTalon.cs" />
     <Compile Include="PartialClasses\Person.cs" />
@@ -219,6 +225,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonNationality.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PersonOuterDocument.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonRelative.cs">

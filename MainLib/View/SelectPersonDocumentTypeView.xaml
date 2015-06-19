@@ -1,0 +1,33 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MainLib.ViewModel">
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <DataTemplate DataType="{x:Type local:SelectPersonDocumentTypeViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Content="Тип документа"></Label>
+            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding DocumentTypes, Mode=TwoWay}" 
+                                SelectedItem="{Binding SelectedDocumentType}" DisplayMemberPath="Name" Margin="5"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Дата документа" Margin="5"
+                                   Visibility="{Binding DocumentHasDate, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <DatePicker Grid.Row="1" Grid.Column="1" Margin="5"
+                                    SelectedDateFormat="Long" 
+                                    SelectedDate="{Binding SelectedDocumentDate, UpdateSourceTrigger=PropertyChanged}"
+                                    Visibility="{Binding DocumentHasDate, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Комментарии" Margin="5"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Margin="5" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" MaxWidth="300"/>
+
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

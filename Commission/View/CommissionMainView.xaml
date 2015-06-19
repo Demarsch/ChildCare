@@ -4,7 +4,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
         xmlns:local="clr-namespace:Commission"
         x:Class="Commission.CommissionMainView"
-        Title="Комиссия" Height="411" Width="575" WindowState="Maximized">
+        Title="Комиссия" Height="411" Width="600" WindowState="Maximized" MinWidth="830">
     <Grid>
         <xcad:DockingManager>
             <xcad:LayoutRoot>

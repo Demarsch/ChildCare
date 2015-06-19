@@ -76,5 +76,8 @@ namespace DataLib
         public virtual DbSet<PersonNationality> PersonNationalities { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Org> Orgs { get; set; }
+        public virtual DbSet<PersonOuterDocument> PersonOuterDocuments { get; set; }
+        public virtual DbSet<OuterDocumentType> OuterDocumentTypes { get; set; }
+        public virtual DbSet<Document> Documents { get; set; }
     }
 }

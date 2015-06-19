@@ -6,6 +6,7 @@ using DataLib;
 using AdminTools.ViewModel;
 using log4net;
 using log4net.Core;
+using MainLib.ViewModel;
 
 namespace AdminTools
 {
@@ -25,7 +26,7 @@ namespace AdminTools
             Container.RegisterSingle<IUserService, UserService>();
             Container.RegisterSingle<IPersonService, PersonService>();
             Container.RegisterSingle<IPermissionService, PermissionService>();
-            Container.RegisterSingle<IScannerService, ScannerService>();
+            Container.RegisterSingle<IDocumentService, DocumentService>();
             Container.RegisterSingle<ILog>(new LogImpl(LoggerManager.CreateRepository(typeof(App).FullName).GetLogger(typeof(App).Name)));
             Container.RegisterSingle<IDialogService, WindowDialogService>();
 
@@ -35,8 +36,6 @@ namespace AdminTools
             Container.Register<UserAccountViewModel>();
             Container.Register<UserEditorViewModel>();
             Container.Register<UserViewModel>();
-            Container.Register<EditPermissionViewModel>();
-            Container.Register<ScanDocumentsViewModel>();
 
             MainWindow = new MainWindow { DataContext = Container.GetInstance<MainWindowViewModel>() };
             MainWindow.Show();

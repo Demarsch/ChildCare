@@ -32,6 +32,7 @@ namespace DataLib
             this.PersonHealthGroups = new HashSet<PersonHealthGroup>();
             this.PersonNationalities = new HashSet<PersonNationality>();
             this.Assignments = new HashSet<Assignment>();
+            this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
         }
     
         public int Id { get; set; }
@@ -62,5 +63,6 @@ namespace DataLib
         public virtual ICollection<PersonHealthGroup> PersonHealthGroups { get; set; }
         public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
     }
 }

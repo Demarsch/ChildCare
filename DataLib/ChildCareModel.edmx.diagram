@@ -130,6 +130,13 @@
         <AssociationConnector Association="DataLib.FK_Assignments_Users" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
         <AssociationConnector Association="DataLib.FK_PersonSocialStatuses_Orgs" />
+        <EntityTypeShape EntityType="DataLib.PersonOuterDocument" Width="1.5" PointX="13.25" PointY="36.625" />
+        <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Persons" />
+        <EntityTypeShape EntityType="DataLib.OuterDocumentType" Width="1.5" PointX="5.375" PointY="5" />
+        <AssociationConnector Association="DataLib.FK_OuterDocumentTypes_OuterDocumentTypes" />
+        <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_OuterDocumentTypes" />
+        <EntityTypeShape EntityType="DataLib.Document" Width="1.5" PointX="0.75" PointY="9" />
+        <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Documents" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

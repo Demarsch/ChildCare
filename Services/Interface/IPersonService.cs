@@ -34,13 +34,15 @@ namespace Core
 
         ICollection<PersonIdentityDocument> GetPersonIdentityDocuments(int personId);
 
+        ICollection<PersonOuterDocument> GetPersonOuterDocuments(int personId);
+
         ICollection<PersonSocialStatus> GetPersonSocialStatuses(int personId);
 
         ICollection<PersonDisability> GetPersonDisabilities(int personId);
 
         ICollection<PersonAddress> GetPersonAddresses(int personId);
 
-        ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes();
+        ICollection<InsuranceDocumentType> GetInsuranceDocumentTypes();        
 
         InsuranceDocumentType GetInsuranceDocumentTypeById(int id);
 
@@ -104,5 +106,9 @@ namespace Core
         ICollection<Person> GetPersonsByStaffId(int staffId, DateTime begin, DateTime end);
 
         PersonStaff GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end);
+
+        bool SavePersonDocument(PersonOuterDocument personOuterDocument, out string exception);
+
+        void DeletePersonOuterDocument(int documentId);
     }
 }

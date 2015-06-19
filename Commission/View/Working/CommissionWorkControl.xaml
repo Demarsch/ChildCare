@@ -7,9 +7,9 @@
              xmlns:core="clr-namespace:Core;assembly=StuffLib"
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" 
              xmlns:local="clr-namespace:Commission"
+             xmlns:controls="clr-namespace:MainLib.View;assembly=MainLib"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="800">
-    
+             d:DesignHeight="400" d:DesignWidth="800">    
     <Grid>
         <xcad:DockingManager>
             <xcad:LayoutRoot>
@@ -56,7 +56,9 @@
                             
                             <xcad:LayoutDocument Title="Услуги пациента" CanClose="False" CanFloat="False"></xcad:LayoutDocument>
                             
-                            <xcad:LayoutDocument Title="Документы пациента" CanClose="False" CanFloat="False"></xcad:LayoutDocument>
+                            <xcad:LayoutDocument Title="Документы пациента" CanClose="False" CanFloat="False">
+                                <controls:PersonDocumentsControl DataContext="{Binding PersonDocuments}"/>
+                            </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutPanel>                    
                 </xcad:LayoutPanel>

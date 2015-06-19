@@ -48,8 +48,9 @@
     <Reference Include="GalaSoft.MvvmLight.Platform">
       <HintPath>..\packages\MvvmLightLibs.5.1.1.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TwainDotNet.1.0.0\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
@@ -70,6 +71,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.1.1.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -80,6 +83,15 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="TwainDotNet">
+      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="TwainDotNet.WinFroms">
+      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.WinFroms.dll</HintPath>
+    </Reference>
+    <Reference Include="TwainDotNet.Wpf">
+      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -107,6 +119,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data transfer objects\ThumbnailDTO.cs" />
     <Compile Include="Data transfer objects\UserDTO.cs" />
     <Compile Include="Exception\UserFriendlyException.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
@@ -136,11 +149,20 @@
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonCommonDataViewModel.cs" />
+    <Compile Include="ViewModel\PersonDocumentsViewModel.cs" />
+    <Compile Include="ViewModel\ScanDocumentsViewModel.cs" />
+    <Compile Include="ViewModel\SelectPersonDocumentTypeViewModel.cs" />
     <Compile Include="View\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\EditPersonCommonDataView.xaml.cs">
       <DependentUpon>EditPersonCommonDataView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonDocumentsControl.xaml.cs">
+      <DependentUpon>PersonDocumentsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ScanDocumentsView.xaml.cs">
+      <DependentUpon>ScanDocumentsView.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -181,6 +203,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\EditPersonCommonDataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PersonDocumentsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScanDocumentsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SelectPersonDocumentTypeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

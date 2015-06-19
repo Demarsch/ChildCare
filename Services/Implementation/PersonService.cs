@@ -55,7 +55,7 @@ namespace Core
                 return db.GetData<InsuranceDocumentType>().ToArray();
             }
         }
-
+        
         public ICollection<ChangeNameReason> GetActualChangeNameReasons()
         {
             using (var db = provider.GetNewDataContext())
@@ -159,6 +159,14 @@ namespace Core
             using (var db = provider.GetNewDataContext())
             {
                 return db.GetData<PersonIdentityDocument>().Where(x => x.PersonId == personId).ToArray();
+            }
+        }
+
+        public ICollection<PersonOuterDocument> GetPersonOuterDocuments(int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonOuterDocument>().Where(x => x.PersonId == personId).ToArray();
             }
         }
 
@@ -464,6 +472,41 @@ namespace Core
             }
         }
 
+        public bool SavePersonDocument(PersonOuterDocument personOuterDocument, out string msg)
+        {
+            string exception = string.Empty;
+            try
+            {
+                using (var db = provider.GetNewDataContext())
+                {
+                    var dbDocument = personOuterDocument.Id > 0 ? db.GetById<PersonOuterDocument>(personOuterDocument.Id) : new PersonOuterDocument();
+                    dbDocument.PersonId = personOuterDocument.PersonId;
+                    dbDocument.DocumentId = personOuterDocument.DocumentId;
+                    dbDocument.OuterDocumentTypeId = personOuterDocument.OuterDocumentTypeId;                    
+                    if (dbDocument.Id == 0)
+                        db.Add<PersonOuterDocument>(dbDocument);
+                    db.Save();
+                    msg = exception;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                return false;
+            }
+        }
+
+        public void DeletePersonOuterDocument(int documentId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var personOuterDoc = db.GetData<PersonOuterDocument>().FirstOrDefault(x => x.DocumentId == documentId);
+                if (personOuterDoc == null) return;
+                db.Remove<PersonOuterDocument>(personOuterDoc);
+                db.Save();
+            }
+        }
 
         public bool SavePersonData(Person person, IList<PersonName> personNames, IList<InsuranceDocument> personInsuranceDocuments, IList<PersonAddress> personAddresses, IList<PersonIdentityDocument> personIdentityDocuments,
             IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses, int healthGroupId, int nationalityId)

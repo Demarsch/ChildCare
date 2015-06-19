@@ -48,5 +48,16 @@ namespace Core
         {
             return Application.Current.Windows.Cast<Window>().FirstOrDefault(x => x.IsActive) ?? Application.Current.MainWindow;
         }
+
+        public string[] ShowOpenFileDialog(bool allowMultipleChoice)
+        {
+            System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
+            dialog.Multiselect = allowMultipleChoice;
+            dialog.Filter = "All files (*.*)|*.*|Office Files|*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx|Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|Text files (*.txt)|*.txt";
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)            
+                return dialog.FileNames;
+            return new string[0];
+        }
     }
 }
