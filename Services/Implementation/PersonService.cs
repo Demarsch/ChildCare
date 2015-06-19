@@ -31,6 +31,7 @@ namespace Core
             {
                 return db.GetData<PersonRelative>().Where(x => x.PersonId == personId).Select(x => new PersonRelativeDTO
                     {
+                        PersonId = x.PersonId,
                         RelativePersonId = x.RelativeId,
                         ShortName = x.Person1.ShortName,
                         RelativeRelationId = x.RelativeRelationshipId,
@@ -207,7 +208,7 @@ namespace Core
             using (var db = provider.GetNewDataContext())
             {
                 var dateTimeNow = DateTime.Now;
-                return db.GetData<PersonName>().FirstOrDefault(y => dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
+                return db.GetData<PersonName>().FirstOrDefault(y => y.PersonId == personId && dateTimeNow >= y.BeginDateTime && dateTimeNow < y.EndDateTime && !y.ChangeNameReasonId.HasValue);
             }
         }
 
@@ -508,28 +509,31 @@ namespace Core
             }
         }
 
-        public bool SavePersonData(Person person, IList<PersonName> personNames, IList<InsuranceDocument> personInsuranceDocuments, IList<PersonAddress> personAddresses, IList<PersonIdentityDocument> personIdentityDocuments,
-            IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses, int healthGroupId, int nationalityId)
+        public bool SavePersonData(PersonDataSaveDTO person, ICollection<PersonDataSaveDTO> personRelatives)
         {
             using (var db = provider.GetNewDataContext())
             {
-                if (person.Id == 0)
-                    db.Add(person);
-                else
-                    db.Update(person);
-                SetPersonNames(person, personNames, db);
-                if (personInsuranceDocuments != null)
-                    SetPersonInsuranceDocuments(person, personInsuranceDocuments, db);
-                if (personAddresses != null)
-                    SetPersonAddresses(person, personAddresses, db);
-                if (personIdentityDocuments != null)
-                    SetPersonIdentityDocuments(person, personIdentityDocuments, db);
-                if (personDisabilities != null)
-                    SetPersonDisabilities(person, personDisabilities, db);
-                if (personSocialStatuses != null)
-                    SetPersonSocialStatuses(person, personSocialStatuses, db);
-                SetPersonHealthGroup(person, healthGroupId, db);
-                SetPersonNationality(person, nationalityId, db);
+                SetPersonData(person, db);
+                foreach (var personRelative in personRelatives)
+                {
+                    SetPersonData(personRelative, db);
+                    //set relation between person and relative
+                    if (personRelative.RelativeToPersonId > 0)
+                    {
+                        var curPersonRelative = db.GetData<PersonRelative>().FirstOrDefault(x => x.PersonId == person.Person.Id && x.RelativeId == personRelative.Person.Id);
+                        if (curPersonRelative == null)
+                        {
+                            curPersonRelative = new PersonRelative()
+                            {
+                                Person = person.Person,
+                                Person1 = personRelative.Person
+                            };
+                            db.Add<PersonRelative>(curPersonRelative);
+                        }
+                        curPersonRelative.IsRepresentative = personRelative.IsRepresentative;
+                        curPersonRelative.RelativeRelationshipId = personRelative.RelativeRelationId;
+                    }
+                }
                 try
                 {
                     db.Save();
@@ -540,6 +544,27 @@ namespace Core
                     return false;
                 }
             }
+        }
+
+        private void SetPersonData(PersonDataSaveDTO personData, IDataContext db)
+        {
+            if (personData.Person.Id == 0)
+                db.Add(personData.Person);
+            else
+                db.Update(personData.Person);
+            SetPersonNames(personData.Person, personData.PersonNames, db);
+            if (personData.PersonInsuranceDocuments != null)
+                SetPersonInsuranceDocuments(personData.Person, personData.PersonInsuranceDocuments, db);
+            if (personData.PersonAddresses != null)
+                SetPersonAddresses(personData.Person, personData.PersonAddresses, db);
+            if (personData.PersonIdentityDocuments != null)
+                SetPersonIdentityDocuments(personData.Person, personData.PersonIdentityDocuments, db);
+            if (personData.PersonDisabilities != null)
+                SetPersonDisabilities(personData.Person, personData.PersonDisabilities, db);
+            if (personData.PersonSocialStatuses != null)
+                SetPersonSocialStatuses(personData.Person, personData.PersonSocialStatuses, db);
+            SetPersonHealthGroup(personData.Person, personData.HealthGroupId, db);
+            SetPersonNationality(personData.Person, personData.NationalityId, db);
         }
 
         private void SetPersonNationality(Person person, int nationalityId, IDataContext db)
@@ -778,6 +803,15 @@ namespace Core
                     changedPersonInsuranceDocuments[j].Person = person;
                     db.Add(changedPersonInsuranceDocuments[j]);
                 }
+            }
+        }
+
+
+        public PersonRelative GetPersonRelative(int personId, int relativePersonId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PersonRelative>().FirstOrDefault(x => x.PersonId == personId && x.RelativeId == relativePersonId);
             }
         }
     }

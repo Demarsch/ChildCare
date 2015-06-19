@@ -73,9 +73,50 @@ namespace Registry
             set { Set(() => CommonPersonData, ref commonPersonData, value); }
         }
 
+        #region Properties for relatives
+
+        public int RelativeToPersonId { get; set; }
+
+        private string shortName;
+        public string ShortName
+        {
+            get { return shortName; }
+            set { Set(() => ShortName, ref shortName, value); }
+        }
+
+        private int relativeRelationId;
+        public int RelativeRelationId
+        {
+            get { return relativeRelationId; }
+            set { Set(() => RelativeRelationId, ref relativeRelationId, value); }
+        }
+
+        private bool isRepresentative;
+        public bool IsRepresentative
+        {
+            get { return isRepresentative; }
+            set { Set(() => IsRepresentative, ref isRepresentative, value); }
+        }
+
+        #endregion
+
         private void FillPropertyFromPerson()
         {
             var dateTimeNow = DateTime.Now;
+           
+        }
+
+        public async void GetPersonData()
+        {
+            var task = Task.Factory.StartNew(GetPersonDataAsync);
+            await task;
+            FillPropertyFromPerson();
+        }
+
+        private void GetPersonDataAsync()
+        {
+            var dateTimeNow = DateTime.Now;
+            person = service.GetPersonById(Id);
             if (!IsEmpty)
             {
                 CommonPersonData.Person = person;
@@ -89,19 +130,20 @@ namespace Registry
                 Disabilities = service.GetActualPersonDisabilitiesString(Id);
                 SocialStatuses = service.GetActualPersonSocialStatusesString(Id);
             }
-        }
-
-        public async void GetPersonData()
-        {
-            var task = Task.Factory.StartNew(GetPersonDataAsync);
-            await task;
-            FillPropertyFromPerson();
-        }
-
-        private void GetPersonDataAsync()
-        {
-            var dateTimeNow = DateTime.Now;
-            person = service.GetPersonById(id);
+            // if relative
+            var personRelative = service.GetPersonRelative(RelativeToPersonId, Id);
+            if (personRelative != null)
+            {
+                IsRepresentative = personRelative.IsRepresentative;
+                RelativeRelationId = personRelative.RelativeRelationshipId;
+                ShortName = person.ShortName;
+            }
+            else
+            {
+                IsRepresentative = false;
+                RelativeRelationId = 0;
+                ShortName = string.Empty;
+            }
         }
 
         void CommonPersonData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

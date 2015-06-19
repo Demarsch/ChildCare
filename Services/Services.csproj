@@ -89,6 +89,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\PersonDataSaveDTO.cs" />
     <Compile Include="DTO\PersonRelativeDTO.cs" />
     <Compile Include="Implementation\ADUserSystemInfoService.cs" />
     <Compile Include="Implementation\CommissionService.cs" />

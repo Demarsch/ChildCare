@@ -23,10 +23,14 @@ namespace Core
 
         string GetActualPersonSocialStatusesString(int personId);
 
-        bool SavePersonData(Person person, IList<PersonName> personNames, IList<InsuranceDocument> personInsuranceDocuments, IList<PersonAddress> PersonAddresses, IList<PersonIdentityDocument> personIdentityDocuments,
-            IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses, int healthGroupId, int nationalityId);
+        //bool SavePersonData(Person person, IList<PersonName> personNames, IList<InsuranceDocument> personInsuranceDocuments, IList<PersonAddress> PersonAddresses, IList<PersonIdentityDocument> personIdentityDocuments,
+        //    IList<PersonDisability> personDisabilities, IList<PersonSocialStatus> personSocialStatuses, int healthGroupId, int nationalityId);
+
+        bool SavePersonData(PersonDataSaveDTO person, ICollection<PersonDataSaveDTO> personRelatives);
 
         ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
+
+        PersonRelative GetPersonRelative(int personId, int relativePersonId);
 
         ICollection<RelativeRelationship> GetRelativeRelationships();
 
