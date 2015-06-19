@@ -153,17 +153,33 @@ namespace Core
             return data;
         }
 
-        public BitmapImage GetImageFromBinaryData(Byte[] bytes)
+        public BitmapImage GetThumbnailForFile(Byte[] content, string extension)
         {
-            using (var ms = new System.IO.MemoryStream(bytes))
+            string[] ImageExt = new string[]{ "jpeg", "jpg", "png", "tiff", "bmp", "gif" };
+            string[] WordExt = new string[]{ "doc", "docx" };
+            string[] ExcelExt = new string[]{ "xls", "xlsx" };
+            string[] PDFExt = new string[]{ "pdf" };
+
+            if (WordExt.Contains(extension))
+                return new BitmapImage(new Uri("pack://application:,,,/Resources;component/Images/File_Word.png"));
+            else if (ExcelExt.Contains(extension))
+                return new BitmapImage(new Uri("pack://application:,,,/Resources;component/Images/File_Excel.png"));
+            else if (PDFExt.Contains(extension))
+                return new BitmapImage(new Uri("pack://application:,,,/Resources;component/Images/File_Pdf.png"));
+            else if (ImageExt.Contains(extension))
             {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad; 
-                image.StreamSource = ms;
-                image.EndInit();
-                return image;
+                using (var ms = new System.IO.MemoryStream(content))
+                {
+                    var image = new BitmapImage();
+                    image.BeginInit();
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.StreamSource = ms;
+                    image.EndInit();
+                    return image;
+                }
             }
+            else
+                return new BitmapImage(new Uri("pack://application:,,,/Resources;component/Images/File_Unknown.png"));
         }
     }
 }

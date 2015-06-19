@@ -18,7 +18,7 @@ namespace Core
 
         byte[] GetBinaryDataFromFile(string filePath);
         byte[] GetBinaryDataFromImage(BitmapImage bitmapImage);
-        BitmapImage GetImageFromBinaryData(byte[] binaryData);
+        BitmapImage GetThumbnailForFile(byte[] content, string extension);
         string GetFileFromBinaryData(byte[] content, string extension);
 
         void RunFile(string filePath);

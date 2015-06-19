@@ -60,7 +60,7 @@ namespace MainLib.ViewModel
                     DocumentTypeParentName = documentService.GetParentOuterDocumentTypeById(personDocument.OuterDocumentTypeId).Name,
                     Comment = doc.Description,
                     DocumentDate = doc.DocumentFromDate,
-                    ThumbnailImage = documentService.GetImageFromBinaryData(doc.FileData),
+                    ThumbnailImage = documentService.GetThumbnailForFile(doc.FileData, doc.Extension),
                     ThumbnailChecked = false
                 });
                 await Task.Delay(10);    
@@ -115,7 +115,7 @@ namespace MainLib.ViewModel
                     DocumentTypeParentName = documentService.GetParentOuterDocumentTypeById(item.DocumentTypeId).Name,
                     Comment = doc.Description,
                     DocumentDate = doc.DocumentFromDate,
-                    ThumbnailImage = documentService.GetImageFromBinaryData(doc.FileData),
+                    ThumbnailImage = documentService.GetThumbnailForFile(doc.FileData, doc.Extension),
                     ThumbnailChecked = false
                 });
             }
@@ -171,7 +171,7 @@ namespace MainLib.ViewModel
                         DocumentTypeParentName = documentService.GetParentOuterDocumentTypeById(documentTypeId).Name,
                         Comment = document.Description,
                         DocumentDate = document.DocumentFromDate,
-                        ThumbnailImage = documentService.GetImageFromBinaryData(document.FileData),
+                        ThumbnailImage = documentService.GetThumbnailForFile(document.FileData, document.Extension),
                         ThumbnailChecked = false
                     });
                 }
