@@ -175,7 +175,7 @@ namespace Registry
         {
             var usedRecordTypes = new HashSet<int>(AllowedRecordTypes.Select(x => x.RecordTypeId));
             var firstUnusedRecordType = AssignableRecordTypes.Select(x => x.Id).FirstOrDefault(x => !usedRecordTypes.Contains(x));
-            AllowedRecordTypes.Add(new ScheduleEditorEditRecordTypeViewModel { RecordTypeId = firstUnusedRecordType, Times = "8:00-12:00, 13:00-17:00" });
+            AllowedRecordTypes.Add(new ScheduleEditorEditRecordTypeViewModel { RecordTypeId = firstUnusedRecordType, Times = Configuration.DefaultRecordTypeTime });
             (AddRecordTypeCommand as RelayCommand).RaiseCanExecuteChanged();
         }
 

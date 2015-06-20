@@ -275,7 +275,10 @@ namespace Registry
                 log.Info("Movement completed");
                 ClearScheduleGrid();
                 BuildScheduleGrid();
-                CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(whatToMove.Id);
+                if (CurrentPatientAssignmentsViewModel.ShowCurrentPatientAssignments)
+                {
+                    CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(whatToMove.Id);
+                }
             }
             catch (AssignmentConflictException ex)
             {
@@ -331,7 +334,10 @@ namespace Registry
                     Environment.NewLine));
                 return;
             }
-            CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+            if (CurrentPatientAssignmentsViewModel.ShowCurrentPatientAssignments)
+            {
+                CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+            }
             var newAssignmentDTO = new ScheduledAssignmentDTO
             {
                 Id = assignment.Id,
@@ -372,7 +378,10 @@ namespace Registry
                         newAssignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                         newAssignment.MoveRequested -= RoomOnAssignmentMoveRequested;
                         log.Info("New assignment was successfully deleted");
-                        CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                        if (CurrentPatientAssignmentsViewModel.ShowCurrentPatientAssignments)
+                        {
+                            CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -397,7 +406,10 @@ namespace Registry
                         newAssignment.AssignLpuId = assignment.AssignLpuId;
                         isFailed = false;
                         log.Info("New assignment was updated and moved from temporary state");
-                        CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                        if (CurrentPatientAssignmentsViewModel.ShowCurrentPatientAssignments)
+                        {
+                            CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -425,7 +437,10 @@ namespace Registry
                     ClearScheduleGrid();
                     BuildScheduleGrid();
                     log.Info("Temporary assignment was manually deleted");
-                    CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                    if (CurrentPatientAssignmentsViewModel.ShowCurrentPatientAssignments)
+                    {
+                        CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -448,7 +463,10 @@ namespace Registry
                     ClearScheduleGrid();
                     BuildScheduleGrid();
                     log.Info("Assignment was canceled");
-                    CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                    if (CurrentPatientAssignmentsViewModel.ShowCurrentPatientAssignments)
+                    {
+                        CurrentPatientAssignmentsViewModel.UpdateAssignmentAsync(assignment.Id);
+                    }
                 }
                 catch (Exception ex)
                 {

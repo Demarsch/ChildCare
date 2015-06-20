@@ -36,6 +36,7 @@ namespace Registry
             var securityService = new SecurityService(true) as ISecurityService;
 
             var cacheService = new DataContextCacheService(contextProvider) as ICacheService;
+            Configuration.Initialize(cacheService);
             var environment = new Environment(contextProvider) as IEnvironment;
             var dialogService = new WindowDialogService() as IDialogService;
 

@@ -48,7 +48,7 @@ namespace Core
         {
             var type = typeof(TData);
             object dictionaryObj;
-            if (!itemsById.TryGetValue(type, out dictionaryObj))
+            if (!itemsByName.TryGetValue(type, out dictionaryObj))
             {
                 dictionaryObj = dataContext.GetData<TData>().ToDictionary(GetNameSelectorFunction<TData>());
                 itemsByName.Add(type, dictionaryObj);

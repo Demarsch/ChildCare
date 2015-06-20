@@ -123,6 +123,7 @@
     <Compile Include="Data transfer objects\UserDTO.cs" />
     <Compile Include="Exception\UserFriendlyException.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
+    <Compile Include="Misc\Configuration.cs" />
     <Compile Include="Misc\MainContainerProvider.cs" />
     <Compile Include="Implementations\Environment.cs" />
     <Compile Include="Implementations\TimeInterval.cs" />

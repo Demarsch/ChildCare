@@ -3,6 +3,7 @@
                     xmlns:registry="clr-namespace:Registry"
                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                     xmlns:core="clr-namespace:Core;assembly=StuffLib"
+                    xmlns:main="clr-namespace:Core;assembly=MainLib"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <DataTemplate DataType="{x:Type registry:ScheduleViewModel}">
@@ -92,7 +93,7 @@
                                 <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <xctk:TimelinePanel BeginDate="{Binding OpenTime}" EndDate="{Binding CloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
-                                                        UnitSize="{x:Static core:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static core:Configuration.ScheduleUnitTimeInterval}"/>
+                                                        UnitSize="{x:Static main:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static main:Configuration.ScheduleUnitTimeInterval}"/>
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
                                 <ListBox.ItemContainerStyle>

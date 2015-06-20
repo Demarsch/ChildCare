@@ -196,6 +196,7 @@
     <Compile Include="OuterDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PartialClasses\DBSetting.cs" />
     <Compile Include="PartialClasses\InsuranceCompany.cs" />
     <Compile Include="PartialClasses\PersonTalon.cs" />
     <Compile Include="PartialClasses\Person.cs" />
