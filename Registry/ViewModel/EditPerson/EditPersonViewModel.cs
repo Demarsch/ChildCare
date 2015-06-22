@@ -20,6 +20,8 @@ namespace Registry
 
         private readonly IDialogService dialogService;
 
+        private readonly IDocumentService documentService;
+
         private EditPersonDataViewModel editPersonDataViewModel;
         public EditPersonDataViewModel EditPersonDataViewModel
         {
@@ -43,7 +45,7 @@ namespace Registry
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -51,19 +53,22 @@ namespace Registry
                 throw new ArgumentNullException("service");
             if (dialogService == null)
                 throw new ArgumentNullException("dialogService");
+            if (documentService == null)
+                throw new ArgumentNullException("documentService");
+            this.documentService = documentService;
             this.dialogService = dialogService;
             this.service = service;
             this.log = log;
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
             EditPersonRelativeDataViewModels = new ObservableCollection<EditPersonDataViewModel>();
-            EditPersonDataViewModel = new EditPersonDataViewModel(log, service, dialogService);
+            EditPersonDataViewModel = new EditPersonDataViewModel(log, service, dialogService, documentService);
             RelativeRelations = new ObservableCollection<RelativeRelationship>(service.GetRelativeRelationships());
             SaveChangesCommand = new RelayCommand(SaveChanges);
         }
 
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, int personId)
-            : this(log, service, dialogService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, int personId)
+            : this(log, service, dialogService, documentService)
         {
             Id = personId;
             this.log = log;
@@ -72,8 +77,8 @@ namespace Registry
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, string personData)
-            : this(log, service, dialogService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, string personData)
+            : this(log, service, dialogService, documentService)
         {
 
         }
@@ -196,7 +201,7 @@ namespace Registry
 
             var listViewModels = new List<EditPersonDataViewModel>();
             foreach (var item in listRelatives)
-                listViewModels.Add(new EditPersonDataViewModel(log, service, dialogService) { Id = item.RelativePersonId, RelativeToPersonId = this.Id });
+                listViewModels.Add(new EditPersonDataViewModel(log, service, dialogService, documentService) { Id = item.RelativePersonId, RelativeToPersonId = this.Id });
             EditPersonRelativeDataViewModels = new ObservableCollection<EditPersonDataViewModel>(listViewModels);
         }
 

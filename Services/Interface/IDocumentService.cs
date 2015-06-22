@@ -3,6 +3,7 @@ using DataLib;
 using System;
 using System.Drawing;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace Core
 {
@@ -18,8 +19,10 @@ namespace Core
 
         byte[] GetBinaryDataFromFile(string filePath);
         byte[] GetBinaryDataFromImage(BitmapImage bitmapImage);
+        byte[] GetBinaryDataFromImage(BitmapEncoder encoder, ImageSource imageSource);
         BitmapImage GetThumbnailForFile(byte[] content, string extension);
         string GetFileFromBinaryData(byte[] content, string extension);
+        ImageSource GetImageSourceFromBinaryData(byte[] source);
 
         void RunFile(string filePath);
         void DeleteFile(string filePath);

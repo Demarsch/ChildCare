@@ -45,6 +45,7 @@ namespace DataLib
         public Nullable<System.DateTime> DeleteDateTime { get; set; }
         public string Phones { get; set; }
         public string Email { get; set; }
+        public Nullable<int> PhotoId { get; set; }
     
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual Gender Gender { get; set; }
@@ -64,5 +65,6 @@ namespace DataLib
         public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
+        public virtual Document Document { get; set; }
     }
 }

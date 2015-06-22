@@ -137,6 +137,7 @@
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_OuterDocumentTypes" />
         <EntityTypeShape EntityType="DataLib.Document" Width="1.5" PointX="0.75" PointY="9" />
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Documents" />
+        <AssociationConnector Association="DataLib.FK_Persons_Documents" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -152,7 +152,7 @@ namespace StuffLib
             {
                 bitmap.Save(memoryStream, ImageFormat.Png);
                 var snapshotBytes = memoryStream.ToArray();
-                return (ImageSource)imageSourceConverter.ConvertFrom(snapshotBytes); ;
+                return (ImageSource)imageSourceConverter.ConvertFrom(snapshotBytes);
             }
         }
 

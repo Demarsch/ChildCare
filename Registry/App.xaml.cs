@@ -29,7 +29,7 @@ namespace Registry
             FrameworkContentElement.LanguageProperty.OverrideMetadata(typeof(System.Windows.Documents.TextElement), new FrameworkPropertyMetadata(lang)); ;
             base.OnStartup(e);
             XmlConfigurator.Configure();
-            
+
             var log = LogManager.GetLogger("Registry");
             var contextProvider = new ModelContextProvider() as IDataContextProvider;
             var personService = new PersonService(contextProvider);
@@ -40,6 +40,8 @@ namespace Registry
             var environment = new Environment(contextProvider) as IEnvironment;
             var dialogService = new WindowDialogService() as IDialogService;
 
+            var documentService = new DocumentService(contextProvider) as IDocumentService;
+
             var patientAssignmentService = new PatientAssignmentService(contextProvider) as IPatientAssignmentService;
             var patientAssignmentListViewModel = new PatientAssignmentListViewModel(patientAssignmentService, log, cacheService);
 
@@ -48,7 +50,7 @@ namespace Registry
             var scheduleViewModel = new ScheduleViewModel(currentPatientAssignmentsViewModel, scheduleService, log, cacheService, environment, dialogService, securityService);
 
             var patientService = new PatientService(contextProvider) as IPatientService;
-            var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, dialogService, patientAssignmentListViewModel);
+            var patientSearchViewModel = new PatientSearchViewModel(patientService, personService, log, dialogService, documentService, patientAssignmentListViewModel);
             var mainViewModel = new MainWindowViewModel(patientSearchViewModel, scheduleViewModel);
             var mainWindow = new MainWindow { DataContext = mainViewModel };
             MainWindow = mainWindow;

@@ -22,12 +22,14 @@ namespace Registry
 
         private readonly IDialogService dialogService;
 
+        private readonly IDocumentService documentService;
+
         private Person person;
 
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -35,10 +37,13 @@ namespace Registry
                 throw new ArgumentNullException("service");
             if (dialogService == null)
                 throw new ArgumentNullException("dialogService");
+            if (documentService == null)
+                throw new ArgumentNullException("documentService");
+            this.documentService = documentService;
             this.dialogService = dialogService;
             this.service = service;
             this.log = log;
-            commonPersonData = new EditPersonCommonDataViewModel(null, service, dialogService);
+            commonPersonData = new EditPersonCommonDataViewModel(null, service, dialogService, documentService);
             CommonPersonData.PropertyChanged += CommonPersonData_PropertyChanged;
             EditInsuranceCommand = new RelayCommand(EditInsurance);
             EditPersonAddressCommand = new RelayCommand(EditPersonAddress);
@@ -50,8 +55,8 @@ namespace Registry
 
         }
 
-        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, int personId)
-            : this(log, service, dialogService)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, int personId)
+            : this(log, service, dialogService, documentService)
         {
             Id = personId;
             this.log = log;
@@ -60,8 +65,8 @@ namespace Registry
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, string personData)
-            : this(log, service, dialogService)
+        public EditPersonDataViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, string personData)
+            : this(log, service, dialogService, documentService)
         {
 
         }
@@ -103,7 +108,7 @@ namespace Registry
         private void FillPropertyFromPerson()
         {
             var dateTimeNow = DateTime.Now;
-           
+
         }
 
         public async void GetPersonData()

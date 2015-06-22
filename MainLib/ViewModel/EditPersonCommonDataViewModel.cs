@@ -24,19 +24,24 @@ namespace MainLib
 
         private readonly IDialogService dialogService;
 
+        private readonly IDocumentService documentService;
+
         private PersonName personName;
 
         #endregion
 
         #region Constructors
 
-        public EditPersonCommonDataViewModel(Person person, IPersonService service, IDialogService dialogService)
+        public EditPersonCommonDataViewModel(Person person, IPersonService service, IDialogService dialogService, IDocumentService documentService)
         {
             if (service == null)
                 throw new ArgumentNullException("service");
             if (dialogService == null)
                 throw new ArgumentNullException("dialogService");
+            if (dialogService == null)
+                throw new ArgumentNullException("documentService");
 
+            this.documentService = documentService;
             this.dialogService = dialogService;
             this.service = service;
             this.person = person;
@@ -67,6 +72,13 @@ namespace MainLib
         public bool IsEmpty
         {
             get { return person == null; }
+        }
+
+        private int photoId = 0;
+        public int PhotoId
+        {
+            get { return photoId; }
+            set { Set(() => PhotoId, ref photoId, value); }
         }
 
         private ImageSource photoURI;
@@ -255,10 +267,22 @@ namespace MainLib
                 photoViewModel = new PhotoViewModel();
             var dialogResult = dialogService.ShowDialog(photoViewModel);
             if (dialogResult == true)
+            {
+                JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+                var fileData = documentService.GetBinaryDataFromImage(encoder, photoViewModel.SnapshotTaken);
+                var str = string.Empty;
+                PhotoId = documentService.UploadDocument(new Document()
+                    {
+                        FileData = fileData,
+                        Description = "фото",
+                        DisplayName = "фото",
+                        Extension = "jpg",
+                        FileName = "фото",
+                        FileSize = fileData.Length,
+                        UploadDate = DateTime.Now
+                    }, out str);
                 PhotoURI = photoViewModel.SnapshotTaken;
-            //if (dialogResult != true)
-            //    photoViewModel = new PersonInsuranceDocumentsViewModel(Id, log, service, dialogService);
-            //Insurances = insuranceDocumentViewModel.ActialInsuranceDocumentsString;
+            }
         }
 
         #endregion
@@ -319,6 +343,7 @@ namespace MainLib
             person.GenderId = GenderId.Value;
             person.Phones = Phones;
             person.Email = Email;
+            person.PhotoId = PhotoId;
 
             person.ShortName = LastName + " " + FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
             person.FullName = LastName + " " + FirstName + " " + MiddleName;
@@ -341,7 +366,17 @@ namespace MainLib
                     MiddleName = personName.MiddleName;
                 }
                 //ToDo: make a method to get photo from store
-                PhotoURI = null;
+                PhotoId = person.PhotoId.ToInt();
+                if (person.PhotoId.HasValue)
+                {
+                    var photo = documentService.GetDocumentById(person.PhotoId.Value);
+                    if (photo == null)
+                        PhotoURI = null;
+                    else
+                        PhotoURI = documentService.GetImageSourceFromBinaryData(photo.FileData);
+                }
+                else
+                    PhotoURI = null;
                 BirthDate = person.BirthDate;
                 SNILS = person.Snils;
                 MedNumber = person.MedNumber;

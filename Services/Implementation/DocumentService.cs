@@ -10,6 +10,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Windows.Media.Imaging;
 using System.Diagnostics;
+using System.Windows.Media;
 
 namespace Core
 {
@@ -118,6 +119,12 @@ namespace Core
             return Path.ChangeExtension(fileName, extension); ;          
         }
 
+        public ImageSource GetImageSourceFromBinaryData(byte[] source)
+        {
+            var imageSourceConverter = new ImageSourceConverter();
+            return (ImageSource)imageSourceConverter.ConvertFrom(source); 
+        }
+
         public void DeleteFile(string filePath)
         {
             if (File.Exists(filePath))            
@@ -151,6 +158,23 @@ namespace Core
                 data = ms.ToArray();
             }
             return data;
+        }
+
+        public byte[] GetBinaryDataFromImage(BitmapEncoder encoder, ImageSource imageSource)
+        {
+            byte[] bytes = null;
+            var bitmapSource = imageSource as BitmapSource;
+            if (bitmapSource != null)
+            {
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+                using (var stream = new MemoryStream())
+                {
+                    encoder.Save(stream);
+                    bytes = stream.ToArray();
+                }
+            }
+            return bytes;
         }
 
         public BitmapImage GetThumbnailForFile(Byte[] content, string extension)

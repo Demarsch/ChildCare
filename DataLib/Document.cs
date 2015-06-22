@@ -17,6 +17,7 @@ namespace DataLib
         public Document()
         {
             this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
+            this.Persons = new HashSet<Person>();
         }
     
         public int Id { get; set; }
@@ -30,5 +31,6 @@ namespace DataLib
         public Nullable<System.DateTime> DocumentFromDate { get; set; }
     
         public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
+        public virtual ICollection<Person> Persons { get; set; }
     }
 }

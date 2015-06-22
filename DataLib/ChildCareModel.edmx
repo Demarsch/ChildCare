@@ -456,6 +456,7 @@
           <Property Name="Snils" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="MedNumber" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="GenderId" Type="int" Nullable="false" />
+          <Property Name="PhotoId" Type="int" />
           <Property Name="Phones" Type="varchar(max)" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DeleteDateTime" Type="datetime" />
@@ -1287,6 +1288,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Persons_Documents">
+          <End Role="Documents" Type="Self.Documents" Multiplicity="0..1" />
+          <End Role="Persons" Type="Self.Persons" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Documents">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Persons">
+              <PropertyRef Name="PhotoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Persons_Genders">
           <End Role="Genders" Type="Self.Genders" Multiplicity="1" />
           <End Role="Persons" Type="Self.Persons" Multiplicity="*" />
@@ -1846,6 +1859,10 @@
             <End Role="RelativeRelationships" EntitySet="RelativeRelationships" />
             <End Role="PersonRelatives" EntitySet="PersonRelatives" />
           </AssociationSet>
+          <AssociationSet Name="FK_Persons_Documents" Association="Self.FK_Persons_Documents">
+            <End Role="Documents" EntitySet="Documents" />
+            <End Role="Persons" EntitySet="Persons" />
+          </AssociationSet>
           <AssociationSet Name="FK_Persons_Genders" Association="Self.FK_Persons_Genders">
             <End Role="Genders" EntitySet="Genders" />
             <End Role="Persons" EntitySet="Persons" />
@@ -2314,6 +2331,10 @@
             <End Role="Document" EntitySet="Documents" />
             <End Role="PersonOuterDocument" EntitySet="PersonOuterDocuments" />
           </AssociationSet>
+          <AssociationSet Name="FK_Persons_Documents" Association="DataLib.FK_Persons_Documents">
+            <End Role="Document" EntitySet="Documents" />
+            <End Role="Person" EntitySet="Persons" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -2712,6 +2733,8 @@
           <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
           <NavigationProperty Name="PersonOuterDocuments" Relationship="DataLib.FK_PersonOuterDocuments_Persons" FromRole="Person" ToRole="PersonOuterDocument" />
+          <Property Name="PhotoId" Type="Int32" />
+          <NavigationProperty Name="Document" Relationship="DataLib.FK_Persons_Documents" FromRole="Person" ToRole="Document" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -4028,6 +4051,7 @@
           <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="DocumentFromDate" Type="DateTime" Precision="3" Nullable="true" />
           <NavigationProperty Name="PersonOuterDocuments" Relationship="DataLib.FK_PersonOuterDocuments_Documents" FromRole="Document" ToRole="PersonOuterDocument" />
+          <NavigationProperty Name="Persons" Relationship="DataLib.FK_Persons_Documents" FromRole="Document" ToRole="Person" />
         </EntityType>
         <Association Name="FK_PersonOuterDocuments_Documents">
           <End Type="DataLib.Document" Role="Document" Multiplicity="1" />
@@ -4038,6 +4062,18 @@
             </Principal>
             <Dependent Role="PersonOuterDocument">
               <PropertyRef Name="DocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Persons_Documents">
+          <End Type="DataLib.Document" Role="Document" Multiplicity="0..1" />
+          <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Document">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Person">
+              <PropertyRef Name="PhotoId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4382,6 +4418,7 @@
           <EntitySetMapping Name="Persons">
             <EntityTypeMapping TypeName="DataLib.Person">
               <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="PhotoId" ColumnName="PhotoId" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Phones" ColumnName="Phones" />
                 <ScalarProperty Name="DeleteDateTime" ColumnName="DeleteDateTime" />

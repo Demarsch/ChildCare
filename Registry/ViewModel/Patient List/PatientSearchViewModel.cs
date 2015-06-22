@@ -25,9 +25,11 @@ namespace Registry
 
         private readonly IDialogService dialogService;
 
+        private readonly IDocumentService documentService;
+
         public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
 
-        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, PatientAssignmentListViewModel patientAssignmentListViewModel)
+        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
                 throw new ArgumentNullException("patientService");
@@ -39,13 +41,16 @@ namespace Registry
                 throw new ArgumentNullException("personService");
             if (dialogService == null)
                 throw new ArgumentNullException("dialogService");
+            if (documentService == null)
+                throw new ArgumentNullException("documentService");
+            this.documentService = documentService;
             this.dialogService = dialogService;
             this.personService = personService;
             this.log = log;
             this.patientService = patientService;
             patients = new ObservableCollection<PersonViewModel>();
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
-            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService);
+            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService, documentService);
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
