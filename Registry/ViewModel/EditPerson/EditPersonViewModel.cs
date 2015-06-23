@@ -65,6 +65,8 @@ namespace Registry
             EditPersonDataViewModel = new EditPersonDataViewModel(log, service, dialogService, documentService);
             RelativeRelations = new ObservableCollection<RelativeRelationship>(service.GetRelativeRelationships());
             SaveChangesCommand = new RelayCommand(SaveChanges);
+            AddNewPersonToRelativeCommand = new RelayCommand(AddNewPersonToRelative);
+            RemovePersonFromRelativeCommand = new RelayCommand(RemovePersonFromRelative);
         }
 
         public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, int personId)
@@ -93,22 +95,6 @@ namespace Registry
                 editPersonDataViewModel.Id = id;
                 SetRelatives();
             }
-        }
-
-        public ICommand ReturnToPersonEditingCommand { get; private set; }
-
-        private void ReturnToPersonEditing()
-        {
-            SelectedRelativeViewModel = null;
-        }
-
-        public ICommand SaveChangesCommand { get; set; }
-        private async void SaveChanges()
-        {
-            var task = Task.Factory.StartNew(SaveData);
-            IsSaveEnabled = false;
-            await task;
-            IsSaveEnabled = true;
         }
 
         private void SaveData()
@@ -211,5 +197,48 @@ namespace Registry
         }
 
         public ObservableCollection<RelativeRelationship> RelativeRelations { get; set; }
+
+
+        #region Commands
+
+        public ICommand AddNewPersonToRelativeCommand { get; set; }
+        private void AddNewPersonToRelative()
+        {
+            var newRelative = new EditPersonDataViewModel(log, service, dialogService, documentService);
+            EditPersonRelativeDataViewModels.Add(newRelative);
+            SelectedRelativeViewModel = newRelative;
+        }
+
+        public ICommand RemovePersonFromRelativeCommand { get; set; }
+        private void RemovePersonFromRelative()
+        {
+            var selectedIndex = EditPersonRelativeDataViewModels.IndexOf(SelectedRelativeViewModel);
+            EditPersonRelativeDataViewModels.Remove(SelectedRelativeViewModel);
+            if (EditPersonRelativeDataViewModels.Count > 0)
+                if (selectedIndex < EditPersonRelativeDataViewModels.Count)
+                    SelectedRelativeViewModel = EditPersonRelativeDataViewModels[selectedIndex];
+                else
+                    SelectedRelativeViewModel = EditPersonRelativeDataViewModels[selectedIndex - 1];
+            else
+                SelectedRelativeViewModel = null;
+        }
+
+        public ICommand ReturnToPersonEditingCommand { get; set; }
+        private void ReturnToPersonEditing()
+        {
+            SelectedRelativeViewModel = null;
+        }
+
+        public ICommand SaveChangesCommand { get; set; }
+        private async void SaveChanges()
+        {
+            var task = Task.Factory.StartNew(SaveData);
+            IsSaveEnabled = false;
+            await task;
+            IsSaveEnabled = true;
+        }
+
+        #endregion
     }
+
 }

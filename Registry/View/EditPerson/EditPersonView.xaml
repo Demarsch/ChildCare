@@ -56,6 +56,15 @@
                 <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
                 <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
                     <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <TextBox Width="244"/>
+                        <Button HorizontalAlignment="Right" ToolTip="Добавить нового родственника" Command="{Binding AddNewPersonToRelativeCommand}">
+                            <Image Source="pack://application:,,,/Resources;component/Images/Add24x24.png"/>
+                        </Button>
+                        <Button HorizontalAlignment="Right" ToolTip="Убрать из родственников" Command="{Binding RemovePersonFromRelativeCommand}">
+                            <Image Source="pack://application:,,,/Resources;component/Images/Remove24x24.png"/>
+                        </Button>
+                    </StackPanel>
                     <Button DockPanel.Dock="Bottom" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>

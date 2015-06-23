@@ -165,7 +165,7 @@ namespace MainLib
             }
         }
 
-        private DateTime birthDate = DateTime.Parse("1/1/1900");
+        private DateTime birthDate = DateTime.Now;
         public DateTime BirthDate
         {
             get { return birthDate; }
@@ -338,12 +338,12 @@ namespace MainLib
                 person = new Person();
             }
             person.BirthDate = BirthDate;
-            person.Snils = SNILS;
+            person.Snils = SNILS.Replace("-", string.Empty).Replace(" ", string.Empty);
             person.MedNumber = MedNumber;
             person.GenderId = GenderId.Value;
             person.Phones = Phones;
             person.Email = Email;
-            person.PhotoId = PhotoId;
+            person.PhotoId = PhotoId > 0 ? PhotoId : (int?)null;
 
             person.ShortName = LastName + " " + FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
             person.FullName = LastName + " " + FirstName + " " + MiddleName;
@@ -365,7 +365,6 @@ namespace MainLib
                     FirstName = personName.FirstName;
                     MiddleName = personName.MiddleName;
                 }
-                //ToDo: make a method to get photo from store
                 PhotoId = person.PhotoId.ToInt();
                 if (person.PhotoId.HasValue)
                 {
@@ -387,7 +386,7 @@ namespace MainLib
                 LastName = string.Empty;
                 FirstName = string.Empty;
                 MiddleName = string.Empty;
-                BirthDate = new DateTime(1900, 1, 1);
+                BirthDate = DateTime.Now;
                 SNILS = string.Empty;
                 MedNumber = string.Empty;
                 GenderId = 0;

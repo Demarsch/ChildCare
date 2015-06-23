@@ -87,7 +87,5 @@
         <Label Grid.Row="20" Grid.Column="0" FontWeight="Bold">Гражданство</Label>
         <ComboBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Countries}" DisplayMemberPath="Name" SelectedValuePath="Id" 
                   SelectedValue="{Binding NationalityId,  ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
-
-        <TextBlock Grid.Row="21" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding TextMessage}"/>
     </Grid>
 </UserControl>

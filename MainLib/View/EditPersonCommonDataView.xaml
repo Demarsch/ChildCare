@@ -6,6 +6,7 @@
              xmlns:core="clr-namespace:Core;assembly=StuffLib"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:mainLib="clr-namespace:MainLib"
+             xmlns:ex="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
              mc:Ignorable="d" 
              Height="auto" Width="600" Background="White">
     
@@ -70,16 +71,18 @@
         <ComboBox Grid.Row="5" Grid.Column="4" Margin="1" ItemsSource="{Binding Genders, Mode=OneTime}" DisplayMemberPath="ShortName" SelectedValuePath="Id" SelectedValue="{Binding GenderId, ValidatesOnDataErrors=True}"
                   Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
 
-        <TextBlock Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="0,2">Телефон</TextBlock>
-        <TextBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Margin="1" HorizontalAlignment="Stretch" Text="{Binding Phones}"/>
+        <TextBlock Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Margin="0,2">СНИЛС</TextBlock>
+        <ex:MaskedTextBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Margin="1" HorizontalAlignment="Stretch" Text="{Binding SNILS}" Mask="000-000-000 00"/>
 
-        <TextBlock Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" Margin="0,2">Эл. почта</TextBlock>
-        <TextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Margin="1" HorizontalAlignment="Stretch" Text="{Binding Email}"/>
+        <TextBlock Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" Margin="0,2">ЕНП</TextBlock>
+        <ex:MaskedTextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Margin="1" HorizontalAlignment="Stretch" Text="{Binding MedNumber}" Mask="0000000000000000"/>
 
-        <TextBlock Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0,2">СНИЛС</TextBlock>
-        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4" Margin="1" HorizontalAlignment="Stretch" Text="{Binding SNILS}"/>
+        <TextBlock Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0,2">Телефон</TextBlock>
+        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="4" Margin="1" HorizontalAlignment="Stretch" Text="{Binding Phones}"/>
 
-        <TextBlock Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="0,2">ЕНП</TextBlock>
-        <TextBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="4" Margin="1" HorizontalAlignment="Stretch" Text="{Binding MedNumber}"/>
+        <TextBlock Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="0,2">Эл. почта</TextBlock>
+        <TextBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="4" Margin="1" HorizontalAlignment="Stretch" Text="{Binding Email}"/>
+
+        
     </Grid>
 </UserControl>
