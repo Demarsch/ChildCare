@@ -24,6 +24,10 @@ namespace Core
 
         public IList<PersonSocialStatus> PersonSocialStatuses { get; set; }
 
+        public int MaritalStatusId { get; set; }
+
+        public int EducationId { get; set; }
+
         public int HealthGroupId { get; set; }
 
         public int NationalityId { get; set; }

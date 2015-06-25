@@ -138,6 +138,14 @@
         <EntityTypeShape EntityType="DataLib.Document" Width="1.5" PointX="0.75" PointY="9" />
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Documents" />
         <AssociationConnector Association="DataLib.FK_Persons_Documents" />
+        <EntityTypeShape EntityType="DataLib.Education" Width="1.5" PointX="12" PointY="15.375" />
+        <EntityTypeShape EntityType="DataLib.MaritalStatus" Width="1.5" PointX="12" PointY="18.375" />
+        <EntityTypeShape EntityType="DataLib.PersonMaritalStatus" Width="1.5" PointX="14.25" PointY="25" />
+        <AssociationConnector Association="DataLib.FK_PersonMaritalStatuses_MaritalStatuses" />
+        <AssociationConnector Association="DataLib.FK_PersonMaritalStatuses_Persons" />
+        <EntityTypeShape EntityType="DataLib.PersonEducation" Width="1.5" PointX="14.25" PointY="21.875" />
+        <AssociationConnector Association="DataLib.FK_PersonEducations_Educations" />
+        <AssociationConnector Association="DataLib.FK_PersonEducations_Persons" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

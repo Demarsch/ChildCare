@@ -119,5 +119,9 @@
     <Build Include="dbo\Tables\PersonOuterDocuments.sql" />
     <Build Include="dbo\Tables\OuterDocumentTypes.sql" />
     <Build Include="dbo\Tables\Documents.sql" />
+    <Build Include="dbo\Tables\PersonMaritalStatuses.sql" />
+    <Build Include="dbo\Tables\PersonEducations.sql" />
+    <Build Include="dbo\Tables\MaritalStatuses.sql" />
+    <Build Include="dbo\Tables\Educations.sql" />
   </ItemGroup>
 </Project>

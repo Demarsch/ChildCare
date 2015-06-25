@@ -50,6 +50,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5"  FontWeight="Bold">Личные данные</Label>
@@ -87,5 +89,14 @@
         <Label Grid.Row="20" Grid.Column="0" FontWeight="Bold">Гражданство</Label>
         <ComboBox Grid.Row="20" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Countries}" DisplayMemberPath="Name" SelectedValuePath="Id" 
                   SelectedValue="{Binding NationalityId,  ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
+
+        <Label Grid.Row="21" Grid.Column="0" FontWeight="Bold">Семейное положение
+        </Label>
+        <ComboBox Grid.Row="21" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding MaritalStatuses}" DisplayMemberPath="Name" SelectedValuePath="Id" 
+                  SelectedValue="{Binding MaritalStatusId}"/>
+
+        <Label Grid.Row="22" Grid.Column="0" FontWeight="Bold">ОБразование</Label>
+        <ComboBox Grid.Row="22" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Educations}" DisplayMemberPath="Name" SelectedValuePath="Id" 
+                  SelectedValue="{Binding EducationId}"/>
     </Grid>
 </UserControl>

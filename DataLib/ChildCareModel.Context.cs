@@ -79,5 +79,9 @@ namespace DataLib
         public virtual DbSet<PersonOuterDocument> PersonOuterDocuments { get; set; }
         public virtual DbSet<OuterDocumentType> OuterDocumentTypes { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
+        public virtual DbSet<Education> Educations { get; set; }
+        public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
+        public virtual DbSet<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
+        public virtual DbSet<PersonEducation> PersonEducations { get; set; }
     }
 }

@@ -62,6 +62,10 @@ namespace Core
 
         ICollection<Country> GetCountries();
 
+        ICollection<MaritalStatus> GetMaritalStatuses();
+
+        ICollection<Education> GetEducations();
+
         ICollection<Person> GetPersonsByFullName(string fullName);
 
         ICollection<AddressType> GetAddressTypes();
@@ -89,6 +93,10 @@ namespace Core
         int GetHealthGroupId(int personId, DateTime date);
 
         int GetNationalityCountryId(int personId, DateTime date);
+
+        int GetMaritalStatusId(int personId, DateTime date);
+
+        int GetEducationId(int personId, DateTime date);
 
         int GetDefaultNationalityCountryId();
 

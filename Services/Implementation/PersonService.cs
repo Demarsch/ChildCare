@@ -565,6 +565,44 @@ namespace Core
                 SetPersonSocialStatuses(personData.Person, personData.PersonSocialStatuses, db);
             SetPersonHealthGroup(personData.Person, personData.HealthGroupId, db);
             SetPersonNationality(personData.Person, personData.NationalityId, db);
+            SetPersonEducations(personData.Person, personData.EducationId, db);
+            SetPersonMaritalStatuses(personData.Person, personData.MaritalStatusId, db);
+        }
+
+        private void SetPersonEducations(Person person, int educationId, IDataContext db)
+        {
+            if (educationId < 1)
+                return;
+            PersonEducation personEducation = person.PersonEducations.FirstOrDefault(x => x.EndDateTime == DateTime.MaxValue);
+            DateTime dateTimeNow = DateTime.Now;
+            if (personEducation != null)
+                personEducation.EndDateTime = dateTimeNow;
+            var newPersonEducation = new PersonEducation()
+            {
+                Person = person,
+                EducationId = educationId,
+                BeginDateTime = dateTimeNow,
+                EndDateTime = DateTime.MaxValue
+            };
+            db.Add<PersonEducation>(newPersonEducation);
+        }
+
+        private void SetPersonMaritalStatuses(Person person, int maritalStatusesId, IDataContext db)
+        {
+            if (maritalStatusesId < 1)
+                return;
+            PersonMaritalStatus personMaritalStatus = person.PersonMaritalStatuses.FirstOrDefault(x => x.EndDateTime == DateTime.MaxValue);
+            DateTime dateTimeNow = DateTime.Now;
+            if (personMaritalStatus != null)
+                personMaritalStatus.EndDateTime = dateTimeNow;
+            var newPersonMaritalStatus = new PersonMaritalStatus()
+            {
+                Person = person,
+                MaritalStatusId = maritalStatusesId,
+                BeginDateTime = dateTimeNow,
+                EndDateTime = DateTime.MaxValue
+            };
+            db.Add<PersonMaritalStatus>(newPersonMaritalStatus);
         }
 
         private void SetPersonNationality(Person person, int nationalityId, IDataContext db)
@@ -582,6 +620,7 @@ namespace Core
                 BeginDateTime = dateTimeNow,
                 EndDateTime = DateTime.MaxValue
             };
+            db.Add<PersonNationality>(newPersonNationality);
         }
 
         private void SetPersonHealthGroup(Person person, int healthGroupId, IDataContext db)
@@ -599,6 +638,7 @@ namespace Core
                 BeginDateTime = dateTimeNow,
                 EndDateTime = DateTime.MaxValue
             };
+            db.Add<PersonHealthGroup>(newPersonHealthGroup);
         }
 
         private void SetPersonSocialStatuses(Person person, IList<PersonSocialStatus> changedPersonSocialStatuses, IDataContext db)
@@ -812,6 +852,43 @@ namespace Core
             using (var db = provider.GetNewDataContext())
             {
                 return db.GetData<PersonRelative>().FirstOrDefault(x => x.PersonId == personId && x.RelativeId == relativePersonId);
+            }
+        }
+
+
+        public ICollection<MaritalStatus> GetMaritalStatuses()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<MaritalStatus>().ToArray();
+            }
+        }
+
+        public ICollection<Education> GetEducations()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Education>().ToArray();
+            }
+        }
+
+        public int GetMaritalStatusId(int personId, DateTime date)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var personMaritalStatus = db.GetData<PersonMaritalStatus>().FirstOrDefault(x => x.PersonId == personId && date > x.BeginDateTime && date < x.EndDateTime);
+                if (personMaritalStatus == null) return 0;
+                return personMaritalStatus.MaritalStatusId;
+            }
+        }
+
+        public int GetEducationId(int personId, DateTime date)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                var personEducation = db.GetData<PersonEducation>().FirstOrDefault(x => x.PersonId == personId && date > x.BeginDateTime && date < x.EndDateTime);
+                if (personEducation == null) return 0;
+                return personEducation.EducationId;
             }
         }
     }

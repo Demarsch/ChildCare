@@ -219,6 +219,13 @@
           <Property Name="Description" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="DocumentFromDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="Educations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="512" Nullable="false" />
+        </EntityType>
         <EntityType Name="FinacingSources">
           <Key>
             <PropertyRef Name="Id" />
@@ -294,6 +301,13 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MaritalStatuses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="512" Nullable="false" />
         </EntityType>
         <EntityType Name="MedicalHelpTypes">
           <Key>
@@ -380,6 +394,16 @@
           <Property Name="BeginDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="PersonEducations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="EducationId" Type="int" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="PersonHealthGroups">
           <Key>
             <PropertyRef Name="Id" />
@@ -402,6 +426,16 @@
           <Property Name="GivenOrg" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="BeginDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PersonMaritalStatuses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="MaritalStatusId" Type="int" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonNames">
           <Key>
@@ -1120,6 +1154,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PersonEducations_Educations">
+          <End Role="Educations" Type="Self.Educations" Multiplicity="1" />
+          <End Role="PersonEducations" Type="Self.PersonEducations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Educations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonEducations">
+              <PropertyRef Name="EducationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonEducations_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonEducations" Type="Self.PersonEducations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonEducations">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonHealthGroups_HealthGroups">
           <End Role="HealthGroups" Type="Self.HealthGroups" Multiplicity="1" />
           <End Role="PersonHealthGroups" Type="Self.PersonHealthGroups" Multiplicity="*" />
@@ -1164,6 +1222,30 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="PersonIdentityDocuments">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonMaritalStatuses_MaritalStatuses">
+          <End Role="MaritalStatuses" Type="Self.MaritalStatuses" Multiplicity="1" />
+          <End Role="PersonMaritalStatuses" Type="Self.PersonMaritalStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaritalStatuses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonMaritalStatuses">
+              <PropertyRef Name="MaritalStatusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonMaritalStatuses_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonMaritalStatuses" Type="Self.PersonMaritalStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonMaritalStatuses">
               <PropertyRef Name="PersonId" />
             </Dependent>
           </ReferentialConstraint>
@@ -1606,6 +1688,7 @@
           <EntitySet Name="Decisions" EntityType="Self.Decisions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DisabilityTypes" EntityType="Self.DisabilityTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Documents" EntityType="Self.Documents" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Educations" EntityType="Self.Educations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinacingSources" EntityType="Self.FinacingSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HealthGroups" EntityType="Self.HealthGroups" Schema="dbo" store:Type="Tables" />
@@ -1613,6 +1696,7 @@
           <EntitySet Name="InsuranceCompanies" EntityType="Self.InsuranceCompanies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceDocuments" EntityType="Self.InsuranceDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceDocumentTypes" EntityType="Self.InsuranceDocumentTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MaritalStatuses" EntityType="Self.MaritalStatuses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MedicalHelpTypes" EntityType="Self.MedicalHelpTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Okatos" EntityType="Self.Okatos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orgs" EntityType="Self.Orgs" Schema="dbo" store:Type="Tables" />
@@ -1621,8 +1705,10 @@
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonAddresses" EntityType="Self.PersonAddresses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonDisabilities" EntityType="Self.PersonDisabilities" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonEducations" EntityType="Self.PersonEducations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonHealthGroups" EntityType="Self.PersonHealthGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonIdentityDocuments" EntityType="Self.PersonIdentityDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonMaritalStatuses" EntityType="Self.PersonMaritalStatuses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNames" EntityType="Self.PersonNames" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonNationalities" EntityType="Self.PersonNationalities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonOuterDocuments" EntityType="Self.PersonOuterDocuments" Schema="dbo" store:Type="Tables" />
@@ -1803,6 +1889,14 @@
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonDisabilities" EntitySet="PersonDisabilities" />
           </AssociationSet>
+          <AssociationSet Name="FK_PersonEducations_Educations" Association="Self.FK_PersonEducations_Educations">
+            <End Role="Educations" EntitySet="Educations" />
+            <End Role="PersonEducations" EntitySet="PersonEducations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonEducations_Persons" Association="Self.FK_PersonEducations_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonEducations" EntitySet="PersonEducations" />
+          </AssociationSet>
           <AssociationSet Name="FK_PersonHealthGroups_HealthGroups" Association="Self.FK_PersonHealthGroups_HealthGroups">
             <End Role="HealthGroups" EntitySet="HealthGroups" />
             <End Role="PersonHealthGroups" EntitySet="PersonHealthGroups" />
@@ -1818,6 +1912,14 @@
           <AssociationSet Name="FK_PersonIdentityDocuments_Persons" Association="Self.FK_PersonIdentityDocuments_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonIdentityDocuments" EntitySet="PersonIdentityDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonMaritalStatuses_MaritalStatuses" Association="Self.FK_PersonMaritalStatuses_MaritalStatuses">
+            <End Role="MaritalStatuses" EntitySet="MaritalStatuses" />
+            <End Role="PersonMaritalStatuses" EntitySet="PersonMaritalStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonMaritalStatuses_Persons" Association="Self.FK_PersonMaritalStatuses_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonMaritalStatuses" EntitySet="PersonMaritalStatuses" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonNames_ChangeNameReasons" Association="Self.FK_PersonNames_ChangeNameReasons">
             <End Role="ChangeNameReasons" EntitySet="ChangeNameReasons" />
@@ -2335,6 +2437,26 @@
             <End Role="Document" EntitySet="Documents" />
             <End Role="Person" EntitySet="Persons" />
           </AssociationSet>
+          <EntitySet Name="Educations" EntityType="DataLib.Education" />
+          <EntitySet Name="MaritalStatuses" EntityType="DataLib.MaritalStatus" />
+          <EntitySet Name="PersonMaritalStatuses" EntityType="DataLib.PersonMaritalStatus" />
+          <AssociationSet Name="FK_PersonMaritalStatuses_MaritalStatuses" Association="DataLib.FK_PersonMaritalStatuses_MaritalStatuses">
+            <End Role="MaritalStatus" EntitySet="MaritalStatuses" />
+            <End Role="PersonMaritalStatus" EntitySet="PersonMaritalStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonMaritalStatuses_Persons" Association="DataLib.FK_PersonMaritalStatuses_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonMaritalStatus" EntitySet="PersonMaritalStatuses" />
+          </AssociationSet>
+          <EntitySet Name="PersonEducations" EntityType="DataLib.PersonEducation" />
+          <AssociationSet Name="FK_PersonEducations_Educations" Association="DataLib.FK_PersonEducations_Educations">
+            <End Role="Education" EntitySet="Educations" />
+            <End Role="PersonEducation" EntitySet="PersonEducations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonEducations_Persons" Association="DataLib.FK_PersonEducations_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonEducation" EntitySet="PersonEducations" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -2735,6 +2857,8 @@
           <NavigationProperty Name="PersonOuterDocuments" Relationship="DataLib.FK_PersonOuterDocuments_Persons" FromRole="Person" ToRole="PersonOuterDocument" />
           <Property Name="PhotoId" Type="Int32" />
           <NavigationProperty Name="Document" Relationship="DataLib.FK_Persons_Documents" FromRole="Person" ToRole="Document" />
+          <NavigationProperty Name="PersonMaritalStatuses" Relationship="DataLib.FK_PersonMaritalStatuses_Persons" FromRole="Person" ToRole="PersonMaritalStatus" />
+          <NavigationProperty Name="PersonEducations" Relationship="DataLib.FK_PersonEducations_Persons" FromRole="Person" ToRole="PersonEducation" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -4077,6 +4201,94 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Education">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonEducations" Relationship="DataLib.FK_PersonEducations_Educations" FromRole="Education" ToRole="PersonEducation" />
+        </EntityType>
+        <EntityType Name="MaritalStatus">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonMaritalStatuses" Relationship="DataLib.FK_PersonMaritalStatuses_MaritalStatuses" FromRole="MaritalStatus" ToRole="PersonMaritalStatus" />
+        </EntityType>
+        <EntityType Name="PersonMaritalStatus">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="MaritalStatusId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="MaritalStatus" Relationship="DataLib.FK_PersonMaritalStatuses_MaritalStatuses" FromRole="PersonMaritalStatus" ToRole="MaritalStatus" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonMaritalStatuses_Persons" FromRole="PersonMaritalStatus" ToRole="Person" />
+        </EntityType>
+        <Association Name="FK_PersonMaritalStatuses_MaritalStatuses">
+          <End Type="DataLib.MaritalStatus" Role="MaritalStatus" Multiplicity="1" />
+          <End Type="DataLib.PersonMaritalStatus" Role="PersonMaritalStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MaritalStatus">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonMaritalStatus">
+              <PropertyRef Name="MaritalStatusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonMaritalStatuses_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonMaritalStatus" Role="PersonMaritalStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonMaritalStatus">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PersonEducation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="EducationId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Education" Relationship="DataLib.FK_PersonEducations_Educations" FromRole="PersonEducation" ToRole="Education" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonEducations_Persons" FromRole="PersonEducation" ToRole="Person" />
+        </EntityType>
+        <Association Name="FK_PersonEducations_Educations">
+          <End Type="DataLib.Education" Role="Education" Multiplicity="1" />
+          <End Type="DataLib.PersonEducation" Role="PersonEducation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Education">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonEducation">
+              <PropertyRef Name="EducationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonEducations_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonEducation" Role="PersonEducation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonEducation">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4766,6 +4978,44 @@
                 <ScalarProperty Name="Extension" ColumnName="Extension" />
                 <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
                 <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Educations">
+            <EntityTypeMapping TypeName="DataLib.Education">
+              <MappingFragment StoreEntitySet="Educations">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MaritalStatuses">
+            <EntityTypeMapping TypeName="DataLib.MaritalStatus">
+              <MappingFragment StoreEntitySet="MaritalStatuses">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonMaritalStatuses">
+            <EntityTypeMapping TypeName="DataLib.PersonMaritalStatus">
+              <MappingFragment StoreEntitySet="PersonMaritalStatuses">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="MaritalStatusId" ColumnName="MaritalStatusId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonEducations">
+            <EntityTypeMapping TypeName="DataLib.PersonEducation">
+              <MappingFragment StoreEntitySet="PersonEducations">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="EducationId" ColumnName="EducationId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

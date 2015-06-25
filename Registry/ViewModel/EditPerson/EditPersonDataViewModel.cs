@@ -51,6 +51,8 @@ namespace Registry
             EditPersonDisabilitiesCommand = new RelayCommand(EditPersonDisabilities);
             EditPersonSocialStatusesCommand = new RelayCommand(EditPersonSocialStatuses);
             HealthGroups = new ObservableCollection<HealthGroup>(service.GetHealthGroups());
+            MaritalStatuses = new ObservableCollection<MaritalStatus>(service.GetMaritalStatuses());
+            Educations = new ObservableCollection<Education>(service.GetEducations());
             Countries = new ObservableCollection<Country>(service.GetCountries());
 
         }
@@ -127,6 +129,8 @@ namespace Registry
                 CommonPersonData.Person = person;
                 HealthGroupId = service.GetHealthGroupId(person.Id, dateTimeNow);
                 NationalityId = service.GetNationalityCountryId(person.Id, dateTimeNow);
+                MaritalStatusId = service.GetMaritalStatusId(person.Id, dateTimeNow);
+                EducationId = service.GetEducationId(person.Id, dateTimeNow);
                 if (NationalityId < 1)
                     NationalityId = service.GetDefaultNationalityCountryId();
                 Insurances = service.GetActualInsuranceDocumentsString(Id);
@@ -233,6 +237,20 @@ namespace Registry
             set { Set(() => Countries, ref countries, value); }
         }
 
+        private ObservableCollection<Education> educations = new ObservableCollection<Education>();
+        public ObservableCollection<Education> Educations 
+        {
+            get { return educations; }
+            set { Set(() => Educations, ref educations, value); }
+        }
+
+        private ObservableCollection<MaritalStatus> maritalStatuses = new ObservableCollection<MaritalStatus>();
+        public ObservableCollection<MaritalStatus> MaritalStatuses
+        {
+            get { return maritalStatuses; }
+            set { Set(() => MaritalStatuses, ref maritalStatuses, value); }
+        }
+
         private string textMessage = string.Empty;
         public string TextMessage
         {
@@ -256,6 +274,19 @@ namespace Registry
             }
         }
 
+        private int educationId = 0;
+        public int EducationId
+        {
+            get { return educationId; }
+            set { Set(() => EducationId, ref educationId, value); }
+        }
+
+        private int maritalStatusId = 0;
+        public int MaritalStatusId
+        {
+            get { return maritalStatusId; }
+            set { Set(() => MaritalStatusId, ref maritalStatusId, value); }
+        }
 
         private int healthGroupId = 0;
         public int HealthGroupId

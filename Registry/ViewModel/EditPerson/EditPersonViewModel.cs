@@ -112,6 +112,8 @@ namespace Registry
                 PersonSocialStatuses = EditPersonDataViewModel.GetUnsavedPersonSocialStatuses(),
                 HealthGroupId = EditPersonDataViewModel.HealthGroupId,
                 NationalityId = EditPersonDataViewModel.NationalityId,
+                MaritalStatusId = EditPersonDataViewModel.MaritalStatusId,
+                EducationId = EditPersonDataViewModel.EducationId,
                 RelativeToPersonId = 0
             };
 
@@ -131,6 +133,8 @@ namespace Registry
                     PersonSocialStatuses = personRelativeDataViewModels.GetUnsavedPersonSocialStatuses(),
                     HealthGroupId = personRelativeDataViewModels.HealthGroupId,
                     NationalityId = personRelativeDataViewModels.NationalityId,
+                    MaritalStatusId = personRelativeDataViewModels.MaritalStatusId,
+                    EducationId = personRelativeDataViewModels.EducationId,
                     RelativeToPersonId = personRelativeDataViewModels.RelativeToPersonId,
                     IsRepresentative = personRelativeDataViewModels.IsRepresentative,
                     RelativeRelationId = personRelativeDataViewModels.RelativeRelationId
