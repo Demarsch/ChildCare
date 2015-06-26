@@ -431,6 +431,15 @@ namespace MainLib
                 {
                     result = !GenderId.HasValue ? "Укажите пол" : string.Empty;
                 }
+                if (columnName == "SNILS")
+                {
+                    result = SNILS.FilterChars().Length > 0 && SNILS.FilterChars().Length != 11 ? "Поле СНИЛС должно содержать 11 цифр" : string.Empty;
+                }
+                if (columnName == "MedNumber")
+                {
+
+                    result = MedNumber.FilterChars().Length > 0 && MedNumber.FilterChars().Length != 16 ? "Поле СНИЛС должно содержать 16 цифр" : string.Empty;
+                }
                 if (string.IsNullOrEmpty(result))
                 {
                     invalidProperties.Remove(columnName);

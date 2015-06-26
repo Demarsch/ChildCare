@@ -93,7 +93,7 @@
                                     <StackPanel Grid.Column="1" Margin="3">
                                         <TextBlock Text="{Binding ShortName}"/>
                                         <ComboBox Margin="2" ItemsSource="{Binding DataContext.RelativeRelations, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" 
-                                              SelectedValuePath="Id" SelectedValue="{Binding RelativeRelationId}" DisplayMemberPath="Name"/>
+                                              SelectedValuePath="Id" SelectedValue="{Binding RelativeRelationId, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" DisplayMemberPath="Name"/>
                                         <stuffLib:CheckBoxExtentions Content="Представитель" IsChecked="{Binding IsRepresentative}" GroupName="PersonRelatives">
                                         </stuffLib:CheckBoxExtentions>
                                     </StackPanel>

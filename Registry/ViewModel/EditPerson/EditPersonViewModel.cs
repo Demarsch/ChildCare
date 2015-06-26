@@ -114,7 +114,7 @@ namespace Registry
                 NationalityId = EditPersonDataViewModel.NationalityId,
                 MaritalStatusId = EditPersonDataViewModel.MaritalStatusId,
                 EducationId = EditPersonDataViewModel.EducationId,
-                RelativeToPersonId = 0
+                RelativeToPersonId = -1
             };
 
             var personRelativesDataSaveDTO = new List<PersonDataSaveDTO>();
@@ -208,7 +208,7 @@ namespace Registry
         public ICommand AddNewPersonToRelativeCommand { get; set; }
         private void AddNewPersonToRelative()
         {
-            var newRelative = new EditPersonDataViewModel(log, service, dialogService, documentService);
+            var newRelative = new EditPersonDataViewModel(log, service, dialogService, documentService) { RelativeToPersonId = Id };
             EditPersonRelativeDataViewModels.Add(newRelative);
             SelectedRelativeViewModel = newRelative;
         }
@@ -236,8 +236,20 @@ namespace Registry
         public ICommand SaveChangesCommand { get; set; }
         private async void SaveChanges()
         {
-            var task = Task.Factory.StartNew(SaveData);
             IsSaveEnabled = false;
+            var notEroors = true;
+            notEroors &= EditPersonDataViewModel.Invalidate();
+            foreach (var personRelativeDataViewModels in EditPersonRelativeDataViewModels)
+            {
+                notEroors &= personRelativeDataViewModels.Invalidate();
+            }
+            if (!notEroors)
+            {
+                IsSaveEnabled = true;
+                return;
+            }
+            var task = Task.Factory.StartNew(SaveData);
+            
             await task;
             IsSaveEnabled = true;
         }

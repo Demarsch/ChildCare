@@ -391,7 +391,6 @@ namespace Core
             }
         }
 
-
         public ICollection<PersonSocialStatus> GetPersonSocialStatuses(int personId)
         {
             using (var db = provider.GetNewDataContext())
@@ -399,7 +398,6 @@ namespace Core
                 return db.GetData<PersonSocialStatus>().Where(x => x.PersonId == personId).ToArray();
             }
         }
-
 
         public ICollection<HealthGroup> GetHealthGroups()
         {
@@ -518,7 +516,7 @@ namespace Core
                 {
                     SetPersonData(personRelative, db);
                     //set relation between person and relative
-                    if (personRelative.RelativeToPersonId > 0)
+                    if (personRelative.RelativeToPersonId > -1)
                     {
                         var curPersonRelative = db.GetData<PersonRelative>().FirstOrDefault(x => x.PersonId == person.Person.Id && x.RelativeId == personRelative.Person.Id);
                         if (curPersonRelative == null)
@@ -526,7 +524,7 @@ namespace Core
                             curPersonRelative = new PersonRelative()
                             {
                                 Person = person.Person,
-                                Person1 = personRelative.Person
+                                Person1 = personRelative.Person,
                             };
                             db.Add<PersonRelative>(curPersonRelative);
                         }

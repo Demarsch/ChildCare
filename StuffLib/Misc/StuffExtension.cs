@@ -157,7 +157,7 @@ namespace Core
         /// <param name="digits">оставлять ли цифры</param>
         /// <param name="trimall"></param>
         /// <returns></returns>
-        public static string FilterChars(this string str, string chars = " ,.-/", bool literals = true, bool digits = true, bool trimall = true)
+        public static string FilterChars(this string str, string chars = " ,.-_/", bool literals = true, bool digits = true, bool trimall = true)
         {
             string r = "";
             foreach (char c in str.ToCharArray()) if (chars.Contains(c) || (literals && char.IsLetter(c)) || (digits && char.IsDigit(c))) r += c;

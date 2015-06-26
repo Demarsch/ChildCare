@@ -82,7 +82,12 @@ namespace Registry
 
         #region Properties for relatives
 
-        public int RelativeToPersonId { get; set; }
+        private int relativeToPersonId = -1;
+        public int RelativeToPersonId
+        {
+            get { return relativeToPersonId; }
+            set { Set(() => RelativeToPersonId, ref relativeToPersonId, value); }
+        }
 
         private string shortName;
         public string ShortName
@@ -421,7 +426,7 @@ namespace Registry
         {
             saveWasRequested = true;
             RaisePropertyChanged(string.Empty);
-            return invalidProperties.Count < 1;
+            return CommonPersonData.Invalidate() && invalidProperties.Count < 1;
         }
 
         string IDataErrorInfo.this[string columnName]
@@ -441,6 +446,10 @@ namespace Registry
                 if (columnName == "NationalityId")
                 {
                     result = NationalityId < 1 ? "Укажите гражданство" : string.Empty;
+                }
+                if (columnName == "RelativeRelationId")
+                {
+                    result = RelativeRelationId < 1 ? "Укажите степень родства" : string.Empty;
                 }
                 if (string.IsNullOrEmpty(result))
                 {
