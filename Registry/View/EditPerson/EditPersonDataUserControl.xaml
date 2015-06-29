@@ -95,7 +95,7 @@
         <ComboBox Grid.Row="21" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding MaritalStatuses}" DisplayMemberPath="Name" SelectedValuePath="Id" 
                   SelectedValue="{Binding MaritalStatusId}"/>
 
-        <Label Grid.Row="22" Grid.Column="0" FontWeight="Bold">ОБразование</Label>
+        <Label Grid.Row="22" Grid.Column="0" FontWeight="Bold">Образование</Label>
         <ComboBox Grid.Row="22" Grid.Column="1" Grid.ColumnSpan="2" Margin="1" HorizontalAlignment="Stretch" ItemsSource="{Binding Educations}" DisplayMemberPath="Name" SelectedValuePath="Id" 
                   SelectedValue="{Binding EducationId}"/>
     </Grid>

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using MainLib;
 using System.ComponentModel;
+using System.Windows.Media;
 
 namespace Registry
 {
@@ -110,6 +111,13 @@ namespace Registry
             set { Set(() => IsRepresentative, ref isRepresentative, value); }
         }
 
+        private ImageSource photoUri;
+        public ImageSource PhotoUri
+        {
+            get { return photoUri; }
+            set { Set(() => PhotoUri, ref photoUri, value); }
+        }
+
         #endregion
 
         private void FillPropertyFromPerson()
@@ -151,12 +159,14 @@ namespace Registry
                 IsRepresentative = personRelative.IsRepresentative;
                 RelativeRelationId = personRelative.RelativeRelationshipId;
                 ShortName = person.ShortName;
+                PhotoUri = CommonPersonData.PhotoURI;
             }
             else
             {
                 IsRepresentative = false;
                 RelativeRelationId = 0;
                 ShortName = string.Empty;
+                PhotoUri = null;
             }
         }
 
@@ -165,6 +175,15 @@ namespace Registry
             if (e.PropertyName == "BirthDate")
             {
                 RaisePropertyChanged(() => IsChild);
+            }
+            if (e.PropertyName == "FirstName" || e.PropertyName == "LastName" || e.PropertyName == "MiddleName")
+            {
+                ShortName = CommonPersonData.LastName + " " + (CommonPersonData.FirstName != string.Empty ? CommonPersonData.FirstName.Substring(0, 1) + ". " : string.Empty) +
+                    (CommonPersonData.MiddleName != string.Empty ? CommonPersonData.MiddleName.Substring(0, 1) + "." : string.Empty);
+            }
+            if (e.PropertyName == "PhotoURI")
+            {
+                PhotoUri = CommonPersonData.PhotoURI;
             }
         }
 
@@ -243,7 +262,7 @@ namespace Registry
         }
 
         private ObservableCollection<Education> educations = new ObservableCollection<Education>();
-        public ObservableCollection<Education> Educations 
+        public ObservableCollection<Education> Educations
         {
             get { return educations; }
             set { Set(() => Educations, ref educations, value); }

@@ -159,7 +159,13 @@ namespace Registry
             {
                 Set(() => SelectedRelativeViewModel, ref selectedRelativeViewModel, value);
                 IsPersonEditing = (selectedRelativeViewModel == null);
+                RaisePropertyChanged(() => IsNullSelectedRelativeViewModel);
             }
+        }
+
+        public bool IsNullSelectedRelativeViewModel
+        {
+            get { return SelectedRelativeViewModel == null; }
         }
 
         private bool isPersonEditing;
@@ -216,6 +222,8 @@ namespace Registry
         public ICommand RemovePersonFromRelativeCommand { get; set; }
         private void RemovePersonFromRelative()
         {
+            if (SelectedRelativeViewModel == null)
+                return;
             var selectedIndex = EditPersonRelativeDataViewModels.IndexOf(SelectedRelativeViewModel);
             EditPersonRelativeDataViewModels.Remove(SelectedRelativeViewModel);
             if (EditPersonRelativeDataViewModels.Count > 0)

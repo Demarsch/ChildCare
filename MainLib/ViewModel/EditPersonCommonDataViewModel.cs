@@ -130,8 +130,8 @@ namespace MainLib
             set
             {
                 Set(() => LastName, ref lastName, value);
-                RaisePropertyChanged("IsFIOChanged");
-                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
+                RaisePropertyChanged(() => IsFIOChanged);
+                RaisePropertyChanged(() => IsSelectedChangeNameReasonWithCreateNewPersonNames);
             }
         }
 
@@ -145,8 +145,8 @@ namespace MainLib
             set
             {
                 Set(() => FirstName, ref firstName, value);
-                RaisePropertyChanged("IsFIOChanged");
-                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
+                RaisePropertyChanged(() => IsFIOChanged);
+                RaisePropertyChanged(() => IsSelectedChangeNameReasonWithCreateNewPersonNames);
             }
         }
 
@@ -160,8 +160,8 @@ namespace MainLib
             set
             {
                 Set(() => MiddleName, ref middleName, value);
-                RaisePropertyChanged("IsFIOChanged");
-                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
+                RaisePropertyChanged(() => IsFIOChanged);
+                RaisePropertyChanged(() => IsSelectedChangeNameReasonWithCreateNewPersonNames);
             }
         }
 
@@ -245,7 +245,7 @@ namespace MainLib
             set
             {
                 Set(() => SelectedChangeNameReason, ref selectedChangeNameReason, value);
-                RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
+                RaisePropertyChanged(() => IsSelectedChangeNameReasonWithCreateNewPersonNames);
             }
         }
 
@@ -271,17 +271,20 @@ namespace MainLib
                 JpegBitmapEncoder encoder = new JpegBitmapEncoder();
                 var fileData = documentService.GetBinaryDataFromImage(encoder, photoViewModel.SnapshotTaken);
                 var str = string.Empty;
-                PhotoId = documentService.UploadDocument(new Document()
-                    {
-                        FileData = fileData,
-                        Description = "фото",
-                        DisplayName = "фото",
-                        Extension = "jpg",
-                        FileName = "фото",
-                        FileSize = fileData.Length,
-                        UploadDate = DateTime.Now
-                    }, out str);
+                if (fileData != null && fileData.Length > 0)
+                    PhotoId = documentService.UploadDocument(new Document()
+                        {
+                            FileData = fileData,
+                            Description = "фото",
+                            DisplayName = "фото",
+                            Extension = "jpg",
+                            FileName = "фото",
+                            FileSize = fileData.Length,
+                            UploadDate = DateTime.Now
+                        }, out str);
                 PhotoURI = photoViewModel.SnapshotTaken;
+                photoViewModel.SnapshotBitmap = null;
+                photoViewModel.SnapshotTaken = null;
             }
         }
 
@@ -348,8 +351,8 @@ namespace MainLib
             person.ShortName = LastName + " " + FirstName.Substring(0, 1) + ". " + (MiddleName != string.Empty ? MiddleName.Substring(0, 1) + "." : string.Empty);
             person.FullName = LastName + " " + FirstName + " " + MiddleName;
 
-            RaisePropertyChanged("IsFIOChanged");
-            RaisePropertyChanged("IsSelectedChangeNameReasonWithCreateNewPersonNames");
+            RaisePropertyChanged(() => IsFIOChanged);
+            RaisePropertyChanged(() => IsSelectedChangeNameReasonWithCreateNewPersonNames);
 
             return person;
         }
@@ -425,7 +428,7 @@ namespace MainLib
                 }
                 if (columnName == "ChangeNameDate")
                 {
-                    result = IsFIOChanged && SelectedChangeNameReason.NeedCreateNewPersonName && ChangeNameDate == null ? "Укажите дату, с которой изменилось ФИО" : string.Empty;
+                    result = IsFIOChanged && SelectedChangeNameReason != null && SelectedChangeNameReason.NeedCreateNewPersonName && ChangeNameDate == null ? "Укажите дату, с которой изменилось ФИО" : string.Empty;
                 }
                 if (columnName == "GenderId")
                 {
