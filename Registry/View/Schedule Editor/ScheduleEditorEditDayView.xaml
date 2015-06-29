@@ -5,57 +5,113 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <DataTemplate DataType="{x:Type registry:ScheduleEditorEditDayViewModel}">
         <DataTemplate.Resources>
-            <core:UniversalConverter x:Key="ItemCountToVisiblityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
-                <core:ConverterItem To="{x:Static Visibility.Visible}" From="{core:Convert 0, {x:Type system:Int32}}" />
+            <core:UniversalConverter x:Key="ItemCountToVisiblityConverter" 
+                                     DefaultValue="{x:Static Visibility.Collapsed}">
+                <core:ConverterItem To="{x:Static Visibility.Visible}"
+                                    From="{core:Convert 0, {x:Type system:Int32}}" />
             </core:UniversalConverter>
         </DataTemplate.Resources>
-        <StackPanel Orientation="Vertical" Width="500">
+        <StackPanel Orientation="Vertical"
+                    Width="500">
             <ToolBar OverflowMode="Never">
                 <Button Command="{Binding AddRecordTypeCommand, Mode=OneTime}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="16" Height="16" Source="pack://application:,,,/Resources;component/Images/Add48x48.png" Stretch="Uniform" Margin="2" VerticalAlignment="Center" />
-                        <TextBlock Margin="2" VerticalAlignment="Center" Text="Добавить услугу" />
+                        <Image Width="16"
+                               Height="16" 
+                               Source="pack://application:,,,/Resources;component/Images/Add48x48.png"
+                               Stretch="Uniform"
+                               Margin="2" 
+                               VerticalAlignment="Center" />
+                        <TextBlock Margin="2" 
+                                   VerticalAlignment="Center"
+                                   Text="Добавить услугу" />
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding ClearRecordTypesCommand, Mode=OneTime}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="16" Height="16" Source="pack://application:,,,/Resources;component/Images/Delete24x24.png" Stretch="Uniform" Margin="2" VerticalAlignment="Center" />
-                        <TextBlock Margin="2" VerticalAlignment="Center" Text="Очистить список" />
+                        <Image Width="16"
+                               Height="16" 
+                               Source="pack://application:,,,/Resources;component/Images/Delete24x24.png"
+                               Stretch="Uniform" 
+                               Margin="2"
+                               VerticalAlignment="Center" />
+                        <TextBlock Margin="2" 
+                                   VerticalAlignment="Center"
+                                   Text="Очистить список" />
                     </StackPanel>
                 </Button>
             </ToolBar>
             <Grid>
-                <ListBox MinHeight="150" MaxHeight="300" ItemsSource="{Binding AllowedRecordTypes}" Margin="5" Grid.IsSharedSizeScope="True" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                <ListBox MinHeight="150"
+                         MaxHeight="300"
+                         ItemsSource="{Binding AllowedRecordTypes}" 
+                         Margin="5" 
+                         Grid.IsSharedSizeScope="True" 
+                         HorizontalContentAlignment="Stretch"
+                         HorizontalAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type registry:ScheduleEditorEditRecordTypeViewModel}">
-                            <Grid Background="White" x:Name="Grid">
+                            <Grid Background="White"
+                                  x:Name="Grid">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition SharedSizeGroup="RecordType" />
-                                    <ColumnDefinition SharedSizeGroup="Times" MinWidth="100" />
+                                    <ColumnDefinition SharedSizeGroup="Times"
+                                                      MinWidth="100" />
                                 </Grid.ColumnDefinitions>
-                                <Button Margin="2" Padding="2" Command="{Binding DataContext.RemoveRecordTypeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Mode=OneTime}" CommandParameter="{Binding Mode=OneTime}"
-                                    Opacity="0.5" x:Name="Button" ToolTip="Убрать услугу">
-                                    <Image Width="12" Height="12" Source="pack://application:,,,/Resources;component/Images/Delete24x24.png" Stretch="Uniform" Margin="2" VerticalAlignment="Center" />
+                                <Button Margin="2"
+                                        Padding="2" 
+                                        Command="{Binding DataContext.RemoveRecordTypeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}, Mode=OneTime}"
+                                        CommandParameter="{Binding Mode=OneTime}"
+                                        Opacity="0.5"
+                                        x:Name="Button" 
+                                        ToolTip="Убрать услугу">
+                                    <Image Width="12" 
+                                           Height="12"
+                                           Source="pack://application:,,,/Resources;component/Images/Delete24x24.png"
+                                           Stretch="Uniform" 
+                                           Margin="2" 
+                                           VerticalAlignment="Center" />
                                 </Button>
-                                <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False" HorizontalAlignment="Stretch" DisplayMemberPath="Name" SelectedValue="{Binding RecordTypeId, UpdateSourceTrigger=PropertyChanged}" 
-                                      SelectedValuePath="Id" Margin="2" ItemsSource="{Binding DataContext.AssignableRecordTypes, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
-                                      MinWidth="250"/>
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Times, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Margin="2 2 20 2"
+                                <ComboBox Grid.Row="0"
+                                          Grid.Column="1" 
+                                          IsEditable="False" 
+                                          HorizontalAlignment="Stretch"
+                                          DisplayMemberPath="Name"
+                                          SelectedValue="{Binding RecordTypeId, UpdateSourceTrigger=PropertyChanged}" 
+                                          SelectedValuePath="Id" 
+                                          Margin="2" 
+                                          ItemsSource="{Binding DataContext.AssignableRecordTypes, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"
+                                          MinWidth="250"/>
+                                <TextBox Grid.Row="0" 
+                                         Grid.Column="2"
+                                         Text="{Binding Times, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                                         Margin="2 2 20 2"
                                      Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" MinWidth="150" />
                             </Grid>
                             <DataTemplate.Triggers>
-                                <Trigger SourceName="Grid" Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Button" Property="Opacity" Value="1.0" />
+                                <Trigger SourceName="Grid" 
+                                         Property="IsMouseOver" 
+                                         Value="True">
+                                    <Setter TargetName="Button"
+                                            Property="Opacity" 
+                                            Value="1.0" />
                                 </Trigger>
                             </DataTemplate.Triggers>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <TextBlock Text="Кабинет закрыт" Foreground="DimGray" FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
+                <TextBlock Text="Кабинет закрыт" 
+                           Foreground="DimGray"
+                           FontWeight="SemiBold"
+                           FontSize="16" 
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" 
+                           IsHitTestVisible="False"
                            Visibility="{Binding AllowedRecordTypes.Count, Converter={StaticResource ItemCountToVisiblityConverter}}" />
             </Grid>
-            <CheckBox Margin="5 0 5 5" IsChecked="{Binding IsThisDayOnly, UpdateSourceTrigger=PropertyChanged}">
+            <CheckBox Margin="5 0 5 5" 
+                      IsChecked="{Binding IsThisDayOnly, UpdateSourceTrigger=PropertyChanged}">
                 <TextBlock>
                     <Run Text="Указанное расписание будет действовать только " />
                     <Run Text="{Binding CurrentDate, StringFormat='d MMMM', Mode=OneTime}" />

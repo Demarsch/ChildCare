@@ -26,12 +26,18 @@
                         </core:ConverterItem>
                     </core:UniversalConverter>
                 </DataTemplate.Resources>
-                <Border BorderBrush="Gray" BorderThickness="0 0.5 0 0.5" Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}">
+                <Border BorderBrush="Gray" 
+                        BorderThickness="0 0.5 0 0.5" 
+                        Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}">
                     <Border.OpacityMask>
-                        <LinearGradientBrush StartPoint="0, 0" EndPoint="1, 0">
-                            <GradientStop Color="Black" Offset="0" />
-                            <GradientStop Color="Black" Offset="0.5" />
-                            <GradientStop Color="Transparent" Offset="1"/>
+                        <LinearGradientBrush StartPoint="0, 0" 
+                                             EndPoint="1, 0">
+                            <GradientStop Color="Black" 
+                                          Offset="0" />
+                            <GradientStop Color="Black"
+                                          Offset="0.5" />
+                            <GradientStop Color="Transparent"
+                                          Offset="1"/>
                         </LinearGradientBrush>
                     </Border.OpacityMask>
                     <Grid>
@@ -40,30 +46,56 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2 2 0 0" FontSize="9">
+                        <TextBlock Grid.Row="0" 
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top" 
+                                   Margin="2 2 0 0" 
+                                   FontSize="9">
                             <Run Text="{Binding StartTime, StringFormat='HH:mm', Mode=OneTime}" />
                             <Run Text="-" />
                             <Run Text="{Binding EndTime, StringFormat='HH:mm', Mode=OneTime}" />
                         </TextBlock>
-                        <TextBlock Grid.Row="1" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 2 0 0" FontWeight="SemiBold" Text="{Binding RecordType, Mode=OneTime}" />
-                        <TextBlock Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2 0 0 2" Text="{Binding Room, Mode=OneTime}" />
+                        <TextBlock Grid.Row="1"
+                                   Panel.ZIndex="1"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="2 2 0 0" 
+                                   FontWeight="SemiBold" 
+                                   Text="{Binding RecordType, Mode=OneTime}" />
+                        <TextBlock Grid.Row="2" 
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Bottom"
+                                   Margin="2 0 0 2"
+                                   Text="{Binding Room, Mode=OneTime}" />
                     </Grid>
                 </Border>
             </DataTemplate>
         </DataTemplate.Resources>
         <Grid>
-            <ItemsControl ItemsSource="{Binding Assignments}" Background="Transparent" IsHitTestVisible="False" Width="200" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
-                          BorderBrush="Gray" BorderThickness="0.5">
+            <ItemsControl ItemsSource="{Binding Assignments}" 
+                          Background="Transparent"
+                          IsHitTestVisible="False"
+                          Width="200" 
+                          HorizontalContentAlignment="Stretch"
+                          VerticalContentAlignment="Stretch"
+                          BorderBrush="Gray"
+                          BorderThickness="0.5">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <xctk:TimelinePanel BeginDate="{Binding CurrentDateRoomsOpenTime}" EndDate="{Binding CurrentDateRoomsCloseTime}" Orientation="Vertical" OverlapBehavior="Stretch"
-                                                        UnitSize="{x:Static main:Configuration.ScheduleUnitPerTimeInterval}" UnitTimeSpan="{x:Static main:Configuration.ScheduleUnitTimeInterval}"/>
+                        <xctk:TimelinePanel BeginDate="{Binding CurrentDateRoomsOpenTime}"
+                                            EndDate="{Binding CurrentDateRoomsCloseTime}" 
+                                            Orientation="Vertical" 
+                                            OverlapBehavior="Stretch"
+                                            UnitSize="{x:Static main:Configuration.ScheduleUnitPerTimeInterval}"
+                                            UnitTimeSpan="{x:Static main:Configuration.ScheduleUnitTimeInterval}"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style>
-                        <Setter Property="xctk:TimelinePanel.Date" Value="{Binding StartTime, Mode=OneTime}" />
-                        <Setter Property="xctk:TimelinePanel.DateEnd" Value="{Binding EndTime, Mode=OneTime}" />
+                        <Setter Property="xctk:TimelinePanel.Date" 
+                                Value="{Binding StartTime, Mode=OneTime}" />
+                        <Setter Property="xctk:TimelinePanel.DateEnd" 
+                                Value="{Binding EndTime, Mode=OneTime}" />
                     </Style>
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>

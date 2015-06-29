@@ -182,7 +182,6 @@ namespace Registry
             catch (AggregateException ex)
             {
                 var innerException = ex.InnerExceptions[0];
-                //TODO: probably move this string to separate localizable dll
                 FailReason = "При попытке загрузить наначения возникла ошибка. Возможно отсутствует связь с базой данной. Попробуйте обновить список. Если ошибка повторится, обратитесь в службу поддержки";
                 log.Error(string.Format("Failed to load assignment for patient Id of '{0}'", sourceTask.AsyncState), innerException);
             }
@@ -199,7 +198,7 @@ namespace Registry
         private void UpdateDefaultView(ObservableCollection<PatientAssignmentViewModel> sourceCollection)
         {
             var defaultView = CollectionViewSource.GetDefaultView(sourceCollection);
-            defaultView.SortDescriptions.Add(new SortDescription("StartTime", ListSortDirection.Descending));
+            defaultView.SortDescriptions.Add(new SortDescription("AssignDateTime", ListSortDirection.Descending));
             defaultView.Filter = FilterAssignments;
 
         }
@@ -209,7 +208,7 @@ namespace Registry
             var assignment = obj as PatientAssignmentViewModel;
             return assignment != null && ((assignment.State == AssignmentState.Cancelled && showCancelled)
                                         || (assignment.State == AssignmentState.Completed && showCompleted)
-                                        || (assignment.State == AssignmentState.Incompleted && showIncompleted));
+                                        || ((assignment.State == AssignmentState.Incompleted || assignment.State == AssignmentState.Temporary) && showIncompleted));
         }
 
         private void RefreshAssignments()

@@ -27,6 +27,8 @@ namespace Registry
 
         public bool IsCompleted { get { return assignment.IsCompleted; } }
 
+        public bool IsTemporary { get { return assignment.IsTemporary; } }
+
         public string Room
         {
             get
@@ -51,7 +53,9 @@ namespace Registry
             {
                 return IsCancelled
                     ? AssignmentState.Cancelled
-                    : IsCompleted ? AssignmentState.Completed : AssignmentState.Incompleted;
+                    : IsCompleted 
+                        ?  AssignmentState.Completed 
+                        : IsTemporary ? AssignmentState.Temporary : AssignmentState.Incompleted;
             }
         }
     }
@@ -60,6 +64,7 @@ namespace Registry
     {
         Incompleted,
         Completed,
-        Cancelled
+        Cancelled,
+        Temporary
     }
 }

@@ -24,7 +24,7 @@ namespace Registry
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
-                return dataContext.GetData<Assignment>().Where(x => x.PersonId == patientId && !x.IsTemporary)
+                return dataContext.GetData<Assignment>().Where(x => x.PersonId == patientId)
                     .Select(x => new AssignmentDTO
                     {
                         Id = x.Id,

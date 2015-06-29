@@ -5,10 +5,19 @@
         xmlns:registry="clr-namespace:Registry"
         mc:Ignorable="d"
         x:Class="Registry.MainWindow"
-        Title="Регистратура" Height="350" Width="525" WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Title="Регистратура" 
+        Height="350" 
+        Width="525" 
+        WindowStartupLocation="CenterScreen" 
+        WindowState="Maximized"
         d:DataContext="{d:DesignInstance registry:MainWindowViewModel}">
-    <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
-        <registry:PatientSearchUserControl DataContext="{Binding PatientSearchViewModel}" DockPanel.Dock="Top" />
-        <ContentControl Content="{Binding ScheduleViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+    <DockPanel HorizontalAlignment="Stretch" 
+               VerticalAlignment="Stretch" 
+               LastChildFill="True">
+        <registry:PatientSearchUserControl DataContext="{Binding PatientSearchViewModel}" 
+                                           DockPanel.Dock="Top" />
+        <ContentControl Content="{Binding ScheduleViewModel}" 
+                        VerticalAlignment="Stretch" 
+                        HorizontalAlignment="Stretch" />
     </DockPanel>
 </Window>

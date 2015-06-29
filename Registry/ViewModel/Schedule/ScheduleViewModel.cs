@@ -76,6 +76,7 @@ namespace Registry
             ChangeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
             CancelAssignmentMovementCommand = new RelayCommand(CancelAssignmentMovement);
             OpenScheduleEditorCommand = new RelayCommand(OpenScheduleEditor, CanOpenScheduleEditor);
+            ChangeDateCommand = new RelayCommand<int>(ChangeDate);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
@@ -230,6 +231,13 @@ namespace Registry
         private bool CanOpenScheduleEditor()
         {
             return securityService.HasPrivilege(Privileges.EditSchedule);
+        }
+
+        public RelayCommand<int> ChangeDateCommand { get; private set; }
+
+        private void ChangeDate(int days)
+        {
+            SelectedDate = SelectedDate.AddDays(days);
         }
 
         #region Assignments

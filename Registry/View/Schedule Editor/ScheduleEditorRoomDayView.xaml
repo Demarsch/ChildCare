@@ -6,16 +6,24 @@
     <DataTemplate DataType="{x:Type registry:ScheduleEditorRoomDayViewModel}">
         <DataTemplate.Resources>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <core:UniversalConverter x:Key="StateToBackgroundConverter" DefaultValue="{x:Static Brushes.Transparent}">
-                <core:ConverterItem From="{x:Static registry:RoomDayState.ChangedDirectly}" To="{x:Static Brushes.Yellow}" />
-                <core:ConverterItem From="{x:Static registry:RoomDayState.ChangedIndirectly}" To="{x:Static Brushes.Orange}" />
+            <core:UniversalConverter x:Key="StateToBackgroundConverter"
+                                     DefaultValue="{x:Static Brushes.Transparent}">
+                <core:ConverterItem From="{x:Static registry:RoomDayState.ChangedDirectly}"
+                                    To="{x:Static Brushes.Yellow}" />
+                <core:ConverterItem From="{x:Static registry:RoomDayState.ChangedIndirectly}" 
+                                    To="{x:Static Brushes.Orange}" />
             </core:UniversalConverter>
         </DataTemplate.Resources>
-        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
-            <Button Padding="5" Command="{Binding EditRoomDayCommand, Mode=OneTime}" HorizontalContentAlignment="Stretch">
+        <Grid HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch" 
+              Background="White">
+            <Button Padding="5" 
+                    Command="{Binding EditRoomDayCommand, Mode=OneTime}" 
+                    HorizontalContentAlignment="Stretch">
                 <Button.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Command="{Binding CloseCommand, Mode=OneTime}" CommandParameter="{core:Convert True, {x:Type system:Boolean}}">
+                        <MenuItem Command="{Binding CloseCommand, Mode=OneTime}"
+                                  CommandParameter="{core:Convert True, {x:Type system:Boolean}}">
                             <MenuItem.Header>
                                 <TextBlock>
                                     <Run Text="Закрыть только" />
@@ -23,7 +31,8 @@
                                 </TextBlock>
                             </MenuItem.Header>
                         </MenuItem>
-                        <MenuItem Command="{Binding CloseCommand, Mode=OneTime}" CommandParameter="{core:Convert False, {x:Type system:Boolean}}">
+                        <MenuItem Command="{Binding CloseCommand, Mode=OneTime}"
+                                  CommandParameter="{core:Convert False, {x:Type system:Boolean}}">
                             <MenuItem.Header>
                                 <TextBlock>
                                     <Run Text="Закрыть, начиная с" />
@@ -32,13 +41,20 @@
                             </MenuItem.Header>
                         </MenuItem>
                         <Separator />
-                        <MenuItem Command="{Binding CopyCommand, Mode=OneTime}" CommandParameter="{Binding}" Header="Копировать" />
-                        <MenuItem Command="{Binding PasteCommand, Mode=OneTime}" CommandParameter="{Binding}" Header="Вставить" />
+                        <MenuItem Command="{Binding CopyCommand, Mode=OneTime}" 
+                                  CommandParameter="{Binding}"
+                                  Header="Копировать" />
+                        <MenuItem Command="{Binding PasteCommand, Mode=OneTime}"
+                                  CommandParameter="{Binding}" 
+                                  Header="Вставить" />
                     </ContextMenu>
                 </Button.ContextMenu>
                 <StackPanel Orientation="Vertical">
-                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding ScheduleItems}">
+                    <Grid HorizontalAlignment="Stretch" 
+                          VerticalAlignment="Stretch">
+                        <ItemsControl HorizontalAlignment="Stretch" 
+                                      VerticalAlignment="Stretch" 
+                                      ItemsSource="{Binding ScheduleItems}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel />
@@ -48,19 +64,23 @@
                                 <GroupStyle>
                                     <GroupStyle.HeaderTemplate>
                                         <DataTemplate DataType="{x:Type CollectionViewGroup}">
-                                            <TextBlock Foreground="DimGray" Margin="2" Text="{Binding Name}" />
+                                            <TextBlock Foreground="DimGray"
+                                                       Margin="2"
+                                                       Text="{Binding Name}" />
                                         </DataTemplate>
                                     </GroupStyle.HeaderTemplate>
                                     <GroupStyle.Panel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Vertical" Margin="2" />
+                                            <StackPanel Orientation="Vertical"
+                                                        Margin="2" />
                                         </ItemsPanelTemplate>
                                     </GroupStyle.Panel>
                                 </GroupStyle>
                             </ItemsControl.GroupStyle>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="{x:Type registry:ScheduleEditorScheduleItemViewModel}">
-                                    <TextBlock FontWeight="SemiBold" Margin="2">
+                                    <TextBlock FontWeight="SemiBold" 
+                                               Margin="2">
                                     <Run Text="{Binding StartTime, Mode=OneTime, StringFormat='{}{0:hh\\:mm}'}" />
                                     <Run Text="-" />
                                     <Run Text="{Binding EndTime, Mode=OneTime, StringFormat='{}{0:hh\\:mm}'}" />
@@ -68,13 +88,28 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Text="Кабинет закрыт" Foreground="DimGray" FontWeight="SemiBold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
-                           Visibility="{Binding IsRoomDayClosed, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <TextBlock Text="Кабинет закрыт" 
+                                   Foreground="DimGray"
+                                   FontWeight="SemiBold" 
+                                   FontSize="16" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"
+                                   IsHitTestVisible="False"
+                                   Visibility="{Binding IsRoomDayClosed, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </Grid>
-                    <TextBlock Text="Только на этот день" Visibility="{Binding IsThisDayOnly, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5 5 0 0" HorizontalAlignment="Right" Foreground="DimGray" FontStyle="Italic" FontSize="10" />
+                    <TextBlock Text="Только на этот день"
+                               Visibility="{Binding IsThisDayOnly, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                               Margin="5 5 0 0"
+                               HorizontalAlignment="Right"
+                               Foreground="DimGray" 
+                               FontStyle="Italic"
+                               FontSize="10" />
                 </StackPanel>
             </Button>
-            <Border IsHitTestVisible="False" Opacity="0.3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+            <Border IsHitTestVisible="False" 
+                    Opacity="0.3" 
+                    HorizontalAlignment="Stretch" 
+                    VerticalAlignment="Stretch" 
                     Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}"/>
         </Grid>
     </DataTemplate>

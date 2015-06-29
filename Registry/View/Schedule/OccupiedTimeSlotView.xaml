@@ -27,22 +27,28 @@
                     </core:ConverterItem.To>
                 </core:ConverterItem>
             </core:UniversalConverter>
-            <core:UniversalConverter x:Key="ModeToContextMenuConverter" DefaultValue="{x:Null}">
+            <core:UniversalConverter x:Key="ModeToContextMenuConverter"
+                                     DefaultValue="{x:Null}">
                 <core:ConverterItem>
                     <core:ConverterItem.From>
                         <system:Boolean>False</system:Boolean>
                     </core:ConverterItem.From>
                     <core:ConverterItem.To>
                         <ContextMenu>
-                            <MenuItem Header="{Binding CancelOrDeleteActionName}" Command="{Binding CancelOrDeleteCommand}" />
-                            <MenuItem Header="Обновить информацию" Command="{Binding UpdateCommand}" />
-                            <MenuItem Header="Перенести назначение" Command="{Binding MoveCommand}" />
+                            <MenuItem Header="{Binding CancelOrDeleteActionName}" 
+                                      Command="{Binding CancelOrDeleteCommand}" />
+                            <MenuItem Header="Обновить информацию" 
+                                      Command="{Binding UpdateCommand}" />
+                            <MenuItem Header="Перенести назначение"
+                                      Command="{Binding MoveCommand}" />
                         </ContextMenu>
                     </core:ConverterItem.To>
                 </core:ConverterItem>
             </core:UniversalConverter>
         </DataTemplate.Resources>
-        <Border BorderBrush="Gray" BorderThickness="0 0.5 0 0.5" Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}"
+        <Border BorderBrush="Gray"
+                BorderThickness="0 0.5 0 0.5"
+                Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}"
                 ContextMenu="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToContextMenuConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -50,9 +56,25 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2 2 0 0" FontSize="9" Text="{Binding StartTime, StringFormat='HH:mm', Mode=OneTime}" />
-                <TextBlock Grid.Row="1" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2 2 0 0" FontWeight="SemiBold" Text="{Binding PersonShortName, Mode=OneTime}" />
-                <TextBlock Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 2 2" FontSize="9" Text="{Binding EndTime, StringFormat='HH:mm', Mode=OneTime}" />
+                <TextBlock Grid.Row="0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="2 2 0 0" 
+                           FontSize="9" 
+                           Text="{Binding StartTime, StringFormat='HH:mm', Mode=OneTime}" />
+                <TextBlock Grid.Row="1" 
+                           Panel.ZIndex="1"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="2 2 0 0"
+                           FontWeight="SemiBold" 
+                           Text="{Binding PersonShortName, Mode=OneTime}" />
+                <TextBlock Grid.Row="2" 
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom" 
+                           Margin="0 0 2 2" 
+                           FontSize="9" 
+                           Text="{Binding EndTime, StringFormat='HH:mm', Mode=OneTime}" />
             </Grid>
         </Border>
     </DataTemplate>

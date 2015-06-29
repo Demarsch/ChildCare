@@ -4,10 +4,17 @@
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:command="http://www.galasoft.ch/mvvmlight">
     <DataTemplate DataType="{x:Type registry:FreeTimeSlotViewModel}">
-        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" BorderBrush="DarkGoldenrod" BorderThickness="1" x:Name="border" CornerRadius="2">
+        <Border HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch"
+                Background="White"
+                BorderBrush="DarkGoldenrod"
+                BorderThickness="1"
+                x:Name="border" 
+                CornerRadius="2">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="PreviewMouseDown">
-                    <command:EventToCommand Command="{Binding RequestAssignmentCreationCommand, Mode=OneTime}" PassEventArgsToCommand="True"  />
+                    <command:EventToCommand Command="{Binding RequestAssignmentCreationCommand, Mode=OneTime}" 
+                                            PassEventArgsToCommand="True"  />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <Grid>
@@ -16,20 +23,46 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2 2 0 0" FontSize="9" Text="{Binding StartTime, StringFormat='HH:mm'}" Foreground="DimGray"
+                <TextBlock Grid.Row="0"
+                           HorizontalAlignment="Left" 
+                           VerticalAlignment="Top" 
+                           Margin="2 2 0 0" 
+                           FontSize="9" 
+                           Text="{Binding StartTime, StringFormat='HH:mm'}" 
+                           Foreground="DimGray"
                            x:Name="startTimeText"/>
-                <TextBlock Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 2 2" FontSize="9" Text="{Binding EndTime, StringFormat='HH:mm'}" Foreground="DimGray"
+                <TextBlock Grid.Row="2" 
+                           HorizontalAlignment="Right" 
+                           VerticalAlignment="Bottom"
+                           Margin="0 0 2 2"
+                           FontSize="9"
+                           Text="{Binding EndTime, StringFormat='HH:mm'}" 
+                           Foreground="DimGray"
                            x:Name="endTimeText"/>
             </Grid>
         </Border>
         <DataTemplate.Triggers>
-            <Trigger SourceName="border" Property="IsMouseOver" Value="True">
-                <Setter TargetName="border" Property="BorderBrush" Value="SteelBlue" />
-                <Setter TargetName="border" Property="BorderThickness" Value="2" />
-                <Setter TargetName="startTimeText" Property="Foreground" Value="Black" />
-                <Setter TargetName="endTimeText" Property="Foreground" Value="Black" />
-                <Setter TargetName="startTimeText" Property="FontSize" Value="12" />
-                <Setter TargetName="endTimeText" Property="FontSize" Value="12" />
+            <Trigger SourceName="border" 
+                     Property="IsMouseOver" 
+                     Value="True">
+                <Setter TargetName="border" 
+                        Property="BorderBrush" 
+                        Value="SteelBlue" />
+                <Setter TargetName="border"
+                        Property="BorderThickness"
+                        Value="2" />
+                <Setter TargetName="startTimeText" 
+                        Property="Foreground"
+                        Value="Black" />
+                <Setter TargetName="endTimeText"
+                        Property="Foreground"
+                        Value="Black" />
+                <Setter TargetName="startTimeText"
+                        Property="FontSize"
+                        Value="12" />
+                <Setter TargetName="endTimeText" 
+                        Property="FontSize" 
+                        Value="12" />
             </Trigger>
         </DataTemplate.Triggers>
     </DataTemplate>
