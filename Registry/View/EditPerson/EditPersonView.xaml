@@ -7,7 +7,9 @@
         xmlns:stuffLib ="clr-namespace:StuffLib;assembly=StuffLib"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:core="clr-namespace:Core;assembly=StuffLib"
-        Width="920" SizeToContent="Height" ResizeMode="NoResize">
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" 
+        xmlns:controls="clr-namespace:MainLib.View;assembly=MainLib"
+        Width="920" MinHeight="910" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <core:UniversalConverter x:Key="booleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">
@@ -19,93 +21,106 @@
         </core:UniversalConverter>
     </Window.Resources>
 
-    <StackPanel>
-        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="viewer">
-            <ScrollViewer.Style>
-                <Style TargetType="{x:Type ScrollViewer}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
-                                        <DoubleAnimation To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                            <DataTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
-                                        <DoubleAnimation To="650" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.ExitActions>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ScrollViewer.Style>
-            <Grid>
-                <Grid.ColumnDefinitions >
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition  Height="auto"/>
-                </Grid.RowDefinitions>
-
-                <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
-                <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
-                    <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <TextBox Width="244"/>
-                        <Button HorizontalAlignment="Right" ToolTip="Добавить нового родственника" Command="{Binding AddNewPersonToRelativeCommand}">
-                            <Image Source="pack://application:,,,/Resources;component/Images/Add24x24.png"/>
-                        </Button>
-                        <Button HorizontalAlignment="Right" ToolTip="Убрать из родственников" Command="{Binding RemovePersonFromRelativeCommand}" Visibility="{Binding IsNullSelectedRelativeViewModel, Converter={StaticResource booleanToInversedVisibilityConverter}}">
-                            <Image Source="pack://application:,,,/Resources;component/Images/Remove24x24.png"/>
-                        </Button>
-                    </StackPanel>
-                    <Button DockPanel.Dock="Bottom" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
-                            <TextBlock Margin="3" Text="К пациенту"/>
-                        </StackPanel>
-                    </Button>
-                    <ListBox Width="300" ItemsSource="{Binding EditPersonRelativeDataViewModels}" SelectedItem="{Binding SelectedRelativeViewModel}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
+    <xcad:DockingManager>
+        <xcad:LayoutRoot>
+            <xcad:LayoutPanel Orientation="Horizontal">
+                <xcad:LayoutDocumentPane DockHeight="*">
+                    <xcad:LayoutDocument Title="Учетная карта пациента" CanClose="False" CanFloat="False">
+                        <StackPanel>
+                            <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" x:Name="viewer">
+                                <ScrollViewer.Style>
+                                    <Style TargetType="{x:Type ScrollViewer}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPersonEditing}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
+                                                            <DoubleAnimation To="0" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard TargetProperty="(mainLib:ScrollViewerHelper.HorizontalOffset)" Target="{Binding ElementName=viewer}">
+                                                            <DoubleAnimation To="650" Duration="0:0:0.5" AccelerationRatio="0.5" DecelerationRatio="0.2" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ScrollViewer.Style>
                                 <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition  Width="auto"/>
-                                        <ColumnDefinition  Width="*"/>
+                                    <Grid.ColumnDefinitions >
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
+                                        <RowDefinition  Height="auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Height="120" Width="90">
-                                            <Image Source="{Binding PhotoUri}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                    </Border>
+                                    <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="0" x:Name="personEditor" DataContext="{Binding EditPersonDataViewModel, Mode=OneWay}"/>
+                                    <DockPanel Grid.Row="0" Grid.Column="1" Margin="3" LastChildFill="True">
+                                        <TextBlock Text="Родственники" DockPanel.Dock="Top"  TextAlignment="Center"/>
+                                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                            <TextBox Width="244"/>
+                                            <Button HorizontalAlignment="Right" ToolTip="Добавить нового родственника" Command="{Binding AddNewPersonToRelativeCommand}">
+                                                <Image Source="pack://application:,,,/Resources;component/Images/Add24x24.png"/>
+                                            </Button>
+                                            <Button HorizontalAlignment="Right" ToolTip="Убрать из родственников" Command="{Binding RemovePersonFromRelativeCommand}" Visibility="{Binding IsNullSelectedRelativeViewModel, Converter={StaticResource booleanToInversedVisibilityConverter}}">
+                                                <Image Source="pack://application:,,,/Resources;component/Images/Remove24x24.png"/>
+                                            </Button>
+                                        </StackPanel>
+                                        <Button DockPanel.Dock="Bottom" Height="auto"  Visibility="{Binding IsPersonEditing, Converter={StaticResource booleanToInversedVisibilityConverter}}" Command="{Binding ReturnToPersonEditingCommand}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="pack://application:,,,/Resources;component/Images/BackArrow24x24.png"/>
+                                                <TextBlock Margin="3" Text="К пациенту"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <ListBox Width="300" ItemsSource="{Binding EditPersonRelativeDataViewModels}" SelectedItem="{Binding SelectedRelativeViewModel}">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition  Width="auto"/>
+                                                            <ColumnDefinition  Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*"/>
+                                                        </Grid.RowDefinitions>
 
-                                    <StackPanel Grid.Column="1" Margin="3">
-                                        <TextBlock Text="{Binding ShortName}"/>
-                                        <ComboBox Margin="2" ItemsSource="{Binding DataContext.RelativeRelations, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" 
-                                              SelectedValuePath="Id" SelectedValue="{Binding RelativeRelationId, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" DisplayMemberPath="Name"/>
-                                        <stuffLib:CheckBoxExtentions Content="Представитель" IsChecked="{Binding IsRepresentative}" GroupName="PersonRelatives">
-                                        </stuffLib:CheckBoxExtentions>
-                                    </StackPanel>
+                                                        <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2" VerticalAlignment="Center" Height="120" Width="90">
+                                                            <Image Source="{Binding PhotoUri}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                                        </Border>
+
+                                                        <StackPanel Grid.Column="1" Margin="3">
+                                                            <TextBlock Text="{Binding ShortName}"/>
+                                                            <ComboBox Margin="2" ItemsSource="{Binding DataContext.RelativeRelations, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" 
+                                                              SelectedValuePath="Id" SelectedValue="{Binding RelativeRelationId, ValidatesOnDataErrors=True}" Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" DisplayMemberPath="Name"/>
+                                                            <stuffLib:CheckBoxExtentions Content="Представитель" IsChecked="{Binding IsRepresentative}" GroupName="PersonRelatives">
+                                                            </stuffLib:CheckBoxExtentions>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </DockPanel>
+                                    <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding SelectedRelativeViewModel, Mode=OneWay}"/>
+
                                 </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-                <registry:EditPersonDataUserControl  Grid.Row="0" Grid.Column="2" x:Name="personRelativeEditor" DataContext="{Binding SelectedRelativeViewModel, Mode=OneWay}"/>
-
-            </Grid>
-        </ScrollViewer>
-        <StackPanel  Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
-            <Button Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}" IsEnabled="{Binding IsSaveEnabled}"/>
-            <Button Margin="3"  Height="24" Padding="3" Content="Отмена" />
-        </StackPanel>
-    </StackPanel>
+                            </ScrollViewer>
+                            <StackPanel  Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Width="auto">
+                                <Button Margin="3"  Height="24" Padding="3" Content="Сохранить" Command="{Binding SaveChangesCommand}" IsEnabled="{Binding IsSaveEnabled}"/>
+                                <Button Margin="3"  Height="24" Padding="3" Content="Отмена" />
+                            </StackPanel>
+                        </StackPanel>
+                    </xcad:LayoutDocument>
+                    <xcad:LayoutDocument Title="Документы пациента" CanClose="False" CanFloat="False">
+                        <controls:PersonDocumentsControl DataContext="{Binding PersonDocuments}"/>
+                    </xcad:LayoutDocument>
+                </xcad:LayoutDocumentPane>
+            </xcad:LayoutPanel>
+        </xcad:LayoutRoot>
+    </xcad:DockingManager>
 </Window>

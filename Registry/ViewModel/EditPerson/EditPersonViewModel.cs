@@ -9,6 +9,8 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Linq;
+using MainLib.ViewModel;
+using MainLib.View;
 
 namespace Registry
 {
@@ -94,6 +96,7 @@ namespace Registry
                 Set("Id", ref id, value);
                 editPersonDataViewModel.Id = id;
                 SetRelatives();
+                LoadPersonDocuments();
             }
         }
 
@@ -199,6 +202,19 @@ namespace Registry
             foreach (var item in listRelatives)
                 listViewModels.Add(new EditPersonDataViewModel(log, service, dialogService, documentService) { Id = item.RelativePersonId, RelativeToPersonId = this.Id });
             EditPersonRelativeDataViewModels = new ObservableCollection<EditPersonDataViewModel>(listViewModels);
+        }
+
+        private PersonDocumentsViewModel personDocuments;
+        public PersonDocumentsViewModel PersonDocuments
+        {
+            get { return personDocuments; }
+            set { Set("PersonDocuments", ref personDocuments, value); }
+        }
+
+        private void LoadPersonDocuments()
+        {
+            PersonDocuments = new PersonDocumentsViewModel(service, documentService, dialogService, log);
+            PersonDocuments.Load(Id);
         }
 
         public string PersonFullName

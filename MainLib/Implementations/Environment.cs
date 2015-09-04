@@ -26,8 +26,8 @@ namespace Core
                        (currentUser =
                            new UserDTO
                            {
-                               UserId = 1,
-                               PersonId = 1,
+                               UserId = 8,
+                               PersonId = 7,
                                PersonFullName = "Adminov Admin Adminovich",
                                PersonShortName = "Adminov A.A."
                            });
