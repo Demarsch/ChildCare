@@ -56,7 +56,7 @@ namespace Core
                 return db.GetData<InsuranceDocumentType>().ToArray();
             }
         }
-        
+
         public ICollection<ChangeNameReason> GetActualChangeNameReasons()
         {
             using (var db = provider.GetNewDataContext())
@@ -481,7 +481,7 @@ namespace Core
                     var dbDocument = personOuterDocument.Id > 0 ? db.GetById<PersonOuterDocument>(personOuterDocument.Id) : new PersonOuterDocument();
                     dbDocument.PersonId = personOuterDocument.PersonId;
                     dbDocument.DocumentId = personOuterDocument.DocumentId;
-                    dbDocument.OuterDocumentTypeId = personOuterDocument.OuterDocumentTypeId;                    
+                    dbDocument.OuterDocumentTypeId = personOuterDocument.OuterDocumentTypeId;
                     if (dbDocument.Id == 0)
                         db.Add<PersonOuterDocument>(dbDocument);
                     db.Save();
@@ -532,6 +532,8 @@ namespace Core
                         curPersonRelative.RelativeRelationshipId = personRelative.RelativeRelationId;
                     }
                 }
+                var curRelativeIds = personRelatives.Select(x => x.Person.Id).ToList();
+                db.RemoveRange<PersonRelative>(person.Person.PersonRelatives.Where(x => !curRelativeIds.Contains(x.RelativeId)));
                 try
                 {
                     db.Save();
@@ -565,6 +567,11 @@ namespace Core
             SetPersonNationality(personData.Person, personData.NationalityId, db);
             SetPersonEducations(personData.Person, personData.EducationId, db);
             SetPersonMaritalStatuses(personData.Person, personData.MaritalStatusId, db);
+        }
+
+        private void SetPersonRelatives(Person person, IList<PersonRelative> changedPersonRelatives, IDataContext db)
+        {
+            
         }
 
         private void SetPersonEducations(Person person, int educationId, IDataContext db)
