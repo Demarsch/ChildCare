@@ -255,8 +255,8 @@ namespace Registry
                 var addressType = service.GetAddressType(AddressTypeId);
                 if (addressType != null)
                     addressTypeName = addressType.Name;
-                return addressTypeName + ": " + UserText + " " + House + (!string.IsNullOrEmpty(Building) ? "\"" + Building + "\"" : string.Empty) +
-                    (!string.IsNullOrEmpty(Apartment) ? " " + Apartment : string.Empty) + "\r\nДействует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                return addressTypeName + ": " + UserText + " " + (!string.IsNullOrEmpty(House) ? "д." + House : string.Empty) + (!string.IsNullOrEmpty(Building) ? "\"" + Building + "\"" : string.Empty) +
+                    (!string.IsNullOrEmpty(Apartment) ? " кв." + Apartment : string.Empty) + "\r\nДействует с " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
             }
         }
 

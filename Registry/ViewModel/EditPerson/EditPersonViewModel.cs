@@ -214,7 +214,8 @@ namespace Registry
         private void LoadPersonDocuments()
         {
             PersonDocuments = new PersonDocumentsViewModel(service, documentService, dialogService, log);
-            PersonDocuments.Load(Id);
+            if (Id != 0)
+                PersonDocuments.Load(Id);
         }
 
         public string PersonFullName
