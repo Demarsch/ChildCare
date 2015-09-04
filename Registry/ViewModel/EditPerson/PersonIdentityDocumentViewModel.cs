@@ -45,7 +45,7 @@ namespace Registry
             personIdentityDocument.IdentityDocumentTypeId = IdentityDocumentTypeId;
             personIdentityDocument.Series = Series;
             personIdentityDocument.Number = Number;
-            personIdentityDocument.GivenOrg = GivenOrg;
+            personIdentityDocument.GivenOrg = GivenOrg ?? GivenOrgText;
             personIdentityDocument.BeginDate = BeginDate;
             personIdentityDocument.EndDate = endDate;
 

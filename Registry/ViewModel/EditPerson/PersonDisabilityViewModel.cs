@@ -45,7 +45,7 @@ namespace Registry
             personDisability.DisabilityTypeId = DisabilityTypeId;
             personDisability.Series = Series;
             personDisability.Number = Number;
-            personDisability.GivenOrg = GivenOrg;
+            personDisability.GivenOrg = GivenOrg ?? GivenOrgText;
             personDisability.BeginDate = BeginDate;
             personDisability.EndDate = endDate;
 

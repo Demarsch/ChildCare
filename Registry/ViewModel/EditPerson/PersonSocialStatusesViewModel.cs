@@ -109,7 +109,7 @@ namespace Registry
         public ICommand AddPersonSocialStatusCommand { get; set; }
         private void AddPersonSocialStatus()
         {
-            PersonSocialStatuses.Add(new PersonSocialStatusViewModel(new PersonSocialStatus() { EndDateTime = DateTime.MaxValue, BeginDateTime = new DateTime(DateTime.Now.Year, 1, 1) }, service));
+            PersonSocialStatuses.Add(new PersonSocialStatusViewModel(new PersonSocialStatus() { Office = string.Empty, EndDateTime = DateTime.MaxValue, BeginDateTime = new DateTime(DateTime.Now.Year, 1, 1) }, service));
             RaisePropertyChanged("PersonSocialStatusesHasNoItems");
         }
 

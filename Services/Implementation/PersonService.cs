@@ -539,10 +539,26 @@ namespace Core
                     db.Save();
                     return true;
                 }
-                catch (Exception ex)
+                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
                 {
+                    string str = string.Empty;
+                    foreach (var eve in ex.EntityValidationErrors)
+                    {
+                        str += string.Format("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            str += string.Format("- Property: \"{0}\", Error: \"{1}\"",
+                                ve.PropertyName, ve.ErrorMessage);
+                        }
+                    }
+                    System.Windows.MessageBox.Show(str);
                     return false;
                 }
+                //catch (Exception ex)
+                //{
+                //    return false;
+                //}
             }
         }
 

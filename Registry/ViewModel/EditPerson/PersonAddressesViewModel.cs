@@ -93,7 +93,7 @@ namespace Registry
         public ICommand AddPersonAddressCommand { get; set; }
         private void AddPersonAddress()
         {
-            PersonAddresses.Add(new PersonAddressViewModel(new PersonAddress() { BeginDateTime = new DateTime(DateTime.Now.Year, 1, 1), EndDateTime = DateTime.MaxValue.Date }, service));
+            PersonAddresses.Add(new PersonAddressViewModel(new PersonAddress() { Building = string.Empty, Apartment = string.Empty, BeginDateTime = new DateTime(DateTime.Now.Year, 1, 1), EndDateTime = DateTime.MaxValue.Date }, service));
             RaisePropertyChanged("PersonAddressesHasNoItems");
         }
 
