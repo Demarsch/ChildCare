@@ -23,6 +23,7 @@
                 <ResourceDictionary Source="View/Schedule Editor/ScheduleEditorRoomView.xaml" />
                 <ResourceDictionary Source="View/Schedule Editor/ScheduleEditorRoomDayView.xaml" />
                 <ResourceDictionary Source="View/Schedule Editor/ScheduleEditorEditDayView.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MainLib;component/View/SelectPersonDocumentTypeView.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <ControlTemplate x:Key="ValidationTemplate">
                 <Grid>

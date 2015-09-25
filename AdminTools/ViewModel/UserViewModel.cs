@@ -14,7 +14,7 @@ namespace AdminTools.ViewModel
         {
             this.user = user;
             this.personService = personService;
-            var person = personService.GetPersonById(user.PersonId);
+            var person = personService.GetPersonById(user.PersonId != 0 ? user.PersonId : user.Person.Id);
             sid = !IsEmpty ? user.SID : string.Empty;
             isActive = !IsEmpty ? !user.EndDateTime.HasValue : false;
             userFullName = !IsEmpty ? person.FullName : string.Empty;

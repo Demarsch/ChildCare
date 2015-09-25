@@ -25,7 +25,7 @@ namespace Core
                 using (var db = provider.GetNewDataContext())
                 {
                     var dbuser = user.Id > 0 ? db.GetById<User>(user.Id) : new User();
-                    dbuser.PersonId = user.PersonId;
+                    dbuser.PersonId = user.PersonId != 0 ? user.PersonId : user.Person.Id;
                     dbuser.SID = user.SID;
                     dbuser.BeginDateTime = user.BeginDateTime;
                     dbuser.EndDateTime = user.EndDateTime;

@@ -9,7 +9,7 @@
         xmlns:core="clr-namespace:Core;assembly=StuffLib"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" 
         xmlns:controls="clr-namespace:MainLib.View;assembly=MainLib"
-        Width="920" MinHeight="910" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Width="920" MinHeight="610" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <core:UniversalConverter x:Key="booleanToInversedVisibilityConverter" DefaultValue="{x:Static Visibility.Collapsed}">

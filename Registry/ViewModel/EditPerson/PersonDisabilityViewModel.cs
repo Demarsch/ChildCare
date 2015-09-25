@@ -77,7 +77,7 @@ namespace Registry
         }
 
         #endregion
-
+            
         #region Properties
 
         private DisabilitiesGivenOrgSuggestionProvider givenOrgSuggestionProvider;
@@ -206,7 +206,7 @@ namespace Registry
                 var disabilityType = service.GetDisabilityType(DisabilityTypeId);
                 if (disabilityType != null)
                     disabilityTypeName = disabilityType.Name;
-                return disabilityTypeName + ": Серия " + Series + " Номер " + Number + "\r\nВыдан " + (GivenOrg != null ? GivenOrg : GivenOrgText) + " " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                return disabilityTypeName + ": Серия " + Series + " Номер " + Number + "; Выдан " + (GivenOrg != null ? GivenOrg : GivenOrgText) + " " + BeginDate.ToString("dd.MM.yyyy") + (EndDate != DateTime.MaxValue ? " по " + EndDate.ToString("dd.MM.yyyy") : string.Empty);
             }
         }
 

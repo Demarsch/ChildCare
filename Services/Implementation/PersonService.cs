@@ -224,9 +224,9 @@ namespace Core
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";
-                    resStr += String.Format("тип док-та: {0}\r\nстрах. орг.: {1}\r\nсерия {2} номер {3}\r\nдействует с {4} {5}",
+                    resStr += String.Format("Тип документа: {0}\r\nСтраховая организация: {1}\r\nСерия {2} Номер {3}; Период действия {4} {5}",
                         insuranceDocument.InsuranceDocumentType.Name, insuranceDocument.InsuranceCompany.NameSMOK, insuranceDocument.Series, insuranceDocument.Number, insuranceDocument.BeginDate.ToString("dd.MM.yyyy"),
-                        (insuranceDocument.EndDate != DateTime.MaxValue ? " по " + insuranceDocument.EndDate.ToString("dd.MM.yyyy") : string.Empty));
+                        (insuranceDocument.EndDate.Date != DateTime.MaxValue.Date ? " по " + insuranceDocument.EndDate.ToString("dd.MM.yyyy") : string.Empty));
                 }
             }
             return resStr;
@@ -278,8 +278,8 @@ namespace Core
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";
-                    resStr += personAddress.AddressType.Name + ": " + personAddress.UserText + " " + personAddress.House + (personAddress.Building != string.Empty ? "\"" + personAddress.Building + "\"" : string.Empty) +
-                        (personAddress.Apartment != string.Empty ? " " + personAddress.Apartment : string.Empty) + "\r\nДействует с " + personAddress.BeginDateTime.ToString("dd.MM.yyyy") + (personAddress.EndDateTime != DateTime.MaxValue ? " по" + personAddress.EndDateTime.ToString("dd.MM.yyyy") : string.Empty);
+                    resStr += personAddress.AddressType.Name + ": " + personAddress.UserText + " д." + personAddress.House + (personAddress.Building != string.Empty ? "\"" + personAddress.Building + "\"" : string.Empty) +
+                        (personAddress.Apartment != string.Empty ? " кв." + personAddress.Apartment : string.Empty) + "\r\nДействует с " + personAddress.BeginDateTime.ToString("dd.MM.yyyy") + (personAddress.EndDateTime.Date != DateTime.MaxValue.Date ? " по " + personAddress.EndDateTime.ToString("dd.MM.yyyy") : string.Empty);
                 }
             }
             return resStr;
@@ -298,7 +298,7 @@ namespace Core
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";
-                    resStr += personIdentityDocument.IdentityDocumentType.Name + ": Серия " + personIdentityDocument.Series + " Номер " + personIdentityDocument.Number + "\r\nВыдан " + personIdentityDocument.GivenOrg + " " + personIdentityDocument.BeginDate.ToString("dd.MM.yyyy") + (personIdentityDocument.EndDate != DateTime.MaxValue ? " по " + personIdentityDocument.EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                    resStr += personIdentityDocument.IdentityDocumentType.Name + ": Серия " + personIdentityDocument.Series + " Номер " + personIdentityDocument.Number + "\r\nВыдан " + personIdentityDocument.GivenOrg + " " + personIdentityDocument.BeginDate.ToString("dd.MM.yyyy");
                 }
             }
             return resStr;
@@ -317,7 +317,10 @@ namespace Core
                 {
                     if (resStr != string.Empty)
                         resStr += "\r\n";
-                    resStr += personDisabilities.DisabilityType.Name + ": Серия " + personDisabilities.Series + " Номер " + personDisabilities.Number + "\r\nВыдан " + personDisabilities.GivenOrg + " " + personDisabilities.BeginDate.ToString("dd.MM.yyyy") + (personDisabilities.EndDate != DateTime.MaxValue ? " по " + personDisabilities.EndDate.ToString("dd.MM.yyyy") : string.Empty);
+                    resStr += personDisabilities.DisabilityType.Name + ": Серия " + personDisabilities.Series + " Номер " +
+                        personDisabilities.Number + "; Выдан " + personDisabilities.GivenOrg + " " + 
+                        personDisabilities.BeginDate.ToString("dd.MM.yyyy") + 
+                        (personDisabilities.EndDate.Date != DateTime.MaxValue.Date ? " по " + personDisabilities.EndDate.ToString("dd.MM.yyyy") : string.Empty);
                 }
             }
             return resStr;
