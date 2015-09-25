@@ -48,6 +48,8 @@ namespace DataLib
         public string Phones { get; set; }
         public string Email { get; set; }
         public Nullable<int> PhotoId { get; set; }
+        public string AmbNumberString { get; set; }
+        public int AmbNumber { get; set; }
     
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual Gender Gender { get; set; }

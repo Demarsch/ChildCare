@@ -33,9 +33,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Everaldo-Crystal-Clear-Mimetype-schedule.ico</ApplicationIcon>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
@@ -340,9 +337,7 @@
   <ItemGroup>
     <SplashScreen Include="SplashScreen.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Everaldo-Crystal-Clear-Mimetype-schedule.ico" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

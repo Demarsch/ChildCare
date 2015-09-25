@@ -54,6 +54,21 @@ namespace Registry
             get { return IsEmpty ? string.Empty : patient.MedNumber; }
         }
 
+        public int AmbNumber
+        {
+            get { return IsEmpty ? 0 : patient.AmbNumber; }
+        }
+
+        public string AmbNumberString
+        {
+            get { return IsEmpty ? string.Empty : patient.AmbNumberString; }
+        }
+
+        public bool AmbNumberExist
+        {
+            get { return AmbNumber > 0; }
+        }
+
         //TODO: rework into loading photo from base. Probably worth using IsAsync binding property
         public string PhotoSource
         {
