@@ -494,6 +494,8 @@
           <Property Name="Phones" Type="varchar(max)" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DeleteDateTime" Type="datetime" />
+          <Property Name="AmbNumberString" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="AmbNumber" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonSocialStatuses">
           <Key>
@@ -2859,6 +2861,8 @@
           <NavigationProperty Name="Document" Relationship="DataLib.FK_Persons_Documents" FromRole="Person" ToRole="Document" />
           <NavigationProperty Name="PersonMaritalStatuses" Relationship="DataLib.FK_PersonMaritalStatuses_Persons" FromRole="Person" ToRole="PersonMaritalStatus" />
           <NavigationProperty Name="PersonEducations" Relationship="DataLib.FK_PersonEducations_Persons" FromRole="Person" ToRole="PersonEducation" />
+          <Property Name="AmbNumberString" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AmbNumber" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -4630,6 +4634,8 @@
           <EntitySetMapping Name="Persons">
             <EntityTypeMapping TypeName="DataLib.Person">
               <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="AmbNumber" ColumnName="AmbNumber" />
+                <ScalarProperty Name="AmbNumberString" ColumnName="AmbNumberString" />
                 <ScalarProperty Name="PhotoId" ColumnName="PhotoId" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Phones" ColumnName="Phones" />

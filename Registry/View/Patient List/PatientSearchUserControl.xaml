@@ -11,6 +11,7 @@
              d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance registry:PatientSearchViewModel}">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <stuffLib:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <stuffLib:MultiBooleanConverter x:Key="MultiBooleanToInversedVisibilityConverter" UseLogicalOr="True" TrueValue="{x:Static Visibility.Collapsed}" FalseValue="{x:Static Visibility.Visible}" />
         <xctk:InverseBoolConverter x:Key="InverseBoolConverter" />
     </UserControl.Resources>
@@ -23,6 +24,12 @@
         </Border.Background>
         <Grid VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -50,12 +57,51 @@
                     <ContentControl HorizontalAlignment="Stretch" Content="{Binding PatientAssignmentListViewModel}" />
                 </xctk:SplitButton.DropDownContent>
             </xctk:SplitButton>
-            <TextBlock Grid.Column="2" Margin="7 0 0 0"  x:Name="watermark" Text="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН" VerticalAlignment="Center">
+            <xctk:SplitButton Grid.Column="2" Margin="2" VerticalAlignment="Center" Padding="3" Height="60" Width="60"
+                        Background="White" x:Name="ambulatoryCardButton" ToolTipService.IsEnabled="{Binding CurrentPatient.IsEmpty, Converter={StaticResource InverseBoolConverter}}">
+                <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Content="{Binding CurrentPatient.AmbNumberString}" 
+                        IsEnabled="{Binding CurrentPatient.AmbNumberExist, Converter={StaticResource InverseBoolConverter}}" Command="{Binding CreateAmbCardCommand}"/>
+                <!--<xctk:SplitButton.Resources>
+                    <Style TargetType="{x:Type Popup}">
+                        <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type xctk:SplitButton}}}" />
+                    </Style>
+                </xctk:SplitButton.Resources>-->
+                <ToolTipService.ToolTip>
+                    <ToolTip>
+                    </ToolTip>
+                </ToolTipService.ToolTip>
+                <xctk:SplitButton.DropDownContent>
+                    <StackPanel Visibility="{Binding CurrentPatient.AmbNumberExist, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Button Content="Печать титульного листа амбулаторной карты" Command="{Binding PrintAmbCardFirstList}"/>
+                        <Button Content="Печать листа госпитализации" Command="{Binding PrintPersonHospList}"/>
+                        <Button Content="Печать листа лучевой назгрузки" Command="{Binding PrintRadiationList}"/>
+                        <Button Content="Печать все листы амбулаторной карты" Command="{Binding PrintAmbCardFirstList}"/>
+                    </StackPanel>
+                </xctk:SplitButton.DropDownContent>
+            </xctk:SplitButton>
+            <Button Grid.Column="4" ToolTip="Договора" Padding="5" Margin="5" VerticalAlignment="Center" Background="White" Command="{Binding ContractsCommand}">
+                <Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/Contract48x48.png" />
+            </Button>
+            <Button Grid.Column="3" ToolTip="Случаи" Padding="5" Margin="5" VerticalAlignment="Center" Background="White" Height="60" Width="60" Command="{Binding VisitsCommand}">
+                <TextBlock TextAlignment="Justify" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">Случаи</TextBlock>
+                <!--<Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/AddPatient48x48.png" />-->
+            </Button>
+            <Button Grid.Column="5" ToolTip="Истории болезни" Padding="5" Margin="5" VerticalAlignment="Center" Background="White" Height="60" Width="60" Command="{Binding CasesCommand}">
+                <TextBlock TextAlignment="Justify" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">И/Б</TextBlock>
+                <!--<Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/AddPatient48x48.png" />-->
+            </Button>
+            <Button Grid.Column="6" ToolTip="Прикрепление документов" Padding="5" Margin="5" VerticalAlignment="Center" Background="White" Command="{Binding DocumentsCommand}">
+                <Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/Attachments48x48.png" />
+            </Button>
+            <Button Grid.Column="7" ToolTip="Документы леч. диагн. процесса" Padding="5" Margin="5" VerticalAlignment="Center" Background="White" Command="{Binding PrintDocumentsCommand}">
+                <Image Width="48" Height="48" Source="pack://application:,,,/Resources;component/Images/documentPrint48x48.png" />
+            </Button>
+            <TextBlock Grid.Column="8" Margin="7 0 0 0"  x:Name="watermark" Text="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН" VerticalAlignment="Center">
                 <TextBlock.RenderTransform>
                     <TranslateTransform Y="0" />
                 </TextBlock.RenderTransform>
             </TextBlock>
-            <xctk:WatermarkTextBox Grid.Column="2" Margin="5" Watermark="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН"
+            <xctk:WatermarkTextBox Grid.Column="9" Margin="5" Watermark="Поиск по имени, фамилии, отчеству, дате рождения или номерам СНИЛС и ЕМН"
                                        VerticalAlignment="Center" x:Name="searchPatientTextBox" Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}"
                                        Width="500" HorizontalAlignment="Left" PreviewKeyDown="SearchPatientTextBoxOnPreviewKeyDown">
                 <xctk:WatermarkTextBox.Triggers>
@@ -93,11 +139,11 @@
                             </ListBox.Visibility>
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
-                                   <Style.Triggers>
-                                       <Trigger Property="IsMouseOver" Value="True">
-                                           <Setter Property="BorderThickness" Value="2" />
-                                       </Trigger>
-                                   </Style.Triggers>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="BorderThickness" Value="2" />
+                                        </Trigger>
+                                    </Style.Triggers>
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
