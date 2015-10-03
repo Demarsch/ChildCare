@@ -371,7 +371,7 @@ namespace Registry
             do
             {
                 var dialogViewModel = new ScheduleAssignmentUpdateViewModel(cacheService, true);
-                dialogViewModel.SelectedFinancingSource = dialogViewModel.FinacingSources.First(x => x.Id == assignment.FinancingSourceId);
+                dialogViewModel.SelectedFinancingSource = dialogViewModel.FinancingSource.First(x => x.Id == assignment.FinancingSourceId);
                 var dialogResult = dialogService.ShowDialog(dialogViewModel);
                 if (dialogResult != true)
                 {
@@ -559,7 +559,7 @@ namespace Registry
             var assignment = sender as OccupiedTimeSlotViewModel;
             var dialogViewModel = new ScheduleAssignmentUpdateViewModel(cacheService, false);
             dialogViewModel.Note = assignment.Note;
-            dialogViewModel.SelectedFinancingSource = dialogViewModel.FinacingSources.FirstOrDefault(x => x.Id == assignment.FinancingSourceId);
+            dialogViewModel.SelectedFinancingSource = dialogViewModel.FinancingSource.FirstOrDefault(x => x.Id == assignment.FinancingSourceId);
             dialogViewModel.SelectedAssignLpu = dialogViewModel.AssignLpuList.FirstOrDefault(x => x.Id == assignment.AssignLpuId);
             bool isFailed;
             do
@@ -591,10 +591,10 @@ namespace Registry
 
         private int GetFinancingSource()
         {
-            var result = cacheService.GetItems<FinacingSource>().Where(x => !x.IsActive).Select(x => x.Id).FirstOrDefault();
+            var result = cacheService.GetItems<FinancingSource>().Where(x => !x.IsActive).Select(x => x.Id).FirstOrDefault();
             if (result == 0)
             {
-                result = cacheService.GetItems<FinacingSource>().Select(x => x.Id).FirstOrDefault();
+                result = cacheService.GetItems<FinancingSource>().Select(x => x.Id).FirstOrDefault();
             }
             return result;
         }
