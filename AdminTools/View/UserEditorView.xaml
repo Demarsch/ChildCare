@@ -132,7 +132,7 @@
                         <GridViewColumn>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Background="Transparent" BorderThickness="0" 
+                                    <Button Background="Transparent" BorderThickness="0"
                                             Command="{Binding ElementName=userList, Path=DataContext.UpdateUserStatusCommand}"
                                             CommandParameter="{Binding}">
                                         <Image Source="{Binding Path=IsActive, Converter={StaticResource UserIsActiveConverter}}" Margin="5,0,0,5" Stretch="None" Height="24"/>

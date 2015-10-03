@@ -50,11 +50,12 @@ namespace Core
                 string sid = string.Empty;
                 try
                 {
-                    sid = System.Security.Principal.WindowsIdentity.GetCurrent().Name; 
-                    //sid = userSystemInfoService.GetCurrentSID();
+                    //in ActiveDirectory case
+                    sid = userSystemInfoService.GetCurrentSID();                    
                 }
                 catch 
-                { 
+                {
+                    //in local case
                     sid = System.Security.Principal.WindowsIdentity.GetCurrent().Name; 
                 }
                 return db.GetData<User>().FirstOrDefault(x => x.SID == sid && !x.EndDateTime.HasValue);

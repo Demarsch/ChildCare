@@ -17,7 +17,6 @@
         <EntityTypeShape EntityType="DataLib.CommissionSource" Width="1.5" PointX="11.25" PointY="46.875" />
         <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="8.25" PointY="37.125" />
         <EntityTypeShape EntityType="DataLib.DBSetting" Width="1.5" PointX="3.125" PointY="3.125" />
-        <EntityTypeShape EntityType="DataLib.FinacingSource" Width="1.5" PointX="4.5" PointY="18.125" />
         <EntityTypeShape EntityType="DataLib.Gender" Width="1.5" PointX="0.75" PointY="29.25" />
         <EntityTypeShape EntityType="DataLib.IdentityDocumentType" Width="1.5" PointX="6" PointY="36.375" />
         <EntityTypeShape EntityType="DataLib.InsuranceCompany" Width="1.5" PointX="3" PointY="33.75" />
@@ -62,7 +61,6 @@
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_FinacingSources" />
         <AssociationConnector Association="DataLib.FK_Persons_Genders" />
         <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" />
         <AssociationConnector Association="DataLib.FK_InsuranceDocuments_InsuranceCompanies" />
@@ -121,7 +119,6 @@
         <AssociationConnector Association="DataLib.FK_PersonNationalities_Persons" />
         <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="15.75" PointY="32.375" />
         <EntityTypeShape EntityType="DataLib.Org" Width="1.5" PointX="9" PointY="21.625" />
-        <AssociationConnector Association="DataLib.FK_Assignments_FinacingSources" />
         <AssociationConnector Association="DataLib.FK_Assignments_Orgs" />
         <AssociationConnector Association="DataLib.FK_Assignments_Persons" />
         <AssociationConnector Association="DataLib.FK_Assignments_Records" />
@@ -146,6 +143,23 @@
         <EntityTypeShape EntityType="DataLib.PersonEducation" Width="1.5" PointX="14.25" PointY="21.875" />
         <AssociationConnector Association="DataLib.FK_PersonEducations_Educations" />
         <AssociationConnector Association="DataLib.FK_PersonEducations_Persons" />
+        <EntityTypeShape EntityType="DataLib.FinancingSource" Width="1.5" PointX="13.5" PointY="30.125" />
+        <EntityTypeShape EntityType="DataLib.PaymentType" Width="1.5" PointX="15.75" PointY="29.25" />
+        <EntityTypeShape EntityType="DataLib.RecordContractItem" Width="1.5" PointX="18" PointY="32" />
+        <EntityTypeShape EntityType="DataLib.RecordContractLimit" Width="1.5" PointX="13.5" PointY="39.875" />
+        <AssociationConnector Association="DataLib.FK_Assignments_FinancingSources" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_Assignments" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_FinancingSources" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_Orgs" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_PaymentTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_Clients" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_Consumers" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_PersonStaffs" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_PersonStaffs" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

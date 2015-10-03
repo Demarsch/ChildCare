@@ -17,6 +17,8 @@ namespace DataLib
         public PersonStaff()
         {
             this.CommissionMembers = new HashSet<CommissionMember>();
+            this.RecordContractItems = new HashSet<RecordContractItem>();
+            this.RecordContracts = new HashSet<RecordContract>();
         }
     
         public int Id { get; set; }
@@ -32,5 +34,7 @@ namespace DataLib
         public virtual ICollection<CommissionMember> CommissionMembers { get; set; }
         public virtual Person Person { get; set; }
         public virtual Staff Staff { get; set; }
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
+        public virtual ICollection<RecordContract> RecordContracts { get; set; }
     }
 }

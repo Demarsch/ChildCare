@@ -14,6 +14,11 @@ namespace DataLib
     
     public partial class Assignment
     {
+        public Assignment()
+        {
+            this.RecordContractItems = new HashSet<RecordContractItem>();
+        }
+    
         public int Id { get; set; }
         public int RecordTypeId { get; set; }
         public int PersonId { get; set; }
@@ -30,7 +35,6 @@ namespace DataLib
         public bool IsTemporary { get; set; }
         public System.DateTime CreationDateTime { get; set; }
     
-        public virtual FinacingSource FinacingSource { get; set; }
         public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
         public virtual Record Record { get; set; }
@@ -38,5 +42,7 @@ namespace DataLib
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
+        public virtual FinancingSource FinancingSource { get; set; }
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
     }
 }

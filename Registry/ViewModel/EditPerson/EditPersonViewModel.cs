@@ -97,6 +97,7 @@ namespace Registry
                 editPersonDataViewModel.Id = id;
                 SetRelatives();
                 LoadPersonDocuments();
+                LoadContracts();
             }
         }
 
@@ -211,6 +212,20 @@ namespace Registry
             set { Set("PersonDocuments", ref personDocuments, value); }
         }
 
+        private PersonContractsViewModel personContracts;
+        public PersonContractsViewModel PersonContracts
+        {
+            get { return personContracts; }
+            set { Set("PersonContracts", ref personContracts, value); }
+        }
+
+        private int selectedPageIndex;
+        public int SelectedPageIndex
+        {
+            get { return selectedPageIndex; }
+            set { Set("SelectedPageIndex", ref selectedPageIndex, value); }
+        }
+
         private void LoadPersonDocuments()
         {
             PersonDocuments = new PersonDocumentsViewModel(service, documentService, dialogService, log);
@@ -218,6 +233,13 @@ namespace Registry
                 PersonDocuments.Load(Id);
         }
 
+        private void LoadContracts()
+        {
+            PersonContracts = new PersonContractsViewModel(service, dialogService, log);
+            if (Id != 0)
+                PersonContracts.Load(Id);
+        }
+        
         public string PersonFullName
         {
             get { return EditPersonDataViewModel.PersonFullName; }

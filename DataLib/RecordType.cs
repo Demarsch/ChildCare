@@ -20,6 +20,8 @@ namespace DataLib
             this.RecordTypes1 = new HashSet<RecordType>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
             this.Assignments = new HashSet<Assignment>();
+            this.RecordContractItems = new HashSet<RecordContractItem>();
+            this.RecordContractLimits = new HashSet<RecordContractLimit>();
         }
     
         public int Id { get; set; }
@@ -40,5 +42,7 @@ namespace DataLib
         public virtual RecordType RecordType1 { get; set; }
         public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
+        public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
     }
 }

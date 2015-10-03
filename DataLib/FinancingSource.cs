@@ -12,12 +12,12 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class FinacingSource
+    public partial class FinancingSource
     {
-        public FinacingSource()
+        public FinancingSource()
         {
-            this.RecordContracts = new HashSet<RecordContract>();
             this.Assignments = new HashSet<Assignment>();
+            this.RecordContracts = new HashSet<RecordContract>();
         }
     
         public int Id { get; set; }
@@ -25,7 +25,7 @@ namespace DataLib
         public string ShortName { get; set; }
         public bool IsActive { get; set; }
     
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<RecordContract> RecordContracts { get; set; }
     }
 }

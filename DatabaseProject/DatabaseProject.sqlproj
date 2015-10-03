@@ -96,7 +96,6 @@
     <Build Include="dbo\Tables\UserMessageTypes.sql" />
     <Build Include="dbo\Tables\UserMessages.sql" />
     <Build Include="dbo\Tables\PersonTalons.sql" />
-    <Build Include="dbo\Tables\FinacingSources.sql" />
     <Build Include="dbo\Tables\CommissionSources.sql" />
     <Build Include="dbo\Tables\CommissionQuestions.sql" />
     <Build Include="dbo\Tables\RecordContracts.sql" />
@@ -123,5 +122,9 @@
     <Build Include="dbo\Tables\PersonEducations.sql" />
     <Build Include="dbo\Tables\MaritalStatuses.sql" />
     <Build Include="dbo\Tables\Educations.sql" />
+    <Build Include="dbo\Tables\RecordContractLimits.sql" />
+    <Build Include="dbo\Tables\RecordContractItems.sql" />
+    <Build Include="dbo\Tables\PaymentTypes.sql" />
+    <Build Include="dbo\Tables\FinancingSources.sql" />
   </ItemGroup>
 </Project>

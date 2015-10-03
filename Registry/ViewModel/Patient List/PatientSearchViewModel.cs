@@ -54,6 +54,8 @@ namespace Registry
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
+            ContractsCommand = new RelayCommand(PatientContracts);
+            PersonDocumentsCommand = new RelayCommand(PersonDocuments);
         }
 
         private ObservableCollection<PersonViewModel> patients;
@@ -199,8 +201,31 @@ namespace Registry
             if (currentPatient.IsEmpty)
                 return;
             editPersonViewModel.Id = currentPatient.Id;
+            editPersonViewModel.SelectedPageIndex = 0;
             var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
         }
+
+        public ICommand PersonDocumentsCommand { get; private set; }
+        private void PersonDocuments()
+        {
+            if (currentPatient.IsEmpty)
+                return;
+            editPersonViewModel.Id = currentPatient.Id;
+            editPersonViewModel.SelectedPageIndex = 1;
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
+            editPersonDataView.ShowDialog();
+        }
+
+        public ICommand ContractsCommand { get; private set; }
+        private void PatientContracts()
+        {
+            if (currentPatient.IsEmpty)
+                return;
+            editPersonViewModel.Id = currentPatient.Id;
+            editPersonViewModel.SelectedPageIndex = 2;
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
+            editPersonDataView.ShowDialog();
+        }        
     }
 }

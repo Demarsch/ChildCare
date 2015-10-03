@@ -6,7 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:cmd="http://www.galasoft.ch/mvvmlight"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="550">
+             d:DesignHeight="300" d:DesignWidth="550" MinHeight="610">
         <UserControl.Resources>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <CollectionViewSource x:Key="DocumentsGroup" Source="{Binding Path=AllDocuments}">

@@ -19,16 +19,34 @@ namespace DataLib
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.MedicalHelpTypes = new HashSet<MedicalHelpType>();
             this.PersonTalons = new HashSet<PersonTalon>();
+            this.RecordContractItems = new HashSet<RecordContractItem>();
+            this.RecordContractLimits = new HashSet<RecordContractLimit>();
         }
     
         public int Id { get; set; }
         public int FinancingSourceId { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public Nullable<int> Number { get; set; }
+        public string ContractName { get; set; }
+        public Nullable<int> ClientId { get; set; }
+        public Nullable<int> ConsumerId { get; set; }
+        public Nullable<int> OrgId { get; set; }
+        public double ContractCost { get; set; }
+        public int Priority { get; set; }
+        public string Options { get; set; }
+        public System.DateTime InDateTime { get; set; }
+        public int InUserId { get; set; }
     
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual FinacingSource FinacingSource { get; set; }
         public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
         public virtual ICollection<PersonTalon> PersonTalons { get; set; }
+        public virtual FinancingSource FinancingSource { get; set; }
+        public virtual Org Org { get; set; }
+        public virtual Person Person { get; set; }
+        public virtual Person Person1 { get; set; }
+        public virtual PersonStaff PersonStaff { get; set; }
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
+        public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
     }
 }
