@@ -16,7 +16,7 @@ namespace Registry
         public PersonViewModel(Person patient)
         {
             this.patient = patient;
-            AmbNumberString = patient.AmbNumberString;
+            AmbNumberString = patient != null ? patient.AmbNumberString : string.Empty;
         }
 
         public int Id
@@ -55,21 +55,20 @@ namespace Registry
             get { return IsEmpty ? string.Empty : patient.MedNumber; }
         }
 
-        public int AmbNumber
-        {
-            get { return IsEmpty ? 0 : patient.AmbNumber; }
-        }
-
         private string ambNumberString = string.Empty;
         public string AmbNumberString
         {
             get { return IsEmpty ? string.Empty : ambNumberString; }
-            set { Set(() => AmbNumberString, ref ambNumberString, value); }
+            set
+            {
+                Set(() => AmbNumberString, ref ambNumberString, value);
+                RaisePropertyChanged(() => AmbNumberExist);
+            }
         }
 
         public bool AmbNumberExist
         {
-            get { return AmbNumber > 0; }
+            get { return !string.IsNullOrEmpty(ambNumberString); }
         }
 
         //TODO: rework into loading photo from base. Probably worth using IsAsync binding property

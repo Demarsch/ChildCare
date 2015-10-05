@@ -55,8 +55,17 @@ namespace Registry
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
-            ContractsCommand = new RelayCommand(PatientContracts);
+            ShowContractsCommand = new RelayCommand(ShowContracts);
             PersonDocumentsCommand = new RelayCommand(PersonDocuments);
+            CreateAmbCardCommand = new RelayCommand(CreateAmbCard);
+            PrintAmbCardFirstListCommand = new RelayCommand(PrintAmbCardFirstList);
+            PrintPersonHospListCommand = new RelayCommand(PrintPersonHospList);
+            PrintRadiationListCommand = new RelayCommand(PrintRadiationList);
+            PrintAllAmbCardCommand = new RelayCommand(PrintAllAmbCard);
+            ShowVisitsCommand = new RelayCommand(ShowVisits);
+            ShowCasesCommand = new RelayCommand(ShowCases);
+            ShowPrintDocumentsCommand = new RelayCommand(ShowPrintDocuments);
+
         }
         #endregion
 
@@ -85,6 +94,16 @@ namespace Registry
             }
         }
 
+        private string ambNumberButtonText;
+        public string AmbNumberButtonText
+        {
+            get
+            {
+                if (CurrentPatient.IsEmpty) return "Новая а/к";
+                return CurrentPatient.AmbNumberExist ? "а/к " + CurrentPatient.AmbNumberString : string.Empty;
+            }
+        }
+
         private PersonViewModel selectedPatient;
         //The difference between this property and CurrentPatient is that one is bound to ListBox and may become null when user searches patients.
         //On the other hand CurrentPatient is empty initially (when no patient is selected) and after user selects or creates a patient, it will never become empty again
@@ -109,8 +128,12 @@ namespace Registry
             set
             {
                 var isPatientSelected = IsPatientSelected;
-                if (Set("CurrentPatient", ref currentPatient, value) && IsPatientSelected != isPatientSelected)
-                    RaisePropertyChanged("IsPatientSelected");
+                if (Set("CurrentPatient", ref currentPatient, value))
+                {
+                    RaisePropertyChanged(() => AmbNumberButtonText);
+                    if (IsPatientSelected != isPatientSelected)
+                        RaisePropertyChanged("IsPatientSelected");
+                }
             }
         }
 
@@ -204,7 +227,6 @@ namespace Registry
         }
 
         public ICommand EditPatientCommand { get; private set; }
-
         private void EditPatient()
         {
             if (currentPatient.IsEmpty)
@@ -226,8 +248,8 @@ namespace Registry
             editPersonDataView.ShowDialog();
         }
 
-        public ICommand ContractsCommand { get; private set; }
-        private void PatientContracts()
+        public ICommand ShowContractsCommand { get; private set; }
+        private void ShowContracts()
         {
             if (currentPatient.IsEmpty)
                 return;
@@ -235,14 +257,57 @@ namespace Registry
             editPersonViewModel.SelectedPageIndex = 2;
             var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
-        }        
+        }
 
         public ICommand CreateAmbCardCommand { get; private set; }
         private void CreateAmbCard()
         {
             if (currentPatient.IsEmpty)
                 return;
-            CurrentPatient.AmbNumberString = personService.CreateAmbCard(currentPatient.Id);
+            CurrentPatient.AmbNumberString = personService.GetOrCreateAmbCard(currentPatient.Id);
+            RaisePropertyChanged(() => AmbNumberButtonText);
+        }
+
+        public ICommand PrintAmbCardFirstListCommand { get; private set; }
+        private void PrintAmbCardFirstList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand PrintPersonHospListCommand { get; private set; }
+        private void PrintPersonHospList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand PrintRadiationListCommand { get; private set; }
+        private void PrintRadiationList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand PrintAllAmbCardCommand { get; private set; }
+        private void PrintAllAmbCard()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand ShowVisitsCommand { get; private set; }
+        private void ShowVisits()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand ShowCasesCommand { get; private set; }
+        private void ShowCases()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand ShowPrintDocumentsCommand { get; private set; }
+        private void ShowPrintDocuments()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

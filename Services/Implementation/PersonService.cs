@@ -917,7 +917,7 @@ namespace Core
         }
 
 
-        public string CreateAmbCard(int personId)
+        public string GetOrCreateAmbCard(int personId)
         {
             string ambNumber = string.Empty;
             using (var db = provider.GetNewDataContext())
@@ -928,13 +928,13 @@ namespace Core
                 if (person.AmbNumber.ToInt() > 0)
                     return person.AmbNumberString;
                 int number = 1;
-                int year = DateTime.Now.Year;
-                foreach (var existNumber in db.GetData<Person>().Where(x => x.Year == year).OrderBy(x => x.AmbNumber).Select(x => x.AmbNumber))
+                var now = DateTime.Now;
+                foreach (var existNumber in db.GetData<Person>().Where(x => x.Year == now.Year).OrderBy(x => x.AmbNumber).Select(x => x.AmbNumber))
                 {
                     if (existNumber != number)
                     {
                         person.AmbNumber = number;
-                        person.Year = year;
+                        person.Year = now.Year;
                         break;
                     }
                     number++;
@@ -942,10 +942,15 @@ namespace Core
                 if (person.AmbNumber.ToInt() < 1)
                 {
                     person.AmbNumber = number;
-                    person.Year = year;
+                    person.Year = now.Year;
                 }
-                ambNumber = person.AmbNumber + "-" + person.Year;
-                person.AmbNumberString = ambNumber;
+                if (number > 0)
+                {
+                    ambNumber = person.AmbNumber + "-" + now.ToString("yy");
+                    person.AmbNumberString = ambNumber;
+                }
+                else
+                    person.AmbNumberString = string.Empty;
                 db.Save();
             }
             return ambNumber;

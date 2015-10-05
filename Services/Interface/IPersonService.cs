@@ -28,7 +28,7 @@ namespace Core
 
         bool SavePersonData(PersonDataSaveDTO person, ICollection<PersonDataSaveDTO> personRelatives);
 
-        string CreateAmbCard(int personId);
+        string GetOrCreateAmbCard(int personId);
 
         ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
 
