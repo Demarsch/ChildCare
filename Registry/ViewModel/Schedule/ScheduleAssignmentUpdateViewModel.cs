@@ -19,7 +19,7 @@ namespace Registry
 
         public ScheduleAssignmentUpdateViewModel(ICacheService cacheService, bool runCountdown)
         {
-            FinacingSources = cacheService.GetItems<FinacingSource>().OrderBy(x => x.Name).ToArray();
+            FinancingSource = cacheService.GetItems<FinancingSource>().OrderBy(x => x.Name).ToArray();
             AssignLpuList = new[] { SelfAssigned }.Concat(cacheService.GetItems<Org>().Where(x => x.IsLpu).OrderBy(x => x.Name)).ToArray();
             CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
             if (runCountdown)
@@ -35,9 +35,9 @@ namespace Registry
             SelectedAssignLpu = AssignLpuList.FirstOrDefault(x => x.Name == Configuration.CurrentLpuName);
         }
 
-        private FinacingSource selectedFinancingSource;
+        private FinancingSource selectedFinancingSource;
 
-        public FinacingSource SelectedFinancingSource
+        public FinancingSource SelectedFinancingSource
         {
             get { return selectedFinancingSource; }
             set { Set("SelectedFinancingSource", ref selectedFinancingSource, value); }
@@ -75,7 +75,7 @@ namespace Registry
             set { Set("Note", ref note, value); }
         }
 
-        public IEnumerable<FinacingSource> FinacingSources { get; private set; }
+        public IEnumerable<FinancingSource> FinancingSource { get; private set; }
 
         public IEnumerable<Org> AssignLpuList { get; private set; }
 

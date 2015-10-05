@@ -30,7 +30,7 @@ namespace DataLib
     
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual MedicalHelpType MedicalHelpType { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
         public virtual Person Person { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }

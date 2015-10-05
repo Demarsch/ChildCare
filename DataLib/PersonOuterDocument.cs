@@ -19,8 +19,8 @@ namespace DataLib
         public int OuterDocumentTypeId { get; set; }
         public int DocumentId { get; set; }
     
+        public virtual Person Person { get; set; }
         public virtual OuterDocumentType OuterDocumentType { get; set; }
         public virtual Document Document { get; set; }
-        public virtual Person Person { get; set; }
     }
 }

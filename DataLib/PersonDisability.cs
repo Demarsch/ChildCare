@@ -23,7 +23,7 @@ namespace DataLib
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
-        public virtual DisabilityType DisabilityType { get; set; }
         public virtual Person Person { get; set; }
+        public virtual DisabilityType DisabilityType { get; set; }
     }
 }

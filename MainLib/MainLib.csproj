@@ -96,6 +96,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WpfAnimatedGif">
+      <HintPath>..\packages\WpfAnimatedGif.1.4.12\lib\net\WpfAnimatedGif.dll</HintPath>
+    </Reference>
     <Reference Include="WpfControls">
       <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
     </Reference>
@@ -150,14 +153,21 @@
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonCommonDataViewModel.cs" />
+    <Compile Include="ViewModel\PersonContractsViewModel.cs" />
     <Compile Include="ViewModel\PersonDocumentsViewModel.cs" />
     <Compile Include="ViewModel\ScanDocumentsViewModel.cs" />
     <Compile Include="ViewModel\SelectPersonDocumentTypeViewModel.cs" />
+    <Compile Include="View\ContractControl.xaml.cs">
+      <DependentUpon>ContractControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\EditPersonCommonDataView.xaml.cs">
       <DependentUpon>EditPersonCommonDataView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonContractsControl.xaml.cs">
+      <DependentUpon>PersonContractsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PersonDocumentsControl.xaml.cs">
       <DependentUpon>PersonDocumentsControl.xaml</DependentUpon>
@@ -199,6 +209,10 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\ContractControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\DialogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -206,6 +220,10 @@
     <Page Include="View\EditPersonCommonDataView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PersonContractsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\PersonDocumentsControl.xaml">
       <SubType>Designer</SubType>

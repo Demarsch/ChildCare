@@ -166,7 +166,7 @@
     </Compile>
     <Compile Include="EFImplementations\ModelContext.cs" />
     <Compile Include="EFImplementations\ModelContextProvider.cs" />
-    <Compile Include="FinacingSource.cs">
+    <Compile Include="FinancingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Gender.cs">
@@ -207,6 +207,9 @@
     <Compile Include="PartialClasses\PersonTalon.cs" />
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="PartialClasses\ScheduleItem.cs" />
+    <Compile Include="PaymentType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Permission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -260,6 +263,12 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordContract.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordContractItem.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordContractLimit.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordType.cs">

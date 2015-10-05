@@ -37,7 +37,6 @@ namespace DataLib
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
-        public virtual DbSet<FinacingSource> FinacingSources { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
         public virtual DbSet<InsuranceCompany> InsuranceCompanies { get; set; }
@@ -51,6 +50,7 @@ namespace DataLib
         public virtual DbSet<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
         public virtual DbSet<PersonName> PersonNames { get; set; }
         public virtual DbSet<PersonRelative> PersonRelatives { get; set; }
+        public virtual DbSet<Person> Persons { get; set; }
         public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
@@ -82,6 +82,9 @@ namespace DataLib
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public virtual DbSet<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
         public virtual DbSet<PersonEducation> PersonEducations { get; set; }
-        public virtual DbSet<Person> Persons { get; set; }
+        public virtual DbSet<FinancingSource> FinancingSources { get; set; }
+        public virtual DbSet<PaymentType> PaymentTypes { get; set; }
+        public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
+        public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
     }
 }

@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="MainLib.View.PersonContractsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:cmd="http://www.galasoft.ch/mvvmlight"
+             xmlns:ctrls="clr-namespace:Core.View"
+             Width="Auto" MinHeight="610">
+        <UserControl.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </UserControl.Resources>
+
+        <DockPanel>
+
+        <DockPanel DockPanel.Dock="Left" >
+            <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+                    <TextBlock Text="Период действия договоров" Margin="5" 
+                               Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <StackPanel Orientation="Horizontal"
+                                Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <DatePicker Margin="2"/>
+                        <TextBlock Text=" - " Padding="0,5,0,0"/>
+                        <DatePicker Margin="2"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding ContractsCount}" Margin="5,0">Кол-во договоров</TextBlock>
+                    <TextBlock Text="{Binding ContractsSum}" Margin="5,0">Сумма договоров</TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding NewUserCommand}" Margin="2" BorderThickness="0"
+                                Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Resources;component/Images/Add24x24.png" Stretch="Uniform" Height="16" Width="16"/>
+                                <TextBlock Text="Добавить" Margin="2" TextDecorations="Underline"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding NewUserCommand}" Margin="2" BorderThickness="0"
+                                Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Resources;component/Images/Delete24x24.png" Stretch="Uniform" Height="16" Width="16"/>
+                                <TextBlock Text="Удалить" Margin="2" TextDecorations="Underline"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding NewUserCommand}" Margin="2,2,0,2" BorderThickness="0">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="pack://application:,,,/Resources;component/Images/documentPrint48x48.png" Stretch="Uniform" Height="16" Width="16"/>
+                                <TextBlock Text="Печать  " Margin="2" TextDecorations="Underline"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+                <ListView x:Name="contracts"
+                          ItemsSource="{Binding Contracts}" 
+                          SelectedItem="{Binding SelectedContract, Mode=TwoWay}">
+                    <ListView.View>
+                        <GridView>
+                            <GridView.Columns>
+                                <GridViewColumn x:Name="ContractNumber" Header="Договор" DisplayMemberBinding="{Binding Path=ContractNumber}"></GridViewColumn>
+                                <GridViewColumn x:Name="Client" Header="Заказчик" DisplayMemberBinding="{Binding Path=Client}"></GridViewColumn>
+                                <GridViewColumn x:Name="Cost" Header="Сумма" DisplayMemberBinding="{Binding Path=Cost}"></GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </DockPanel>
+
+            <ctrls:ContractControl DataContext="{Binding SelectedContract}"/>
+            
+        </DockPanel>
+</UserControl>
+

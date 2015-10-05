@@ -24,7 +24,7 @@
                       Grid.Column="1" 
                       IsEditable="False" 
                       Grid.ColumnSpan="2" 
-                      ItemsSource="{Binding FinacingSources, Mode=OneTime}"
+                      ItemsSource="{Binding FinancingSources, Mode=OneTime}"
                       SelectedItem="{Binding SelectedFinancingSource, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                       DisplayMemberPath="ShortName"
                       Margin="0 5 25 5" 
