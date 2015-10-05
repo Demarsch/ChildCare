@@ -30,7 +30,7 @@ namespace DataLib
     
         public virtual Branch Branch { get; set; }
         public virtual ICollection<CommissionMember> CommissionMembers { get; set; }
-        public virtual Person Person { get; set; }
         public virtual Staff Staff { get; set; }
+        public virtual Person Person { get; set; }
     }
 }

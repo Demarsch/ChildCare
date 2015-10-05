@@ -318,8 +318,8 @@ namespace Core
                     if (resStr != string.Empty)
                         resStr += "\r\n";
                     resStr += personDisabilities.DisabilityType.Name + ": Серия " + personDisabilities.Series + " Номер " +
-                        personDisabilities.Number + "; Выдан " + personDisabilities.GivenOrg + " " + 
-                        personDisabilities.BeginDate.ToString("dd.MM.yyyy") + 
+                        personDisabilities.Number + "; Выдан " + personDisabilities.GivenOrg + " " +
+                        personDisabilities.BeginDate.ToString("dd.MM.yyyy") +
                         (personDisabilities.EndDate.Date != DateTime.MaxValue.Date ? " по " + personDisabilities.EndDate.ToString("dd.MM.yyyy") : string.Empty);
                 }
             }
@@ -590,7 +590,7 @@ namespace Core
 
         private void SetPersonRelatives(Person person, IList<PersonRelative> changedPersonRelatives, IDataContext db)
         {
-            
+
         }
 
         private void SetPersonEducations(Person person, int educationId, IDataContext db)
@@ -914,6 +914,41 @@ namespace Core
                 if (personEducation == null) return 0;
                 return personEducation.EducationId;
             }
+        }
+
+
+        public string CreateAmbCard(int personId)
+        {
+            string ambNumber = string.Empty;
+            using (var db = provider.GetNewDataContext())
+            {
+                var person = db.GetById<Person>(personId);
+                if (person == null)
+                    return string.Empty;
+                if (person.AmbNumber.ToInt() > 0)
+                    return person.AmbNumberString;
+                int number = 1;
+                int year = DateTime.Now.Year;
+                foreach (var existNumber in db.GetData<Person>().Where(x => x.Year == year).OrderBy(x => x.AmbNumber).Select(x => x.AmbNumber))
+                {
+                    if (existNumber != number)
+                    {
+                        person.AmbNumber = number;
+                        person.Year = year;
+                        break;
+                    }
+                    number++;
+                }
+                if (person.AmbNumber.ToInt() < 1)
+                {
+                    person.AmbNumber = number;
+                    person.Year = year;
+                }
+                ambNumber = person.AmbNumber + "-" + person.Year;
+                person.AmbNumberString = ambNumber;
+                db.Save();
+            }
+            return ambNumber;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Registry
         public PersonViewModel(Person patient)
         {
             this.patient = patient;
+            AmbNumberString = patient.AmbNumberString;
         }
 
         public int Id
@@ -59,9 +60,11 @@ namespace Registry
             get { return IsEmpty ? 0 : patient.AmbNumber; }
         }
 
+        private string ambNumberString = string.Empty;
         public string AmbNumberString
         {
-            get { return IsEmpty ? string.Empty : patient.AmbNumberString; }
+            get { return IsEmpty ? string.Empty : ambNumberString; }
+            set { Set(() => AmbNumberString, ref ambNumberString, value); }
         }
 
         public bool AmbNumberExist

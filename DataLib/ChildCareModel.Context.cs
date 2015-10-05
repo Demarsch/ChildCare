@@ -51,7 +51,6 @@ namespace DataLib
         public virtual DbSet<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
         public virtual DbSet<PersonName> PersonNames { get; set; }
         public virtual DbSet<PersonRelative> PersonRelatives { get; set; }
-        public virtual DbSet<Person> Persons { get; set; }
         public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
@@ -83,5 +82,6 @@ namespace DataLib
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public virtual DbSet<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
         public virtual DbSet<PersonEducation> PersonEducations { get; set; }
+        public virtual DbSet<Person> Persons { get; set; }
     }
 }

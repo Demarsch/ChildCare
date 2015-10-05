@@ -13,6 +13,7 @@ namespace Registry
 {
     public class PatientSearchViewModel : BasicViewModel
     {
+        #region Fields
         private const int UserInputSearchThreshold = 3;
 
         private const int PatientDisplayCount = 5;
@@ -26,9 +27,9 @@ namespace Registry
         private readonly IDialogService dialogService;
 
         private readonly IDocumentService documentService;
+        #endregion
 
-        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
-
+        #region Constructors
         public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
@@ -55,6 +56,10 @@ namespace Registry
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
         }
+        #endregion
+
+        #region Properties
+        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
 
         private ObservableCollection<PersonViewModel> patients;
 
@@ -78,6 +83,57 @@ namespace Registry
             }
         }
 
+        private PersonViewModel selectedPatient;
+        //The difference between this property and CurrentPatient is that one is bound to ListBox and may become null when user searches patients.
+        //On the other hand CurrentPatient is empty initially (when no patient is selected) and after user selects or creates a patient, it will never become empty again
+        //meaning that user can't deselect patient
+        public PersonViewModel SelectedPatient
+        {
+            get { return selectedPatient; }
+            set
+            {
+                Set("SelectedPatient", ref selectedPatient, value);
+                if (value == null)
+                    return;
+                SelectPatient(value);
+            }
+        }
+
+        private PersonViewModel currentPatient;
+
+        public PersonViewModel CurrentPatient
+        {
+            get { return currentPatient; }
+            set
+            {
+                var isPatientSelected = IsPatientSelected;
+                if (Set("CurrentPatient", ref currentPatient, value) && IsPatientSelected != isPatientSelected)
+                    RaisePropertyChanged("IsPatientSelected");
+            }
+        }
+
+        public bool IsPatientSelected { get { return currentPatient != null; } }
+
+        private bool isLookingForPatient;
+
+        public bool IsLookingForPatient
+        {
+            get { return isLookingForPatient; }
+            set { Set("IsLookingForPatient", ref isLookingForPatient, value); }
+        }
+
+        private bool noOneisFound;
+
+        public bool NoOneisFound
+        {
+            get { return noOneisFound; }
+            set { Set("NoOneisFound", ref noOneisFound, value); }
+        }
+
+        private readonly EditPersonViewModel editPersonViewModel;
+        #endregion
+
+        #region Methods
         private void SearchPatients(string searchString)
         {
             IsLookingForPatient = false;
@@ -133,56 +189,9 @@ namespace Registry
             CurrentPatient = person;
             PatientAssignmentListViewModel.PatientId = person.Id;
         }
+        #endregion
 
-        private PersonViewModel selectedPatient;
-        //The difference between this property and CurrentPatient is that one is bound to ListBox and may become null when user searches patients.
-        //On the other hand CurrentPatient is empty initially (when no patient is selected) and after user selects or creates a patient, it will never become empty again
-        //meaning that user can't deselect patient
-        public PersonViewModel SelectedPatient
-        {
-            get { return selectedPatient; }
-            set
-            {
-                Set("SelectedPatient", ref selectedPatient, value);
-                if (value == null)
-                    return;
-                SelectPatient(value);
-            }
-        }
-
-        private PersonViewModel currentPatient;
-
-        public PersonViewModel CurrentPatient
-        {
-            get { return currentPatient; }
-            set
-            {
-                var isPatientSelected = IsPatientSelected;
-                if (Set("CurrentPatient", ref currentPatient, value) && IsPatientSelected != isPatientSelected)
-                    RaisePropertyChanged("IsPatientSelected");
-            }
-        }
-
-        public bool IsPatientSelected { get { return currentPatient != null; } }
-
-        private bool isLookingForPatient;
-
-        public bool IsLookingForPatient
-        {
-            get { return isLookingForPatient; }
-            set { Set("IsLookingForPatient", ref isLookingForPatient, value); }
-        }
-
-        private bool noOneisFound;
-
-        public bool NoOneisFound
-        {
-            get { return noOneisFound; }
-            set { Set("NoOneisFound", ref noOneisFound, value); }
-        }
-
-        private readonly EditPersonViewModel editPersonViewModel;
-
+        #region Commands
         public ICommand NewPatientCommand { get; private set; }
 
         private void NewPatient()
@@ -202,5 +211,14 @@ namespace Registry
             var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
         }
+
+        public ICommand CreateAmbCardCommand { get; private set; }
+        private void CreateAmbCard()
+        {
+            if (currentPatient.IsEmpty)
+                return;
+            CurrentPatient.AmbNumberString = personService.CreateAmbCard(currentPatient.Id);
+        }
+        #endregion
     }
 }

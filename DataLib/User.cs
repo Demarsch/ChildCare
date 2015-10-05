@@ -32,12 +32,12 @@ namespace DataLib
         public Nullable<System.DateTime> EndDateTime { get; set; }
     
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual Person Person { get; set; }
         public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<UserMessage> UserMessages { get; set; }
         public virtual ICollection<UserMessage> UserMessages1 { get; set; }
         public virtual ICollection<UserPermission> UserPermissions { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<Assignment> Assignments1 { get; set; }
+        public virtual Person Person { get; set; }
     }
 }
