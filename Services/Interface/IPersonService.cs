@@ -30,6 +30,12 @@ namespace Core
 
         string GetOrCreateAmbCard(int personId);
 
+        string GetAmbCardFirstList(int personId);
+
+        string GetPersonHospList(int personId);
+
+        string GetRadiationList(int personId);
+
         ICollection<PersonRelativeDTO> GetPersonRelativesDTO(int personId);
 
         PersonRelative GetPersonRelative(int personId, int relativePersonId);

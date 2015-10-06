@@ -955,5 +955,24 @@ namespace Core
             }
             return ambNumber;
         }
+
+
+        public string GetAmbCardFirstList(int personId)
+        {
+            //ToDo: Inplement using Report
+            return string.Empty;
+        }
+
+        public string GetPersonHospList(int personId)
+        {
+            //ToDo: Inplement using Report
+            return string.Empty;
+        }
+
+        public string GetRadiationList(int personId)
+        {
+            //ToDo: Inplement using Report
+            return string.Empty;
+        }
     }
 }

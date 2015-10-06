@@ -85,5 +85,20 @@ namespace Registry
         }
 
         public string ShortName { get { return patient.ShortName; } }
+
+        public int AmbCardFirstListHashCode
+        {
+            get { return IsEmpty ? 0 : patient.AmbCardFirstListHashCode; }
+        }
+
+        public int PersonHospListHashCode
+        {
+            get { return IsEmpty ? 0 : patient.PersonHospListHashCode; }
+        }
+
+        public int RadiationListHashCode
+        {
+            get { return IsEmpty ? 0 : patient.RadiationListHashCode; }
+        }
     }
 }

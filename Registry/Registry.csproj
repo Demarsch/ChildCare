@@ -119,6 +119,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\IsPrintedToColorConverter.cs" />
     <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\ScheduledAssignmentDTO.cs" />
     <Compile Include="Exceptions\AssignmentConflictException.cs" />

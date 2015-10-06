@@ -94,13 +94,12 @@ namespace Registry
             }
         }
 
-        private string ambNumberButtonText;
         public string AmbNumberButtonText
         {
             get
             {
-                if (CurrentPatient.IsEmpty) return "Новая а/к";
-                return CurrentPatient.AmbNumberExist ? "а/к " + CurrentPatient.AmbNumberString : string.Empty;
+                if (CurrentPatient.IsEmpty) return string.Empty;
+                return CurrentPatient.AmbNumberExist ? "а/к " + CurrentPatient.AmbNumberString : "Новая а/к";
             }
         }
 
@@ -130,6 +129,7 @@ namespace Registry
                 var isPatientSelected = IsPatientSelected;
                 if (Set("CurrentPatient", ref currentPatient, value))
                 {
+                    SetPrintedProperties();
                     RaisePropertyChanged(() => AmbNumberButtonText);
                     if (IsPatientSelected != isPatientSelected)
                         RaisePropertyChanged("IsPatientSelected");
@@ -140,7 +140,6 @@ namespace Registry
         public bool IsPatientSelected { get { return currentPatient != null; } }
 
         private bool isLookingForPatient;
-
         public bool IsLookingForPatient
         {
             get { return isLookingForPatient; }
@@ -148,17 +147,67 @@ namespace Registry
         }
 
         private bool noOneisFound;
-
         public bool NoOneisFound
         {
             get { return noOneisFound; }
             set { Set("NoOneisFound", ref noOneisFound, value); }
         }
 
+        private bool? isPrintedAmbCardFirstList = null;
+        public bool? IsPrintedAmbCardFirstList
+        {
+            get { return isPrintedAmbCardFirstList; }
+            set
+            {
+                if (Set(() => IsPrintedAmbCardFirstList, ref isPrintedAmbCardFirstList, value))
+                    RaisePropertyChanged(() => IsPrintedAllAmbCard);
+            }
+        }
+
+        private bool? isPrintedPersonHospList = null;
+        public bool? IsPrintedPersonHospList
+        {
+            get { return isPrintedPersonHospList; }
+            set
+            {
+                if (Set(() => IsPrintedPersonHospList, ref isPrintedPersonHospList, value))
+                    RaisePropertyChanged(() => IsPrintedAllAmbCard);
+            }
+        }
+
+        private bool? isPrintedRadiationList = null;
+        public bool? IsPrintedRadiationList
+        {
+            get { return isPrintedRadiationList; }
+            set
+            {
+                if (Set(() => IsPrintedRadiationList, ref isPrintedRadiationList, value))
+                    RaisePropertyChanged(() => IsPrintedAllAmbCard);
+            }
+        }
+
+        public bool? IsPrintedAllAmbCard
+        {
+            get
+            {
+                if (IsPrintedAmbCardFirstList == null || IsPrintedPersonHospList == null || IsPrintedRadiationList == null)
+                    return null;
+                return (bool)IsPrintedAmbCardFirstList && (bool)IsPrintedPersonHospList && (bool)IsPrintedRadiationList;
+            }
+        }
+
         private readonly EditPersonViewModel editPersonViewModel;
         #endregion
 
         #region Methods
+
+        private void SetPrintedProperties()
+        {
+            IsPrintedAmbCardFirstList = (CurrentPatient.AmbCardFirstListHashCode == personService.GetAmbCardFirstList(CurrentPatient.Id).GetHashCode());
+            IsPrintedPersonHospList = (CurrentPatient.PersonHospListHashCode == personService.GetPersonHospList(CurrentPatient.Id).GetHashCode());
+            IsPrintedRadiationList = (CurrentPatient.RadiationListHashCode == personService.GetRadiationList(CurrentPatient.Id).GetHashCode());
+        }
+
         private void SearchPatients(string searchString)
         {
             IsLookingForPatient = false;

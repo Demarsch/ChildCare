@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <stuffLib:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <registry:IsPrintedToColorConverter x:Key="IsPrintedToColorConverter" />
         <stuffLib:MultiBooleanConverter x:Key="MultiBooleanToInversedVisibilityConverter" UseLogicalOr="True" TrueValue="{x:Static Visibility.Collapsed}" FalseValue="{x:Static Visibility.Visible}" />
         <xctk:InverseBoolConverter x:Key="InverseBoolConverter" />
     </UserControl.Resources>
@@ -58,8 +59,9 @@
                 </xctk:SplitButton.DropDownContent>
             </xctk:SplitButton>
             <xctk:SplitButton Grid.Column="2" Margin="2" VerticalAlignment="Stretch" Padding="3" Height="60" Width="60"
-                              Background="White" x:Name="ambulatoryCardButton" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding AmbNumberButtonText}" Command="{Binding CreateAmbCardCommand}" 
-                              ToolTipService.IsEnabled="{Binding CurrentPatient.AmbNumberExist, Converter={StaticResource InverseBoolConverter}}" >
+                              x:Name="ambulatoryCardButton" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding AmbNumberButtonText}" Command="{Binding CreateAmbCardCommand}" 
+                              ToolTipService.IsEnabled="{Binding CurrentPatient.AmbNumberExist, Converter={StaticResource InverseBoolConverter}}" 
+                              Background="{Binding IsPrintedAllAmbCard, Converter={StaticResource IsPrintedToColorConverter}}">
                 <!--<xctk:SplitButton.Resources>
                     <Style TargetType="{x:Type Popup}">
                         <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type xctk:SplitButton}}}" />
@@ -71,10 +73,14 @@
                 </ToolTipService.ToolTip>
                 <xctk:SplitButton.DropDownContent>
                     <StackPanel Visibility="{Binding CurrentPatient.AmbNumberExist, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Button Padding="4" Content="Печать титульного листа амбулаторной карты" Command="{Binding PrintAmbCardFirstListCommand}"/>
-                        <Button Padding="4" Content="Печать листа госпитализации" Command="{Binding PrintPersonHospListCommand}"/>
-                        <Button Padding="4" Content="Печать листа лучевой назгрузки" Command="{Binding PrintRadiationListCommand}"/>
-                        <Button Padding="4" Content="Печать все листы амбулаторной карты" Command="{Binding PrintAllAmbCardCommand}"/>
+                        <Button Padding="4" HorizontalContentAlignment="Left" Content="Печать титульного листа амбулаторной карты" Command="{Binding PrintAmbCardFirstListCommand}" 
+                                Background="{Binding IsPrintedAmbCardFirstList, Converter={StaticResource IsPrintedToColorConverter}}"/>
+                        <Button Padding="4" HorizontalContentAlignment="Left" Content="Печать листа госпитализации" Command="{Binding PrintPersonHospListCommand}" 
+                                Background="{Binding IsPrintedPersonHospList, Converter={StaticResource IsPrintedToColorConverter}}"/>
+                        <Button Padding="4" HorizontalContentAlignment="Left" Content="Печать листа лучевой назгрузки" Command="{Binding PrintRadiationListCommand}" 
+                                Background="{Binding IsPrintedRadiationList, Converter={StaticResource IsPrintedToColorConverter}}"/>
+                        <Button Padding="4" HorizontalContentAlignment="Left" Content="Печать все листы амбулаторной карты" Command="{Binding PrintAllAmbCardCommand}" 
+                                Background="{Binding IsPrintedAllAmbCard, Converter={StaticResource IsPrintedToColorConverter}}"/>
                     </StackPanel>
                 </xctk:SplitButton.DropDownContent>
             </xctk:SplitButton>
