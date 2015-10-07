@@ -33,7 +33,7 @@ namespace MainLib.ViewModel
             this.RemoveContractCommand = new RelayCommand(RemoveContract);
             this.PrintContractsCommand = new RelayCommand(PrintContracts);
 
-            Registrators = pers
+            //Registrators = pers
         }
 
         public async void Load(int? personId = null)
