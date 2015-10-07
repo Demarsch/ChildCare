@@ -16,12 +16,14 @@ namespace DataLib
     {
         public RecordType()
         {
-            this.Records = new HashSet<Record>();
-            this.RecordTypes1 = new HashSet<RecordType>();
-            this.ScheduleItems = new HashSet<ScheduleItem>();
             this.Assignments = new HashSet<Assignment>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
+            this.Records = new HashSet<Record>();
+            this.RecordTypeCosts = new HashSet<RecordTypeCost>();
+            this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
+            this.RecordTypes1 = new HashSet<RecordType>();
+            this.ScheduleItems = new HashSet<ScheduleItem>();
         }
     
         public int Id { get; set; }
@@ -36,13 +38,17 @@ namespace DataLib
         public Nullable<int> EditorId { get; set; }
         public int RecordTypeGroupId { get; set; }
         public int MedProfileId { get; set; }
+        public bool IsRecord { get; set; }
+        public string Options { get; set; }
     
-        public virtual ICollection<Record> Records { get; set; }
-        public virtual ICollection<RecordType> RecordTypes1 { get; set; }
-        public virtual RecordType RecordType1 { get; set; }
-        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
         public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
+        public virtual ICollection<Record> Records { get; set; }
+        public virtual ICollection<RecordTypeCost> RecordTypeCosts { get; set; }
+        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
+        public virtual ICollection<RecordType> RecordTypes1 { get; set; }
+        public virtual RecordType RecordType1 { get; set; }
+        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
     }
 }

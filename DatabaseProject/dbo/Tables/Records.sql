@@ -15,6 +15,7 @@
     [EndDateTime]     DATETIME     NOT NULL,
     [ActualDateTime]  DATETIME     NOT NULL,
     [OKATO]           VARCHAR (16) CONSTRAINT [DF_Records_OKATO] DEFAULT ('') NOT NULL,
+    [BillingDateTime] DATETIME     NULL,
     [RemovedByUserId] INT          NULL,
     CONSTRAINT [PK_Records] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Records_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
@@ -23,6 +24,8 @@
     CONSTRAINT [FK_Records_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [dbo].[Rooms] ([Id]),
     CONSTRAINT [FK_Records_Users] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

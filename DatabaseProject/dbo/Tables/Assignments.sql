@@ -14,6 +14,8 @@
     [RecordId]          INT            NULL,
     [IsTemporary]       BIT            CONSTRAINT [DF__Assignmen__IsTem__4A8310C6] DEFAULT ((0)) NOT NULL,
     [CreationDateTime]  DATETIME       CONSTRAINT [DF__Assignmen__Creat__498EEC8D] DEFAULT (getdate()) NOT NULL,
+    [BillingDateTime]   DATETIME       NULL,
+    [Cost]              FLOAT (53)     CONSTRAINT [DF_Assignments_Cost] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Assignments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Assignments_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
     CONSTRAINT [FK_Assignments_Orgs] FOREIGN KEY ([AssignLpuId]) REFERENCES [dbo].[Orgs] ([Id]),
@@ -24,6 +26,8 @@
     CONSTRAINT [FK_Assignments_Users] FOREIGN KEY ([AssignUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Users1] FOREIGN KEY ([CancelUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

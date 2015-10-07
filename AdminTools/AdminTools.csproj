@@ -121,10 +121,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DTO\PersonDTO.cs" />
     <Compile Include="DTO\UserPermissionsDTO.cs" />
+    <Compile Include="DTO\UserDTO.cs" />
+    <Compile Include="Helpers\UserSuggestionProvider.cs" />
     <Compile Include="ViewModel\EditPermissionViewModel.cs" />
-    <Compile Include="ViewModel\PersonSuggestionProvider.cs" />
     <Compile Include="ViewModel\PermissionsTreeViewModel.cs" />
     <Compile Include="ViewModel\UserAccountViewModel.cs" />
     <Compile Include="ViewModel\UserEditorViewModel.cs" />
@@ -239,9 +239,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Administrative_Tools-64.ico" />
   </ItemGroup>

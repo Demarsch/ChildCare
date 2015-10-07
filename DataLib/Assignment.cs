@@ -34,7 +34,10 @@ namespace DataLib
         public Nullable<int> RecordId { get; set; }
         public bool IsTemporary { get; set; }
         public System.DateTime CreationDateTime { get; set; }
+        public Nullable<System.DateTime> BillingDateTime { get; set; }
+        public double Cost { get; set; }
     
+        public virtual FinancingSource FinancingSource { get; set; }
         public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
         public virtual Record Record { get; set; }
@@ -42,7 +45,6 @@ namespace DataLib
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
-        public virtual FinancingSource FinancingSource { get; set; }
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
     }
 }

@@ -12,35 +12,36 @@
         </UserControl.Resources>
 
         <DockPanel>
-
-        <DockPanel DockPanel.Dock="Left" >
-            <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+            <DockPanel DockPanel.Dock="Left" >
+                <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
                     <TextBlock Text="Период действия договоров" Margin="5" 
-                               Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <StackPanel Orientation="Horizontal"
                                 Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <DatePicker Margin="2"/>
                         <TextBlock Text=" - " Padding="0,5,0,0"/>
                         <DatePicker Margin="2"/>
                     </StackPanel>
+                    <ComboBox ItemsSource="{Binding Registrators}" DisplayMemberPath="Name" SelectedValuePath="Id" 
+                                      SelectedItem="{Binding SelectedRegistrator}" />
                     <TextBlock Text="{Binding ContractsCount}" Margin="5,0">Кол-во договоров</TextBlock>
                     <TextBlock Text="{Binding ContractsSum}" Margin="5,0">Сумма договоров</TextBlock>
                     <StackPanel Orientation="Horizontal">
-                        <Button Command="{Binding NewUserCommand}" Margin="2" BorderThickness="0"
+                        <Button Command="{Binding AddContractCommand}" Margin="2" BorderThickness="0"
                                 Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="pack://application:,,,/Resources;component/Images/Add24x24.png" Stretch="Uniform" Height="16" Width="16"/>
                                 <TextBlock Text="Добавить" Margin="2" TextDecorations="Underline"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding NewUserCommand}" Margin="2" BorderThickness="0"
+                        <Button Command="{Binding RemoveContractCommand}" Margin="2" BorderThickness="0"
                                 Visibility="{Binding ShowPeriod, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="pack://application:,,,/Resources;component/Images/Delete24x24.png" Stretch="Uniform" Height="16" Width="16"/>
                                 <TextBlock Text="Удалить" Margin="2" TextDecorations="Underline"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding NewUserCommand}" Margin="2,2,0,2" BorderThickness="0">
+                        <Button Command="{Binding PrintContractsCommand}" Margin="2,2,0,2" BorderThickness="0">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="pack://application:,,,/Resources;component/Images/documentPrint48x48.png" Stretch="Uniform" Height="16" Width="16"/>
                                 <TextBlock Text="Печать  " Margin="2" TextDecorations="Underline"/>
@@ -49,8 +50,8 @@
                     </StackPanel>
                 </StackPanel>
                 <ListView x:Name="contracts"
-                          ItemsSource="{Binding Contracts}" 
-                          SelectedItem="{Binding SelectedContract, Mode=TwoWay}">
+                            ItemsSource="{Binding Contracts}" 
+                            SelectedItem="{Binding SelectedContract, Mode=TwoWay}">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>

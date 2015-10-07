@@ -23,20 +23,20 @@ namespace DataLib
             this.PersonNames = new HashSet<PersonName>();
             this.PersonRelatives = new HashSet<PersonRelative>();
             this.PersonRelatives1 = new HashSet<PersonRelative>();
-            this.PersonStaffs = new HashSet<PersonStaff>();
             this.PersonTalons = new HashSet<PersonTalon>();
-            this.Records = new HashSet<Record>();
             this.Users = new HashSet<User>();
             this.PersonDisabilities = new HashSet<PersonDisability>();
             this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
             this.PersonHealthGroups = new HashSet<PersonHealthGroup>();
             this.PersonNationalities = new HashSet<PersonNationality>();
-            this.Assignments = new HashSet<Assignment>();
             this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
             this.PersonMaritalStatuses = new HashSet<PersonMaritalStatus>();
             this.PersonEducations = new HashSet<PersonEducation>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.RecordContracts1 = new HashSet<RecordContract>();
+            this.Assignments = new HashSet<Assignment>();
+            this.PersonStaffs = new HashSet<PersonStaff>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -61,20 +61,20 @@ namespace DataLib
         public virtual ICollection<PersonName> PersonNames { get; set; }
         public virtual ICollection<PersonRelative> PersonRelatives { get; set; }
         public virtual ICollection<PersonRelative> PersonRelatives1 { get; set; }
-        public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
         public virtual ICollection<PersonTalon> PersonTalons { get; set; }
-        public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<User> Users { get; set; }
         public virtual ICollection<PersonDisability> PersonDisabilities { get; set; }
         public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
         public virtual ICollection<PersonHealthGroup> PersonHealthGroups { get; set; }
         public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
-        public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
         public virtual Document Document { get; set; }
         public virtual ICollection<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
         public virtual ICollection<PersonEducation> PersonEducations { get; set; }
         public virtual ICollection<RecordContract> RecordContracts { get; set; }
         public virtual ICollection<RecordContract> RecordContracts1 { get; set; }
+        public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
+        public virtual ICollection<Record> Records { get; set; }
     }
 }

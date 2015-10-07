@@ -3,7 +3,7 @@ using GalaSoft.MvvmLight;
 
 namespace AdminTools.DTO
 {
-    public class PersonDTO : ObservableObject
+    public class UserDTO : ObservableObject
     {
         public int Id { get; set; }
 

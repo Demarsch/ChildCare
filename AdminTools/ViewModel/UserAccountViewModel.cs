@@ -37,17 +37,17 @@ namespace AdminTools.ViewModel
             this.SynchWithActiveDirectoryCommand = new RelayCommand<object>(SynchWithActiveDirectory);
             this.SelectUserADCommand = new RelayCommand<object>(SelectUserAD);
             this.SaveUserCommand = new RelayCommand(SaveUser);
-            PersonSuggestionProvider = new PersonSuggestionProvider(personService);
+            UserSuggestionProvider = new UserSuggestionProvider(personService);
             AllowSave = false;
         }
 
         #region Commands
 
-        private PersonSuggestionProvider personSuggestionProvider;
-        public PersonSuggestionProvider PersonSuggestionProvider
+        private UserSuggestionProvider userSuggestionProvider;
+        public UserSuggestionProvider UserSuggestionProvider
         {
-            get { return personSuggestionProvider; }
-            set { Set("PersonSuggestionProvider", ref personSuggestionProvider, value); }
+            get { return userSuggestionProvider; }
+            set { Set("UserSuggestionProvider", ref userSuggestionProvider, value); }
         }
 
         private RelayCommand saveUserCommand;
@@ -100,15 +100,15 @@ namespace AdminTools.ViewModel
             set { Set("SelectedUserAD", ref selectedUserAD, value); }
         }
 
-        private ObservableCollection<PersonDTO> persons;
-        public ObservableCollection<PersonDTO> Persons
+        private ObservableCollection<AdminTools.DTO.UserDTO> persons;
+        public ObservableCollection<AdminTools.DTO.UserDTO> Persons
         {
             get { return persons; }
             set { Set("Persons", ref persons, value); }
         }
 
-        private PersonDTO selectedPerson;
-        public PersonDTO SelectedPerson
+        private AdminTools.DTO.UserDTO selectedPerson;
+        public AdminTools.DTO.UserDTO SelectedPerson
         {
             get { return selectedPerson; }
             set
@@ -128,7 +128,7 @@ namespace AdminTools.ViewModel
                 Set("AllowSave", ref allowSave, value);
                 if (value)
                 {
-                    Persons = new ObservableCollection<PersonDTO>(new List<PersonDTO>() { SelectedPerson });
+                    Persons = new ObservableCollection<AdminTools.DTO.UserDTO>(new List<AdminTools.DTO.UserDTO>() { SelectedPerson });
                     SelectedPerson = Persons.First();
                 }
             }
@@ -176,7 +176,7 @@ namespace AdminTools.ViewModel
                 EditPerson(null);
             else
             {
-                SelectedPerson = parameter as PersonDTO;
+                SelectedPerson = parameter as AdminTools.DTO.UserDTO;
                 EditPerson(SelectedPerson.Id);
             }
         }

@@ -59,7 +59,7 @@
                                  SelectedItem="{Binding SelectedPerson, Mode=TwoWay}"
                                  IconPlacement="Left"
                                  IconVisibility="Visible"
-                                 Provider="{Binding PersonSuggestionProvider}"
+                                 Provider="{Binding UserSuggestionProvider}"
                                  x:Name="searchUserTextBox" TabIndex="1">            
             <wpf:AutoCompleteTextBox.LoadingContent>
                 <StackPanel Orientation="Horizontal">                    

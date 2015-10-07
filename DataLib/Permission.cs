@@ -19,6 +19,7 @@ namespace DataLib
             this.PermissionLinks = new HashSet<PermissionLink>();
             this.PermissionLinks1 = new HashSet<PermissionLink>();
             this.UserPermissions = new HashSet<UserPermission>();
+            this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
         }
     
         public int Id { get; set; }
@@ -30,5 +31,6 @@ namespace DataLib
         public virtual ICollection<PermissionLink> PermissionLinks { get; set; }
         public virtual ICollection<PermissionLink> PermissionLinks1 { get; set; }
         public virtual ICollection<UserPermission> UserPermissions { get; set; }
+        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
     }
 }

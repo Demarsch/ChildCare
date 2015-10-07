@@ -51,11 +51,8 @@ namespace DataLib
         public virtual DbSet<PersonName> PersonNames { get; set; }
         public virtual DbSet<PersonRelative> PersonRelatives { get; set; }
         public virtual DbSet<Person> Persons { get; set; }
-        public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
-        public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
@@ -73,7 +70,6 @@ namespace DataLib
         public virtual DbSet<HealthGroup> HealthGroups { get; set; }
         public virtual DbSet<PersonHealthGroup> PersonHealthGroups { get; set; }
         public virtual DbSet<PersonNationality> PersonNationalities { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<PersonOuterDocument> PersonOuterDocuments { get; set; }
         public virtual DbSet<OuterDocumentType> OuterDocumentTypes { get; set; }
@@ -85,6 +81,13 @@ namespace DataLib
         public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
         public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
         public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
+        public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
+        public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
+        public virtual DbSet<RecordTypeRole> RecordTypeRoles { get; set; }
+        public virtual DbSet<RecordType> RecordTypes { get; set; }
     }
 }

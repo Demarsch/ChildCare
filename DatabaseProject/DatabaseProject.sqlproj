@@ -126,5 +126,8 @@
     <Build Include="dbo\Tables\RecordContractItems.sql" />
     <Build Include="dbo\Tables\PaymentTypes.sql" />
     <Build Include="dbo\Tables\FinancingSources.sql" />
+    <Build Include="dbo\Tables\RecordTypeRoles.sql" />
+    <Build Include="dbo\Tables\RecordTypeRolePermissions.sql" />
+    <Build Include="dbo\Tables\RecordTypeCosts.sql" />
   </ItemGroup>
 </Project>

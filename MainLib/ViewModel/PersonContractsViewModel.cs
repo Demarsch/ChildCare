@@ -21,7 +21,7 @@ namespace MainLib.ViewModel
         private ILog log;
         private IDialogService dialogService;
         private IPersonService personService;
-        private int personId;
+        private int? personId;
 
         public PersonContractsViewModel(IPersonService personService, IDialogService dialogService, ILog log)
         {            
@@ -29,44 +29,107 @@ namespace MainLib.ViewModel
             this.dialogService = dialogService;
             this.log = log;
 
-            this.OpenFileCommand = new RelayCommand(OpenFile);            
+            this.AddContractCommand = new RelayCommand(AddContract);
+            this.RemoveContractCommand = new RelayCommand(RemoveContract);
+            this.PrintContractsCommand = new RelayCommand(PrintContracts);
+
+            Registrators = pers
         }
 
-        public async void Load(int personId)
+        public async void Load(int? personId = null)
         {
             this.personId = personId;
-            await LoadDocuments();                        
+            await LoadContracts();
         }
 
-        private async Task LoadDocuments()
+        private async Task LoadContracts()
         {   
 
-        }        
+        }
 
-        private void OpenFile()
+        private void AddContract()
         {
             
         }
-                
-        private RelayCommand openFileCommand;
-        public RelayCommand OpenFileCommand
-        {
-            get { return openFileCommand; }
-            set { Set("OpenFileCommand", ref openFileCommand, value); }
-        }             
 
-        private string patientFIO;
-        public string PatientFIO
+        private void RemoveContract()
         {
-            get { return patientFIO; }
-            set { Set("PatientFIO", ref patientFIO, value); }
+
         }
 
-        private bool allowDocumentsAction;
-        public bool AllowDocumentsAction
+        private void PrintContracts()
         {
-            get { return allowDocumentsAction; }
-            set { Set("AllowDocumentsAction", ref allowDocumentsAction, value); }
+
+        }
+
+        private RelayCommand addContractCommand;
+        public RelayCommand AddContractCommand
+        {
+            get { return addContractCommand; }
+            set { Set("AddContractCommand", ref addContractCommand, value); }
+        }
+
+        private RelayCommand removeContractCommand;
+        public RelayCommand RemoveContractCommand
+        {
+            get { return removeContractCommand; }
+            set { Set("RemoveContractCommand", ref removeContractCommand, value); }
+        }
+
+        private RelayCommand printContractsCommand;
+        public RelayCommand PrintContractsCommand
+        {
+            get { return printContractsCommand; }
+            set { Set("PrintContractsCommand", ref printContractsCommand, value); }
+        }
+
+        private ObservableCollection<ContractsViewModel> contracts;
+        public ObservableCollection<ContractsViewModel> Contracts
+        {
+            get { return contracts; }
+            set { Set("Contracts", ref contracts, value); }
+        }
+
+        private ContractsViewModel selectedContract;
+        public ContractsViewModel SelectedContract
+        {
+            get { return selectedContract; }
+            set { Set("SelectedContract", ref selectedContract, value); }
+        }
+
+        private bool showPeriod;
+        public bool ShowPeriod
+        {
+            get { return showPeriod; }
+            set { Set("ShowPeriod", ref showPeriod, value); }
+        }
+
+        private int contractsCount;
+        public int ContractsCount
+        {
+            get { return contractsCount; }
+            set { Set("ContractsCount", ref contractsCount, value); }
+        }
+
+        private double contractsSum;
+        public double ContractsSum
+        {
+            get { return contractsSum; }
+            set { Set("ContractsSum", ref contractsSum, value); }
+        }
+
+        private ObservableCollection<PersonStaff> registrators;
+        public ObservableCollection<PersonStaff> Registrators
+        {
+            get { return registrators; }
+            set { Set("Registrators", ref registrators, value); }
+        }
+
+        private PersonStaff selectedRegistrator;
+        public PersonStaff SelectedRegistrator
+        {
+            get { return selectedRegistrator; }
+            set { Set("SelectedRegistrator", ref selectedRegistrator, value); }
         }
     }
 }

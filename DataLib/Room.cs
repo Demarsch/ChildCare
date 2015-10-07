@@ -16,17 +16,17 @@ namespace DataLib
     {
         public Room()
         {
-            this.Records = new HashSet<Record>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
             this.Assignments = new HashSet<Assignment>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
         public string Number { get; set; }
         public string Name { get; set; }
     
-        public virtual ICollection<Record> Records { get; set; }
         public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
         public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<Record> Records { get; set; }
     }
 }

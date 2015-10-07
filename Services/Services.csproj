@@ -94,6 +94,7 @@
     <Compile Include="Implementation\ADUserSystemInfoService.cs" />
     <Compile Include="Implementation\CommissionService.cs" />
     <Compile Include="Implementation\PermissionService.cs" />
+    <Compile Include="Implementation\RecordService.cs" />
     <Compile Include="Implementation\PersonService.cs" />
     <Compile Include="Implementation\DocumentService.cs" />
     <Compile Include="Implementation\UserService.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Interface\IPermissionService.cs" />
     <Compile Include="Interface\IPersonService.cs" />
     <Compile Include="Interface\ISecurityService.cs" />
+    <Compile Include="Interface\IRecordService.cs" />
     <Compile Include="Interface\IUserSystemInfoService.cs" />
     <Compile Include="Interface\IUserService.cs" />
     <Compile Include="Implementation\SecurityService.cs" />

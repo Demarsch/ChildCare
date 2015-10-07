@@ -12,18 +12,17 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class ScheduleItem
+    public partial class RecordTypeRole
     {
-        public int Id { get; set; }
-        public int RoomId { get; set; }
-        public Nullable<int> RecordTypeId { get; set; }
-        public int DayOfWeek { get; set; }
-        public System.DateTime BeginDate { get; set; }
-        public System.DateTime EndDate { get; set; }
-        public System.TimeSpan StartTime { get; set; }
-        public System.TimeSpan EndTime { get; set; }
+        public RecordTypeRole()
+        {
+            this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
+        }
     
-        public virtual Room Room { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+    
+        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
     }
 }

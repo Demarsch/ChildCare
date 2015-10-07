@@ -45,8 +45,8 @@ namespace DataLib
         public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
         public virtual Person Person1 { get; set; }
-        public virtual PersonStaff PersonStaff { get; set; }
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
+        public virtual PersonStaff PersonStaff { get; set; }
         public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
     }
 }

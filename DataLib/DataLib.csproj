@@ -274,6 +274,15 @@
     <Compile Include="RecordType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RecordTypeCost.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordTypeRole.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordTypeRolePermission.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RelativeRelationship.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

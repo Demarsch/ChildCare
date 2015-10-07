@@ -16,17 +16,17 @@ namespace DataLib
     {
         public Org()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
             this.RecordContracts = new HashSet<RecordContract>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
         public string Name { get; set; }
         public bool IsLpu { get; set; }
     
-        public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
         public virtual ICollection<RecordContract> RecordContracts { get; set; }
+        public virtual ICollection<Assignment> Assignments { get; set; }
     }
 }

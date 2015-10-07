@@ -122,9 +122,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data transfer objects\ContractItemDTO.cs" />
     <Compile Include="Data transfer objects\ThumbnailDTO.cs" />
     <Compile Include="Data transfer objects\UserDTO.cs" />
+    <Compile Include="Data transfer objects\AssignmentDTO.cs" />
     <Compile Include="Exception\UserFriendlyException.cs" />
+    <Compile Include="Helpers\RecordTypesSuggestionProvider.cs" />
+    <Compile Include="Helpers\PersonSuggestionProvider.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
     <Compile Include="Misc\Configuration.cs" />
     <Compile Include="Misc\MainContainerProvider.cs" />
@@ -153,6 +157,7 @@
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonCommonDataViewModel.cs" />
+    <Compile Include="ViewModel\ContractsViewModel.cs" />
     <Compile Include="ViewModel\PersonContractsViewModel.cs" />
     <Compile Include="ViewModel\PersonDocumentsViewModel.cs" />
     <Compile Include="ViewModel\ScanDocumentsViewModel.cs" />

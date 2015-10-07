@@ -1,6 +1,5 @@
-﻿using AdminTools;
-using AdminTools.DTO;
-using DataLib;
+﻿using AdminTools.DTO;
+using Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using WpfControls.Editors;
 
-namespace Core
+namespace AdminTools
 {
-    public class PersonSuggestionProvider : ISuggestionProvider
+    public class UserSuggestionProvider : ISuggestionProvider
     {
         private IPersonService service;
 
-        public PersonSuggestionProvider(IPersonService service)
+        public UserSuggestionProvider(IPersonService service)
         {
             this.service = service;
         }
@@ -25,7 +24,7 @@ namespace Core
                 return null;            
 
             return service.GetPersonsByFullName(filter)
-                            .Select(x => new PersonDTO()
+                            .Select(x => new AdminTools.DTO.UserDTO()
                             { 
                                 Id = x.Id,
                                 FullName = x.FullName,

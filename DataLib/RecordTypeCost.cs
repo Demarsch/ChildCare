@@ -12,18 +12,16 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class ScheduleItem
+    public partial class RecordTypeCost
     {
         public int Id { get; set; }
-        public int RoomId { get; set; }
-        public Nullable<int> RecordTypeId { get; set; }
-        public int DayOfWeek { get; set; }
+        public int RecordTypeId { get; set; }
+        public int FinancingSourceId { get; set; }
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
-        public System.TimeSpan StartTime { get; set; }
-        public System.TimeSpan EndTime { get; set; }
+        public Nullable<double> FullPrice { get; set; }
     
-        public virtual Room Room { get; set; }
+        public virtual FinancingSource FinancingSource { get; set; }
         public virtual RecordType RecordType { get; set; }
     }
 }

@@ -16,8 +16,8 @@ namespace DataLib
     {
         public Record()
         {
-            this.Records1 = new HashSet<Record>();
             this.Assignments = new HashSet<Assignment>();
+            this.Records1 = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -36,14 +36,15 @@ namespace DataLib
         public System.DateTime EndDateTime { get; set; }
         public System.DateTime ActualDateTime { get; set; }
         public string OKATO { get; set; }
+        public Nullable<System.DateTime> BillingDateTime { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
     
+        public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual Person Person { get; set; }
         public virtual ICollection<Record> Records1 { get; set; }
         public virtual Record Record1 { get; set; }
         public virtual RecordType RecordType { get; set; }
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
-        public virtual ICollection<Assignment> Assignments { get; set; }
     }
 }
