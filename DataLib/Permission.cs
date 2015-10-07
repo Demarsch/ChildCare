@@ -14,12 +14,13 @@ namespace DataLib
     
     public partial class Permission
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Permission()
         {
             this.PermissionLinks = new HashSet<PermissionLink>();
             this.PermissionLinks1 = new HashSet<PermissionLink>();
-            this.UserPermissions = new HashSet<UserPermission>();
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
+            this.UserPermissions = new HashSet<UserPermission>();
         }
     
         public int Id { get; set; }
@@ -28,9 +29,13 @@ namespace DataLib
         public bool IsGroup { get; set; }
         public bool ReadOnly { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PermissionLink> PermissionLinks { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PermissionLink> PermissionLinks1 { get; set; }
-        public virtual ICollection<UserPermission> UserPermissions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<UserPermission> UserPermissions { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class UserMessageType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserMessageType()
         {
             this.UserMessages = new HashSet<UserMessage>();
@@ -23,6 +24,7 @@ namespace DataLib
         public string Name { get; set; }
         public string ShortName { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserMessage> UserMessages { get; set; }
     }
 }

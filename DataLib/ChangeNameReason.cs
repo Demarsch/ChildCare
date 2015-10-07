@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class ChangeNameReason
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ChangeNameReason()
         {
             this.PersonNames = new HashSet<PersonName>();
@@ -25,6 +26,7 @@ namespace DataLib
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonName> PersonNames { get; set; }
     }
 }

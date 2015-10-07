@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class CommissionMember
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommissionMember()
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
@@ -27,7 +28,9 @@ namespace DataLib
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionDecision> CommissionDecisions1 { get; set; }
         public virtual CommissionMemberType CommissionMemberType { get; set; }
         public virtual CommissionType CommissionType { get; set; }

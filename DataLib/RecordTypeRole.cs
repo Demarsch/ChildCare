@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class RecordTypeRole
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordTypeRole()
         {
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
@@ -23,6 +24,7 @@ namespace DataLib
         public string Name { get; set; }
         public string ShortName { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class SocialStatusType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SocialStatusType()
         {
             this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
@@ -25,6 +26,7 @@ namespace DataLib
         public System.DateTime EndDateTime { get; set; }
         public bool NeedPlace { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
     }
 }

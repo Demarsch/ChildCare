@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class DisabilityType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DisabilityType()
         {
             this.PersonDisabilities = new HashSet<PersonDisability>();
@@ -24,6 +25,7 @@ namespace DataLib
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonDisability> PersonDisabilities { get; set; }
     }
 }

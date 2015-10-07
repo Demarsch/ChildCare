@@ -338,7 +338,15 @@ namespace MainLib
             personNames.Add(personName);
             if (IsEmpty)
             {
-                person = new Person();
+                person = new Person
+                {
+                    AmbNumberString = string.Empty,
+                    AmbNumber = 0,
+                    Year = 0,
+                    AmbCardFirstListHashCode = 0,
+                    PersonHospListHashCode = 0,
+                    RadiationListHashCode = 0
+                };
             }
             person.BirthDate = BirthDate;
             person.Snils = SNILS.Replace("-", string.Empty).Replace(" ", string.Empty);

@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class AddressType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public AddressType()
         {
             this.PersonAddresses = new HashSet<PersonAddress>();
@@ -23,6 +24,7 @@ namespace DataLib
         public string Name { get; set; }
         public bool WithoutEndDate { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonAddress> PersonAddresses { get; set; }
     }
 }

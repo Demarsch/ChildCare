@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class PaymentType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PaymentType()
         {
             this.RecordContractItems = new HashSet<RecordContractItem>();
@@ -22,6 +23,7 @@ namespace DataLib
         public int Id { get; set; }
         public string Name { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class CommissionMemberType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommissionMemberType()
         {
             this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
@@ -27,7 +28,9 @@ namespace DataLib
         public bool IsSecretary { get; set; }
         public bool IsMember { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionMember> CommissionMembers { get; set; }
     }
 }

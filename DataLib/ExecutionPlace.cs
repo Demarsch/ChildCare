@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class ExecutionPlace
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ExecutionPlace()
         {
             this.VisitOutcomes = new HashSet<VisitOutcome>();
@@ -25,7 +26,9 @@ namespace DataLib
         public string ShortName { get; set; }
         public string UseName { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VisitOutcome> VisitOutcomes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VisitResult> VisitResults { get; set; }
     }
 }

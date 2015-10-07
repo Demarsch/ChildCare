@@ -166,6 +166,9 @@
     </Compile>
     <Compile Include="EFImplementations\ModelContext.cs" />
     <Compile Include="EFImplementations\ModelContextProvider.cs" />
+    <Compile Include="ExecutionPlace.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="FinancingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -298,6 +301,9 @@
     <Compile Include="Staff.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="sysdiagram.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="User.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -308,6 +314,15 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="UserPermission.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Visit.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VisitOutcome.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VisitResult.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -321,16 +336,16 @@
     </EntityDeploy>
     <None Include="ChildCareModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>ChildCareModel.edmx</DependentUpon>
       <LastGenOutput>ChildCareModel.Context.cs</LastGenOutput>
+      <DependentUpon>ChildCareModel.edmx</DependentUpon>
     </None>
     <None Include="ChildCareModel.edmx.diagram">
       <DependentUpon>ChildCareModel.edmx</DependentUpon>
     </None>
     <None Include="ChildCareModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>ChildCareModel.edmx</DependentUpon>
       <LastGenOutput>ChildCareModel.cs</LastGenOutput>
+      <DependentUpon>ChildCareModel.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

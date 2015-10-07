@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class OuterDocumentType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public OuterDocumentType()
         {
             this.OuterDocumentTypes1 = new HashSet<OuterDocumentType>();
@@ -27,8 +28,10 @@ namespace DataLib
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OuterDocumentType> OuterDocumentTypes1 { get; set; }
         public virtual OuterDocumentType OuterDocumentType1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
     }
 }

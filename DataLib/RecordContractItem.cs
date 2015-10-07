@@ -26,10 +26,10 @@ namespace DataLib
         public int InUserId { get; set; }
         public System.DateTime InDateTime { get; set; }
     
-        public virtual PaymentType PaymentType { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
         public virtual Assignment Assignment { get; set; }
+        public virtual PaymentType PaymentType { get; set; }
         public virtual PersonStaff PersonStaff { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
         public virtual RecordType RecordType { get; set; }
     }
 }

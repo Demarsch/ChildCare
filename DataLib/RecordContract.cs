@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class RecordContract
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordContract()
         {
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
@@ -25,11 +26,11 @@ namespace DataLib
         }
     
         public int Id { get; set; }
-        public int FinancingSourceId { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
         public Nullable<int> Number { get; set; }
         public string ContractName { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
+        public int FinancingSourceId { get; set; }
         public Nullable<int> ClientId { get; set; }
         public Nullable<int> ConsumerId { get; set; }
         public Nullable<int> OrgId { get; set; }
@@ -39,16 +40,22 @@ namespace DataLib
         public System.DateTime InDateTime { get; set; }
         public int InUserId { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
-        public virtual ICollection<PersonTalon> PersonTalons { get; set; }
         public virtual FinancingSource FinancingSource { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
         public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
         public virtual Person Person1 { get; set; }
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
         public virtual PersonStaff PersonStaff { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonTalon> PersonTalons { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
     }
 }

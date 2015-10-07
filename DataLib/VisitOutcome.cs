@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class VisitOutcome
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public VisitOutcome()
         {
             this.Visits = new HashSet<Visit>();
@@ -28,6 +29,7 @@ namespace DataLib
         public System.DateTime EndDateTime { get; set; }
     
         public virtual ExecutionPlace ExecutionPlace { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
     }
 }

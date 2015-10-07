@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class InsuranceDocumentType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public InsuranceDocumentType()
         {
             this.InsuranceDocuments = new HashSet<InsuranceDocument>();
@@ -22,6 +23,7 @@ namespace DataLib
         public int Id { get; set; }
         public string Name { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
     }
 }

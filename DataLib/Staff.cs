@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class Staff
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Staff()
         {
             this.PersonStaffs = new HashSet<PersonStaff>();
@@ -25,6 +26,7 @@ namespace DataLib
         public string ShortName { get; set; }
         public bool IsSenior { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
     }
 }

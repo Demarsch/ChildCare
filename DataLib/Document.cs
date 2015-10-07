@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class Document
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Document()
         {
             this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
@@ -30,7 +31,9 @@ namespace DataLib
         public string Description { get; set; }
         public Nullable<System.DateTime> DocumentFromDate { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Person> Persons { get; set; }
     }
 }

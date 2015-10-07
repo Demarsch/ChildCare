@@ -14,6 +14,7 @@ namespace DataLib
     
     public partial class PersonTalon
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PersonTalon()
         {
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
@@ -28,6 +29,7 @@ namespace DataLib
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public string Address { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual MedicalHelpType MedicalHelpType { get; set; }
         public virtual Person Person { get; set; }
