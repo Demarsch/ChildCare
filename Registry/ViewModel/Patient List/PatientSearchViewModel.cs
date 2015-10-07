@@ -56,7 +56,7 @@ namespace Registry
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
             ShowContractsCommand = new RelayCommand(ShowContracts);
-            PersonDocumentsCommand = new RelayCommand(PersonDocuments);
+            ShowPersonDocumentsCommand = new RelayCommand(ShowPersonDocuments);
             CreateAmbCardCommand = new RelayCommand(CreateAmbCard);
             PrintAmbCardFirstListCommand = new RelayCommand(PrintAmbCardFirstList);
             PrintPersonHospListCommand = new RelayCommand(PrintPersonHospList);
@@ -286,8 +286,8 @@ namespace Registry
             editPersonDataView.ShowDialog();
         }
 
-        public ICommand PersonDocumentsCommand { get; private set; }
-        private void PersonDocuments()
+        public ICommand ShowPersonDocumentsCommand { get; private set; }
+        private void ShowPersonDocuments()
         {
             if (currentPatient.IsEmpty)
                 return;
