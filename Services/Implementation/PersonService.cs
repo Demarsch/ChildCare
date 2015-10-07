@@ -318,8 +318,8 @@ namespace Core
                     if (resStr != string.Empty)
                         resStr += "\r\n";
                     resStr += personDisabilities.DisabilityType.Name + ": Серия " + personDisabilities.Series + " Номер " +
-                        personDisabilities.Number + "; Выдан " + personDisabilities.GivenOrg + " " + 
-                        personDisabilities.BeginDate.ToString("dd.MM.yyyy") + 
+                        personDisabilities.Number + "; Выдан " + personDisabilities.GivenOrg + " " +
+                        personDisabilities.BeginDate.ToString("dd.MM.yyyy") +
                         (personDisabilities.EndDate.Date != DateTime.MaxValue.Date ? " по " + personDisabilities.EndDate.ToString("dd.MM.yyyy") : string.Empty);
                 }
             }
@@ -590,7 +590,7 @@ namespace Core
 
         private void SetPersonRelatives(Person person, IList<PersonRelative> changedPersonRelatives, IDataContext db)
         {
-            
+
         }
 
         private void SetPersonEducations(Person person, int educationId, IDataContext db)
@@ -914,6 +914,65 @@ namespace Core
                 if (personEducation == null) return 0;
                 return personEducation.EducationId;
             }
+        }
+
+
+        public string GetOrCreateAmbCard(int personId)
+        {
+            string ambNumber = string.Empty;
+            using (var db = provider.GetNewDataContext())
+            {
+                var person = db.GetById<Person>(personId);
+                if (person == null)
+                    return string.Empty;
+                if (person.AmbNumber.ToInt() > 0)
+                    return person.AmbNumberString;
+                int number = 1;
+                var now = DateTime.Now;
+                foreach (var existNumber in db.GetData<Person>().Where(x => x.Year == now.Year).OrderBy(x => x.AmbNumber).Select(x => x.AmbNumber))
+                {
+                    if (existNumber != number)
+                    {
+                        person.AmbNumber = number;
+                        person.Year = now.Year;
+                        break;
+                    }
+                    number++;
+                }
+                if (person.AmbNumber.ToInt() < 1)
+                {
+                    person.AmbNumber = number;
+                    person.Year = now.Year;
+                }
+                if (number > 0)
+                {
+                    ambNumber = person.AmbNumber + "-" + now.ToString("yy");
+                    person.AmbNumberString = ambNumber;
+                }
+                else
+                    person.AmbNumberString = string.Empty;
+                db.Save();
+            }
+            return ambNumber;
+        }
+
+
+        public string GetAmbCardFirstList(int personId)
+        {
+            //ToDo: Inplement using Report
+            return string.Empty;
+        }
+
+        public string GetPersonHospList(int personId)
+        {
+            //ToDo: Inplement using Report
+            return string.Empty;
+        }
+
+        public string GetRadiationList(int personId)
+        {
+            //ToDo: Inplement using Report
+            return string.Empty;
         }
     }
 }

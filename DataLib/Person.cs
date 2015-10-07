@@ -52,6 +52,10 @@ namespace DataLib
         public Nullable<int> PhotoId { get; set; }
         public string AmbNumberString { get; set; }
         public int AmbNumber { get; set; }
+        public int Year { get; set; }
+        public int AmbCardFirstListHashCode { get; set; }
+        public int PersonHospListHashCode { get; set; }
+        public int RadiationListHashCode { get; set; }
     
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual Gender Gender { get; set; }

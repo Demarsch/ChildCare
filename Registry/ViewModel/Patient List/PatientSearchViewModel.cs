@@ -13,6 +13,7 @@ namespace Registry
 {
     public class PatientSearchViewModel : BasicViewModel
     {
+        #region Fields
         private const int UserInputSearchThreshold = 3;
 
         private const int PatientDisplayCount = 5;
@@ -26,9 +27,9 @@ namespace Registry
         private readonly IDialogService dialogService;
 
         private readonly IDocumentService documentService;
+        #endregion
 
-        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
-
+        #region Constructors
         public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
@@ -54,9 +55,22 @@ namespace Registry
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
-            ContractsCommand = new RelayCommand(PatientContracts);
+            ShowContractsCommand = new RelayCommand(ShowContracts);
             PersonDocumentsCommand = new RelayCommand(PersonDocuments);
+            CreateAmbCardCommand = new RelayCommand(CreateAmbCard);
+            PrintAmbCardFirstListCommand = new RelayCommand(PrintAmbCardFirstList);
+            PrintPersonHospListCommand = new RelayCommand(PrintPersonHospList);
+            PrintRadiationListCommand = new RelayCommand(PrintRadiationList);
+            PrintAllAmbCardCommand = new RelayCommand(PrintAllAmbCard);
+            ShowVisitsCommand = new RelayCommand(ShowVisits);
+            ShowCasesCommand = new RelayCommand(ShowCases);
+            ShowPrintDocumentsCommand = new RelayCommand(ShowPrintDocuments);
+
         }
+        #endregion
+
+        #region Properties
+        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
 
         private ObservableCollection<PersonViewModel> patients;
 
@@ -78,6 +92,120 @@ namespace Registry
                     return;
                 SearchPatients(value);
             }
+        }
+
+        public string AmbNumberButtonText
+        {
+            get
+            {
+                if (CurrentPatient.IsEmpty) return string.Empty;
+                return CurrentPatient.AmbNumberExist ? "а/к " + CurrentPatient.AmbNumberString : "Новая а/к";
+            }
+        }
+
+        private PersonViewModel selectedPatient;
+        //The difference between this property and CurrentPatient is that one is bound to ListBox and may become null when user searches patients.
+        //On the other hand CurrentPatient is empty initially (when no patient is selected) and after user selects or creates a patient, it will never become empty again
+        //meaning that user can't deselect patient
+        public PersonViewModel SelectedPatient
+        {
+            get { return selectedPatient; }
+            set
+            {
+                Set("SelectedPatient", ref selectedPatient, value);
+                if (value == null)
+                    return;
+                SelectPatient(value);
+            }
+        }
+
+        private PersonViewModel currentPatient;
+
+        public PersonViewModel CurrentPatient
+        {
+            get { return currentPatient; }
+            set
+            {
+                var isPatientSelected = IsPatientSelected;
+                if (Set("CurrentPatient", ref currentPatient, value))
+                {
+                    SetPrintedProperties();
+                    RaisePropertyChanged(() => AmbNumberButtonText);
+                    if (IsPatientSelected != isPatientSelected)
+                        RaisePropertyChanged("IsPatientSelected");
+                }
+            }
+        }
+
+        public bool IsPatientSelected { get { return currentPatient != null; } }
+
+        private bool isLookingForPatient;
+        public bool IsLookingForPatient
+        {
+            get { return isLookingForPatient; }
+            set { Set("IsLookingForPatient", ref isLookingForPatient, value); }
+        }
+
+        private bool noOneisFound;
+        public bool NoOneisFound
+        {
+            get { return noOneisFound; }
+            set { Set("NoOneisFound", ref noOneisFound, value); }
+        }
+
+        private bool? isPrintedAmbCardFirstList = null;
+        public bool? IsPrintedAmbCardFirstList
+        {
+            get { return isPrintedAmbCardFirstList; }
+            set
+            {
+                if (Set(() => IsPrintedAmbCardFirstList, ref isPrintedAmbCardFirstList, value))
+                    RaisePropertyChanged(() => IsPrintedAllAmbCard);
+            }
+        }
+
+        private bool? isPrintedPersonHospList = null;
+        public bool? IsPrintedPersonHospList
+        {
+            get { return isPrintedPersonHospList; }
+            set
+            {
+                if (Set(() => IsPrintedPersonHospList, ref isPrintedPersonHospList, value))
+                    RaisePropertyChanged(() => IsPrintedAllAmbCard);
+            }
+        }
+
+        private bool? isPrintedRadiationList = null;
+        public bool? IsPrintedRadiationList
+        {
+            get { return isPrintedRadiationList; }
+            set
+            {
+                if (Set(() => IsPrintedRadiationList, ref isPrintedRadiationList, value))
+                    RaisePropertyChanged(() => IsPrintedAllAmbCard);
+            }
+        }
+
+        public bool? IsPrintedAllAmbCard
+        {
+            get
+            {
+                if (IsPrintedAmbCardFirstList == null || IsPrintedPersonHospList == null || IsPrintedRadiationList == null)
+                    return null;
+                return (bool)IsPrintedAmbCardFirstList && (bool)IsPrintedPersonHospList && (bool)IsPrintedRadiationList;
+            }
+        }
+
+        private readonly EditPersonViewModel editPersonViewModel;
+        #endregion
+
+        #region Methods
+
+        private void SetPrintedProperties()
+        {
+            IsPrintedAmbCardFirstList = (CurrentPatient.AmbCardFirstListHashCode == personService.GetAmbCardFirstList(CurrentPatient.Id).GetHashCode());
+            IsPrintedPersonHospList = (CurrentPatient.PersonHospListHashCode == personService.GetPersonHospList(CurrentPatient.Id).GetHashCode());
+            IsPrintedRadiationList = (CurrentPatient.RadiationListHashCode == personService.GetRadiationList(CurrentPatient.Id).GetHashCode());
         }
 
         private void SearchPatients(string searchString)
@@ -135,56 +263,9 @@ namespace Registry
             CurrentPatient = person;
             PatientAssignmentListViewModel.PatientId = person.Id;
         }
+        #endregion
 
-        private PersonViewModel selectedPatient;
-        //The difference between this property and CurrentPatient is that one is bound to ListBox and may become null when user searches patients.
-        //On the other hand CurrentPatient is empty initially (when no patient is selected) and after user selects or creates a patient, it will never become empty again
-        //meaning that user can't deselect patient
-        public PersonViewModel SelectedPatient
-        {
-            get { return selectedPatient; }
-            set
-            {
-                Set("SelectedPatient", ref selectedPatient, value);
-                if (value == null)
-                    return;
-                SelectPatient(value);
-            }
-        }
-
-        private PersonViewModel currentPatient;
-
-        public PersonViewModel CurrentPatient
-        {
-            get { return currentPatient; }
-            set
-            {
-                var isPatientSelected = IsPatientSelected;
-                if (Set("CurrentPatient", ref currentPatient, value) && IsPatientSelected != isPatientSelected)
-                    RaisePropertyChanged("IsPatientSelected");
-            }
-        }
-
-        public bool IsPatientSelected { get { return currentPatient != null; } }
-
-        private bool isLookingForPatient;
-
-        public bool IsLookingForPatient
-        {
-            get { return isLookingForPatient; }
-            set { Set("IsLookingForPatient", ref isLookingForPatient, value); }
-        }
-
-        private bool noOneisFound;
-
-        public bool NoOneisFound
-        {
-            get { return noOneisFound; }
-            set { Set("NoOneisFound", ref noOneisFound, value); }
-        }
-
-        private readonly EditPersonViewModel editPersonViewModel;
-
+        #region Commands
         public ICommand NewPatientCommand { get; private set; }
 
         private void NewPatient()
@@ -195,7 +276,6 @@ namespace Registry
         }
 
         public ICommand EditPatientCommand { get; private set; }
-
         private void EditPatient()
         {
             if (currentPatient.IsEmpty)
@@ -217,8 +297,8 @@ namespace Registry
             editPersonDataView.ShowDialog();
         }
 
-        public ICommand ContractsCommand { get; private set; }
-        private void PatientContracts()
+        public ICommand ShowContractsCommand { get; private set; }
+        private void ShowContracts()
         {
             if (currentPatient.IsEmpty)
                 return;
@@ -226,6 +306,58 @@ namespace Registry
             editPersonViewModel.SelectedPageIndex = 2;
             var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
             editPersonDataView.ShowDialog();
-        }        
+        }
+
+        public ICommand CreateAmbCardCommand { get; private set; }
+        private void CreateAmbCard()
+        {
+            if (currentPatient.IsEmpty)
+                return;
+            CurrentPatient.AmbNumberString = personService.GetOrCreateAmbCard(currentPatient.Id);
+            RaisePropertyChanged(() => AmbNumberButtonText);
+        }
+
+        public ICommand PrintAmbCardFirstListCommand { get; private set; }
+        private void PrintAmbCardFirstList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand PrintPersonHospListCommand { get; private set; }
+        private void PrintPersonHospList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand PrintRadiationListCommand { get; private set; }
+        private void PrintRadiationList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand PrintAllAmbCardCommand { get; private set; }
+        private void PrintAllAmbCard()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand ShowVisitsCommand { get; private set; }
+        private void ShowVisits()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand ShowCasesCommand { get; private set; }
+        private void ShowCases()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICommand ShowPrintDocumentsCommand { get; private set; }
+        private void ShowPrintDocuments()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

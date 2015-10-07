@@ -505,6 +505,10 @@
           <Property Name="DeleteDateTime" Type="datetime" />
           <Property Name="AmbNumberString" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="AmbNumber" Type="int" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="AmbCardFirstListHashCode" Type="int" Nullable="false" />
+          <Property Name="PersonHospListHashCode" Type="int" Nullable="false" />
+          <Property Name="RadiationListHashCode" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonSocialStatuses">
           <Key>
@@ -3262,6 +3266,10 @@
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
           <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="Person" ToRole="PersonStaff" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="AmbCardFirstListHashCode" Type="Int32" Nullable="false" />
+          <Property Name="PersonHospListHashCode" Type="Int32" Nullable="false" />
+          <Property Name="RadiationListHashCode" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonTalon">
           <Key>
@@ -5330,6 +5338,10 @@
           <EntitySetMapping Name="Persons">
             <EntityTypeMapping TypeName="DataLib.Person">
               <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="RadiationListHashCode" ColumnName="RadiationListHashCode" />
+                <ScalarProperty Name="PersonHospListHashCode" ColumnName="PersonHospListHashCode" />
+                <ScalarProperty Name="AmbCardFirstListHashCode" ColumnName="AmbCardFirstListHashCode" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="AmbNumber" ColumnName="AmbNumber" />
                 <ScalarProperty Name="AmbNumberString" ColumnName="AmbNumberString" />
                 <ScalarProperty Name="PhotoId" ColumnName="PhotoId" />

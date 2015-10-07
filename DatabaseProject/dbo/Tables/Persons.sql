@@ -10,12 +10,15 @@
     [Phones]          VARCHAR (MAX) CONSTRAINT [DF_Persons_Phones] DEFAULT ('') NOT NULL,
     [Email]           VARCHAR (255) CONSTRAINT [DF_Persons_Email] DEFAULT ('') NOT NULL,
     [DeleteDateTime]  DATETIME      NULL,
-    [AmbNumberString] VARCHAR (50)  CONSTRAINT [DF_Persons_AmbNumberString] DEFAULT ('') NOT NULL,
+    [AmbNumberString] VARCHAR (50)  NOT NULL,
     [AmbNumber]       INT           CONSTRAINT [DF_Persons_AmbNumber] DEFAULT ((0)) NOT NULL,
+    [Year]            INT           CONSTRAINT [DF_Persons_Year] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Persons] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Persons_Documents] FOREIGN KEY ([PhotoId]) REFERENCES [dbo].[Documents] ([Id]),
     CONSTRAINT [FK_Persons_Genders] FOREIGN KEY ([GenderId]) REFERENCES [dbo].[Genders] ([Id])
 );
+
+
 
 
 
