@@ -168,6 +168,18 @@
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
+        <EntityTypeShape EntityType="DataLib.ExecutionPlace" Width="1.5" PointX="14.25" PointY="6.5" />
+        <EntityTypeShape EntityType="DataLib.VisitOutcome" Width="1.5" PointX="16.5" PointY="6.125" />
+        <EntityTypeShape EntityType="DataLib.VisitResult" Width="1.5" PointX="16.5" PointY="25.625" />
+        <EntityTypeShape EntityType="DataLib.Visit" Width="1.5" PointX="18.75" PointY="23.625" />
+        <AssociationConnector Association="DataLib.FK_VisitOutcomes_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_VisitResults_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_Visits_FinancingSources" />
+        <AssociationConnector Association="DataLib.FK_Visits_Orgs" />
+        <AssociationConnector Association="DataLib.FK_Visits_Persons" />
+        <AssociationConnector Association="DataLib.FK_Visits_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_Visits_VisitOutcomes" />
+        <AssociationConnector Association="DataLib.FK_Visits_VisitResults" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

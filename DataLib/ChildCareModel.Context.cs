@@ -89,5 +89,9 @@ namespace DataLib
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
         public virtual DbSet<RecordTypeRole> RecordTypeRoles { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
+        public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
+        public virtual DbSet<VisitResult> VisitResults { get; set; }
+        public virtual DbSet<Visit> Visits { get; set; }
     }
 }

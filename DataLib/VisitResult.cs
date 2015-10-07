@@ -12,23 +12,21 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class Org
+    public partial class VisitResult
     {
-        public Org()
+        public VisitResult()
         {
-            this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
-            this.RecordContracts = new HashSet<RecordContract>();
-            this.Assignments = new HashSet<Assignment>();
             this.Visits = new HashSet<Visit>();
         }
     
         public int Id { get; set; }
+        public int Code { get; set; }
+        public int ExecutionPlaceId { get; set; }
         public string Name { get; set; }
-        public bool IsLpu { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     
-        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ExecutionPlace ExecutionPlace { get; set; }
         public virtual ICollection<Visit> Visits { get; set; }
     }
 }

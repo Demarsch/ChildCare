@@ -32,8 +32,6 @@
           <Property Name="RecordId" Type="int" />
           <Property Name="IsTemporary" Type="bit" Nullable="false" />
           <Property Name="CreationDateTime" Type="datetime" Nullable="false" />
-          <Property Name="BillingDateTime" Type="datetime" />
-          <Property Name="Cost" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="Branches">
           <Key>
@@ -227,6 +225,15 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="512" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExecutionPlaces">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UseName" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="FinancingSources">
           <Key>
@@ -532,6 +539,8 @@
           <Property Name="StaffId" Type="int" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+          <Property Name="IsSign" Type="bit" Nullable="false" />
+          <Property Name="IsActing" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonTalons">
           <Key>
@@ -610,38 +619,7 @@
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="ActualDateTime" Type="datetime" Nullable="false" />
           <Property Name="OKATO" Type="varchar" MaxLength="16" Nullable="false" />
-          <Property Name="BillingDateTime" Type="datetime" />
           <Property Name="RemovedByUserId" Type="int" />
-        </EntityType>
-        <EntityType Name="RecordTypeCosts">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RecordTypeId" Type="int" Nullable="false" />
-          <Property Name="FinancingSourceId" Type="int" Nullable="false" />
-          <Property Name="BeginDate" Type="datetime" Nullable="false" />
-          <Property Name="EndDate" Type="datetime" Nullable="false" />
-          <Property Name="FullPrice" Type="float" />
-        </EntityType>
-        <EntityType Name="RecordTypeRolePermissions">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RecordTypeId" Type="int" Nullable="false" />
-          <Property Name="RecordTypeMemberRoleId" Type="int" Nullable="false" />
-          <Property Name="PermissionId" Type="int" Nullable="false" />
-          <Property Name="IsSign" Type="bit" Nullable="false" />
-          <Property Name="IsRequired" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="RecordTypeRoles">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
-          <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="RecordTypes">
           <Key>
@@ -659,8 +637,6 @@
           <Property Name="EditorId" Type="int" />
           <Property Name="RecordTypeGroupId" Type="int" Nullable="false" />
           <Property Name="MedProfileId" Type="int" Nullable="false" />
-          <Property Name="IsRecord" Type="bit" Nullable="false" />
-          <Property Name="Options" Type="varchar" MaxLength="1000" Nullable="false" />
         </EntityType>
         <EntityType Name="RelativeRelationships">
           <Key>
@@ -752,6 +728,50 @@
           <Property Name="SID" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="VisitOutcomes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Code" Type="int" Nullable="false" />
+          <Property Name="ExecutionPlaceId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="IsDefault" Type="bit" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VisitResults">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Code" Type="int" Nullable="false" />
+          <Property Name="ExecutionPlaceId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Visits">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="VisitTypeId" Type="int" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" />
+          <Property Name="UrgentlyId" Type="int" Nullable="false" />
+          <Property Name="FinancingSourceId" Type="int" Nullable="false" />
+          <Property Name="ContractId" Type="int" Nullable="false" />
+          <Property Name="SentLPUId" Type="int" Nullable="false" />
+          <Property Name="OKATO" Type="varchar" MaxLength="14" Nullable="false" />
+          <Property Name="MKB" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="VisitResultId" Type="int" />
+          <Property Name="VisitOutcomeId" Type="int" />
+          <Property Name="Note" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="TotalCost" Type="float" Nullable="false" />
+          <Property Name="IsCompleted" Type="bit" />
         </EntityType>
         <Association Name="FK_Addresses_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1">
@@ -1787,66 +1807,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordTypeCosts_FinancingSources">
-          <End Role="FinancingSources" Type="Self.FinancingSources" Multiplicity="1" />
-          <End Role="RecordTypeCosts" Type="Self.RecordTypeCosts" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="FinancingSources">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeCosts">
-              <PropertyRef Name="FinancingSourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeCosts_RecordTypes">
-          <End Role="RecordTypes" Type="Self.RecordTypes" Multiplicity="1" />
-          <End Role="RecordTypeCosts" Type="Self.RecordTypeCosts" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordTypes">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeCosts">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_Permissions">
-          <End Role="Permissions" Type="Self.Permissions" Multiplicity="1" />
-          <End Role="RecordTypeRolePermissions" Type="Self.RecordTypeRolePermissions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permissions">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermissions">
-              <PropertyRef Name="PermissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
-          <End Role="RecordTypeRoles" Type="Self.RecordTypeRoles" Multiplicity="1" />
-          <End Role="RecordTypeRolePermissions" Type="Self.RecordTypeRolePermissions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordTypeRoles">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermissions">
-              <PropertyRef Name="RecordTypeMemberRoleId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_RecordTypes">
-          <End Role="RecordTypes" Type="Self.RecordTypes" Multiplicity="1" />
-          <End Role="RecordTypeRolePermissions" Type="Self.RecordTypeRolePermissions" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordTypes">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermissions">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RecordTypes_RecordTypes">
           <End Role="RecordTypes" Type="Self.RecordTypes" Multiplicity="0..1" />
           <End Role="RecordTypes1" Type="Self.RecordTypes" Multiplicity="*" />
@@ -1943,6 +1903,102 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_VisitOutcomes_ExecutionPlaces">
+          <End Role="ExecutionPlaces" Type="Self.ExecutionPlaces" Multiplicity="1" />
+          <End Role="VisitOutcomes" Type="Self.VisitOutcomes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlaces">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VisitOutcomes">
+              <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VisitResults_ExecutionPlaces">
+          <End Role="ExecutionPlaces" Type="Self.ExecutionPlaces" Multiplicity="1" />
+          <End Role="VisitResults" Type="Self.VisitResults" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlaces">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VisitResults">
+              <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_FinancingSources">
+          <End Role="FinancingSources" Type="Self.FinancingSources" Multiplicity="1" />
+          <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinancingSources">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visits">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_Orgs">
+          <End Role="Orgs" Type="Self.Orgs" Multiplicity="1" />
+          <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orgs">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visits">
+              <PropertyRef Name="SentLPUId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visits">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_RecordContracts">
+          <End Role="RecordContracts" Type="Self.RecordContracts" Multiplicity="1" />
+          <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContracts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visits">
+              <PropertyRef Name="ContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_VisitOutcomes">
+          <End Role="VisitOutcomes" Type="Self.VisitOutcomes" Multiplicity="0..1" />
+          <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VisitOutcomes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visits">
+              <PropertyRef Name="VisitOutcomeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_VisitResults">
+          <End Role="VisitResults" Type="Self.VisitResults" Multiplicity="0..1" />
+          <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VisitResults">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visits">
+              <PropertyRef Name="VisitResultId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="DataLibStoreContainer">
           <EntitySet Name="AddressTypes" EntityType="Self.AddressTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Assignments" EntityType="Self.Assignments" Schema="dbo" store:Type="Tables" />
@@ -1962,6 +2018,7 @@
           <EntitySet Name="DisabilityTypes" EntityType="Self.DisabilityTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Documents" EntityType="Self.Documents" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Educations" EntityType="Self.Educations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExecutionPlaces" EntityType="Self.ExecutionPlaces" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinancingSources" EntityType="Self.FinancingSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HealthGroups" EntityType="Self.HealthGroups" Schema="dbo" store:Type="Tables" />
@@ -1995,9 +2052,6 @@
           <EntitySet Name="RecordContractLimits" EntityType="Self.RecordContractLimits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContracts" EntityType="Self.RecordContracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="RecordTypeCosts" EntityType="Self.RecordTypeCosts" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="RecordTypeRolePermissions" EntityType="Self.RecordTypeRolePermissions" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="RecordTypeRoles" EntityType="Self.RecordTypeRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypes" EntityType="Self.RecordTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RelativeRelationships" EntityType="Self.RelativeRelationships" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rooms" EntityType="Self.Rooms" Schema="dbo" store:Type="Tables" />
@@ -2008,6 +2062,9 @@
           <EntitySet Name="UserMessageTypes" EntityType="Self.UserMessageTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPermissions" EntityType="Self.UserPermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VisitOutcomes" EntityType="Self.VisitOutcomes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VisitResults" EntityType="Self.VisitResults" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Visits" EntityType="Self.Visits" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Addresses_Persons" Association="Self.FK_Addresses_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
@@ -2352,26 +2409,6 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="Records" EntitySet="Records" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="Self.FK_RecordTypeCosts_FinancingSources">
-            <End Role="FinancingSources" EntitySet="FinancingSources" />
-            <End Role="RecordTypeCosts" EntitySet="RecordTypeCosts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="Self.FK_RecordTypeCosts_RecordTypes">
-            <End Role="RecordTypes" EntitySet="RecordTypes" />
-            <End Role="RecordTypeCosts" EntitySet="RecordTypeCosts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="Self.FK_RecordTypeRolePermissions_Permissions">
-            <End Role="Permissions" EntitySet="Permissions" />
-            <End Role="RecordTypeRolePermissions" EntitySet="RecordTypeRolePermissions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions" Association="Self.FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
-            <End Role="RecordTypeRoles" EntitySet="RecordTypeRoles" />
-            <End Role="RecordTypeRolePermissions" EntitySet="RecordTypeRolePermissions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypes" Association="Self.FK_RecordTypeRolePermissions_RecordTypes">
-            <End Role="RecordTypes" EntitySet="RecordTypes" />
-            <End Role="RecordTypeRolePermissions" EntitySet="RecordTypeRolePermissions" />
-          </AssociationSet>
           <AssociationSet Name="FK_RecordTypes_RecordTypes" Association="Self.FK_RecordTypes_RecordTypes">
             <End Role="RecordTypes" EntitySet="RecordTypes" />
             <End Role="RecordTypes1" EntitySet="RecordTypes" />
@@ -2403,6 +2440,38 @@
           <AssociationSet Name="FK_Users_Persons" Association="Self.FK_Users_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VisitOutcomes_ExecutionPlaces" Association="Self.FK_VisitOutcomes_ExecutionPlaces">
+            <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
+            <End Role="VisitOutcomes" EntitySet="VisitOutcomes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VisitResults_ExecutionPlaces" Association="Self.FK_VisitResults_ExecutionPlaces">
+            <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
+            <End Role="VisitResults" EntitySet="VisitResults" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_FinancingSources" Association="Self.FK_Visits_FinancingSources">
+            <End Role="FinancingSources" EntitySet="FinancingSources" />
+            <End Role="Visits" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_Orgs" Association="Self.FK_Visits_Orgs">
+            <End Role="Orgs" EntitySet="Orgs" />
+            <End Role="Visits" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_Persons" Association="Self.FK_Visits_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="Visits" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_RecordContracts" Association="Self.FK_Visits_RecordContracts">
+            <End Role="RecordContracts" EntitySet="RecordContracts" />
+            <End Role="Visits" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_VisitOutcomes" Association="Self.FK_Visits_VisitOutcomes">
+            <End Role="VisitOutcomes" EntitySet="VisitOutcomes" />
+            <End Role="Visits" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_VisitResults" Association="Self.FK_Visits_VisitResults">
+            <End Role="VisitResults" EntitySet="VisitResults" />
+            <End Role="Visits" EntitySet="Visits" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -2870,6 +2939,42 @@
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
+          <EntitySet Name="ExecutionPlaces" EntityType="DataLib.ExecutionPlace" />
+          <EntitySet Name="VisitOutcomes" EntityType="DataLib.VisitOutcome" />
+          <EntitySet Name="VisitResults" EntityType="DataLib.VisitResult" />
+          <EntitySet Name="Visits" EntityType="DataLib.Visit" />
+          <AssociationSet Name="FK_VisitOutcomes_ExecutionPlaces" Association="DataLib.FK_VisitOutcomes_ExecutionPlaces">
+            <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
+            <End Role="VisitOutcome" EntitySet="VisitOutcomes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VisitResults_ExecutionPlaces" Association="DataLib.FK_VisitResults_ExecutionPlaces">
+            <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
+            <End Role="VisitResult" EntitySet="VisitResults" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_FinancingSources" Association="DataLib.FK_Visits_FinancingSources">
+            <End Role="FinancingSource" EntitySet="FinancingSources" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_Orgs" Association="DataLib.FK_Visits_Orgs">
+            <End Role="Org" EntitySet="Orgs" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_Persons" Association="DataLib.FK_Visits_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_RecordContracts" Association="DataLib.FK_Visits_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_VisitOutcomes" Association="DataLib.FK_Visits_VisitOutcomes">
+            <End Role="VisitOutcome" EntitySet="VisitOutcomes" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_VisitResults" Association="DataLib.FK_Visits_VisitResults">
+            <End Role="VisitResult" EntitySet="VisitResults" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -3270,6 +3375,7 @@
           <Property Name="AmbCardFirstListHashCode" Type="Int32" Nullable="false" />
           <Property Name="PersonHospListHashCode" Type="Int32" Nullable="false" />
           <Property Name="RadiationListHashCode" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
         </EntityType>
         <EntityType Name="PersonTalon">
           <Key>
@@ -3316,6 +3422,7 @@
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContract" ToRole="RecordContractItem" />
           <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="RecordContract" ToRole="PersonStaff" />
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContract" ToRole="RecordContractLimit" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="RecordContract" ToRole="Visit" />
         </EntityType>
         <EntityType Name="RelativeRelationship">
           <Key>
@@ -4178,6 +4285,7 @@
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="Org" ToRole="PersonSocialStatus" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="Org" ToRole="RecordContract" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Orgs" FromRole="Org" ToRole="Assignment" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Orgs" FromRole="Org" ToRole="Visit" />
         </EntityType>
         <Association Name="FK_PersonSocialStatuses_Orgs">
           <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
@@ -4392,6 +4500,7 @@
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="FinancingSource" ToRole="RecordContract" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_FinancingSources" FromRole="FinancingSource" ToRole="Assignment" />
           <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="FinancingSource" ToRole="RecordTypeCost" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="FinancingSource" ToRole="Visit" />
         </EntityType>
         <EntityType Name="PaymentType">
           <Key>
@@ -4541,6 +4650,8 @@
           <NavigationProperty Name="Staff" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="PersonStaff" ToRole="Staff" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContract" />
+          <Property Name="IsSign" Type="Boolean" Nullable="false" />
+          <Property Name="IsActing" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="RecordContractLimit">
           <Key>
@@ -5004,6 +5115,167 @@
             </Principal>
             <Dependent Role="ScheduleItem">
               <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ExecutionPlace">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UseName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="VisitOutcomes" Relationship="DataLib.FK_VisitOutcomes_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitOutcome" />
+          <NavigationProperty Name="VisitResults" Relationship="DataLib.FK_VisitResults_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitResult" />
+        </EntityType>
+        <EntityType Name="VisitOutcome">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Code" Type="Int32" Nullable="false" />
+          <Property Name="ExecutionPlaceId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IsDefault" Type="Boolean" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_VisitOutcomes_ExecutionPlaces" FromRole="VisitOutcome" ToRole="ExecutionPlace" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_VisitOutcomes" FromRole="VisitOutcome" ToRole="Visit" />
+        </EntityType>
+        <EntityType Name="VisitResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Code" Type="Int32" Nullable="false" />
+          <Property Name="ExecutionPlaceId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_VisitResults_ExecutionPlaces" FromRole="VisitResult" ToRole="ExecutionPlace" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_VisitResults" FromRole="VisitResult" ToRole="Visit" />
+        </EntityType>
+        <EntityType Name="Visit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VisitTypeId" Type="Int32" Nullable="false" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <Property Name="UrgentlyId" Type="Int32" Nullable="false" />
+          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
+          <Property Name="ContractId" Type="Int32" Nullable="false" />
+          <Property Name="SentLPUId" Type="Int32" Nullable="false" />
+          <Property Name="OKATO" Type="String" Nullable="false" MaxLength="14" FixedLength="false" Unicode="false" />
+          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="VisitResultId" Type="Int32" />
+          <Property Name="VisitOutcomeId" Type="Int32" />
+          <Property Name="Note" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="TotalCost" Type="Double" Nullable="false" />
+          <Property Name="IsCompleted" Type="Boolean" />
+          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="Visit" ToRole="FinancingSource" />
+          <NavigationProperty Name="Org" Relationship="DataLib.FK_Visits_Orgs" FromRole="Visit" ToRole="Org" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Visits_Persons" FromRole="Visit" ToRole="Person" />
+          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="Visit" ToRole="RecordContract" />
+          <NavigationProperty Name="VisitOutcome" Relationship="DataLib.FK_Visits_VisitOutcomes" FromRole="Visit" ToRole="VisitOutcome" />
+          <NavigationProperty Name="VisitResult" Relationship="DataLib.FK_Visits_VisitResults" FromRole="Visit" ToRole="VisitResult" />
+        </EntityType>
+        <Association Name="FK_VisitOutcomes_ExecutionPlaces">
+          <End Type="DataLib.ExecutionPlace" Role="ExecutionPlace" Multiplicity="1" />
+          <End Type="DataLib.VisitOutcome" Role="VisitOutcome" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlace">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VisitOutcome">
+              <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VisitResults_ExecutionPlaces">
+          <End Type="DataLib.ExecutionPlace" Role="ExecutionPlace" Multiplicity="1" />
+          <End Type="DataLib.VisitResult" Role="VisitResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlace">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VisitResult">
+              <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_FinancingSources">
+          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinancingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_Orgs">
+          <End Type="DataLib.Org" Role="Org" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Org">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="SentLPUId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="ContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_VisitOutcomes">
+          <End Type="DataLib.VisitOutcome" Role="VisitOutcome" Multiplicity="0..1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VisitOutcome">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="VisitOutcomeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_VisitResults">
+          <End Type="DataLib.VisitResult" Role="VisitResult" Multiplicity="0..1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VisitResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="VisitResultId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5706,8 +5978,6 @@
           <EntitySetMapping Name="Assignments">
             <EntityTypeMapping TypeName="DataLib.Assignment">
               <MappingFragment StoreEntitySet="Assignments">
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
                 <ScalarProperty Name="CreationDateTime" ColumnName="CreationDateTime" />
                 <ScalarProperty Name="IsTemporary" ColumnName="IsTemporary" />
                 <ScalarProperty Name="RecordId" ColumnName="RecordId" />
@@ -5729,6 +5999,8 @@
           <EntitySetMapping Name="PersonStaffs">
             <EntityTypeMapping TypeName="DataLib.PersonStaff">
               <MappingFragment StoreEntitySet="PersonStaffs">
+                <ScalarProperty Name="IsActing" ColumnName="IsActing" />
+                <ScalarProperty Name="IsSign" ColumnName="IsSign" />
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="StaffId" ColumnName="StaffId" />
@@ -5752,7 +6024,6 @@
             <EntityTypeMapping TypeName="DataLib.Record">
               <MappingFragment StoreEntitySet="Records">
                 <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
-                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
                 <ScalarProperty Name="OKATO" ColumnName="OKATO" />
                 <ScalarProperty Name="ActualDateTime" ColumnName="ActualDateTime" />
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
@@ -5772,44 +6043,9 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypeCosts">
-            <EntityTypeMapping TypeName="DataLib.RecordTypeCost">
-              <MappingFragment StoreEntitySet="RecordTypeCosts">
-                <ScalarProperty Name="FullPrice" ColumnName="FullPrice" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
-                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypeRolePermissions">
-            <EntityTypeMapping TypeName="DataLib.RecordTypeRolePermission">
-              <MappingFragment StoreEntitySet="RecordTypeRolePermissions">
-                <ScalarProperty Name="IsRequired" ColumnName="IsRequired" />
-                <ScalarProperty Name="IsSign" ColumnName="IsSign" />
-                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
-                <ScalarProperty Name="RecordTypeMemberRoleId" ColumnName="RecordTypeMemberRoleId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypeRoles">
-            <EntityTypeMapping TypeName="DataLib.RecordTypeRole">
-              <MappingFragment StoreEntitySet="RecordTypeRoles">
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordTypes">
             <EntityTypeMapping TypeName="DataLib.RecordType">
               <MappingFragment StoreEntitySet="RecordTypes">
-                <ScalarProperty Name="Options" ColumnName="Options" />
-                <ScalarProperty Name="IsRecord" ColumnName="IsRecord" />
                 <ScalarProperty Name="MedProfileId" ColumnName="MedProfileId" />
                 <ScalarProperty Name="RecordTypeGroupId" ColumnName="RecordTypeGroupId" />
                 <ScalarProperty Name="EditorId" ColumnName="EditorId" />
@@ -5821,6 +6057,63 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExecutionPlaces">
+            <EntityTypeMapping TypeName="DataLib.ExecutionPlace">
+              <MappingFragment StoreEntitySet="ExecutionPlaces">
+                <ScalarProperty Name="UseName" ColumnName="UseName" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VisitOutcomes">
+            <EntityTypeMapping TypeName="DataLib.VisitOutcome">
+              <MappingFragment StoreEntitySet="VisitOutcomes">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VisitResults">
+            <EntityTypeMapping TypeName="DataLib.VisitResult">
+              <MappingFragment StoreEntitySet="VisitResults">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Visits">
+            <EntityTypeMapping TypeName="DataLib.Visit">
+              <MappingFragment StoreEntitySet="Visits">
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
+                <ScalarProperty Name="TotalCost" ColumnName="TotalCost" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="VisitOutcomeId" ColumnName="VisitOutcomeId" />
+                <ScalarProperty Name="VisitResultId" ColumnName="VisitResultId" />
+                <ScalarProperty Name="MKB" ColumnName="MKB" />
+                <ScalarProperty Name="OKATO" ColumnName="OKATO" />
+                <ScalarProperty Name="SentLPUId" ColumnName="SentLPUId" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
+                <ScalarProperty Name="UrgentlyId" ColumnName="UrgentlyId" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="VisitTypeId" ColumnName="VisitTypeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

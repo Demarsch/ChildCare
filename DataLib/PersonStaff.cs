@@ -27,6 +27,8 @@ namespace DataLib
         public int StaffId { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public bool IsSign { get; set; }
+        public bool IsActing { get; set; }
     
         public virtual Branch Branch { get; set; }
         public virtual ICollection<CommissionMember> CommissionMembers { get; set; }

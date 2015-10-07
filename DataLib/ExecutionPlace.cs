@@ -12,24 +12,20 @@ namespace DataLib
     using System;
     using System.Collections.Generic;
     
-    public partial class FinancingSource
+    public partial class ExecutionPlace
     {
-        public FinancingSource()
+        public ExecutionPlace()
         {
-            this.RecordContracts = new HashSet<RecordContract>();
-            this.Assignments = new HashSet<Assignment>();
-            this.RecordTypeCosts = new HashSet<RecordTypeCost>();
-            this.Visits = new HashSet<Visit>();
+            this.VisitOutcomes = new HashSet<VisitOutcome>();
+            this.VisitResults = new HashSet<VisitResult>();
         }
     
         public int Id { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
-        public bool IsActive { get; set; }
+        public string UseName { get; set; }
     
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        public virtual ICollection<RecordTypeCost> RecordTypeCosts { get; set; }
-        public virtual ICollection<Visit> Visits { get; set; }
+        public virtual ICollection<VisitOutcome> VisitOutcomes { get; set; }
+        public virtual ICollection<VisitResult> VisitResults { get; set; }
     }
 }

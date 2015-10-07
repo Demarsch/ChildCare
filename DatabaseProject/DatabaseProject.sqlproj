@@ -129,5 +129,9 @@
     <Build Include="dbo\Tables\RecordTypeRoles.sql" />
     <Build Include="dbo\Tables\RecordTypeRolePermissions.sql" />
     <Build Include="dbo\Tables\RecordTypeCosts.sql" />
+    <Build Include="dbo\Tables\Visits.sql" />
+    <Build Include="dbo\Tables\VisitResults.sql" />
+    <Build Include="dbo\Tables\VisitOutcomes.sql" />
+    <Build Include="dbo\Tables\ExecutionPlaces.sql" />
   </ItemGroup>
 </Project>
