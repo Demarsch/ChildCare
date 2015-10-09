@@ -20,8 +20,8 @@ namespace DataLib
         public int RelativeRelationshipId { get; set; }
         public bool IsRepresentative { get; set; }
     
+        public virtual RelativeRelationship RelativeRelationship { get; set; }
         public virtual Person Person { get; set; }
         public virtual Person Person1 { get; set; }
-        public virtual RelativeRelationship RelativeRelationship { get; set; }
     }
 }

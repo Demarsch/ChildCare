@@ -14,29 +14,30 @@ namespace DataLib
     
     public partial class Person
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Person()
         {
+            this.Assignments = new HashSet<Assignment>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.InsuranceDocuments = new HashSet<InsuranceDocument>();
             this.PersonAddresses = new HashSet<PersonAddress>();
-            this.PersonIdentityDocuments = new HashSet<PersonIdentityDocument>();
-            this.PersonNames = new HashSet<PersonName>();
-            this.PersonRelatives = new HashSet<PersonRelative>();
-            this.PersonRelatives1 = new HashSet<PersonRelative>();
-            this.PersonTalons = new HashSet<PersonTalon>();
-            this.Users = new HashSet<User>();
             this.PersonDisabilities = new HashSet<PersonDisability>();
-            this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
+            this.PersonEducations = new HashSet<PersonEducation>();
             this.PersonHealthGroups = new HashSet<PersonHealthGroup>();
+            this.PersonIdentityDocuments = new HashSet<PersonIdentityDocument>();
+            this.PersonMaritalStatuses = new HashSet<PersonMaritalStatus>();
+            this.PersonNames = new HashSet<PersonName>();
             this.PersonNationalities = new HashSet<PersonNationality>();
             this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
-            this.PersonMaritalStatuses = new HashSet<PersonMaritalStatus>();
-            this.PersonEducations = new HashSet<PersonEducation>();
+            this.PersonRelatives = new HashSet<PersonRelative>();
+            this.PersonRelatives1 = new HashSet<PersonRelative>();
+            this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
+            this.PersonStaffs = new HashSet<PersonStaff>();
+            this.PersonTalons = new HashSet<PersonTalon>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.RecordContracts1 = new HashSet<RecordContract>();
-            this.Assignments = new HashSet<Assignment>();
-            this.PersonStaffs = new HashSet<PersonStaff>();
             this.Records = new HashSet<Record>();
+            this.Users = new HashSet<User>();
             this.Visits = new HashSet<Visit>();
         }
     
@@ -47,40 +48,59 @@ namespace DataLib
         public string Snils { get; set; }
         public string MedNumber { get; set; }
         public int GenderId { get; set; }
-        public Nullable<System.DateTime> DeleteDateTime { get; set; }
+        public Nullable<int> PhotoId { get; set; }
         public string Phones { get; set; }
         public string Email { get; set; }
-        public Nullable<int> PhotoId { get; set; }
+        public Nullable<System.DateTime> DeleteDateTime { get; set; }
         public string AmbNumberString { get; set; }
         public int AmbNumber { get; set; }
         public int Year { get; set; }
-        public int AmbCardFirstListHashCode { get; set; }
-        public int PersonHospListHashCode { get; set; }
-        public int RadiationListHashCode { get; set; }
     
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual Gender Gender { get; set; }
-        public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
-        public virtual ICollection<PersonAddress> PersonAddresses { get; set; }
-        public virtual ICollection<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
-        public virtual ICollection<PersonName> PersonNames { get; set; }
-        public virtual ICollection<PersonRelative> PersonRelatives { get; set; }
-        public virtual ICollection<PersonRelative> PersonRelatives1 { get; set; }
-        public virtual ICollection<PersonTalon> PersonTalons { get; set; }
-        public virtual ICollection<User> Users { get; set; }
-        public virtual ICollection<PersonDisability> PersonDisabilities { get; set; }
-        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
-        public virtual ICollection<PersonHealthGroup> PersonHealthGroups { get; set; }
-        public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
-        public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
-        public virtual Document Document { get; set; }
-        public virtual ICollection<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
-        public virtual ICollection<PersonEducation> PersonEducations { get; set; }
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        public virtual ICollection<RecordContract> RecordContracts1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual Document Document { get; set; }
+        public virtual Gender Gender { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonAddress> PersonAddresses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonDisability> PersonDisabilities { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonEducation> PersonEducations { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonHealthGroup> PersonHealthGroups { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonName> PersonNames { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonRelative> PersonRelatives { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonRelative> PersonRelatives1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonTalon> PersonTalons { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordContract> RecordContracts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordContract> RecordContracts1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<User> Users { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
     }
 }

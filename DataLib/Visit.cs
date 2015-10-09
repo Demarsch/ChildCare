@@ -31,11 +31,11 @@ namespace DataLib
         public double TotalCost { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
     
-        public virtual FinancingSource FinancingSource { get; set; }
         public virtual Org Org { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
         public virtual VisitOutcome VisitOutcome { get; set; }
         public virtual VisitResult VisitResult { get; set; }
+        public virtual FinancingSource FinancingSource { get; set; }
+        public virtual Person Person { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }

@@ -25,6 +25,38 @@ namespace Core
             }
         }
 
+        public ICollection<RecordType> GetRecordTypesByOptions(string[] options)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordType>().Where(x => x.Options.ContainsAny(options)).ToArray();
+            }
+        }
+
+        public ICollection<RecordType> GetRecordTypesByOptions(string options)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordType>().Where(x => x.Options.Contains(options)).ToArray();
+            }
+        }
+
+        public ICollection<RecordTypeRole> GetRecordTypeRolesByOptions(string[] options)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordTypeRole>().Where(x => x.Options.ContainsAny(options)).ToArray();
+            }
+        }
+
+        public ICollection<RecordTypeRole> GetRecordTypeRolesByOptions(string options)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordTypeRole>().Where(x => x.Options.Contains(options)).ToArray();
+            }
+        }
+
         public ICollection<RecordType> GetAllRecordTypes()
         {
             using (var db = provider.GetNewDataContext())

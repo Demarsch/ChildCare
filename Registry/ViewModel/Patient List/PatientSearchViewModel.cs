@@ -26,11 +26,13 @@ namespace Registry
 
         private readonly IDialogService dialogService;
 
+        private readonly IRecordService recordService;
+
         private readonly IDocumentService documentService;
         #endregion
 
         #region Constructors
-        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, PatientAssignmentListViewModel patientAssignmentListViewModel)
+        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
                 throw new ArgumentNullException("patientService");
@@ -51,7 +53,7 @@ namespace Registry
             this.patientService = patientService;
             patients = new ObservableCollection<PersonViewModel>();
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
-            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService, documentService);
+            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService, documentService, recordService);
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);

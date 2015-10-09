@@ -88,17 +88,17 @@ namespace Registry
 
         public int AmbCardFirstListHashCode
         {
-            get { return IsEmpty ? 0 : patient.AmbCardFirstListHashCode; }
+            get { return 0;/*IsEmpty ? 0 : patient.AmbCardFirstListHashCode;*/ }
         }
 
         public int PersonHospListHashCode
         {
-            get { return IsEmpty ? 0 : patient.PersonHospListHashCode; }
+            get { return 0;/*IsEmpty ? 0 : patient.PersonHospListHashCode;*/ }
         }
 
         public int RadiationListHashCode
         {
-            get { return IsEmpty ? 0 : patient.RadiationListHashCode; }
+            get { return 0;/*IsEmpty ? 0 : patient.RadiationListHashCode;*/ }
         }
     }
 }

@@ -52,12 +52,16 @@
         </StackPanel>
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Источник финансирования" Margin="7"/>
         <ComboBox Grid.Row="2" Grid.Column="1" Width="221" HorizontalAlignment="Left" Margin="5"
-                  ItemsSource="{Binding FinancingSources}" DisplayMemberPath="Name" SelectedValuePath="Id" 
-                  SelectedItem="{Binding SelectedFinancingSource}"/>
+                  ItemsSource="{Binding FinancingSources}" 
+                  DisplayMemberPath="Name" 
+                  SelectedValuePath="Id" 
+                  SelectedValue="{Binding SelectedFinancingSourceId}"/>
         <TextBlock Grid.Row="3" Grid.Column="0" Text="Ответственный за договор" Margin="7"/>
         <ComboBox Grid.Row="3" Grid.Column="1" Width="221" HorizontalAlignment="Left" Margin="5"
-                  ItemsSource="{Binding Registrators}" DisplayMemberPath="Name" SelectedValuePath="Id" 
-                  SelectedItem="{Binding SelectedRegistrator}"/>
+                  ItemsSource="{Binding Registrators}" 
+                  DisplayMemberPath="Name" 
+                  SelectedValuePath="Id" 
+                  SelectedValue="{Binding SelectedRegistratorId}"/>
         
         <TextBlock Grid.Row="4" Grid.Column="0" Text="Заказчик" Margin="7"/>
         <wpf:AutoCompleteTextBox Grid.Row="4" Grid.Column="1" Margin="5"
@@ -97,7 +101,7 @@
 
         <GroupBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
             <StackPanel Orientation="Vertical" >
-                <TextBlock HorizontalAlignment="Center" Text="Услуги по договору" FontWeight="Bold"></TextBlock>
+                <TextBlock Text="Услуги по договору" FontWeight="Bold"></TextBlock>
                 <RadioButton Content="Назначенные услуги" IsChecked="{Binding IsAssignRecordsChecked, Mode=TwoWay}" Margin="3"/>
                 <ListView ItemsSource="{Binding Assignments}" SelectedItem="{Binding SelectedAssignment, Mode=TwoWay}"
                           Visibility="{Binding IsAssignRecordsChecked, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5">

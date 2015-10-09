@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DataLib;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity;
 
 namespace Core
 {
@@ -463,6 +464,15 @@ namespace Core
             }
         }
 
+        public ICollection<PersonStaff> GetAllowedPersonStaffs(int recordTypeId, int memberRoleId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordTypeRolePermission>().Where(x => x.RecordTypeId == recordTypeId && x.RecordTypeMemberRoleId == memberRoleId)
+                    .SelectMany(x => x.Permission.UserPermissions.SelectMany(a => a.User.Person.PersonStaffs)).ToArray();
+            }
+        }
+
 
         public int GetDefaultNationalityCountryId()
         {
@@ -916,6 +926,39 @@ namespace Core
             }
         }
 
+        public ICollection<RecordContract> GetContracts(int? consumerId = null, DateTime? fromDate = null, DateTime? toDate = null, int inUserId = -1)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordContract>().Where(x => x.ClientId.HasValue && x.ClientId != 0 && !x.OrgId.HasValue
+                        && (consumerId.HasValue ? x.ConsumerId == consumerId.Value : true)
+                        && ((fromDate.HasValue && toDate.HasValue) ? DbFunctions.TruncateTime(x.BeginDateTime) <= DbFunctions.TruncateTime(toDate.Value) && DbFunctions.TruncateTime(x.EndDateTime) >= DbFunctions.TruncateTime(fromDate.Value) : true)
+                        && (inUserId != -1 ? x.InUserId == inUserId : true)).ToArray();
+            }
+        }
+
+        public double GetContractCost(int[] contractIds)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordContract>().Where(x => contractIds.Contains(x.Id)).SelectMany(x => x.RecordContractItems).Where(x => x.IsPaid).Sum(x => x.Cost);
+            }
+        }
+        public double GetContractCost(int contractId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordContract>().Where(x => x.Id == contractId).SelectMany(x => x.RecordContractItems).Where(x => x.IsPaid).Sum(x => x.Cost);
+            }
+        }
+                
+        public RecordContract GetContractById(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<RecordContract>().ById(id);
+            }
+        }
 
         public string GetOrCreateAmbCard(int personId)
         {

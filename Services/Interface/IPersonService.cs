@@ -127,8 +127,18 @@ namespace Core
 
         PersonStaff GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end);
 
+        ICollection<PersonStaff> GetAllowedPersonStaffs(int recordTypeId, int memberRoleId);
+
         bool SavePersonDocument(PersonOuterDocument personOuterDocument, out string exception);
 
         void DeletePersonOuterDocument(int documentId);
+
+        ICollection<RecordContract> GetContracts(int? consumerId = null, DateTime? fromDate = null, DateTime? toDate = null, int inUserId = -1);
+
+        double GetContractCost(int[] contractIds);
+
+        double GetContractCost(int contractId);
+
+        RecordContract GetContractById(int id);
     }
 }

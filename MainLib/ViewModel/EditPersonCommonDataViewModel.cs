@@ -342,10 +342,10 @@ namespace MainLib
                 {
                     AmbNumberString = string.Empty,
                     AmbNumber = 0,
-                    Year = 0,
-                    AmbCardFirstListHashCode = 0,
-                    PersonHospListHashCode = 0,
-                    RadiationListHashCode = 0
+                    Year = 0
+                    //AmbCardFirstListHashCode = 0,
+                    //PersonHospListHashCode = 0,
+                    //RadiationListHashCode = 0
                 };
             }
             person.BirthDate = BirthDate;

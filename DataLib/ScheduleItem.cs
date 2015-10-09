@@ -23,7 +23,7 @@ namespace DataLib
         public System.TimeSpan StartTime { get; set; }
         public System.TimeSpan EndTime { get; set; }
     
-        public virtual RecordType RecordType { get; set; }
         public virtual Room Room { get; set; }
+        public virtual RecordType RecordType { get; set; }
     }
 }

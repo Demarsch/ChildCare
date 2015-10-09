@@ -19,8 +19,8 @@ namespace DataLib
         {
             this.PermissionLinks = new HashSet<PermissionLink>();
             this.PermissionLinks1 = new HashSet<PermissionLink>();
-            this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
             this.UserPermissions = new HashSet<UserPermission>();
+            this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
         }
     
         public int Id { get; set; }
@@ -34,8 +34,8 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PermissionLink> PermissionLinks1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserPermission> UserPermissions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
     }
 }

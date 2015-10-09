@@ -20,6 +20,8 @@ namespace Registry
 
         private readonly IPersonService service;
 
+        private readonly IRecordService recordService;
+
         private readonly IDialogService dialogService;
 
         private readonly IDocumentService documentService;
@@ -47,7 +49,7 @@ namespace Registry
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -60,6 +62,7 @@ namespace Registry
             this.documentService = documentService;
             this.dialogService = dialogService;
             this.service = service;
+            this.recordService = recordService;
             this.log = log;
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
@@ -71,8 +74,8 @@ namespace Registry
             RemovePersonFromRelativeCommand = new RelayCommand(RemovePersonFromRelative);
         }
 
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, int personId)
-            : this(log, service, dialogService, documentService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, int personId)
+            : this(log, service, dialogService, documentService, recordService)
         {
             Id = personId;
             this.log = log;
@@ -81,8 +84,8 @@ namespace Registry
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, string personData)
-            : this(log, service, dialogService, documentService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, string personData)
+            : this(log, service, dialogService, documentService, recordService)
         {
 
         }
@@ -235,7 +238,7 @@ namespace Registry
 
         private void LoadContracts()
         {
-            PersonContracts = new PersonContractsViewModel(service, dialogService, log);
+            PersonContracts = new PersonContractsViewModel(service, recordService, dialogService, log);
             if (Id != 0)
                 PersonContracts.Load(Id);
         }
