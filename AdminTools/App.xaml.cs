@@ -1,12 +1,9 @@
-﻿using System.Globalization;
-using System.Threading;
-using System.Windows;
+﻿using System.Windows;
 using Core;
 using DataLib;
 using AdminTools.ViewModel;
 using log4net;
 using log4net.Core;
-using MainLib.ViewModel;
 
 namespace AdminTools
 {

@@ -1,15 +1,10 @@
 ﻿using System.Globalization;
-using System.Threading;
 using System.Windows;
 using System.Windows.Markup;
 using Core;
 using DataLib;
 using log4net;
 using log4net.Config;
-using log4net.Core;
-using log4net.Repository.Hierarchy;
-using TestCore;
-using System;
 using Environment = Core.Environment;
 
 namespace Registry

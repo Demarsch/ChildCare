@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace DataLib
+﻿namespace DataLib
 {
     public partial class PersonStaff
     {        

@@ -1,10 +1,7 @@
 ﻿using DataLib;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GalaSoft.MvvmLight;
-using System.Threading.Tasks;
 using Core;
 using System.ComponentModel;
 

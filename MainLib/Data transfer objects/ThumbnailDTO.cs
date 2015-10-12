@@ -1,7 +1,5 @@
 ﻿using System;
 using GalaSoft.MvvmLight;
-using System.Drawing;
-using DataLib;
 using System.Windows.Media.Imaging;
 
 namespace MainLib

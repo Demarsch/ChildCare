@@ -1,5 +1,4 @@
-﻿using Core;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 
 namespace Commission
 {

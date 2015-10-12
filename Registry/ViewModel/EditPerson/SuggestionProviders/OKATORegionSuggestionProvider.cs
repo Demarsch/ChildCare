@@ -1,10 +1,4 @@
 ﻿using Core;
-using DataLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WpfControls.Editors;
 
 namespace Registry

@@ -1,10 +1,5 @@
-﻿using AdminTools.DTO;
-using Core;
-using System;
-using System.Collections.Generic;
+﻿using Core;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WpfControls.Editors;
 
 namespace AdminTools

@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
 using System.Windows;
-using DataLib;
 using GalaSoft.MvvmLight;
 using Core;
 using AdminTools.View;

@@ -7,7 +7,6 @@ using System.Windows.Input;
 using Core;
 using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
-using MainLib;
 
 namespace Registry
 {

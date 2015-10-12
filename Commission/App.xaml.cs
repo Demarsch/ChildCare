@@ -3,14 +3,8 @@ using DataLib;
 using log4net;
 using log4net.Core;
 using MainLib.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Commission

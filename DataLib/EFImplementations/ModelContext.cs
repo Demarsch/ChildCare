@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using Core;
-using System.Data.Entity;
 using System.Collections.Generic;
 
 namespace DataLib

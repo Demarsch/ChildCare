@@ -1,0 +1,26 @@
+﻿<fluent:RibbonWindow x:Class="Shell.ShellWindow"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:fluent="urn:fluent-ribbon"
+                     xmlns:regions="http://prismlibrary.com/"
+                     xmlns:shared="clr-namespace:Shell.Shared;assembly=Shell.Shared"
+                     Title="Добро пожаловать"
+                     Height="350"
+                     Width="525"
+                     WindowState="Maximized">
+    <DockPanel LastChildFill="True">
+        <fluent:Ribbon regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleList}"
+                       DockPanel.Dock="Top">
+            <fluent:Ribbon.Menu>
+                <fluent:Backstage>
+                    <fluent:Backstage.Header>
+                        <TextBlock Margin="3"
+                                   Text="Основное Меню" />
+                    </fluent:Backstage.Header>
+                    <fluent:BackstageTabControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.MainMenu}" />
+                </fluent:Backstage>
+            </fluent:Ribbon.Menu>
+        </fluent:Ribbon>
+        <ContentControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}" />
+    </DockPanel>
+</fluent:RibbonWindow>

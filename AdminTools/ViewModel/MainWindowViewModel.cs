@@ -1,10 +1,6 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using AdminTools.View;
 using GalaSoft.MvvmLight;
-using Core;
-using log4net;
-using MainLib.View;
-using MainLib.ViewModel;
 
 namespace AdminTools.ViewModel
 {

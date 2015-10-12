@@ -9,9 +9,6 @@
 
 namespace DataLib
 {
-    using System;
-    using System.Collections.Generic;
-    
     public partial class PersonAddress
     {
         public int Id { get; set; }

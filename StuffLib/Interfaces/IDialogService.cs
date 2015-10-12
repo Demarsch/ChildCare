@@ -1,9 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics.Contracts;
-using System.Windows;
-using System.Windows.Forms;
-
-namespace Core
+﻿namespace Core
 {
     public interface IDialogService
     {

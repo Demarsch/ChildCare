@@ -2,7 +2,6 @@
 using System;
 using GalaSoft.MvvmLight;
 using Core;
-using log4net;
 using System.ComponentModel;
 using System.Collections.Generic;
 

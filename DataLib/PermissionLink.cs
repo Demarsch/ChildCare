@@ -10,8 +10,7 @@
 namespace DataLib
 {
     using System;
-    using System.Collections.Generic;
-    
+
     public partial class PermissionLink
     {
         public int Id { get; set; }

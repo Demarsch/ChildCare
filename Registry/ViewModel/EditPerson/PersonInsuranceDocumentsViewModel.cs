@@ -7,7 +7,6 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight.CommandWpf;
 using System.Linq;
 using log4net;
-using System.ComponentModel;
 using System.Windows.Navigation;
 using System.Collections.Generic;
 
