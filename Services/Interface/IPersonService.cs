@@ -140,5 +140,9 @@ namespace Core
         double GetContractCost(int contractId);
 
         RecordContract GetContractById(int id);
+
+        ICollection<AssignmentDTO> GetRootAssignments(int personId);
+
+        ICollection<Core.PersonVisitItemsListViewModels.VisitDTO> GetVisits(int personId);
     }
 }

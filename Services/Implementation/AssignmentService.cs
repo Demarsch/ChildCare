@@ -37,5 +37,23 @@ namespace Core
                 return result.ToArray();
             }
         }
+
+
+
+        public ICollection<AssignmentDTO> GetChildAssignments(int parentAssignmentId)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                return dataContext.GetData<Assignment>().Where(x => x.ParentId == parentAssignmentId)
+                       .Select(x => new AssignmentDTO
+                       {
+                           Id = x.Id,
+                           AssignDateTime = x.AssignDateTime,
+                           RecordTypeName = x.RecordType.Name,
+                           RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
+
+                       }).ToList();
+            }
+        }
     }
 }

@@ -72,5 +72,35 @@ namespace Core
                 return db.GetData<RecordType>().Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim())).ToArray();
             }
         }
+
+
+        public ICollection<PersonVisitItemsListViewModels.RecordDTO> GetChildRecords(int recordId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Record>().Where(x => x.ParentId == recordId).Select(x => new Core.PersonVisitItemsListViewModels.RecordDTO()
+                {
+                    BeginDateTime = x.BeginDateTime,
+                    EndDateTime = x.EndDateTime,
+                    RecordTypeName = x.RecordType.Name,
+                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                    IsCompleted = x.IsCompleted
+                }).ToArray();
+            }
+        }
+
+        public ICollection<AssignmentDTO> GetChildAssignments(int recordId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Assignment>().Where(x => x.RecordId == recordId).Select(x => new AssignmentDTO()
+                {
+                    Id = x.Id,
+                    AssignDateTime = x.AssignDateTime,
+                    RecordTypeName = x.RecordType.Name,
+                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
+                }).ToList();
+            }
+        }
     }
 }

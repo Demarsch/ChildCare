@@ -153,8 +153,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Services\Implementation\AssignmentService.cs" />
-    <Compile Include="Services\Interface\IAssignmentService.cs" />
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonCommonDataViewModel.cs" />
@@ -164,6 +162,7 @@
     <Compile Include="ViewModel\PersonVisitItemsListViewModels\PersonHierarchicalAssignmentsViewModel.cs" />
     <Compile Include="ViewModel\PersonContractsViewModel.cs" />
     <Compile Include="ViewModel\PersonDocumentsViewModel.cs" />
+    <Compile Include="ViewModel\PersonVisitItemsListViewModels\PersonVisitItemsListViewModel.cs" />
     <Compile Include="ViewModel\ScanDocumentsViewModel.cs" />
     <Compile Include="ViewModel\SelectPersonDocumentTypeViewModel.cs" />
     <Compile Include="View\ContractControl.xaml.cs">
@@ -180,6 +179,9 @@
     </Compile>
     <Compile Include="View\PersonDocumentsControl.xaml.cs">
       <DependentUpon>PersonDocumentsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PersonVisitItemsListViews\PatientVisitItemsListView.xaml.cs">
+      <DependentUpon>PatientVisitItemsListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ScanDocumentsView.xaml.cs">
       <DependentUpon>ScanDocumentsView.xaml</DependentUpon>
@@ -235,6 +237,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\PersonDocumentsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PersonVisitItemsListViews\PatientVisitItemsListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

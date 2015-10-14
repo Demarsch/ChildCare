@@ -3,45 +3,58 @@ using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
+using Core.PersonVisitItemsListViewModels;
+using System.Linq;
 
 namespace MainLib.PersonVisitItemsListViewModels
 {
     public class PersonHierarchicalRecordsViewModel : ObservableObject
     {
-        private readonly AssignmentDTO assignment;
+        private readonly RecordDTO record;
 
-        private readonly IPersonService personService;
+        private readonly IRecordService recordService;
+        private readonly IAssignmentService assignmentService;
 
-        public PersonHierarchicalRecordsViewModel(AssignmentDTO assignment, IPersonService personService)
+        public PersonHierarchicalRecordsViewModel(RecordDTO recordDTO, IRecordService recordService, IAssignmentService assignmentService)
         {
-            if (assignment == null)
+            if (recordDTO == null)
             {
-                throw new ArgumentNullException("assignment");
+                throw new ArgumentNullException("recordDTO");
             }
-            if (personService == null)
+            if (recordService == null)
             {
-                throw new ArgumentNullException("personService");
+                throw new ArgumentNullException("recordService");
             }
-            this.personService = personService;
-            this.assignment = assignment;
+            if (assignmentService == null)
+            {
+                throw new ArgumentNullException("assignmentService");
+            }
+            this.assignmentService = assignmentService;
+            this.recordService = recordService;
+            this.record = recordDTO;
         }
 
-        public int Id { get { return assignment.Id; } }
+        public int Id { get { return record.Id; } }
 
-        public DateTime StartTime { get { return assignment.AssignDateTime; } }
+        public string DateTimePeriod { get { return record.BeginDateTime.ToString("dd.MM.yyyy") + " - " + (record.EndDateTime.HasValue ? record.EndDateTime.Value.ToString("dd.MM.yyyy") : "..."); } }
 
-        public string RecordTypeName { get { return assignment.RecordTypeName; } }
+        public string RecordTypeName { get { return record.RecordTypeName; } }
 
-        public string RoomName { get { return assignment.RoomName; } }
+        public string RoomName { get { return record.RoomName; } }
 
-        public ObservableCollection<object> Childern
+        private ObservalbeCollectionEx<object> nestedItems;
+        public ObservalbeCollectionEx<object> NestedItems
         {
             get
             {
-                var childrenList = new ObservableCollection<object>();
-
-                //childrenList.Add(personService.GetChild(assignment.Id));
-                return childrenList;
+                if (nestedItems != null)
+                {
+                    var childrenList = new ObservalbeCollectionEx<object>();
+                    childrenList.AddRange(recordService.GetChildRecords(record.Id).Select(x => new PersonHierarchicalRecordsViewModel(x, recordService, assignmentService)));
+                    childrenList.AddRange(recordService.GetChildAssignments(record.Id).Select(x => new PersonHierarchicalAssignmentsViewModel(x, assignmentService)));
+                    Set(() => NestedItems, ref nestedItems, childrenList);
+                }
+                return nestedItems;
             }
         }
     }

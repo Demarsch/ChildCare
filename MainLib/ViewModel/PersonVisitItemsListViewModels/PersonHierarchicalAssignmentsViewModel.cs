@@ -2,6 +2,7 @@
 using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
+using System.Linq;
 using System.Collections.ObjectModel;
 
 namespace MainLib.PersonVisitItemsListViewModels
@@ -10,19 +11,19 @@ namespace MainLib.PersonVisitItemsListViewModels
     {
         private readonly AssignmentDTO assignment;
 
-        private readonly IPersonService personService;
+        private readonly IAssignmentService assignmentService;
 
-        public PersonHierarchicalAssignmentsViewModel(AssignmentDTO assignment, IPersonService personService)
+        public PersonHierarchicalAssignmentsViewModel(AssignmentDTO assignment, IAssignmentService assignmentService)
         {
             if (assignment == null)
             {
                 throw new ArgumentNullException("assignment");
             }
-            if (personService == null)
+            if (assignmentService == null)
             {
-                throw new ArgumentNullException("personService");
+                throw new ArgumentNullException("assignmentService");
             }
-            this.personService = personService;
+            this.assignmentService = assignmentService;
             this.assignment = assignment;
         }
 
@@ -34,13 +35,19 @@ namespace MainLib.PersonVisitItemsListViewModels
 
         public string RoomName { get { return assignment.RoomName; } }
 
-        public ObservableCollection<object> Childern
+
+        private ObservalbeCollectionEx<object> nestedItems;
+        public ObservalbeCollectionEx<object> NestedItems
         {
             get
             {
-                var childrenList = new ObservableCollection<object>();
-                //childrenList.AddRange(personService.GetChildAssignments(assignment.Id));
-                return childrenList;
+                if (nestedItems != null)
+                {
+                    var childrenList = new ObservalbeCollectionEx<object>();
+                    childrenList.AddRange(assignmentService.GetChildAssignments(assignment.Id).Select(x => new PersonHierarchicalAssignmentsViewModel(x, assignmentService)));
+                    Set(() => NestedItems, ref nestedItems, childrenList);
+                }
+                return nestedItems;
             }
         }
     }

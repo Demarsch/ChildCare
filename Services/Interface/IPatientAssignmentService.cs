@@ -10,7 +10,5 @@ namespace Core
         ICollection<AssignmentScheduleDTO> GetActualAssignments(int patientId, DateTime date);
 
         AssignmentScheduleDTO GetAssignment(int assignmentId, int patientId);
-
-        ICollection<AssignmentDTO> GetChildAssignments(int parentAssignmentId);
     }
 }

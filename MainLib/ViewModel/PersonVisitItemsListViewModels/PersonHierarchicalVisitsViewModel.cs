@@ -3,44 +3,62 @@ using Core;
 using DataLib;
 using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
+using Core.PersonVisitItemsListViewModels;
+using System.Linq;
 
 namespace MainLib.PersonVisitItemsListViewModels
 {
     public class PersonHierarchicalVisitsViewModel : ObservableObject
     {
-        private readonly AssignmentDTO assignment;
+        private readonly VisitDTO visit;
 
-        private readonly IPersonService personService;
+        private readonly IVisitService visitService;
+        private readonly IRecordService recordService;
+        private readonly IAssignmentService assignmentService;
 
-        public PersonHierarchicalVisitsViewModel(AssignmentDTO assignment, IPersonService personService)
+        public PersonHierarchicalVisitsViewModel(VisitDTO visitDTO, IVisitService visitService, IRecordService recordService, IAssignmentService assignmentService)
         {
-            if (assignment == null)
+            if (visitDTO == null)
             {
-                throw new ArgumentNullException("assignment");
+                throw new ArgumentNullException("visitDTO");
             }
-            if (personService == null)
+            if (visitService == null)
             {
-                throw new ArgumentNullException("personService");
+                throw new ArgumentNullException("visitService");
             }
-            this.personService = personService;
-            this.assignment = assignment;
+            if (recordService == null)
+            {
+                throw new ArgumentNullException("recordService");
+            }
+            if (assignmentService == null)
+            {
+                throw new ArgumentNullException("assignmentService");
+            }
+            this.visitService = visitService;
+            this.recordService = recordService;
+            this.assignmentService = assignmentService;
+            this.visit = visitDTO;
         }
 
-        public int Id { get { return assignment.Id; } }
+        public int Id { get { return visit.Id; } }
 
-        public DateTime StartTime { get { return assignment.AssignDateTime; } }
+        public string DateTimePeriod { get { return visit.BeginDateTime.ToString("dd.MM.yyyy") + " - " + (visit.EndDateTime.HasValue ? visit.EndDateTime.Value.ToString("dd.MM.yyyy") : "..."); } }
 
-        public string RecordTypeName { get { return assignment.RecordTypeName; } }
+        public string Name { get { return visit.Name; } }
 
-        public string RoomName { get { return assignment.RoomName; } }
-
-        public ObservableCollection<object> Childern
+        private ObservalbeCollectionEx<object> nestedItems;
+        public ObservalbeCollectionEx<object> NestedItems
         {
             get
             {
-                var childrenList = new ObservableCollection<object>();
-                return childrenList;
-                //childrenList.Add(personService.GetPersonAssignment(assignment.PersonId));
+                if (nestedItems != null)
+                {
+                    var childrenList = new ObservalbeCollectionEx<object>();
+                    childrenList.AddRange(visitService.GetChildRecords(visit.Id).Select(x => new PersonHierarchicalRecordsViewModel(x, recordService, assignmentService)));
+                    childrenList.AddRange(visitService.GetChildAssignments(visit.Id).Select(x => new PersonHierarchicalAssignmentsViewModel(x, assignmentService)));
+                    Set(() => NestedItems, ref nestedItems, childrenList);
+                }
+                return nestedItems;
             }
         }
     }
