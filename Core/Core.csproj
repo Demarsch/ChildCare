@@ -39,9 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementations\DisposableQueryable.cs" />
-    <Compile Include="Interfaces\IDisposableQueryable.cs" />
+    <Compile Include="Expressions\DateBasedSearchExpressionProvider.cs" />
+    <Compile Include="Expressions\ParameterReplacer.cs" />
+    <Compile Include="Services\Implementations\DisposableQueryable.cs" />
+    <Compile Include="Services\Interfaces\IDisposableQueryable.cs" />
+    <Compile Include="Expressions\ISearchExpressionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Behaviors\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

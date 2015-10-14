@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using Core.Expressions;
+using Core.Misc;
 using Microsoft.Practices.Unity;
+using PatientSearchModule.Model;
 using PatientSearchModule.Views;
 using Prism.Modularity;
 using Prism.Regions;
@@ -31,6 +35,23 @@ namespace PatientSearchModule
         }
 
         public void Initialize()
+        {
+            RegisterServices();
+            RegisterViews();
+        }
+
+        private void RegisterServices()
+        {
+            container.RegisterType<IUserInputNormalizer, UserInputNormalizer>(new ContainerControlledLifetimeManager());
+
+            //container.RegisterType<ISearchExpressionProvider<>, NamesSearchExpressionProvider>(typeof(NamesSearchExpressionProvider).Name, new ContainerControlledLifetimeManager());
+            //container.RegisterType<ISearchExpressionProvider<>, DatesSearchExpressionProvider>(typeof(DatesSearchExpressionProvider).Name, new ContainerControlledLifetimeManager());
+            //container.RegisterType<ISearchExpressionProvider<>, DocumentNumbersSearchExpressionProvider>(typeof(DocumentNumbersSearchExpressionProvider).Name, new ContainerControlledLifetimeManager());
+            //container.RegisterType<IEnumerable<ISearchExpressionProvider>, ISearchExpressionProvider[]>();
+            //container.RegisterType<ISearchExpressionProvider<>, CompositeSearchExpressionProvider>(new ContainerControlledLifetimeManager());
+        }
+
+        private void RegisterViews()
         {
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, () => container.Resolve<PatientSearch>());
         }
