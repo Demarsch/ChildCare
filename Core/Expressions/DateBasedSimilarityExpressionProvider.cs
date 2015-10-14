@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Core.Expressions
 {
-    public abstract class DateBasedSearchExpressionProvider<T> : ISearchExpressionProvider<T>
+    public abstract class DateBasedSimilarityExpressionProvider<T> : ISimilarityExpressionProvider<T>
     {
         private static readonly Regex DatesRegex = new Regex(@"\d{1,2}[ /\-.]{1}\d{1,2}[ /\-.](\d{2}|\d{4})|\d{1,2} ?\w{3,10} ?(\d{2}|\d{4})");
 
@@ -30,6 +30,6 @@ namespace Core.Expressions
             return result;
         }
 
-        public abstract Expression<Func<T, int>> CreateSearchExpression(string searchPattern);
+        public abstract Expression<Func<T, int>> CreateSimilarityExpression(string searchPattern);
     }
 }

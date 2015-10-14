@@ -5,6 +5,6 @@ namespace PatientSearchModule.Services
 {
     public interface IPatientSearchService
     {
-        IDisposableQueryable<Person> SearchPatients(string searchPattern);
+        IDisposableQueryable<Person> PatientSearchQuery(string searchPattern);
     }
 }

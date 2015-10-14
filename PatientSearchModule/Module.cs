@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Data;
 using Core.Expressions;
 using Core.Misc;
+using log4net;
 using Microsoft.Practices.Unity;
 using PatientSearchModule.Model;
+using PatientSearchModule.Services;
 using PatientSearchModule.Views;
 using Prism.Modularity;
 using Prism.Regions;
@@ -31,7 +34,7 @@ namespace PatientSearchModule
                 throw new ArgumentNullException("regionManager");
             }
             this.regionManager = regionManager;
-            this.container = container;
+            this.container = container.CreateChildContainer();
         }
 
         public void Initialize()
@@ -42,13 +45,17 @@ namespace PatientSearchModule
 
         private void RegisterServices()
         {
-            container.RegisterType<IUserInputNormalizer, UserInputNormalizer>(new ContainerControlledLifetimeManager());
+            container.RegisterInstance(LogManager.GetLogger("PATSEARCH"));
 
-            //container.RegisterType<ISearchExpressionProvider<>, NamesSearchExpressionProvider>(typeof(NamesSearchExpressionProvider).Name, new ContainerControlledLifetimeManager());
-            //container.RegisterType<ISearchExpressionProvider<>, DatesSearchExpressionProvider>(typeof(DatesSearchExpressionProvider).Name, new ContainerControlledLifetimeManager());
-            //container.RegisterType<ISearchExpressionProvider<>, DocumentNumbersSearchExpressionProvider>(typeof(DocumentNumbersSearchExpressionProvider).Name, new ContainerControlledLifetimeManager());
-            //container.RegisterType<IEnumerable<ISearchExpressionProvider>, ISearchExpressionProvider[]>();
-            //container.RegisterType<ISearchExpressionProvider<>, CompositeSearchExpressionProvider>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IUserInputNormalizer, UserInputNormalizer>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonBirthDateSimilarityExpressionProvider>("PersonBirthDate", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonIdentityDocumentNumberSimilarityExpressionProvider>("PersonIdentityNumber", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonMedNumberSimilarityExpressionProvider>("PersonMedNumber", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonNamesSimilarityExpressionProvider>("PersonNames", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonSnilsSimilarityExpressionProvider>("PersonSnils", new ContainerControlledLifetimeManager());
+            container.RegisterType<IEnumerable<ISimilarityExpressionProvider<Person>>, ISimilarityExpressionProvider<Person>[]>();
+            container.RegisterType<ISimilarityExpressionProvider<Person>, CompositeSimilarityExpressionProvider<Person>>();
+            container.RegisterType<IPatientSearchService, PatientSearchService>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()

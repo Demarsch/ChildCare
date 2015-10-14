@@ -6,9 +6,9 @@ using Core.Expressions;
 
 namespace PatientSearchModule.Model
 {
-    public class PersonBirthDateSearchExpressionProvider : DateBasedSearchExpressionProvider<Person>
+    public class PersonBirthDateSimilarityExpressionProvider : DateBasedSimilarityExpressionProvider<Person>
     {
-        public override Expression<Func<Person, int>> CreateSearchExpression(string searchPattern)
+        public override Expression<Func<Person, int>> CreateSimilarityExpression(string searchPattern)
         {
             var parsedDates = GetDates(searchPattern);
             if (parsedDates.Count == 0)

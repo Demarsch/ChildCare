@@ -8,11 +8,11 @@ using Core.Expressions;
 
 namespace PatientSearchModule.Model
 {
-    public class PersonNamesSearchExpressionProvider : ISearchExpressionProvider<Person>
+    public class PersonNamesSimilarityExpressionProvider : ISimilarityExpressionProvider<Person>
     {
         private static readonly Regex NamesRegex = new Regex(@"\w+|\w+-{1}\w+");
 
-        public Expression<Func<Person, int>> CreateSearchExpression(string searchPattern)
+        public Expression<Func<Person, int>> CreateSimilarityExpression(string searchPattern)
         {
             var parsedNames = GetNames(searchPattern);
             if (parsedNames.Count == 0)

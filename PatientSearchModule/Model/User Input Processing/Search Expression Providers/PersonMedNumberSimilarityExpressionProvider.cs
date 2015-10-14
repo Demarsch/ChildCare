@@ -8,7 +8,7 @@ using Core.Expressions;
 
 namespace PatientSearchModule.Model
 {
-    public class PersonMedNumberSearchExpressionProvider : ISearchExpressionProvider<Person>
+    public class PersonMedNumberSimilarityExpressionProvider : ISimilarityExpressionProvider<Person>
     {
         private static readonly Regex MedNumberRegex = new Regex(@"\d{13}");
 
@@ -22,7 +22,7 @@ namespace PatientSearchModule.Model
                                        StringComparer.CurrentCultureIgnoreCase);
         }
 
-        public Expression<Func<Person, int>> CreateSearchExpression(string searchPattern)
+        public Expression<Func<Person, int>> CreateSimilarityExpression(string searchPattern)
         {
             var parsedMedNumbersCollection = GetMedNumbersCollection(searchPattern);
             if (parsedMedNumbersCollection.Count == 0)
