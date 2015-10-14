@@ -19,6 +19,7 @@ namespace DataLib
         {
             this.VisitOutcomes = new HashSet<VisitOutcome>();
             this.VisitResults = new HashSet<VisitResult>();
+            this.Visits = new HashSet<Visit>();
         }
     
         public int Id { get; set; }
@@ -30,5 +31,7 @@ namespace DataLib
         public virtual ICollection<VisitOutcome> VisitOutcomes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VisitResult> VisitResults { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Visit> Visits { get; set; }
     }
 }

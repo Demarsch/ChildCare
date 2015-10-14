@@ -127,7 +127,6 @@
     <Compile Include="Data transfer objects\ContractItemDTO.cs" />
     <Compile Include="Data transfer objects\ThumbnailDTO.cs" />
     <Compile Include="Data transfer objects\UserDTO.cs" />
-    <Compile Include="Data transfer objects\AssignmentDTO.cs" />
     <Compile Include="Exception\UserFriendlyException.cs" />
     <Compile Include="Helpers\RecordTypesSuggestionProvider.cs" />
     <Compile Include="Helpers\PersonSuggestionProvider.cs" />
@@ -160,6 +159,9 @@
     <Compile Include="Services\Implementation\PatientService.cs" />
     <Compile Include="ViewModel\EditPersonCommonDataViewModel.cs" />
     <Compile Include="ViewModel\ContractsViewModel.cs" />
+    <Compile Include="ViewModel\PersonVisitItemsListViewModels\PersonHierarchicalRecordsViewModel.cs" />
+    <Compile Include="ViewModel\PersonVisitItemsListViewModels\PersonHierarchicalVisitsViewModel.cs" />
+    <Compile Include="ViewModel\PersonVisitItemsListViewModels\PersonHierarchicalAssignmentsViewModel.cs" />
     <Compile Include="ViewModel\PersonContractsViewModel.cs" />
     <Compile Include="ViewModel\PersonDocumentsViewModel.cs" />
     <Compile Include="ViewModel\ScanDocumentsViewModel.cs" />
@@ -236,6 +238,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\PersonVisitItemsListViews\PersonHierarchicalRecordsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonVisitItemsListViews\PersonHierarchicalAssignmentsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PersonVisitItemsListViews\PersonHierarchicalVisitsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\ScanDocumentsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -252,7 +266,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Fody.1.28.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.28.3\build\Fody.targets'))" />
-  </Target> 
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

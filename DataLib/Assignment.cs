@@ -18,6 +18,7 @@ namespace DataLib
         public Assignment()
         {
             this.RecordContractItems = new HashSet<RecordContractItem>();
+            this.Assignments1 = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -37,6 +38,8 @@ namespace DataLib
         public System.DateTime CreationDateTime { get; set; }
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public double Cost { get; set; }
+        public Nullable<int> ParentId { get; set; }
+        public Nullable<int> VisitId { get; set; }
     
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual Org Org { get; set; }
@@ -48,5 +51,9 @@ namespace DataLib
         public virtual User User1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Assignment> Assignments1 { get; set; }
+        public virtual Assignment Assignment1 { get; set; }
+        public virtual Visit Visit { get; set; }
     }
 }

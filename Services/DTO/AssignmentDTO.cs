@@ -35,6 +35,13 @@ namespace Core
             set { Set("EndDateTime", ref endDateTime, value); }
         }
 
+        private string roomName;
+        public string RoomName
+        {
+            get { return roomName; }
+            set { Set("RoomName", ref roomName, value); }
+        }
+
         private double recordTypeCost;
         public double RecordTypeCost
         {

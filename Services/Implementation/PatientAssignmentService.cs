@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using Core;
 using DataLib;
 
-namespace Registry
+namespace Core
 {
     public class PatientAssignmentService : IPatientAssignmentService
     {
@@ -20,12 +19,12 @@ namespace Registry
             this.dataContextProvider = dataContextProvider;
         }
 
-        public ICollection<AssignmentDTO> GetAssignments(int patientId)
+        public ICollection<AssignmentScheduleDTO> GetAssignments(int patientId)
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
                 return dataContext.GetData<Assignment>().Where(x => x.PersonId == patientId)
-                    .Select(x => new AssignmentDTO
+                    .Select(x => new AssignmentScheduleDTO
                     {
                         Id = x.Id,
                         AssignDateTime = x.AssignDateTime,
@@ -39,14 +38,14 @@ namespace Registry
             }
         }
 
-        public ICollection<AssignmentDTO> GetActualAssignments(int patientId, DateTime date)
+        public ICollection<AssignmentScheduleDTO> GetActualAssignments(int patientId, DateTime date)
         {
             var startDate = date.Date;
             var endDate = startDate.AddDays(1.0);
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
                 return dataContext.GetData<Assignment>().Where(x => x.PersonId == patientId && x.CancelUserId == null && x.AssignDateTime >= startDate && x.AssignDateTime < endDate)
-                    .Select(x => new AssignmentDTO
+                    .Select(x => new AssignmentScheduleDTO
                     {
                         Id = x.Id,
                         AssignDateTime = x.AssignDateTime,
@@ -60,12 +59,12 @@ namespace Registry
             }
         }
 
-        public AssignmentDTO GetAssignment(int assignmentId, int patientId)
+        public AssignmentScheduleDTO GetAssignment(int assignmentId, int patientId)
         {
             using (var dataContext = dataContextProvider.GetNewDataContext())
             {
                 return dataContext.GetData<Assignment>().Where(x => x.Id == assignmentId && x.PersonId == patientId)
-                    .Select(x => new AssignmentDTO
+                    .Select(x => new AssignmentScheduleDTO
                     {
                         Id = x.Id,
                         AssignDateTime = x.AssignDateTime,
@@ -77,6 +76,23 @@ namespace Registry
                         Duration = x.Duration
                     })
                     .FirstOrDefault();
+            }
+        }
+
+
+        public ICollection<AssignmentDTO> GetChildAssignments(int parentAssignmentId)
+        {
+            using (var dataContext = dataContextProvider.GetNewDataContext())
+            {
+                return dataContext.GetData<Assignment>().Where(x => x.ParentId == parentAssignmentId)
+                       .Select(x => new AssignmentDTO
+                       {
+                           Id = x.Id,
+                           AssignDateTime = x.AssignDateTime,
+                           RecordTypeName = x.RecordType.Name,
+                           RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
+
+                       }).ToList();
             }
         }
     }

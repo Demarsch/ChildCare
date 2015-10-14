@@ -142,7 +142,7 @@ namespace Registry
                 {
                     return;
                 }
-                var assignment = await Task<AssignmentDTO>.Factory.StartNew(() => patientAssignmentService.GetAssignment(assignmentId, currentPatient.Id));
+                var assignment = await Task<AssignmentScheduleDTO>.Factory.StartNew(() => patientAssignmentService.GetAssignment(assignmentId, currentPatient.Id));
                 Assignments.RemoveWhere(x => x.Id == assignmentId);
                 if (assignment != null && !assignment.IsCanceled)
                 {
@@ -173,7 +173,7 @@ namespace Registry
             }
             try
             {
-                var assignments = await Task<ICollection<AssignmentDTO>>.Factory.StartNew(() => patientAssignmentService.GetActualAssignments(currentPatientId, currentDate));
+                var assignments = await Task<ICollection<AssignmentScheduleDTO>>.Factory.StartNew(() => patientAssignmentService.GetActualAssignments(currentPatientId, currentDate));
                 if (currentPatient.Id != currentPatientId)
                 {
                     return;

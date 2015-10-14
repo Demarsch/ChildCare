@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MainLib.PersonVisitItemsListViewModels">
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <HierarchicalDataTemplate DataType="{x:Type local:PersonHierarchicalRecordsViewModel}" ItemsSource="{Binding NestedItems}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
+            
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" />
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}" />
+
+        </Grid>
+    </HierarchicalDataTemplate>
+</ResourceDictionary>
