@@ -11,14 +11,22 @@
              d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:PatientSearchViewModel}"
              mvvm:ViewModelLocator.AutoWireViewModel="True">
-    <DockPanel LastChildFill="True">
+    <DockPanel LastChildFill="True"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch">
         <xctk:WatermarkTextBox Watermark="Начните вводить любое имя, номер документа или дату для поиска пациента"
                                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=750}"
                                DockPanel.Dock="Top"
                                Margin="5 15 5 5" 
                                MaxLength="200"/>
-        <ItemsControl BorderThickness="0">
-            
-        </ItemsControl>
+        <xctk:BusyIndicator IsBusy="{Binding BusyMediator.IsBusy}"
+                            BusyContent="{Binding BusyMediator.Message}">
+            <ItemsControl HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Margin="5"
+                          BorderThickness="0"
+                          />
+        </xctk:BusyIndicator>
+        
     </DockPanel>
 </UserControl>

@@ -103,7 +103,8 @@
     <Compile Include="CommissionType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Implementations\DbContextProvider.cs" />
+    <Compile Include="Services\Implementations\DbContextCacheService.cs" />
+    <Compile Include="Services\Implementations\DbContextProvider.cs" />
     <Compile Include="Country.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -146,7 +147,7 @@
     <Compile Include="InsuranceDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\IDbContextProvider.cs" />
+    <Compile Include="Services\Interfaces\IDbContextProvider.cs" />
     <Compile Include="MaritalStatus.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -306,6 +307,12 @@
       <LastGenOutput>ChildCareModel.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{CF75CDE2-002C-4113-824A-03A3B7C6847B}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

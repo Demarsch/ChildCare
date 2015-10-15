@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using Core.Data;
 using Core.Expressions;
-using Core.Misc;
 using log4net;
 using Microsoft.Practices.Unity;
 using PatientSearchModule.Model;
@@ -14,11 +14,10 @@ using Shell.Shared;
 
 namespace PatientSearchModule
 {
-    [Module(ModuleName = ModuleName)]
+    [Module(ModuleName = WellKnownModuleNames.PatientSearchModule)]
+    [ModuleDependency(WellKnownModuleNames.CoreModule)]
     public class Module : IModule
     {
-        public const string ModuleName = "Patient Search Module";
-
         private readonly IUnityContainer container;
 
         private readonly IRegionManager regionManager;
@@ -61,6 +60,7 @@ namespace PatientSearchModule
         private void RegisterViews()
         {
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, () => container.Resolve<PatientSearch>());
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"Views\FoundPatient.xaml", UriKind.Relative) });
         }
     }
 }

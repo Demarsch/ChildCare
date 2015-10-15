@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using Core.Data;
 using Core.Misc;
+using Core.Services;
 using Core.Wpf.Mvvm;
 using log4net;
 using PatientSearchModule.Services;
@@ -18,7 +19,9 @@ namespace PatientSearchModule.ViewModels
 
         private readonly ILog log;
 
-        public PatientSearchViewModel(IPatientSearchService patientSearchService, ILog log)
+        private readonly ICacheService cacheService;
+
+        public PatientSearchViewModel(IPatientSearchService patientSearchService, ILog log, ICacheService cacheService)
         {
             if (patientSearchService == null)
             {
@@ -28,6 +31,11 @@ namespace PatientSearchModule.ViewModels
             {
                 throw new ArgumentNullException("log");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
+            this.cacheService = cacheService;
             this.log = log;
             this.patientSearchService = patientSearchService;
             Header = "Поиск Пациента";

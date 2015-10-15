@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Core.Data;
-using Core.Data.Interfaces;
+using Core.Data.Services;
 using Core.Expressions;
 using Core.Misc;
 using PatientSearchModule.Model;
