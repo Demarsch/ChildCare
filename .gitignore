@@ -186,3 +186,4 @@ FakesAssemblies/
 *.csproj.DotSettings
 *.csproj.DotSettings
 *.orig
+Output/*
