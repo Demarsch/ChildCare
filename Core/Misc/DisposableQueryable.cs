@@ -8,9 +8,7 @@ namespace Core.Misc
 {
     public sealed class DisposableQueryable<T> : IDisposableQueryable<T>
     {
-        private static readonly DisposableQueryable<T> emptyInstance = new DisposableQueryable<T>(new T[0].AsQueryable(), null);
-
-        public static DisposableQueryable<T> EmptyInstance { get { return emptyInstance; } }
+        public static readonly DisposableQueryable<T> Empty = new DisposableQueryable<T>(new T[0].AsQueryable(), null);
 
         private readonly IQueryable<T> query;
 

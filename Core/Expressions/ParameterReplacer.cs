@@ -16,9 +16,16 @@ namespace Core.Expressions
             Parameter = parameter;
         }
 
+        private ParameterExpression replacedParameter;
+
         protected override Expression VisitParameter(ParameterExpression node)
         {
-            return Parameter;
+            if (replacedParameter == null)
+            {
+                replacedParameter = node;
+                return Parameter;
+            }
+            return node.Name == replacedParameter.Name ? Parameter : node;
         }
     }
 }

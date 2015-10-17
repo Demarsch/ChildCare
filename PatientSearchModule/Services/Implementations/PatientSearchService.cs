@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Core.Data;
 using Core.Data.Services;
 using Core.Expressions;
@@ -44,12 +45,12 @@ namespace PatientSearchModule.Services
             var normalizedUserInput = userInputNormalizer.NormalizeUserInput(searchPattern);
             if (normalizedUserInput.Length < UserInputThresholdLength)
             {
-                return DisposableQueryable<Person>.EmptyInstance;
+                return DisposableQueryable<Person>.Empty;
             }
             var similarityExpression = similarityExpressionProvider.CreateSimilarityExpression(normalizedUserInput);
             if (similarityExpression == null)
             {
-                return DisposableQueryable<Person>.EmptyInstance;
+                return DisposableQueryable<Person>.Empty;
             }
             var dataContext = contextProvider.CreateNewContext();
             return new DisposableQueryable<Person>(dataContext.Set<Person>()

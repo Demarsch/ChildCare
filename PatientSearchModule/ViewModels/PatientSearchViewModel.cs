@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Data;
 using Core.Misc;
@@ -52,7 +53,13 @@ namespace PatientSearchModule.ViewModels
         public string SearchText
         {
             get { return searchText; }
-            set { SetProperty(ref searchText, value); }
+            set
+            {
+                if (SetProperty(ref searchText, value))
+                {
+                    SearchPatients();
+                }
+            }
         }
 
         private object header;
@@ -80,17 +87,19 @@ namespace PatientSearchModule.ViewModels
             try
             {
                 query = patientSearchService.PatientSearchQuery(currentSearchText);
-                var result = await query.Select(x => x.FullName).ToArrayAsync();
+                var runQueryTask = query.Select(x => x.FullName).ToArrayAsync();
+                await Task.WhenAll(runQueryTask, Task.Delay(TimeSpan.FromSeconds(0.75)));
                 searchIsCompleted = currentSearchText == SearchText;
                 if (searchIsCompleted)
                 {
-                    log.InfoFormat("Found {0} patients", result.Length);
-                    Patients.Replace(result);
+                    log.InfoFormat("Found {0} patients", runQueryTask.Result.Length);
+                    Patients.Replace(runQueryTask.Result);
                 }
             }
             catch (Exception ex)
             {
                 log.Error("Failed to find patients", ex);
+                searchIsCompleted = currentSearchText == SearchText;
                 CriticalFailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", SearchPatientsCommand);
             }
             finally

@@ -2,6 +2,28 @@
                     xmlns:viewModels="clr-namespace:PatientSearchModule.ViewModels"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DataTemplate DataType="{x:Type viewModels:FoundPatientViewModel}">
-        <TextBlock Text="Placeholder" />
+        <Border BorderBrush="DimGray"
+                BorderThickness="2"
+                CornerRadius="1">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0"
+                        Grid.Column="0"
+                        BorderBrush="Black"
+                        BorderThickness="1"
+                        Margin="5">
+                    <Image Width="72"
+                           Height="72" />
+                </Border>
+                <TextBlock ></TextBlock>
+            </Grid>
+        </Border>
     </DataTemplate>
 </ResourceDictionary>

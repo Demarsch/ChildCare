@@ -50,10 +50,11 @@
     <Compile Include="Expressions\CompositeSimilarityExpressionProvider.cs" />
     <Compile Include="Expressions\DateBasedSimilarityExpressionProvider.cs" />
     <Compile Include="Expressions\ParameterReplacer.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
-    <Compile Include="Misc\Interfaces\DisposableQueryable.cs" />
+    <Compile Include="Misc\DisposableQueryable.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
-    <Compile Include="Misc\Implementations\IDisposableQueryable.cs" />
+    <Compile Include="Misc\IDisposableQueryable.cs" />
     <Compile Include="Expressions\ISimilarityExpressionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

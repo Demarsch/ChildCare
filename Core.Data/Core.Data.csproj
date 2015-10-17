@@ -103,6 +103,7 @@
     <Compile Include="CommissionType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PartialClasses\Gender.cs" />
     <Compile Include="Services\Implementations\DbContextCacheService.cs" />
     <Compile Include="Services\Implementations\DbContextProvider.cs" />
     <Compile Include="Country.cs">

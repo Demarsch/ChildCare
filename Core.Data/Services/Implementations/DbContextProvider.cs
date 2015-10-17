@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Diagnostics;
 
 namespace Core.Data.Services
 {
@@ -39,7 +40,7 @@ namespace Core.Data.Services
                     {
                         throw new ObjectDisposedException("SharedContext");
                     }
-                    sharedContext = new ModelContext();
+                    sharedContext = CreateNewContext();
                     sharedContext.Configuration.AutoDetectChangesEnabled = false;
                 }
                 return sharedContext;
@@ -48,7 +49,11 @@ namespace Core.Data.Services
 
         public DbContext CreateNewContext()
         {
-            return new ModelContext();
+            var result = new ModelContext();
+#if DEBUG
+            result.Database.Log = x => Debug.Write(x);
+#endif
+            return result;
         }
     }
 }

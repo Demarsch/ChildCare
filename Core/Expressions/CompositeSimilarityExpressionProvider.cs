@@ -20,8 +20,13 @@ namespace Core.Expressions
 
         public Expression<Func<T, int>> CreateSimilarityExpression(string searchPattern)
         {
+            var type = typeof(T);
+            var parameter = Expression.Parameter(type, type.Name.ToLower());
+            var parameterReplacer = new ParameterReplacer(parameter);
             var expressions = providers.Select(x => x.CreateSimilarityExpression(searchPattern))
                                        .Where(x => x != null)
+                                       .Select(parameterReplacer.Visit)
+                                       .Cast<Expression<Func<T, int>>>()
                                        .Select(x => x.Body)
                                        .ToArray();
             Expression body = null;
@@ -33,10 +38,6 @@ namespace Core.Expressions
             {
                 return null;
             }
-            var type = typeof(T);
-            var parameter = Expression.Parameter(type, type.Name.ToLower());
-            var parameterReplacer = new ParameterReplacer(parameter);
-            parameterReplacer.Visit(parameter);
             return Expression.Lambda<Func<T, int>>(body, parameter);
         }
     }
