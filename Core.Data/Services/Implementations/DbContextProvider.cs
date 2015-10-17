@@ -42,6 +42,7 @@ namespace Core.Data.Services
                     }
                     sharedContext = CreateNewContext();
                     sharedContext.Configuration.AutoDetectChangesEnabled = false;
+                    sharedContext.Configuration.ProxyCreationEnabled = false;
                 }
                 return sharedContext;
             }

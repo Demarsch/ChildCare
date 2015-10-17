@@ -68,7 +68,7 @@ namespace PatientSearchModule.ViewModels
             get
             {
                 var result = new StringBuilder();
-                var hasCurrent = !string.IsNullOrWhiteSpace(CurrentName.LastName);
+                var hasCurrent = CurrentName != null && !string.IsNullOrWhiteSpace(CurrentName.LastName);
                 var hasPrevious = PreviousName != null && !string.IsNullOrWhiteSpace(PreviousName.LastName);
                 var theyAreDifferent = hasCurrent != hasPrevious || (hasCurrent && CurrentName.LastName != PreviousName.LastName);
                 if (hasCurrent && hasPrevious && theyAreDifferent)
@@ -78,16 +78,21 @@ namespace PatientSearchModule.ViewModels
                         .Append(PreviousName.LastName)
                         .Append(')');
                 }
-                if (!hasCurrent && hasPrevious)
+                else if (hasCurrent)
+                {
+                    result.Append(CurrentName.LastName);
+                }
+                else if (hasPrevious)
                 {
                     result.Append(PreviousName.LastName);
                 }
-                if (!hasCurrent && !hasPrevious)
+                else
                 {
                     result.Append(PersonName.UnknownLastName);
                 }
                 result.Append(' ');
-                hasCurrent = !string.IsNullOrWhiteSpace(CurrentName.FirstName);
+
+                hasCurrent = CurrentName != null && !string.IsNullOrWhiteSpace(CurrentName.FirstName);
                 hasPrevious = PreviousName != null && !string.IsNullOrWhiteSpace(PreviousName.FirstName);
                 theyAreDifferent = hasCurrent != hasPrevious || (hasCurrent && CurrentName.FirstName != PreviousName.FirstName);
                 if (hasCurrent && hasPrevious && theyAreDifferent)
@@ -97,16 +102,21 @@ namespace PatientSearchModule.ViewModels
                         .Append(PreviousName.FirstName)
                         .Append(')');
                 }
-                if (!hasCurrent && hasPrevious)
+                else if (hasCurrent)
+                {
+                    result.Append(CurrentName.FirstName);
+                }
+                else if (hasPrevious)
                 {
                     result.Append(PreviousName.FirstName);
                 }
-                if (!hasCurrent && !hasPrevious)
+                else
                 {
                     result.Append(PersonName.UnknownFirstName);
                 }
                 result.Append(' ');
-                hasCurrent = !string.IsNullOrWhiteSpace(CurrentName.MiddleName);
+
+                hasCurrent = CurrentName != null && !string.IsNullOrWhiteSpace(CurrentName.MiddleName);
                 hasPrevious = PreviousName != null && !string.IsNullOrWhiteSpace(PreviousName.MiddleName);
                 theyAreDifferent = hasCurrent != hasPrevious || (hasCurrent && CurrentName.MiddleName != PreviousName.MiddleName);
                 if (hasCurrent && hasPrevious && theyAreDifferent)
@@ -116,7 +126,11 @@ namespace PatientSearchModule.ViewModels
                         .Append(PreviousName.MiddleName)
                         .Append(')');
                 }
-                if (!hasCurrent && hasPrevious)
+                else if (hasCurrent)
+                {
+                    result.Append(CurrentName.MiddleName);
+                }
+                else if (hasPrevious)
                 {
                     result.Append(PreviousName.MiddleName);
                 }

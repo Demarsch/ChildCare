@@ -1,7 +1,20 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:viewModels="clr-namespace:PatientSearchModule.ViewModels"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                    xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
+                    xmlns:coreMisc="clr-namespace:Core.Misc;assembly=Core">
     <DataTemplate DataType="{x:Type viewModels:FoundPatientViewModel}">
+        <DataTemplate.Resources>
+            <converters:Converter x:Key="GenderToTextConverter">
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                          To="родился" />
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                          To="родилась" />
+            </converters:Converter>
+            <SolidColorBrush x:Key="ExplanationTextColor" Color="Gray" />
+            
+        </DataTemplate.Resources>
         <Border BorderBrush="DimGray"
                 BorderThickness="2"
                 CornerRadius="1">
@@ -16,13 +29,41 @@
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0"
                         Grid.Column="0"
+                        Grid.RowSpan="2"
                         BorderBrush="Black"
                         BorderThickness="1"
                         Margin="5">
                     <Image Width="72"
                            Height="72" />
                 </Border>
-                <TextBlock ></TextBlock>
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="5">
+                    <TextBlock Text="{Binding FullName, Mode=OneWay}"
+                               FontSize="16"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Gender.IsMale, Converter={StaticResource GenderToTextConverter}}"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock
+                        Text="{Binding BirthDate, StringFormat={x:Static coreMisc:DateTimeFormats.ShortDateFormat}}" />
+                </StackPanel>
+                <StackPanel Grid.Row="1"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="5">
+                    <TextBlock Text="СНИЛС"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock Text="{Binding Snils}" />
+                    <TextBlock Text="ЕМН"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock Text="{Binding MedNumber}" />
+                    <TextBlock Text="{Binding IdentityDocument.IdentityDocumentType.Name}"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock Text="{Binding IdentityDocument.SeriesAndNumber}" />
+                </StackPanel>
             </Grid>
         </Border>
     </DataTemplate>

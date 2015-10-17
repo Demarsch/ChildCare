@@ -53,6 +53,7 @@ namespace PatientSearchModule.Services
                 return DisposableQueryable<Person>.Empty;
             }
             var dataContext = contextProvider.CreateNewContext();
+            dataContext.Configuration.ProxyCreationEnabled = false;
             return new DisposableQueryable<Person>(dataContext.Set<Person>()
                                                               .AsNoTracking()
                                                               .OrderByDescending(similarityExpression)

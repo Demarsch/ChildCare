@@ -13,6 +13,12 @@
                 <Setter Property="Header"
                         Value="{Binding Content.DataContext.Header, RelativeSource={RelativeSource Self}}" />
             </Style>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+                <Setter Property="Margin"
+                        Value="5" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

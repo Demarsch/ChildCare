@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Data;
+using Core.Extensions;
 using Core.Misc;
 using Core.Services;
 using Core.Wpf.Mvvm;
@@ -42,11 +43,11 @@ namespace PatientSearchModule.ViewModels
             Header = "Поиск Пациента";
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
-            Patients = new ObservableCollectionEx<string>();
+            Patients = new ObservableCollectionEx<FoundPatientViewModel>();
             SearchPatientsCommand = new DelegateCommand(SearchPatients);
         }
 
-        public ObservableCollectionEx<string> Patients { get; private set; }
+        public ObservableCollectionEx<FoundPatientViewModel> Patients { get; private set; }
 
         private string searchText;
 
@@ -82,18 +83,44 @@ namespace PatientSearchModule.ViewModels
             var searchIsCompleted = false;
             CriticalFailureMediator.Deactivate();
             BusyMediator.Activate("Идет поиск пациентов...");
-            log.InfoFormat("Searching patient by user input \"{0}\"", currentSearchText);
+            log.InfoFormat("Searching patients by user input \"{0}\"", currentSearchText);
             IDisposableQueryable<Person> query = null;
             try
             {
                 query = patientSearchService.PatientSearchQuery(currentSearchText);
-                var runQueryTask = query.Select(x => x.FullName).ToArrayAsync();
-                await Task.WhenAll(runQueryTask, Task.Delay(TimeSpan.FromSeconds(0.75)));
+                var runQueryTask = query
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.BirthDate,
+                        x.GenderId,
+                        x.Snils,
+                        x.MedNumber,
+                        CurrentName = x.PersonNames.FirstOrDefault(y => y.ChangeNameReason == null),
+                        PreviousName = x.PersonNames.Where(y => y.ChangeNameReason != null)
+                            .OrderByDescending(y => y.BeginDateTime)
+                            .FirstOrDefault(),
+                        IdentityDocument = x.PersonIdentityDocuments
+                            .OrderByDescending(y => y.BeginDate)
+                            .FirstOrDefault()
+                    })
+                    .ToArrayAsync();
+                await Task.WhenAll(runQueryTask, Task.Delay(TimeSpan.FromSeconds(0.5)));
+                var result = await Task.Run(() => runQueryTask.Result.Select(x => new FoundPatientViewModel
+                {
+                    BirthDate = x.BirthDate,
+                    CurrentName = x.CurrentName,
+                    PreviousName = cacheService.AutoWire(x.PreviousName, y => y.ChangeNameReason),
+                    Gender = cacheService.GetItemById<Gender>(x.GenderId),
+                    IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
+                    MedNumber = x.MedNumber,
+                    Snils = x.Snils
+                }));
                 searchIsCompleted = currentSearchText == SearchText;
                 if (searchIsCompleted)
                 {
                     log.InfoFormat("Found {0} patients", runQueryTask.Result.Length);
-                    Patients.Replace(runQueryTask.Result);
+                    Patients.Replace(result);
                 }
             }
             catch (Exception ex)
