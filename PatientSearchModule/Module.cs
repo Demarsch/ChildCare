@@ -47,13 +47,13 @@ namespace PatientSearchModule
             container.RegisterInstance(LogManager.GetLogger("PATSEARCH"));
 
             container.RegisterType<IUserInputNormalizer, UserInputNormalizer>(new ContainerControlledLifetimeManager());
-            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonBirthDateSimilarityExpressionProvider>("PersonBirthDate", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonIdentityDocumentNumberSimilarityExpressionProvider>("PersonIdentityNumber", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonMedNumberSimilarityExpressionProvider>("PersonMedNumber", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonNamesSimilarityExpressionProvider>("PersonNames", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISimilarityExpressionProvider<Person>, PersonSnilsSimilarityExpressionProvider>("PersonSnils", new ContainerControlledLifetimeManager());
-            container.RegisterType<IEnumerable<ISimilarityExpressionProvider<Person>>, ISimilarityExpressionProvider<Person>[]>();
-            container.RegisterType<ISimilarityExpressionProvider<Person>, CompositeSimilarityExpressionProvider<Person>>();
+            container.RegisterType<ISearchExpressionProvider<Person>, PersonBirthDateSearchExpressionProvider>("PersonBirthDate", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISearchExpressionProvider<Person>, PersonIdentityDocumentNumberSearchExpressionProvider>("PersonIdentityNumber", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISearchExpressionProvider<Person>, PersonMedNumberSearchExpressionProvider>("PersonMedNumber", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISearchExpressionProvider<Person>, PersonNamesSearchExpressionProvider>("PersonNames", new ContainerControlledLifetimeManager());
+            container.RegisterType<ISearchExpressionProvider<Person>, PersonSnilsSearchExpressionProvider>("PersonSnils", new ContainerControlledLifetimeManager());
+            container.RegisterType<IEnumerable<ISearchExpressionProvider<Person>>, ISearchExpressionProvider<Person>[]>();
+            container.RegisterType<ISearchExpressionProvider<Person>, CompositeSearchExpressionProvider<Person>>();
             container.RegisterType<IPatientSearchService, PatientSearchService>(new ContainerControlledLifetimeManager());
         }
 

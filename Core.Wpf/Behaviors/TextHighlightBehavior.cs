@@ -9,9 +9,9 @@ using System.Windows.Interactivity;
 
 namespace Core.Wpf.Behaviors
 {
-    public class TextHightlightBehavior : Behavior<TextBlock>
+    public class TextHighlightBehavior : Behavior<TextBlock>
     {
-        public static readonly DependencyProperty HighlightStyleProperty = DependencyProperty.Register("HighlightStyle", typeof(Style), typeof(TextHightlightBehavior), new PropertyMetadata(HighlightStyleChanged));
+        public static readonly DependencyProperty HighlightStyleProperty = DependencyProperty.Register("HighlightStyle", typeof(Style), typeof(TextHighlightBehavior), new PropertyMetadata(HighlightStyleChanged));
 
         public Style HighlightStyle
         {
@@ -19,7 +19,7 @@ namespace Core.Wpf.Behaviors
             set { SetValue(HighlightStyleProperty, value); }
         }
 
-        public static readonly DependencyProperty WordsToHighlightProperty = DependencyProperty.Register("WordsToHighlight", typeof(IEnumerable<string>), typeof(TextHightlightBehavior), new PropertyMetadata(WordsToHighlightChanged));
+        public static readonly DependencyProperty WordsToHighlightProperty = DependencyProperty.Register("WordsToHighlight", typeof(IEnumerable<string>), typeof(TextHighlightBehavior), new PropertyMetadata(WordsToHighlightChanged));
 
         public IEnumerable<string> WordsToHighlight
         {
@@ -30,6 +30,7 @@ namespace Core.Wpf.Behaviors
         protected override void OnAttached()
         {
             DependencyPropertyDescriptor.FromProperty(TextBlock.TextProperty, typeof(TextBlock)).AddValueChanged(AssociatedObject, TextChanged);
+            ParseAndHighlight(this);
             base.OnAttached();
         }
 
@@ -42,19 +43,19 @@ namespace Core.Wpf.Behaviors
 
         private static void HighlightStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ParseAndHighlight(d as TextHightlightBehavior);
+            ParseAndHighlight(d as TextHighlightBehavior);
         }
 
         private static void WordsToHighlightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ParseAndHighlight(d as TextHightlightBehavior);
+            ParseAndHighlight(d as TextHighlightBehavior);
         }
 
         private bool textChangeComesFromHighlighting;
 
-        private static void ParseAndHighlight(TextHightlightBehavior behavior)
+        private static void ParseAndHighlight(TextHighlightBehavior behavior)
         {
-            if (behavior.textChangeComesFromHighlighting)
+            if (behavior.AssociatedObject == null || behavior.textChangeComesFromHighlighting)
             {
                 return;
             }
@@ -67,10 +68,8 @@ namespace Core.Wpf.Behaviors
                 || string.IsNullOrWhiteSpace(text = behavior.AssociatedObject.Text)
                 || words.Length == 0)
             {
-                if (behavior.AssociatedObject != null)
-                {
-                    behavior.AssociatedObject.Text = behavior.originalText;
-                }
+                behavior.AssociatedObject.Text = behavior.originalText;
+                behavior.textChangeComesFromHighlighting = false;
                 return;
             }
             //First we fill dictionary where key is a start index of the word and value is the length of this word

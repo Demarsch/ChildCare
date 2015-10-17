@@ -8,27 +8,32 @@ using Core.Expressions;
 
 namespace PatientSearchModule.Model
 {
-    public class PersonIdentityDocumentNumberSimilarityExpressionProvider : ISimilarityExpressionProvider<Person>
+    public class PersonIdentityDocumentNumberSearchExpressionProvider : SearchExpressionProvider<Person>
     {
         private static readonly Regex DocumentNumbersRegex = new Regex(@"[\w\d]{1,6} {1}\d{1, 10}");
 
-        public Expression<Func<Person, int>> CreateSimilarityExpression(string searchPattern)
+        public override SearchExpression<Person> CreateSearchExpression(string searchPattern)
         {
             var parsedIdentityNumbers = GetIdentityNumbers(searchPattern);
             if (parsedIdentityNumbers.Count == 0)
             {
-                return null;
+                return EmptyExpression;
             }
+            Expression<Func<Person, int>> expression;
             if (parsedIdentityNumbers.Count == 1)
             {
                 var parsedIdentityNumber = parsedIdentityNumbers.First();
-                return person => person
-                                     .PersonIdentityDocuments
-                                     .Any(x => x.Series + " " + x.Number == parsedIdentityNumber) ? 1 : 0;
+                expression = person => person
+                                           .PersonIdentityDocuments
+                                           .Any(x => x.Series + " " + x.Number == parsedIdentityNumber) ? 1 : 0;
             }
-            return person => person
-                                 .PersonIdentityDocuments
-                                 .Any(x => parsedIdentityNumbers.Contains(x.Series + " " + x.Number)) ? 1 : 0;
+            else
+            {
+                expression = person => person
+                                           .PersonIdentityDocuments
+                                           .Any(x => parsedIdentityNumbers.Contains(x.Series + " " + x.Number)) ? 1 : 0;
+            }
+            return new SearchExpression<Person>(parsedIdentityNumbers, expression);
         }
 
         internal ICollection<string> GetIdentityNumbers(string userInput)

@@ -1,31 +1,33 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Core.Expressions
 {
     public class ParameterReplacer : ExpressionVisitor
     {
-        public ParameterExpression Parameter { get; private set; }
+        private readonly object replaceLock = new object();
 
-        public ParameterReplacer(ParameterExpression parameter)
+        private ParameterExpression sourceParameter;
+
+        private ParameterExpression newParameter;
+
+        public Expression ReplaceParameter(Expression lambda, ParameterExpression newParameter)
         {
-            if (parameter == null)
+            lock (replaceLock)
             {
-                throw new ArgumentNullException("parameter");
+                this.newParameter = newParameter;
+                sourceParameter = null;
+                return Visit(lambda);
             }
-            Parameter = parameter;
         }
-
-        private ParameterExpression replacedParameter;
 
         protected override Expression VisitParameter(ParameterExpression node)
         {
-            if (replacedParameter == null)
+            if (sourceParameter == null)
             {
-                replacedParameter = node;
-                return Parameter;
+                sourceParameter = node;
+                return newParameter;
             }
-            return node.Name == replacedParameter.Name ? Parameter : node;
+            return node.Name == sourceParameter.Name ? newParameter : node;
         }
     }
 }

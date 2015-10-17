@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Data;
 using Core.Extensions;
-using Core.Misc;
 using Core.Services;
 using Core.Wpf.Mvvm;
 using log4net;
+using PatientSearchModule.Misc;
 using PatientSearchModule.Services;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -84,42 +85,49 @@ namespace PatientSearchModule.ViewModels
             CriticalFailureMediator.Deactivate();
             BusyMediator.Activate("Идет поиск пациентов...");
             log.InfoFormat("Searching patients by user input \"{0}\"", currentSearchText);
-            IDisposableQueryable<Person> query = null;
+            PatientSearchQuery query = null;
             try
             {
-                query = patientSearchService.PatientSearchQuery(currentSearchText);
+                query = patientSearchService.GetPatientSearchQuery(currentSearchText);
                 var runQueryTask = query
+                    .PatientsQuery
                     .Select(x => new
-                    {
-                        x.Id,
-                        x.BirthDate,
-                        x.GenderId,
-                        x.Snils,
-                        x.MedNumber,
-                        CurrentName = x.PersonNames.FirstOrDefault(y => y.ChangeNameReason == null),
-                        PreviousName = x.PersonNames.Where(y => y.ChangeNameReason != null)
-                            .OrderByDescending(y => y.BeginDateTime)
-                            .FirstOrDefault(),
-                        IdentityDocument = x.PersonIdentityDocuments
-                            .OrderByDescending(y => y.BeginDate)
-                            .FirstOrDefault()
-                    })
+                                 {
+                                     x.Id,
+                                     x.BirthDate,
+                                     x.GenderId,
+                                     x.Snils,
+                                     x.MedNumber,
+                                     CurrentName = x.PersonNames.FirstOrDefault(y => y.ChangeNameReason == null),
+                                     PreviousName = x.PersonNames.Where(y => y.ChangeNameReason != null)
+                                                     .OrderByDescending(y => y.BeginDateTime)
+                                                     .FirstOrDefault(),
+                                     IdentityDocument = x.PersonIdentityDocuments
+                                                         .OrderByDescending(y => y.BeginDate)
+                                                         .FirstOrDefault()
+                                 })
                     .ToArrayAsync();
                 await Task.WhenAll(runQueryTask, Task.Delay(TimeSpan.FromSeconds(0.5)));
-                var result = await Task.Run(() => runQueryTask.Result.Select(x => new FoundPatientViewModel
-                {
-                    BirthDate = x.BirthDate,
-                    CurrentName = x.CurrentName,
-                    PreviousName = cacheService.AutoWire(x.PreviousName, y => y.ChangeNameReason),
-                    Gender = cacheService.GetItemById<Gender>(x.GenderId),
-                    IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
-                    MedNumber = x.MedNumber,
-                    Snils = x.Snils
-                }));
+                var result = await runQueryTask.Result
+                                               .Select(x => new FoundPatientViewModel
+                                                            {
+                                                                BirthDate = x.BirthDate,
+                                                                CurrentName = x.CurrentName,
+                                                                PreviousName = x.PreviousName,
+                                                                Gender = cacheService.GetItemById<Gender>(x.GenderId),
+                                                                IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
+                                                                MedNumber = x.MedNumber,
+                                                                Snils = x.Snils
+                                                            })
+                                               .ToArrayAsync();
                 searchIsCompleted = currentSearchText == SearchText;
                 if (searchIsCompleted)
                 {
-                    log.InfoFormat("Found {0} patients", runQueryTask.Result.Length);
+                    log.InfoFormat("Found {0} patients", result.Length);
+                    foreach (var patient in result)
+                    {
+                        patient.WordsToHighlight = query.ParsedTokens;
+                    }
                     Patients.Replace(result);
                 }
             }

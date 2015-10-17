@@ -3,17 +3,23 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                     xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
-                    xmlns:coreMisc="clr-namespace:Core.Misc;assembly=Core">
+                    xmlns:coreMisc="clr-namespace:Core.Misc;assembly=Core"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf">
     <DataTemplate DataType="{x:Type viewModels:FoundPatientViewModel}">
         <DataTemplate.Resources>
-            <converters:Converter x:Key="GenderToTextConverter">
-                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Resources/ResourceDictionaries/Styles.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+                <converters:Converter x:Key="GenderToTextConverter">
+                    <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
                                           To="родился" />
-                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                    <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
                                           To="родилась" />
-            </converters:Converter>
-            <SolidColorBrush x:Key="ExplanationTextColor" Color="Gray" />
-            
+                </converters:Converter>
+                <SolidColorBrush x:Key="ExplanationTextColor" Color="Gray" />
+            </ResourceDictionary>
         </DataTemplate.Resources>
         <Border BorderBrush="DimGray"
                 BorderThickness="2"
@@ -43,7 +49,12 @@
                             Margin="5">
                     <TextBlock Text="{Binding FullName, Mode=OneWay}"
                                FontSize="16"
-                               VerticalAlignment="Center" />
+                               VerticalAlignment="Center">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
                     <TextBlock Text="{Binding Gender.IsMale, Converter={StaticResource GenderToTextConverter}}"
                                Foreground="{StaticResource ExplanationTextColor}" />
                     <TextBlock

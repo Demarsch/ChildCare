@@ -8,7 +8,7 @@ using Core.Expressions;
 
 namespace PatientSearchModule.Model
 {
-    public class PersonSnilsSimilarityExpressionProvider : ISimilarityExpressionProvider<Person>
+    public class PersonSnilsSearchExpressionProvider : SearchExpressionProvider<Person>
     {
         private static readonly Regex SnilsRegex = new Regex(@"\d{3} ?\d{3} ?\d{3}-?\d{2}");
         
@@ -22,19 +22,24 @@ namespace PatientSearchModule.Model
                                        StringComparer.CurrentCultureIgnoreCase);
         }
 
-        public Expression<Func<Person, int>> CreateSimilarityExpression(string searchPattern)
+        public override SearchExpression<Person> CreateSearchExpression(string searchPattern)
         {
             var parsedSnilsCollection = GetSnilsCollection(searchPattern);
             if (parsedSnilsCollection.Count == 0)
             {
-                return null;
+                return EmptyExpression;
             }
+            Expression<Func<Person, int>> expression;
             if (parsedSnilsCollection.Count == 1)
             {
                 var parsedSnils = parsedSnilsCollection.First();
-                return person => person.Snils == parsedSnils ? 1 : 0;
+                expression = person => person.Snils == parsedSnils ? 1 : 0;
             }
-            return person => parsedSnilsCollection.Contains(person.Snils) ? 1 : 0;
+            else
+            {
+                expression = person => parsedSnilsCollection.Contains(person.Snils) ? 1 : 0;
+            }
+            return new SearchExpression<Person>(parsedSnilsCollection, expression);
         }
     }
 }

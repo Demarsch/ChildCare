@@ -47,9 +47,11 @@
   <ItemGroup>
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
-    <Compile Include="Expressions\CompositeSimilarityExpressionProvider.cs" />
-    <Compile Include="Expressions\DateBasedSimilarityExpressionProvider.cs" />
+    <Compile Include="Expressions\CompositeSearchExpressionProvider.cs" />
+    <Compile Include="Expressions\DateBasedSearchExpressionProvider.cs" />
     <Compile Include="Expressions\ParameterReplacer.cs" />
+    <Compile Include="Expressions\SearchExpression.cs" />
+    <Compile Include="Expressions\SearchExpressionProvider.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
@@ -57,7 +59,7 @@
     <Compile Include="Misc\DisposableQueryable.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
-    <Compile Include="Expressions\ISimilarityExpressionProvider.cs" />
+    <Compile Include="Expressions\ISearchExpressionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

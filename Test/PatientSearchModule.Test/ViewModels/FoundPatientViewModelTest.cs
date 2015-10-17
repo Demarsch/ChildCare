@@ -1,5 +1,4 @@
-﻿using System;
-using Core.Data;
+﻿using Core.Data;
 using NUnit.Framework;
 using PatientSearchModule.ViewModels;
 

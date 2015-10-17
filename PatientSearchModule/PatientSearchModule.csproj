@@ -107,13 +107,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonBirthDateSimilarityExpressionProvider.cs" />
+    <Compile Include="Misc\PatientSearchQuery.cs" />
+    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonBirthDateSearchExpressionProvider.cs" />
     <Compile Include="Model\User Input Processing\Input Normalization\IUserInputNormalizer.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonIdentityDocumentNumberSimilarityExpressionProvider.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonMedNumberSimilarityExpressionProvider.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonNamesSimilarityExpressionProvider.cs" />
+    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonIdentityDocumentNumberSearchExpressionProvider.cs" />
+    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonMedNumberSearchExpressionProvider.cs" />
+    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonNamesSearchExpressionProvider.cs" />
     <Compile Include="Model\User Input Processing\Input Normalization\UserInputNormalizer.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonSnilsSimilarityExpressionProvider.cs" />
+    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonSnilsSearchExpressionProvider.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IPatientSearchService.cs" />

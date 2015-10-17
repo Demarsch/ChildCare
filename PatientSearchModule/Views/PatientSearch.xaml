@@ -12,11 +12,15 @@
     <DockPanel LastChildFill="True"
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch">
-        <xctk:WatermarkTextBox Watermark="Начните вводить любое имя, номер документа или дату для поиска пациента"
-                               Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=750}"
+        <xctk:WatermarkTextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=750}"
                                DockPanel.Dock="Top"
                                Margin="5 15 5 5" 
-                               MaxLength="200"/>
+                               MaxLength="200"> 
+            <xctk:WatermarkTextBox.Watermark>
+                <TextBlock Text="Начните вводить любое имя, номер документа или дату для поиска пациента"
+                           Style="{x:Null}" />
+            </xctk:WatermarkTextBox.Watermark>
+        </xctk:WatermarkTextBox>
         <xctk:BusyIndicator IsBusy="{Binding BusyMediator.IsBusy}"
                             BusyContent="{Binding BusyMediator.Message}">
             <ItemsControl HorizontalAlignment="Stretch"

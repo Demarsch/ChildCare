@@ -1,10 +1,9 @@
-﻿using Core.Data;
-using Core.Misc;
+﻿using PatientSearchModule.Misc;
 
 namespace PatientSearchModule.Services
 {
     public interface IPatientSearchService
     {
-        IDisposableQueryable<Person> PatientSearchQuery(string searchPattern);
+        PatientSearchQuery GetPatientSearchQuery(string searchPattern);
     }
 }

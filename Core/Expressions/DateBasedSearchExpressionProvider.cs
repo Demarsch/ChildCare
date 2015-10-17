@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 namespace Core.Expressions
 {
-    public abstract class DateBasedSimilarityExpressionProvider<T> : ISimilarityExpressionProvider<T>
+    public abstract class DateBasedSearchExpressionProvider<T> : SearchExpressionProvider<T>
     {
         private static readonly Regex DatesRegex = new Regex(@"\d{1,2}[ /\-.]{1}\d{1,2}[ /\-.](\d{2}|\d{4})|\d{1,2} ?\w{3,10} ?(\d{2}|\d{4})");
 
@@ -29,7 +28,5 @@ namespace Core.Expressions
             }
             return result;
         }
-
-        public abstract Expression<Func<T, int>> CreateSimilarityExpression(string searchPattern);
     }
 }

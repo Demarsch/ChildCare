@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Core.Data;
 using Prism.Mvvm;
@@ -7,6 +8,14 @@ namespace PatientSearchModule.ViewModels
 {
     public class FoundPatientViewModel : BindableBase
     {
+        private IEnumerable<string> wordsToHighlight;
+
+        public IEnumerable<string> WordsToHighlight
+        {
+            get { return wordsToHighlight; }
+            set { SetProperty(ref wordsToHighlight, value); }
+        }
+
         private DateTime birthDate;
 
         public DateTime BirthDate
@@ -28,7 +37,11 @@ namespace PatientSearchModule.ViewModels
         public string Snils
         {
             get { return snils; }
-            set { SetProperty(ref snils, value); }
+            set
+            {
+                value = string.IsNullOrWhiteSpace(value) ? Person.UnknownSnils : value;
+                SetProperty(ref snils, value);
+            }
         }
 
         private string medNumber;
@@ -36,7 +49,11 @@ namespace PatientSearchModule.ViewModels
         public string MedNumber
         {
             get { return medNumber; }
-            set { SetProperty(ref medNumber, value); }
+            set
+            {
+                value = string.IsNullOrWhiteSpace(value) ? Person.UnknownMedNumber : value;
+                SetProperty(ref medNumber, value);
+            }
         }
 
         private PersonName currentName;

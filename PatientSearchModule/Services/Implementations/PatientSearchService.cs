@@ -5,6 +5,7 @@ using Core.Data;
 using Core.Data.Services;
 using Core.Expressions;
 using Core.Misc;
+using PatientSearchModule.Misc;
 using PatientSearchModule.Model;
 
 namespace PatientSearchModule.Services
@@ -19,9 +20,9 @@ namespace PatientSearchModule.Services
 
         private readonly IUserInputNormalizer userInputNormalizer;
 
-        private readonly ISimilarityExpressionProvider<Person> similarityExpressionProvider;
+        private readonly ISearchExpressionProvider<Person> searchExpressionProvider;
 
-        public PatientSearchService(IDbContextProvider contextProvider, IUserInputNormalizer userInputNormalizer, ISimilarityExpressionProvider<Person> similarityExpressionProvider)
+        public PatientSearchService(IDbContextProvider contextProvider, IUserInputNormalizer userInputNormalizer, ISearchExpressionProvider<Person> searchExpressionProvider)
         {
             if (contextProvider == null)
             {
@@ -31,34 +32,36 @@ namespace PatientSearchModule.Services
             {
                 throw new ArgumentNullException("userInputNormalizer");
             }
-            if (similarityExpressionProvider == null)
+            if (searchExpressionProvider == null)
             {
-                throw new ArgumentNullException("similarityExpressionProvider");
+                throw new ArgumentNullException("searchExpressionProvider");
             }
-            this.similarityExpressionProvider = similarityExpressionProvider;
+            this.searchExpressionProvider = searchExpressionProvider;
             this.userInputNormalizer = userInputNormalizer;
             this.contextProvider = contextProvider;
         }
 
-        public IDisposableQueryable<Person> PatientSearchQuery(string searchPattern)
+        public PatientSearchQuery GetPatientSearchQuery(string searchPattern)
         {
             var normalizedUserInput = userInputNormalizer.NormalizeUserInput(searchPattern);
             if (normalizedUserInput.Length < UserInputThresholdLength)
             {
-                return DisposableQueryable<Person>.Empty;
+                return PatientSearchQuery.Empty;
             }
-            var similarityExpression = similarityExpressionProvider.CreateSimilarityExpression(normalizedUserInput);
-            if (similarityExpression == null)
+            var searchExpression = searchExpressionProvider.CreateSearchExpression(normalizedUserInput);
+            if (searchExpression == null)
             {
-                return DisposableQueryable<Person>.Empty;
+                return PatientSearchQuery.Empty;
             }
             var dataContext = contextProvider.CreateNewContext();
             dataContext.Configuration.ProxyCreationEnabled = false;
-            return new DisposableQueryable<Person>(dataContext.Set<Person>()
-                                                              .AsNoTracking()
-                                                              .OrderByDescending(similarityExpression)
-                                                              .Take(TopPatientCount),
-                                                   dataContext);
+            return new PatientSearchQuery(searchExpression.ParsedTokens,
+                                          new DisposableQueryable<Person>(dataContext.Set<Person>()
+                                                                                     .AsNoTracking()
+                                                                                     .OrderByDescending(searchExpression.SimilarityExpression)
+                                                                                     .Take(TopPatientCount)
+                                                                                     .Where(searchExpression.FilterExpression),
+                                                                          dataContext));
         }
     }
 }

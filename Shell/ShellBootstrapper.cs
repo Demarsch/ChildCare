@@ -1,9 +1,7 @@
 ﻿using System.Windows;
 using Fluent;
 using log4net;
-using log4net.Util;
 using Microsoft.Practices.Unity;
-using Prism.Logging;
 using Prism.Modularity;
 using Prism.Regions;
 using Prism.Unity;
