@@ -15,7 +15,9 @@
     [Note]              VARCHAR (500) CONSTRAINT [DF_Visits_Note] DEFAULT ('') NOT NULL,
     [TotalCost]         FLOAT (53)    CONSTRAINT [DF_Visits_TotalCost] DEFAULT ((0)) NOT NULL,
     [IsCompleted]       BIT           NULL,
+    [ExecutionPlaceId]  INT           NOT NULL,
     CONSTRAINT [PK_Visits] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_Visits_ExecutionPlaces] FOREIGN KEY ([ExecutionPlaceId]) REFERENCES [dbo].[ExecutionPlaces] ([Id]),
     CONSTRAINT [FK_Visits_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
     CONSTRAINT [FK_Visits_Orgs] FOREIGN KEY ([SentLPUId]) REFERENCES [dbo].[Orgs] ([Id]),
     CONSTRAINT [FK_Visits_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
@@ -23,4 +25,6 @@
     CONSTRAINT [FK_Visits_VisitOutcomes] FOREIGN KEY ([VisitOutcomeId]) REFERENCES [dbo].[VisitOutcomes] ([Id]),
     CONSTRAINT [FK_Visits_VisitResults] FOREIGN KEY ([VisitResultId]) REFERENCES [dbo].[VisitResults] ([Id])
 );
+
+
 

@@ -11,7 +11,8 @@ namespace Core
         ICollection<RecordTypeRole> GetRecordTypeRolesByOptions(string[] options);
         ICollection<RecordTypeRole> GetRecordTypeRolesByOptions(string options);
         ICollection<RecordType> GetAllRecordTypes();
-        ICollection<RecordType> GetRecordTypesByName(string name);        
-            
+        ICollection<RecordType> GetRecordTypesByName(string name);
+        ICollection<Core.PersonVisitItemsListViewModels.RecordDTO> GetChildRecords(int recordId);
+        ICollection<AssignmentDTO> GetChildAssignments(int recordId);
     }
 }

@@ -122,15 +122,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\IsPrintedToColorConverter.cs" />
-    <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\ScheduledAssignmentDTO.cs" />
     <Compile Include="Exceptions\AssignmentConflictException.cs" />
     <Compile Include="Exceptions\SamePatientAssignmentConflictException.cs" />
     <Compile Include="Privileges.cs" />
     <Compile Include="Services\Interface\IScheduleService.cs" />
     <Compile Include="Services\Implementation\ScheduleService.cs" />
-    <Compile Include="Services\Implementation\PatientAssignmentService.cs" />
-    <Compile Include="Services\Interface\IPatientAssignmentService.cs" />
     <Compile Include="ViewModel\Schedule\CurrentPatientAssignmentsViewModel.cs" />
     <Compile Include="ViewModel\Schedule\CurrentPatientAssignmentViewModel.cs" />
     <Compile Include="ViewModel\Schedule\DayOfWeekViewModel.cs" />

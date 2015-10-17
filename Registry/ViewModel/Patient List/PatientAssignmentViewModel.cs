@@ -7,11 +7,11 @@ namespace Registry
 {
     public class PatientAssignmentViewModel : ObservableObject
     {
-        private readonly AssignmentDTO assignment;
+        private readonly AssignmentScheduleDTO assignment;
 
         private readonly ICacheService cacheService;
 
-        public PatientAssignmentViewModel(AssignmentDTO assignment, ICacheService cacheService)
+        public PatientAssignmentViewModel(AssignmentScheduleDTO assignment, ICacheService cacheService)
         {
             if (assignment == null)
                 throw new ArgumentNullException("assignment");

@@ -951,7 +951,7 @@ namespace Core
                 return db.GetData<RecordContract>().Where(x => x.Id == contractId).SelectMany(x => x.RecordContractItems).Where(x => x.IsPaid).Sum(x => x.Cost);
             }
         }
-                
+
         public RecordContract GetContractById(int id)
         {
             using (var db = provider.GetNewDataContext())
@@ -1016,6 +1016,36 @@ namespace Core
         {
             //ToDo: Inplement using Report
             return string.Empty;
+        }
+
+
+        public ICollection<AssignmentDTO> GetRootAssignments(int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Assignment>().Where(x => x.PersonId == personId && x.ParentId == null && !x.RecordId.HasValue && !x.VisitId.HasValue).Select(x => new AssignmentDTO()
+                {
+                    Id = x.Id,
+                    AssignDateTime = x.AssignDateTime,
+                    RecordTypeName = x.RecordType.Name,
+                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
+                }).ToList();
+            }
+        }
+
+        public ICollection<PersonVisitItemsListViewModels.VisitDTO> GetVisits(int personId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Visit>().Where(x => x.PersonId == personId).Select(x => new Core.PersonVisitItemsListViewModels.VisitDTO()
+                {
+                    Id = x.Id,
+                    BeginDateTime = x.BeginDateTime,
+                    EndDateTime = x.EndDateTime,
+                    Name = x.ExecutionPlace.Name,
+                    IsCompleted = x.IsCompleted
+                }).ToList();
+            }
         }
     }
 }

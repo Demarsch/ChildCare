@@ -180,6 +180,10 @@
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Assignments" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Visits" />
+        <AssociationConnector Association="DataLib.FK_Visits_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_Records_Visits" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

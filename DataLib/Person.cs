@@ -55,6 +55,9 @@ namespace DataLib
         public string AmbNumberString { get; set; }
         public int AmbNumber { get; set; }
         public int Year { get; set; }
+        public int AmbCardFirstListHashCode { get; set; }
+        public int PersonHospListHashCode { get; set; }
+        public int RadiationListHashCode { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }

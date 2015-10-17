@@ -18,6 +18,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
           <Property Name="RecordTypeId" Type="int" Nullable="false" />
           <Property Name="PersonId" Type="int" Nullable="false" />
           <Property Name="AssignDateTime" Type="datetime" Nullable="false" />
@@ -30,6 +31,7 @@
           <Property Name="CancelDateTime" Type="datetime" />
           <Property Name="Note" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="RecordId" Type="int" />
+          <Property Name="VisitId" Type="int" />
           <Property Name="IsTemporary" Type="bit" Nullable="false" />
           <Property Name="CreationDateTime" Type="datetime" Nullable="false" />
           <Property Name="BillingDateTime" Type="datetime" />
@@ -516,6 +518,9 @@
           <Property Name="AmbNumberString" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="AmbNumber" Type="int" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="AmbCardFirstListHashCode" Type="int" Nullable="false" />
+          <Property Name="PersonHospListHashCode" Type="int" Nullable="false" />
+          <Property Name="RadiationListHashCode" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonSocialStatuses">
           <Key>
@@ -804,6 +809,7 @@
           <Property Name="Note" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="TotalCost" Type="float" Nullable="false" />
           <Property Name="IsCompleted" Type="bit" />
+          <Property Name="ExecutionPlaceId" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_Addresses_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1">
@@ -816,6 +822,18 @@
             </Principal>
             <Dependent Role="PersonAddresses">
               <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignments_Assignments">
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="0..1" />
+          <End Role="Assignments1" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assignments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments1">
+              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -912,6 +930,18 @@
             </Principal>
             <Dependent Role="Assignments">
               <PropertyRef Name="CancelUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignments_Visits">
+          <End Role="Visits" Type="Self.Visits" Multiplicity="0..1" />
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Visits">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignments">
+              <PropertyRef Name="VisitId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1839,6 +1869,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Records_Visits">
+          <End Role="Visits" Type="Self.Visits" Multiplicity="1" />
+          <End Role="Records" Type="Self.Records" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Visits">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Records">
+              <PropertyRef Name="VisitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RecordTypeCosts_FinancingSources">
           <End Role="FinancingSources" Type="Self.FinancingSources" Multiplicity="1" />
           <End Role="RecordTypeCosts" Type="Self.RecordTypeCosts" Multiplicity="*" />
@@ -2019,6 +2061,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Visits_ExecutionPlaces">
+          <End Role="ExecutionPlaces" Type="Self.ExecutionPlaces" Multiplicity="1" />
+          <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlaces">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visits">
+              <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Visits_FinancingSources">
           <End Role="FinancingSources" Type="Self.FinancingSources" Multiplicity="1" />
           <End Role="Visits" Type="Self.Visits" Multiplicity="*" />
@@ -2164,6 +2218,10 @@
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
           </AssociationSet>
+          <AssociationSet Name="FK_Assignments_Assignments" Association="Self.FK_Assignments_Assignments">
+            <End Role="Assignments" EntitySet="Assignments" />
+            <End Role="Assignments1" EntitySet="Assignments" />
+          </AssociationSet>
           <AssociationSet Name="FK_Assignments_FinancingSources" Association="Self.FK_Assignments_FinancingSources">
             <End Role="FinancingSources" EntitySet="FinancingSources" />
             <End Role="Assignments" EntitySet="Assignments" />
@@ -2194,6 +2252,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_Users1" Association="Self.FK_Assignments_Users1">
             <End Role="Users" EntitySet="Users" />
+            <End Role="Assignments" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignments_Visits" Association="Self.FK_Assignments_Visits">
+            <End Role="Visits" EntitySet="Visits" />
             <End Role="Assignments" EntitySet="Assignments" />
           </AssociationSet>
           <AssociationSet Name="FK_Branches_Branches" Association="Self.FK_Branches_Branches">
@@ -2504,6 +2566,10 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="Records" EntitySet="Records" />
           </AssociationSet>
+          <AssociationSet Name="FK_Records_Visits" Association="Self.FK_Records_Visits">
+            <End Role="Visits" EntitySet="Visits" />
+            <End Role="Records" EntitySet="Records" />
+          </AssociationSet>
           <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="Self.FK_RecordTypeCosts_FinancingSources">
             <End Role="FinancingSources" EntitySet="FinancingSources" />
             <End Role="RecordTypeCosts" EntitySet="RecordTypeCosts" />
@@ -2563,6 +2629,10 @@
           <AssociationSet Name="FK_VisitResults_ExecutionPlaces" Association="Self.FK_VisitResults_ExecutionPlaces">
             <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
             <End Role="VisitResults" EntitySet="VisitResults" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_ExecutionPlaces" Association="Self.FK_Visits_ExecutionPlaces">
+            <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
+            <End Role="Visits" EntitySet="Visits" />
           </AssociationSet>
           <AssociationSet Name="FK_Visits_FinancingSources" Association="Self.FK_Visits_FinancingSources">
             <End Role="FinancingSources" EntitySet="FinancingSources" />
@@ -3090,6 +3160,22 @@
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
+          <AssociationSet Name="FK_Assignments_Assignments" Association="DataLib.FK_Assignments_Assignments">
+            <End Role="Assignment" EntitySet="Assignments" />
+            <End Role="Assignment1" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Assignments_Visits" Association="DataLib.FK_Assignments_Visits">
+            <End Role="Visit" EntitySet="Visits" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_ExecutionPlaces" Association="DataLib.FK_Visits_ExecutionPlaces">
+            <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Visits" Association="DataLib.FK_Records_Visits">
+            <End Role="Visit" EntitySet="Visits" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -3344,6 +3430,7 @@
           <Property Name="UseName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="VisitOutcomes" Relationship="DataLib.FK_VisitOutcomes_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitOutcome" />
           <NavigationProperty Name="VisitResults" Relationship="DataLib.FK_VisitResults_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitResult" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="Visit" />
         </EntityType>
         <EntityType Name="Gender">
           <Key>
@@ -3834,6 +3921,10 @@
           <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="Visit" ToRole="FinancingSource" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Visits_Persons" FromRole="Visit" ToRole="Person" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="Visit" ToRole="RecordContract" />
+          <Property Name="ExecutionPlaceId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Visits" FromRole="Visit" ToRole="Assignment" />
+          <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="Visit" ToRole="ExecutionPlace" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Visits" FromRole="Visit" ToRole="Record" />
         </EntityType>
         <Association Name="FK_PersonAddresses_AddressTypes">
           <End Type="DataLib.AddressType" Role="AddressType" Multiplicity="1" />
@@ -4429,6 +4520,11 @@
           <NavigationProperty Name="User" Relationship="DataLib.FK_Assignments_Users" FromRole="Assignment" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DataLib.FK_Assignments_Users1" FromRole="Assignment" ToRole="User" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="Assignment" ToRole="RecordContractItem" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="VisitId" Type="Int32" />
+          <NavigationProperty Name="Assignments1" Relationship="DataLib.FK_Assignments_Assignments" FromRole="Assignment" ToRole="Assignment1" />
+          <NavigationProperty Name="Assignment1" Relationship="DataLib.FK_Assignments_Assignments" FromRole="Assignment1" ToRole="Assignment" />
+          <NavigationProperty Name="Visit" Relationship="DataLib.FK_Assignments_Visits" FromRole="Assignment" ToRole="Visit" />
         </EntityType>
         <EntityType Name="FinancingSource">
           <Key>
@@ -4494,6 +4590,9 @@
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
+          <Property Name="AmbCardFirstListHashCode" Type="Int32" Nullable="false" />
+          <Property Name="PersonHospListHashCode" Type="Int32" Nullable="false" />
+          <Property Name="RadiationListHashCode" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -4603,6 +4702,7 @@
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
           <NavigationProperty Name="Room" Relationship="DataLib.FK_Records_Rooms" FromRole="Record" ToRole="Room" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
+          <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
         </EntityType>
         <EntityType Name="RecordTypeCost">
           <Key>
@@ -5391,6 +5491,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Assignments_Assignments">
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="0..1" />
+          <End Type="DataLib.Assignment" Role="Assignment1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assignment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Assignments_Visits">
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="0..1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Visit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="VisitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_ExecutionPlaces">
+          <End Type="DataLib.ExecutionPlace" Role="ExecutionPlace" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlace">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Visits">
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Visit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="VisitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6047,6 +6195,7 @@
           <EntitySetMapping Name="Visits">
             <EntityTypeMapping TypeName="DataLib.Visit">
               <MappingFragment StoreEntitySet="Visits">
+                <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
                 <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
                 <ScalarProperty Name="TotalCost" ColumnName="TotalCost" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
@@ -6069,6 +6218,8 @@
           <EntitySetMapping Name="Assignments">
             <EntityTypeMapping TypeName="DataLib.Assignment">
               <MappingFragment StoreEntitySet="Assignments">
+                <ScalarProperty Name="VisitId" ColumnName="VisitId" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Cost" ColumnName="Cost" />
                 <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
                 <ScalarProperty Name="CreationDateTime" ColumnName="CreationDateTime" />
@@ -6111,6 +6262,9 @@
           <EntitySetMapping Name="Persons">
             <EntityTypeMapping TypeName="DataLib.Person">
               <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="RadiationListHashCode" ColumnName="RadiationListHashCode" />
+                <ScalarProperty Name="PersonHospListHashCode" ColumnName="PersonHospListHashCode" />
+                <ScalarProperty Name="AmbCardFirstListHashCode" ColumnName="AmbCardFirstListHashCode" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="AmbNumber" ColumnName="AmbNumber" />
                 <ScalarProperty Name="AmbNumberString" ColumnName="AmbNumberString" />

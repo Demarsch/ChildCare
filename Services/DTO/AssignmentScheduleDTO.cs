@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Registry
+namespace Core
 {
-    public class AssignmentDTO
+    public class AssignmentScheduleDTO
     {
         public int Id { get; set; }
 
