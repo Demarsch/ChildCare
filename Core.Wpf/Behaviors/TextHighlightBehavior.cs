@@ -29,6 +29,7 @@ namespace Core.Wpf.Behaviors
 
         protected override void OnAttached()
         {
+            originalText = AssociatedObject.Text;
             DependencyPropertyDescriptor.FromProperty(TextBlock.TextProperty, typeof(TextBlock)).AddValueChanged(AssociatedObject, TextChanged);
             ParseAndHighlight(this);
             base.OnAttached();

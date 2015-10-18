@@ -8,7 +8,9 @@ namespace Core.Expressions
 {
     public abstract class DateBasedSearchExpressionProvider<T> : SearchExpressionProvider<T>
     {
-        private static readonly Regex DatesRegex = new Regex(@"\d{1,2}[ /\-.]{1}\d{1,2}[ /\-.](\d{2}|\d{4})|\d{1,2} ?\w{3,10} ?(\d{2}|\d{4})");
+        //private static readonly Regex DatesRegex = new Regex(@"((0?[13578]|10|12)(-|\/|.)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[01]?))(-|\/|.)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1}))|(0?[2469]|11)(-|\/|.)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))(-|\/|.)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))");
+
+        private static readonly Regex DatesRegex = new Regex(@"[0-9]{1,2}[-/\. ][0-9]{1,2}[-/\. ][0-9]{2,4}");
 
         protected internal ICollection<DateTime> GetDates(string userInput)
         {

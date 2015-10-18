@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Expressions;
-using Core.Misc;
 using PatientSearchModule.Misc;
 using PatientSearchModule.Model;
 

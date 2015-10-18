@@ -10,7 +10,7 @@ namespace PatientSearchModule.Model
 {
     public class PersonNamesSearchExpressionProvider : SearchExpressionProvider<Person>
     {
-        private static readonly Regex NamesRegex = new Regex(@"\w+|\w+-{1}\w+");
+        private static readonly Regex NamesRegex = new Regex(@"\p{L}+|\p{L}+-{1}\p{L}+");
 
         public override SearchExpression<Person> CreateSearchExpression(string searchPattern)
         {

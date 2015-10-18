@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Data;
-using Core.Misc;
+using Core.Data.Misc;
 
 namespace PatientSearchModule.Misc
 {

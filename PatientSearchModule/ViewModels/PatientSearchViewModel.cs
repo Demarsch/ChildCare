@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,7 +79,12 @@ namespace PatientSearchModule.ViewModels
 
         private async void SearchPatients()
         {
+            Patients.Clear();
             var currentSearchText = SearchText;
+            if (string.IsNullOrWhiteSpace(currentSearchText))
+            {
+                return;
+            }
             var searchIsCompleted = false;
             CriticalFailureMediator.Deactivate();
             BusyMediator.Activate("Идет поиск пациентов...");

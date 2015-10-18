@@ -57,8 +57,12 @@
                     </TextBlock>
                     <TextBlock Text="{Binding Gender.IsMale, Converter={StaticResource GenderToTextConverter}}"
                                Foreground="{StaticResource ExplanationTextColor}" />
-                    <TextBlock
-                        Text="{Binding BirthDate, StringFormat={x:Static coreMisc:DateTimeFormats.ShortDateFormat}}" />
+                    <TextBlock Text="{Binding BirthDate, StringFormat={x:Static coreMisc:DateTimeFormats.ShortDateFormat}}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
                 </StackPanel>
                 <StackPanel Grid.Row="1"
                             Grid.Column="1"
@@ -67,13 +71,28 @@
                             Margin="5">
                     <TextBlock Text="СНИЛС"
                                Foreground="{StaticResource ExplanationTextColor}" />
-                    <TextBlock Text="{Binding Snils}" />
+                    <TextBlock Text="{Binding Snils}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
                     <TextBlock Text="ЕМН"
                                Foreground="{StaticResource ExplanationTextColor}" />
-                    <TextBlock Text="{Binding MedNumber}" />
+                    <TextBlock Text="{Binding MedNumber}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
                     <TextBlock Text="{Binding IdentityDocument.IdentityDocumentType.Name}"
                                Foreground="{StaticResource ExplanationTextColor}" />
-                    <TextBlock Text="{Binding IdentityDocument.SeriesAndNumber}" />
+                    <TextBlock Text="{Binding IdentityDocument.SeriesAndNumber}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
                 </StackPanel>
             </Grid>
         </Border>
