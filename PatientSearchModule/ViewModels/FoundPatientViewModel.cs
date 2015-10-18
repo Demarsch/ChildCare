@@ -29,7 +29,16 @@ namespace PatientSearchModule.ViewModels
         public Gender Gender
         {
             get { return gender; }
-            set { SetProperty(ref gender, value); }
+            set
+            {
+                if (SetProperty(ref gender, value))
+                {
+                    PhotoSource = new Uri(gender.IsMale
+                        ? "pack://application:,,,/Core;Component/Resources/Images/Man48x48.png"
+                        : "pack://application:,,,/Core;Component/Resources/Images/Woman48x48.png");
+
+                }
+            }
         }
 
         private string snils;
@@ -78,6 +87,14 @@ namespace PatientSearchModule.ViewModels
         {
             get { return identityDocument; }
             set { SetProperty(ref identityDocument, value); }
+        }
+
+        private Uri photoSource;
+
+        public Uri PhotoSource
+        {
+            get { return photoSource; }
+            set { SetProperty(ref photoSource, value); }
         }
 
         public string FullName

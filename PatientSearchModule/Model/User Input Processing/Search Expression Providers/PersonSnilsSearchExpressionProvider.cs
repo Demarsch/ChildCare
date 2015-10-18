@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Core.Data;
 using Core.Expressions;
+using Microsoft.Practices.ObjectBuilder2;
 
 namespace PatientSearchModule.Model
 {
@@ -14,12 +15,14 @@ namespace PatientSearchModule.Model
         
         internal ICollection<string> GetSnilsCollection(string userInput)
         {
-            return new HashSet<string>(SnilsRegex
-                                           .Matches(userInput)
-                                           .Cast<Match>()
-                                           .Where(x => x.Success)
-                                           .Select(x => x.Value),
-                                       StringComparer.CurrentCultureIgnoreCase);
+            var snilsCollection = new HashSet<string>(SnilsRegex
+                                                          .Matches(userInput)
+                                                          .Cast<Match>()
+                                                          .Where(x => x.Success)
+                                                          .Select(x => x.Value),
+                                                      StringComparer.CurrentCultureIgnoreCase);
+            snilsCollection.Select(Person.DelimitizeSnils).ToArray().ForEach(x => snilsCollection.Add(x));
+            return snilsCollection;
         }
 
         public override SearchExpression<Person> CreateSearchExpression(string searchPattern)

@@ -12,23 +12,56 @@
     <DockPanel LastChildFill="True"
                HorizontalAlignment="Stretch"
                VerticalAlignment="Stretch">
-        <xctk:WatermarkTextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=750}"
+        <xctk:WatermarkTextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                                DockPanel.Dock="Top"
-                               Margin="5 15 5 5" 
-                               MaxLength="200"> 
+                               Margin="5 15 5 5"
+                               MaxLength="200">
             <xctk:WatermarkTextBox.Watermark>
                 <TextBlock Text="Начните вводить любое имя, номер документа или дату для поиска пациента"
                            Style="{x:Null}" />
             </xctk:WatermarkTextBox.Watermark>
         </xctk:WatermarkTextBox>
-        <xctk:BusyIndicator IsBusy="{Binding BusyMediator.IsBusy}"
-                            BusyContent="{Binding BusyMediator.Message}">
+        <Grid HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
             <ItemsControl HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Margin="5"
                           BorderThickness="0"
                           ItemsSource="{Binding Patients}" />
-        </xctk:BusyIndicator>
-        
+            <Label Content="{Binding BusyMediator.Message}"
+                   FontSize="20"
+                   IsHitTestVisible="False"
+                   Opacity="0"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Padding="20"
+                   BorderBrush="Black"
+                   BorderThickness="1"
+                   Background="White">
+                <Label.Style>
+                    <Style TargetType="{x:Type Label}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding BusyMediator.IsBusy}"
+                                         Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard TargetProperty="Opacity">
+                                            <DoubleAnimation To="1" Duration="0:0:0.5" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard TargetProperty="Opacity">
+                                            <DoubleAnimation To="0" Duration="0:0:0.5" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+        </Grid>
     </DockPanel>
 </UserControl>

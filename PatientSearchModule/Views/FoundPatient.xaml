@@ -23,7 +23,8 @@
         </DataTemplate.Resources>
         <Border BorderBrush="DimGray"
                 BorderThickness="2"
-                CornerRadius="1">
+                CornerRadius="1"
+                Margin="0 2 0 2">
             <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -40,7 +41,8 @@
                         BorderThickness="1"
                         Margin="5">
                     <Image Width="72"
-                           Height="72" />
+                           Height="72"
+                           Source="{Binding PhotoSource}"/>
                 </Border>
                 <StackPanel Grid.Row="0"
                             Grid.Column="1"

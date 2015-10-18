@@ -17,37 +17,25 @@ namespace PatientSearchModule.Services
 
         private readonly IDbContextProvider contextProvider;
 
-        private readonly IUserInputNormalizer userInputNormalizer;
-
         private readonly ISearchExpressionProvider<Person> searchExpressionProvider;
 
-        public PatientSearchService(IDbContextProvider contextProvider, IUserInputNormalizer userInputNormalizer, ISearchExpressionProvider<Person> searchExpressionProvider)
+        public PatientSearchService(IDbContextProvider contextProvider, ISearchExpressionProvider<Person> searchExpressionProvider)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
-            }
-            if (userInputNormalizer == null)
-            {
-                throw new ArgumentNullException("userInputNormalizer");
             }
             if (searchExpressionProvider == null)
             {
                 throw new ArgumentNullException("searchExpressionProvider");
             }
             this.searchExpressionProvider = searchExpressionProvider;
-            this.userInputNormalizer = userInputNormalizer;
             this.contextProvider = contextProvider;
         }
 
         public PatientSearchQuery GetPatientSearchQuery(string searchPattern)
         {
-            var normalizedUserInput = userInputNormalizer.NormalizeUserInput(searchPattern);
-            if (normalizedUserInput.Length < UserInputThresholdLength)
-            {
-                return PatientSearchQuery.Empty;
-            }
-            var searchExpression = searchExpressionProvider.CreateSearchExpression(normalizedUserInput);
+            var searchExpression = searchExpressionProvider.CreateSearchExpression(searchPattern);
             if (searchExpression == null)
             {
                 return PatientSearchQuery.Empty;

@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Data;
 using Core.Extensions;
+using Core.Misc;
 using Core.Services;
 using Core.Wpf.Mvvm;
 using log4net;
 using PatientSearchModule.Misc;
+using PatientSearchModule.Model;
 using PatientSearchModule.Services;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -23,7 +26,9 @@ namespace PatientSearchModule.ViewModels
 
         private readonly ICacheService cacheService;
 
-        public PatientSearchViewModel(IPatientSearchService patientSearchService, ILog log, ICacheService cacheService)
+        private readonly IUserInputNormalizer userInputNormalizer;
+
+        public PatientSearchViewModel(IPatientSearchService patientSearchService, ILog log, ICacheService cacheService, IUserInputNormalizer userInputNormalizer)
         {
             if (patientSearchService == null)
             {
@@ -37,7 +42,13 @@ namespace PatientSearchModule.ViewModels
             {
                 throw new ArgumentNullException("cacheService");
             }
+            if (userInputNormalizer == null)
+            {
+                throw new ArgumentNullException("userInputNormalizer");
+            }
+            this.userInputNormalizer = userInputNormalizer;
             this.cacheService = cacheService;
+            this.userInputNormalizer = userInputNormalizer;
             this.log = log;
             this.patientSearchService = patientSearchService;
             Header = "Поиск Пациента";
@@ -63,6 +74,8 @@ namespace PatientSearchModule.ViewModels
             }
         }
 
+        private CancellationTokenSource currentSearchToken;
+
         private object header;
 
         public object Header
@@ -77,22 +90,38 @@ namespace PatientSearchModule.ViewModels
 
         public ICommand SearchPatientsCommand { get; private set; }
 
-        private async void SearchPatients()
+        private void SearchPatients()
         {
-            Patients.Clear();
-            var currentSearchText = SearchText;
-            if (string.IsNullOrWhiteSpace(currentSearchText))
+            if (currentSearchToken != null)
             {
+                currentSearchToken.Cancel();
+                currentSearchToken.Dispose();
+            }
+            currentSearchToken = new CancellationTokenSource();
+            var userInput = userInputNormalizer.NormalizeUserInput(searchText ?? string.Empty);
+            if (userInput.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                BusyMediator.Deactivate();
+                Patients.Clear();
                 return;
             }
+            BusyMediator.Activate("ИДЕТ ПОИСК ПАЦИЕНТОВ...");
+            Task.Delay(AppConfiguration.UserInputDelay, currentSearchToken.Token)
+                .ContinueWith(x => SearchPatientsAsync(userInput, currentSearchToken.Token),
+                              currentSearchToken.Token,
+                              TaskContinuationOptions.OnlyOnRanToCompletion,
+                              TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private async void SearchPatientsAsync(string userInput, CancellationToken token)
+        {
             var searchIsCompleted = false;
             CriticalFailureMediator.Deactivate();
-            BusyMediator.Activate("Идет поиск пациентов...");
-            log.InfoFormat("Searching patients by user input \"{0}\"", currentSearchText);
+            log.InfoFormat("Searching patients by user input \"{0}\"", userInput);
             PatientSearchQuery query = null;
             try
             {
-                query = patientSearchService.GetPatientSearchQuery(currentSearchText);
+                query = patientSearchService.GetPatientSearchQuery(userInput);
                 var runQueryTask = query
                     .PatientsQuery
                     .Select(x => new
@@ -110,8 +139,12 @@ namespace PatientSearchModule.ViewModels
                                                          .OrderByDescending(y => y.BeginDate)
                                                          .FirstOrDefault()
                                  })
-                    .ToArrayAsync();
-                await Task.WhenAll(runQueryTask, Task.Delay(TimeSpan.FromSeconds(0.5)));
+                    .ToArrayAsync(token);
+                await Task.WhenAll(runQueryTask, Task.Delay(TimeSpan.FromSeconds(0.5), token));
+                if (runQueryTask.IsCanceled)
+                {
+                    return;
+                }
                 var result = await runQueryTask.Result
                                                .Select(x => new FoundPatientViewModel
                                                             {
@@ -121,24 +154,25 @@ namespace PatientSearchModule.ViewModels
                                                                 Gender = cacheService.GetItemById<Gender>(x.GenderId),
                                                                 IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
                                                                 MedNumber = x.MedNumber,
-                                                                Snils = x.Snils
+                                                                Snils = Person.DelimitizeSnils(x.Snils)
                                                             })
-                                               .ToArrayAsync();
-                searchIsCompleted = currentSearchText == SearchText;
-                if (searchIsCompleted)
+                                               .ToArrayAsync(token);
+                log.InfoFormat("Found {0} patients", result.Length);
+                foreach (var patient in result)
                 {
-                    log.InfoFormat("Found {0} patients", result.Length);
-                    foreach (var patient in result)
-                    {
-                        patient.WordsToHighlight = query.ParsedTokens;
-                    }
-                    Patients.Replace(result);
+                    patient.WordsToHighlight = query.ParsedTokens;
                 }
+                Patients.Replace(result);
+                searchIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                searchIsCompleted = false;
             }
             catch (Exception ex)
             {
                 log.Error("Failed to find patients", ex);
-                searchIsCompleted = currentSearchText == SearchText;
+                searchIsCompleted = true;
                 CriticalFailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", SearchPatientsCommand);
             }
             finally
