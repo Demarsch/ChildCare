@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Core;
 using GalaSoft.MvvmLight.CommandWpf;
 using log4net;
+using MainLib;
 
 namespace Registry
 {
@@ -28,10 +29,11 @@ namespace Registry
         private readonly IRecordService recordService;
 
         private readonly IDocumentService documentService;
+        private readonly IAssignmentService assignmentService;
         #endregion
 
         #region Constructors
-        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, PatientAssignmentListViewModel patientAssignmentListViewModel)
+        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IAssignmentService assignmentService, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
                 throw new ArgumentNullException("patientService");
@@ -50,9 +52,11 @@ namespace Registry
             this.personService = personService;
             this.log = log;
             this.patientService = patientService;
+            this.recordService = recordService;
+            this.assignmentService = assignmentService;
             patients = new ObservableCollection<PersonViewModel>();
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
-            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService, documentService, recordService);
+            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService, documentService, recordService, assignmentService);
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);

@@ -9,6 +9,7 @@
 
 namespace DataLib
 {
+    using System;
     using System.Collections.Generic;
     
     public partial class FinancingSource
@@ -17,9 +18,9 @@ namespace DataLib
         public FinancingSource()
         {
             this.Assignments = new HashSet<Assignment>();
-            this.RecordContracts = new HashSet<RecordContract>();
             this.RecordTypeCosts = new HashSet<RecordTypeCost>();
             this.Visits = new HashSet<Visit>();
+            this.RecordContracts = new HashSet<RecordContract>();
         }
     
         public int Id { get; set; }
@@ -30,10 +31,10 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeCost> RecordTypeCosts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordContract> RecordContracts { get; set; }
     }
 }

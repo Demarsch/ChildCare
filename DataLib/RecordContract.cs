@@ -35,6 +35,9 @@ namespace DataLib
         public Nullable<int> ConsumerId { get; set; }
         public Nullable<int> OrgId { get; set; }
         public double ContractCost { get; set; }
+        public int PaymentTypeId { get; set; }
+        public string TransactionNumber { get; set; }
+        public string TransactionDate { get; set; }
         public int Priority { get; set; }
         public string Options { get; set; }
         public System.DateTime InDateTime { get; set; }
@@ -46,6 +49,7 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
         public virtual Org Org { get; set; }
+        public virtual PaymentType PaymentType { get; set; }
         public virtual Person Person { get; set; }
         public virtual Person Person1 { get; set; }
         public virtual PersonStaff PersonStaff { get; set; }

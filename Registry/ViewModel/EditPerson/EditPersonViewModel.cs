@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Linq;
 using MainLib.ViewModel;
+using MainLib.View;
 
 namespace Registry
 {
@@ -24,6 +26,7 @@ namespace Registry
 
         private readonly IDocumentService documentService;
 
+        private readonly IAssignmentService assignmentService;
         private EditPersonDataViewModel editPersonDataViewModel;
         public EditPersonDataViewModel EditPersonDataViewModel
         {
@@ -47,7 +50,7 @@ namespace Registry
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IAssignmentService assignmentService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -61,6 +64,7 @@ namespace Registry
             this.dialogService = dialogService;
             this.service = service;
             this.recordService = recordService;
+            this.assignmentService = assignmentService;
             this.log = log;
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
@@ -72,8 +76,8 @@ namespace Registry
             RemovePersonFromRelativeCommand = new RelayCommand(RemovePersonFromRelative);
         }
 
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, int personId)
-            : this(log, service, dialogService, documentService, recordService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IAssignmentService assignmentService, int personId)
+            : this(log, service, dialogService, documentService, recordService, assignmentService)
         {
             Id = personId;
             this.log = log;
@@ -82,8 +86,8 @@ namespace Registry
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, string personData)
-            : this(log, service, dialogService, documentService, recordService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IAssignmentService assignmentService, string personData)
+            : this(log, service, dialogService, documentService, recordService, assignmentService)
         {
 
         }
@@ -236,7 +240,7 @@ namespace Registry
 
         private void LoadContracts()
         {
-            PersonContracts = new PersonContractsViewModel(service, recordService, dialogService, log);
+            PersonContracts = new PersonContractsViewModel(service, recordService, assignmentService, dialogService, log);
             if (Id != 0)
                 PersonContracts.Load(Id);
         }

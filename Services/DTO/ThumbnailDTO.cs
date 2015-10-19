@@ -2,7 +2,7 @@
 using GalaSoft.MvvmLight;
 using System.Windows.Media.Imaging;
 
-namespace MainLib
+namespace Core
 {
     public class ThumbnailDTO : ObservableObject
     {

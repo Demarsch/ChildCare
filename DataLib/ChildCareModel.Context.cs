@@ -7,11 +7,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-
 namespace DataLib
 {
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Infrastructure;
+    
     public partial class ModelContext : DbContext
     {
         public ModelContext()
@@ -84,13 +85,13 @@ namespace DataLib
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
         public virtual DbSet<Person> Persons { get; set; }
         public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
-        public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
         public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
-        public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
         public virtual DbSet<RecordTypeRole> RecordTypeRoles { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
+        public virtual DbSet<RecordContract> RecordContracts { get; set; }
     }
 }

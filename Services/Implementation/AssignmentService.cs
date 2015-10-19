@@ -16,7 +16,15 @@ namespace Core
             this.dataContextProvider = dataContextProvider;
         }
 
-        public ICollection<Assignment> GetAssignments(int personId = 0, DateTime? fromDate = null, DateTime? toDate = null, bool includeCanceled = true)
+        public Assignment GetAssignmentById(int assignmentId)
+        {
+            using (var db = dataContextProvider.GetNewDataContext())
+            {
+                return db.GetById<Assignment>(assignmentId);
+            }
+        }
+
+        public ICollection<Assignment> GetAssignments(int personId = 0, DateTime? fromDate = null, DateTime? toDate = null, bool includeCanceled = false)
         {
             using (var context = dataContextProvider.GetNewDataContext())
             {
@@ -37,8 +45,6 @@ namespace Core
                 return result.ToArray();
             }
         }
-
-
 
         public ICollection<AssignmentDTO> GetChildAssignments(int parentAssignmentId)
         {
