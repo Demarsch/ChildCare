@@ -4,7 +4,7 @@ using System.Drawing;
 using DataLib;
 using System.Windows.Media.Imaging;
 
-namespace MainLib
+namespace Core
 {
     public class ThumbnailDTO : ObservableObject
     {

@@ -73,6 +73,45 @@ namespace Core
             }
         }
 
+        public ICollection<FinancingSource> GetActiveFinancingSources()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<FinancingSource>().Where(x => x.IsActive).ToArray();
+            }
+        }
+
+        public ICollection<PaymentType> GetPaymentTypes()
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<PaymentType>().ToArray();
+            }
+        }
+
+        public PaymentType GetPaymentTypeById(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetById<PaymentType>(id);
+            }
+        }
+
+        public ICollection<Visit> GetVisitsByContractId(int contractId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return db.GetData<Visit>().Where(x => x.ContractId == contractId).ToArray();
+            }
+        }
+
+        public double GetRecordTypeCost(int recordTypeId)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                return 1000;
+            }
+        }
 
         public ICollection<PersonVisitItemsListViewModels.RecordDTO> GetChildRecords(int recordId)
         {

@@ -135,11 +135,23 @@ namespace Core
 
         ICollection<RecordContract> GetContracts(int? consumerId = null, DateTime? fromDate = null, DateTime? toDate = null, int inUserId = -1);
 
+        ICollection<RecordContractItem> GetContractItems(int contractId, int? appendix = null);
+
         double GetContractCost(int[] contractIds);
 
         double GetContractCost(int contractId);
 
         RecordContract GetContractById(int id);
+
+        RecordContractItem GetContractItemById(int id);
+
+        int SaveContractData(RecordContract contract, out string msg);
+
+        int SaveContractItemData(RecordContractItem contractItem, out string msg);
+
+        void DeleteContract(int contractId);
+
+        void DeleteContractItems(int contractId);    
 
         ICollection<AssignmentDTO> GetRootAssignments(int personId);
 

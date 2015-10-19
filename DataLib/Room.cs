@@ -17,9 +17,9 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Room()
         {
-            this.ScheduleItems = new HashSet<ScheduleItem>();
             this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
+            this.ScheduleItems = new HashSet<ScheduleItem>();
         }
     
         public int Id { get; set; }
@@ -27,10 +27,10 @@ namespace DataLib
         public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
     }
 }

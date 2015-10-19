@@ -14,47 +14,39 @@ namespace Core
             set { Set(() => RecordTypeId, ref recordTypeId, value); }
 
         }
-
         private string recordTypeName;
         public string RecordTypeName
         {
             get { return recordTypeName; }
-            set { Set("RecordTypeName", ref recordTypeName, value); }
+            set { Set(() => RecordTypeName, ref recordTypeName, value); }
         }
 
         private DateTime assignDateTime;
         public DateTime AssignDateTime
         {
             get { return assignDateTime; }
-            set { Set("AssignDateTime", ref assignDateTime, value); }
+            set { Set(() => AssignDateTime, ref assignDateTime, value); }
         }
 
         private DateTime beginDateTime;
         public DateTime BeginDateTime
         {
             get { return beginDateTime; }
-            set { Set("BeginDateTime", ref beginDateTime, value); }
+            set { Set(() => BeginDateTime, ref beginDateTime, value); }
         }
 
         private DateTime endDateTime;
         public DateTime EndDateTime
         {
             get { return endDateTime; }
-            set { Set("EndDateTime", ref endDateTime, value); }
-        }
-
-        private string roomName;
-        public string RoomName
-        {
-            get { return roomName; }
-            set { Set("RoomName", ref roomName, value); }
+            set { Set(() => EndDateTime, ref endDateTime, value); }
         }
 
         private double recordTypeCost;
         public double RecordTypeCost
         {
             get { return recordTypeCost; }
-            set { Set("RecordTypeCost", ref recordTypeCost, value); }
+            set { Set(() => RecordTypeCost, ref recordTypeCost, value); }
         }
 
         private bool isSelected;

@@ -23,7 +23,7 @@ namespace DataLib
         public System.DateTime EndDateTime { get; set; }
     
         public virtual Org Org { get; set; }
-        public virtual SocialStatusType SocialStatusType { get; set; }
         public virtual Person Person { get; set; }
+        public virtual SocialStatusType SocialStatusType { get; set; }
     }
 }

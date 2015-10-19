@@ -17,6 +17,7 @@ using TwainDotNet.Wpf;
 using TwainDotNet.Win32;
 using System.Windows.Interop;
 using System.IO;
+using Core;
 
 namespace MainLib.View
 {

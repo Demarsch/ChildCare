@@ -21,13 +21,11 @@ namespace DataLib
         public int Count { get; set; }
         public double Cost { get; set; }
         public bool IsPaid { get; set; }
-        public int PaymentTypeId { get; set; }
         public Nullable<int> Appendix { get; set; }
         public int InUserId { get; set; }
         public System.DateTime InDateTime { get; set; }
     
         public virtual Assignment Assignment { get; set; }
-        public virtual PaymentType PaymentType { get; set; }
         public virtual PersonStaff PersonStaff { get; set; }
         public virtual RecordContract RecordContract { get; set; }
         public virtual RecordType RecordType { get; set; }
