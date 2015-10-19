@@ -1,18 +1,17 @@
 ﻿using System.Windows.Input;
+using Core.Wpf.Misc;
 using Prism.Mvvm;
 
 namespace Core.Wpf.Mvvm
 {
-    public class CriticalFailureMediator : BindableBase
+    public class CriticalFailureMediator : BindableBase, IMediator
     {
-        public const string RetryCommandDefaultName = "Повторить";
+        private bool isActive;
 
-        private bool hasFailure;
-
-        public bool HasFailure
+        public bool IsActive
         {
-            get { return hasFailure; }
-            private set { SetProperty(ref hasFailure, value); }
+            get { return isActive; }
+            private set { SetProperty(ref isActive, value); }
         }
 
         private object message;
@@ -23,36 +22,29 @@ namespace Core.Wpf.Mvvm
             private set { SetProperty(ref message, value); }
         }
 
-        private ICommand retryCommand;
+        private CommandWrapper retryCommand;
 
-        public ICommand RetryCommand
+        public CommandWrapper RetryCommand
         {
             get { return retryCommand; }
-            private set { SetProperty(ref retryCommand, value); }
+            set { SetProperty(ref retryCommand, value); }
         }
 
-        private string retryCommandName;
-
-        public string RetryCommandName
+        public void Activate(object failureMessage)
         {
-            get { return retryCommandName; }
-            private set { SetProperty(ref retryCommandName, value); }
+            Activate(failureMessage, CommandWrapper.Empty);
         }
 
-        public void Activate(object failureMessage, ICommand retryCommand, string retryCommandName = RetryCommandDefaultName)
+        public void Activate(object failureMessage, CommandWrapper retryCommand)
         {
             Message = failureMessage;
             RetryCommand = retryCommand;
-            HasFailure = true;
-            RetryCommandName = retryCommandName;
+            IsActive = true;
         }
 
         public void Deactivate()
         {
-            HasFailure = false;
-            RetryCommand = null;
-            Message = null;
-            RetryCommandName = string.Empty;
+            IsActive = false;
         }
     }
 }

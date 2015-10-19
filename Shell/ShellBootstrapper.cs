@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using Core.Data.Services;
+using Core.Services;
 using Fluent;
 using log4net;
 using Microsoft.Practices.Unity;
@@ -15,10 +17,13 @@ namespace Shell
             return Container.Resolve<ShellWindow>();
         }
 
-        protected override void InitializeShell()
+        protected override async void InitializeShell()
         {
-            Application.Current.MainWindow = (Window)Shell;
+            var shellWindow = (ShellWindow)Shell;
+            Application.Current.MainWindow = shellWindow;
             Application.Current.MainWindow.Show();
+            await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
+            base.InitializeModules();
         }
 
         protected override RegionAdapterMappings ConfigureRegionAdapterMappings()
@@ -31,6 +36,18 @@ namespace Shell
         protected override void ConfigureContainer()
         {
             base.ConfigureContainer();
+            RegisterServices();
+        }
+
+        protected override void InitializeModules()
+        {
+            //Do nothing as we actually still wait for connection status at this point
+        }
+
+        private void RegisterServices()
+        {
+            Container.RegisterType<IDbContextProvider, DbContextProvider>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<ICacheService, DbContextCacheService>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("SHELL"));
         }
 

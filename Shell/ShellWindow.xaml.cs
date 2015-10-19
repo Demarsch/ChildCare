@@ -1,4 +1,6 @@
-﻿namespace Shell
+﻿using Microsoft.Practices.Unity;
+
+namespace Shell
 {
     /// <summary>
     /// Interaction logic for ShellWindow.xaml
@@ -8,6 +10,13 @@
         public ShellWindow()
         {
             InitializeComponent();
+        }
+
+        [Dependency]
+        public ShellWindowViewModel ShellWindowViewModel
+        {
+            get { return DataContext as ShellWindowViewModel; }
+            set { DataContext = value; }
         }
     }
 }
