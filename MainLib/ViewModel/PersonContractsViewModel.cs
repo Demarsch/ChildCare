@@ -62,7 +62,7 @@ namespace MainLib.ViewModel
         {          
             var contractsQuery = personService.GetContracts(this.personId, null, null, SelectedRegistratorId).OrderBy(x => x.BeginDateTime);
             ContractsCount = contractsQuery.Count().ToSafeString();
-            ContractsSum = personService.GetContractCost(contractsQuery.Select(x => x.Id).ToArray()) + " руб.";
+            ContractsSum = (contractsQuery.Any() ? personService.GetContractCost(contractsQuery.Select(x => x.Id).ToArray()) : 0) + " руб.";
             Contracts = new ObservableCollection<ContractsViewModel>();
             dispatcher.InvokeAsync(new Action(()=>
             {
