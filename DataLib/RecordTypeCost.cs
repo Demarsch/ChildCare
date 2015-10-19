@@ -10,7 +10,8 @@
 namespace DataLib
 {
     using System;
-
+    using System.Collections.Generic;
+    
     public partial class RecordTypeCost
     {
         public int Id { get; set; }

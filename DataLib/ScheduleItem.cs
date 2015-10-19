@@ -10,7 +10,8 @@
 namespace DataLib
 {
     using System;
-
+    using System.Collections.Generic;
+    
     public partial class ScheduleItem
     {
         public int Id { get; set; }

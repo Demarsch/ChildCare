@@ -17,8 +17,8 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Assignment()
         {
-            this.RecordContractItems = new HashSet<RecordContractItem>();
             this.Assignments1 = new HashSet<Assignment>();
+            this.RecordContractItems = new HashSet<RecordContractItem>();
         }
     
         public int Id { get; set; }
@@ -50,10 +50,10 @@ namespace DataLib
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments1 { get; set; }
         public virtual Assignment Assignment1 { get; set; }
         public virtual Visit Visit { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
     }
 }

@@ -12,6 +12,12 @@ namespace Core
         ICollection<RecordTypeRole> GetRecordTypeRolesByOptions(string options);
         ICollection<RecordType> GetAllRecordTypes();
         ICollection<RecordType> GetRecordTypesByName(string name);
+	double GetRecordTypeCost(int recordTypeId);
+        ICollection<FinancingSource> GetActiveFinancingSources();
+        ICollection<PaymentType> GetPaymentTypes();
+        PaymentType GetPaymentTypeById(int id);
+        ICollection<Visit> GetVisitsByContractId(int contractId);
+
         ICollection<Core.PersonVisitItemsListViewModels.RecordDTO> GetChildRecords(int recordId);
         ICollection<AssignmentDTO> GetChildAssignments(int recordId);
     }

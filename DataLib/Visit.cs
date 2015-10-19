@@ -7,12 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace DataLib
 {
     using System;
-
+    using System.Collections.Generic;
+    
     public partial class Visit
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -45,11 +44,11 @@ namespace DataLib
         public virtual VisitResult VisitResult { get; set; }
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual Person Person { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ExecutionPlace ExecutionPlace { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }

@@ -569,7 +569,6 @@
           <Property Name="Count" Type="int" Nullable="false" />
           <Property Name="Cost" Type="float" Nullable="false" />
           <Property Name="IsPaid" Type="bit" Nullable="false" />
-          <Property Name="PaymentTypeId" Type="int" Nullable="false" />
           <Property Name="Appendix" Type="int" />
           <Property Name="InUserId" Type="int" Nullable="false" />
           <Property Name="InDateTime" Type="datetime" Nullable="false" />
@@ -597,6 +596,9 @@
           <Property Name="ConsumerId" Type="int" />
           <Property Name="OrgId" Type="int" />
           <Property Name="ContractCost" Type="float" Nullable="false" />
+          <Property Name="PaymentTypeId" Type="int" Nullable="false" />
+          <Property Name="TransactionNumber" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="TransactionDate" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Priority" Type="int" Nullable="false" />
           <Property Name="Options" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="InDateTime" Type="datetime" Nullable="false" />
@@ -1677,18 +1679,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordContractItems_PaymentTypes">
-          <End Role="PaymentTypes" Type="Self.PaymentTypes" Multiplicity="1" />
-          <End Role="RecordContractItems" Type="Self.RecordContractItems" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PaymentTypes">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractItems">
-              <PropertyRef Name="PaymentTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RecordContractItems_PersonStaffs">
           <End Role="PersonStaffs" Type="Self.PersonStaffs" Multiplicity="1" />
           <End Role="RecordContractItems" Type="Self.RecordContractItems" Multiplicity="*" />
@@ -1794,6 +1784,18 @@
             </Principal>
             <Dependent Role="RecordContracts">
               <PropertyRef Name="OrgId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_PaymentTypes">
+          <End Role="PaymentTypes" Type="Self.PaymentTypes" Multiplicity="1" />
+          <End Role="RecordContracts" Type="Self.RecordContracts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PaymentTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContracts">
+              <PropertyRef Name="PaymentTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2502,10 +2504,6 @@
             <End Role="Assignments" EntitySet="Assignments" />
             <End Role="RecordContractItems" EntitySet="RecordContractItems" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordContractItems_PaymentTypes" Association="Self.FK_RecordContractItems_PaymentTypes">
-            <End Role="PaymentTypes" EntitySet="PaymentTypes" />
-            <End Role="RecordContractItems" EntitySet="RecordContractItems" />
-          </AssociationSet>
           <AssociationSet Name="FK_RecordContractItems_PersonStaffs" Association="Self.FK_RecordContractItems_PersonStaffs">
             <End Role="PersonStaffs" EntitySet="PersonStaffs" />
             <End Role="RecordContractItems" EntitySet="RecordContractItems" />
@@ -2540,6 +2538,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_RecordContracts_Orgs" Association="Self.FK_RecordContracts_Orgs">
             <End Role="Orgs" EntitySet="Orgs" />
+            <End Role="RecordContracts" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_PaymentTypes" Association="Self.FK_RecordContracts_PaymentTypes">
+            <End Role="PaymentTypes" EntitySet="PaymentTypes" />
             <End Role="RecordContracts" EntitySet="RecordContracts" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordContracts_PersonStaffs" Association="Self.FK_RecordContracts_PersonStaffs">
@@ -2912,9 +2914,7 @@
           <EntitySet Name="PaymentTypes" EntityType="DataLib.PaymentType" />
           <EntitySet Name="Persons" EntityType="DataLib.Person" />
           <EntitySet Name="PersonStaffs" EntityType="DataLib.PersonStaff" />
-          <EntitySet Name="RecordContractItems" EntityType="DataLib.RecordContractItem" />
           <EntitySet Name="RecordContractLimits" EntityType="DataLib.RecordContractLimit" />
-          <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
           <EntitySet Name="Records" EntityType="DataLib.Record" />
           <EntitySet Name="RecordTypeCosts" EntityType="DataLib.RecordTypeCost" />
           <EntitySet Name="RecordTypeRolePermissions" EntityType="DataLib.RecordTypeRolePermission" />
@@ -2952,10 +2952,6 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Assignment" EntitySet="Assignments" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordContractItems_Assignments" Association="DataLib.FK_RecordContractItems_Assignments">
-            <End Role="Assignment" EntitySet="Assignments" />
-            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
-          </AssociationSet>
           <AssociationSet Name="FK_PersonStaffs_Branches" Association="DataLib.FK_PersonStaffs_Branches">
             <End Role="Branch" EntitySet="Branches" />
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
@@ -2968,17 +2964,9 @@
             <End Role="Person" EntitySet="Persons" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
           </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="DataLib.FK_CommissionProtocols_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
-          </AssociationSet>
           <AssociationSet Name="FK_Persons_Documents" Association="DataLib.FK_Persons_Documents">
             <End Role="Document" EntitySet="Documents" />
             <End Role="Person" EntitySet="Persons" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_FinancingSources" Association="DataLib.FK_RecordContracts_FinancingSources">
-            <End Role="FinancingSource" EntitySet="FinancingSources" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="DataLib.FK_RecordTypeCosts_FinancingSources">
             <End Role="FinancingSource" EntitySet="FinancingSources" />
@@ -2995,18 +2983,6 @@
           <AssociationSet Name="FK_InsuranceDocuments_Persons" Association="DataLib.FK_InsuranceDocuments_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="InsuranceDocument" EntitySet="InsuranceDocuments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MedicalHelpTypes_RecordContracts" Association="DataLib.FK_MedicalHelpTypes_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="MedicalHelpType" EntitySet="MedicalHelpTypes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_Orgs" Association="DataLib.FK_RecordContracts_Orgs">
-            <End Role="Org" EntitySet="Orgs" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContractItems_PaymentTypes" Association="DataLib.FK_RecordContractItems_PaymentTypes">
-            <End Role="PaymentType" EntitySet="PaymentTypes" />
-            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
             <End Role="Permission" EntitySet="Permissions" />
@@ -3068,14 +3044,6 @@
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonTalon" EntitySet="PersonTalons" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_Clients" Association="DataLib.FK_RecordContracts_Clients">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_Consumers" Association="DataLib.FK_RecordContracts_Consumers">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-          </AssociationSet>
           <AssociationSet Name="FK_Records_Persons" Association="DataLib.FK_Records_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="Record" EntitySet="Records" />
@@ -3092,37 +3060,9 @@
             <End Role="Staff" EntitySet="Staffs" />
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordContractItems_PersonStaffs" Association="DataLib.FK_RecordContractItems_PersonStaffs">
-            <End Role="PersonStaff" EntitySet="PersonStaffs" />
-            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_PersonStaffs" Association="DataLib.FK_RecordContracts_PersonStaffs">
-            <End Role="PersonStaff" EntitySet="PersonStaffs" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonTalons_RecordContracts" Association="DataLib.FK_PersonTalons_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="PersonTalon" EntitySet="PersonTalons" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContractItems_RecordContracts" Association="DataLib.FK_RecordContractItems_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContractItems_RecordTypes" Association="DataLib.FK_RecordContractItems_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContractLimits_RecordContracts" Association="DataLib.FK_RecordContractLimits_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="RecordContractLimit" EntitySet="RecordContractLimits" />
-          </AssociationSet>
           <AssociationSet Name="FK_RecordContractLimits_RecordTypes" Association="DataLib.FK_RecordContractLimits_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordContractLimit" EntitySet="RecordContractLimits" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Visits_RecordContracts" Association="DataLib.FK_Visits_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
           <AssociationSet Name="FK_Records_Records" Association="DataLib.FK_Records_Records">
             <End Role="Record" EntitySet="Records" />
@@ -3175,6 +3115,68 @@
           <AssociationSet Name="FK_Records_Visits" Association="DataLib.FK_Records_Visits">
             <End Role="Visit" EntitySet="Visits" />
             <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <EntitySet Name="RecordContractItems" EntityType="DataLib.RecordContractItem" />
+          <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
+          <AssociationSet Name="FK_RecordContractItems_Assignments" Association="DataLib.FK_RecordContractItems_Assignments">
+            <End Role="Assignment" EntitySet="Assignments" />
+            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="DataLib.FK_CommissionProtocols_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_FinancingSources" Association="DataLib.FK_RecordContracts_FinancingSources">
+            <End Role="FinancingSource" EntitySet="FinancingSources" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MedicalHelpTypes_RecordContracts" Association="DataLib.FK_MedicalHelpTypes_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="MedicalHelpType" EntitySet="MedicalHelpTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_Orgs" Association="DataLib.FK_RecordContracts_Orgs">
+            <End Role="Org" EntitySet="Orgs" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_PaymentTypes" Association="DataLib.FK_RecordContracts_PaymentTypes">
+            <End Role="PaymentType" EntitySet="PaymentTypes" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_Clients" Association="DataLib.FK_RecordContracts_Clients">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_Consumers" Association="DataLib.FK_RecordContracts_Consumers">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContractItems_PersonStaffs" Association="DataLib.FK_RecordContractItems_PersonStaffs">
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_PersonStaffs" Association="DataLib.FK_RecordContracts_PersonStaffs">
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonTalons_RecordContracts" Association="DataLib.FK_PersonTalons_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="PersonTalon" EntitySet="PersonTalons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContractItems_RecordContracts" Association="DataLib.FK_RecordContractItems_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContractItems_RecordTypes" Association="DataLib.FK_RecordContractItems_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContractLimits_RecordContracts" Association="DataLib.FK_RecordContractLimits_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="RecordContractLimit" EntitySet="RecordContractLimits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_RecordContracts" Association="DataLib.FK_Visits_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
@@ -3920,11 +3922,11 @@
           <NavigationProperty Name="VisitResult" Relationship="DataLib.FK_Visits_VisitResults" FromRole="Visit" ToRole="VisitResult" />
           <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="Visit" ToRole="FinancingSource" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Visits_Persons" FromRole="Visit" ToRole="Person" />
-          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="Visit" ToRole="RecordContract" />
           <Property Name="ExecutionPlaceId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Visits" FromRole="Visit" ToRole="Assignment" />
           <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="Visit" ToRole="ExecutionPlace" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Visits" FromRole="Visit" ToRole="Record" />
+          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="Visit" ToRole="RecordContract" />
         </EntityType>
         <Association Name="FK_PersonAddresses_AddressTypes">
           <End Type="DataLib.AddressType" Role="AddressType" Multiplicity="1" />
@@ -4519,12 +4521,12 @@
           <NavigationProperty Name="Room" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Assignment" ToRole="Room" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Assignments_Users" FromRole="Assignment" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DataLib.FK_Assignments_Users1" FromRole="Assignment" ToRole="User" />
-          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="Assignment" ToRole="RecordContractItem" />
           <Property Name="ParentId" Type="Int32" />
           <Property Name="VisitId" Type="Int32" />
           <NavigationProperty Name="Assignments1" Relationship="DataLib.FK_Assignments_Assignments" FromRole="Assignment" ToRole="Assignment1" />
           <NavigationProperty Name="Assignment1" Relationship="DataLib.FK_Assignments_Assignments" FromRole="Assignment1" ToRole="Assignment" />
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Assignments_Visits" FromRole="Assignment" ToRole="Visit" />
+          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="Assignment" ToRole="RecordContractItem" />
         </EntityType>
         <EntityType Name="FinancingSource">
           <Key>
@@ -4535,9 +4537,9 @@
           <Property Name="ShortName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_FinancingSources" FromRole="FinancingSource" ToRole="Assignment" />
-          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="FinancingSource" ToRole="RecordContract" />
           <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="FinancingSource" ToRole="RecordTypeCost" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="FinancingSource" ToRole="Visit" />
+          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="FinancingSource" ToRole="RecordContract" />
         </EntityType>
         <EntityType Name="PaymentType">
           <Key>
@@ -4546,7 +4548,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_PaymentTypes" FromRole="PaymentType" ToRole="RecordContractItem" />
+          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PaymentTypes" FromRole="PaymentType" ToRole="RecordContract" />
         </EntityType>
         <EntityType Name="Person">
           <Key>
@@ -4585,14 +4587,14 @@
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="Person" ToRole="PersonSocialStatus" />
           <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="Person" ToRole="PersonStaff" />
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="Person" ToRole="PersonTalon" />
-          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="Person" ToRole="RecordContract" />
-          <NavigationProperty Name="RecordContracts1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="Person" ToRole="RecordContract" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
           <Property Name="AmbCardFirstListHashCode" Type="Int32" Nullable="false" />
           <Property Name="PersonHospListHashCode" Type="Int32" Nullable="false" />
           <Property Name="RadiationListHashCode" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="Person" ToRole="RecordContract" />
+          <NavigationProperty Name="RecordContracts1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="Person" ToRole="RecordContract" />
         </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
@@ -4611,27 +4613,6 @@
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContract" />
         </EntityType>
-        <EntityType Name="RecordContractItem">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordContractId" Type="Int32" Nullable="false" />
-          <Property Name="AssignmentId" Type="Int32" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Count" Type="Int32" Nullable="false" />
-          <Property Name="Cost" Type="Double" Nullable="false" />
-          <Property Name="IsPaid" Type="Boolean" Nullable="false" />
-          <Property Name="PaymentTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Appendix" Type="Int32" />
-          <Property Name="InUserId" Type="Int32" Nullable="false" />
-          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Assignment" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="RecordContractItem" ToRole="Assignment" />
-          <NavigationProperty Name="PaymentType" Relationship="DataLib.FK_RecordContractItems_PaymentTypes" FromRole="RecordContractItem" ToRole="PaymentType" />
-          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="RecordContractItem" ToRole="PersonStaff" />
-          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContractItem" ToRole="RecordContract" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordContractItem" ToRole="RecordType" />
-        </EntityType>
         <EntityType Name="RecordContractLimit">
           <Key>
             <PropertyRef Name="Id" />
@@ -4640,38 +4621,8 @@
           <Property Name="RecordContractId" Type="Int32" Nullable="false" />
           <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
           <Property Name="Count" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContractLimit" ToRole="RecordContract" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordContractLimit" ToRole="RecordType" />
-        </EntityType>
-        <EntityType Name="RecordContract">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Number" Type="Int32" />
-          <Property Name="ContractName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
-          <Property Name="ClientId" Type="Int32" />
-          <Property Name="ConsumerId" Type="Int32" />
-          <Property Name="OrgId" Type="Int32" />
-          <Property Name="ContractCost" Type="Double" Nullable="false" />
-          <Property Name="Priority" Type="Int32" Nullable="false" />
-          <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="InUserId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="RecordContract" ToRole="CommissionProtocol" />
-          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="RecordContract" ToRole="FinancingSource" />
-          <NavigationProperty Name="MedicalHelpTypes" Relationship="DataLib.FK_MedicalHelpTypes_RecordContracts" FromRole="RecordContract" ToRole="MedicalHelpType" />
-          <NavigationProperty Name="Org" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="RecordContract" ToRole="Org" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="RecordContract" ToRole="Person" />
-          <NavigationProperty Name="Person1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="RecordContract" ToRole="Person" />
-          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="RecordContract" ToRole="PersonStaff" />
-          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
-          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContract" ToRole="RecordContractItem" />
-          <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContract" ToRole="RecordContractLimit" />
-          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="RecordContract" ToRole="Visit" />
+          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContractLimit" ToRole="RecordContract" />
         </EntityType>
         <EntityType Name="Record">
           <Key>
@@ -4760,7 +4711,6 @@
           <Property Name="IsRecord" Type="Boolean" Nullable="false" />
           <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="RecordType" ToRole="Assignment" />
-          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordType" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordType" ToRole="RecordContractLimit" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordTypes" FromRole="RecordType" ToRole="Record" />
           <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
@@ -4768,6 +4718,7 @@
           <NavigationProperty Name="RecordTypes1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType" ToRole="RecordType1" />
           <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType1" ToRole="RecordType" />
           <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="RecordType" ToRole="ScheduleItem" />
+          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordType" ToRole="RecordContractItem" />
         </EntityType>
         <Association Name="FK_Assignments_FinancingSources">
           <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
@@ -4865,18 +4816,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordContractItems_Assignments">
-          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="0..1" />
-          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Assignment">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractItem">
-              <PropertyRef Name="AssignmentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PersonStaffs_Branches">
           <End Type="DataLib.Branch" Role="Branch" Multiplicity="1" />
           <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="*" />
@@ -4913,18 +4852,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CommissionProtocols_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocol">
-              <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Persons_Documents">
           <End Type="DataLib.Document" Role="Document" Multiplicity="0..1" />
           <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
@@ -4934,18 +4861,6 @@
             </Principal>
             <Dependent Role="Person">
               <PropertyRef Name="PhotoId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_FinancingSources">
-          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="FinancingSource">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4994,42 +4909,6 @@
             </Principal>
             <Dependent Role="InsuranceDocument">
               <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_MedicalHelpTypes_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
-          <End Type="DataLib.MedicalHelpType" Role="MedicalHelpType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="MedicalHelpType">
-              <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_Orgs">
-          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Org">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="OrgId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContractItems_PaymentTypes">
-          <End Type="DataLib.PaymentType" Role="PaymentType" Multiplicity="1" />
-          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PaymentType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractItem">
-              <PropertyRef Name="PaymentTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5215,30 +5094,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordContracts_Clients">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="ClientId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_Consumers">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="ConsumerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Records_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
           <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
@@ -5287,78 +5142,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordContractItems_PersonStaffs">
-          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="1" />
-          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PersonStaff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractItem">
-              <PropertyRef Name="InUserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_PersonStaffs">
-          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PersonStaff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="InUserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonTalons_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
-          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonTalon">
-              <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContractItems_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
-          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractItem">
-              <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContractItems_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractItem">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContractLimits_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
-          <End Type="DataLib.RecordContractLimit" Role="RecordContractLimit" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractLimit">
-              <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RecordContractLimits_RecordTypes">
           <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
           <End Type="DataLib.RecordContractLimit" Role="RecordContractLimit" Multiplicity="*" />
@@ -5368,18 +5151,6 @@
             </Principal>
             <Dependent Role="RecordContractLimit">
               <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Visits_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
-          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Visit">
-              <PropertyRef Name="ContractId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5536,6 +5307,239 @@
             </Principal>
             <Dependent Role="Record">
               <PropertyRef Name="VisitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RecordContractItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordContractId" Type="Int32" Nullable="false" />
+          <Property Name="AssignmentId" Type="Int32" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Count" Type="Int32" Nullable="false" />
+          <Property Name="Cost" Type="Double" Nullable="false" />
+          <Property Name="IsPaid" Type="Boolean" Nullable="false" />
+          <Property Name="Appendix" Type="Int32" />
+          <Property Name="InUserId" Type="Int32" Nullable="false" />
+          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Assignment" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="RecordContractItem" ToRole="Assignment" />
+          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="RecordContractItem" ToRole="PersonStaff" />
+          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContractItem" ToRole="RecordContract" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordContractItem" ToRole="RecordType" />
+        </EntityType>
+        <EntityType Name="RecordContract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Number" Type="Int32" />
+          <Property Name="ContractName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
+          <Property Name="ClientId" Type="Int32" />
+          <Property Name="ConsumerId" Type="Int32" />
+          <Property Name="OrgId" Type="Int32" />
+          <Property Name="ContractCost" Type="Double" Nullable="false" />
+          <Property Name="PaymentTypeId" Type="Int32" Nullable="false" />
+          <Property Name="TransactionNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TransactionDate" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InUserId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="RecordContract" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="RecordContract" ToRole="FinancingSource" />
+          <NavigationProperty Name="MedicalHelpTypes" Relationship="DataLib.FK_MedicalHelpTypes_RecordContracts" FromRole="RecordContract" ToRole="MedicalHelpType" />
+          <NavigationProperty Name="Org" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="RecordContract" ToRole="Org" />
+          <NavigationProperty Name="PaymentType" Relationship="DataLib.FK_RecordContracts_PaymentTypes" FromRole="RecordContract" ToRole="PaymentType" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="RecordContract" ToRole="Person" />
+          <NavigationProperty Name="Person1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="RecordContract" ToRole="Person" />
+          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="RecordContract" ToRole="PersonStaff" />
+          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
+          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContract" ToRole="RecordContractItem" />
+          <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContract" ToRole="RecordContractLimit" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="RecordContract" ToRole="Visit" />
+        </EntityType>
+        <Association Name="FK_RecordContractItems_Assignments">
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="0..1" />
+          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assignment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContractItem">
+              <PropertyRef Name="AssignmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionProtocols_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionProtocol">
+              <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_FinancingSources">
+          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinancingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MedicalHelpTypes_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
+          <End Type="DataLib.MedicalHelpType" Role="MedicalHelpType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MedicalHelpType">
+              <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_Orgs">
+          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Org">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="OrgId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_PaymentTypes">
+          <End Type="DataLib.PaymentType" Role="PaymentType" Multiplicity="1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PaymentType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="PaymentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_Clients">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_Consumers">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="ConsumerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContractItems_PersonStaffs">
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="1" />
+          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonStaff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContractItem">
+              <PropertyRef Name="InUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_PersonStaffs">
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonStaff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="InUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonTalons_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
+          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonTalon">
+              <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContractItems_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
+          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContractItem">
+              <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContractItems_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
+          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContractItem">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContractLimits_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
+          <End Type="DataLib.RecordContractLimit" Role="RecordContractLimit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContractLimit">
+              <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="ContractId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6294,49 +6298,12 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="RecordContractItems">
-            <EntityTypeMapping TypeName="DataLib.RecordContractItem">
-              <MappingFragment StoreEntitySet="RecordContractItems">
-                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
-                <ScalarProperty Name="InUserId" ColumnName="InUserId" />
-                <ScalarProperty Name="Appendix" ColumnName="Appendix" />
-                <ScalarProperty Name="PaymentTypeId" ColumnName="PaymentTypeId" />
-                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="Count" ColumnName="Count" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
-                <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordContractLimits">
             <EntityTypeMapping TypeName="DataLib.RecordContractLimit">
               <MappingFragment StoreEntitySet="RecordContractLimits">
                 <ScalarProperty Name="Count" ColumnName="Count" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecordContracts">
-            <EntityTypeMapping TypeName="DataLib.RecordContract">
-              <MappingFragment StoreEntitySet="RecordContracts">
-                <ScalarProperty Name="InUserId" ColumnName="InUserId" />
-                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
-                <ScalarProperty Name="Options" ColumnName="Options" />
-                <ScalarProperty Name="Priority" ColumnName="Priority" />
-                <ScalarProperty Name="ContractCost" ColumnName="ContractCost" />
-                <ScalarProperty Name="OrgId" ColumnName="OrgId" />
-                <ScalarProperty Name="ConsumerId" ColumnName="ConsumerId" />
-                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
-                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="ContractName" ColumnName="ContractName" />
-                <ScalarProperty Name="Number" ColumnName="Number" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -6415,6 +6382,45 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordContractItems">
+            <EntityTypeMapping TypeName="DataLib.RecordContractItem">
+              <MappingFragment StoreEntitySet="RecordContractItems">
+                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
+                <ScalarProperty Name="InUserId" ColumnName="InUserId" />
+                <ScalarProperty Name="Appendix" ColumnName="Appendix" />
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Count" ColumnName="Count" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
+                <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordContracts">
+            <EntityTypeMapping TypeName="DataLib.RecordContract">
+              <MappingFragment StoreEntitySet="RecordContracts">
+                <ScalarProperty Name="InUserId" ColumnName="InUserId" />
+                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="TransactionNumber" ColumnName="TransactionNumber" />
+                <ScalarProperty Name="PaymentTypeId" ColumnName="PaymentTypeId" />
+                <ScalarProperty Name="ContractCost" ColumnName="ContractCost" />
+                <ScalarProperty Name="OrgId" ColumnName="OrgId" />
+                <ScalarProperty Name="ConsumerId" ColumnName="ConsumerId" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="ContractName" ColumnName="ContractName" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

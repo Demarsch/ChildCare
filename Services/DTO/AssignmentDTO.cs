@@ -7,6 +7,14 @@ namespace Core
     {
         public int Id { get; set; }
 
+	private int recordTypeId;
+        public int RecordTypeId
+        {
+            get { return recordTypeId; }
+            set { Set(() => RecordTypeId, ref recordTypeId, value); }
+
+        }
+
         private string recordTypeName;
         public string RecordTypeName
         {
@@ -47,6 +55,13 @@ namespace Core
         {
             get { return recordTypeCost; }
             set { Set("RecordTypeCost", ref recordTypeCost, value); }
+        }
+
+	private bool isSelected;
+        public bool IsSelected
+        {
+            get { return isSelected; }
+            set { Set(() => IsSelected, ref isSelected, value); }
         }
     }
 }

@@ -112,9 +112,7 @@
         <EntityTypeShape EntityType="DataLib.PaymentType" Width="1.5" PointX="16.5" PointY="63.75" />
         <EntityTypeShape EntityType="DataLib.Person" Width="1.5" PointX="6" PointY="43.875" />
         <EntityTypeShape EntityType="DataLib.PersonStaff" Width="1.5" PointX="8.25" PointY="38.125" />
-        <EntityTypeShape EntityType="DataLib.RecordContractItem" Width="1.5" PointX="18.75" PointY="56.625" />
         <EntityTypeShape EntityType="DataLib.RecordContractLimit" Width="1.5" PointX="18.75" PointY="42.375" />
-        <EntityTypeShape EntityType="DataLib.RecordContract" Width="1.5" PointX="16.5" PointY="40.5" />
         <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="16.5" PointY="77.875" />
         <EntityTypeShape EntityType="DataLib.RecordTypeCost" Width="1.5" PointX="18.75" PointY="38.375" />
         <EntityTypeShape EntityType="DataLib.RecordTypeRolePermission" Width="1.5" PointX="18.75" PointY="66.125" />
@@ -128,20 +126,14 @@
         <AssociationConnector Association="DataLib.FK_Assignments_Rooms" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users1" />
-        <AssociationConnector Association="DataLib.FK_RecordContractItems_Assignments" />
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Branches" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_PersonStaffs" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Persons" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_Persons_Documents" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_RecordTypeCosts_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_Visits_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_Persons_Genders" />
         <AssociationConnector Association="DataLib.FK_InsuranceDocuments_Persons" />
-        <AssociationConnector Association="DataLib.FK_MedicalHelpTypes_RecordContracts" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_Orgs" />
-        <AssociationConnector Association="DataLib.FK_RecordContractItems_PaymentTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
         <AssociationConnector Association="DataLib.FK_Addresses_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonDisabilities_Persons" />
@@ -157,20 +149,11 @@
         <AssociationConnector Association="DataLib.FK_PersonSocialStatuses_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_Persons" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_Clients" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_Consumers" />
         <AssociationConnector Association="DataLib.FK_Records_Persons" />
         <AssociationConnector Association="DataLib.FK_Users_Persons" />
         <AssociationConnector Association="DataLib.FK_Visits_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
-        <AssociationConnector Association="DataLib.FK_RecordContractItems_PersonStaffs" />
-        <AssociationConnector Association="DataLib.FK_RecordContracts_PersonStaffs" />
-        <AssociationConnector Association="DataLib.FK_PersonTalons_RecordContracts" />
-        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordContracts" />
-        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_Visits_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_Records_Records" />
         <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_Records_Rooms" />
@@ -184,6 +167,23 @@
         <AssociationConnector Association="DataLib.FK_Assignments_Visits" />
         <AssociationConnector Association="DataLib.FK_Visits_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Records_Visits" />
+        <EntityTypeShape EntityType="DataLib.RecordContractItem" Width="1.5" PointX="24.75" PointY="52.125" />
+        <EntityTypeShape EntityType="DataLib.RecordContract" Width="1.5" PointX="24.75" PointY="39.75" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_Assignments" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_FinancingSources" />
+        <AssociationConnector Association="DataLib.FK_MedicalHelpTypes_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_Orgs" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_PaymentTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_Clients" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_Consumers" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_PersonStaffs" />
+        <AssociationConnector Association="DataLib.FK_RecordContracts_PersonStaffs" />
+        <AssociationConnector Association="DataLib.FK_PersonTalons_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordContracts" />
+        <AssociationConnector Association="DataLib.FK_Visits_RecordContracts" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

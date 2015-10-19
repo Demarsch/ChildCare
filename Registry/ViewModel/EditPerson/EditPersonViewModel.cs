@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Linq;
 using MainLib.ViewModel;
+using MainLib.View;
 
 namespace Registry
 {
@@ -256,7 +258,7 @@ namespace Registry
 
         private void LoadContracts()
         {
-            PersonContracts = new PersonContractsViewModel(service, recordService, dialogService, log);
+            PersonContracts = new PersonContractsViewModel(service, recordService, assignmentService, dialogService, log);
             if (Id != 0)
                 PersonContracts.Load(Id);
         }

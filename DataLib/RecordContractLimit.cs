@@ -9,6 +9,9 @@
 
 namespace DataLib
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class RecordContractLimit
     {
         public int Id { get; set; }
@@ -16,7 +19,7 @@ namespace DataLib
         public int RecordTypeId { get; set; }
         public int Count { get; set; }
     
-        public virtual RecordContract RecordContract { get; set; }
         public virtual RecordType RecordType { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }

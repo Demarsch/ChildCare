@@ -18,13 +18,13 @@ namespace DataLib
         public RecordType()
         {
             this.Assignments = new HashSet<Assignment>();
-            this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Records = new HashSet<Record>();
             this.RecordTypeCosts = new HashSet<RecordTypeCost>();
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
             this.RecordTypes1 = new HashSet<RecordType>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
+            this.RecordContractItems = new HashSet<RecordContractItem>();
         }
     
         public int Id { get; set; }
@@ -45,8 +45,6 @@ namespace DataLib
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
@@ -59,5 +57,7 @@ namespace DataLib
         public virtual RecordType RecordType1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
     }
 }

@@ -9,7 +9,7 @@
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              xmlns:wpf="http://wpfcontrols.com/"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             MinHeight="610">
+             Width="Auto" MinHeight="610">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <DataTemplate x:Key="PersonAutoCompleteTemplate">
@@ -24,7 +24,7 @@
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -35,7 +35,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -43,29 +46,30 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Text="{Binding ContractName}" FontWeight="Bold" Margin="5">Название договора</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Период действия" Margin="7"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" 
+                   Text="{Binding ContractName, Mode=TwoWay}" FontWeight="Bold" Margin="3">Название договора</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Период действия" Margin="3"/>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-            <DatePicker Margin="5,2,2,2"/>
+            <DatePicker SelectedDate="{Binding ContractBeginDateTime, Mode=TwoWay}" Margin="5,2,2,2"/>
             <TextBlock Text=" - " Padding="0,5,0,0"/>
-            <DatePicker Margin="2"/>
+            <DatePicker SelectedDate="{Binding ContractEndDateTime, Mode=TwoWay}" Margin="2"/>
         </StackPanel>
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Источник финансирования" Margin="7"/>
-        <ComboBox Grid.Row="2" Grid.Column="1" Width="221" HorizontalAlignment="Left" Margin="5"
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Источник финансирования" Margin="3"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Width="235" HorizontalAlignment="Left" Margin="3"
                   ItemsSource="{Binding FinancingSources}" 
-                  DisplayMemberPath="Name" 
-                  SelectedValuePath="Id" 
+                  DisplayMemberPath="Field" 
+                  SelectedValuePath="Value" 
                   SelectedValue="{Binding SelectedFinancingSourceId}"/>
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Ответственный за договор" Margin="7"/>
-        <ComboBox Grid.Row="3" Grid.Column="1" Width="221" HorizontalAlignment="Left" Margin="5"
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Ответственный за договор" Margin="3"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" Width="235" HorizontalAlignment="Left" Margin="3"
                   ItemsSource="{Binding Registrators}" 
-                  DisplayMemberPath="Name" 
-                  SelectedValuePath="Id" 
+                  DisplayMemberPath="Field" 
+                  SelectedValuePath="Value" 
                   SelectedValue="{Binding SelectedRegistratorId}"/>
-        
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Заказчик" Margin="7"/>
-        <wpf:AutoCompleteTextBox Grid.Row="4" Grid.Column="1" Margin="5"
-                                 Watermark="Введите Ф.И.О. заказчика для поиска в МИС..."
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Заказчик" Margin="3"/>
+        <wpf:AutoCompleteTextBox Grid.Row="4" Grid.Column="1" Margin="3" Width="235" HorizontalAlignment="Left"
+                                 Watermark="Введите Ф.И.О. заказчика для поиска..."
                                  DisplayMember="FullName"
                                  ItemTemplate="{StaticResource PersonAutoCompleteTemplate}"
                                  SelectedItem="{Binding SelectedClient, Mode=TwoWay}"
@@ -76,14 +80,14 @@
             <wpf:AutoCompleteTextBox.LoadingContent>
                 <StackPanel Orientation="Horizontal">
                     <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" Height="16" Width="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    <TextBlock Text="Загрузка данных..." Margin="5" FontSize="13" />
+                    <TextBlock Text="Загрузка данных..." Margin="3" FontSize="13" />
                 </StackPanel>
             </wpf:AutoCompleteTextBox.LoadingContent>
         </wpf:AutoCompleteTextBox>
 
-        <TextBlock Grid.Row="5" Grid.Column="0" Text="Потребитель" Margin="7"/>
-        <wpf:AutoCompleteTextBox Grid.Row="5" Grid.Column="1" Margin="5"
-                                 Watermark="Введите Ф.И.О. потребителя для поиска в МИС..."
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Потребитель" Margin="3"/>
+        <wpf:AutoCompleteTextBox Grid.Row="5" Grid.Column="1" Margin="3" Width="235" HorizontalAlignment="Left"
+                                 Watermark="Введите Ф.И.О. потребителя для поиска..."
                                  DisplayMember="FullName"
                                  ItemTemplate="{StaticResource PersonAutoCompleteTemplate}"
                                  SelectedItem="{Binding SelectedConsumer, Mode=TwoWay}"
@@ -94,31 +98,53 @@
             <wpf:AutoCompleteTextBox.LoadingContent>
                 <StackPanel Orientation="Horizontal">
                     <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" Height="16" Width="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    <TextBlock Text="Загрузка данных..." Margin="5" FontSize="13" />
+                    <TextBlock Text="Загрузка данных..." Margin="3" FontSize="13" />
                 </StackPanel>
             </wpf:AutoCompleteTextBox.LoadingContent>
         </wpf:AutoCompleteTextBox>
 
-        <GroupBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Метод оплаты" Margin="3"/>
+        <ComboBox Grid.Row="6" Grid.Column="1" Width="235" HorizontalAlignment="Left" Margin="3"
+                ItemsSource="{Binding PaymentTypes}" 
+                DisplayMemberPath="Field" 
+                SelectedValuePath="Value" 
+                SelectedValue="{Binding SelectedPaymentTypeId}"/>
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="№ транзакции" Margin="3" Visibility="{Binding IsCashless, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBox Grid.Row="7" Grid.Column="1" Width="235" Height="20" HorizontalAlignment="Left" Margin="3"
+                    Text="{Binding TransationNumber, Mode=TwoWay}" Visibility="{Binding IsCashless, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="Дата транзакции" Margin="3" Visibility="{Binding IsCashless, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBox Grid.Row="8" Grid.Column="1" Width="235" Height="20" HorizontalAlignment="Left" Margin="3"
+                    Text="{Binding TransationDate, Mode=TwoWay}" Visibility="{Binding IsCashless, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+      
+
+        <GroupBox Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2">
             <StackPanel Orientation="Vertical" >
                 <TextBlock Text="Услуги по договору" FontWeight="Bold"></TextBlock>
                 <RadioButton Content="Назначенные услуги" IsChecked="{Binding IsAssignRecordsChecked, Mode=TwoWay}" Margin="3"/>
                 <ListView ItemsSource="{Binding Assignments}" SelectedItem="{Binding SelectedAssignment, Mode=TwoWay}"
-                          Visibility="{Binding IsAssignRecordsChecked, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5">
+                          Visibility="{Binding IsAssignRecordsChecked, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Margin="3" MaxHeight="150">
                     <ListView.View>
                         <GridView>
                             <GridView.Columns>
-                                <GridViewColumn x:Name="Date" Header="Дата" DisplayMemberBinding="{Binding Path=AssignDate}"></GridViewColumn>
-                                <GridViewColumn x:Name="Name" Header="Наименование услуги" DisplayMemberBinding="{Binding Path=RecordTypeName}"></GridViewColumn>
-                                <GridViewColumn x:Name="Cost" Header="Сумма" DisplayMemberBinding="{Binding Path=RecordTypeCost}"></GridViewColumn>
+                                <GridViewColumn x:Name="Checked" Width="30">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="Date" Width="120" Header="Дата" DisplayMemberBinding="{Binding Path=AssignDateTime}"></GridViewColumn>
+                                <GridViewColumn x:Name="Name" Width="280" Header="Наименование услуги" DisplayMemberBinding="{Binding Path=RecordTypeName}"></GridViewColumn>
+                                <GridViewColumn x:Name="Cost" Width="80" Header="Сумма, руб." DisplayMemberBinding="{Binding Path=RecordTypeCost}"></GridViewColumn>
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <RadioButton Content="Добавить новую услугу" IsChecked="{Binding IsNewRecordChecked, Mode=TwoWay}" Margin="3"/>
+                <RadioButton Content="Добавить услугу из номенклатуры" IsChecked="{Binding IsNewRecordChecked, Mode=TwoWay}" Margin="3"/>
                 <StackPanel Orientation="Vertical" 
                             Visibility="{Binding IsNewRecordChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <wpf:AutoCompleteTextBox Grid.Row="4" Grid.Column="1" Margin="5"
+                    <wpf:AutoCompleteTextBox Grid.Row="4" Grid.Column="1" Margin="3"
                                      Watermark="Введите наименование услуги для поиска..."
                                      DisplayMember="RecordName"
                                      ItemTemplate="{StaticResource RecordTypesAutoCompleteTemplate}"
@@ -130,7 +156,7 @@
                         <wpf:AutoCompleteTextBox.LoadingContent>
                             <StackPanel Orientation="Horizontal">
                                 <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Resources;component/Images/Loading16x16.gif" Height="16" Width="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                <TextBlock Text="Загрузка данных..." Margin="5" FontSize="13" />
+                                <TextBlock Text="Загрузка данных..." Margin="3" FontSize="13" />
                             </StackPanel>
                         </wpf:AutoCompleteTextBox.LoadingContent>
                     </wpf:AutoCompleteTextBox>
@@ -141,18 +167,22 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="23*"/>
+                            <ColumnDefinition Width="67*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Кол-во услуг" Margin="5"/>
-                        <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Value="1" Height="20" Increment="1" Maximum="100" Minimum="1" ParsingNumberStyle="Integer" TextAlignment="Left"/>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Стоимость услуг" Margin="5"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Height="20" IsReadOnly="True"/>
-                    </Grid>     
-                </StackPanel>                
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Кол-во услуг" Margin="3"/>
+                        <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1"
+                                            Height="20" Increment="1" Maximum="100" Minimum="1" 
+                                            ParsingNumberStyle="Integer" TextAlignment="Left"
+                                            Value="{Binding RecordsCount}" Grid.ColumnSpan="2" Margin="0,3" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Стоимость услуг, руб." Margin="3"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Height="20" Text="{Binding AssignRecordTypeCost}" IsReadOnly="True" Grid.ColumnSpan="2" Margin="0,3"/>
+                    </Grid>
+                </StackPanel>
             </StackPanel>
         </GroupBox>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,2">
+        <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,2">
             <Button Command="{Binding AddRecordCommand}" Margin="0,0,5,0" BorderThickness="0">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="pack://application:,,,/Resources;component/Images/Add24x24.png" Stretch="Uniform" Height="16" Width="16"/>
@@ -178,44 +208,39 @@
                 </StackPanel>
             </Button>
         </StackPanel>
-        
-        <ListView Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"  Margin="5"
-                  ItemsSource="{Binding ContractItems}" SelectedItem="{Binding SelectedContractItem, Mode=TwoWay}">
+
+        <ListView Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2"  Margin="3" MinHeight="300"
+                  ItemsSource="{Binding ContractItems}" 
+                  SelectedItem="{Binding SelectedContractItem, Mode=TwoWay}">
             <ListView.View>
                 <GridView>
                     <GridView.Columns>
-                        <GridViewColumn x:Name="IsPaid">
+                        <GridViewColumn x:Name="IsPaid" Header="Оплата" Width="50">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <CheckBox IsChecked="{Binding IsPaid}"></CheckBox>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn x:Name="RecordName" Header="Наименование услуги" DisplayMemberBinding="{Binding Path=RecordTypeName}"></GridViewColumn>
-                        <GridViewColumn x:Name="RecordCount" Header="Кол-во" DisplayMemberBinding="{Binding Path=RecordCount}"></GridViewColumn>
-                        <GridViewColumn x:Name="RecordCost" Header="Сумма" DisplayMemberBinding="{Binding Path=RecordCost}"></GridViewColumn>
-                        <GridViewColumn x:Name="PaymentType" Header="Тип оплаты">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding PaymentTypes}" 
-                                              DisplayMemberPath="Name" SelectedValuePath="Id" 
-                                              SelectedItem="{Binding SelectedPaymentType}" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                        <GridViewColumn x:Name="RecordName" Width="350" Header="Наименование услуги"
+                                        DisplayMemberBinding="{Binding Path=RecordTypeName}"></GridViewColumn>
+                        <GridViewColumn x:Name="RecordCount" Width="50" Header="Кол-во"
+                                        DisplayMemberBinding="{Binding Path=RecordCount}"></GridViewColumn>
+                        <GridViewColumn x:Name="RecordCost" Width="80" Header="Сумма, руб." 
+                                        DisplayMemberBinding="{Binding Path=RecordCost}"></GridViewColumn>
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
         </ListView>
-
-        <Button Grid.Row="9" Grid.Column="0" Command="{Binding SaveContractCommand}" Margin="5" Background="White">
+        
+        <Button Grid.Row="12" Grid.Column="0" Command="{Binding SaveContractCommand}" Margin="3" Background="White" IsEnabled="{Binding AllowSave}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="pack://application:,,,/Resources;component/Images/Save_48x48.png" Stretch="Uniform" Height="24" Width="24"/>
-                <TextBlock Text="Сохранить договор" Margin="5"/>
+                <TextBlock Text="Сохранить договор" Margin="3"/>
             </StackPanel>
         </Button>
 
-        <xctk:DropDownButton Margin="5" Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" Background="White">
+        <xctk:DropDownButton Margin="3" Grid.Row="13" Grid.Column="1" HorizontalAlignment="Right" Background="White" IsEnabled="{Binding AllowPrint}">
             <xctk:DropDownButton.Content>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="pack://application:,,,/Resources;component/Images/documentPrint48x48.png" Stretch="Uniform" Height="24" Width="24"/>
@@ -227,18 +252,17 @@
                     <Button Command="{Binding PrintContractCommand}" BorderThickness="0" HorizontalContentAlignment="Left">
                         <StackPanel Orientation="Horizontal" >
                             <Image Source="pack://application:,,,/Resources;component/Images/File_Word.png" Stretch="Uniform" Height="24" Width="24"/>
-                            <TextBlock Text="Договор" Margin="5"/>
+                            <TextBlock Text="Договор" Margin="3"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding PrintAppendixCommand}" BorderThickness="0" HorizontalContentAlignment="Left">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="pack://application:,,,/Resources;component/Images/File_Word.png" Stretch="Uniform" Height="24" Width="24"/>
-                            <TextBlock Text="Доп. соглашение к договору" Margin="5"/>
+                            <TextBlock Text="Доп. соглашение к договору" Margin="3"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
             </xctk:DropDownButton.DropDownContent>
-
-        </xctk:DropDownButton>        
+        </xctk:DropDownButton>
     </Grid>
 </UserControl>

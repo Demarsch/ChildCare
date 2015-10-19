@@ -212,6 +212,7 @@
     <Compile Include="PartialClasses\PersonStaff.cs" />
     <Compile Include="PartialClasses\PersonTalon.cs" />
     <Compile Include="PartialClasses\Person.cs" />
+    <Compile Include="PartialClasses\RecordContract.cs" />
     <Compile Include="PartialClasses\ScheduleItem.cs" />
     <Compile Include="PaymentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
