@@ -1,23 +1,25 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:MainLib.PersonVisitItemsListViewModels">
-    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
     <HierarchicalDataTemplate DataType="{x:Type local:PersonHierarchicalVisitsViewModel}" ItemsSource="{Binding NestedItems}">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Border BorderThickness="1" BorderBrush="Black" Background="LightGreen" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
-            
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" />
+                <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
 
-        </Grid>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" />
+            </Grid>
+        </Border>
     </HierarchicalDataTemplate>
 </ResourceDictionary>

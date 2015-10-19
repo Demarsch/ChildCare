@@ -9,6 +9,7 @@
         xmlns:core="clr-namespace:Core;assembly=StuffLib"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" 
         xmlns:controls="clr-namespace:MainLib.View;assembly=MainLib"
+        xmlns:tempCtrl="clr-namespace:Core.PersonVisitItemsListViews;assembly=MainLib"
         Width="920" MinHeight="610" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -118,6 +119,9 @@
         </TabItem>
         <TabItem Header="Договоры пациента">
             <controls:PersonContractsControl DataContext="{Binding PersonContracts}"/>
+        </TabItem>
+        <TabItem Header="Случаи">
+            <tempCtrl:PatientVisitItemsListView DataContext="{Binding PersonVisits}"/>
         </TabItem>
     </TabControl>
 </Window>

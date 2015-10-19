@@ -27,11 +27,16 @@ namespace Registry
 
         private readonly IRecordService recordService;
 
+        private readonly IAssignmentService assignmentService;
+
+        private readonly IVisitService visitService;
+
         private readonly IDocumentService documentService;
         #endregion
 
         #region Constructors
-        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, PatientAssignmentListViewModel patientAssignmentListViewModel)
+        public PatientSearchViewModel(IPatientService patientService, IPersonService personService, ILog log, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IAssignmentService assignmentService,
+           IVisitService visitService, PatientAssignmentListViewModel patientAssignmentListViewModel)
         {
             if (patientService == null)
                 throw new ArgumentNullException("patientService");
@@ -45,14 +50,23 @@ namespace Registry
                 throw new ArgumentNullException("dialogService");
             if (documentService == null)
                 throw new ArgumentNullException("documentService");
+            if (recordService == null)
+                throw new ArgumentNullException("recordService");
+            if (assignmentService == null)
+                throw new ArgumentNullException("assignmentService");
+            if (visitService == null)
+                throw new ArgumentNullException("visitService");
             this.documentService = documentService;
             this.dialogService = dialogService;
             this.personService = personService;
             this.log = log;
             this.patientService = patientService;
+            this.recordService = recordService;
+            this.assignmentService = assignmentService;
+            this.visitService = visitService;
             patients = new ObservableCollection<PersonViewModel>();
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
-            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService, documentService, recordService);
+            editPersonViewModel = new EditPersonViewModel(log, personService, dialogService, documentService, recordService, visitService, assignmentService);
             currentPatient = new PersonViewModel(null);
             NewPatientCommand = new RelayCommand(NewPatient);
             EditPatientCommand = new RelayCommand(EditPatient);
@@ -202,6 +216,16 @@ namespace Registry
 
         #region Methods
 
+        private void ShowPersonData(int selectedTabPageIndex = 0)
+        {
+            if (currentPatient.IsEmpty)
+                return;
+            editPersonViewModel.Id = currentPatient.Id;
+            editPersonViewModel.SelectedPageIndex = selectedTabPageIndex;
+            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
+            editPersonDataView.ShowDialog();
+        }
+
         private void SetPrintedProperties()
         {
             IsPrintedAmbCardFirstList = (CurrentPatient.AmbCardFirstListHashCode == personService.GetAmbCardFirstList(CurrentPatient.Id).GetHashCode());
@@ -279,34 +303,19 @@ namespace Registry
         public ICommand EditPatientCommand { get; private set; }
         private void EditPatient()
         {
-            if (currentPatient.IsEmpty)
-                return;
-            editPersonViewModel.Id = currentPatient.Id;
-            editPersonViewModel.SelectedPageIndex = 0;
-            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
-            editPersonDataView.ShowDialog();
+            ShowPersonData();
         }
 
         public ICommand ShowPersonDocumentsCommand { get; private set; }
         private void ShowPersonDocuments()
         {
-            if (currentPatient.IsEmpty)
-                return;
-            editPersonViewModel.Id = currentPatient.Id;
-            editPersonViewModel.SelectedPageIndex = 1;
-            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
-            editPersonDataView.ShowDialog();
+            ShowPersonData(1);
         }
 
         public ICommand ShowContractsCommand { get; private set; }
         private void ShowContracts()
         {
-            if (currentPatient.IsEmpty)
-                return;
-            editPersonViewModel.Id = currentPatient.Id;
-            editPersonViewModel.SelectedPageIndex = 2;
-            var editPersonDataView = new EditPersonView() { DataContext = editPersonViewModel };
-            editPersonDataView.ShowDialog();
+            ShowPersonData(2);
         }
 
         public ICommand CreateAmbCardCommand { get; private set; }
@@ -345,7 +354,7 @@ namespace Registry
         public ICommand ShowVisitsCommand { get; private set; }
         private void ShowVisits()
         {
-            throw new NotImplementedException();
+            ShowPersonData(3);
         }
 
         public ICommand ShowCasesCommand { get; private set; }

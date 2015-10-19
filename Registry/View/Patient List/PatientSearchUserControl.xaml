@@ -8,7 +8,7 @@
              xmlns:registry="clr-namespace:Registry"
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" d:DataContext="{d:DesignInstance registry:PatientSearchViewModel}">
+             d:DesignHeight="300" d:DesignWidth="3000" d:DataContext="{d:DesignInstance registry:PatientSearchViewModel}">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <stuffLib:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
@@ -59,9 +59,10 @@
                 </xctk:SplitButton.DropDownContent>
             </xctk:SplitButton>
             <xctk:SplitButton Grid.Column="2" Margin="2" VerticalAlignment="Stretch" Padding="3" Height="60" Width="60"
-                              x:Name="ambulatoryCardButton" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="{Binding AmbNumberButtonText}" Command="{Binding CreateAmbCardCommand}" 
+                              x:Name="ambulatoryCardButton" Command="{Binding CreateAmbCardCommand}" 
                               ToolTipService.IsEnabled="{Binding CurrentPatient.AmbNumberExist, Converter={StaticResource InverseBoolConverter}}" 
                               Background="{Binding IsPrintedAllAmbCard, Converter={StaticResource IsPrintedToColorConverter}}">
+                <TextBlock Text="{Binding AmbNumberButtonText}" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
                 <!--<xctk:SplitButton.Resources>
                     <Style TargetType="{x:Type Popup}">
                         <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type xctk:SplitButton}}}" />

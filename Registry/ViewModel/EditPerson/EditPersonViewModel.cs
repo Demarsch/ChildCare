@@ -20,6 +20,10 @@ namespace Registry
 
         private readonly IRecordService recordService;
 
+        private readonly IVisitService visitService;
+
+        private readonly IAssignmentService assignmentService;
+
         private readonly IDialogService dialogService;
 
         private readonly IDocumentService documentService;
@@ -47,7 +51,7 @@ namespace Registry
         /// <summary>
         /// Use this for creating new person
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IVisitService visitService, IAssignmentService assignmentService)
         {
             if (log == null)
                 throw new ArgumentNullException("log");
@@ -57,10 +61,18 @@ namespace Registry
                 throw new ArgumentNullException("dialogService");
             if (documentService == null)
                 throw new ArgumentNullException("documentService");
+            if (recordService == null)
+                throw new ArgumentNullException("recordService");
+            if (visitService == null)
+                throw new ArgumentNullException("visitService");
+            if (assignmentService == null)
+                throw new ArgumentNullException("assignmentService");
             this.documentService = documentService;
             this.dialogService = dialogService;
             this.service = service;
             this.recordService = recordService;
+            this.assignmentService = assignmentService;
+            this.visitService = visitService;
             this.log = log;
             IsPersonEditing = true;
             ReturnToPersonEditingCommand = new RelayCommand(ReturnToPersonEditing);
@@ -72,8 +84,8 @@ namespace Registry
             RemovePersonFromRelativeCommand = new RelayCommand(RemovePersonFromRelative);
         }
 
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, int personId)
-            : this(log, service, dialogService, documentService, recordService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IVisitService visitService, IAssignmentService assignmentService, int personId)
+            : this(log, service, dialogService, documentService, recordService, visitService, assignmentService)
         {
             Id = personId;
             this.log = log;
@@ -82,8 +94,8 @@ namespace Registry
         /// <summary>
         /// TODO: Use this for creating new person with default data from search
         /// </summary>
-        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, string personData)
-            : this(log, service, dialogService, documentService, recordService)
+        public EditPersonViewModel(ILog log, IPersonService service, IDialogService dialogService, IDocumentService documentService, IRecordService recordService, IVisitService visitService, IAssignmentService assignmentService, string personData)
+            : this(log, service, dialogService, documentService, recordService, visitService, assignmentService)
         {
 
         }
@@ -99,6 +111,7 @@ namespace Registry
                 SetRelatives();
                 LoadPersonDocuments();
                 LoadContracts();
+                LoadVisits();
             }
         }
 
@@ -220,6 +233,13 @@ namespace Registry
             set { Set("PersonContracts", ref personContracts, value); }
         }
 
+        private MainLib.PersonVisitItemsListViewModels.PersonVisitItemsListViewModel personVisits;
+        public MainLib.PersonVisitItemsListViewModels.PersonVisitItemsListViewModel PersonVisits
+        {
+            get { return personVisits; }
+            set { Set(() => PersonVisits, ref personVisits, value); }
+        }
+
         private int selectedPageIndex;
         public int SelectedPageIndex
         {
@@ -240,7 +260,12 @@ namespace Registry
             if (Id != 0)
                 PersonContracts.Load(Id);
         }
-        
+
+        private void LoadVisits()
+        {
+            PersonVisits = new MainLib.PersonVisitItemsListViewModels.PersonVisitItemsListViewModel(Id, service, visitService, assignmentService, recordService);
+        }
+
         public string PersonFullName
         {
             get { return EditPersonDataViewModel.PersonFullName; }
@@ -297,7 +322,7 @@ namespace Registry
                 return;
             }
             var task = Task.Factory.StartNew(SaveData);
-            
+
             await task;
             IsSaveEnabled = true;
         }
