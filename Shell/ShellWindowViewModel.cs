@@ -29,7 +29,7 @@ namespace Shell
 
         public async Task CheckDatabaseConnectionAsync()
         {
-            BusyMediator.Activate("ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ...");
+            BusyMediator.Activate("Подключение к базе данных...");
             OnPropertyChanged(() => CanOpenMenu);
             var checkDataBaseConnectionTask = Task.Run(() => CheckDatabaseConnection());
             await Task.WhenAll(checkDataBaseConnectionTask, Task.Delay(TimeSpan.FromSeconds(1.0)));
@@ -37,7 +37,7 @@ namespace Shell
             BusyMediator.Deactivate();
             if (!success)
             {
-                CriticalFailureMediator.Activate("НЕ УДАЛОСЬ ПОДКЛЮЧИТЬСЯ К БАЗЕ ДАННЫХ. ОБРАТИТЕСЬ В СЛУЖБУ ПОДДЕРЖКИ");
+                CriticalFailureMediator.Activate("Не удалось подключиться к базе данных. Пожалуйста, обратитесь в службу поддержки");
             }
             OnPropertyChanged(() => CanOpenMenu);
         }

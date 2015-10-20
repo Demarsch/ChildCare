@@ -5,14 +5,11 @@ using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Expressions;
 using PatientSearchModule.Misc;
-using PatientSearchModule.Model;
 
 namespace PatientSearchModule.Services
 {
     public class PatientSearchService : IPatientSearchService
     {
-        private const int UserInputThresholdLength = 3;
-
         private const int TopPatientCount = 5;
 
         private readonly IDbContextProvider contextProvider;

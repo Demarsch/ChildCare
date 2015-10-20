@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using Core.Wpf.Misc;
 using Prism.Mvvm;
 
@@ -30,15 +31,32 @@ namespace Core.Wpf.Mvvm
             set { SetProperty(ref retryCommand, value); }
         }
 
-        public void Activate(object failureMessage)
+        private Exception exception;
+
+        public Exception Exception
         {
-            Activate(failureMessage, CommandWrapper.Empty);
+            get { return exception; }
+            set
+            {
+                if (SetProperty(ref exception, value))
+                {
+                    OnPropertyChanged(() => HasException);
+                }
+            }
         }
 
-        public void Activate(object failureMessage, CommandWrapper retryCommand)
+        public bool HasException { get { return Exception != null; } }
+
+        public void Activate(object failureMessage)
+        {
+            Activate(failureMessage, CommandWrapper.Empty, null);
+        }
+
+        public void Activate(object failureMessage, CommandWrapper retryCommand, Exception exception)
         {
             Message = failureMessage;
             RetryCommand = retryCommand;
+            Exception = exception;
             IsActive = true;
         }
 

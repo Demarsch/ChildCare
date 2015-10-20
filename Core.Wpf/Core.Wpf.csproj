@@ -60,6 +60,7 @@
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\Converter.cs" />
+    <Compile Include="Converters\ToStringConverter.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />

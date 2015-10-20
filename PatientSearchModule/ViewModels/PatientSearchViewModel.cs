@@ -114,7 +114,7 @@ namespace PatientSearchModule.ViewModels
                 Patients.Clear();
                 return;
             }
-            BusyMediator.Activate("ИДЕТ ПОИСК ПАЦИЕНТОВ...");
+            BusyMediator.Activate("Идет поиск пациентов...");
             if (useDelay == true)
             {
                 Task.Delay(AppConfiguration.UserInputDelay, currentSearchToken.Token)
@@ -189,7 +189,7 @@ namespace PatientSearchModule.ViewModels
             {
                 log.Error("Failed to find patients", ex);
                 searchIsCompleted = true;
-                CriticalFailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", searchPatientsCommandWrapper);
+                CriticalFailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", searchPatientsCommandWrapper, ex);
             }
             finally
             {
