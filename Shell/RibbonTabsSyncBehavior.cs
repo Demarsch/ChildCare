@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Core.Extensions;
 using Fluent;
 using Prism.Regions;
 using Prism.Regions.Behaviors;
@@ -37,14 +38,18 @@ namespace Shell
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 var startIndex = e.NewStartingIndex;
-                foreach (var newItem in e.NewItems.OfType<RibbonTabItem>())
+                foreach (var newRibbon in e.NewItems.OfType<UserControl>().Select(x => x.Content).Cast<Ribbon>())
                 {
-                    ribbon.Tabs.Insert(startIndex++, newItem);
+                    foreach (var ribbonTab in newRibbon.Tabs)
+                    {
+                        ribbonTab.DataContext = newRibbon.DataContext;
+                        ribbon.Tabs.Insert(startIndex++, ribbonTab);
+                    }
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (var oldItem in e.OldItems.OfType<RibbonTabItem>())
+                foreach (var oldItem in e.OldItems.OfType<UserControl>().Select(x => x.Content as Ribbon).SelectMany(x => x.Tabs))
                 {
                     ribbon.Tabs.Remove(oldItem);
                 }

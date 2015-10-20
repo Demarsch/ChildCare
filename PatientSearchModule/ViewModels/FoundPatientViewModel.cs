@@ -8,6 +8,14 @@ namespace PatientSearchModule.ViewModels
 {
     public class FoundPatientViewModel : BindableBase
     {
+        private int id;
+
+        public int Id
+        {
+            get { return id; }
+            set { SetProperty(ref id, value); }
+        }
+
         private IEnumerable<string> wordsToHighlight;
 
         public IEnumerable<string> WordsToHighlight

@@ -8,6 +8,7 @@ using Core.Data;
 using Core.Extensions;
 using Core.Misc;
 using Core.Services;
+using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
@@ -15,6 +16,7 @@ using PatientSearchModule.Misc;
 using PatientSearchModule.Model;
 using PatientSearchModule.Services;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 
 namespace PatientSearchModule.ViewModels
@@ -29,7 +31,13 @@ namespace PatientSearchModule.ViewModels
 
         private readonly IUserInputNormalizer userInputNormalizer;
 
-        public PatientSearchViewModel(IPatientSearchService patientSearchService, ILog log, ICacheService cacheService, IUserInputNormalizer userInputNormalizer)
+        private readonly IEventAggregator eventAggregator;
+
+        public PatientSearchViewModel(IPatientSearchService patientSearchService,
+                                      ILog log,
+                                      ICacheService cacheService,
+                                      IUserInputNormalizer userInputNormalizer,
+                                      IEventAggregator eventAggregator)
         {
             if (patientSearchService == null)
             {
@@ -47,7 +55,12 @@ namespace PatientSearchModule.ViewModels
             {
                 throw new ArgumentNullException("userInputNormalizer");
             }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
             this.userInputNormalizer = userInputNormalizer;
+            this.eventAggregator = eventAggregator;
             this.cacheService = cacheService;
             this.userInputNormalizer = userInputNormalizer;
             this.log = log;
@@ -98,6 +111,21 @@ namespace PatientSearchModule.ViewModels
         private readonly CommandWrapper searchPatientsCommandWrapper;
 
         public ICommand SearchPatientsCommand { get; private set; }
+
+        private FoundPatientViewModel selectedPatient;
+
+        public FoundPatientViewModel SelectedPatient
+        {
+            get { return selectedPatient; }
+            set
+            {
+                SetProperty(ref selectedPatient, value);
+                if (value != null)
+                {
+                    eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(value.Id);
+                }
+            }
+        }
 
         private void SearchPatients(bool? useDelay)
         {
@@ -164,6 +192,7 @@ namespace PatientSearchModule.ViewModels
                 var result = await runQueryTask.Result
                                                .Select(x => new FoundPatientViewModel
                                                             {
+                                                                Id = x.Id,
                                                                 BirthDate = x.BirthDate,
                                                                 CurrentName = x.CurrentName,
                                                                 PreviousName = x.PreviousName,

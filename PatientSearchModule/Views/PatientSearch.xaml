@@ -23,11 +23,12 @@
         </xctk:WatermarkTextBox>
         <Grid HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
-            <ItemsControl HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Margin="5"
-                          BorderThickness="0"
-                          ItemsSource="{Binding Patients}" />
+            <ListBox HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     Margin="5"
+                     BorderThickness="0"
+                     ItemsSource="{Binding Patients}"
+                     SelectedItem="{Binding SelectedPatient, Mode=OneWayToSource}"/>
             <ContentControl Content="{Binding BusyMediator}"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch" />
