@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
+using Core;
 
-namespace Core.PersonVisitItemsListViewModel
+namespace MainLib.PersonVisitItemsListViewModels
 {
     public class PersonVisitItemsListViewModel : ObservableObject
     {
@@ -56,7 +57,9 @@ namespace Core.PersonVisitItemsListViewModel
             set
             {
                 Set(() => PersonId, ref personId, value);
-                LoadRootItemsAsync();
+                //LoadRootItemsAsync();
+                RootItems.Clear();
+                RootItems.AddRange(LoadRootItems());
             }
         }
 
@@ -71,15 +74,20 @@ namespace Core.PersonVisitItemsListViewModel
 
         private async void LoadRootItemsAsync()
         {
-            var task = Task.Factory.StartNew(LoadRootItems);
+            RootItems.Clear();
+            var task = Task<List<object>>.Factory.StartNew(LoadRootItems);
             await task;
+            RootItems.AddRange(task.Result);
         }
 
-        private void LoadRootItems()
+        private List<object> LoadRootItems()
         {
-            RootItems.Clear();
-            RootItems.AddRange(personService.GetRootAssignments(PersonId));
-            RootItems.AddRange(personService.GetVisits(PersonId));
+            List<object> resList = new List<object>();
+            var assignmentsViewModels = personService.GetRootAssignments(PersonId).Select(x => new PersonHierarchicalAssignmentsViewModel(x, assignmentService));
+            var visitsViewModels = personService.GetVisits(PersonId).Select(x => new PersonHierarchicalVisitsViewModel(x, visitService, recordService, assignmentService));
+            resList.AddRange(assignmentsViewModels);
+            resList.AddRange(visitsViewModels);
+            return resList;
         }
 
         #endregion

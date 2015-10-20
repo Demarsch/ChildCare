@@ -8,6 +8,7 @@ using Core.Data;
 using Core.Extensions;
 using Core.Misc;
 using Core.Services;
+using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
 using PatientSearchModule.Misc;
@@ -55,7 +56,13 @@ namespace PatientSearchModule.ViewModels
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
             Patients = new ObservableCollectionEx<FoundPatientViewModel>();
-            SearchPatientsCommand = new DelegateCommand(SearchPatients);
+            SearchPatientsCommand = new DelegateCommand<bool?>(SearchPatients);
+            searchPatientsCommandWrapper = new CommandWrapper
+                                           {
+                                               Command = SearchPatientsCommand,
+                                               CommandName = "Повторный поиск",
+                                               CommandParameter = false
+                                           };
         }
 
         public ObservableCollectionEx<FoundPatientViewModel> Patients { get; private set; }
@@ -69,7 +76,7 @@ namespace PatientSearchModule.ViewModels
             {
                 if (SetProperty(ref searchText, value))
                 {
-                    SearchPatients();
+                    SearchPatients(true);
                 }
             }
         }
@@ -88,9 +95,11 @@ namespace PatientSearchModule.ViewModels
 
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }
 
+        private readonly CommandWrapper searchPatientsCommandWrapper;
+
         public ICommand SearchPatientsCommand { get; private set; }
 
-        private void SearchPatients()
+        private void SearchPatients(bool? useDelay)
         {
             if (currentSearchToken != null)
             {
@@ -106,11 +115,18 @@ namespace PatientSearchModule.ViewModels
                 return;
             }
             BusyMediator.Activate("ИДЕТ ПОИСК ПАЦИЕНТОВ...");
-            Task.Delay(AppConfiguration.UserInputDelay, currentSearchToken.Token)
-                .ContinueWith(x => SearchPatientsAsync(userInput, currentSearchToken.Token),
-                              currentSearchToken.Token,
-                              TaskContinuationOptions.OnlyOnRanToCompletion,
-                              TaskScheduler.FromCurrentSynchronizationContext());
+            if (useDelay == true)
+            {
+                Task.Delay(AppConfiguration.UserInputDelay, currentSearchToken.Token)
+                    .ContinueWith(x => SearchPatientsAsync(userInput, currentSearchToken.Token),
+                                  currentSearchToken.Token,
+                                  TaskContinuationOptions.OnlyOnRanToCompletion,
+                                  TaskScheduler.FromCurrentSynchronizationContext());
+            }
+            else
+            {
+                SearchPatientsAsync(userInput, currentSearchToken.Token);
+            }
         }
 
         private async void SearchPatientsAsync(string userInput, CancellationToken token)
@@ -173,7 +189,7 @@ namespace PatientSearchModule.ViewModels
             {
                 log.Error("Failed to find patients", ex);
                 searchIsCompleted = true;
-                CriticalFailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", SearchPatientsCommand);
+                CriticalFailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", searchPatientsCommandWrapper);
             }
             finally
             {

@@ -2,14 +2,14 @@
 
 namespace Core.Wpf.Mvvm
 {
-    public class BusyMediator : BindableBase
+    public class BusyMediator : BindableBase, IMediator
     {
-        private bool isBusy;
+        private bool isActive;
 
-        public bool IsBusy
+        public bool IsActive
         {
-            get { return isBusy; }
-            private set { SetProperty(ref isBusy, value); }
+            get { return isActive; }
+            private set { SetProperty(ref isActive, value); }
         }
 
         private object message;
@@ -23,12 +23,12 @@ namespace Core.Wpf.Mvvm
         public void Activate(object busyMessage)
         {
             Message = busyMessage;
-            IsBusy = true;
+            IsActive = true;
         }
 
         public void Deactivate()
         {
-            IsBusy = false;
+            IsActive = false;
         }
     }
 }

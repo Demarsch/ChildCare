@@ -45,9 +45,9 @@ namespace PatientSearchModule.Services
             return new PatientSearchQuery(searchExpression.ParsedTokens,
                                           new DisposableQueryable<Person>(dataContext.Set<Person>()
                                                                                      .AsNoTracking()
+                                                                                     .Where(searchExpression.FilterExpression)
                                                                                      .OrderByDescending(searchExpression.SimilarityExpression)
-                                                                                     .Take(TopPatientCount)
-                                                                                     .Where(searchExpression.FilterExpression),
+                                                                                     .Take(TopPatientCount),
                                                                           dataContext));
         }
     }

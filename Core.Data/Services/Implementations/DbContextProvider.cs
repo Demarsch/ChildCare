@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Core.Data.Services
 {
@@ -36,13 +37,19 @@ namespace Core.Data.Services
                 }
                 lock (sharedContextLock)
                 {
+                     if (sharedContext != null)
+                {
+                    return sharedContext;
+                }
                     if (isDisposed)
                     {
                         throw new ObjectDisposedException("SharedContext");
                     }
-                    sharedContext = CreateNewContext();
-                    sharedContext.Configuration.AutoDetectChangesEnabled = false;
-                    sharedContext.Configuration.ProxyCreationEnabled = false;
+                    var local = CreateNewContext();
+                    local.Configuration.AutoDetectChangesEnabled = false;
+                    local.Configuration.ProxyCreationEnabled = false;
+                    Thread.MemoryBarrier();
+                    sharedContext = local;
                 }
                 return sharedContext;
             }

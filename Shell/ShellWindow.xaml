@@ -4,23 +4,39 @@
                      xmlns:fluent="urn:fluent-ribbon"
                      xmlns:regions="http://prismlibrary.com/"
                      xmlns:shared="clr-namespace:Shell.Shared;assembly=Shell.Shared"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:shell="clr-namespace:Shell"
+                     mc:Ignorable="d"
                      Title="Добро пожаловать"
                      Height="350"
                      Width="525"
-                     WindowState="Maximized">
+                     WindowState="Maximized" d:DataContext="{d:DesignInstance shell:ShellWindowViewModel}">
     <DockPanel LastChildFill="True">
         <fluent:Ribbon regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleList}"
-                       DockPanel.Dock="Top">
+                           DockPanel.Dock="Top">
             <fluent:Ribbon.Menu>
-                <fluent:Backstage>
+                <fluent:Backstage IsEnabled="{Binding CanOpenMenu}">
                     <fluent:Backstage.Header>
                         <TextBlock Margin="3"
-                                   Text="Основное Меню" />
+                                       Text="Основное Меню" />
                     </fluent:Backstage.Header>
-                    <fluent:BackstageTabControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.MainMenu}" />
+                    <fluent:BackstageTabControl
+                            regions:RegionManager.RegionName="{x:Static shared:RegionNames.MainMenu}" />
                 </fluent:Backstage>
             </fluent:Ribbon.Menu>
         </fluent:Ribbon>
-        <ContentControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}" />
+        <Grid>
+            <ContentControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+
+            <ContentControl Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+            <ContentControl Content="{Binding CriticalFailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+        </Grid>
     </DockPanel>
 </fluent:RibbonWindow>

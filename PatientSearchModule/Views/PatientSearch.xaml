@@ -28,40 +28,12 @@
                           Margin="5"
                           BorderThickness="0"
                           ItemsSource="{Binding Patients}" />
-            <Label Content="{Binding BusyMediator.Message}"
-                   FontSize="20"
-                   IsHitTestVisible="False"
-                   Opacity="0"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Padding="20"
-                   BorderBrush="Black"
-                   BorderThickness="1"
-                   Background="White">
-                <Label.Style>
-                    <Style TargetType="{x:Type Label}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding BusyMediator.IsBusy}"
-                                         Value="True">
-                                <DataTrigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard TargetProperty="Opacity">
-                                            <DoubleAnimation To="1" Duration="0:0:0.5" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.EnterActions>
-                                <DataTrigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard TargetProperty="Opacity">
-                                            <DoubleAnimation To="0" Duration="0:0:0.5" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </DataTrigger.ExitActions>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Label.Style>
-            </Label>
+            <ContentControl Content="{Binding BusyMediator}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+            <ContentControl Content="{Binding CriticalFailureMediator}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
         </Grid>
     </DockPanel>
 </UserControl>

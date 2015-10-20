@@ -3,7 +3,8 @@
                     xmlns:local="clr-namespace:MainLib.PersonVisitItemsListViewModels">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <HierarchicalDataTemplate DataType="{x:Type local:PersonHierarchicalAssignmentsViewModel}" ItemsSource="{Binding NestedItems}">
-        <Grid>
+
+        <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -15,11 +16,10 @@
             </Grid.ColumnDefinitions>
 
             <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
-            
+
             <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}" />
             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AssignDateTime}" />
             <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}" />
-
         </Grid>
     </HierarchicalDataTemplate>
 </ResourceDictionary>

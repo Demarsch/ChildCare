@@ -10,7 +10,7 @@
         <DataTemplate.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Resources/ResourceDictionaries/Styles.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
                 </ResourceDictionary.MergedDictionaries>
                 <converters:Converter x:Key="GenderToTextConverter">
                     <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"

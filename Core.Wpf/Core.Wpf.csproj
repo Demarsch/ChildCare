@@ -58,15 +58,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\Converter.cs" />
+    <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />
     <Compile Include="Mvvm\Mediators\CriticalFailureMediator.cs" />
+    <Compile Include="Mvvm\Mediators\IMediator.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Resources\ResourceDictionaries\Styles.xaml">
+    <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -75,6 +78,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Events\" />
     <Folder Include="Resources\Images\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

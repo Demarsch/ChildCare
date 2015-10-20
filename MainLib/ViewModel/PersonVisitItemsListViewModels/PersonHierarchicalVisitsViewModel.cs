@@ -51,7 +51,7 @@ namespace MainLib.PersonVisitItemsListViewModels
         {
             get
             {
-                if (nestedItems != null)
+                if (nestedItems == null)
                 {
                     var childrenList = new ObservalbeCollectionEx<object>();
                     childrenList.AddRange(visitService.GetChildRecords(visit.Id).Select(x => new PersonHierarchicalRecordsViewModel(x, recordService, assignmentService)));
