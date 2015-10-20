@@ -926,7 +926,7 @@ namespace Core
             }
         }
 
-	public int SaveContractData(RecordContract contract, out string msg)
+	    public int SaveContractData(RecordContract contract, out string msg)
         {
             string exception = string.Empty;
             try
@@ -1012,6 +1012,15 @@ namespace Core
             {
                 var contractItems = db.GetData<RecordContractItem>().Where(x => x.RecordContractId == contractId);
                 db.RemoveRange<RecordContractItem>(contractItems);
+                db.Save();
+            }
+        }
+
+        public void DeleteContractItemById(int id)
+        {
+            using (var db = provider.GetNewDataContext())
+            {
+                db.Remove<RecordContractItem>(db.GetData<RecordContractItem>().ById(id));
                 db.Save();
             }
         }

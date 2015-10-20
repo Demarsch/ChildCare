@@ -2,6 +2,8 @@
 using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
 using DataLib;
+using System.Drawing;
+using System.Windows;
 
 namespace Core
 {
@@ -63,6 +65,27 @@ namespace Core
         {
             get { return appendix; }
             set { Set(() => Appendix, ref appendix, value); }
+        }
+
+        private string sectionName;
+        public string SectionName
+        {
+            get { return sectionName; }
+            set { Set(() => SectionName, ref sectionName, value); }
+        }
+
+        private Color sectionBackColor;
+        public Color SectionBackColor
+        {
+            get { return sectionBackColor; }
+            set { Set(() => SectionBackColor, ref sectionBackColor, value); }
+        }
+
+        private HorizontalAlignment sectionAlignment;
+        public HorizontalAlignment SectionAlignment
+        {
+            get { return sectionAlignment; }
+            set { Set(() => SectionAlignment, ref sectionAlignment, value); }
         }
     }
 }

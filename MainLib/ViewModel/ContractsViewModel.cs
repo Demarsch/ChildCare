@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.IO;
 using log4net;
 using MainLib.View;
+using System.Windows;
 
 namespace MainLib.ViewModel
 {
@@ -80,6 +81,7 @@ namespace MainLib.ViewModel
             SelectedClient = personService.GetPersonById(Id != 0 ? personService.GetContractById(Id).ClientId.Value : personId);
             SelectedConsumer = personService.GetPersonById(Id != 0 ? personService.GetContractById(Id).ConsumerId.Value : personId);
             Assignments = new ObservableCollection<AssignmentDTO>(assignmentService.GetAssignments(Id != 0 ? personService.GetContractById(Id).ConsumerId.Value : personId)
+                                            .Where(x => !x.RecordId.HasValue)
                                             .Select(x => new AssignmentDTO()
                                             {
                                                 Id = x.Id,
@@ -98,19 +100,7 @@ namespace MainLib.ViewModel
                 SelectedFinancingSourceId = contract.FinancingSourceId;
                 SelectedRegistratorId = contract.InUserId;
                 SelectedPaymentTypeId = contract.PaymentTypeId;
-                ContractItems = new ObservableCollection<ContractItemDTO>(personService.GetContractItems(Id)
-                                                .Select(x => new ContractItemDTO()
-                                                {
-                                                    Id = x.Id,
-                                                    RecordContractId = x.RecordContractId,
-                                                    AssignmentId = x.AssignmentId,
-                                                    RecordTypeId = x.RecordTypeId,                                                    
-                                                    IsPaid = x.IsPaid,
-                                                    RecordTypeName = recordService.GetRecordTypeById(x.RecordTypeId).Name,
-                                                    RecordCount = x.Count,
-                                                    RecordCost = x.Cost,
-                                                    Appendix = x.Appendix
-                                                }));
+                LoadContractItems();
             }
             else
             {
@@ -120,16 +110,66 @@ namespace MainLib.ViewModel
             }
         }
 
+        private void LoadContractItems()
+        {
+            var contractItems = personService.GetContractItems(Id);
+            foreach (var groupedItem in contractItems.GroupBy(x => x.Appendix).OrderBy(x => x.Key))
+            {
+                if (groupedItem.Key.HasValue)
+                    AddSectionRow(groupedItem.Key.Value, Color.LightSalmon, HorizontalAlignment.Center);
+                foreach (var contractItem in groupedItem)
+                    AddContractItemRow(contractItem);
+            }
+            if (contractItems.Any())
+                AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);
+        }
+
+        private void AddContractItemRow(RecordContractItem item)
+        {
+            ContractItems.Add(new ContractItemDTO()
+            {
+                Id = item.Id,
+                RecordContractId = item.RecordContractId,
+                AssignmentId = item.AssignmentId,
+                RecordTypeId = item.RecordTypeId,
+                IsPaid = item.IsPaid,
+                RecordTypeName = recordService.GetRecordTypeById(item.RecordTypeId).Name,
+                RecordCount = item.Count,
+                RecordCost = item.Cost,
+                Appendix = item.Appendix
+            });
+        }
+
+        private void AddSectionRow(int appendix, Color backColor, HorizontalAlignment alignment, int insertPosition = -1)
+        {
+            var item = new ContractItemDTO()
+                {
+                    SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб."),
+                    Appendix = appendix,
+                    SectionAlignment = alignment,
+                    SectionBackColor = backColor
+                };
+            if (insertPosition == -1)
+                ContractItems.Add(item);
+            else
+                ContractItems.Insert(insertPosition, item);
+        }
+
+        private void UpdateTotalSumRow()
+        {
+            ContractItems.First(x => x.Appendix == -1).SectionName = "ИТОГО: " + ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
+            ContractCost = ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
+        }
+
         private void AddRecord()
         {
-            int? appendix = null;
-            if (ContractItems.Any(x => x.Appendix.HasValue))
-                appendix = ContractItems.Where(x => x.Appendix.HasValue).Select(x => x.Appendix.Value).OrderByDescending(x => x).First();
+            int? appendixCount = ContractItems.Where(x => x.Appendix > 0).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
             if (isAssignRecordsChecked)
             {
                 foreach (var assignment in assignments.Where(x => x.IsSelected))
                 {
-                    ContractItems.Add(new ContractItemDTO()
+                    int insertPosition = ContractItems.Any() ? ContractItems.Count - 1 : 0;
+                    ContractItems.Insert(insertPosition, new ContractItemDTO()
                     {
                         Id = 0,
                         RecordContractId = (int?)null,
@@ -139,13 +179,14 @@ namespace MainLib.ViewModel
                         RecordTypeName = assignment.RecordTypeName,
                         RecordCount = 1,
                         RecordCost = assignment.RecordTypeCost,
-                        Appendix = appendix
+                        Appendix = (appendixCount == 0 ? (int?)null : appendixCount)
                     });
                 }
             }
             else
             {
-                ContractItems.Add(new ContractItemDTO()
+                int insertPosition = ContractItems.Any() ? ContractItems.Count - 1 : 0;
+                ContractItems.Insert(insertPosition, new ContractItemDTO()
                 {
                     Id = 0,
                     RecordContractId = (int?)null,
@@ -155,24 +196,45 @@ namespace MainLib.ViewModel
                     RecordTypeName = SelectedRecord.Name,
                     RecordCount = RecordsCount,
                     RecordCost = AssignRecordTypeCost,
-                    Appendix = appendix
+                    Appendix = (appendixCount == 0 ? (int?)null : appendixCount)
                 });
             }
+            UpdateTotalSumRow();
         }
 
         private void RemoveRecord()
         {
-
+            if (this.dialogService.AskUser("Удалить услугу " + SelectedContractItem.RecordTypeName + " из договора ?", true) == true)
+            {
+                personService.DeleteContractItemById(SelectedContractItem.Id);
+                ContractItems.Remove(SelectedContractItem);
+                UpdateTotalSumRow();
+            }
         }
 
         private void AddAppendix()
         {
-
+            int? appendixCount = ContractItems.Where(x => x.Appendix > 0 && x.SectionName != string.Empty).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
+            if (!ContractItems.Any(x => (x.Appendix == appendixCount.ToInt()) && x.SectionName != string.Empty))
+                AddSectionRow(appendixCount.ToInt() + 1, Color.LightSalmon, HorizontalAlignment.Center, ContractItems.Count - 1);
         }
 
         private void RemoveAppendix()
         {
-
+            if (!string.IsNullOrEmpty(SelectedContractItem.SectionName) && this.dialogService.AskUser("Удалить " + SelectedContractItem.SectionName + " вместе со вложенными услугами ?", true) == true)
+            {
+                int? appendix = SelectedContractItem.Appendix;
+                foreach (var item in ContractItems.ToList())
+                {
+                    if (item.Appendix == appendix)
+                    {
+                        if (string.IsNullOrEmpty(item.SectionName))
+                            personService.DeleteContractItemById(item.Id);
+                        ContractItems.Remove(item);
+                    }
+                }
+                UpdateTotalSumRow();
+            }
         }
 
         private void SaveContract()
@@ -217,7 +279,7 @@ namespace MainLib.ViewModel
                 }
                 Id = contract.Id;
 
-                foreach (ContractItemDTO itemDTO in ContractItems)
+                foreach (ContractItemDTO itemDTO in ContractItems.Where(x => string.IsNullOrEmpty(x.SectionName)))
                 {
                     RecordContractItem item = personService.GetContractItemById(itemDTO.Id);
                     if (item == null)
@@ -245,6 +307,7 @@ namespace MainLib.ViewModel
                 Client = contract.ContractName;
                 ContractCost = personService.GetContractCost(contract.Id).ToSafeString() + " руб.";
                 ContractDate = contract.BeginDateTime.ToShortDateString();
+                UpdateTotalSumRow();
                 
                 dialogService.ShowMessage("Данные сохранены");
             }

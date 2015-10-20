@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exception\UserFriendlyException.cs" />
+    <Compile Include="Helpers\ContractItemTemplateSelector.cs" />
     <Compile Include="Helpers\RecordTypesSuggestionProvider.cs" />
     <Compile Include="Helpers\PersonSuggestionProvider.cs" />
     <Compile Include="Helpers\ScrollViewerHelper.cs" />
