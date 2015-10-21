@@ -46,6 +46,10 @@ namespace MainLib.PersonVisitItemsListViewModels
 
         public string Name { get { return visit.Name; } }
 
+        public string FinSource { get { return visit.FinSource; } }
+
+        public bool IsCompleted { get { return visit.IsCompleted == true; } }
+
         private ObservalbeCollectionEx<object> nestedItems;
         public ObservalbeCollectionEx<object> NestedItems
         {

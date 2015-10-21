@@ -42,6 +42,8 @@ namespace MainLib.PersonVisitItemsListViewModels
 
         public string RoomName { get { return record.RoomName; } }
 
+        public bool IsCompleted { get { return record.IsCompleted == true; } }
+
         private ObservalbeCollectionEx<object> nestedItems;
         public ObservalbeCollectionEx<object> NestedItems
         {

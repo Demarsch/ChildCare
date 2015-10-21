@@ -35,6 +35,8 @@ namespace MainLib.PersonVisitItemsListViewModels
 
         public string RoomName { get { return assignment.RoomName; } }
 
+        public string FinSource { get { return assignment.FinancingSourceName; } }
+
 
         private ObservalbeCollectionEx<object> nestedItems;
         public ObservalbeCollectionEx<object> NestedItems

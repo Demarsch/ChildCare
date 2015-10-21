@@ -43,6 +43,7 @@ namespace Core
                     AssignDateTime = x.AssignDateTime,
                     RecordTypeName = x.RecordType.Name,
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                    FinancingSourceName = x.FinancingSource.ShortName
                 }).ToList();
             }
         }

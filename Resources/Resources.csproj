@@ -138,6 +138,19 @@
   <ItemGroup>
     <Resource Include="Images\Contract48x48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Assignment48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Ok24x24.png" />
+    <Resource Include="Images\Record48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Visit48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Ok48x48.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
