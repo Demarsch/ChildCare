@@ -27,8 +27,10 @@
                      VerticalAlignment="Stretch"
                      Margin="5"
                      BorderThickness="0"
+                     Background="{x:Null}"
                      ItemsSource="{Binding Patients}"
-                     SelectedItem="{Binding SelectedPatient, Mode=OneWayToSource}"/>
+                     SelectedItem="{Binding SelectedPatient, Mode=OneWayToSource}"
+                     HorizontalContentAlignment="Stretch"/>
             <ContentControl Content="{Binding BusyMediator}"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch" />

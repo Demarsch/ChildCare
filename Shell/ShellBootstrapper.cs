@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Core.Data.Services;
 using Core.Services;
+using Core.Wpf.Services;
 using Fluent;
 using log4net;
 using Microsoft.Practices.Unity;
@@ -48,6 +49,7 @@ namespace Shell
         {
             Container.RegisterType<IDbContextProvider, DbContextProvider>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ICacheService, DbContextCacheService>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IViewNameResolver, ConventionBasedViewNameResolver>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("SHELL"));
         }
 

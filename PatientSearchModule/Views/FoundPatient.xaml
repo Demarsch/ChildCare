@@ -24,7 +24,8 @@
         <Border BorderBrush="DimGray"
                 BorderThickness="2"
                 CornerRadius="1"
-                Margin="0 2 0 2">
+                Margin="0 2 0 2"
+                HorizontalAlignment="Stretch">
             <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />

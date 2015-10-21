@@ -59,7 +59,7 @@ namespace PatientSearchModule
         private void RegisterViews()
         {
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, () => container.Resolve<PatientSearch>());
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientSearchModule;Component/Views/FoundPatient.xaml", UriKind.Absolute) });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientSearchModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
     }
 }

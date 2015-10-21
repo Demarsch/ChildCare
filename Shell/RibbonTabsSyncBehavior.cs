@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
@@ -21,7 +22,6 @@ namespace Shell
         public DependencyObject HostControl
         {
             get { return ribbon; }
-
             set { ribbon = value as Ribbon; }
         }
 
@@ -38,18 +38,14 @@ namespace Shell
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 var startIndex = e.NewStartingIndex;
-                foreach (var newRibbon in e.NewItems.OfType<UserControl>().Select(x => x.Content).Cast<Ribbon>())
+                foreach (var newItem in e.NewItems.Cast<RibbonTabItem>())
                 {
-                    foreach (var ribbonTab in newRibbon.Tabs)
-                    {
-                        ribbonTab.DataContext = newRibbon.DataContext;
-                        ribbon.Tabs.Insert(startIndex++, ribbonTab);
-                    }
+                    ribbon.Tabs.Insert(startIndex++, newItem);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (var oldItem in e.OldItems.OfType<UserControl>().Select(x => x.Content as Ribbon).SelectMany(x => x.Tabs))
+                foreach (var oldItem in e.OldItems.Cast<RibbonTabItem>())
                 {
                     ribbon.Tabs.Remove(oldItem);
                 }
@@ -108,26 +104,23 @@ namespace Shell
                 // This is needed to prevent the OnActiveViewsCollectionChanged() method from firing. 
                 updatingActiveViewsInRibbonSelectedTabChanged = true;
 
-                var source = e.OriginalSource;
 
-                if (source == sender)
+                foreach (var item in e.RemovedItems.Cast<RibbonTabItem>())
                 {
-                    foreach (var item in e.RemovedItems)
+                    // check if the view is in both Views and ActiveViews collections (there may be out of sync)
+                    if (Region.Views.Contains(item) && Region.ActiveViews.Contains(item))
                     {
-                        // check if the view is in both Views and ActiveViews collections (there may be out of sync)
-                        if (Region.Views.Contains(item) && Region.ActiveViews.Contains(item))
-                        {
-                            Region.Deactivate(item);
-                        }
-                    }
-                    foreach (var item in e.AddedItems)
-                    {
-                        if (Region.Views.Contains(item) && !Region.ActiveViews.Contains(item))
-                        {
-                            Region.Activate(item);
-                        }
+                        Region.Deactivate(item);
                     }
                 }
+                foreach (var item in e.AddedItems.Cast<RibbonTabItem>())
+                {
+                    if (Region.Views.Contains(item) && !Region.ActiveViews.Contains(item))
+                    {
+                        Region.Activate(item);
+                    }
+                }
+
             }
             finally
             {
