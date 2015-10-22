@@ -6,8 +6,21 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        
-        <Border BorderBrush="Black" BorderThickness="1" Width="250">
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition  Height="auto"/>
+            <RowDefinition  Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ToggleButton Grid.Column="0" Grid.Row="0" Background="White">
+            <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                <Image  HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Resources;component/Images/AmbCard48x48.png" />
+                <TextBlock Text="{Binding AmbNumber}" />
+            </StackPanel>
+        </ToggleButton>
+        <Border Grid.Column="0" Grid.Row="1" BorderBrush="Black" BorderThickness="1" Width="250">
             <TreeView ItemsSource="{Binding RootItems, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
@@ -25,6 +38,6 @@
                 </TreeView.ItemContainerStyle>
             </TreeView>
         </Border>
-        <TextBlock Text="Загрузка данных..." Foreground="Gray" HorizontalAlignment="Center" Margin="0,10,0,0" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBlock Grid.Column="0" Grid.Row="1" Text="Загрузка данных..." Foreground="Gray" HorizontalAlignment="Center" Margin="0,10,0,0" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     </Grid>
 </UserControl>

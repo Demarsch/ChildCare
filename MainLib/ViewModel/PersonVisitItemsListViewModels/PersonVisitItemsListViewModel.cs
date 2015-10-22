@@ -58,6 +58,7 @@ namespace MainLib.PersonVisitItemsListViewModels
             {
                 Set(() => PersonId, ref personId, value);
                 LoadRootItemsAsync();
+                LoadRootItemsAsync();
                 //RootItems.Clear();
                 //RootItems.AddRange(LoadRootItems());
             }
@@ -70,6 +71,13 @@ namespace MainLib.PersonVisitItemsListViewModels
         {
             get { return isLoading; }
             set { Set(() => IsLoading, ref isLoading, value); }
+        }
+
+        private string ambNumber;
+        public string AmbNumber
+        {
+            get { return ambNumber; }
+            set { Set(() => AmbNumber, ref ambNumber, value); }
         }
 
         #endregion
