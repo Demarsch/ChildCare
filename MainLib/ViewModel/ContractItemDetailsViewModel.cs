@@ -5,11 +5,15 @@ using DataLib;
 using System.Drawing;
 using System.Windows;
 
-namespace Core
+namespace MainLib.ViewModel
 {
-    public class ContractItemDTO : ObservableObject
+    public class ContractItemDetailsViewModel : ObservableObject
     {
         public int Id { get; set; }
+
+        public ContractItemDetailsViewModel()
+        { 
+        }
 
         private int? recordContractId;
         public int?  RecordContractId
@@ -66,6 +70,8 @@ namespace Core
             get { return appendix; }
             set { Set(() => Appendix, ref appendix, value); }
         }
+
+        public bool IsSection { get; set; }
 
         private string sectionName;
         public string SectionName

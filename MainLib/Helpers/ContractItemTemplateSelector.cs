@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MainLib.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,14 @@ namespace Core.Helpers
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             FrameworkElement element = container as FrameworkElement;
-            ContractItemDTO contractItem = item as ContractItemDTO;
-            if (!string.IsNullOrEmpty(contractItem.SectionName))
-                return element.FindResource("SectionDataTemplate") as DataTemplate;
-            else
-                return element.FindResource("ContractItemDataTemplate") as DataTemplate;
+            if (item is ContractItemDetailsViewModel)
+            {
+                if ((item as ContractItemDetailsViewModel).IsSection)
+                    return element.FindResource("SectionDataTemplate") as DataTemplate;
+                else
+                    return element.FindResource("ContractItemDataTemplate") as DataTemplate;
+            }
+            return null;
         }
     }
 }

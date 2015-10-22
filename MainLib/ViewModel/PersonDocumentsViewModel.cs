@@ -43,12 +43,12 @@ namespace MainLib.ViewModel
         }
 
         private async Task LoadDocuments()
-        {            
-            AllDocuments = new ObservableCollection<ThumbnailDTO>();
+        {
+            AllDocuments = new ObservableCollection<ThumbnailViewModel>();
             foreach (var personDocument in personService.GetPersonOuterDocuments(this.personId))
             {
                 var doc = documentService.GetDocumentById(personDocument.DocumentId);
-                AllDocuments.Add(new ThumbnailDTO()
+                AllDocuments.Add(new ThumbnailViewModel()
                 {
                     DocumentId = personDocument.DocumentId,
                     DocumentTypeId = personDocument.OuterDocumentTypeId,
@@ -103,7 +103,7 @@ namespace MainLib.ViewModel
                     log.Error(string.Format("Failed to save patient documents. " + exception));
                 }
 
-                AllDocuments.Add(new ThumbnailDTO()
+                AllDocuments.Add(new ThumbnailViewModel()
                 {
                     DocumentId = item.DocumentId,
                     DocumentTypeId = item.DocumentTypeId,
@@ -159,7 +159,7 @@ namespace MainLib.ViewModel
                         log.Error(string.Format("Failed to upload document to database. " + exception));
                     }
 
-                    AllDocuments.Add(new ThumbnailDTO()
+                    AllDocuments.Add(new ThumbnailViewModel()
                     {
                         DocumentId = documentId,
                         DocumentTypeId = documentTypeId,
@@ -208,15 +208,15 @@ namespace MainLib.ViewModel
             set { Set("OpenFileCommand", ref openFileCommand, value); }
         }
 
-        private ObservableCollection<ThumbnailDTO> allDocuments;
-        public ObservableCollection<ThumbnailDTO> AllDocuments
+        private ObservableCollection<ThumbnailViewModel> allDocuments;
+        public ObservableCollection<ThumbnailViewModel> AllDocuments
         {
             get { return allDocuments; }
             set { Set("AllDocuments", ref allDocuments, value); }
         }
 
-        private ThumbnailDTO selectedDocument;
-        public ThumbnailDTO SelectedDocument
+        private ThumbnailViewModel selectedDocument;
+        public ThumbnailViewModel SelectedDocument
         {
             get { return selectedDocument; }
             set { Set("SelectedDocument", ref selectedDocument, value); }

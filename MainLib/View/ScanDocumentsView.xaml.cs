@@ -42,7 +42,7 @@ namespace MainLib.View
                     {
                         IntPtr hbitmap = new Bitmap(args.Image).GetHbitmap();
                         (this.DataContext as MainLib.ViewModel.ScanDocumentsViewModel).PreviewImages.Add(
-                            new ThumbnailDTO()
+                            new ThumbnailViewModel()
                             {
                                 ThumbnailImage =
                                    BitmapFromSource(Imaging.CreateBitmapSourceFromHBitmap(
@@ -87,17 +87,6 @@ namespace MainLib.View
 
             return bImg;
         }
-
-        //public Image CurrentScannedImage
-        //{
-        //    get { return (Image)GetValue(ThumbnailImageProperty); }
-        //    set { SetValue(ThumbnailImageProperty, value); }
-        //}
-
-        //private static void ScanPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-        //    var scanDocumentView = d as ScanDocumentsView;
-        //}
 
         private void ScanButton_Click(object sender, RoutedEventArgs e)
         {
