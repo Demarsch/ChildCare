@@ -14,6 +14,13 @@ namespace Core
             set { Set(() => RecordTypeId, ref recordTypeId, value); }
         }
 
+        private string financingSourceName;
+        public string FinancingSourceName
+        {
+            get { return financingSourceName; }
+            set { Set(() => FinancingSourceName, ref financingSourceName, value); }
+        }
+
         private string recordTypeName;
         public string RecordTypeName
         {

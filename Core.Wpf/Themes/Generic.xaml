@@ -23,7 +23,7 @@
                 <SolidColorBrush Color="Transparent" />
             </Border.Background>
             <Label Content="{Binding Message}"
-                   FontSize="20"
+                   
                    Opacity="0"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
@@ -92,7 +92,7 @@
                     <TextBlock Grid.Row="0"
                                Grid.Column="0"
                                Text="{Binding Message}"
-                               FontSize="20"
+                               
                                MaxWidth="700"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center"

@@ -57,13 +57,20 @@ namespace MainLib.PersonVisitItemsListViewModels
             set
             {
                 Set(() => PersonId, ref personId, value);
-                //LoadRootItemsAsync();
-                RootItems.Clear();
-                RootItems.AddRange(LoadRootItems());
+                LoadRootItemsAsync();
+                //RootItems.Clear();
+                //RootItems.AddRange(LoadRootItems());
             }
         }
 
         public ObservalbeCollectionEx<object> RootItems { get; set; }
+
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get { return isLoading; }
+            set { Set(() => IsLoading, ref isLoading, value); }
+        }
 
         #endregion
 
@@ -76,7 +83,9 @@ namespace MainLib.PersonVisitItemsListViewModels
         {
             RootItems.Clear();
             var task = Task<List<object>>.Factory.StartNew(LoadRootItems);
+            IsLoading = true;
             await task;
+            IsLoading = false;
             RootItems.AddRange(task.Result);
         }
 

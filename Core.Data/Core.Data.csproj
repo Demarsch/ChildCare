@@ -108,6 +108,7 @@
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
+    <Compile Include="Misc\SpecialId.cs" />
     <Compile Include="PartialClasses\Gender.cs" />
     <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
     <Compile Include="PartialClasses\PersonName.cs" />

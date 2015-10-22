@@ -1143,7 +1143,8 @@ namespace Core
                     Id = x.Id,
                     AssignDateTime = x.AssignDateTime,
                     RecordTypeName = x.RecordType.Name,
-                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
+                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                    FinancingSourceName = x.FinancingSource.ShortName
                 }).ToList();
             }
         }
@@ -1157,6 +1158,7 @@ namespace Core
                     Id = x.Id,
                     BeginDateTime = x.BeginDateTime,
                     EndDateTime = x.EndDateTime,
+                    FinSource = x.FinancingSource.ShortName,
                     Name = x.ExecutionPlace.Name,
                     IsCompleted = x.IsCompleted
                 }).ToList();
