@@ -23,7 +23,7 @@ namespace MainLib.ViewModel
             this.log = log;
 
             this.SaveCommand = new RelayCommand(Save);
-            PreviewImages = new ObservableCollection<ThumbnailDTO>();
+            PreviewImages = new ObservableCollection<ThumbnailViewModel>();
             DocumentTypes = new ObservableCollection<OuterDocumentType>(documentService.GetOuterDocumentTypes(null));
         }
 
@@ -32,6 +32,11 @@ namespace MainLib.ViewModel
             if (!PreviewImages.Any() || PreviewImages.All(x => !x.ThumbnailChecked))
             {
                 dialogService.ShowMessage("Отсутствуют отсканированные документы или вы их не отметили.");
+                return;
+            }
+            if (PreviewImages.Any(x => x.DocumentTypeId < 1))
+            {
+                dialogService.ShowMessage("Один или несколько документов не имеют описания. Укажите тип документа.");
                 return;
             }
 
@@ -73,15 +78,15 @@ namespace MainLib.ViewModel
             set { Set("SaveCommand", ref saveCommand, value); }
         }
 
-        private ObservableCollection<ThumbnailDTO> previewImages;
-        public ObservableCollection<ThumbnailDTO> PreviewImages
+        private ObservableCollection<ThumbnailViewModel> previewImages;
+        public ObservableCollection<ThumbnailViewModel> PreviewImages
         {
             get { return previewImages; }
             set { Set("PreviewImages", ref previewImages, value); }
         }
 
-        private ThumbnailDTO selectedThumbnail;
-        public ThumbnailDTO SelectedThumbnail
+        private ThumbnailViewModel selectedThumbnail;
+        public ThumbnailViewModel SelectedThumbnail
         {
             get { return selectedThumbnail; }
             set 
@@ -156,6 +161,18 @@ namespace MainLib.ViewModel
         {
             get { return currentScannedImage; }
             set { Set("CurrentScannedImage", ref currentScannedImage, value); }
-        }       
+        }
+
+        private bool selectAllThumbnails;
+        public bool SelectAllThumbnails
+        {
+            get { return selectAllThumbnails; }
+            set
+            {
+                if (!Set("SelectAllThumbnails", ref selectAllThumbnails, value))
+                    return;
+                PreviewImages.ToList().ForEach(x => x.ThumbnailChecked = value);
+            }
+        }
     }
 }

@@ -4,8 +4,13 @@ using System.Windows.Media.Imaging;
 
 namespace Core
 {
-    public class ThumbnailDTO : ObservableObject
+    public class ThumbnailViewModel : ObservableObject
     {
+        public ThumbnailViewModel()
+        {
+
+        }
+
         private int documentId;
         public int DocumentId
         {

@@ -153,6 +153,7 @@
     </Compile>
     <Compile Include="Services\Interface\IPatientService.cs" />
     <Compile Include="Services\Implementation\PatientService.cs" />
+    <Compile Include="ViewModel\ContractItemDetailsViewModel.cs" />
     <Compile Include="ViewModel\EditPersonCommonDataViewModel.cs" />
     <Compile Include="ViewModel\ContractsViewModel.cs" />
     <Compile Include="ViewModel\PersonVisitItemsListViewModels\PersonHierarchicalRecordsViewModel.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="ViewModel\PersonVisitItemsListViewModels\PersonVisitItemsListViewModel.cs" />
     <Compile Include="ViewModel\ScanDocumentsViewModel.cs" />
     <Compile Include="ViewModel\SelectPersonDocumentTypeViewModel.cs" />
+    <Compile Include="ViewModel\ThumbnailViewModel.cs" />
     <Compile Include="View\ContractControl.xaml.cs">
       <DependentUpon>ContractControl.xaml</DependentUpon>
     </Compile>

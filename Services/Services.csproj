@@ -93,11 +93,9 @@
   <ItemGroup>
     <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\AssignmentScheduleDTO.cs" />
-    <Compile Include="DTO\ContractItemDTO.cs" />
     <Compile Include="DTO\PersonDataSaveDTO.cs" />
     <Compile Include="DTO\PersonRelativeDTO.cs" />
     <Compile Include="DTO\RecordDTO.cs" />
-    <Compile Include="DTO\ThumbnailDTO.cs" />
     <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="DTO\VisitDTO.cs" />
     <Compile Include="Implementation\ADUserSystemInfoService.cs" />

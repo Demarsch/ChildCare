@@ -75,7 +75,7 @@ namespace MainLib.ViewModel
             SelectedRegistratorId = -1;
             SelectedPaymentTypeId = -1;
             IsCashless = false;
-            ContractItems = new ObservableCollection<ContractItemDTO>();
+            ContractItems = new ObservableCollection<ContractItemDetailsViewModel>();
             Assignments = new ObservableCollection<AssignmentDTO>();
 
             SelectedClient = personService.GetPersonById(Id != 0 ? personService.GetContractById(Id).ClientId.Value : personId);
@@ -126,7 +126,7 @@ namespace MainLib.ViewModel
 
         private void AddContractItemRow(RecordContractItem item)
         {
-            ContractItems.Add(new ContractItemDTO()
+            ContractItems.Add(new ContractItemDetailsViewModel()
             {
                 Id = item.Id,
                 RecordContractId = item.RecordContractId,
@@ -142,8 +142,9 @@ namespace MainLib.ViewModel
 
         private void AddSectionRow(int appendix, Color backColor, HorizontalAlignment alignment, int insertPosition = -1)
         {
-            var item = new ContractItemDTO()
+            var item = new ContractItemDetailsViewModel()
                 {
+                    IsSection = true,
                     SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб."),
                     Appendix = appendix,
                     SectionAlignment = alignment,
@@ -157,7 +158,7 @@ namespace MainLib.ViewModel
 
         private void UpdateTotalSumRow()
         {
-            ContractItems.First(x => x.Appendix == -1).SectionName = "ИТОГО: " + ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
+            ContractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
             ContractCost = ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
         }
 
@@ -169,7 +170,7 @@ namespace MainLib.ViewModel
                 foreach (var assignment in assignments.Where(x => x.IsSelected))
                 {
                     int insertPosition = ContractItems.Any() ? ContractItems.Count - 1 : 0;
-                    ContractItems.Insert(insertPosition, new ContractItemDTO()
+                    ContractItems.Insert(insertPosition, new ContractItemDetailsViewModel()
                     {
                         Id = 0,
                         RecordContractId = (int?)null,
@@ -186,7 +187,7 @@ namespace MainLib.ViewModel
             else
             {
                 int insertPosition = ContractItems.Any() ? ContractItems.Count - 1 : 0;
-                ContractItems.Insert(insertPosition, new ContractItemDTO()
+                ContractItems.Insert(insertPosition, new ContractItemDetailsViewModel()
                 {
                     Id = 0,
                     RecordContractId = (int?)null,
@@ -214,21 +215,21 @@ namespace MainLib.ViewModel
 
         private void AddAppendix()
         {
-            int? appendixCount = ContractItems.Where(x => x.Appendix > 0 && x.SectionName != string.Empty).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
-            if (!ContractItems.Any(x => (x.Appendix == appendixCount.ToInt()) && x.SectionName != string.Empty))
+            int? appendixCount = ContractItems.Where(x => x.IsSection && x.Appendix > 0).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
+            if (!ContractItems.Any(x => x.IsSection &&  (x.Appendix == appendixCount.ToInt())))
                 AddSectionRow(appendixCount.ToInt() + 1, Color.LightSalmon, HorizontalAlignment.Center, ContractItems.Count - 1);
         }
 
         private void RemoveAppendix()
         {
-            if (!string.IsNullOrEmpty(SelectedContractItem.SectionName) && this.dialogService.AskUser("Удалить " + SelectedContractItem.SectionName + " вместе со вложенными услугами ?", true) == true)
+            if (SelectedContractItem.IsSection && this.dialogService.AskUser("Удалить " + SelectedContractItem.SectionName + " вместе со вложенными услугами ?", true) == true)
             {
                 int? appendix = SelectedContractItem.Appendix;
                 foreach (var item in ContractItems.ToList())
                 {
                     if (item.Appendix == appendix)
                     {
-                        if (string.IsNullOrEmpty(item.SectionName))
+                        if (!item.IsSection)
                             personService.DeleteContractItemById(item.Id);
                         ContractItems.Remove(item);
                     }
@@ -279,7 +280,7 @@ namespace MainLib.ViewModel
                 }
                 Id = contract.Id;
 
-                foreach (ContractItemDTO itemDTO in ContractItems.Where(x => string.IsNullOrEmpty(x.SectionName)))
+                foreach (ContractItemDetailsViewModel itemDTO in ContractItems.Where(x => !x.IsSection))
                 {
                     RecordContractItem item = personService.GetContractItemById(itemDTO.Id);
                     if (item == null)
@@ -604,15 +605,15 @@ namespace MainLib.ViewModel
             set { Set(() => SelectedAssignment, ref selectedAssignment, value); }
         }
 
-        private ObservableCollection<ContractItemDTO> contractItems;
-        public ObservableCollection<ContractItemDTO> ContractItems
+        private ObservableCollection<ContractItemDetailsViewModel> contractItems;
+        public ObservableCollection<ContractItemDetailsViewModel> ContractItems
         {
             get { return contractItems; }
             set { Set(() => ContractItems, ref contractItems, value); }
         }
 
-        private ContractItemDTO selectedContractItem;
-        public ContractItemDTO SelectedContractItem
+        private ContractItemDetailsViewModel selectedContractItem;
+        public ContractItemDetailsViewModel SelectedContractItem
         {
             get { return selectedContractItem; }
             set { Set(() => SelectedContractItem, ref selectedContractItem, value); }
