@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Windows;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Services;
 using log4net;
-using PatientInfoModule.Views;
 using Prism;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
-using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class ModuleHeaderViewModel : BindableBase, IDisposable, IActiveAware
+    public class DocumentsHeaderViewModel : BindableBase, IDisposable, IActiveAware
     {
         private readonly IDbContextProvider contextProvider;
 
@@ -29,9 +24,7 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
-        private const string PatientIsNotSelected = "не выбран";
-
-        public ModuleHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public DocumentsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
         {
             if (contextProvider == null)
             {
@@ -58,20 +51,11 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
-            ShortName = PatientIsNotSelected;
             patientId = SpecialId.NonExisting;
             SubscribeToEvents();
         }
 
         private int patientId;
-
-        private string shortName;
-
-        public string ShortName
-        {
-            get { return shortName; }
-            set { SetProperty(ref shortName, value); }
-        }
 
         public void Dispose()
         {
@@ -92,7 +76,7 @@ namespace PatientInfoModule.ViewModels
 
         private void LoadSelectedPatientData()
         {
-            MessageBox.Show("Загрузка данных пациента с Id = " + patientId + " в верхнюю часть риббона");
+            //TODO:
         }
 
         private void UnsubscriveFromEvents()
@@ -102,15 +86,7 @@ namespace PatientInfoModule.ViewModels
 
         private void ActivatePatientInfo()
         {
-            if (patientId == SpecialId.NonExisting)
-            {
-                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
-            }
-            else
-            {
-                var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
-                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PatientInfoViewModel>(), navigationParameters);
-            }
+           //TODO:
         }
 
         private bool isActive;

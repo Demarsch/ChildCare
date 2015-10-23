@@ -1,4 +1,4 @@
-﻿<fluent:RibbonTabItem x:Class="PatientInfoModule.Views.ModuleHeader"
+﻿<fluent:RibbonTabItem x:Class="PatientInfoModule.Views.ContractsHeader"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,11 +8,9 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:ModuleHeaderViewModel}">
+                      d:DataContext="{d:DesignInstance viewModels:CommonInfoHeaderViewModel}">
     <fluent:RibbonTabItem.Header>
-        <TextBlock Margin="0">
-            <Run Text="Пациент" />
-            <Run Text="{Binding ShortName, Mode=OneWay}" />
-        </TextBlock>
+        <TextBlock Text="Договора"
+                   Style="{x:Null}" />
     </fluent:RibbonTabItem.Header>
 </fluent:RibbonTabItem>

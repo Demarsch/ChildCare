@@ -41,6 +41,10 @@ namespace Shell
                 foreach (var newItem in e.NewItems.Cast<RibbonTabItem>())
                 {
                     ribbon.Tabs.Insert(startIndex++, newItem);
+                    if (!ribbon.ContextualGroups.Contains(newItem.Group))
+                    {
+                        ribbon.ContextualGroups.Add(newItem.Group);
+                    }
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
@@ -48,6 +52,10 @@ namespace Shell
                 foreach (var oldItem in e.OldItems.Cast<RibbonTabItem>())
                 {
                     ribbon.Tabs.Remove(oldItem);
+                    if (!ribbon.Tabs.Any(x => ReferenceEquals(x.Group, oldItem.Group)))
+                    {
+                        ribbon.ContextualGroups.Remove(oldItem.Group);
+                    }
                 }
             }
         }

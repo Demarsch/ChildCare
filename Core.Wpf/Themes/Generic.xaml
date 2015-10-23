@@ -22,23 +22,28 @@
             <Border.Background>
                 <SolidColorBrush Color="Transparent" />
             </Border.Background>
-            <Label Content="{Binding Message}"
-                   
-                   Opacity="0"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Padding="20"
-                   BorderBrush="Black"
-                   BorderThickness="1"
-                   Background="White"
-                   x:Name="label" />
+            <Grid HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Opacity="1"
+                  x:Name="grid">
+                <ProgressBar HorizontalAlignment="Stretch"
+                             VerticalAlignment="Stretch"
+                             IsIndeterminate="True" />
+                <Label Content="{Binding Message}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Padding="15"
+                       BorderBrush="Black"
+                       BorderThickness="1"
+                       Background="{x:Null}" />
+            </Grid>
         </Border>
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding IsActive}"
                          Value="True">
                 <DataTrigger.EnterActions>
                     <BeginStoryboard>
-                        <Storyboard TargetName="label"
+                        <Storyboard TargetName="grid"
                                     TargetProperty="Opacity">
                             <DoubleAnimation To="1"
                                              Duration="{StaticResource AnimationDuration}" />
@@ -47,7 +52,7 @@
                 </DataTrigger.EnterActions>
                 <DataTrigger.ExitActions>
                     <BeginStoryboard>
-                        <Storyboard TargetName="label"
+                        <Storyboard TargetName="grid"
                                     TargetProperty="Opacity">
                             <DoubleAnimation To="0"
                                              Duration="{StaticResource AnimationDuration}" />
@@ -92,7 +97,7 @@
                     <TextBlock Grid.Row="0"
                                Grid.Column="0"
                                Text="{Binding Message}"
-                               
+
                                MaxWidth="700"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center"
