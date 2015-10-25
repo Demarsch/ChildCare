@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
@@ -6,6 +7,7 @@ using Core.Wpf.Events;
 using Core.Wpf.Services;
 using log4net;
 using Prism;
+using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -13,7 +15,7 @@ using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class CommonInfoHeaderViewModel : BindableBase, IDisposable, IActiveAware
+    public class InfoHeaderViewModel : BindableBase, IDisposable, IActiveAware
     {
         private readonly IDbContextProvider contextProvider;
 
@@ -25,7 +27,7 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public CommonInfoHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public InfoHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
         {
             if (contextProvider == null)
             {
@@ -54,6 +56,7 @@ namespace PatientInfoModule.ViewModels
             this.viewNameResolver = viewNameResolver;
             patientId = SpecialId.NonExisting;
             SubscribeToEvents();
+            CreateNewPatientCommand = new DelegateCommand(CreatetNewPatient);
         }
 
         private int patientId;
@@ -94,7 +97,7 @@ namespace PatientInfoModule.ViewModels
             else
             {
                 var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
-                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PatientInfoViewModel>(), navigationParameters);
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<InfoContentViewModel>(), navigationParameters);
             }
         }
 
@@ -119,5 +122,12 @@ namespace PatientInfoModule.ViewModels
         }
 
         public event EventHandler IsActiveChanged = delegate { };
+
+        public ICommand CreateNewPatientCommand { get; private set; }
+
+        private void CreatetNewPatient()
+        {
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(SpecialId.New);
+        }
     }
 }

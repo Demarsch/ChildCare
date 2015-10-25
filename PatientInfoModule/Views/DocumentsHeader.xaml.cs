@@ -6,7 +6,7 @@ using PatientInfoModule.ViewModels;
 namespace PatientInfoModule.Views
 {
     /// <summary>
-    /// Interaction logic for CommonInfoHeader.xaml
+    /// Interaction logic for InfoHeader.xaml
     /// </summary>
     public partial class DocumentsHeader
     {
@@ -16,9 +16,9 @@ namespace PatientInfoModule.Views
         }
 
         [Dependency]
-        public CommonInfoHeaderViewModel CommonInfoHeaderViewModel
+        public DocumentsHeaderViewModel InfoHeaderViewModel
         {
-            get { return DataContext as CommonInfoHeaderViewModel; }
+            get { return DataContext as DocumentsHeaderViewModel; }
             set { DataContext = value; }
         }
 

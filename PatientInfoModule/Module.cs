@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Services;
@@ -11,6 +12,7 @@ using Fluent;
 using log4net;
 using Microsoft.Practices.Unity;
 using PatientInfoModule.Misc;
+using PatientInfoModule.Services;
 using PatientInfoModule.ViewModels;
 using PatientInfoModule.Views;
 using Prism.Events;
@@ -25,6 +27,8 @@ namespace PatientInfoModule
     public class Module : IModule
     {
         private const string PatientIsNotSelected = "Пациент не выбран";
+
+        private const string NewPatient = "Новый пациент";
 
         private readonly IUnityContainer container;
 
@@ -83,7 +87,7 @@ namespace PatientInfoModule
         {
             //This is required by Prism navigation mechanism to resolve view
             container.RegisterType<object, EmptyPatientInfo>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, PatientInfo>(viewNameResolver.Resolve<PatientInfoViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, InfoContent>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterInstance(Common.RibbonGroupName,
                                        new RibbonContextualTabGroup
                                        {
@@ -93,7 +97,7 @@ namespace PatientInfoModule
                                            Header = PatientIsNotSelected
                                        });
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync);
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommonInfoHeader>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<InfoHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<DocumentsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<ContractsHeader>());
         }
@@ -102,6 +106,16 @@ namespace PatientInfoModule
         {
             DbContext context = null;
             var ribbonContextualGroup = container.Resolve<RibbonContextualTabGroup>(Common.RibbonGroupName);
+            if (patientId == SpecialId.NonExisting)
+            {
+                ribbonContextualGroup.Header = PatientIsNotSelected;
+                return;
+            }
+            if (patientId == SpecialId.New)
+            {
+                ribbonContextualGroup.Header = NewPatient;
+                return;
+            }
             try
             {
                 context = contextProvider.CreateNewContext();
@@ -137,6 +151,7 @@ namespace PatientInfoModule
 
         private void RegisterServices()
         {
+            container.RegisterType<IPatientService, PatientService>(new ContainerControlledLifetimeManager());
         }
     }
 }

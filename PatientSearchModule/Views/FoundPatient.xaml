@@ -43,7 +43,7 @@
                         Margin="5">
                     <Image Width="72"
                            Height="72"
-                           Source="{Binding PhotoSource}"/>
+                           Source="{Binding IsMale, Converter={x:Static converters:GenderToImageConverter.Instance}}"/>
                 </Border>
                 <StackPanel Grid.Row="0"
                             Grid.Column="1"
@@ -58,7 +58,7 @@
                                                              WordsToHighlight="{Binding WordsToHighlight}"/>
                         </i:Interaction.Behaviors>
                     </TextBlock>
-                    <TextBlock Text="{Binding Gender.IsMale, Converter={StaticResource GenderToTextConverter}}"
+                    <TextBlock Text="{Binding IsMale, Converter={StaticResource GenderToTextConverter}}"
                                Foreground="{StaticResource ExplanationTextColor}" />
                     <TextBlock Text="{Binding BirthDate, StringFormat={x:Static coreMisc:DateTimeFormats.ShortDateFormat}}">
                         <i:Interaction.Behaviors>

@@ -7,16 +7,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class Assignment
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Assignment()
         {
+            this.Assignments1 = new HashSet<Assignment>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
         }
     
@@ -37,6 +38,8 @@ namespace Core.Data
         public System.DateTime CreationDateTime { get; set; }
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public double Cost { get; set; }
+        public Nullable<int> ParentId { get; set; }
+        public Nullable<int> VisitId { get; set; }
     
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual Org Org { get; set; }
@@ -46,6 +49,10 @@ namespace Core.Data
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Assignment> Assignments1 { get; set; }
+        public virtual Assignment Assignment1 { get; set; }
+        public virtual Visit Visit { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
     }

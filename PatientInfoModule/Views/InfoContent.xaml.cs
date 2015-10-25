@@ -4,19 +4,19 @@ using PatientInfoModule.ViewModels;
 namespace PatientInfoModule.Views
 {
     /// <summary>
-    /// Interaction logic for PatientInfo.xaml
+    /// Interaction logic for InfoContent.xaml
     /// </summary>
-    public partial class PatientInfo
+    public partial class InfoContent
     {
-        public PatientInfo()
+        public InfoContent()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public PatientInfoViewModel ViewModel
+        public InfoContentViewModel ContentViewModel
         {
-            get { return DataContext as PatientInfoViewModel; }
+            get { return DataContext as InfoContentViewModel; }
             set { DataContext = value; }
         }
     }

@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class Record
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -49,5 +49,6 @@ namespace Core.Data
         public virtual RecordType RecordType { get; set; }
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
+        public virtual Visit Visit { get; set; }
     }
 }

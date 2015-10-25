@@ -7,18 +7,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class PersonStaff
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PersonStaff()
         {
             this.CommissionMembers = new HashSet<CommissionMember>();
-            this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContracts = new HashSet<RecordContract>();
+            this.RecordContractItems = new HashSet<RecordContractItem>();
         }
     
         public int Id { get; set; }
@@ -34,8 +35,8 @@ namespace Core.Data
         public virtual Person Person { get; set; }
         public virtual Staff Staff { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContract> RecordContracts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
     }
 }

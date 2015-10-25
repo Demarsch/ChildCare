@@ -12,15 +12,15 @@ namespace Core.Wpf.Mvvm
             private set { SetProperty(ref isActive, value); }
         }
 
-        private object message;
+        private string message;
 
-        public object Message
+        public string Message
         {
             get { return message; }
             private set { SetProperty(ref message, value); }
         }
 
-        public void Activate(object busyMessage)
+        public void Activate(string busyMessage)
         {
             Message = busyMessage;
             IsActive = true;

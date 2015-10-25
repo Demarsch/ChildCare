@@ -8,17 +8,17 @@ namespace PatientInfoModule.Views
     /// <summary>
     /// Interaction logic for CommonInfoHeader.xaml
     /// </summary>
-    public partial class CommonInfoHeader
+    public partial class InfoHeader
     {
-        public CommonInfoHeader()
+        public InfoHeader()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public CommonInfoHeaderViewModel ViewModel
+        public InfoHeaderViewModel ViewModel
         {
-            get { return DataContext as CommonInfoHeaderViewModel; }
+            get { return DataContext as InfoHeaderViewModel; }
             set { DataContext = value; }
         }
 

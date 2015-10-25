@@ -7,10 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class ScheduleItem
     {
         public int Id { get; set; }

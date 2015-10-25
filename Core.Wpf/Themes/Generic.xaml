@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mvvm="clr-namespace:Core.Wpf.Mvvm"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters"
-                    xmlns:misc="clr-namespace:Core.Wpf.Misc">
+                    xmlns:misc="clr-namespace:Core.Wpf.Misc"
+                    xmlns:gif="http://wpfanimatedgif.codeplex.com">
     <Duration x:Key="AnimationDuration">0:0:0.75</Duration>
     <!--Default styles-->
     <Style x:Key="TextHighlightStyle"
@@ -18,32 +19,36 @@
         <Border HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 IsHitTestVisible="{Binding IsActive}"
-                x:Name="border">
+                x:Name="outerBorder">
             <Border.Background>
                 <SolidColorBrush Color="Transparent" />
             </Border.Background>
-            <Grid HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  Opacity="1"
-                  x:Name="grid">
-                <ProgressBar HorizontalAlignment="Stretch"
-                             VerticalAlignment="Stretch"
-                             IsIndeterminate="True" />
-                <Label Content="{Binding Message}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Padding="15"
-                       BorderBrush="Black"
-                       BorderThickness="1"
-                       Background="{x:Null}" />
-            </Grid>
+            <Border BorderBrush="Black"
+                    BorderThickness="1"
+                    Background="White"
+                    x:Name="innerBorder"
+                    Opacity="0">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <Image Width="32"
+                           Height="32"
+                           Stretch="None"
+                           gif:ImageBehavior.AnimatedSource="../Resources/Images/Loading-32x32.GIF"
+                           VerticalAlignment="Center"
+                           Margin="5" />
+                    <TextBlock Text="{Binding Message}"
+                               VerticalAlignment="Center"
+                               Margin="5" />
+                </StackPanel>
+            </Border>
         </Border>
         <DataTemplate.Triggers>
             <DataTrigger Binding="{Binding IsActive}"
                          Value="True">
                 <DataTrigger.EnterActions>
                     <BeginStoryboard>
-                        <Storyboard TargetName="grid"
+                        <Storyboard TargetName="innerBorder"
                                     TargetProperty="Opacity">
                             <DoubleAnimation To="1"
                                              Duration="{StaticResource AnimationDuration}" />
@@ -52,7 +57,7 @@
                 </DataTrigger.EnterActions>
                 <DataTrigger.ExitActions>
                     <BeginStoryboard>
-                        <Storyboard TargetName="grid"
+                        <Storyboard TargetName="innerBorder"
                                     TargetProperty="Opacity">
                             <DoubleAnimation To="0"
                                              Duration="{StaticResource AnimationDuration}" />

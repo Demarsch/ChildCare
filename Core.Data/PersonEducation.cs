@@ -9,6 +9,9 @@
 
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class PersonEducation
     {
         public int Id { get; set; }

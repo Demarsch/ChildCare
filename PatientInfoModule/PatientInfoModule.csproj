@@ -94,11 +94,13 @@
     <Compile Include="Misc\ParameterNames.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Implementations\PatientService.cs" />
+    <Compile Include="Services\Interfaces\IPatientService.cs" />
     <Compile Include="ViewModels\ContractsHeaderViewModel.cs" />
     <Compile Include="ViewModels\DocumentsHeaderViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
-    <Compile Include="ViewModels\CommonInfoHeaderViewModel.cs" />
-    <Compile Include="ViewModels\PatientInfoViewModel.cs" />
+    <Compile Include="ViewModels\InfoHeaderViewModel.cs" />
+    <Compile Include="ViewModels\InfoContentViewModel.cs" />
     <Compile Include="Views\ContractsHeader.xaml.cs">
       <DependentUpon>ContractsHeader.xaml</DependentUpon>
     </Compile>
@@ -108,11 +110,11 @@
     <Compile Include="Views\EmptyPatientInfo.xaml.cs">
       <DependentUpon>EmptyPatientInfo.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CommonInfoHeader.xaml.cs">
-      <DependentUpon>CommonInfoHeader.xaml</DependentUpon>
+    <Compile Include="Views\InfoHeader.xaml.cs">
+      <DependentUpon>InfoHeader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PatientInfo.xaml.cs">
-      <DependentUpon>PatientInfo.xaml</DependentUpon>
+    <Compile Include="Views\InfoContent.xaml.cs">
+      <DependentUpon>InfoContent.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +129,10 @@
     <ProjectReference Include="..\Core.Wpf\Core.Wpf.csproj">
       <Project>{62515044-F9C0-4D93-8B55-1407CCF8D3F2}</Project>
       <Name>Core.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{CF75CDE2-002C-4113-824A-03A3B7C6847B}</Project>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Shell.Shared\Shell.Shared.csproj">
       <Project>{4E0D997F-374E-43BE-9617-8DA82504B7C8}</Project>
@@ -146,16 +152,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CommonInfoHeader.xaml">
+    <Page Include="Views\InfoHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PatientInfo.xaml">
+    <Page Include="Views\InfoContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\Cancel-48x48.png" />
+    <Resource Include="Resources\Images\SaveChanges-48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AddPatient-48x48.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

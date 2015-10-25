@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Services;
+using Core.Misc;
 using Core.Wpf.Events;
 using Core.Wpf.Mvvm;
 using Prism.Events;
@@ -51,7 +52,7 @@ namespace Shell
             BusyMediator.Activate("Подключение к базе данных...");
             OnPropertyChanged(() => CanOpenMenu);
             var checkDataBaseConnectionTask = Task.Run(() => CheckDatabaseConnection());
-            await Task.WhenAll(checkDataBaseConnectionTask, Task.Delay(TimeSpan.FromSeconds(1.0)));
+            await Task.WhenAll(checkDataBaseConnectionTask, Task.Delay(AppConfiguration.PendingOperationDelay));
             var success = checkDataBaseConnectionTask.Result;
             BusyMediator.Deactivate();
             if (!success)

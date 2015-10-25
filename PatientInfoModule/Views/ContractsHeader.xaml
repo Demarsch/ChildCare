@@ -8,7 +8,7 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:CommonInfoHeaderViewModel}">
+                      d:DataContext="{d:DesignInstance viewModels:InfoHeaderViewModel}">
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Договора"
                    Style="{x:Null}" />

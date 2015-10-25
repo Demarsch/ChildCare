@@ -172,7 +172,7 @@ namespace PatientSearchModule.ViewModels
                                  {
                                      x.Id,
                                      x.BirthDate,
-                                     x.GenderId,
+                                     x.IsMale,
                                      x.Snils,
                                      x.MedNumber,
                                      CurrentName = x.PersonNames.FirstOrDefault(y => y.ChangeNameReason == null),
@@ -184,11 +184,7 @@ namespace PatientSearchModule.ViewModels
                                                          .FirstOrDefault()
                                  })
                     .ToArrayAsync(token);
-                await Task.WhenAll(runQueryTask, Task.Delay(TimeSpan.FromSeconds(0.5), token));
-                if (runQueryTask.IsCanceled)
-                {
-                    return;
-                }
+                await Task.WhenAll(runQueryTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
                 var result = await runQueryTask.Result
                                                .Select(x => new FoundPatientViewModel
                                                             {
@@ -196,7 +192,7 @@ namespace PatientSearchModule.ViewModels
                                                                 BirthDate = x.BirthDate,
                                                                 CurrentName = x.CurrentName,
                                                                 PreviousName = x.PreviousName,
-                                                                Gender = cacheService.GetItemById<Gender>(x.GenderId),
+                                                                IsMale = x.IsMale,
                                                                 IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
                                                                 MedNumber = x.MedNumber,
                                                                 Snils = Person.DelimitizeSnils(x.Snils)
@@ -212,7 +208,7 @@ namespace PatientSearchModule.ViewModels
             }
             catch (OperationCanceledException)
             {
-                searchIsCompleted = false;
+                //Do nothing. Cancelled operation means that user started another search before completing the previous one
             }
             catch (Exception ex)
             {

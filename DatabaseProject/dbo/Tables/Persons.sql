@@ -1,8 +1,9 @@
 ﻿CREATE TABLE [dbo].[Persons] (
     [Id]                       INT           IDENTITY (1, 1) NOT NULL,
-    [FullName]                 VARCHAR (100) NOT NULL,
-    [ShortName]                VARCHAR (100) NOT NULL,
+    [FullName]                 VARCHAR (300) NOT NULL,
+    [ShortName]                VARCHAR (110) NOT NULL,
     [BirthDate]                DATETIME      NOT NULL,
+	[IsMale]                   BIT           CONSTRAINT [DF_Persons_IsMale] DEFAULT ((1)) NOT NULL,
     [Snils]                    VARCHAR (50)  NOT NULL,
     [MedNumber]                VARCHAR (50)  NOT NULL,
     [GenderId]                 INT           NOT NULL,

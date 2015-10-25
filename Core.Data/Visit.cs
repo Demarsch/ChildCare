@@ -7,12 +7,20 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class Visit
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Visit()
+        {
+            this.Assignments = new HashSet<Assignment>();
+            this.Records = new HashSet<Record>();
+        }
+    
         public int Id { get; set; }
         public int VisitTypeId { get; set; }
         public int PersonId { get; set; }
@@ -29,6 +37,7 @@ namespace Core.Data
         public string Note { get; set; }
         public double TotalCost { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
+        public int ExecutionPlaceId { get; set; }
     
         public virtual Org Org { get; set; }
         public virtual VisitOutcome VisitOutcome { get; set; }
@@ -36,5 +45,10 @@ namespace Core.Data
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual Person Person { get; set; }
         public virtual RecordContract RecordContract { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ExecutionPlace ExecutionPlace { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Record> Records { get; set; }
     }
 }

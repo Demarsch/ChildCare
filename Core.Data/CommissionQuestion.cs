@@ -9,6 +9,9 @@
 
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class CommissionQuestion
     {
         public int Id { get; set; }

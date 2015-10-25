@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-
 namespace Core.Data
 {
+    using System;
+    using System.Collections.Generic;
+    
     public partial class Person
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -55,6 +55,10 @@ namespace Core.Data
         public string AmbNumberString { get; set; }
         public int AmbNumber { get; set; }
         public int Year { get; set; }
+        public bool IsMale { get; set; }
+        public int AmbCardFirstListHashCode { get; set; }
+        public int PersonHospListHashCode { get; set; }
+        public int RadiationListHashCode { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
