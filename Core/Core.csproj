@@ -57,6 +57,7 @@
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Misc\AppConfiguration.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
@@ -70,6 +71,19 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Man48x48.png" />
     <Resource Include="Resources\Images\Woman48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Add48x48.png" />
+    <Resource Include="Resources\Images\AddAppendix48x48.png" />
+    <Resource Include="Resources\Images\AddContract48x48.png" />
+    <Resource Include="Resources\Images\Print48x48.png" />
+    <Resource Include="Resources\Images\Remove48x48.png" />
+    <Resource Include="Resources\Images\RemoveAppendix48x48.png" />
+    <Resource Include="Resources\Images\RemoveContract48x48.png" />
+    <Resource Include="Resources\Images\Save48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\FileUnknown48x48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

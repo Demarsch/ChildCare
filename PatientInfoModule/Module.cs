@@ -88,6 +88,7 @@ namespace PatientInfoModule
             //This is required by Prism navigation mechanism to resolve view
             container.RegisterType<object, EmptyPatientInfo>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, InfoContent>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
+            //container.RegisterType<object, PatientContracts>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterInstance(Common.RibbonGroupName,
                                        new RibbonContextualTabGroup
                                        {
@@ -152,6 +153,8 @@ namespace PatientInfoModule
         private void RegisterServices()
         {
             container.RegisterType<IPatientService, PatientService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
         }
     }
 }

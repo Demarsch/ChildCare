@@ -1,5 +1,5 @@
-﻿using Microsoft.Practices.Unity;
-using PatientInfoModule.ViewModels;
+﻿    using Microsoft.Practices.Unity;
+    using PatientInfoModule.ViewModels;
 
 namespace PatientInfoModule.Views
 {

@@ -77,6 +77,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.3.5.1.198\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -88,19 +90,36 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WpfControls">
+      <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Misc\Common.cs" />
+    <Compile Include="Misc\ItemTemplateSelector.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
+    <Compile Include="Misc\PersonSuggestionProvider.cs" />
+    <Compile Include="Misc\RecordTypesSuggestionProvider.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Implementations\ContractService.cs" />
     <Compile Include="Services\Implementations\PatientService.cs" />
+    <Compile Include="Services\Interfaces\IContractService.cs" />
     <Compile Include="Services\Interfaces\IPatientService.cs" />
+    <Compile Include="Services\Implementations\RecordService.cs" />
+    <Compile Include="Services\Interfaces\IRecordService.cs" />
+    <Compile Include="ViewModels\ContractItemViewModel.cs" />
     <Compile Include="ViewModels\ContractsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\ContractViewModel.cs" />
     <Compile Include="ViewModels\DocumentsHeaderViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\InfoHeaderViewModel.cs" />
     <Compile Include="ViewModels\InfoContentViewModel.cs" />
+    <Compile Include="ViewModels\PatientContractsViewModel.cs" />
     <Compile Include="Views\ContractsHeader.xaml.cs">
       <DependentUpon>ContractsHeader.xaml</DependentUpon>
     </Compile>
@@ -115,6 +134,9 @@
     </Compile>
     <Compile Include="Views\InfoContent.xaml.cs">
       <DependentUpon>InfoContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PatientContracts.xaml.cs">
+      <DependentUpon>PatientContracts.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +179,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\InfoContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PatientContracts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

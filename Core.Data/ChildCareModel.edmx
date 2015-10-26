@@ -252,9 +252,9 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="ShortName" Type="varchar" MaxLength="1" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
         </EntityType>
         <EntityType Name="HealthGroups">
           <Key>
@@ -505,12 +505,13 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FullName" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FullName" Type="varchar" MaxLength="300" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="110" Nullable="false" />
           <Property Name="BirthDate" Type="datetime" Nullable="false" />
           <Property Name="IsMale" Type="bit" Nullable="false" />
           <Property Name="Snils" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="MedNumber" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="GenderId" Type="int" Nullable="false" />
           <Property Name="PhotoId" Type="int" />
           <Property Name="Phones" Type="varchar(max)" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
@@ -521,7 +522,6 @@
           <Property Name="AmbCardFirstListHashCode" Type="int" Nullable="false" />
           <Property Name="PersonHospListHashCode" Type="int" Nullable="false" />
           <Property Name="RadiationListHashCode" Type="int" Nullable="false" />
-          <Property Name="GenderId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonSocialStatuses">
           <Key>
@@ -1548,6 +1548,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Persons_Genders">
+          <End Role="Genders" Type="Self.Genders" Multiplicity="1" />
+          <End Role="Persons" Type="Self.Persons" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Genders">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Persons">
+              <PropertyRef Name="GenderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonSocialStatuses_Orgs">
           <End Role="Orgs" Type="Self.Orgs" Multiplicity="0..1" />
           <End Role="PersonSocialStatuses" Type="Self.PersonSocialStatuses" Multiplicity="*" />
@@ -2449,6 +2461,10 @@
             <End Role="Documents" EntitySet="Documents" />
             <End Role="Persons" EntitySet="Persons" />
           </AssociationSet>
+          <AssociationSet Name="FK_Persons_Genders" Association="Self.FK_Persons_Genders">
+            <End Role="Genders" EntitySet="Genders" />
+            <End Role="Persons" EntitySet="Persons" />
+          </AssociationSet>
           <AssociationSet Name="FK_PersonSocialStatuses_Orgs" Association="Self.FK_PersonSocialStatuses_Orgs">
             <End Role="Orgs" EntitySet="Orgs" />
             <End Role="PersonSocialStatuses" EntitySet="PersonSocialStatuses" />
@@ -2897,7 +2913,6 @@
           <EntitySet Name="Assignments" EntityType="DataLib.Assignment" />
           <EntitySet Name="FinancingSources" EntityType="DataLib.FinancingSource" />
           <EntitySet Name="PaymentTypes" EntityType="DataLib.PaymentType" />
-          <EntitySet Name="Persons" EntityType="DataLib.Person" />
           <EntitySet Name="PersonStaffs" EntityType="DataLib.PersonStaff" />
           <EntitySet Name="RecordContractLimits" EntityType="DataLib.RecordContractLimit" />
           <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
@@ -2912,10 +2927,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_Orgs" Association="DataLib.FK_Assignments_Orgs">
             <End Role="Org" EntitySet="Orgs" />
-            <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Assignments_Persons" Association="DataLib.FK_Assignments_Persons">
-            <End Role="Person" EntitySet="Persons" />
             <End Role="Assignment" EntitySet="Assignments" />
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_Records" Association="DataLib.FK_Assignments_Records">
@@ -2946,17 +2957,9 @@
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
             <End Role="CommissionMember" EntitySet="CommissionMembers" />
           </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_Persons" Association="DataLib.FK_CommissionProtocols_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
-          </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="DataLib.FK_CommissionProtocols_RecordContracts">
             <End Role="RecordContract" EntitySet="RecordContracts" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Persons_Documents" Association="DataLib.FK_Persons_Documents">
-            <End Role="Document" EntitySet="Documents" />
-            <End Role="Person" EntitySet="Persons" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordContracts_FinancingSources" Association="DataLib.FK_RecordContracts_FinancingSources">
             <End Role="FinancingSource" EntitySet="FinancingSources" />
@@ -2970,14 +2973,6 @@
             <End Role="FinancingSource" EntitySet="FinancingSources" />
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
-          <AssociationSet Name="FK_Persons_Genders" Association="DataLib.FK_Persons_Genders">
-            <End Role="Gender" EntitySet="Genders" />
-            <End Role="Person" EntitySet="Persons" />
-          </AssociationSet>
-          <AssociationSet Name="FK_InsuranceDocuments_Persons" Association="DataLib.FK_InsuranceDocuments_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="InsuranceDocument" EntitySet="InsuranceDocuments" />
-          </AssociationSet>
           <AssociationSet Name="FK_MedicalHelpTypes_RecordContracts" Association="DataLib.FK_MedicalHelpTypes_RecordContracts">
             <End Role="RecordContract" EntitySet="RecordContracts" />
             <End Role="MedicalHelpType" EntitySet="MedicalHelpTypes" />
@@ -2989,82 +2984,6 @@
           <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
             <End Role="Permission" EntitySet="Permissions" />
             <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Addresses_Persons" Association="DataLib.FK_Addresses_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonAddress" EntitySet="PersonAddresses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonDisabilities_Persons" Association="DataLib.FK_PersonDisabilities_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonEducations_Persons" Association="DataLib.FK_PersonEducations_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonEducation" EntitySet="PersonEducations" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonHealthGroups_Persons" Association="DataLib.FK_PersonHealthGroups_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonHealthGroup" EntitySet="PersonHealthGroups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonIdentityDocuments_Persons" Association="DataLib.FK_PersonIdentityDocuments_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonMaritalStatuses_Persons" Association="DataLib.FK_PersonMaritalStatuses_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonMaritalStatus" EntitySet="PersonMaritalStatuses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonNames_Persons" Association="DataLib.FK_PersonNames_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonName" EntitySet="PersonNames" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonNationalities_Persons" Association="DataLib.FK_PersonNationalities_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonNationality" EntitySet="PersonNationalities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonOuterDocuments_Persons" Association="DataLib.FK_PersonOuterDocuments_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonOuterDocument" EntitySet="PersonOuterDocuments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonRelatives_Persons" Association="DataLib.FK_PersonRelatives_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonRelative" EntitySet="PersonRelatives" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonRelatives_Persons1" Association="DataLib.FK_PersonRelatives_Persons1">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonRelative" EntitySet="PersonRelatives" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonSocialStatuses_Persons" Association="DataLib.FK_PersonSocialStatuses_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonStaffs_Persons" Association="DataLib.FK_PersonStaffs_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonStaff" EntitySet="PersonStaffs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonTalons_Persons" Association="DataLib.FK_PersonTalons_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonTalon" EntitySet="PersonTalons" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_Clients" Association="DataLib.FK_RecordContracts_Clients">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_Consumers" Association="DataLib.FK_RecordContracts_Consumers">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Records_Persons" Association="DataLib.FK_Records_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="Record" EntitySet="Records" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Users_Persons" Association="DataLib.FK_Users_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="User" EntitySet="Users" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Visits_Persons" Association="DataLib.FK_Visits_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonStaffs_Staffs" Association="DataLib.FK_PersonStaffs_Staffs">
             <End Role="Staff" EntitySet="Staffs" />
@@ -3162,6 +3081,103 @@
           <AssociationSet Name="FK_RecordContractItems_RecordTypes" Association="DataLib.FK_RecordContractItems_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordContractItem" EntitySet="RecordContractItems" />
+          </AssociationSet>
+          <EntitySet Name="Persons" EntityType="DataLib.Person" />
+          <AssociationSet Name="FK_Assignments_Persons" Association="DataLib.FK_Assignments_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionProtocols_Persons" Association="DataLib.FK_CommissionProtocols_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Persons_Documents" Association="DataLib.FK_Persons_Documents">
+            <End Role="Document" EntitySet="Documents" />
+            <End Role="Person" EntitySet="Persons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Persons_Genders" Association="DataLib.FK_Persons_Genders">
+            <End Role="Gender" EntitySet="Genders" />
+            <End Role="Person" EntitySet="Persons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InsuranceDocuments_Persons" Association="DataLib.FK_InsuranceDocuments_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="InsuranceDocument" EntitySet="InsuranceDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Addresses_Persons" Association="DataLib.FK_Addresses_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonAddress" EntitySet="PersonAddresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDisabilities_Persons" Association="DataLib.FK_PersonDisabilities_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonEducations_Persons" Association="DataLib.FK_PersonEducations_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonEducation" EntitySet="PersonEducations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonHealthGroups_Persons" Association="DataLib.FK_PersonHealthGroups_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonHealthGroup" EntitySet="PersonHealthGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonIdentityDocuments_Persons" Association="DataLib.FK_PersonIdentityDocuments_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonMaritalStatuses_Persons" Association="DataLib.FK_PersonMaritalStatuses_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonMaritalStatus" EntitySet="PersonMaritalStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonNames_Persons" Association="DataLib.FK_PersonNames_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonName" EntitySet="PersonNames" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonNationalities_Persons" Association="DataLib.FK_PersonNationalities_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonNationality" EntitySet="PersonNationalities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonOuterDocuments_Persons" Association="DataLib.FK_PersonOuterDocuments_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonOuterDocument" EntitySet="PersonOuterDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonRelatives_Persons" Association="DataLib.FK_PersonRelatives_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonRelative" EntitySet="PersonRelatives" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonRelatives_Persons1" Association="DataLib.FK_PersonRelatives_Persons1">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonRelative" EntitySet="PersonRelatives" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonSocialStatuses_Persons" Association="DataLib.FK_PersonSocialStatuses_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonStaffs_Persons" Association="DataLib.FK_PersonStaffs_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonTalons_Persons" Association="DataLib.FK_PersonTalons_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonTalon" EntitySet="PersonTalons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_Clients" Association="DataLib.FK_RecordContracts_Clients">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_Consumers" Association="DataLib.FK_RecordContracts_Consumers">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Persons" Association="DataLib.FK_Records_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Persons" Association="DataLib.FK_Users_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_Persons" Association="DataLib.FK_Visits_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
@@ -3292,8 +3308,8 @@
           <NavigationProperty Name="MedicalHelpType" Relationship="DataLib.FK_CommissionProtocols_MedicalHelpTypes" FromRole="CommissionProtocol" ToRole="MedicalHelpType" />
           <NavigationProperty Name="PersonTalon" Relationship="DataLib.FK_CommissionProtocols_PersonTalons" FromRole="CommissionProtocol" ToRole="PersonTalon" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_CommissionProtocols_Users" FromRole="CommissionProtocol" ToRole="User" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="CommissionProtocol" ToRole="Person" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="CommissionProtocol" ToRole="RecordContract" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="CommissionProtocol" ToRole="Person" />
         </EntityType>
         <EntityType Name="CommissionQuestion">
           <Key>
@@ -3425,7 +3441,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Persons" Relationship="DataLib.FK_Persons_Genders" FromRole="Gender" ToRole="Person" />
         </EntityType>
         <EntityType Name="HealthGroup">
@@ -3739,8 +3755,8 @@
           <Property Name="Address" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_PersonTalons" FromRole="PersonTalon" ToRole="CommissionProtocol" />
           <NavigationProperty Name="MedicalHelpType" Relationship="DataLib.FK_PersonTalons_MedicalHelpTypes" FromRole="PersonTalon" ToRole="MedicalHelpType" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="PersonTalon" ToRole="Person" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="PersonTalon" ToRole="RecordContract" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="PersonTalon" ToRole="Person" />
         </EntityType>
         <EntityType Name="RelativeRelationship">
           <Key>
@@ -3852,8 +3868,8 @@
           <NavigationProperty Name="UserPermissions" Relationship="DataLib.FK_Permissions_Users" FromRole="User" ToRole="UserPermission" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Users" FromRole="User" ToRole="Assignment" />
           <NavigationProperty Name="Assignments1" Relationship="DataLib.FK_Assignments_Users1" FromRole="User" ToRole="Assignment" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_Users_Persons" FromRole="User" ToRole="Person" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Users" FromRole="User" ToRole="Record" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Users_Persons" FromRole="User" ToRole="Person" />
         </EntityType>
         <EntityType Name="VisitOutcome">
           <Key>
@@ -3906,12 +3922,12 @@
           <NavigationProperty Name="VisitOutcome" Relationship="DataLib.FK_Visits_VisitOutcomes" FromRole="Visit" ToRole="VisitOutcome" />
           <NavigationProperty Name="VisitResult" Relationship="DataLib.FK_Visits_VisitResults" FromRole="Visit" ToRole="VisitResult" />
           <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="Visit" ToRole="FinancingSource" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_Visits_Persons" FromRole="Visit" ToRole="Person" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="Visit" ToRole="RecordContract" />
           <Property Name="ExecutionPlaceId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Visits" FromRole="Visit" ToRole="Assignment" />
           <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="Visit" ToRole="ExecutionPlace" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Visits" FromRole="Visit" ToRole="Record" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Visits_Persons" FromRole="Visit" ToRole="Person" />
         </EntityType>
         <Association Name="FK_PersonAddresses_AddressTypes">
           <End Type="DataLib.AddressType" Role="AddressType" Multiplicity="1" />
@@ -4500,7 +4516,6 @@
           <Property Name="Cost" Type="Double" Nullable="false" />
           <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_Assignments_FinancingSources" FromRole="Assignment" ToRole="FinancingSource" />
           <NavigationProperty Name="Org" Relationship="DataLib.FK_Assignments_Orgs" FromRole="Assignment" ToRole="Org" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_Assignments_Persons" FromRole="Assignment" ToRole="Person" />
           <NavigationProperty Name="Record" Relationship="DataLib.FK_Assignments_Records" FromRole="Assignment" ToRole="Record" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="Assignment" ToRole="RecordType" />
           <NavigationProperty Name="Room" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Assignment" ToRole="Room" />
@@ -4512,6 +4527,7 @@
           <NavigationProperty Name="Assignment1" Relationship="DataLib.FK_Assignments_Assignments" FromRole="Assignment1" ToRole="Assignment" />
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Assignments_Visits" FromRole="Assignment" ToRole="Visit" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="Assignment" ToRole="RecordContractItem" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Assignments_Persons" FromRole="Assignment" ToRole="Person" />
         </EntityType>
         <EntityType Name="FinancingSource">
           <Key>
@@ -4535,53 +4551,6 @@
           <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PaymentTypes" FromRole="PaymentType" ToRole="RecordContract" />
         </EntityType>
-        <EntityType Name="Person">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FullName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="BirthDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Snils" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="MedNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="GenderId" Type="Int32" Nullable="false" />
-          <Property Name="PhotoId" Type="Int32" />
-          <Property Name="Phones" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="DeleteDateTime" Type="DateTime" Precision="3" />
-          <Property Name="AmbNumberString" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="AmbNumber" Type="Int32" Nullable="false" />
-          <Property Name="Year" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
-          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="Person" ToRole="CommissionProtocol" />
-          <NavigationProperty Name="Document" Relationship="DataLib.FK_Persons_Documents" FromRole="Person" ToRole="Document" />
-          <NavigationProperty Name="Gender" Relationship="DataLib.FK_Persons_Genders" FromRole="Person" ToRole="Gender" />
-          <NavigationProperty Name="InsuranceDocuments" Relationship="DataLib.FK_InsuranceDocuments_Persons" FromRole="Person" ToRole="InsuranceDocument" />
-          <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_Addresses_Persons" FromRole="Person" ToRole="PersonAddress" />
-          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="Person" ToRole="PersonDisability" />
-          <NavigationProperty Name="PersonEducations" Relationship="DataLib.FK_PersonEducations_Persons" FromRole="Person" ToRole="PersonEducation" />
-          <NavigationProperty Name="PersonHealthGroups" Relationship="DataLib.FK_PersonHealthGroups_Persons" FromRole="Person" ToRole="PersonHealthGroup" />
-          <NavigationProperty Name="PersonIdentityDocuments" Relationship="DataLib.FK_PersonIdentityDocuments_Persons" FromRole="Person" ToRole="PersonIdentityDocument" />
-          <NavigationProperty Name="PersonMaritalStatuses" Relationship="DataLib.FK_PersonMaritalStatuses_Persons" FromRole="Person" ToRole="PersonMaritalStatus" />
-          <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_Persons" FromRole="Person" ToRole="PersonName" />
-          <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Persons" FromRole="Person" ToRole="PersonNationality" />
-          <NavigationProperty Name="PersonOuterDocuments" Relationship="DataLib.FK_PersonOuterDocuments_Persons" FromRole="Person" ToRole="PersonOuterDocument" />
-          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_Persons" FromRole="Person" ToRole="PersonRelative" />
-          <NavigationProperty Name="PersonRelatives1" Relationship="DataLib.FK_PersonRelatives_Persons1" FromRole="Person" ToRole="PersonRelative" />
-          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="Person" ToRole="PersonSocialStatus" />
-          <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="Person" ToRole="PersonStaff" />
-          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="Person" ToRole="PersonTalon" />
-          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="Person" ToRole="RecordContract" />
-          <NavigationProperty Name="RecordContracts1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="Person" ToRole="RecordContract" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
-          <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
-          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
-          <Property Name="IsMale" Type="Boolean" Nullable="false" />
-          <Property Name="AmbCardFirstListHashCode" Type="Int32" Nullable="false" />
-          <Property Name="PersonHospListHashCode" Type="Int32" Nullable="false" />
-          <Property Name="RadiationListHashCode" Type="Int32" Nullable="false" />
-        </EntityType>
         <EntityType Name="PersonStaff">
           <Key>
             <PropertyRef Name="Id" />
@@ -4594,10 +4563,10 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Branch" Relationship="DataLib.FK_PersonStaffs_Branches" FromRole="PersonStaff" ToRole="Branch" />
           <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_PersonStaffs" FromRole="PersonStaff" ToRole="CommissionMember" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="PersonStaff" ToRole="Person" />
           <NavigationProperty Name="Staff" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="PersonStaff" ToRole="Staff" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContract" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContractItem" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="PersonStaff" ToRole="Person" />
         </EntityType>
         <EntityType Name="RecordContractLimit">
           <Key>
@@ -4632,8 +4601,6 @@
           <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="RecordContract" ToRole="FinancingSource" />
           <NavigationProperty Name="MedicalHelpTypes" Relationship="DataLib.FK_MedicalHelpTypes_RecordContracts" FromRole="RecordContract" ToRole="MedicalHelpType" />
           <NavigationProperty Name="Org" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="RecordContract" ToRole="Org" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="RecordContract" ToRole="Person" />
-          <NavigationProperty Name="Person1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="RecordContract" ToRole="Person" />
           <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="RecordContract" ToRole="PersonStaff" />
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContract" ToRole="RecordContractLimit" />
@@ -4643,6 +4610,8 @@
           <Property Name="TransactionDate" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PaymentType" Relationship="DataLib.FK_RecordContracts_PaymentTypes" FromRole="RecordContract" ToRole="PaymentType" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContract" ToRole="RecordContractItem" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="RecordContract" ToRole="Person" />
+          <NavigationProperty Name="Person1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="RecordContract" ToRole="Person" />
         </EntityType>
         <EntityType Name="Record">
           <Key>
@@ -4667,13 +4636,13 @@
           <Property Name="BillingDateTime" Type="DateTime" Precision="3" />
           <Property Name="RemovedByUserId" Type="Int32" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Records" FromRole="Record" ToRole="Assignment" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_Records_Persons" FromRole="Record" ToRole="Person" />
           <NavigationProperty Name="Records1" Relationship="DataLib.FK_Records_Records" FromRole="Record" ToRole="Record1" />
           <NavigationProperty Name="Record1" Relationship="DataLib.FK_Records_Records" FromRole="Record1" ToRole="Record" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
           <NavigationProperty Name="Room" Relationship="DataLib.FK_Records_Rooms" FromRole="Record" ToRole="Room" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Records_Persons" FromRole="Record" ToRole="Person" />
         </EntityType>
         <EntityType Name="RecordTypeCost">
           <Key>
@@ -4764,18 +4733,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Assignments_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Assignment">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Assignments_Records">
           <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
           <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
@@ -4860,18 +4817,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CommissionProtocols_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocol">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CommissionProtocols_RecordContracts">
           <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
@@ -4881,18 +4826,6 @@
             </Principal>
             <Dependent Role="CommissionProtocol">
               <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Persons_Documents">
-          <End Type="DataLib.Document" Role="Document" Multiplicity="0..1" />
-          <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Document">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Person">
-              <PropertyRef Name="PhotoId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4932,30 +4865,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Persons_Genders">
-          <End Type="DataLib.Gender" Role="Gender" Multiplicity="1" />
-          <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Gender">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Person">
-              <PropertyRef Name="GenderId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_InsuranceDocuments_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.InsuranceDocument" Role="InsuranceDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="InsuranceDocument">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_MedicalHelpTypes_RecordContracts">
           <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
           <End Type="DataLib.MedicalHelpType" Role="MedicalHelpType" Multiplicity="*" />
@@ -4989,236 +4898,6 @@
             </Principal>
             <Dependent Role="RecordTypeRolePermission">
               <PropertyRef Name="PermissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Addresses_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonAddress">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonDisabilities_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonDisability">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonEducations_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonEducation" Role="PersonEducation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonEducation">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonHealthGroups_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonHealthGroup" Role="PersonHealthGroup" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonHealthGroup">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonIdentityDocuments_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonIdentityDocument" Role="PersonIdentityDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonIdentityDocument">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonMaritalStatuses_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonMaritalStatus" Role="PersonMaritalStatus" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonMaritalStatus">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonNames_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonName" Role="PersonName" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonName">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonNationalities_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonNationality" Role="PersonNationality" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonNationality">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonOuterDocuments_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonOuterDocument" Role="PersonOuterDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonOuterDocument">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonRelatives_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonRelative">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonRelatives_Persons1">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonRelative">
-              <PropertyRef Name="RelativeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonSocialStatuses_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonSocialStatus">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonStaffs_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonStaff">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonTalons_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonTalon">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_Clients">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="ClientId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_Consumers">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
-              <PropertyRef Name="ConsumerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Records_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Record">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Users_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.User" Role="User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Visits_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Visit">
-              <PropertyRef Name="PersonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5526,6 +5205,343 @@
             </Principal>
             <Dependent Role="RecordContractItem">
               <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Person">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FullName" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="110" FixedLength="false" Unicode="false" />
+          <Property Name="BirthDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsMale" Type="Boolean" Nullable="false" />
+          <Property Name="Snils" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MedNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GenderId" Type="Int32" Nullable="false" />
+          <Property Name="PhotoId" Type="Int32" />
+          <Property Name="Phones" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DeleteDateTime" Type="DateTime" Precision="3" />
+          <Property Name="AmbNumberString" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AmbNumber" Type="Int32" Nullable="false" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="AmbCardFirstListHashCode" Type="Int32" Nullable="false" />
+          <Property Name="PersonHospListHashCode" Type="Int32" Nullable="false" />
+          <Property Name="RadiationListHashCode" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
+          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="Person" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="Document" Relationship="DataLib.FK_Persons_Documents" FromRole="Person" ToRole="Document" />
+          <NavigationProperty Name="Gender" Relationship="DataLib.FK_Persons_Genders" FromRole="Person" ToRole="Gender" />
+          <NavigationProperty Name="InsuranceDocuments" Relationship="DataLib.FK_InsuranceDocuments_Persons" FromRole="Person" ToRole="InsuranceDocument" />
+          <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_Addresses_Persons" FromRole="Person" ToRole="PersonAddress" />
+          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="Person" ToRole="PersonDisability" />
+          <NavigationProperty Name="PersonEducations" Relationship="DataLib.FK_PersonEducations_Persons" FromRole="Person" ToRole="PersonEducation" />
+          <NavigationProperty Name="PersonHealthGroups" Relationship="DataLib.FK_PersonHealthGroups_Persons" FromRole="Person" ToRole="PersonHealthGroup" />
+          <NavigationProperty Name="PersonIdentityDocuments" Relationship="DataLib.FK_PersonIdentityDocuments_Persons" FromRole="Person" ToRole="PersonIdentityDocument" />
+          <NavigationProperty Name="PersonMaritalStatuses" Relationship="DataLib.FK_PersonMaritalStatuses_Persons" FromRole="Person" ToRole="PersonMaritalStatus" />
+          <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_Persons" FromRole="Person" ToRole="PersonName" />
+          <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Persons" FromRole="Person" ToRole="PersonNationality" />
+          <NavigationProperty Name="PersonOuterDocuments" Relationship="DataLib.FK_PersonOuterDocuments_Persons" FromRole="Person" ToRole="PersonOuterDocument" />
+          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_Persons" FromRole="Person" ToRole="PersonRelative" />
+          <NavigationProperty Name="PersonRelatives1" Relationship="DataLib.FK_PersonRelatives_Persons1" FromRole="Person" ToRole="PersonRelative" />
+          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="Person" ToRole="PersonSocialStatus" />
+          <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="Person" ToRole="PersonStaff" />
+          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="Person" ToRole="PersonTalon" />
+          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="Person" ToRole="RecordContract" />
+          <NavigationProperty Name="RecordContracts1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="Person" ToRole="RecordContract" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
+          <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
+        </EntityType>
+        <Association Name="FK_Assignments_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionProtocols_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionProtocol">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Persons_Documents">
+          <End Type="DataLib.Document" Role="Document" Multiplicity="0..1" />
+          <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Document">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Person">
+              <PropertyRef Name="PhotoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Persons_Genders">
+          <End Type="DataLib.Gender" Role="Gender" Multiplicity="1" />
+          <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Gender">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Person">
+              <PropertyRef Name="GenderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InsuranceDocuments_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.InsuranceDocument" Role="InsuranceDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InsuranceDocument">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Addresses_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonAddress">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDisabilities_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDisability">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonEducations_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonEducation" Role="PersonEducation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonEducation">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonHealthGroups_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonHealthGroup" Role="PersonHealthGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonHealthGroup">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonIdentityDocuments_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonIdentityDocument" Role="PersonIdentityDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonIdentityDocument">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonMaritalStatuses_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonMaritalStatus" Role="PersonMaritalStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonMaritalStatus">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonNames_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonName" Role="PersonName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonName">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonNationalities_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonNationality" Role="PersonNationality" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonNationality">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonOuterDocuments_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonOuterDocument" Role="PersonOuterDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonOuterDocument">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonRelatives_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelative">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonRelatives_Persons1">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelative">
+              <PropertyRef Name="RelativeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonSocialStatuses_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonSocialStatus" Role="PersonSocialStatus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonSocialStatus">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonStaffs_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonStaff">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonTalons_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonTalon">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_Clients">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_Consumers">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
+              <PropertyRef Name="ConsumerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="PersonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6249,30 +6265,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Persons">
-            <EntityTypeMapping TypeName="DataLib.Person">
-              <MappingFragment StoreEntitySet="Persons">
-                <ScalarProperty Name="IsMale" ColumnName="IsMale" />
-                <ScalarProperty Name="RadiationListHashCode" ColumnName="RadiationListHashCode" />
-                <ScalarProperty Name="PersonHospListHashCode" ColumnName="PersonHospListHashCode" />
-                <ScalarProperty Name="AmbCardFirstListHashCode" ColumnName="AmbCardFirstListHashCode" />
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="AmbNumber" ColumnName="AmbNumber" />
-                <ScalarProperty Name="AmbNumberString" ColumnName="AmbNumberString" />
-                <ScalarProperty Name="DeleteDateTime" ColumnName="DeleteDateTime" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Phones" ColumnName="Phones" />
-                <ScalarProperty Name="PhotoId" ColumnName="PhotoId" />
-                <ScalarProperty Name="GenderId" ColumnName="GenderId" />
-                <ScalarProperty Name="MedNumber" ColumnName="MedNumber" />
-                <ScalarProperty Name="Snils" ColumnName="Snils" />
-                <ScalarProperty Name="BirthDate" ColumnName="BirthDate" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="FullName" ColumnName="FullName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PersonStaffs">
             <EntityTypeMapping TypeName="DataLib.PersonStaff">
               <MappingFragment StoreEntitySet="PersonStaffs">
@@ -6408,6 +6400,30 @@
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
                 <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Persons">
+            <EntityTypeMapping TypeName="DataLib.Person">
+              <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="RadiationListHashCode" ColumnName="RadiationListHashCode" />
+                <ScalarProperty Name="PersonHospListHashCode" ColumnName="PersonHospListHashCode" />
+                <ScalarProperty Name="AmbCardFirstListHashCode" ColumnName="AmbCardFirstListHashCode" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="AmbNumber" ColumnName="AmbNumber" />
+                <ScalarProperty Name="AmbNumberString" ColumnName="AmbNumberString" />
+                <ScalarProperty Name="DeleteDateTime" ColumnName="DeleteDateTime" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phones" ColumnName="Phones" />
+                <ScalarProperty Name="PhotoId" ColumnName="PhotoId" />
+                <ScalarProperty Name="GenderId" ColumnName="GenderId" />
+                <ScalarProperty Name="MedNumber" ColumnName="MedNumber" />
+                <ScalarProperty Name="Snils" ColumnName="Snils" />
+                <ScalarProperty Name="IsMale" ColumnName="IsMale" />
+                <ScalarProperty Name="BirthDate" ColumnName="BirthDate" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -42,7 +42,6 @@ namespace Core.Data
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
-        public virtual Person Person { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records1 { get; set; }
         public virtual Record Record1 { get; set; }
@@ -50,5 +49,6 @@ namespace Core.Data
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
         public virtual Visit Visit { get; set; }
+        public virtual Person Person { get; set; }
     }
 }

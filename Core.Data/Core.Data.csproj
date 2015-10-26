@@ -112,6 +112,7 @@
     <Compile Include="PartialClasses\Gender.cs" />
     <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
     <Compile Include="PartialClasses\PersonName.cs" />
+    <Compile Include="PartialClasses\RecordContract.cs" />
     <Compile Include="Services\Implementations\DbContextCacheService.cs" />
     <Compile Include="Services\Implementations\DbContextProvider.cs" />
     <Compile Include="Country.cs">

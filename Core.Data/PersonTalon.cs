@@ -32,7 +32,7 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual MedicalHelpType MedicalHelpType { get; set; }
-        public virtual Person Person { get; set; }
         public virtual RecordContract RecordContract { get; set; }
+        public virtual Person Person { get; set; }
     }
 }

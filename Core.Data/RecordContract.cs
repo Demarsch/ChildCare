@@ -49,8 +49,6 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
         public virtual Org Org { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual Person Person1 { get; set; }
         public virtual PersonStaff PersonStaff { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonTalon> PersonTalons { get; set; }
@@ -61,5 +59,7 @@ namespace Core.Data
         public virtual PaymentType PaymentType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
+        public virtual Person Person { get; set; }
+        public virtual Person Person1 { get; set; }
     }
 }
