@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Extensions
 {
@@ -13,7 +9,7 @@ namespace Core.Extensions
         /// </summary>
         public static string ToSafeString(this object obj)
         {
-            return obj == null ? "" : obj.ToString();
+            return obj == null ? string.Empty : obj.ToString();
         }
 
         /// <summary>
@@ -29,7 +25,8 @@ namespace Core.Extensions
         /// </summary>
         public static string ToDefaultString(this object obj, string defaultValue)
         {
-            return ((obj.ToSafeString().HasData() && obj.ToSafeString() != "0") ? obj.ToString() : defaultValue);
+            var safeString = obj.ToSafeString();
+            return string.IsNullOrWhiteSpace(safeString) || safeString == "0" ? defaultValue : safeString;
         }
 
         /// <summary>
@@ -76,17 +73,6 @@ namespace Core.Extensions
             {
                 return 0.0;
             }
-        }
-
-        /// <summary>
-        /// Проверяет, чтобы строка не являлась null'ом, пустой или содержащей только пробельные символы
-        /// </summary>
-        /// <returns>false - если в строке нет полезной информации, true - если есть хотя бы один полезный символ</returns>
-        public static bool HasData(this string currentString)
-        {
-            if (string.IsNullOrEmpty(currentString)) return false;
-            if (currentString.Trim() == "") return false;
-            return true;
         }
     }
 }

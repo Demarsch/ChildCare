@@ -1,19 +1,24 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Extensions;
 using Core.Misc;
 using Core.Services;
+using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
 
@@ -27,7 +32,9 @@ namespace PatientInfoModule.ViewModels
 
         private readonly ICacheService cacheService;
 
-        public InfoContentViewModel(IPatientService patientService, ILog log, ICacheService cacheService)
+        private readonly IEventAggregator eventAggregator;
+
+        public InfoContentViewModel(IPatientService patientService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
         {
             if (patientService == null)
             {
@@ -41,9 +48,20 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("cacheService");
             }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
             this.patientService = patientService;
             this.log = log;
             this.cacheService = cacheService;
+            this.eventAggregator = eventAggregator;
+            changeTracker = new ChangeTracker();
+            changeTracker.RegisterComparer(() => LastName, StringComparer.CurrentCultureIgnoreCase);
+            changeTracker.RegisterComparer(() => FirstName, StringComparer.CurrentCultureIgnoreCase);
+            changeTracker.RegisterComparer(() => MiddleName, StringComparer.CurrentCultureIgnoreCase);
+            changeTracker.PropertyChanged += OnChangesTracked;
+            patientId = SpecialId.NonExisting;
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
             reloadPatientDataCommandWrapper = new CommandWrapper
@@ -51,13 +69,27 @@ namespace PatientInfoModule.ViewModels
                                                   Command = new DelegateCommand(() => SelectPatientAsync(patientId)),
                                                   CommandName = "Повторить",
                                               };
+            createNewPatientCommand = new DelegateCommand(CreatetNewPatient);
+            saveChangesCommand = new DelegateCommand(SaveChanges, CanSaveChanges);
+            cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
         }
+
+        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                saveChangesCommand.RaiseCanExecuteChanged();
+                cancelChangesCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private readonly ChangeTracker changeTracker;
 
         public BusyMediator BusyMediator { get; set; }
 
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }
 
-        private int patientId;
+        private volatile int patientId;
 
         private string lastName;
 
@@ -66,8 +98,12 @@ namespace PatientInfoModule.ViewModels
             get { return lastName; }
             set
             {
-                SetProperty(ref lastName, value.Trim());
-                UpdateNameIsChanged();
+                value = value.Trim();
+                changeTracker.Track(lastName, value);
+                if (SetProperty(ref lastName, value))
+                {
+                    UpdateNameIsChanged();
+                }
             }
         }
 
@@ -78,8 +114,12 @@ namespace PatientInfoModule.ViewModels
             get { return firstName; }
             set
             {
-                SetProperty(ref firstName, value.Trim());
-                UpdateNameIsChanged();
+                value = value.Trim();
+                changeTracker.Track(firstName, value);
+                if (SetProperty(ref firstName, value))
+                {
+                    UpdateNameIsChanged();
+                }
             }
         }
 
@@ -90,8 +130,12 @@ namespace PatientInfoModule.ViewModels
             get { return middleName; }
             set
             {
-                SetProperty(ref middleName, value.Trim());
-                UpdateNameIsChanged();
+                value = value.Trim();
+                changeTracker.Track(middleName, value);
+                if (SetProperty(ref middleName, value))
+                {
+                    UpdateNameIsChanged();
+                }
             }
         }
 
@@ -100,15 +144,11 @@ namespace PatientInfoModule.ViewModels
         public DateTime? BirthDate
         {
             get { return birthDate; }
-            set { SetProperty(ref birthDate, value); }
-        }
-
-        private Gender selectedGender;
-
-        public Gender SelectedGender
-        {
-            get { return selectedGender; }
-            set { SetProperty(ref selectedGender, value); }
+            set
+            {
+                changeTracker.Track(birthDate, value);
+                SetProperty(ref birthDate, value);
+            }
         }
 
         private string snils;
@@ -116,7 +156,11 @@ namespace PatientInfoModule.ViewModels
         public string Snils
         {
             get { return snils; }
-            set { SetProperty(ref snils, value); }
+            set
+            {
+                changeTracker.Track(snils, value);
+                SetProperty(ref snils, value);
+            }
         }
 
         private string medNumber;
@@ -124,7 +168,11 @@ namespace PatientInfoModule.ViewModels
         public string MedNumber
         {
             get { return medNumber; }
-            set { SetProperty(ref medNumber, value); }
+            set
+            {
+                changeTracker.Track(medNumber, value);
+                SetProperty(ref medNumber, value);
+            }
         }
 
         private bool isMale;
@@ -132,7 +180,11 @@ namespace PatientInfoModule.ViewModels
         public bool IsMale
         {
             get { return isMale; }
-            set { SetProperty(ref isMale, value); }
+            set
+            {
+                changeTracker.Track(isMale, value);
+                SetProperty(ref isMale, value);
+            }
         }
 
         private string phones;
@@ -140,7 +192,11 @@ namespace PatientInfoModule.ViewModels
         public string Phones
         {
             get { return phones; }
-            set { SetProperty(ref phones, value); }
+            set
+            {
+                changeTracker.Track(phones, value);
+                SetProperty(ref phones, value);
+            }
         }
 
         private string email;
@@ -148,10 +204,12 @@ namespace PatientInfoModule.ViewModels
         public string Email
         {
             get { return email; }
-            set { SetProperty(ref email, value); }
+            set
+            {
+                changeTracker.Track(email, value);
+                SetProperty(ref email, value);
+            }
         }
-
-        #region Name changing
 
         private bool isNameChanged;
 
@@ -169,42 +227,11 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        private bool isTrackingNameChanges;
-
-        private string originalLastName;
-
-        private string originalFirstName;
-
-        private string originalMiddleName;
-
-        private void StartTrackingNameChanges()
-        {
-            originalLastName = lastName;
-            originalFirstName = firstName;
-            originalMiddleName = middleName;
-            isTrackingNameChanges = true;
-        }
-
-        private void StopTrackingNameChanges()
-        {
-            originalLastName = null;
-            originalFirstName = null;
-            originalMiddleName = null;
-            isTrackingNameChanges = false;
-        }
-
         private void UpdateNameIsChanged()
         {
-            if (isTrackingNameChanges)
-            {
-                IsNameChanged = string.Compare(originalLastName, lastName, StringComparison.CurrentCultureIgnoreCase) != 0
-                                || string.Compare(originalFirstName, firstName, StringComparison.CurrentCultureIgnoreCase) != 0
-                                || string.Compare(originalMiddleName, middleName, StringComparison.CurrentCultureIgnoreCase) != 0;
-            }
-            else
-            {
-                IsNameChanged = false;
-            }
+            IsNameChanged = changeTracker.PropertyHasChanges(() => LastName)
+                            || changeTracker.PropertyHasChanges(() => FirstName)
+                            || changeTracker.PropertyHasChanges(() => MiddleName);
         }
 
         private bool isIncorrectName;
@@ -243,6 +270,66 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref newNameStartDate, value); }
         }
 
+        #region Actions
+
+        private readonly DelegateCommand createNewPatientCommand;
+
+        private readonly DelegateCommand saveChangesCommand;
+
+        private readonly DelegateCommand cancelChangesCommand;
+
+        public ICommand CreateNewPatientCommand
+        {
+            get { return createNewPatientCommand; }
+        }
+
+        private void CreatetNewPatient()
+        {
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(SpecialId.New);
+        }
+
+        public ICommand SaveChangesCommand
+        {
+            get { return saveChangesCommand; }
+        }
+
+        private void SaveChanges()
+        {
+            MessageBox.Show("Imitating save changes");
+        }
+
+        private bool CanSaveChanges()
+        {
+            if (patientId == SpecialId.NonExisting)
+            {
+                return false;
+            }
+            if (patientId == SpecialId.New)
+            {
+                return true;
+            }
+            return changeTracker.HasChanges;
+        }
+
+        public ICommand CancelChangesCommand
+        {
+            get { return cancelChangesCommand; }
+        }
+
+        private void CancelChanges()
+        {
+            MessageBox.Show("Imitating cancel changes");
+        }
+
+        private bool CanCancelChanges()
+        {
+            if (patientId == SpecialId.NonExisting || patientId == SpecialId.New)
+            {
+                return false;
+            }
+            return changeTracker.HasChanges;
+        }
+
         #endregion
 
         private readonly CommandWrapper reloadPatientDataCommandWrapper;
@@ -253,6 +340,8 @@ namespace PatientInfoModule.ViewModels
         {
             ClearData();
             this.patientId = patientId;
+            saveChangesCommand.RaiseCanExecuteChanged();
+            cancelChangesCommand.RaiseCanExecuteChanged();
             if (patientId == SpecialId.New || patientId == SpecialId.NonExisting)
             {
                 return;
@@ -294,9 +383,8 @@ namespace PatientInfoModule.ViewModels
                 Phones = result.Phones;
                 Email = result.Email;
 
-                StartTrackingNameChanges();
+                changeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
-
             }
             catch (OperationCanceledException)
             {
@@ -310,6 +398,7 @@ namespace PatientInfoModule.ViewModels
             }
             finally
             {
+                CommandManager.InvalidateRequerySuggested();
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
@@ -323,7 +412,7 @@ namespace PatientInfoModule.ViewModels
 
         private void ClearData()
         {
-            StopTrackingNameChanges();
+            changeTracker.IsEnabled = false;
             LastName = string.Empty;
             FirstName = string.Empty;
             MiddleName = string.Empty;
@@ -337,23 +426,28 @@ namespace PatientInfoModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var patientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialId.NonExisting;
-            SelectPatientAsync(patientId);
+            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialId.NonExisting;
+            if (targetPatientId != patientId)
+            {
+                SelectPatientAsync(targetPatientId);
+            }
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
-            throw new NotImplementedException();
+            //We use only one view-model for patient info, thus we says that current view-model can accept navigation requests
+            return true;
         }
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            throw new NotImplementedException();
+            //TODO: place here logic for current view being deactivated
         }
 
         public void ConfirmNavigationRequest(NavigationContext navigationContext, Action<bool> continuationCallback)
         {
-            throw new NotImplementedException();
+            //TODO: probably implement proper logic
+            continuationCallback(true);
         }
     }
 }

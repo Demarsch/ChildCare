@@ -59,7 +59,9 @@
     <Compile Include="Extensions\LogExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Misc\AppConfiguration.cs" />
+    <Compile Include="Misc\ChangeTracker.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
     <Compile Include="Expressions\ISearchExpressionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

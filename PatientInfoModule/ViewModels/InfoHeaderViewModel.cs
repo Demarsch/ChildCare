@@ -27,7 +27,9 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public InfoHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        private readonly InfoContentViewModel contentViewModel;
+
+        public InfoHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, InfoContentViewModel contentViewModel)
         {
             if (contextProvider == null)
             {
@@ -49,14 +51,18 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (contentViewModel == null)
+            {
+                throw new ArgumentNullException("contentViewModel");
+            }
             this.contextProvider = contextProvider;
             this.log = log;
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.contentViewModel = contentViewModel;
             patientId = SpecialId.NonExisting;
             SubscribeToEvents();
-            CreateNewPatientCommand = new DelegateCommand(CreatetNewPatient);
         }
 
         private int patientId;
@@ -123,11 +129,10 @@ namespace PatientInfoModule.ViewModels
 
         public event EventHandler IsActiveChanged = delegate { };
 
-        public ICommand CreateNewPatientCommand { get; private set; }
+        public ICommand CreateNewPatientCommand { get { return contentViewModel.CreateNewPatientCommand; } }
 
-        private void CreatetNewPatient()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(SpecialId.New);
-        }
+        public ICommand SaveChangesCommand { get { return contentViewModel.SaveChangesCommand; } }
+
+        public ICommand CancelChangesCommand { get { return contentViewModel.CancelChangesCommand; } }
     }
 }

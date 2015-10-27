@@ -65,12 +65,6 @@ namespace PatientInfoModule.ViewModels
 
         private int patientId;
 
-        public void OnNavigatedTo(NavigationContext navigationContext)
-        {
-            this.patientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialId.NonExisting;
-            LoadDataSources();
-        }
-
         public void LoadDataSources()
         {
             var contractRecord = recordService.GetRecordTypesByOptions("|contract|").FirstOrDefault();
@@ -423,19 +417,27 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref isNewRecordChecked, value); }
         }
 
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            this.patientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialId.NonExisting;
+            LoadDataSources();
+        }
+
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
-            throw new NotImplementedException();
+            //We use only one view-model for patient info, thus we says that current view-model can accept navigation requests
+            return true;
         }
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            throw new NotImplementedException();
+            //TODO: place here logic for current view being deactivated
         }
 
         public void ConfirmNavigationRequest(NavigationContext navigationContext, Action<bool> continuationCallback)
         {
-            throw new NotImplementedException();
+            //TODO: probably implement proper logic
+            continuationCallback(true);
         }
     }
 }

@@ -80,7 +80,14 @@ namespace PatientInfoModule
         public void Initialize()
         {
             RegisterServices();
+            RegisterViewModels();
             RegisterViews();
+        }
+
+        private void RegisterViewModels()
+        {
+            container.RegisterType<EmptyPatientInfoViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<InfoContentViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
@@ -98,9 +105,9 @@ namespace PatientInfoModule
                                            Header = PatientIsNotSelected
                                        });
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync);
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<InfoHeader>());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<DocumentsHeader>());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<ContractsHeader>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeader));
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeader));
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeader));
         }
 
         private async void OnPatientSelectedAsync(int patientId)
