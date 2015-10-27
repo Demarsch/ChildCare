@@ -89,7 +89,7 @@ namespace PatientInfoModule.ViewModels
 
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }
 
-        private volatile int patientId;
+        private int patientId;
 
         private string lastName;
 
@@ -318,7 +318,17 @@ namespace PatientInfoModule.ViewModels
 
         private void CancelChanges()
         {
-            MessageBox.Show("Imitating cancel changes");
+            changeTracker.Untrack(ref lastName, () => LastName);
+            changeTracker.Untrack(ref firstName, () => FirstName);
+            changeTracker.Untrack(ref middleName, () => MiddleName);
+            changeTracker.Untrack(ref birthDate, () => BirthDate);
+            changeTracker.Untrack(ref isMale, () => IsMale);
+            changeTracker.Untrack(ref snils, () => Snils);
+            changeTracker.Untrack(ref medNumber, () => MedNumber);
+            changeTracker.Untrack(ref phones, () => Phones);
+            changeTracker.Untrack(ref email, () => Email);
+            OnPropertyChanged(string.Empty);
+            UpdateNameIsChanged();
         }
 
         private bool CanCancelChanges()

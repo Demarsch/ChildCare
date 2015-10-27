@@ -29,7 +29,12 @@ namespace PatientInfoModule.ViewModels
 
         private readonly InfoContentViewModel contentViewModel;
 
-        public InfoHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, InfoContentViewModel contentViewModel)
+        public InfoHeaderViewModel(IDbContextProvider contextProvider, 
+            ILog log, 
+            IEventAggregator eventAggregator, 
+            IRegionManager regionManager, 
+            IViewNameResolver viewNameResolver, 
+            InfoContentViewModel contentViewModel)
         {
             if (contextProvider == null)
             {

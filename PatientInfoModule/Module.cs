@@ -105,7 +105,7 @@ namespace PatientInfoModule
                                            BorderBrush = Brushes.Blue,
                                            Header = PatientIsNotSelected
                                        });
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync);
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync, true);
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeader));
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeader));
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeader));
@@ -130,7 +130,7 @@ namespace PatientInfoModule
                 context = contextProvider.CreateNewContext();
                 var data = await context.Set<Person>()
                                         .Where(x => x.Id == patientId)
-                                        .Select(x => new { x.ShortName, x.GenderId })
+                                        .Select(x => new { x.ShortName, x.IsMale })
                                         .FirstOrDefaultAsync();
                 if (data == null)
                 {
@@ -140,7 +140,7 @@ namespace PatientInfoModule
                 else
                 {
                     ribbonContextualGroup.Header = string.Format("{0} {1}",
-                                                                 data.GenderId == Gender.MaleGenderId ? "Пациент" : "Пациентка",
+                                                                 data.IsMale ? "Пациент" : "Пациентка",
                                                                  data.ShortName);
                 }
             }

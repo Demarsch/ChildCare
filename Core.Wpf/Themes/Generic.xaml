@@ -19,15 +19,15 @@
         <Border HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 IsHitTestVisible="{Binding IsActive}"
-                x:Name="outerBorder">
-            <Border.Background>
-                <SolidColorBrush Color="Transparent" />
-            </Border.Background>
+                x:Name="outerBorder"
+                Background="Transparent">
             <Border BorderBrush="Black"
                     BorderThickness="1"
                     Background="White"
                     x:Name="innerBorder"
-                    Opacity="0">
+                    Opacity="0"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">

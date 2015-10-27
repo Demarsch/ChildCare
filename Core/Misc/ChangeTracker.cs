@@ -70,6 +70,22 @@ namespace Core.Misc
             }
         }
 
+        public void Untrack<TValue>(ref TValue originalValueStorage, Expression<Func<TValue>> propertyExpression)
+        {
+            if (propertyExpression == null)
+            {
+                throw new ArgumentNullException("propertyExpression");
+            }
+            var propertyName = ((MemberExpression)propertyExpression.Body).Member.Name;
+            object originalValue;
+            if (values.TryGetValue(propertyName, out originalValue))
+            {
+                originalValueStorage = (TValue)originalValue;
+                values.Remove(propertyName);
+                HasChanges = values.Count > 0;
+            }
+        }
+
         public void RegisterComparer<TValue>(Expression<Func<TValue>> propertyExpression, IEqualityComparer<TValue> comparer)
         {
             if (propertyExpression == null)
