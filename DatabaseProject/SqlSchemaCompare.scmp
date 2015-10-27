@@ -2,15 +2,15 @@
 <SchemaComparison>
   <Version>10</Version>
   <SourceModelProvider>
-    <ConnectionBasedModelProvider>
-      <ConnectionString>Data Source=.\SQLEXPRESS;Initial Catalog=ChildCare;Integrated Security=True;Pooling=False</ConnectionString>
-    </ConnectionBasedModelProvider>
-  </SourceModelProvider>
-  <TargetModelProvider>
     <ProjectBasedModelProvider>
       <ProjectGuid>{af5b2989-48e6-42f2-be2c-b30f91f5287f}</ProjectGuid>
       <Name>DatabaseProject</Name>
     </ProjectBasedModelProvider>
+  </SourceModelProvider>
+  <TargetModelProvider>
+    <ConnectionBasedModelProvider>
+      <ConnectionString>Data Source=.\SQLEXPRESS;Initial Catalog=ChildCare;Integrated Security=True;Pooling=False</ConnectionString>
+    </ConnectionBasedModelProvider>
   </TargetModelProvider>
   <SchemaCompareSettingsService>
     <SchemaCompareSettingsService>
@@ -290,11 +290,11 @@
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetDatabaseName</Name>
-        <Value>DatabaseProject</Value>
+        <Value>ChildCare</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>TargetConnectionString</Name>
-        <Value>Integrated Security=True;Pooling=False;Connect Timeout=30</Value>
+        <Value>Data Source=.\SQLEXPRESS;Initial Catalog=ChildCare;Integrated Security=True;Pooling=False;MultipleActiveResultSets=False;Application Name="Microsoft SQL Server Data Tools, Schema Compare"</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>TreatVerificationErrorsAsWarnings</Name>
@@ -432,6 +432,22 @@
       <Name>dbo</Name>
       <Name>RecordTypes</Name>
     </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlTable, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>RecordContractItems</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlTable, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>RecordContracts</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlDefaultConstraint, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>DF_RecordContracts_TransactionNumber</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlForeignKeyConstraint, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>FK_RecordContracts_PaymentTypes</Name>
+    </SelectedItem>
   </ExcludedSourceElements>
   <ExcludedTargetElements>
     <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlTable, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -549,6 +565,18 @@
     <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlTable, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Name>dbo</Name>
       <Name>RecordTypes</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlTable, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>RecordContractItems</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlForeignKeyConstraint, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>FK_RecordContractItems_PaymentTypes</Name>
+    </SelectedItem>
+    <SelectedItem Type="Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlTable, Microsoft.Data.Tools.Schema.Sql, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Name>dbo</Name>
+      <Name>RecordContracts</Name>
     </SelectedItem>
   </ExcludedTargetElements>
 </SchemaComparison>

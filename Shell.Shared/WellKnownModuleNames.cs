@@ -6,6 +6,8 @@
 
         public const string PatientInfoModule = "PatientInfoModule";
 
+        public const string PatientRecordsModule = "PatientRecordsModule";
+
         public const string CoreModule = "CoreModule";
     }
 }
