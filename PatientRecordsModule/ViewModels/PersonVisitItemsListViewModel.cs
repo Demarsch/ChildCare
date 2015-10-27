@@ -55,6 +55,7 @@ namespace PatientRecordsModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
+            changeTracker = new ChangeTracker();
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
             reloadPatientVisitsCommandWrapper = new CommandWrapper

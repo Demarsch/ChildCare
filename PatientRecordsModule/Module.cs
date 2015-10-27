@@ -87,7 +87,15 @@ namespace PatientRecordsModule
         public void Initialize()
         {
             RegisterServices();
+            RegisterViewModels();
             RegisterViews();
+        }
+
+        private void RegisterViewModels()
+        {
+            container.RegisterType<PersonRecordsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonVisitItemsListViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonRecordEditorViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
