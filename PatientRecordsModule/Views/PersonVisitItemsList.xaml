@@ -16,7 +16,7 @@
 
         <ToggleButton Grid.Column="0" Grid.Row="0" Background="White">
             <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
-                <Image  HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Shell.Shared;component/Images/AmbCard48x48.png" />
+                <Image  HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Core;component/Resources/Images/AmbCard48x48.png" />
                 <TextBlock Text="{Binding AmbNumber}" />
             </StackPanel>
         </ToggleButton>
@@ -38,5 +38,11 @@
                 </TreeView.ItemContainerStyle>
             </TreeView>
         </Border>
+        <ContentControl Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding CriticalFailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

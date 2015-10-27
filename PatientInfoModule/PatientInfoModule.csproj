@@ -153,7 +153,7 @@
       <Name>Core.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{CF75CDE2-002C-4113-824A-03A3B7C6847B}</Project>
+      <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>
       <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Shell.Shared\Shell.Shared.csproj">

@@ -17,8 +17,8 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row="0" Padding="0,0,5,0" HorizontalAlignment="Center" Text="{Binding FinSource}"/>
-                <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Source="pack://application:,,,/Resources;component/Images/Visit48x48.png"/>
-                <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Resources;component/Images/Ok48x48.png" 
+                <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Source="pack://application:,,,/Core;component/Resources/Images/Visit48x48.png"/>
+                <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Core;component/Resources/Images/Ok48x48.png" 
                        Visibility="{Binding IsCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />

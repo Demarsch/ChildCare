@@ -56,7 +56,6 @@ namespace PatientRecordsModule.ViewModels
             this.viewNameResolver = viewNameResolver;
             patientId = SpecialId.NonExisting;
             SubscribeToEvents();
-            CreateNewPatientCommand = new DelegateCommand(CreatetNewPatient);
         }
 
         private int patientId;
@@ -97,7 +96,7 @@ namespace PatientRecordsModule.ViewModels
             else
             {
                 var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
-                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonVisitItemsListViewModel>(), navigationParameters);
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonRecordsViewModel>(), navigationParameters);
             }
         }
 
@@ -122,12 +121,5 @@ namespace PatientRecordsModule.ViewModels
         }
 
         public event EventHandler IsActiveChanged = delegate { };
-
-        public ICommand CreateNewPatientCommand { get; private set; }
-
-        private void CreatetNewPatient()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(SpecialId.New);
-        }
     }
 }

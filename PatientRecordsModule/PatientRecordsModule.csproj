@@ -77,6 +77,8 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.3.5.1.198\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -94,15 +96,24 @@
     <Compile Include="DTOs\RecordDTO.cs" />
     <Compile Include="DTOs\VisitDTO.cs" />
     <Compile Include="Misc\Common.cs" />
+    <Compile Include="Misc\ParameterNames.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\PatientRecordsService.cs" />
     <Compile Include="Services\Interfaces\IPatientRecordsService.cs" />
+    <Compile Include="ViewModels\PersonRecordEditorViewModel.cs" />
+    <Compile Include="ViewModels\PersonRecordsViewModel.cs" />
     <Compile Include="ViewModels\PersonVisitsHeaderViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalAssignmentsViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalRecordsViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalVisitsViewModel.cs" />
     <Compile Include="ViewModels\PersonVisitItemsListViewModel.cs" />
+    <Compile Include="Views\PersonRecordEditor.xaml.cs">
+      <DependentUpon>PersonRecordEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PersonRecords.xaml.cs">
+      <DependentUpon>PersonRecords.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PersonVisitItemsList.xaml.cs">
       <DependentUpon>PersonVisitItemsList.xaml</DependentUpon>
     </Compile>
@@ -119,6 +130,10 @@
       <Project>{62515044-f9c0-4d93-8b55-1407ccf8d3f2}</Project>
       <Name>Core.Wpf</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shell.Shared\Shell.Shared.csproj">
       <Project>{4e0d997f-374e-43be-9617-8da82504b7c8}</Project>
       <Name>Shell.Shared</Name>
@@ -128,8 +143,15 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <Page Include="Views\PersonRecordEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PersonRecords.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PersonVisitItemsList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

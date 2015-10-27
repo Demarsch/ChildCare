@@ -9,27 +9,64 @@ using Prism.Mvvm;
 using Core.Wpf.Mvvm;
 using PatientRecordsModule.Services;
 using PatientRecordsModule.DTO;
+using Core.Data.Misc;
+using Prism.Regions;
+using PatientRecordsModule.Misc;
+using System.Threading;
+using log4net;
+using Core.Data;
+using Core.Misc;
+using Core.Extensions;
+using Core.Wpf.Misc;
+using System.Windows.Input;
+using Prism.Commands;
+using Prism.Events;
+using Core.Wpf.Events;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonVisitItemsListViewModel : BindableBase
+    public class PersonVisitItemsListViewModel : BindableBase, IConfirmNavigationRequest
     {
         #region Fields
 
         private readonly IPatientRecordsService patientRecordsService;
-
+        private readonly IEventAggregator eventAggregator;
+        private readonly ILog logService;
+        private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
+        private readonly ChangeTracker changeTracker;
+        private CancellationTokenSource currentLoadingToken;
         #endregion
 
         #region  Constructors
-        public PersonVisitItemsListViewModel(int personId, IPatientRecordsService patientRecordsService)
+        public PersonVisitItemsListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator)
         {
             if (patientRecordsService == null)
             {
                 throw new ArgumentNullException("patientRecordsService");
             }
+            if (logService == null)
+            {
+                throw new ArgumentNullException("logService");
+            }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
+            this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
+            this.logService = logService;
+            BusyMediator = new BusyMediator();
+            CriticalFailureMediator = new CriticalFailureMediator();
+            reloadPatientVisitsCommandWrapper = new CommandWrapper
+            {
+                Command = new DelegateCommand(() => LoadRootItemsAsync(PersonId)),
+                CommandName = "Повторить",
+            };
             RootItems = new ObservableCollectionEx<object>();
-            this.PersonId = personId;
+            this.PersonId = SpecialId.NonExisting;
+            SubscribeToEvents();
+            //ToDo: If this row exist, all work
+            LoadRootItemsAsync(0);
         }
         #endregion
 
@@ -39,24 +76,10 @@ namespace PatientRecordsModule.ViewModels
         public int PersonId
         {
             get { return personId; }
-            set
-            {
-                SetProperty(ref personId, value);
-                LoadRootItemsAsync();
-                LoadRootItemsAsync();
-                //RootItems.Clear();
-                //RootItems.AddRange(LoadRootItems());
-            }
+            set { SetProperty(ref personId, value); }
         }
 
         public ObservableCollectionEx<object> RootItems { get; set; }
-
-        private bool isLoading;
-        public bool IsLoading
-        {
-            get { return isLoading; }
-            set { SetProperty(ref isLoading, value); }
-        }
 
         private string ambNumber;
         public string AmbNumber
@@ -65,6 +88,10 @@ namespace PatientRecordsModule.ViewModels
             set { SetProperty(ref ambNumber, value); }
         }
 
+        public BusyMediator BusyMediator { get; set; }
+
+        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+
         #endregion
 
         #region Commands
@@ -72,14 +99,80 @@ namespace PatientRecordsModule.ViewModels
 
         #region Methods
 
-        private async void LoadRootItemsAsync()
+        public void Dispose()
+        {
+            UnsubscriveFromEvents();
+        }
+
+        private void SubscribeToEvents()
+        {
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
+        }
+
+        private void OnPatientSelected(int personId)
+        {
+            this.PersonId = personId;
+            LoadRootItemsAsync(this.PersonId);
+        }
+
+        private void UnsubscriveFromEvents()
+        {
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
+        }
+
+
+
+        public async void LoadRootItemsAsync(int personId)
         {
             RootItems.Clear();
-            var task = Task<List<object>>.Factory.StartNew(LoadRootItems);
-            IsLoading = true;
-            await task;
-            IsLoading = false;
-            RootItems.AddRange(task.Result);
+            this.PersonId = personId;
+            if (personId == SpecialId.New || personId == SpecialId.NonExisting)
+            {
+                return;
+            }
+            if (currentLoadingToken != null)
+            {
+                currentLoadingToken.Cancel();
+                currentLoadingToken.Dispose();
+            }
+            var loadingIsCompleted = false;
+            currentLoadingToken = new CancellationTokenSource();
+            var token = currentLoadingToken.Token;
+            BusyMediator.Activate("Загрузка данных...");
+            logService.InfoFormat("Loading patient visits for patient with Id {0}...", personId);
+            IDisposableQueryable<Person> patientQuery = null;
+            try
+            {
+                patientQuery = patientRecordsService.GetPersonQuery(personId);
+                var task = Task<List<object>>.Factory.StartNew(LoadRootItems);
+                await task;
+                RootItems.AddRange(task.Result);
+                AmbNumber = patientQuery.FirstOrDefault().AmbNumberString;
+                changeTracker.IsEnabled = true;
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load person visits for patient with Id {0}", personId);
+                CriticalFailureMediator.Activate("Не удалость загрузить случаи пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (patientQuery != null)
+                {
+                    patientQuery.Dispose();
+                }
+            }
         }
 
         private List<object> LoadRootItems()
@@ -111,7 +204,35 @@ namespace PatientRecordsModule.ViewModels
                 .Select(x => new PersonHierarchicalVisitsViewModel(x, patientRecordsService));
             resList.AddRange(assignmentsViewModels);
             resList.AddRange(visitsViewModels);
-            return resList.OrderBy(x => ((dynamic)x).ActualDateTime).ToList();
+            return resList.ToList();
+        }
+
+        #endregion
+
+        #region IConfirmNavigationRequest implimentation
+
+        public void ConfirmNavigationRequest(NavigationContext navigationContext, Action<bool> continuationCallback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PersonId] ?? SpecialId.NonExisting;
+            if (targetPatientId != personId)
+            {
+                LoadRootItemsAsync(targetPatientId);
+            }
         }
 
         #endregion

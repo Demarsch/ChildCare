@@ -92,9 +92,12 @@ namespace PatientRecordsModule
 
         private void RegisterViews()
         {
+            container.RegisterType<object, PersonRecords>(viewNameResolver.Resolve<PersonRecordsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonVisitItemsList>(viewNameResolver.Resolve<PersonVisitItemsListViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PersonRecordEditor>(viewNameResolver.Resolve<PersonRecordEditorViewModel>(), new ContainerControlledLifetimeManager());
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync);
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonVisitsHeader>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecords>());
         }
 
         private async void OnPatientSelectedAsync(int patientId)
