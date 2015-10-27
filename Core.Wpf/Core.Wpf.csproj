@@ -61,6 +61,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\MedNumberInputHelperBehavior.cs" />
+    <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />

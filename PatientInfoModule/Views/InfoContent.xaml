@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300"
              d:DesignWidth="1024" d:DataContext="{d:DesignInstance viewModels:InfoContentViewModel}">
@@ -145,11 +147,19 @@
                 <TextBlock Text="СНИЛС" />
                 <TextBox Text="{Binding Snils, UpdateSourceTrigger=PropertyChanged}"
                          Width="140"
-                         MaxLength="14" />
+                         MaxLength="14">
+                    <i:Interaction.Behaviors>
+                        <behaviors:SnilsInputHelperBehavior />
+                    </i:Interaction.Behaviors>
+                </TextBox>
                 <TextBlock Text="ЕНП" />
                 <TextBox Text="{Binding MedNumber}"
                          Width="140"
-                         MaxLength="16" />
+                         MaxLength="16">
+                    <i:Interaction.Behaviors>
+                        <behaviors:MedNumberInputHelperBehavior />
+                    </i:Interaction.Behaviors>
+                </TextBox>
             </StackPanel>
             <TextBlock Grid.Row="4"
                        Grid.Column="1"

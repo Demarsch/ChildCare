@@ -24,7 +24,7 @@ using Prism.Regions;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class InfoContentViewModel : BindableBase, IConfirmNavigationRequest
+    public class InfoContentViewModel : BindableBase, INavigationAware
     {
         private readonly IPatientService patientService;
 
@@ -452,12 +452,6 @@ namespace PatientInfoModule.ViewModels
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
             //TODO: place here logic for current view being deactivated
-        }
-
-        public void ConfirmNavigationRequest(NavigationContext navigationContext, Action<bool> continuationCallback)
-        {
-            //TODO: probably implement proper logic
-            continuationCallback(true);
         }
     }
 }
