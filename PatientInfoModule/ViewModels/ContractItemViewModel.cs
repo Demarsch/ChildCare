@@ -1,5 +1,7 @@
 ﻿using Core.Wpf.Events;
+using PatientInfoModule.Services;
 using Prism.Mvvm;
+using System;
 using System.Drawing;
 using System.Windows;
 
@@ -7,8 +9,15 @@ namespace PatientInfoModule.ViewModels
 {
     public class ContractItemViewModel : BindableBase
     {
-        public ContractItemViewModel()
-        { 
+        private readonly IRecordService recordService;
+
+        public ContractItemViewModel(IRecordService recordService)
+        {
+            if (recordService == null)
+            {
+                throw new ArgumentNullException("recordService");
+            }
+            this.recordService = recordService;
         }
 
         private int id;
@@ -57,7 +66,11 @@ namespace PatientInfoModule.ViewModels
         public int RecordCount
         {
             get { return recordCount; }
-            set { SetProperty(ref recordCount, value); }
+            set 
+            { 
+                if (SetProperty(ref recordCount, value))
+                    RecordCost = (recordService.GetRecordTypeCost(recordTypeId) * recordCount);    
+            }
         }
 
         private double recordCost;

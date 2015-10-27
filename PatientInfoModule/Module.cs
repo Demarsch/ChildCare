@@ -88,6 +88,7 @@ namespace PatientInfoModule
         {
             container.RegisterType<EmptyPatientInfoViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<InfoContentViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PatientContractsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()

@@ -18,16 +18,13 @@ namespace PatientInfoModule.ViewModels
     public class ContractsHeaderViewModel : BindableBase, IDisposable, IActiveAware
     {
         private readonly IDbContextProvider contextProvider;
-
         private readonly ILog log;
-
         private readonly IEventAggregator eventAggregator;
-
         private readonly IRegionManager regionManager;
-
         private readonly IViewNameResolver viewNameResolver;
+        private readonly PatientContractsViewModel contractsViewModel;
 
-        public ContractsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public ContractsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, PatientContractsViewModel contractsViewModel)
         {
             if (contextProvider == null)
             {
@@ -54,76 +51,21 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.contractsViewModel = contractsViewModel;
             patientId = SpecialId.NonExisting;
-
-            this.AddContractCommand = new DelegateCommand(AddContract);
-            this.SaveContractCommand = new DelegateCommand(SaveContract);
-            this.RemoveContractCommand = new DelegateCommand(RemoveContract);
-            this.PrintContractCommand = new DelegateCommand(PrintContract);
-            this.PrintAppendixCommand = new DelegateCommand(PrintAppendix);
-            this.AddRecordCommand = new DelegateCommand(AddRecord);
-            this.RemoveRecordCommand = new DelegateCommand(RemoveRecord);
-            this.AddAppendixCommand = new DelegateCommand(AddAppendix);
-            this.RemoveAppendixCommand = new DelegateCommand(RemoveAppendix);
-
             SubscribeToEvents();
-        }
-
-        private void RemoveAppendix()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void AddAppendix()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RemoveRecord()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void AddRecord()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void PrintAppendix()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void PrintContract()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RemoveContract()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void SaveContract()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void AddContract()
-        {
-            throw new NotImplementedException();
-        }
+        }       
 
         private int patientId;
-        public ICommand AddContractCommand { get; private set; }
-        public ICommand SaveContractCommand { get; private set; }
-        public ICommand RemoveContractCommand { get; private set; }
-        public ICommand PrintContractCommand { get; private set; }
-        public ICommand PrintAppendixCommand { get; private set; }
-        public ICommand AddRecordCommand { get; private set; }
-        public ICommand RemoveRecordCommand { get; private set; }
-        public ICommand AddAppendixCommand { get; private set; }
-        public ICommand RemoveAppendixCommand { get; private set; }
+        public ICommand AddContractCommand { get { return contractsViewModel.AddContractCommand; } }
+        public ICommand SaveContractCommand { get { return contractsViewModel.SaveContractCommand; } }
+        public ICommand RemoveContractCommand { get { return contractsViewModel.RemoveContractCommand; } }
+        public ICommand PrintContractCommand { get { return contractsViewModel.PrintContractCommand; } }
+        public ICommand PrintAppendixCommand { get { return contractsViewModel.PrintAppendixCommand; } }
+        public ICommand AddRecordCommand { get { return contractsViewModel.AddRecordCommand; } }
+        public ICommand RemoveRecordCommand { get { return contractsViewModel.RemoveRecordCommand; } }
+        public ICommand AddAppendixCommand { get { return contractsViewModel.AddAppendixCommand; } }
+        public ICommand RemoveAppendixCommand { get { return contractsViewModel.RemoveAppendixCommand; } }
 
         public void Dispose()
         {
