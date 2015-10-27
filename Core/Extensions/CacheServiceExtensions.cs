@@ -25,7 +25,7 @@ namespace Core.Extensions
             }
             //TODO: is it worth to put additional checks here?
             var type = sourceItem.GetType();
-            var property = (propertyExpression.Body as MemberExpression).Member as PropertyInfo;
+            var property = ((MemberExpression)propertyExpression.Body).Member as PropertyInfo;
             var idPropertySuggestedName = property.Name + "Id";
             var idProperty = type.GetProperty(idPropertySuggestedName);
             if (idProperty == null || idProperty.PropertyType != typeof(int))

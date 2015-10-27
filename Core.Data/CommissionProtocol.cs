@@ -50,7 +50,7 @@ namespace Core.Data
         public virtual MedicalHelpType MedicalHelpType { get; set; }
         public virtual PersonTalon PersonTalon { get; set; }
         public virtual User User { get; set; }
-        public virtual Person Person { get; set; }
         public virtual RecordContract RecordContract { get; set; }
+        public virtual Person Person { get; set; }
     }
 }

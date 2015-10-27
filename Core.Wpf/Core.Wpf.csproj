@@ -74,6 +74,7 @@
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />
     <Compile Include="Mvvm\Mediators\CriticalFailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />
+    <Compile Include="Mvvm\Misc\FieldValue.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IViewNameResolver.cs" />

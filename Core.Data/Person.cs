@@ -45,6 +45,7 @@ namespace Core.Data
         public string FullName { get; set; }
         public string ShortName { get; set; }
         public System.DateTime BirthDate { get; set; }
+        public bool IsMale { get; set; }
         public string Snils { get; set; }
         public string MedNumber { get; set; }
         public int GenderId { get; set; }
@@ -55,7 +56,6 @@ namespace Core.Data
         public string AmbNumberString { get; set; }
         public int AmbNumber { get; set; }
         public int Year { get; set; }
-        public bool IsMale { get; set; }
         public int AmbCardFirstListHashCode { get; set; }
         public int PersonHospListHashCode { get; set; }
         public int RadiationListHashCode { get; set; }
