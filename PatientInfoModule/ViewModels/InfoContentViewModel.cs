@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
@@ -24,8 +25,12 @@ using Prism.Regions;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class InfoContentViewModel : BindableBase, INavigationAware
+    public class InfoContentViewModel : BindableBase, INavigationAware, IDataErrorInfo
     {
+        private const int FullSnilsLength = 14;
+
+        private const int FullMedNumberLength = 16;
+
         private readonly IPatientService patientService;
 
         private readonly ILog log;
@@ -295,6 +300,10 @@ namespace PatientInfoModule.ViewModels
 
         private void SaveChanges()
         {
+            if (!IsValid)
+            {
+                return;
+            }
             MessageBox.Show("Imitating save changes");
         }
 
@@ -327,6 +336,7 @@ namespace PatientInfoModule.ViewModels
             changeTracker.Untrack(ref medNumber, () => MedNumber);
             changeTracker.Untrack(ref phones, () => Phones);
             changeTracker.Untrack(ref email, () => Email);
+            saveWasRequested = false;
             OnPropertyChanged(string.Empty);
             UpdateNameIsChanged();
         }
@@ -453,5 +463,91 @@ namespace PatientInfoModule.ViewModels
         {
             //TODO: place here logic for current view being deactivated
         }
+
+        #region Inplementation IDataErrorInfo
+
+        private bool saveWasRequested;
+
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        private bool IsValid
+        {
+            get
+            {
+                saveWasRequested = true;
+                OnPropertyChanged(string.Empty);
+                return invalidProperties.Count < 1;
+            }
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                switch (columnName)
+                {
+                    case "LastName":
+                        result = string.IsNullOrWhiteSpace(LastName) ? "Фамилия не указана" : string.Empty;
+                        break;
+                    case "FirstName":
+                        result = string.IsNullOrWhiteSpace(FirstName) ? "Имя не указано" : string.Empty;
+                        break;
+                    case "BirthDate":
+                        result = !BirthDate.HasValue
+                                   ? "Дата рождения не указана"
+                                   : BirthDate.Value.Date > DateTime.Today
+                                         ? "Дата рождения не может быть в будущем"
+                                         : string.Empty;
+                        break;
+                    case "Snils":
+                        result = string.IsNullOrEmpty(Snils) || Snils.Length == FullSnilsLength
+                                   ? string.Empty
+                                   : "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00";
+                        break;
+                    case "MedNumber":
+                        result = string.IsNullOrEmpty(MedNumber) || MedNumber.Length == FullMedNumberLength
+                                   ? string.Empty
+                                   : "ЕМН должен либо быть пустым либо быть в формате 0000000000000000";
+                        break;
+                    case "IsIncorrectName":
+                    case "IsNewName":
+                        result = IsNameChanged && !IsNewName && !IsIncorrectName
+                                   ? "Выберите причину смены Ф.И.О."
+                                   : string.Empty;
+                        break;
+                    case "NewNameStartDate":
+                        result = IsNewName
+                                     ?  !NewNameStartDate.HasValue 
+                                        ? "Укажите дату, с которой вступили силу изменения Ф.И.О."
+                                        : NewNameStartDate.Value > DateTime.Today
+                                            ? "Дата смены Ф.И.О. не может быть в будущем"
+                                            : string.Empty
+                                     : string.Empty;
+                        break;
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
     }
 }

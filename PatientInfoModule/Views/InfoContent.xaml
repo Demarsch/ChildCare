@@ -57,7 +57,8 @@
             <TextBox Grid.Row="0"
                      Grid.Column="2"
                      HorizontalAlignment="Stretch"
-                     Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                     Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"
                      MaxLength="100" />
             <StackPanel Grid.Row="0"
                         Grid.Column="3"
@@ -98,14 +99,17 @@
                        HorizontalAlignment="Stretch"
                        HorizontalContentAlignment="Center" />
                 <RadioButton Content="Ошибочный ввод" 
-                             IsChecked="{Binding IsIncorrectName, UpdateSourceTrigger=PropertyChanged}" />
+                             IsChecked="{Binding IsIncorrectName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
                 <RadioButton Content="Иная причина"
-                             IsChecked="{Binding IsNewName, UpdateSourceTrigger=PropertyChanged}" />
+                             IsChecked="{Binding IsNewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
                 <TextBlock Text="Новые данные вступают в силу с" 
                            Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
                 <DatePicker HorizontalAlignment="Left"
-                            SelectedDate="{Binding NewNameStartDate, UpdateSourceTrigger=PropertyChanged}"
-                            Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                            SelectedDate="{Binding NewNameStartDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                            Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                            Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
             </StackPanel>
             <TextBlock Grid.Row="1"
                        Grid.Column="1"
@@ -114,7 +118,8 @@
                      Grid.Column="2"
                      HorizontalAlignment="Stretch"
                      MaxLength="100"
-                     Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
+                     Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" 
+                     Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
             <TextBlock Grid.Row="2"
                        Grid.Column="1"
                        Text="Отчество" />
@@ -130,7 +135,9 @@
                         Grid.Column="2"
                         Grid.ColumnSpan="2"
                         Orientation="Horizontal">
-                <DatePicker SelectedDate="{Binding BirthDate}" />
+                <DatePicker SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True}"
+                            Margin="5 5 22 5"
+                            Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
                 <TextBlock Text="Пол" />
                 <ToggleButton Background="Transparent"
                               IsChecked="{Binding IsMale}"
@@ -145,17 +152,19 @@
                     </StackPanel>
                 </ToggleButton>
                 <TextBlock Text="СНИЛС" />
-                <TextBox Text="{Binding Snils, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding Snils, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                          Width="140"
-                         MaxLength="14">
+                         MaxLength="14"
+                         Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}">
                     <i:Interaction.Behaviors>
                         <behaviors:SnilsInputHelperBehavior />
                     </i:Interaction.Behaviors>
                 </TextBox>
                 <TextBlock Text="ЕНП" />
-                <TextBox Text="{Binding MedNumber}"
+                <TextBox Text="{Binding MedNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                          Width="140"
-                         MaxLength="16">
+                         MaxLength="16"
+                         Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}">
                     <i:Interaction.Behaviors>
                         <behaviors:MedNumberInputHelperBehavior />
                     </i:Interaction.Behaviors>
