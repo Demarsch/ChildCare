@@ -66,7 +66,7 @@ namespace PatientRecordsModule.ViewModels
             this.PersonId = SpecialId.NonExisting;
             SubscribeToEvents();
             //ToDo: If this row exist, all work
-            LoadRootItemsAsync(0);
+            LoadRootItemsAsync(1);
         }
         #endregion
 
