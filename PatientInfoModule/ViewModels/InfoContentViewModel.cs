@@ -249,6 +249,7 @@ namespace PatientInfoModule.ViewModels
                 if (SetProperty(ref isIncorrectName, value) && value)
                 {
                     IsNewName = false;
+                    OnPropertyChanged(() => IsNewName);
                 }
             }
         }
@@ -263,6 +264,7 @@ namespace PatientInfoModule.ViewModels
                 if (SetProperty(ref isNewName, value) && value)
                 {
                     IsIncorrectName = false;
+                    OnPropertyChanged(() => IsNewName);
                 }
             }
         }

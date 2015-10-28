@@ -98,10 +98,12 @@
                        BorderBrush="Black"
                        HorizontalAlignment="Stretch"
                        HorizontalContentAlignment="Center" />
-                <RadioButton Content="Ошибочный ввод" 
+                <RadioButton Content="Ошибочный ввод"
+                             Margin="5 5 25 5"
                              IsChecked="{Binding IsIncorrectName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                              Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
                 <RadioButton Content="Иная причина"
+                             Margin="5 5 25 5"
                              IsChecked="{Binding IsNewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                              Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
                 <TextBlock Text="Новые данные вступают в силу с" 
