@@ -19,6 +19,7 @@ using PatientRecordsModule.ViewModels;
 using PatientRecordsModule.Views;
 using PatientRecordsModule.Services;
 using Core.Wpf.Events;
+using System.Windows;
 
 namespace PatientRecordsModule
 {
@@ -94,18 +95,22 @@ namespace PatientRecordsModule
         private void RegisterViewModels()
         {
             container.RegisterType<PersonRecordsViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonVisitItemsListViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonRecordListViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonRecordEditorViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonHierarchicalAssignmentsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonHierarchicalVisitsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonHierarchicalRecordsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
             container.RegisterType<object, PersonRecords>(viewNameResolver.Resolve<PersonRecordsViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, PersonVisitItemsList>(viewNameResolver.Resolve<PersonVisitItemsListViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PersonRecordList>(viewNameResolver.Resolve<PersonRecordListViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordEditor>(viewNameResolver.Resolve<PersonRecordEditorViewModel>(), new ContainerControlledLifetimeManager());
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync);
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonVisitsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecords>());
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientRecordsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
         private async void OnPatientSelectedAsync(int patientId)

@@ -18,19 +18,19 @@ using System.Windows.Shapes;
 namespace PatientRecordsModule.Views
 {
     /// <summary>
-    /// Interaction logic for PatientVisitItemsListView.xaml
+    /// Interaction logic for PersonRecordListView.xaml
     /// </summary>
-    public partial class PersonVisitItemsList
+    public partial class PersonRecordList
     {
-        public PersonVisitItemsList()
+        public PersonRecordList()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public PersonVisitItemsListViewModel ContentViewModel
+        public PersonRecordListViewModel ContentViewModel
         {
-            get { return DataContext as PersonVisitItemsListViewModel; }
+            get { return DataContext as PersonRecordListViewModel; }
             set { DataContext = value; }
         }
     }

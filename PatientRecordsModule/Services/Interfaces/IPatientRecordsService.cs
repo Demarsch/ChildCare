@@ -13,5 +13,15 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Visit> GetPersonVisitsQuery(int personId);
 
+        IDisposableQueryable<Assignment> GetVisitsChildAssignmentsQuery(int visitId);
+
+        IDisposableQueryable<Record> GetVisitsChildRecordsQuery(int visitId);
+
+        IDisposableQueryable<Assignment> GetRecordsChildAssignmentsQuery(int recordId);
+
+        IDisposableQueryable<Record> GetRecordsChildRecordsQuery(int recordId);
+
+        IDisposableQueryable<Assignment> GetAssignmentsChildAssignmentsQuery(int assignmentId);
+
     }
 }

@@ -35,17 +35,17 @@ namespace PatientRecordsModule.Views
         }
 
         [Dependency]
-        public PersonVisitItemsListViewModel PersonVisitItemsListViewModel
+        public PersonRecordListViewModel PersonVisitItemsListViewModel
         {
-            get { return DataContext as PersonVisitItemsListViewModel; }
-            set { DataContext = value; }
+            get { return personVisitItemsList.DataContext as PersonRecordListViewModel; }
+            set { personVisitItemsList.DataContext = value; }
         }
 
-        [Dependency]
-        public PersonRecordEditorViewModel PersonRecordEditorViewModel
-        {
-            get { return DataContext as PersonRecordEditorViewModel; }
-            set { DataContext = value; }
-        }
+        //[Dependency]
+        //public PersonRecordEditorViewModel PersonRecordEditorViewModel
+        //{
+        //    get { return DataContext as PersonRecordEditorViewModel; }
+        //    set { DataContext = value; }
+        //}
     }
 }

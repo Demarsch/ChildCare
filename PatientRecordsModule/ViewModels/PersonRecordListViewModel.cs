@@ -25,7 +25,7 @@ using Core.Wpf.Events;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonVisitItemsListViewModel : BindableBase, IConfirmNavigationRequest
+    public class PersonRecordListViewModel : BindableBase, IConfirmNavigationRequest
     {
         #region Fields
 
@@ -38,7 +38,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region  Constructors
-        public PersonVisitItemsListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator)
+        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator)
         {
             if (patientRecordsService == null)
             {
@@ -67,7 +67,7 @@ namespace PatientRecordsModule.ViewModels
             this.PersonId = SpecialId.NonExisting;
             SubscribeToEvents();
             //ToDo: If this row exist, all work
-            LoadRootItemsAsync(1);
+            //LoadRootItemsAsync(1);
         }
         #endregion
 
@@ -189,7 +189,7 @@ namespace PatientRecordsModule.ViewModels
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
                 })
                 .ToArray()
-                .Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService));
+                .Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, logService));
             var visitsViewModels = patientRecordsService.GetPersonVisitsQuery(PersonId)
                 .Select(x => new VisitDTO()
                 {
@@ -202,7 +202,7 @@ namespace PatientRecordsModule.ViewModels
                     IsCompleted = x.IsCompleted,
                 })
                 .ToArray()
-                .Select(x => new PersonHierarchicalVisitsViewModel(x, patientRecordsService));
+                .Select(x => new PersonHierarchicalVisitsViewModel(x, patientRecordsService, logService));
             resList.AddRange(assignmentsViewModels);
             resList.AddRange(visitsViewModels);
             return resList.ToList();

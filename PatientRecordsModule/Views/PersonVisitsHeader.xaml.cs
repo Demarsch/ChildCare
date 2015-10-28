@@ -30,9 +30,9 @@ namespace PatientRecordsModule.Views
         }
 
         [Dependency]
-        public PersonVisitsHeaderViewModel ViewModel
+        public PersonRecordsHeaderViewModel ViewModel
         {
-            get { return DataContext as PersonVisitsHeaderViewModel; }
+            get { return DataContext as PersonRecordsHeaderViewModel; }
             set { DataContext = value; }
         }
     }

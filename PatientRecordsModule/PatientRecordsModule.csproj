@@ -77,6 +77,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -103,19 +104,19 @@
     <Compile Include="Services\Interfaces\IPatientRecordsService.cs" />
     <Compile Include="ViewModels\PersonRecordEditorViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordsViewModel.cs" />
-    <Compile Include="ViewModels\PersonVisitsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\PersonRecordsHeaderViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalAssignmentsViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalRecordsViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalVisitsViewModel.cs" />
-    <Compile Include="ViewModels\PersonVisitItemsListViewModel.cs" />
+    <Compile Include="ViewModels\PersonRecordListViewModel.cs" />
     <Compile Include="Views\PersonRecordEditor.xaml.cs">
       <DependentUpon>PersonRecordEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PersonRecords.xaml.cs">
       <DependentUpon>PersonRecords.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PersonVisitItemsList.xaml.cs">
-      <DependentUpon>PersonVisitItemsList.xaml</DependentUpon>
+    <Compile Include="Views\PersonRecordList.xaml.cs">
+      <DependentUpon>PersonRecordList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PersonVisitsHeader.xaml.cs">
       <DependentUpon>PersonVisitsHeader.xaml</DependentUpon>
@@ -144,6 +145,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\PersonRecordEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -152,7 +157,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PersonVisitItemsList.xaml">
+    <Page Include="Views\PersonRecordList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

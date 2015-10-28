@@ -15,7 +15,7 @@ using Shell.Shared;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonVisitsHeaderViewModel : BindableBase, IDisposable, IActiveAware
+    public class PersonRecordsHeaderViewModel : BindableBase, IDisposable, IActiveAware
     {
         private readonly IDbContextProvider contextProvider;
 
@@ -27,7 +27,7 @@ namespace PatientRecordsModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public PersonVisitsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public PersonRecordsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
         {
             if (contextProvider == null)
             {

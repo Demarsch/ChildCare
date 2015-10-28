@@ -20,9 +20,16 @@
                 <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Source="pack://application:,,,/Core;component/Resources/Images/Visit48x48.png"/>
                 <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Core;component/Resources/Images/Ok48x48.png" 
                        Visibility="{Binding IsCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-
+                <ContentControl Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+                
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" />
+
+                <ContentControl Content="{Binding CriticalFailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
             </Grid>
         </Border>
     </HierarchicalDataTemplate>

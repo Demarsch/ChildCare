@@ -9,6 +9,7 @@ namespace PatientRecordsModule.DTO
         public DateTime? EndDateTime { get; set; }
         public DateTime ActualDateTime { get; set; }
         public string RecordTypeName { get; set; }
+        public string FinSourceName { get; set; }
         public string RoomName { get; set; }
         public bool? IsCompleted { get; set; }
     }

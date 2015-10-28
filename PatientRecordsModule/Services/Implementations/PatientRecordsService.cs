@@ -42,5 +42,38 @@ namespace PatientRecordsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.PersonId == personId), context);
         }
+
+        public IDisposableQueryable<Assignment> GetVisitsChildAssignmentsQuery(int visitId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.VisitId == visitId && !x.RecordId.HasValue), context);
+        }
+
+        public IDisposableQueryable<Record> GetVisitsChildRecordsQuery(int visitId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.VisitId == visitId), context);
+        }
+
+
+        public IDisposableQueryable<Assignment> GetRecordsChildAssignmentsQuery(int recordId)
+        {
+            //ToDo: Create a field for parent record for Assignment if we need this
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => false), context);
+        }
+
+        public IDisposableQueryable<Record> GetRecordsChildRecordsQuery(int recordId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.ParentId == recordId), context);
+        }
+
+
+        public IDisposableQueryable<Assignment> GetAssignmentsChildAssignmentsQuery(int assignmentId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.ParentId == assignmentId), context);
+        }
     }
 }

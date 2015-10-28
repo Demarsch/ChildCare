@@ -19,10 +19,17 @@
                 <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Source="pack://application:,,,/Core;component/Resources/Images/Record48x48.png"/>
                 <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Core;component/Resources/Images/Ok48x48.png" 
                    Visibility="{Binding IsCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <ContentControl Grid.Column="0"  Grid.Row="1" Grid.RowSpan="2" Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
 
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" />
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}" />
+                
+                <ContentControl Content="{Binding CriticalFailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
 
             </Grid>
         </Border>
