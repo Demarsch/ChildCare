@@ -133,5 +133,7 @@
     <Build Include="dbo\Tables\VisitResults.sql" />
     <Build Include="dbo\Tables\VisitOutcomes.sql" />
     <Build Include="dbo\Tables\ExecutionPlaces.sql" />
+    <Build Include="dbo\Tables\VisitTemplates.sql" />
+    <Build Include="dbo\Tables\Urgentlies.sql" />
   </ItemGroup>
 </Project>

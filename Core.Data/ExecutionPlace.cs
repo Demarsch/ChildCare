@@ -20,6 +20,7 @@ namespace Core.Data
             this.VisitOutcomes = new HashSet<VisitOutcome>();
             this.VisitResults = new HashSet<VisitResult>();
             this.Visits = new HashSet<Visit>();
+            this.VisitTemplates = new HashSet<VisitTemplate>();
         }
     
         public int Id { get; set; }
@@ -33,5 +34,7 @@ namespace Core.Data
         public virtual ICollection<VisitResult> VisitResults { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VisitTemplate> VisitTemplates { get; set; }
     }
 }

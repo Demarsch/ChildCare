@@ -22,9 +22,9 @@ namespace PatientRecordsModule.Views
     /// <summary>
     /// Interaction logic for PersonVisitsHeader.xaml
     /// </summary>
-    public partial class PersonVisitsHeader
+    public partial class PersonRecordsHeader
     {
-        public PersonVisitsHeader()
+        public PersonRecordsHeader()
         {
             InitializeComponent();
         }

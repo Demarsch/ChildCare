@@ -1,4 +1,4 @@
-﻿<fluent:RibbonTabItem x:Class="PatientRecordsModule.Views.PersonVisitsHeader"
+﻿<fluent:RibbonTabItem x:Class="PatientRecordsModule.Views.PersonRecordsHeader"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,7 +8,7 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:PersonVisitsHeaderViewModel}">
+                      d:DataContext="{d:DesignInstance viewModels:PersonRecordsHeaderViewModel}">
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Случаи"
                    Style="{x:Null}" />
@@ -28,7 +28,7 @@
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/Cancel-48x48.png" />
     </fluent:RibbonGroupBox>
-    <fluent:RibbonGroupBox Header="Вид случая"
+    <fluent:RibbonGroupBox Header="Создать случай"
                            MinWidth="250">
         <fluent:InRibbonGallery MinItemsInRow="3"
                                 MaxItemsInRow="5"

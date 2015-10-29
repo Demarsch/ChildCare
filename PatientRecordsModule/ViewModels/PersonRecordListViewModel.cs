@@ -198,7 +198,7 @@ namespace PatientRecordsModule.ViewModels
                     EndDateTime = x.EndDateTime,
                     ActualDateTime = x.BeginDateTime,
                     FinSource = x.FinancingSource.ShortName,
-                    Name = x.VisitTypeId.ToString(),
+                    Name = x.VisitTemplate.ShortName,
                     IsCompleted = x.IsCompleted,
                 })
                 .ToArray()

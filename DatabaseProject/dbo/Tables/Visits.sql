@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Visits] (
     [Id]                INT           IDENTITY (1, 1) NOT NULL,
-    [VisitTypeId]       INT           NOT NULL,
+    [VisitTemplateId]   INT           NOT NULL,
     [PersonId]          INT           NOT NULL,
     [BeginDateTime]     DATETIME      NOT NULL,
     [EndDateTime]       DATETIME      NULL,
@@ -22,9 +22,15 @@
     CONSTRAINT [FK_Visits_Orgs] FOREIGN KEY ([SentLPUId]) REFERENCES [dbo].[Orgs] ([Id]),
     CONSTRAINT [FK_Visits_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
     CONSTRAINT [FK_Visits_RecordContracts] FOREIGN KEY ([ContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
+    CONSTRAINT [FK_Visits_Urgentlies] FOREIGN KEY ([UrgentlyId]) REFERENCES [dbo].[Urgentlies] ([Id]),
     CONSTRAINT [FK_Visits_VisitOutcomes] FOREIGN KEY ([VisitOutcomeId]) REFERENCES [dbo].[VisitOutcomes] ([Id]),
-    CONSTRAINT [FK_Visits_VisitResults] FOREIGN KEY ([VisitResultId]) REFERENCES [dbo].[VisitResults] ([Id])
+    CONSTRAINT [FK_Visits_VisitResults] FOREIGN KEY ([VisitResultId]) REFERENCES [dbo].[VisitResults] ([Id]),
+    CONSTRAINT [FK_Visits_VisitTemplates] FOREIGN KEY ([VisitTemplateId]) REFERENCES [dbo].[VisitTemplates] ([Id])
 );
+
+
+
+
 
 
 

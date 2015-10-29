@@ -12,28 +12,29 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class Org
+    public partial class VisitTemplate
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Org()
+        public VisitTemplate()
         {
-            this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
-            this.Assignments = new HashSet<Assignment>();
             this.Visits = new HashSet<Visit>();
-            this.RecordContracts = new HashSet<RecordContract>();
         }
     
         public int Id { get; set; }
         public string Name { get; set; }
-        public bool IsLpu { get; set; }
+        public string ShortName { get; set; }
+        public Nullable<int> ContractId { get; set; }
+        public Nullable<int> FinancingSourceId { get; set; }
+        public int ExecutionPlaceId { get; set; }
+        public Nullable<int> UrgentlyId { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ExecutionPlace ExecutionPlace { get; set; }
+        public virtual FinancingSource FinancingSource { get; set; }
+        public virtual Urgently Urgently { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }

@@ -270,6 +270,9 @@
     <Compile Include="Staff.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Urgently.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="User.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -289,6 +292,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="VisitResult.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VisitTemplate.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>

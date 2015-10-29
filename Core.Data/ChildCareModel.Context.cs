@@ -79,19 +79,21 @@ namespace Core.Data
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
         public virtual DbSet<VisitResult> VisitResults { get; set; }
-        public virtual DbSet<Visit> Visits { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
         public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
         public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
-        public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
         public virtual DbSet<RecordTypeRole> RecordTypeRoles { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
-        public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
         public virtual DbSet<Person> Persons { get; set; }
+        public virtual DbSet<Visit> Visits { get; set; }
+        public virtual DbSet<Urgently> Urgentlies { get; set; }
+        public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
+        public virtual DbSet<RecordContract> RecordContracts { get; set; }
+        public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
     }
 }

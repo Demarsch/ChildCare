@@ -48,7 +48,8 @@ namespace Core.Data
         public virtual RecordType RecordType { get; set; }
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
-        public virtual Visit Visit { get; set; }
         public virtual Person Person { get; set; }
+        public virtual Visit Visit { get; set; }
+        public virtual Urgently Urgently { get; set; }
     }
 }

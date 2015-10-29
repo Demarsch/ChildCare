@@ -118,8 +118,8 @@
     <Compile Include="Views\PersonRecordList.xaml.cs">
       <DependentUpon>PersonRecordList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PersonVisitsHeader.xaml.cs">
-      <DependentUpon>PersonVisitsHeader.xaml</DependentUpon>
+    <Compile Include="Views\PersonRecordsHeader.xaml.cs">
+      <DependentUpon>PersonRecordsHeader.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +173,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PersonVisitsHeader.xaml">
+    <Page Include="Views\PersonRecordsHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
