@@ -28,12 +28,27 @@
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/Cancel-48x48.png" />
     </fluent:RibbonGroupBox>
-    <fluent:RibbonGroupBox Header="Создать случай"
-                           MinWidth="250">
-        <fluent:InRibbonGallery MinItemsInRow="3"
-                                MaxItemsInRow="5"
-                                ItemWidth="40"
-                                HorizontalAlignment="Stretch"
-                                MinWidth="250"/>
+    <fluent:RibbonGroupBox Header="Случай">
+        <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Visit48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True"  >
+            <fluent:SplitButton.ItemContainerStyle>
+                <Style TargetType="{x:Type fluent:MenuItem}">
+                    <Setter Property="Command" Value="{Binding DataContext.CreateNewVisitCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:SplitButton}}}"/>
+                    <Setter Property="CommandParameter" Value="{Binding}"/>
+                </Style>
+            </fluent:SplitButton.ItemContainerStyle>
+            <fluent:SplitButton.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" VerticalAlignment="Stretch" Background="AliceBlue" TextAlignment="Center" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </fluent:SplitButton.ItemTemplate>
+        </fluent:SplitButton>
+        <!--<fluent:InRibbonGallery MinItemsInRow="3" MaxItemsInRow="5" VerticalContentAlignment="Stretch" ItemWidth="75" ItemsSource="{Binding VisitTemplates}" SelectedItem="{Binding SelectedVisitTemplate}">
+            <fluent:InRibbonGallery.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" VerticalAlignment="Stretch" Background="AliceBlue" TextAlignment="Center" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </fluent:InRibbonGallery.ItemTemplate>
+        </fluent:InRibbonGallery>-->
+        <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
     </fluent:RibbonGroupBox>
-    </fluent:RibbonTabItem>
+</fluent:RibbonTabItem>

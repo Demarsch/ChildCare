@@ -75,5 +75,12 @@ namespace PatientRecordsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.ParentId == assignmentId), context);
         }
+
+
+        public IDisposableQueryable<VisitTemplate> GetActualVisitTemplates(DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<VisitTemplate>(context.Set<VisitTemplate>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
     }
 }

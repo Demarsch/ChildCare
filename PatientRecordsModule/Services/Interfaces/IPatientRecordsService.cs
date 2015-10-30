@@ -1,5 +1,6 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
+using System;
 
 namespace PatientRecordsModule.Services
 {
@@ -23,5 +24,6 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Assignment> GetAssignmentsChildAssignmentsQuery(int assignmentId);
 
+        IDisposableQueryable<VisitTemplate> GetActualVisitTemplates(DateTime onDate);
     }
 }
