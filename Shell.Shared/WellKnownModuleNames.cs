@@ -8,6 +8,8 @@
 
         public const string PatientRecordsModule = "PatientRecordsModule";
 
+        public const string OrganizationContractsModule = "OrganizationContracts";
+
         public const string CoreModule = "CoreModule";
     }
 }

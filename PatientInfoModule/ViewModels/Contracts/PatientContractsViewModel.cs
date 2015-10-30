@@ -83,6 +83,8 @@ namespace PatientInfoModule.ViewModels
             addAppendixCommand = new DelegateCommand(AddAppendix);
             removeAppendixCommand = new DelegateCommand(RemoveAppendix);
             IsContractSelected = false;
+            Contracts = new ObservableCollectionEx<ContractViewModel>();
+            Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
@@ -98,7 +100,7 @@ namespace PatientInfoModule.ViewModels
 
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }        
 
-        private volatile int patientId;
+        private int patientId;
 
         public void LoadDataSources()
         {
@@ -135,8 +137,8 @@ namespace PatientInfoModule.ViewModels
             IsCashless = false;
             PersonSuggestionProvider = new PersonSuggestionProvider(personService);
             RecordTypesSuggestionProvider = new RecordTypesSuggestionProvider(recordService);
-            Contracts = new ObservableCollectionEx<ContractViewModel>();
-            Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
+            Contracts.Clear();
+            Assignments.Clear();
 
             SelectedRegistratorId = -1;
             SelectedPaymentTypeId = -1;
@@ -240,7 +242,6 @@ namespace PatientInfoModule.ViewModels
                 ClearData();
             else
             {
-                ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
                 var contract = contractService.GetContractById(selectedContract.Id).First();
                 ContractBeginDateTime = contract.BeginDateTime;
                 ContractEndDateTime = contract.EndDateTime;
@@ -280,15 +281,16 @@ namespace PatientInfoModule.ViewModels
 
         private void LoadContractItems()
         {
-            var contractItems = contractService.GetContractItems(selectedContract.Id);
-            foreach (var groupedItem in contractItems.GroupBy(x => x.Appendix).OrderBy(x => x.Key))
+            ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
+            var items = contractService.GetContractItems(selectedContract.Id);
+            foreach (var groupedItem in items.GroupBy(x => x.Appendix).OrderBy(x => x.Key))
             {
                 if (groupedItem.Key.HasValue)
                     AddSectionRow(groupedItem.Key.Value, Color.LightSalmon, HorizontalAlignment.Center);
-                foreach (var contractItem in groupedItem)
-                    AddContractItemRow(contractItem);
+                foreach (var item in groupedItem)
+                    AddContractItemRow(item);
             }
-            if (contractItems.Any())
+            if (items.Any())
                 AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);
         }
 

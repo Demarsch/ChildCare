@@ -35,6 +35,5 @@ namespace Core.Data
         public virtual Urgently Urgently { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
     }
 }

@@ -1,0 +1,28 @@
+﻿<fluent:RibbonTabItem x:Class="OrganizationContractsModule.Views.OrgContractsHeader"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:fluent="urn:fluent-ribbon"
+                      xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels"
+                      mc:Ignorable="d"
+                      d:DesignHeight="300"
+                      d:DesignWidth="300"
+                      d:DataContext="{d:DesignInstance viewModels:OrgContractsHeaderViewModel}">
+    <fluent:RibbonTabItem.Header>
+        <TextBlock Text="Договора с юр.лицами"
+                   Style="{x:Null}" />
+    </fluent:RibbonTabItem.Header>
+    <fluent:RibbonGroupBox Header="Договора" FontWeight="Medium">
+        <fluent:Button x:Name="btnAddContract" Command="{Binding AddContractCommand}" 
+                       Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddContract48x48.png" />
+        <fluent:Button x:Name="btnSaveContract" Command="{Binding SaveContractCommand}"
+                       Header="Сохранить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Save48x48.png" />
+        <fluent:Button x:Name="btnRemoveContract" Command="{Binding RemoveContractCommand}"
+                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveContract48x48.png" />
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Организации" FontWeight="Medium">
+        <fluent:Button x:Name="btnAddOrganization" Command="{Binding AddOrganizationCommand}" 
+                       Header="Добавить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />       
+    </fluent:RibbonGroupBox>
+</fluent:RibbonTabItem>
