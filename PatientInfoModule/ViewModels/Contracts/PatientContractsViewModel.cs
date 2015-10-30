@@ -35,6 +35,7 @@ namespace PatientInfoModule.ViewModels
         private readonly ICacheService cacheService;
         private readonly IEventAggregator eventAggregator;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
+        private readonly CommandWrapper reloadDataSourcesCommandWrapper;
         private readonly ChangeTracker changeTracker;
 
         public PatientContractsViewModel(IPatientService personService, IContractService contractService, IRecordService recordService, IAssignmentService assignmentService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
@@ -72,6 +73,11 @@ namespace PatientInfoModule.ViewModels
                                                   Command = new DelegateCommand(() => LoadContractsAsync(patientId)),
                                                   CommandName = "Повторить",
                                               };
+            reloadDataSourcesCommandWrapper = new CommandWrapper
+            {
+                Command = new DelegateCommand(() => LoadDataSources()),
+                CommandName = "Повторить",
+            };
 
             addContractCommand = new DelegateCommand(AddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
@@ -82,9 +88,7 @@ namespace PatientInfoModule.ViewModels
             removeRecordCommand = new DelegateCommand(RemoveRecord);
             addAppendixCommand = new DelegateCommand(AddAppendix);
             removeAppendixCommand = new DelegateCommand(RemoveAppendix);
-            IsContractSelected = false;
-            Contracts = new ObservableCollectionEx<ContractViewModel>();
-            Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
+            IsContractSelected = false;            
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
@@ -109,13 +113,13 @@ namespace PatientInfoModule.ViewModels
             var reliableStaff = recordService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefault();
             if (contractRecord == null || reliableStaff == null)
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", null, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
                 return;
             }
             var personStaffs = personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id);
             if (!personStaffs.Any())
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", null, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
                 return;
             }
             List<FieldValue> elements = new List<FieldValue>();
@@ -137,8 +141,8 @@ namespace PatientInfoModule.ViewModels
             IsCashless = false;
             PersonSuggestionProvider = new PersonSuggestionProvider(personService);
             RecordTypesSuggestionProvider = new RecordTypesSuggestionProvider(recordService);
-            Contracts.Clear();
-            Assignments.Clear();
+            Contracts = new ObservableCollectionEx<ContractViewModel>();
+            Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
 
             SelectedRegistratorId = -1;
             SelectedPaymentTypeId = -1;
@@ -894,7 +898,7 @@ namespace PatientInfoModule.ViewModels
 
         private void AddContract()
         {
-            if (patientId == SpecialId.NonExisting || Contracts.Any(x => x.Id == 0)) return;
+            if (patientId == SpecialId.NonExisting || Contracts == null || Contracts.Any(x => x.Id == 0)) return;
             Contracts.Add(new ContractViewModel()
             {
                 Id = 0,

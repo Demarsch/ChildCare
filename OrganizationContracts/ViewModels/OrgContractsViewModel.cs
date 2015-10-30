@@ -32,6 +32,7 @@ namespace OrganizationContractsModule.ViewModels
         private readonly ICacheService cacheService;
         private readonly IEventAggregator eventAggregator;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
+        private readonly CommandWrapper reloadDataSourcesCommandWrapper;
         private readonly ChangeTracker changeTracker;
         public BusyMediator BusyMediator { get; set; }
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }
@@ -65,13 +66,17 @@ namespace OrganizationContractsModule.ViewModels
                 Command = new DelegateCommand(() => LoadContractsAsync()),
                 CommandName = "Повторить",
             };
+            reloadDataSourcesCommandWrapper = new CommandWrapper
+            {
+                Command = new DelegateCommand(() => LoadDataSources()),
+                CommandName = "Повторить",
+            };
 
             addContractCommand = new DelegateCommand(AddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
             removeContractCommand = new DelegateCommand(RemoveContract, CanRemoveContract);
             addOrganizationCommand = new DelegateCommand(AddOrganization);
-            IsContractSelected = false;
-            Contracts = new ObservableCollectionEx<ContractViewModel>();
+            IsContractSelected = false;            
         }
 
         #region Properties
@@ -260,13 +265,13 @@ namespace OrganizationContractsModule.ViewModels
             var reliableStaff = contractService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefault();
             if (contractRecord == null || reliableStaff == null)
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", null, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
                 return;
             }
             var personStaffs = contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id);
             if (!personStaffs.Any())
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", null, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
                 return;
             }
             List<FieldValue> users = new List<FieldValue>();
@@ -286,7 +291,7 @@ namespace OrganizationContractsModule.ViewModels
             Organizations = new ObservableCollectionEx<FieldValue>(orgs);
             SelectedOrganizationId = -1;
 
-            Contracts.Clear();
+            Contracts = new ObservableCollectionEx<ContractViewModel>();
 
             List<FieldValue> elements = new List<FieldValue>();
             elements.Add(new FieldValue() { Value = -1, Field = "- все -" });
@@ -414,6 +419,7 @@ namespace OrganizationContractsModule.ViewModels
 
         private void AddContract()
         {
+            if (Contracts == null || Contracts.Any(x => x.Id == 0)) return;
             Contracts.Add(new ContractViewModel()
             {
                 Id = 0,

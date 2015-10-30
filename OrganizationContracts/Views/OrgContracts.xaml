@@ -155,11 +155,11 @@
                               DisplayMemberPath="Field" 
                               SelectedValuePath="Value"
                               SelectedValue="{Binding SelectedRegistratorId, Mode=TwoWay}" Margin="2"/>
-                        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <ContentControl Content="{Binding CriticalFailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                     </Grid>
                 </Grid>
             </Border>
         </Grid>
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl Content="{Binding CriticalFailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>
