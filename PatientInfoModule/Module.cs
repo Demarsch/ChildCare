@@ -163,6 +163,7 @@ namespace PatientInfoModule
             container.RegisterType<IPatientService, PatientService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
         }
     }
 }

@@ -103,7 +103,7 @@
     <Resource Include="Resources\Images\Visit48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Images\Contract256x256.png" />
+    <Resource Include="Resources\Images\Contract256x256.png" />
     <Resource Include="Resources\Images\Error16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

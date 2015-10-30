@@ -107,19 +107,22 @@
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\ContractService.cs" />
+    <Compile Include="Services\Implementations\AssignmentService.cs" />
     <Compile Include="Services\Implementations\PatientService.cs" />
     <Compile Include="Services\Interfaces\IContractService.cs" />
     <Compile Include="Services\Interfaces\IPatientService.cs" />
+    <Compile Include="Services\Interfaces\IAssignmentService.cs" />
     <Compile Include="Services\Implementations\RecordService.cs" />
     <Compile Include="Services\Interfaces\IRecordService.cs" />
-    <Compile Include="ViewModels\ContractItemViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\ContractItemViewModel.cs" />
     <Compile Include="ViewModels\ContractsHeaderViewModel.cs" />
-    <Compile Include="ViewModels\ContractViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\ContractAssignmentsViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\ContractViewModel.cs" />
     <Compile Include="ViewModels\DocumentsHeaderViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\InfoHeaderViewModel.cs" />
     <Compile Include="ViewModels\InfoContentViewModel.cs" />
-    <Compile Include="ViewModels\PatientContractsViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\PatientContractsViewModel.cs" />
     <Compile Include="Views\ContractsHeader.xaml.cs">
       <DependentUpon>ContractsHeader.xaml</DependentUpon>
     </Compile>
