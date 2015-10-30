@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Input;
 using Prism.Events;
+using System.ComponentModel;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -29,12 +30,14 @@ namespace PatientInfoModule.ViewModels
         private readonly IPatientService personService;
         private readonly IContractService contractService;
         private readonly IRecordService recordService;
+        private readonly IAssignmentService assignmentService;
         private readonly ILog log;
         private readonly ICacheService cacheService;
         private readonly IEventAggregator eventAggregator;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
+        private readonly ChangeTracker changeTracker;
 
-        public PatientContractsViewModel(IPatientService personService, IContractService contractService, IRecordService recordService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
+        public PatientContractsViewModel(IPatientService personService, IContractService contractService, IRecordService recordService, IAssignmentService assignmentService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
         {
             if (personService == null)
             {
@@ -55,12 +58,15 @@ namespace PatientInfoModule.ViewModels
             this.personService = personService;
             this.contractService = contractService;
             this.recordService = recordService;
+            this.assignmentService = assignmentService;
             this.log = log;
             this.cacheService = cacheService;
             this.eventAggregator = eventAggregator;
             patientId = SpecialId.NonExisting;
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
+            changeTracker = new ChangeTracker();
+            changeTracker.PropertyChanged += OnChangesTracked;
             reloadContractsDataCommandWrapper = new CommandWrapper
                                               {
                                                   Command = new DelegateCommand(() => LoadContractsAsync(patientId)),
@@ -69,7 +75,7 @@ namespace PatientInfoModule.ViewModels
 
             addContractCommand = new DelegateCommand(AddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
-            removeContractCommand = new DelegateCommand(RemoveContract);
+            removeContractCommand = new DelegateCommand(RemoveContract, CanRemoveContract);
             printContractCommand = new DelegateCommand(PrintContract);
             printAppendixCommand = new DelegateCommand(PrintAppendix);
             addRecordCommand = new DelegateCommand(AddRecord);
@@ -77,6 +83,15 @@ namespace PatientInfoModule.ViewModels
             addAppendixCommand = new DelegateCommand(AddAppendix);
             removeAppendixCommand = new DelegateCommand(RemoveAppendix);
             IsContractSelected = false;
+        }
+
+        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                saveContractCommand.RaiseCanExecuteChanged();
+                removeContractCommand.RaiseCanExecuteChanged();
+            }
         }
 
         public BusyMediator BusyMediator { get; set; }
@@ -87,12 +102,20 @@ namespace PatientInfoModule.ViewModels
 
         public void LoadDataSources()
         {
+            CriticalFailureMediator.Deactivate();
             var contractRecord = recordService.GetRecordTypesByOptions("|contract|").FirstOrDefault();
             var reliableStaff = recordService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefault();
-            if (contractRecord == null || reliableStaff == null) return;
-
+            if (contractRecord == null || reliableStaff == null)
+            {
+                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", null, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                return;
+            }
             var personStaffs = personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id);
-            if (!personStaffs.Any()) return;
+            if (!personStaffs.Any())
+            {
+                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", null, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                return;
+            }
             List<FieldValue> elements = new List<FieldValue>();
             elements.Add(new FieldValue() { Value = -1, Field = "- все -" });
             elements.AddRange(personStaffs.Select(x => new FieldValue() { Value = x.Id, Field = x.Person.ShortName }));           
@@ -111,7 +134,9 @@ namespace PatientInfoModule.ViewModels
 
             IsCashless = false;
             PersonSuggestionProvider = new PersonSuggestionProvider(personService);
+            RecordTypesSuggestionProvider = new RecordTypesSuggestionProvider(recordService);
             Contracts = new ObservableCollectionEx<ContractViewModel>();
+            Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
 
             SelectedRegistratorId = -1;
             SelectedPaymentTypeId = -1;
@@ -119,6 +144,8 @@ namespace PatientInfoModule.ViewModels
             ContractBeginDateTime = DateTime.Now;
             ContractEndDateTime = DateTime.Now;
             ContractName = "НОВЫЙ ДОГОВОР";
+            ContractsCount = 0;
+            ContractsSum = "0 руб.";
 
             IsAssignRecordsChecked = false;
             IsNewRecordChecked = false;
@@ -142,6 +169,7 @@ namespace PatientInfoModule.ViewModels
                 currentLoadingToken.Cancel();
                 currentLoadingToken.Dispose();
             }
+            CriticalFailureMediator.Deactivate();
             var loadingIsCompleted = false;
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
@@ -166,6 +194,7 @@ namespace PatientInfoModule.ViewModels
                 ContractsCount = result.Count();
                 ContractsSum = result.Sum(x => x.Cost) + " руб.";
                 Contracts = new ObservableCollectionEx<ContractViewModel>();
+                ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
                 foreach (var contract in contractsQuery)
                     Contracts.Add(new ContractViewModel()
                     {
@@ -175,10 +204,11 @@ namespace PatientInfoModule.ViewModels
                         ContractCost = contractService.GetContractCost(contract.Id).ToString() + " руб.",
                         ContractBeginDate = contract.BeginDateTime.ToShortDateString()
                     });
-                if (Contracts.Any())
-                    SelectedContract = Contracts.OrderByDescending(x => x.ContractBeginDate).First();
+                if (contracts.Any())
+                    SelectedContract = contracts.OrderByDescending(x => x.ContractBeginDate).First();
                 else
                     IsContractSelected = false;
+
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -204,20 +234,34 @@ namespace PatientInfoModule.ViewModels
             }   
         }
 
-        private void LoadContractDataAsync()
+        private void LoadContractData()
         {
             if (SelectedContract.Id == SpecialId.New)
                 ClearData();
             else
             {
                 ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
-                var contract = contractService.GetContractById(SelectedContract.Id).First();
+                var contract = contractService.GetContractById(selectedContract.Id).First();
                 ContractBeginDateTime = contract.BeginDateTime;
                 ContractEndDateTime = contract.EndDateTime;
                 ContractName = contract.DisplayName;
                 SelectedFinancingSourceId = contract.FinancingSourceId;
                 SelectedRegistratorId = contract.InUserId;
                 SelectedPaymentTypeId = contract.PaymentTypeId;
+                SelectedClient = contract.Person;
+                SelectedConsumer = contract.Person1;                
+                IsCashless = false;               
+
+                Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>(assignmentService.GetPersonAssignments(this.patientId).ToList()
+                                            .Select(x => new ContractAssignmentsViewModel()
+                                            {
+                                                Id = x.Id,
+                                                RecordTypeId = x.RecordTypeId,
+                                                AssignDateTime = x.AssignDateTime,
+                                                RecordTypeName = x.RecordType.Name,
+                                                RecordTypeCost = recordService.GetRecordTypeCost(x.RecordTypeId)
+                                            }));
+
                 LoadContractItems();
             }
         }
@@ -228,15 +272,15 @@ namespace PatientInfoModule.ViewModels
             SelectedRegistratorId = -1;
             SelectedFinancingSourceId = -1;
             SelectedPaymentTypeId = -1;
-            IsCashless = true;
+            IsCashless = false;
             SelectedClient = null;
             SelectedConsumer = null;
-            ContractItems.Clear();
+            ContractItems.Clear();            
         }
 
         private void LoadContractItems()
         {
-            var contractItems = contractService.GetContractItems(SelectedContract.Id);
+            var contractItems = contractService.GetContractItems(selectedContract.Id);
             foreach (var groupedItem in contractItems.GroupBy(x => x.Appendix).OrderBy(x => x.Key))
             {
                 if (groupedItem.Key.HasValue)
@@ -269,7 +313,7 @@ namespace PatientInfoModule.ViewModels
             var item = new ContractItemViewModel(recordService)
             {
                 IsSection = true,
-                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб."),
+                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + contractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб."),
                 Appendix = appendix,
                 SectionAlignment = alignment,
                 SectionBackColor = backColor
@@ -282,8 +326,11 @@ namespace PatientInfoModule.ViewModels
 
         private void UpdateTotalSumRow()
         {
-            ContractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
-            ContractsSum = ContractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
+            if (contractItems.Any(x => x.IsSection && x.Appendix == -1))
+                contractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + contractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
+            else
+                AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);
+            ContractsSum = contractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
         }
 
         private string contractName;
@@ -320,8 +367,8 @@ namespace PatientInfoModule.ViewModels
             get { return selectedFilterRegistratorId; }
             set
             {
-                if (SetProperty(ref selectedFilterRegistratorId, value))
-                    LoadContractsAsync(this.patientId);
+                SetProperty(ref selectedFilterRegistratorId, value);
+                LoadContractsAsync(this.patientId);
             }
         }
 
@@ -340,8 +387,15 @@ namespace PatientInfoModule.ViewModels
             {
                 if (SetProperty(ref selectedContract, value))
                 {
-                    IsContractSelected = true;
-                    LoadContractDataAsync();
+                    if (value != null)
+                    {
+                        IsContractSelected = true;
+                        changeTracker.IsEnabled = false;
+                        LoadContractData();
+                        changeTracker.IsEnabled = true;
+                    }
+                    else
+                        IsContractSelected = false;
                 }
             }
         }
@@ -357,7 +411,11 @@ namespace PatientInfoModule.ViewModels
         public int SelectedRegistratorId
         {
             get { return selectedRegistratorId; }
-            set { SetProperty(ref selectedRegistratorId, value); }
+            set 
+            {
+                changeTracker.Track(selectedRegistratorId, value); 
+                SetProperty(ref selectedRegistratorId, value);
+            }
         }
 
         private ObservableCollectionEx<FieldValue> financingSources;
@@ -371,7 +429,11 @@ namespace PatientInfoModule.ViewModels
         public int SelectedFinancingSourceId
         {
             get { return selectedFinancingSourceId; }
-            set { SetProperty(ref selectedFinancingSourceId, value); }
+            set
+            {
+                changeTracker.Track(selectedFinancingSourceId, value); 
+                SetProperty(ref selectedFinancingSourceId, value);
+            }
         }
 
         private ObservableCollectionEx<FieldValue> paymentTypes;
@@ -387,6 +449,7 @@ namespace PatientInfoModule.ViewModels
             get { return selectedPaymentTypeId; }
             set
             {
+                changeTracker.Track(selectedFinancingSourceId, value); 
                 if (SetProperty(ref selectedPaymentTypeId, value))
                     IsCashless = (value == -1) || recordService.GetPaymentTypeById(value).Any(x => x.Options.Contains("|cashless|"));
             }
@@ -396,14 +459,22 @@ namespace PatientInfoModule.ViewModels
         public DateTime ContractBeginDateTime
         {
             get { return contractBeginDateTime; }
-            set { SetProperty(ref contractBeginDateTime, value); }
+            set
+            {
+                changeTracker.Track(contractBeginDateTime, value); 
+                SetProperty(ref contractBeginDateTime, value);
+            }
         }
 
         private DateTime contractEndDateTime;
         public DateTime ContractEndDateTime
         {
             get { return contractEndDateTime; }
-            set { SetProperty(ref contractEndDateTime, value); }
+            set
+            {
+                changeTracker.Track(contractEndDateTime, value); 
+                SetProperty(ref contractEndDateTime, value); 
+            }
         }
 
         private bool isCashless;
@@ -424,21 +495,33 @@ namespace PatientInfoModule.ViewModels
         public Person SelectedClient
         {
             get { return selectedClient; }
-            set { SetProperty(ref selectedClient, value); }
+            set 
+            {
+                changeTracker.Track(selectedClient, value); 
+                SetProperty(ref selectedClient, value);
+            }
         }
 
         private Person selectedConsumer;
         public Person SelectedConsumer
         {
             get { return selectedConsumer; }
-            set { SetProperty(ref selectedConsumer, value); }
+            set 
+            {
+                changeTracker.Track(selectedConsumer, value); 
+                SetProperty(ref selectedConsumer, value);
+            }
         }
 
         private ObservableCollectionEx<ContractItemViewModel> contractItems;
         public ObservableCollectionEx<ContractItemViewModel> ContractItems
         {
             get { return contractItems; }
-            set { SetProperty(ref contractItems, value); }
+            set 
+            {
+                changeTracker.Track(contractItems, value); 
+                SetProperty(ref contractItems, value);
+            }
         }
 
         private ContractItemViewModel selectedContractItem;
@@ -448,6 +531,13 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref selectedContractItem, value); }
         }
 
+        private bool isNewRecordChecked;
+        public bool IsNewRecordChecked
+        {
+            get { return isNewRecordChecked; }
+            set { SetProperty(ref isNewRecordChecked, value); }
+        }
+
         private bool isAssignRecordsChecked;
         public bool IsAssignRecordsChecked
         {
@@ -455,11 +545,40 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref isAssignRecordsChecked, value); }
         }
 
-        private bool isNewRecordChecked;
-        public bool IsNewRecordChecked
+        private double assignRecordTypeCost;
+        public double AssignRecordTypeCost
         {
-            get { return isNewRecordChecked; }
-            set { SetProperty(ref isNewRecordChecked, value); }
+            get { return assignRecordTypeCost; }
+            set { SetProperty(ref assignRecordTypeCost, value); }
+        }
+
+        private int recordsCount;
+        public int RecordsCount
+        {
+            get { return recordsCount; }
+            set
+            {
+                if (SetProperty(ref recordsCount, value))
+                   AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id) * recordsCount);
+            }
+        }
+
+        private RecordTypesSuggestionProvider recordTypesSuggestionProvider;
+        public RecordTypesSuggestionProvider RecordTypesSuggestionProvider
+        {
+            get { return recordTypesSuggestionProvider; }
+            set { SetProperty(ref recordTypesSuggestionProvider, value); }
+        }
+
+        private RecordType selectedRecord;
+        public RecordType SelectedRecord
+        {
+            get { return selectedRecord; }
+            set
+            {
+                if (SetProperty(ref selectedRecord, value))
+                    RecordsCount = 1;
+            }
         }
 
         private bool isContractSelected;
@@ -468,11 +587,7 @@ namespace PatientInfoModule.ViewModels
             get { return isContractSelected; }
             set 
             {
-                if (SetProperty(ref isContractSelected, value))
-                {
-                    ContractsCount = 0;
-                    ContractsSum = string.Empty;
-                }
+                SetProperty(ref isContractSelected, value);
             }
         }
 
@@ -480,14 +595,36 @@ namespace PatientInfoModule.ViewModels
         public string TransationNumber
         {
             get { return transationNumber; }
-            set { SetProperty(ref transationNumber, value); }
+            set
+            {
+                changeTracker.Track(transationNumber, value); 
+                SetProperty(ref transationNumber, value); 
+            }
         }
 
         private string transationDate;
         public string TransationDate
         {
             get { return transationDate; }
-            set { SetProperty(ref transationDate, value); }
+            set
+            {
+                changeTracker.Track(transationDate, value); 
+                SetProperty(ref transationDate, value);
+            }
+        }
+
+        private ObservableCollectionEx<ContractAssignmentsViewModel> assignments;
+        public ObservableCollectionEx<ContractAssignmentsViewModel> Assignments
+        {
+            get { return assignments; }
+            set { SetProperty(ref assignments, value); }
+        }
+
+        private ContractAssignmentsViewModel selectedAssignment;
+        public ContractAssignmentsViewModel SelectedAssignment
+        {
+            get { return selectedAssignment; }
+            set { SetProperty(ref selectedAssignment, value); }
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
@@ -540,9 +677,9 @@ namespace PatientInfoModule.ViewModels
        
         private void RemoveAppendix()
         {
-            if (SelectedContractItem.IsSection /*&& this.dialogService.AskUser("Удалить " + SelectedContractItem.SectionName + " вместе со вложенными услугами ?", true) == true*/)
+            if (selectedContractItem != null && selectedContractItem.IsSection /*&& this.dialogService.AskUser("Удалить " + SelectedContractItem.SectionName + " вместе со вложенными услугами ?", true) == true*/)
             {
-                int? appendix = SelectedContractItem.Appendix;
+                int? appendix = selectedContractItem.Appendix;
                 foreach (var item in ContractItems.ToList())
                 {
                     if (item.Appendix == appendix)
@@ -558,30 +695,30 @@ namespace PatientInfoModule.ViewModels
 
         private void AddAppendix()
         {
-            int? appendixCount = ContractItems.Where(x => x.IsSection && x.Appendix > 0).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
-            if (!ContractItems.Any(x => x.IsSection && (x.Appendix == appendixCount.ToInt())))
-                AddSectionRow(appendixCount.ToInt() + 1, Color.LightSalmon, HorizontalAlignment.Center, ContractItems.Count - 1);
+            int? appendixCount = contractItems.Where(x => x.IsSection && x.Appendix > 0).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
+            if (!contractItems.Any(x => x.IsSection && (x.Appendix == appendixCount.ToInt())))
+                AddSectionRow(appendixCount.ToInt() + 1, Color.LightSalmon, HorizontalAlignment.Center, contractItems.Count - 1);
         }
 
         private void RemoveRecord()
         {
             //if (this.dialogService.AskUser("Удалить услугу " + SelectedContractItem.RecordTypeName + " из договора ?", true) == true)
             //{
-                contractService.DeleteContractItemById(SelectedContractItem.Id);
-                ContractItems.Remove(SelectedContractItem);
+                contractService.DeleteContractItemById(selectedContractItem.Id);
+                ContractItems.Remove(selectedContractItem);
                 UpdateTotalSumRow();
             //}
         }
 
         private void AddRecord()
         {
-            /*int? appendixCount = ContractItems.Where(x => x.Appendix > 0).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
+            int? appendixCount = ContractItems.Where(x => x.Appendix > 0).Select(x => x.Appendix.Value).OrderByDescending(x => x).FirstOrDefault();
             if (isAssignRecordsChecked)
             {
                 foreach (var assignment in assignments.Where(x => x.IsSelected))
                 {
                     int insertPosition = ContractItems.Any() ? ContractItems.Count - 1 : 0;
-                    ContractItems.Insert(insertPosition, new ContractItemDetailsViewModel()
+                    ContractItems.Insert(insertPosition, new ContractItemViewModel(recordService)
                     {
                         Id = 0,
                         RecordContractId = (int?)null,
@@ -598,7 +735,7 @@ namespace PatientInfoModule.ViewModels
             else
             {
                 int insertPosition = ContractItems.Any() ? ContractItems.Count - 1 : 0;
-                ContractItems.Insert(insertPosition, new ContractItemViewModel()
+                ContractItems.Insert(insertPosition, new ContractItemViewModel(recordService)
                 {
                     Id = 0,
                     RecordContractId = (int?)null,
@@ -611,7 +748,9 @@ namespace PatientInfoModule.ViewModels
                     Appendix = (appendixCount == 0 ? (int?)null : appendixCount)
                 });
             }
-            UpdateTotalSumRow();*/
+            UpdateTotalSumRow();
+            changeTracker.Track(null, contractItems);
+            saveContractCommand.RaiseCanExecuteChanged();
         }
 
         private void PrintAppendix()
@@ -634,16 +773,30 @@ namespace PatientInfoModule.ViewModels
                     //this.dialogService.ShowMessage("Данный договор уже закреплен за случаем обращения пациента " + personService.GetPersonById(visit.PersonId).ShortName + ". Удаление договора невозможно.");
                     return;
                 }
-                contractService.DeleteContractItems(SelectedContract.Id);
-                contractService.DeleteContract(SelectedContract.Id);
-                Contracts.Remove(SelectedContract);
-                ContractsCount = Contracts.Count;
+                if (selectedContract.Id != SpecialId.New)
+                {
+                    contractService.DeleteContractItems(selectedContract.Id);
+                    contractService.DeleteContract(selectedContract.Id);
+                }
+                Contracts.Remove(selectedContract);
+                ContractsCount = contracts.Count;
+                saveContractCommand.RaiseCanExecuteChanged();
+                removeContractCommand.RaiseCanExecuteChanged();
             //}
         }
 
         private bool CanSaveChanges()
         {
-            if (patientId == SpecialId.NonExisting)
+            if (patientId == SpecialId.NonExisting || selectedContract == null || patientId == SpecialId.New)
+            {
+                return false;
+            }
+            return changeTracker.HasChanges;
+        }
+
+        private bool CanRemoveContract()
+        {
+            if (selectedContract == null)
             {
                 return false;
             }
@@ -664,28 +817,28 @@ namespace PatientInfoModule.ViewModels
         private void SaveContract()
         {            
             RecordContract contract = new RecordContract();
-            if (SelectedContract.Id != SpecialId.New)
-                contract = contractService.GetContractById(SelectedContract.Id).First();
+            if (selectedContract.Id != SpecialId.New)
+                contract = contractService.GetContractById(selectedContract.Id).First();
             if (!contract.Number.HasValue)
             {
-                DateTime beginYear = new DateTime(ContractBeginDateTime.Year, 1, 1);
-                DateTime endYear = new DateTime(ContractBeginDateTime.Year, 12, 31);
+                DateTime beginYear = new DateTime(contractBeginDateTime.Year, 1, 1);
+                DateTime endYear = new DateTime(contractBeginDateTime.Year, 12, 31);
                 contract.Number = FirstUnused(contractService.GetContracts(null, beginYear, endYear).Select(x => x.Number.Value).ToArray());
             }
-            contract.BeginDateTime = ContractBeginDateTime;
-            contract.EndDateTime = ContractEndDateTime;
-            contract.FinancingSourceId = SelectedFinancingSourceId;
-            contract.ClientId = SelectedClient.Id;
-            contract.ConsumerId = SelectedConsumer.Id;
-            contract.ContractName = SelectedClient.ShortName;
-            contract.PaymentTypeId = SelectedPaymentTypeId;
-            if (recordService.GetPaymentTypeById(SelectedPaymentTypeId).Select(x => x.Options).Contains("|cashless|"))
+            contract.BeginDateTime = contractBeginDateTime;
+            contract.EndDateTime = contractEndDateTime;
+            contract.FinancingSourceId = selectedFinancingSourceId;
+            contract.ClientId = selectedClient.Id;
+            contract.ConsumerId = selectedConsumer.Id;
+            contract.ContractName = selectedClient.ShortName;
+            contract.PaymentTypeId = selectedPaymentTypeId;
+            if (recordService.GetPaymentTypeById(selectedPaymentTypeId).Select(x => x.Options).Contains("|cashless|"))
             {
-                contract.TransactionNumber = TransationNumber;
-                contract.TransactionDate = TransationDate;
+                contract.TransactionNumber = transationNumber;
+                contract.TransactionDate = transationDate;
             }
             contract.Priority = 1;
-            contract.InUserId = SelectedRegistratorId;
+            contract.InUserId = selectedRegistratorId;
             contract.InDateTime = DateTime.Now;
             contract.OrgId = (int?)null;
             contract.ContractCost = 0;
@@ -699,9 +852,9 @@ namespace PatientInfoModule.ViewModels
                 log.Error(string.Format("Failed to Save RecordContract. " + message));
                 return;
             }
-            SelectedContract.Id = contract.Id;
+            selectedContract.Id = contract.Id;
 
-            foreach (ContractItemViewModel itemVM in ContractItems.Where(x => !x.IsSection))
+            foreach (ContractItemViewModel itemVM in contractItems.Where(x => !x.IsSection))
             {
                 RecordContractItem item = contractService.GetContractItemById(itemVM.Id).FirstOrDefault();
                 if (item == null)
@@ -725,13 +878,14 @@ namespace PatientInfoModule.ViewModels
                 itemVM.Id = item.Id;
             }
 
-            SelectedContract.ContractNumber = contract.Number.ToSafeString();
-            SelectedContract.Client = contract.ContractName;
-            SelectedContract.ContractCost = contractService.GetContractCost(contract.Id).ToSafeString() + " руб.";
-            SelectedContract.ContractBeginDate = contract.BeginDateTime.ToShortDateString();
-            SelectedContract.ContractEndDate = contract.EndDateTime.ToShortDateString();
+            selectedContract.ContractNumber = contract.Number.ToSafeString();
+            selectedContract.Client = contract.ContractName;
+            selectedContract.ContractCost = contractService.GetContractCost(contract.Id).ToSafeString() + " руб.";
+            selectedContract.ContractBeginDate = contract.BeginDateTime.ToShortDateString();
+            selectedContract.ContractEndDate = contract.EndDateTime.ToShortDateString();
             UpdateTotalSumRow();
-
+            saveContractCommand.RaiseCanExecuteChanged();
+            removeContractCommand.RaiseCanExecuteChanged();
             //dialogService.ShowMessage("Данные сохранены");
             
         }
@@ -749,7 +903,11 @@ namespace PatientInfoModule.ViewModels
                 ContractBeginDate = DateTime.Now.ToShortDateString(),
                 ContractEndDate = DateTime.Now.ToShortDateString()
             });            
-            SelectedContract = Contracts.First(x => x.Id == 0);
+            SelectedContract = contracts.First(x => x.Id == 0);
+            SelectedPaymentTypeId = recordService.GetPaymentTypes().First(x => x.Options.Contains("|cash|")).Id;
+            SelectedConsumer = personService.GetPatientQuery(this.patientId).First();
+            saveContractCommand.RaiseCanExecuteChanged();
+            removeContractCommand.RaiseCanExecuteChanged();
         }
     }
 }
