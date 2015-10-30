@@ -12,28 +12,45 @@ using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
 using Shell.Shared;
+using Core.Wpf.Mvvm;
+using System.Threading;
+using System.Threading.Tasks;
+using Core.Misc;
+using System.Linq;
+using PatientRecordsModule.Services;
+using System.Data.Entity;
+using Core.Extensions;
+using PatientRecordsModule.DTO;
+using PatientRecordsModule.DTOs;
 
 namespace PatientRecordsModule.ViewModels
 {
     public class PersonRecordsHeaderViewModel : BindableBase, IDisposable, IActiveAware
     {
-        private readonly IDbContextProvider contextProvider;
+        #region Fields
+        private readonly IPatientRecordsService patientRecordsService;
 
-        private readonly ILog log;
+        private readonly ILog logService;
 
         private readonly IEventAggregator eventAggregator;
-        
+
         private readonly IRegionManager regionManager;
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public PersonRecordsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        private int patientId;
+
+        private CancellationTokenSource currentLoadingToken;
+        #endregion
+
+        #region Constructors
+        public PersonRecordsHeaderViewModel(IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
         {
-            if (contextProvider == null)
+            if (patientRecordsService == null)
             {
-                throw new ArgumentNullException("contextProvider");
+                throw new ArgumentNullException("patientRecordsService");
             }
-            if (log == null)
+            if (logSevice == null)
             {
                 throw new ArgumentNullException("log");
             }
@@ -49,17 +66,22 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
-            this.contextProvider = contextProvider;
-            this.log = log;
+            this.patientRecordsService = patientRecordsService;
+            this.logService = logSevice;
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            VisitTemplates = new ObservableCollectionEx<CommonIdName>();
             patientId = SpecialId.NonExisting;
             SubscribeToEvents();
+            BusyMediator = new BusyMediator();
+            createNewVisitCommand = new DelegateCommand<CommonIdName>(CreateNewVisit);
+            LoadItemsAsync();
         }
 
-        private int patientId;
+        #endregion
 
+        #region Methods
         public void Dispose()
         {
             UnsubscriveFromEvents();
@@ -100,8 +122,55 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private bool isActive;
+        private async void LoadItemsAsync()
+        {
+            var loadingIsCompleted = false;
+            VisitTemplates.Clear();
+            currentLoadingToken = new CancellationTokenSource();
+            var token = currentLoadingToken.Token;
+            BusyMediator.Activate(string.Empty);
+            logService.Info("Loading visit templates...");
+            IDisposableQueryable<VisitTemplate> visitTemplates = null;
+            try
+            {
+                visitTemplates = patientRecordsService.GetActualVisitTemplates(DateTime.Now);
+                var loadVisitTemplatesTask = visitTemplates.Select(x => new CommonIdName() { Id = x.Id, Name = x.Name }).ToListAsync(token);
+                await Task.WhenAll(loadVisitTemplatesTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
+                VisitTemplates.AddRange(loadVisitTemplatesTask.Result);
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load visit templates");
+                //CriticalFailureMediator.Activate("Не удалость загрузить шаблоны. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (visitTemplates != null)
+                {
+                    visitTemplates.Dispose();
+                }
+            }
+        }
 
+        private void CreateNewVisit(CommonIdName selectedTemplate)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Properties
+        private bool isActive;
         public bool IsActive
         {
             get { return isActive; }
@@ -120,6 +189,30 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        private ObservableCollectionEx<CommonIdName> visitTemplates;
+        public ObservableCollectionEx<CommonIdName> VisitTemplates
+        {
+            get { return visitTemplates; }
+            set { SetProperty(ref visitTemplates, value); }
+        }
+
+        private CommonIdName selectedVisitTemplate;
+        public CommonIdName SelectedVisitTemplate
+        {
+            get { return selectedVisitTemplate; }
+            set { SetProperty(ref selectedVisitTemplate, value); }
+        }
+
+        public BusyMediator BusyMediator { get; set; }
+        #endregion
+
+        #region Events
         public event EventHandler IsActiveChanged = delegate { };
+        #endregion
+
+        #region Commands
+        private readonly DelegateCommand<CommonIdName> createNewVisitCommand;
+        public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
+        #endregion
     }
 }

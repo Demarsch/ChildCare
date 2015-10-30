@@ -8,6 +8,7 @@ using Core.Extensions;
 using Fluent;
 using Prism.Regions;
 using Prism.Regions.Behaviors;
+using System.Linq;
 
 namespace Shell
 {
@@ -113,17 +114,17 @@ namespace Shell
                 updatingActiveViewsInRibbonSelectedTabChanged = true;
 
 
-                foreach (var item in e.RemovedItems.Cast<RibbonTabItem>())
+                foreach (var item in e.RemovedItems)
                 {
                     // check if the view is in both Views and ActiveViews collections (there may be out of sync)
-                    if (Region.Views.Contains(item) && Region.ActiveViews.Contains(item))
+                    if (item is RibbonTabItem && Region.Views.Contains(item) && Region.ActiveViews.Contains(item))
                     {
                         Region.Deactivate(item);
                     }
                 }
-                foreach (var item in e.AddedItems.Cast<RibbonTabItem>())
+                foreach (var item in e.AddedItems)
                 {
-                    if (Region.Views.Contains(item) && !Region.ActiveViews.Contains(item))
+                    if (item is RibbonTabItem && Region.Views.Contains(item) && !Region.ActiveViews.Contains(item))
                     {
                         Region.Activate(item);
                     }
