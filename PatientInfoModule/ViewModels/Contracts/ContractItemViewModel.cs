@@ -1,5 +1,4 @@
-﻿using Core.Wpf.Events;
-using PatientInfoModule.Services;
+﻿using PatientInfoModule.Services;
 using Prism.Mvvm;
 using System;
 using System.Drawing;

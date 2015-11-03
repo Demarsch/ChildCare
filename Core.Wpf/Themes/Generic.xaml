@@ -136,6 +136,8 @@
                 <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
                                           To="Показать детали" />
             </converters:Converter>
+            <converters:ProportionConverter x:Key="WidthProportionConverter"
+                                            MultiplyBy="0.5"/>
         </DataTemplate.Resources>
         <Border HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -149,10 +151,12 @@
                     Background="White"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    x:Name="innerBorder">
+                    Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DependencyObject}, AncestorLevel=2}, Converter={StaticResource WidthProportionConverter}}"
+                    MinWidth="500"
+                    Name="innerBorder">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -162,30 +166,40 @@
                     <TextBlock Grid.Row="0"
                                Grid.Column="0"
                                Text="{Binding Message}"
-
-                               MaxWidth="700"
-                               TextWrapping="Wrap"
-                               VerticalAlignment="Center"
-                               Margin="5" />
+                               TextWrapping="Wrap" />
                     <Button Grid.Row="0"
                             Grid.Column="1"
                             Margin="5"
-                            Padding="5"
-                            Content="{Binding RetryCommand.CommandName}"
                             Command="{Binding RetryCommand.Command}"
                             CommandParameter="{Binding RetryCommand.CommandParameter}"
                             VerticalAlignment="Center"
+                            MinWidth="100"
+                            Content="{Binding RetryCommand.CommandName}"
                             Visibility="{Binding RetryCommand.HasCommand, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
                     <Expander Grid.Row="1"
                               Grid.Column="0"
                               Grid.ColumnSpan="2"
-                              Header="{Binding IsExpanded, RelativeSource={RelativeSource Self}, Converter={StaticResource IsExpandedToTextConverter}}"
-                              Visibility="{Binding HasException, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                              Visibility="{Binding HasException, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                              FocusVisualStyle="{x:Null}">
+                        <Expander.Header>
+                            <DockPanel LastChildFill="False"
+                                       HorizontalAlignment="Stretch"
+                                       Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}}">
+                                <TextBlock Text="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}, Converter={StaticResource IsExpandedToTextConverter}}"
+                                           DockPanel.Dock="Left"/>
+                                <Button Content="Копировать в буфер обмена" 
+                                        DockPanel.Dock="Right"
+                                        Command="{Binding CopyToClipboardCommand}"
+                                        Margin="0 0 30 0"
+                                        Visibility="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                            </DockPanel>
+                        </Expander.Header>
                         <TextBox HorizontalAlignment="Stretch"
                                  VerticalAlignment="Stretch"
-                                 MaxHeight="200"
+                                 Height="200"
                                  IsReadOnly="True"
                                  Margin="5"
+                                 VerticalScrollBarVisibility="Auto"
                                  Text="{Binding Exception, Mode=OneWay, Converter={x:Static converters:ToStringConverter.Instance}}" />
                     </Expander>
                 </Grid>

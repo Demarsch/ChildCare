@@ -69,7 +69,6 @@
     <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Tables\Persons.sql" />
     <Build Include="dbo\Tables\PersonNames.sql" />
-    <Build Include="dbo\Tables\Genders.sql" />
     <Build Include="dbo\Tables\Assignments.sql" />
     <Build Include="dbo\Tables\RecordTypes.sql" />
     <Build Include="dbo\Tables\Records.sql" />
@@ -79,7 +78,6 @@
     <Build Include="dbo\Tables\UserPermissions.sql" />
     <Build Include="dbo\Tables\Permissions.sql" />
     <Build Include="dbo\Tables\PermissionLinks.sql" />
-    <Build Include="dbo\Tables\ChangeNameReasons.sql" />
     <Build Include="dbo\Tables\Rooms.sql" />
     <Build Include="dbo\Tables\RelativeRelationships.sql" />
     <Build Include="dbo\Tables\PersonRelatives.sql" />

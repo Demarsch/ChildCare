@@ -10,7 +10,6 @@ using Prism;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
-using Prism.Commands;
 using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels
@@ -52,7 +51,7 @@ namespace PatientInfoModule.ViewModels
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.contractsViewModel = contractsViewModel;
-            patientId = SpecialId.NonExisting;
+            patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
         }       
 
@@ -96,7 +95,7 @@ namespace PatientInfoModule.ViewModels
 
         private void ActivatePatientContracts()
         {
-            if (patientId == SpecialId.NonExisting)
+            if (patientId == SpecialValues.NonExistingId)
             {
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
             }

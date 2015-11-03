@@ -175,8 +175,8 @@ namespace PatientSearchModule.ViewModels
                                      x.IsMale,
                                      x.Snils,
                                      x.MedNumber,
-                                     CurrentName = x.PersonNames.FirstOrDefault(y => y.ChangeNameReason == null),
-                                     PreviousName = x.PersonNames.Where(y => y.ChangeNameReason != null)
+                                     CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == null || y.EndDateTime == DateTime.MaxValue),
+                                     PreviousName = x.PersonNames.Where(y => y.EndDateTime != null && y.EndDateTime != DateTime.MaxValue)
                                                      .OrderByDescending(y => y.BeginDateTime)
                                                      .FirstOrDefault(),
                                      IdentityDocument = x.PersonIdentityDocuments

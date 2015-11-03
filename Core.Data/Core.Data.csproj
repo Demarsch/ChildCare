@@ -61,9 +61,6 @@
     <Compile Include="Branch.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="ChangeNameReason.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="ChildCareModel.Context.cs">
       <DependentUpon>ChildCareModel.Context.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -111,11 +108,10 @@
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
-    <Compile Include="Misc\SpecialId.cs" />
+    <Compile Include="Misc\SpecialValues.cs" />
     <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="PartialClasses\Gender.cs" />
     <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
     <Compile Include="PartialClasses\PersonName.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />
@@ -143,9 +139,6 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ExecutionPlace.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Gender.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="HealthGroup.cs">

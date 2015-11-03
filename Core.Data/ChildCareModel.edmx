@@ -48,16 +48,6 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="ChangeNameReasons">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="NeedCreateNewPersonName" Type="bit" Nullable="false" />
-          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
-        </EntityType>
         <EntityType Name="CommissionDecisions">
           <Key>
             <PropertyRef Name="Id" />
@@ -247,14 +237,7 @@
           <Property Name="Name" Type="varchar" MaxLength="150" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Genders">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="IsOrgContract" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="HealthGroups">
           <Key>
@@ -348,7 +331,9 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Details" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="IsLpu" Type="bit" Nullable="false" />
+          <Property Name="UseInContract" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="OuterDocumentTypes">
           <Key>
@@ -469,7 +454,6 @@
           <Property Name="MiddleName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" />
-          <Property Name="ChangeNameReasonId" Type="int" />
         </EntityType>
         <EntityType Name="PersonNationalities">
           <Key>
@@ -511,7 +495,6 @@
           <Property Name="IsMale" Type="bit" Nullable="false" />
           <Property Name="Snils" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="MedNumber" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="GenderId" Type="int" Nullable="false" />
           <Property Name="PhotoId" Type="int" />
           <Property Name="Phones" Type="varchar(max)" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
@@ -596,6 +579,7 @@
           <Property Name="ClientId" Type="int" />
           <Property Name="ConsumerId" Type="int" />
           <Property Name="OrgId" Type="int" />
+          <Property Name="OrgDetails" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="ContractCost" Type="float" Nullable="false" />
           <Property Name="PaymentTypeId" Type="int" Nullable="false" />
           <Property Name="TransactionNumber" Type="varchar" MaxLength="50" Nullable="false" />
@@ -1442,18 +1426,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonNames_ChangeNameReasons">
-          <End Role="ChangeNameReasons" Type="Self.ChangeNameReasons" Multiplicity="0..1" />
-          <End Role="PersonNames" Type="Self.PersonNames" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ChangeNameReasons">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonNames">
-              <PropertyRef Name="ChangeNameReasonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PersonNames_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
           <End Role="PersonNames" Type="Self.PersonNames" Multiplicity="*" />
@@ -1571,18 +1543,6 @@
             </Principal>
             <Dependent Role="Persons">
               <PropertyRef Name="PhotoId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Persons_Genders">
-          <End Role="Genders" Type="Self.Genders" Multiplicity="1" />
-          <End Role="Persons" Type="Self.Persons" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Genders">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Persons">
-              <PropertyRef Name="GenderId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2262,7 +2222,6 @@
           <EntitySet Name="AddressTypes" EntityType="Self.AddressTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Assignments" EntityType="Self.Assignments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Branches" EntityType="Self.Branches" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="ChangeNameReasons" EntityType="Self.ChangeNameReasons" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionDecisions" EntityType="Self.CommissionDecisions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionDecisionsLinks" EntityType="Self.CommissionDecisionsLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionMembers" EntityType="Self.CommissionMembers" Schema="dbo" store:Type="Tables" />
@@ -2279,7 +2238,6 @@
           <EntitySet Name="Educations" EntityType="Self.Educations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ExecutionPlaces" EntityType="Self.ExecutionPlaces" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinancingSources" EntityType="Self.FinancingSources" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Genders" EntityType="Self.Genders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HealthGroups" EntityType="Self.HealthGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IdentityDocumentTypes" EntityType="Self.IdentityDocumentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceCompanies" EntityType="Self.InsuranceCompanies" Schema="dbo" store:Type="Tables" />
@@ -2529,10 +2487,6 @@
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonMaritalStatuses" EntitySet="PersonMaritalStatuses" />
           </AssociationSet>
-          <AssociationSet Name="FK_PersonNames_ChangeNameReasons" Association="Self.FK_PersonNames_ChangeNameReasons">
-            <End Role="ChangeNameReasons" EntitySet="ChangeNameReasons" />
-            <End Role="PersonNames" EntitySet="PersonNames" />
-          </AssociationSet>
           <AssociationSet Name="FK_PersonNames_Persons" Association="Self.FK_PersonNames_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonNames" EntitySet="PersonNames" />
@@ -2571,10 +2525,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_Persons_Documents" Association="Self.FK_Persons_Documents">
             <End Role="Documents" EntitySet="Documents" />
-            <End Role="Persons" EntitySet="Persons" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Persons_Genders" Association="Self.FK_Persons_Genders">
-            <End Role="Genders" EntitySet="Genders" />
             <End Role="Persons" EntitySet="Persons" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonSocialStatuses_Orgs" Association="Self.FK_PersonSocialStatuses_Orgs">
@@ -2810,7 +2760,6 @@
           <EntitySet Name="AddressTypes" EntityType="DataLib.AddressType" />
           <EntitySet Name="Assignments" EntityType="DataLib.Assignment" />
           <EntitySet Name="Branches" EntityType="DataLib.Branch" />
-          <EntitySet Name="ChangeNameReasons" EntityType="DataLib.ChangeNameReason" />
           <EntitySet Name="CommissionDecisions" EntityType="DataLib.CommissionDecision" />
           <EntitySet Name="CommissionDecisionsLinks" EntityType="DataLib.CommissionDecisionsLink" />
           <EntitySet Name="CommissionMembers" EntityType="DataLib.CommissionMember" />
@@ -2826,7 +2775,6 @@
           <EntitySet Name="Documents" EntityType="DataLib.Document" />
           <EntitySet Name="Educations" EntityType="DataLib.Education" />
           <EntitySet Name="ExecutionPlaces" EntityType="DataLib.ExecutionPlace" />
-          <EntitySet Name="Genders" EntityType="DataLib.Gender" />
           <EntitySet Name="HealthGroups" EntityType="DataLib.HealthGroup" />
           <EntitySet Name="IdentityDocumentTypes" EntityType="DataLib.IdentityDocumentType" />
           <EntitySet Name="InsuranceCompanies" EntityType="DataLib.InsuranceCompany" />
@@ -2921,10 +2869,6 @@
           <AssociationSet Name="FK_PersonStaffs_Branches" Association="DataLib.FK_PersonStaffs_Branches">
             <End Role="Branch" EntitySet="Branches" />
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonNames_ChangeNameReasons" Association="DataLib.FK_PersonNames_ChangeNameReasons">
-            <End Role="ChangeNameReason" EntitySet="ChangeNameReasons" />
-            <End Role="PersonName" EntitySet="PersonNames" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisions_CommissionMembers" Association="DataLib.FK_CommissionDecisions_CommissionMembers">
             <End Role="CommissionMember" EntitySet="CommissionMembers" />
@@ -3033,10 +2977,6 @@
           <AssociationSet Name="FK_VisitTemplates_ExecutionPlaces" Association="DataLib.FK_VisitTemplates_ExecutionPlaces">
             <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Persons_Genders" Association="DataLib.FK_Persons_Genders">
-            <End Role="Gender" EntitySet="Genders" />
-            <End Role="Person" EntitySet="Persons" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonHealthGroups_HealthGroups" Association="DataLib.FK_PersonHealthGroups_HealthGroups">
             <End Role="HealthGroup" EntitySet="HealthGroups" />
@@ -3267,23 +3207,9 @@
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
           <EntitySet Name="FinancingSources" EntityType="DataLib.FinancingSource" />
-          <EntitySet Name="Orgs" EntityType="DataLib.Org" />
-          <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
           <AssociationSet Name="FK_Assignments_FinancingSources" Association="DataLib.FK_Assignments_FinancingSources">
             <End Role="FinancingSource" EntitySet="FinancingSources" />
             <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Assignments_Orgs" Association="DataLib.FK_Assignments_Orgs">
-            <End Role="Org" EntitySet="Orgs" />
-            <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="DataLib.FK_CommissionProtocols_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContracts_FinancingSources" Association="DataLib.FK_RecordContracts_FinancingSources">
-            <End Role="FinancingSource" EntitySet="FinancingSources" />
-            <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="DataLib.FK_RecordTypeCosts_FinancingSources">
             <End Role="FinancingSource" EntitySet="FinancingSources" />
@@ -3296,6 +3222,20 @@
           <AssociationSet Name="FK_VisitTemplates_FinancingSources" Association="DataLib.FK_VisitTemplates_FinancingSources">
             <End Role="FinancingSource" EntitySet="FinancingSources" />
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
+          </AssociationSet>
+          <EntitySet Name="Orgs" EntityType="DataLib.Org" />
+          <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
+          <AssociationSet Name="FK_Assignments_Orgs" Association="DataLib.FK_Assignments_Orgs">
+            <End Role="Org" EntitySet="Orgs" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="DataLib.FK_CommissionProtocols_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContracts_FinancingSources" Association="DataLib.FK_RecordContracts_FinancingSources">
+            <End Role="FinancingSource" EntitySet="FinancingSources" />
+            <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
           <AssociationSet Name="FK_MedicalHelpTypes_RecordContracts" Association="DataLib.FK_MedicalHelpTypes_RecordContracts">
             <End Role="RecordContract" EntitySet="RecordContracts" />
@@ -3349,7 +3289,7 @@
             <End Role="RecordContract" EntitySet="RecordContracts" />
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
             <PropertyRef Name="Id" />
@@ -3408,17 +3348,6 @@
           <NavigationProperty Name="Branches1" Relationship="DataLib.FK_Branches_Branches" FromRole="Branch" ToRole="Branch1" />
           <NavigationProperty Name="Branch1" Relationship="DataLib.FK_Branches_Branches" FromRole="Branch1" ToRole="Branch" />
           <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Branches" FromRole="Branch" ToRole="PersonStaff" />
-        </EntityType>
-        <EntityType Name="ChangeNameReason">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="NeedCreateNewPersonName" Type="Boolean" Nullable="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_ChangeNameReasons" FromRole="ChangeNameReason" ToRole="PersonName" />
         </EntityType>
         <EntityType Name="CommissionDecision">
           <Key>
@@ -3641,15 +3570,6 @@
           <NavigationProperty Name="VisitResults" Relationship="DataLib.FK_VisitResults_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitResult" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="Visit" />
           <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitTemplate" />
-        </EntityType>
-        <EntityType Name="Gender">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Persons" Relationship="DataLib.FK_Persons_Genders" FromRole="Gender" ToRole="Person" />
         </EntityType>
         <EntityType Name="HealthGroup">
           <Key>
@@ -3889,8 +3809,6 @@
           <Property Name="MiddleName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Precision="3" />
-          <Property Name="ChangeNameReasonId" Type="Int32" />
-          <NavigationProperty Name="ChangeNameReason" Relationship="DataLib.FK_PersonNames_ChangeNameReasons" FromRole="PersonName" ToRole="ChangeNameReason" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonNames_Persons" FromRole="PersonName" ToRole="Person" />
         </EntityType>
         <EntityType Name="PersonNationality">
@@ -3941,7 +3859,6 @@
           <Property Name="IsMale" Type="Boolean" Nullable="false" />
           <Property Name="Snils" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="MedNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="GenderId" Type="Int32" Nullable="false" />
           <Property Name="PhotoId" Type="Int32" />
           <Property Name="Phones" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
@@ -3955,7 +3872,6 @@
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="Person" ToRole="CommissionProtocol" />
           <NavigationProperty Name="Document" Relationship="DataLib.FK_Persons_Documents" FromRole="Person" ToRole="Document" />
-          <NavigationProperty Name="Gender" Relationship="DataLib.FK_Persons_Genders" FromRole="Person" ToRole="Gender" />
           <NavigationProperty Name="InsuranceDocuments" Relationship="DataLib.FK_InsuranceDocuments_Persons" FromRole="Person" ToRole="InsuranceDocument" />
           <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_Addresses_Persons" FromRole="Person" ToRole="PersonAddress" />
           <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="Person" ToRole="PersonDisability" />
@@ -3976,7 +3892,7 @@
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="Person" ToRole="RecordContract" />
           <NavigationProperty Name="RecordContracts1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="Person" ToRole="RecordContract" />
-        </EntityType>
+          </EntityType>
         <EntityType Name="PersonSocialStatus">
           <Key>
             <PropertyRef Name="Id" />
@@ -4504,18 +4420,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonNames_ChangeNameReasons">
-          <End Type="DataLib.ChangeNameReason" Role="ChangeNameReason" Multiplicity="0..1" />
-          <End Type="DataLib.PersonName" Role="PersonName" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ChangeNameReason">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonName">
-              <PropertyRef Name="ChangeNameReasonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CommissionDecisions_CommissionMembers">
           <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="1" />
           <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
@@ -4837,18 +4741,6 @@
             </Principal>
             <Dependent Role="VisitTemplate">
               <PropertyRef Name="ExecutionPlaceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Persons_Genders">
-          <End Type="DataLib.Gender" Role="Gender" Multiplicity="1" />
-          <End Type="DataLib.Person" Role="Person" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Gender">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Person">
-              <PropertyRef Name="GenderId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5547,57 +5439,11 @@
           <Property Name="ShortName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_FinancingSources" FromRole="FinancingSource" ToRole="Assignment" />
-          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="FinancingSource" ToRole="RecordContract" />
           <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="FinancingSource" ToRole="RecordTypeCost" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="FinancingSource" ToRole="Visit" />
           <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_FinancingSources" FromRole="FinancingSource" ToRole="VisitTemplate" />
-        </EntityType>
-        <EntityType Name="Org">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="IsLpu" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Orgs" FromRole="Org" ToRole="Assignment" />
-          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="Org" ToRole="PersonSocialStatus" />
-          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="Org" ToRole="RecordContract" />
-          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Orgs" FromRole="Org" ToRole="Visit" />
-        </EntityType>
-        <EntityType Name="RecordContract">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Number" Type="Int32" />
-          <Property Name="ContractName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
-          <Property Name="ClientId" Type="Int32" />
-          <Property Name="ConsumerId" Type="Int32" />
-          <Property Name="OrgId" Type="Int32" />
-          <Property Name="ContractCost" Type="Double" Nullable="false" />
-          <Property Name="PaymentTypeId" Type="Int32" Nullable="false" />
-          <Property Name="TransactionNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="TransactionDate" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Priority" Type="Int32" Nullable="false" />
-          <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="InUserId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="RecordContract" ToRole="CommissionProtocol" />
-          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="RecordContract" ToRole="FinancingSource" />
-          <NavigationProperty Name="MedicalHelpTypes" Relationship="DataLib.FK_MedicalHelpTypes_RecordContracts" FromRole="RecordContract" ToRole="MedicalHelpType" />
-          <NavigationProperty Name="Org" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="RecordContract" ToRole="Org" />
-          <NavigationProperty Name="PaymentType" Relationship="DataLib.FK_RecordContracts_PaymentTypes" FromRole="RecordContract" ToRole="PaymentType" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="RecordContract" ToRole="Person" />
-          <NavigationProperty Name="Person1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="RecordContract" ToRole="Person" />
-          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="RecordContract" ToRole="PersonStaff" />
-          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
-          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContract" ToRole="RecordContractItem" />
-          <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContract" ToRole="RecordContractLimit" />
-          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="RecordContract" ToRole="Visit" />
-          <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_RecordContracts" FromRole="RecordContract" ToRole="VisitTemplate" />
+          <Property Name="IsOrgContract" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="FinancingSource" ToRole="RecordContract" />
         </EntityType>
         <Association Name="FK_Assignments_FinancingSources">
           <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
@@ -5607,42 +5453,6 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Assignment">
-              <PropertyRef Name="FinancingSourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Assignments_Orgs">
-          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
-          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Org">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Assignment">
-              <PropertyRef Name="AssignLpuId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionProtocols_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocol">
-              <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContracts_FinancingSources">
-          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="FinancingSource">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContract">
               <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
@@ -5679,6 +5489,92 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="VisitTemplate">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Org">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Details" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="IsLpu" Type="Boolean" Nullable="false" />
+          <Property Name="UseInContract" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Orgs" FromRole="Org" ToRole="Assignment" />
+          <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Orgs" FromRole="Org" ToRole="PersonSocialStatus" />
+          <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="Org" ToRole="RecordContract" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Orgs" FromRole="Org" ToRole="Visit" />
+        </EntityType>
+        <EntityType Name="RecordContract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Number" Type="Int32" />
+          <Property Name="ContractName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
+          <Property Name="ClientId" Type="Int32" />
+          <Property Name="ConsumerId" Type="Int32" />
+          <Property Name="OrgId" Type="Int32" />
+          <Property Name="OrgDetails" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="ContractCost" Type="Double" Nullable="false" />
+          <Property Name="PaymentTypeId" Type="Int32" Nullable="false" />
+          <Property Name="TransactionNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TransactionDate" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InUserId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="RecordContract" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="RecordContract" ToRole="FinancingSource" />
+          <NavigationProperty Name="MedicalHelpTypes" Relationship="DataLib.FK_MedicalHelpTypes_RecordContracts" FromRole="RecordContract" ToRole="MedicalHelpType" />
+          <NavigationProperty Name="Org" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="RecordContract" ToRole="Org" />
+          <NavigationProperty Name="PaymentType" Relationship="DataLib.FK_RecordContracts_PaymentTypes" FromRole="RecordContract" ToRole="PaymentType" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="RecordContract" ToRole="Person" />
+          <NavigationProperty Name="Person1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="RecordContract" ToRole="Person" />
+          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="RecordContract" ToRole="PersonStaff" />
+          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
+          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContract" ToRole="RecordContractItem" />
+          <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContract" ToRole="RecordContractLimit" />
+          <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="RecordContract" ToRole="Visit" />
+          <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_RecordContracts" FromRole="RecordContract" ToRole="VisitTemplate" />
+        </EntityType>
+        <Association Name="FK_Assignments_Orgs">
+          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Org">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="AssignLpuId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionProtocols_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionProtocol">
+              <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContracts_FinancingSources">
+          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinancingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContract">
               <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
@@ -5891,17 +5787,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ChangeNameReasons">
-            <EntityTypeMapping TypeName="DataLib.ChangeNameReason">
-              <MappingFragment StoreEntitySet="ChangeNameReasons">
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="NeedCreateNewPersonName" ColumnName="NeedCreateNewPersonName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CommissionDecisions">
             <EntityTypeMapping TypeName="DataLib.CommissionDecision">
               <MappingFragment StoreEntitySet="CommissionDecisions">
@@ -6092,15 +5977,6 @@
             <EntityTypeMapping TypeName="DataLib.ExecutionPlace">
               <MappingFragment StoreEntitySet="ExecutionPlaces">
                 <ScalarProperty Name="UseName" ColumnName="UseName" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Genders">
-            <EntityTypeMapping TypeName="DataLib.Gender">
-              <MappingFragment StoreEntitySet="Genders">
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -6322,7 +6198,6 @@
           <EntitySetMapping Name="PersonNames">
             <EntityTypeMapping TypeName="DataLib.PersonName">
               <MappingFragment StoreEntitySet="PersonNames">
-                <ScalarProperty Name="ChangeNameReasonId" ColumnName="ChangeNameReasonId" />
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
@@ -6378,7 +6253,6 @@
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Phones" ColumnName="Phones" />
                 <ScalarProperty Name="PhotoId" ColumnName="PhotoId" />
-                <ScalarProperty Name="GenderId" ColumnName="GenderId" />
                 <ScalarProperty Name="MedNumber" ColumnName="MedNumber" />
                 <ScalarProperty Name="Snils" ColumnName="Snils" />
                 <ScalarProperty Name="IsMale" ColumnName="IsMale" />
@@ -6711,6 +6585,7 @@
           <EntitySetMapping Name="FinancingSources">
             <EntityTypeMapping TypeName="DataLib.FinancingSource">
               <MappingFragment StoreEntitySet="FinancingSources">
+                <ScalarProperty Name="IsOrgContract" ColumnName="IsOrgContract" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -6721,7 +6596,9 @@
           <EntitySetMapping Name="Orgs">
             <EntityTypeMapping TypeName="DataLib.Org">
               <MappingFragment StoreEntitySet="Orgs">
+                <ScalarProperty Name="UseInContract" ColumnName="UseInContract" />
                 <ScalarProperty Name="IsLpu" ColumnName="IsLpu" />
+                <ScalarProperty Name="Details" ColumnName="Details" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -6738,6 +6615,7 @@
                 <ScalarProperty Name="TransactionNumber" ColumnName="TransactionNumber" />
                 <ScalarProperty Name="PaymentTypeId" ColumnName="PaymentTypeId" />
                 <ScalarProperty Name="ContractCost" ColumnName="ContractCost" />
+                <ScalarProperty Name="OrgDetails" ColumnName="OrgDetails" />
                 <ScalarProperty Name="OrgId" ColumnName="OrgId" />
                 <ScalarProperty Name="ConsumerId" ColumnName="ConsumerId" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />

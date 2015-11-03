@@ -39,7 +39,8 @@
                     VerticalAlignment="Stretch"
                     Width="150"
                     Height="200">
-                <Button Command="{Binding TakePhotoCommand}">
+                <Button Command="{Binding TakePhotoCommand}" 
+                        IsTabStop="False">
                     <StackPanel VerticalAlignment="Stretch">
                         <Image Source="{Binding PhotoURI}"
                                VerticalAlignment="Stretch"
@@ -97,21 +98,25 @@
                        BorderThickness="0 0 0 1"
                        BorderBrush="Black"
                        HorizontalAlignment="Stretch"
-                       HorizontalContentAlignment="Center" />
+                       HorizontalContentAlignment="Center"
+                       IsTabStop="{Binding IsNameChanged}"/>
                 <RadioButton Content="Ошибочный ввод"
                              Margin="5 5 25 5"
                              IsChecked="{Binding IsIncorrectName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                             Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                             IsTabStop="{Binding IsNameChanged}"/>
                 <RadioButton Content="Иная причина"
                              Margin="5 5 25 5"
                              IsChecked="{Binding IsNewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                             Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                             IsTabStop="{Binding IsNameChanged}"/>
                 <TextBlock Text="Новые данные вступают в силу с" 
                            Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
                 <DatePicker HorizontalAlignment="Left"
                             SelectedDate="{Binding NewNameStartDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                             Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                            Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
+                            Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                            IsTabStop="{Binding IsNameChanged}"/>
             </StackPanel>
             <TextBlock Grid.Row="1"
                        Grid.Column="1"

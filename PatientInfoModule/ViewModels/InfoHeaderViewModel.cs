@@ -7,7 +7,6 @@ using Core.Wpf.Events;
 using Core.Wpf.Services;
 using log4net;
 using Prism;
-using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -66,7 +65,7 @@ namespace PatientInfoModule.ViewModels
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.contentViewModel = contentViewModel;
-            patientId = SpecialId.NonExisting;
+            patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
         }
 
@@ -101,7 +100,7 @@ namespace PatientInfoModule.ViewModels
 
         private void ActivatePatientInfo()
         {
-            if (patientId == SpecialId.NonExisting)
+            if (patientId == SpecialValues.NonExistingId)
             {
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
             }

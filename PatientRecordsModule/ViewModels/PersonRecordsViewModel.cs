@@ -44,7 +44,7 @@ namespace PatientRecordsModule.ViewModels
             this.logService = logService;
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
-            personId = SpecialId.NonExisting;
+            personId = SpecialValues.NonExistingId;
         }
         #endregion
 
@@ -81,7 +81,7 @@ namespace PatientRecordsModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PersonId] ?? SpecialId.NonExisting;
+            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PersonId] ?? SpecialValues.NonExistingId;
             if (targetPatientId != personId)
                 PersonId = targetPatientId;
         }

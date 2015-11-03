@@ -52,7 +52,7 @@ namespace PatientInfoModule.ViewModels
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.viewModel = viewModel;
-            patientId = SpecialId.NonExisting;
+            patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
         }
 
@@ -89,7 +89,7 @@ namespace PatientInfoModule.ViewModels
 
         private void ActivatePersonDocuments()
         {
-            if (patientId == SpecialId.NonExisting)
+            if (patientId == SpecialValues.NonExistingId)
             {
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
             }

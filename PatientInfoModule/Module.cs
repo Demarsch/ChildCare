@@ -117,12 +117,12 @@ namespace PatientInfoModule
         {
             DbContext context = null;
             var ribbonContextualGroup = container.Resolve<RibbonContextualTabGroup>(Common.RibbonGroupName);
-            if (patientId == SpecialId.NonExisting)
+            if (patientId == SpecialValues.NonExistingId)
             {
                 ribbonContextualGroup.Header = PatientIsNotSelected;
                 return;
             }
-            if (patientId == SpecialId.New)
+            if (patientId == SpecialValues.NewId)
             {
                 ribbonContextualGroup.Header = NewPatient;
                 return;
@@ -156,6 +156,11 @@ namespace PatientInfoModule
                 if (context != null)
                 {
                     context.Dispose();
+                }
+                var activeRibbonTabItem = regionManager.Regions[RegionNames.ModuleList].ActiveViews.FirstOrDefault() as RibbonTabItem;
+                if (activeRibbonTabItem == null || !ReferenceEquals(activeRibbonTabItem.Group, ribbonContextualGroup))
+                {
+                    regionManager.Regions[RegionNames.ModuleList].RequestNavigate(viewNameResolver.Resolve<InfoHeaderViewModel>());
                 }
             }
         }

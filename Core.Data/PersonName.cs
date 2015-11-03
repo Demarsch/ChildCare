@@ -21,9 +21,7 @@ namespace Core.Data
         public string MiddleName { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public Nullable<System.DateTime> EndDateTime { get; set; }
-        public Nullable<int> ChangeNameReasonId { get; set; }
     
-        public virtual ChangeNameReason ChangeNameReason { get; set; }
         public virtual Person Person { get; set; }
     }
 }

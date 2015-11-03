@@ -79,6 +79,7 @@
     <Compile Include="Converters\Converter.cs" />
     <Compile Include="Converters\GenderToImageConverter.cs" />
     <Compile Include="Converters\GenderToTextConverter.cs" />
+    <Compile Include="Converters\ProportionConverter.cs" />
     <Compile Include="Converters\ToStringConverter.cs" />
     <Compile Include="Events\SelectionEvent.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />

@@ -5,7 +5,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
@@ -16,6 +15,7 @@ using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
+using PatientInfoModule.Data;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
@@ -66,17 +66,21 @@ namespace PatientInfoModule.ViewModels
             changeTracker.RegisterComparer(() => FirstName, StringComparer.CurrentCultureIgnoreCase);
             changeTracker.RegisterComparer(() => MiddleName, StringComparer.CurrentCultureIgnoreCase);
             changeTracker.PropertyChanged += OnChangesTracked;
-            patientId = SpecialId.NonExisting;
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
+            createNewPatientCommand = new DelegateCommand(CreatetNewPatient);
+            saveChangesCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
+            cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
             reloadPatientDataCommandWrapper = new CommandWrapper
                                               {
-                                                  Command = new DelegateCommand(() => SelectPatientAsync(patientId)),
+                                                  Command = new DelegateCommand(() => SelectPatientAsync(patientIdBeingSelected)),
                                                   CommandName = "Повторить",
                                               };
-            createNewPatientCommand = new DelegateCommand(CreatetNewPatient);
-            saveChangesCommand = new DelegateCommand(SaveChanges, CanSaveChanges);
-            cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
+            saveChangesCommandWrapper = new CommandWrapper
+                                        {
+                                            Command = saveChangesCommand,
+                                            CommandName = "Повторить",
+                                        };
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
@@ -94,7 +98,11 @@ namespace PatientInfoModule.ViewModels
 
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }
 
-        private int patientId;
+        private PersonName currentName;
+
+        private Person currentPerson;
+
+        private int patientIdBeingSelected;
 
         private string lastName;
 
@@ -285,6 +293,8 @@ namespace PatientInfoModule.ViewModels
 
         private readonly DelegateCommand cancelChangesCommand;
 
+        private readonly CommandWrapper saveChangesCommandWrapper;
+
         public ICommand CreateNewPatientCommand
         {
             get { return createNewPatientCommand; }
@@ -292,7 +302,7 @@ namespace PatientInfoModule.ViewModels
 
         private void CreatetNewPatient()
         {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(SpecialId.New);
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(SpecialValues.NewId);
         }
 
         public ICommand SaveChangesCommand
@@ -300,22 +310,83 @@ namespace PatientInfoModule.ViewModels
             get { return saveChangesCommand; }
         }
 
-        private void SaveChanges()
+        private async void SaveChangesAsync()
         {
+            CriticalFailureMediator.Deactivate();
             if (!IsValid)
             {
                 return;
             }
-            MessageBox.Show("Imitating save changes");
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            log.InfoFormat("Saving data for patient with Id = {0}", currentPerson == null || currentPerson.Id == SpecialValues.NewId ? "(New patient)" : currentPerson.Id.ToString());
+            BusyMediator.Activate("Сохранение изменений...");
+            var saveSuccesfull = false;
+            try
+            {
+                //If validation was successfull then BirthDate.Value can't be null
+                var saveData = new SavePatientInput
+                               {
+                                   CurrentName = currentName,
+                                   NewName = new PersonName { BeginDateTime = SpecialValues.MinDate },
+                                   CurrentPerson = currentPerson ?? new Person(),
+                                   IsIncorrectName = IsIncorrectName,
+                                   IsNewName = IsNewName || currentName == null,
+                                   NewNameStartDate = (NewNameStartDate ?? SpecialValues.MinDate).Date,
+                               };
+                saveData.CurrentPerson.BirthDate = BirthDate.Value.Date;
+                saveData.CurrentPerson.Snils = Snils;
+                saveData.CurrentPerson.MedNumber = MedNumber;
+                saveData.CurrentPerson.IsMale = IsMale;
+                saveData.CurrentPerson.Phones = Phones;
+                saveData.CurrentPerson.Email = Email;
+
+                saveData.NewName.LastName = LastName;
+                saveData.NewName.FirstName = FirstName;
+                saveData.NewName.MiddleName = MiddleName;
+
+                var savePatientTask = patientService.SavePatientAsync(saveData, token);
+                await Task.WhenAll(Task.Delay(AppConfiguration.PendingOperationDelay, token), savePatientTask);
+                var result = savePatientTask.Result;
+                currentPerson = result.CurrentPerson;
+                currentName = result.CurrentName;
+                saveSuccesfull = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Failed to save patient info for patient with Id {0}", currentPerson == null || currentPerson.Id == SpecialValues.NewId
+                                                                                                 ? "(New patient)"
+                                                                                                 : currentPerson.Id.ToString());
+                CriticalFailureMediator.Activate("Не удалось сохранить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+                    changeTracker.UntrackAll();
+                    UpdateNameIsChanged();
+                    eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(currentPerson.Id);
+                }
+            }
         }
 
         private bool CanSaveChanges()
         {
-            if (patientId == SpecialId.NonExisting)
+            if (currentPerson == null)
             {
                 return false;
             }
-            if (patientId == SpecialId.New)
+            if (currentPerson.Id == SpecialValues.NewId)
             {
                 return true;
             }
@@ -329,6 +400,7 @@ namespace PatientInfoModule.ViewModels
 
         private void CancelChanges()
         {
+            CriticalFailureMediator.Deactivate();
             changeTracker.Untrack(ref lastName, () => LastName);
             changeTracker.Untrack(ref firstName, () => FirstName);
             changeTracker.Untrack(ref middleName, () => MiddleName);
@@ -345,7 +417,7 @@ namespace PatientInfoModule.ViewModels
 
         private bool CanCancelChanges()
         {
-            if (patientId == SpecialId.NonExisting || patientId == SpecialId.New)
+            if (currentPerson == null || currentPerson.Id == SpecialValues.NewId)
             {
                 return false;
             }
@@ -356,26 +428,30 @@ namespace PatientInfoModule.ViewModels
 
         private readonly CommandWrapper reloadPatientDataCommandWrapper;
 
-        private CancellationTokenSource currentLoadingToken;
+        private CancellationTokenSource currentOperationToken;
 
         public async void SelectPatientAsync(int patientId)
         {
-            ClearData();
-            this.patientId = patientId;
-            saveChangesCommand.RaiseCanExecuteChanged();
-            cancelChangesCommand.RaiseCanExecuteChanged();
-            if (patientId == SpecialId.New || patientId == SpecialId.NonExisting)
+            if (currentPerson != null && currentPerson.Id == patientId)
             {
                 return;
             }
-            if (currentLoadingToken != null)
+            ClearData();
+            saveChangesCommand.RaiseCanExecuteChanged();
+            cancelChangesCommand.RaiseCanExecuteChanged();
+            if (patientId == SpecialValues.NewId || patientId == SpecialValues.NonExistingId)
             {
-                currentLoadingToken.Cancel();
-                currentLoadingToken.Dispose();
+                return;
+            }
+            patientIdBeingSelected = patientId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
             }
             var loadingIsCompleted = false;
-            currentLoadingToken = new CancellationTokenSource();
-            var token = currentLoadingToken.Token;
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
             BusyMediator.Activate("Загрузка данных пациента...");
             log.InfoFormat("Loading patient info for patient with Id {0}...", patientId);
             IDisposableQueryable<Person> patientQuery = null;
@@ -384,26 +460,28 @@ namespace PatientInfoModule.ViewModels
                 patientQuery = patientService.GetPatientQuery(patientId);
                 var loadPatientTask = patientQuery.Select(x => new
                                                                {
-                                                                   ActualName = x.PersonNames.FirstOrDefault(y => y.ChangeNameReason == null), 
-                                                                   x.BirthDate,
-                                                                   x.Snils,
-                                                                   x.MedNumber,
-                                                                   x.IsMale,
-                                                                   x.Phones,
-                                                                   x.Email
+                                                                   CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == null || y.EndDateTime == DateTime.MaxValue),
+                                                                   CurrentPerson = x
                                                                })
                                                   .FirstOrDefaultAsync(token);
                 await Task.WhenAll(loadPatientTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
                 var result = loadPatientTask.Result;
-                LastName = result.ActualName == null ? PersonName.UnknownLastName : result.ActualName.LastName;
-                FirstName = result.ActualName == null ? PersonName.UnknownFirstName : result.ActualName.FirstName;
-                MiddleName = result.ActualName == null ? string.Empty : result.ActualName.MiddleName;
-                IsMale = result.IsMale;
-                BirthDate = result.BirthDate;
-                Snils = result.Snils;
-                MedNumber = result.MedNumber;
-                Phones = result.Phones;
-                Email = result.Email;
+                if (result == null)
+                {
+                    CriticalFailureMediator.Activate("Указанный пациент по какой-то причине отсутсвует в базе данных. Пожалуйста, обратитесь в службу поддержки");
+                    return;
+                }
+                currentName = result.CurrentName;
+                currentPerson = result.CurrentPerson;
+                LastName = currentName == null ? PersonName.UnknownLastName : currentName.LastName;
+                FirstName = currentName == null ? PersonName.UnknownFirstName : currentName.FirstName;
+                MiddleName = currentName == null ? string.Empty : currentName.MiddleName;
+                IsMale = currentPerson.IsMale;
+                BirthDate = currentPerson.BirthDate;
+                Snils = currentPerson.Snils;
+                MedNumber = currentPerson.MedNumber;
+                Phones = currentPerson.Phones;
+                Email = currentPerson.Email;
 
                 changeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
@@ -423,18 +501,20 @@ namespace PatientInfoModule.ViewModels
                 CommandManager.InvalidateRequerySuggested();
                 if (loadingIsCompleted)
                 {
+                    saveChangesCommand.RaiseCanExecuteChanged();
                     BusyMediator.Deactivate();
                 }
                 if (patientQuery != null)
                 {
                     patientQuery.Dispose();
                 }
-            }   
+            }
         }
 
         private void ClearData()
         {
             changeTracker.IsEnabled = false;
+            currentPerson = new Person { Id = SpecialValues.NewId, AmbNumberString = string.Empty };
             LastName = string.Empty;
             FirstName = string.Empty;
             MiddleName = string.Empty;
@@ -448,11 +528,8 @@ namespace PatientInfoModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialId.NonExisting;
-            if (targetPatientId != patientId)
-            {
-                SelectPatientAsync(targetPatientId);
-            }
+            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
+            SelectPatientAsync(targetPatientId);
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
@@ -502,34 +579,34 @@ namespace PatientInfoModule.ViewModels
                         break;
                     case "BirthDate":
                         result = !BirthDate.HasValue
-                                   ? "Дата рождения не указана"
-                                   : BirthDate.Value.Date > DateTime.Today
-                                         ? "Дата рождения не может быть в будущем"
-                                         : string.Empty;
+                                     ? "Дата рождения не указана"
+                                     : BirthDate.Value.Date > DateTime.Today
+                                           ? "Дата рождения не может быть в будущем"
+                                           : string.Empty;
                         break;
                     case "Snils":
                         result = string.IsNullOrEmpty(Snils) || Snils.Length == FullSnilsLength
-                                   ? string.Empty
-                                   : "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00";
+                                     ? string.Empty
+                                     : "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00";
                         break;
                     case "MedNumber":
                         result = string.IsNullOrEmpty(MedNumber) || MedNumber.Length == FullMedNumberLength
-                                   ? string.Empty
-                                   : "ЕМН должен либо быть пустым либо быть в формате 0000000000000000";
+                                     ? string.Empty
+                                     : "ЕМН должен либо быть пустым либо быть в формате 0000000000000000";
                         break;
                     case "IsIncorrectName":
                     case "IsNewName":
                         result = IsNameChanged && !IsNewName && !IsIncorrectName
-                                   ? "Выберите причину смены Ф.И.О."
-                                   : string.Empty;
+                                     ? "Выберите причину смены Ф.И.О."
+                                     : string.Empty;
                         break;
                     case "NewNameStartDate":
                         result = IsNewName
-                                     ?  !NewNameStartDate.HasValue 
-                                        ? "Укажите дату, с которой вступили силу изменения Ф.И.О."
-                                        : NewNameStartDate.Value > DateTime.Today
-                                            ? "Дата смены Ф.И.О. не может быть в будущем"
-                                            : string.Empty
+                                     ? !NewNameStartDate.HasValue
+                                           ? "Укажите дату, с которой вступили силу изменения Ф.И.О."
+                                           : NewNameStartDate.Value > DateTime.Today
+                                                 ? "Дата смены Ф.И.О. не может быть в будущем"
+                                                 : string.Empty
                                      : string.Empty;
                         break;
                 }

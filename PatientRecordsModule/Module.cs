@@ -109,47 +109,9 @@ namespace PatientRecordsModule
             container.RegisterType<object, PersonRecordList>(viewNameResolver.Resolve<PersonRecordListViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordEditor>(viewNameResolver.Resolve<PersonRecordEditorViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, NewVisitCreating>(viewNameResolver.Resolve<NewVisitCreatingViewModel>(), new ContainerControlledLifetimeManager());
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync);
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonRecordsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecords>());
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientRecordsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
-        }
-
-        private async void OnPatientSelectedAsync(int patientId)
-        {
-            DbContext context = null;
-            var ribbonContextualGroup = container.Resolve<RibbonContextualTabGroup>(Common.RibbonGroupName);
-            try
-            {
-                context = contextProvider.CreateNewContext();
-                var data = await context.Set<Person>()
-                                        .Where(x => x.Id == patientId)
-                                        .Select(x => new { x.ShortName, x.GenderId })
-                                        .FirstOrDefaultAsync();
-                if (data == null)
-                {
-                    ribbonContextualGroup.Header = PatientIsNotSelected;
-                    log.ErrorFormat("Patient with Id {0} not found in database", patientId);
-                }
-                else
-                {
-                    ribbonContextualGroup.Header = string.Format("{0} {1}",
-                                                                 data.GenderId == Gender.MaleGenderId ? "Пациент" : "Пациентка",
-                                                                 data.ShortName);
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error("Failed to retrieve patient short name for ribbon contextual group header", ex);
-                ribbonContextualGroup.Header = PatientIsNotSelected;
-            }
-            finally
-            {
-                if (context != null)
-                {
-                    context.Dispose();
-                }
-            }
         }
 
         private void RegisterServices()

@@ -29,6 +29,12 @@ namespace Core.Misc
             }
         }
 
+        public void UntrackAll()
+        {
+            values.Clear();
+            HasChanges = false;
+        }
+
         public void Track<TValue>(TValue oldValue, TValue newValue, [CallerMemberName] string propertyName = null)
         {
             if (!IsEnabled)

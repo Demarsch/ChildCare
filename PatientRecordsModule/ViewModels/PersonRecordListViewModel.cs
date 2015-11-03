@@ -64,7 +64,7 @@ namespace PatientRecordsModule.ViewModels
                 CommandName = "Повторить",
             };
             RootItems = new ObservableCollectionEx<object>();
-            this.PersonId = SpecialId.NonExisting;
+            this.PersonId = SpecialValues.NonExistingId;
             SubscribeToEvents();
             //ToDo: If this row exist, all work
             //LoadRootItemsAsync(1);
@@ -127,7 +127,7 @@ namespace PatientRecordsModule.ViewModels
         {
             RootItems.Clear();
             this.PersonId = personId;
-            if (personId == SpecialId.New || personId == SpecialId.NonExisting)
+            if (personId == SpecialValues.NewId || personId == SpecialValues.NonExistingId)
             {
                 return;
             }
@@ -229,7 +229,7 @@ namespace PatientRecordsModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PersonId] ?? SpecialId.NonExisting;
+            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PersonId] ?? SpecialValues.NonExistingId;
             if (targetPatientId != personId)
             {
                 LoadRootItemsAsync(targetPatientId);

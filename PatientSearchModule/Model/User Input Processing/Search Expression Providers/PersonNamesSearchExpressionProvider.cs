@@ -25,7 +25,6 @@ namespace PatientSearchModule.Model
                 var parsedName = parsedNames.First();
                 expression = person => person
                                            .PersonNames
-                                           .Where(x => x.ChangeNameReason == null || x.ChangeNameReason.NeedCreateNewPersonName)
                                            .Max(x => (x.FirstName.StartsWith(parsedName) ? 1 : 0)
                                                      + (x.MiddleName.StartsWith(parsedName) ? 1 : 0)
                                                      + (x.LastName.StartsWith(parsedName) ? 1 : 0));
@@ -34,7 +33,6 @@ namespace PatientSearchModule.Model
             {
                 expression = person => person
                                            .PersonNames
-                                           .Where(x => x.ChangeNameReason == null || x.ChangeNameReason.NeedCreateNewPersonName)
                                            .Max(x => (parsedNames.Any(y => x.FirstName.StartsWith(y)) ? 1 : 0)
                                                      + (parsedNames.Any(y => x.MiddleName.StartsWith(y)) ? 1 : 0)
                                                      + (parsedNames.Any(y => x.LastName.StartsWith(y)) ? 1 : 0));

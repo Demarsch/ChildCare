@@ -1,6 +1,5 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
-using System;
 
 namespace PatientInfoModule.Services
 {

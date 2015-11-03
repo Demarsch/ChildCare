@@ -1,8 +1,5 @@
-﻿using Core.Wpf.Events;
-using Prism.Mvvm;
+﻿using Prism.Mvvm;
 using System;
-using System.Drawing;
-using System.Windows;
 
 namespace PatientInfoModule.ViewModels
 {

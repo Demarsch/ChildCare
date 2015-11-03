@@ -74,7 +74,7 @@ namespace PatientRecordsModule.ViewModels
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
-            patientId = SpecialId.NonExisting;
+            patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
             BusyMediator = new BusyMediator();
             createNewVisitCommand = new DelegateCommand<VisitTemplateDTO>(CreateNewVisit);
@@ -114,7 +114,7 @@ namespace PatientRecordsModule.ViewModels
 
         private void ActivatePatientInfo()
         {
-            if (patientId == SpecialId.NonExisting)
+            if (patientId == SpecialValues.NonExistingId)
             {
                 //regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
             }

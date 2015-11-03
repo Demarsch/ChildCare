@@ -63,7 +63,7 @@ namespace PatientInfoModule.ViewModels
             this.log = log;
             this.cacheService = cacheService;
             this.eventAggregator = eventAggregator;
-            patientId = SpecialId.NonExisting;
+            patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
             changeTracker = new ChangeTracker();
@@ -166,7 +166,7 @@ namespace PatientInfoModule.ViewModels
             this.patientId = patientId;
             saveContractCommand.RaiseCanExecuteChanged();
             removeContractCommand.RaiseCanExecuteChanged();
-            if (patientId == SpecialId.New || patientId == SpecialId.NonExisting)
+            if (patientId == SpecialValues.NewId || patientId == SpecialValues.NonExistingId)
             {
                 return;
             }
@@ -242,7 +242,7 @@ namespace PatientInfoModule.ViewModels
 
         private void LoadContractData()
         {
-            if (SelectedContract.Id == SpecialId.New)
+            if (SelectedContract.Id == SpecialValues.NewId)
                 ClearData();
             else
             {
@@ -635,7 +635,7 @@ namespace PatientInfoModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialId.NonExisting;
+            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
             if (targetPatientId != patientId)
             {
                 this.patientId = targetPatientId;
@@ -779,7 +779,7 @@ namespace PatientInfoModule.ViewModels
                     //this.dialogService.ShowMessage("Данный договор уже закреплен за случаем обращения пациента " + personService.GetPersonById(visit.PersonId).ShortName + ". Удаление договора невозможно.");
                     return;
                 }
-                if (selectedContract.Id != SpecialId.New)
+                if (selectedContract.Id != SpecialValues.NewId)
                 {
                     contractService.DeleteContractItems(selectedContract.Id);
                     contractService.DeleteContract(selectedContract.Id);
@@ -793,7 +793,7 @@ namespace PatientInfoModule.ViewModels
 
         private bool CanSaveChanges()
         {
-            if (patientId == SpecialId.NonExisting || selectedContract == null || patientId == SpecialId.New)
+            if (patientId == SpecialValues.NonExistingId || selectedContract == null || patientId == SpecialValues.NewId)
             {
                 return false;
             }
@@ -823,7 +823,7 @@ namespace PatientInfoModule.ViewModels
         private void SaveContract()
         {            
             RecordContract contract = new RecordContract();
-            if (selectedContract.Id != SpecialId.New)
+            if (selectedContract.Id != SpecialValues.NewId)
                 contract = contractService.GetContractById(selectedContract.Id).First();
             if (!contract.Number.HasValue)
             {
@@ -898,7 +898,7 @@ namespace PatientInfoModule.ViewModels
 
         private void AddContract()
         {
-            if (patientId == SpecialId.NonExisting || Contracts == null || Contracts.Any(x => x.Id == 0)) return;
+            if (patientId == SpecialValues.NonExistingId || Contracts == null || Contracts.Any(x => x.Id == 0)) return;
             Contracts.Add(new ContractViewModel()
             {
                 Id = 0,

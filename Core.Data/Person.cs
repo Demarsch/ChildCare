@@ -48,7 +48,6 @@ namespace Core.Data
         public bool IsMale { get; set; }
         public string Snils { get; set; }
         public string MedNumber { get; set; }
-        public int GenderId { get; set; }
         public Nullable<int> PhotoId { get; set; }
         public string Phones { get; set; }
         public string Email { get; set; }
@@ -65,7 +64,6 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual Document Document { get; set; }
-        public virtual Gender Gender { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

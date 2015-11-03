@@ -65,7 +65,7 @@ namespace PatientInfoModule.ViewModels
             this.log = log;
             this.cacheService = cacheService;
             this.eventAggregator = eventAggregator;
-            personId = SpecialId.NonExisting;
+            personId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
             reloadPatientDataCommandWrapper = new CommandWrapper
@@ -83,7 +83,7 @@ namespace PatientInfoModule.ViewModels
         public async void LoadPersonDocumentsAsync(int personId)
         {
             this.personId = personId;
-            if (personId == SpecialId.New || personId == SpecialId.NonExisting)
+            if (personId == SpecialValues.NewId || personId == SpecialValues.NonExistingId)
             {
                 return;
             }
@@ -201,7 +201,7 @@ namespace PatientInfoModule.ViewModels
        
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var targetPersonId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialId.NonExisting;
+            var targetPersonId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
             if (targetPersonId != personId)
             {
                 LoadPersonDocumentsAsync(targetPersonId);

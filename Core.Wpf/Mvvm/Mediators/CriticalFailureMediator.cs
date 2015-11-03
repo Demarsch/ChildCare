@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using Core.Wpf.Misc;
+using Prism.Commands;
 using Prism.Mvvm;
 
 namespace Core.Wpf.Mvvm
 {
     public class CriticalFailureMediator : BindableBase, IMediator
     {
+        public CriticalFailureMediator()
+        {
+            CopyToClipboardCommand = new DelegateCommand(CopyToClipboard);
+        }
+
         private bool isActive;
 
         public bool IsActive
@@ -46,6 +53,16 @@ namespace Core.Wpf.Mvvm
         }
 
         public bool HasException { get { return Exception != null; } }
+
+        public ICommand CopyToClipboardCommand { get; private set; }
+
+        private void CopyToClipboard()
+        {
+            if (HasException)
+            {
+                Clipboard.SetText(Exception.ToString());
+            }
+        }
 
         public void Activate(object failureMessage)
         {

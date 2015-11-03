@@ -3,7 +3,6 @@ using System.Linq;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
-using System.Data.Entity.Core.Objects;
 
 namespace PatientInfoModule.Services
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using Core.Extensions;
@@ -17,6 +18,8 @@ namespace Shell
         public static readonly string BehaviorKey = "RibbonTabsSyncBehavior";
 
         private bool updatingActiveViewsInRibbonSelectedTabChanged;
+
+        private List<string> viewSortHints; 
 
         private Ribbon ribbon;
 
@@ -36,13 +39,19 @@ namespace Shell
 
         private void OnViewCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (viewSortHints == null)
+            {
+                viewSortHints = ribbon.Tabs.Select(GetViewSortHint).ToList();
+            }
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                var startIndex = e.NewStartingIndex;
                 foreach (var newItem in e.NewItems.Cast<RibbonTabItem>())
                 {
-                    ribbon.Tabs.Insert(startIndex++, newItem);
-                    if (!ribbon.ContextualGroups.Contains(newItem.Group))
+                    var viewSortHint = GetViewSortHint(newItem);
+                    var newItemPosition = GetNewItemPosition(viewSortHint);
+                    ribbon.Tabs.Insert(newItemPosition, newItem);
+                    viewSortHints.Insert(newItemPosition, viewSortHint);
+                    if (newItem.Group != null && !ribbon.ContextualGroups.Contains(newItem.Group))
                     {
                         ribbon.ContextualGroups.Add(newItem.Group);
                     }
@@ -53,12 +62,44 @@ namespace Shell
                 foreach (var oldItem in e.OldItems.Cast<RibbonTabItem>())
                 {
                     ribbon.Tabs.Remove(oldItem);
-                    if (!ribbon.Tabs.Any(x => ReferenceEquals(x.Group, oldItem.Group)))
+                    if (oldItem.Group != null && !ribbon.Tabs.Any(x => ReferenceEquals(x.Group, oldItem.Group)))
                     {
                         ribbon.ContextualGroups.Remove(oldItem.Group);
                     }
                 }
             }
+        }
+
+        private int GetNewItemPosition(string viewSortHint)
+        {
+            if (viewSortHints.Count == 0)
+            {
+                return 0;
+            }
+            if (string.IsNullOrEmpty(viewSortHint))
+            {
+                return viewSortHints.Count;
+            }
+            if (string.IsNullOrEmpty(viewSortHints[0]))
+            {
+                return 0;
+            }
+            var index = 0;
+            while (index < viewSortHints.Count)
+            {
+                if (string.IsNullOrEmpty(viewSortHints[index]) || string.CompareOrdinal(viewSortHint, viewSortHints[index]) < 0)
+                {
+                    break;
+                }
+                index++;
+            }
+            return index;
+        }
+
+        private string GetViewSortHint(RibbonTabItem ribbonTabItem)
+        {
+            var attribute = ribbonTabItem.GetType().GetCustomAttribute<ViewSortHintAttribute>();
+            return attribute == null ? string.Empty : attribute.Hint;
         }
 
         private void SynchronizeItems()

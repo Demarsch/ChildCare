@@ -35,6 +35,7 @@ namespace Core.Data
         public Nullable<int> ClientId { get; set; }
         public Nullable<int> ConsumerId { get; set; }
         public Nullable<int> OrgId { get; set; }
+        public string OrgDetails { get; set; }
         public double ContractCost { get; set; }
         public int PaymentTypeId { get; set; }
         public string TransactionNumber { get; set; }

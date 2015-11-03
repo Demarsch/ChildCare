@@ -375,7 +375,7 @@ namespace OrganizationContractsModule.ViewModels
 
         private void LoadContractData()
         {
-            if (SelectedContract.Id == SpecialId.New)
+            if (SelectedContract.Id == SpecialValues.NewId)
                 ClearData();
             else
             {
@@ -445,7 +445,7 @@ namespace OrganizationContractsModule.ViewModels
         private void SaveContract()
         {
             RecordContract contract = new RecordContract();
-            if (selectedContract.Id != SpecialId.New)
+            if (selectedContract.Id != SpecialValues.NewId)
                 contract = contractService.GetContractById(selectedContract.Id).First();
             if (!contract.Number.HasValue)
             {
@@ -499,7 +499,7 @@ namespace OrganizationContractsModule.ViewModels
                 //this.dialogService.ShowMessage("Данный договор уже закреплен за случаем обращения пациента " + personService.GetPersonById(visit.PersonId).ShortName + ". Удаление договора невозможно.");
                 return;
             }
-            if (selectedContract.Id != SpecialId.New)
+            if (selectedContract.Id != SpecialValues.NewId)
                 contractService.DeleteContract(selectedContract.Id);
 
             Contracts.Remove(selectedContract);
