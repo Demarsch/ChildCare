@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
@@ -9,22 +10,21 @@ using Prism;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
+using Prism.Commands;
+using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels
 {
     public class DocumentsHeaderViewModel : BindableBase, IDisposable, IActiveAware
     {
         private readonly IDbContextProvider contextProvider;
-
         private readonly ILog log;
-
-        private readonly IEventAggregator eventAggregator;
-        
+        private readonly IEventAggregator eventAggregator;        
         private readonly IRegionManager regionManager;
-
         private readonly IViewNameResolver viewNameResolver;
+        private readonly PersonDocumentsViewModel viewModel;
 
-        public DocumentsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public DocumentsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, PersonDocumentsViewModel viewModel)
         {
             if (contextProvider == null)
             {
@@ -51,11 +51,15 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.viewModel = viewModel;
             patientId = SpecialId.NonExisting;
             SubscribeToEvents();
         }
 
         private int patientId;
+        public ICommand ScanningCommand { get { return viewModel.ScanningCommand; } }
+        public ICommand AddDocumentCommand { get { return viewModel.AddDocumentCommand; } }
+        public ICommand RemoveDocumentCommand { get { return viewModel.RemoveDocumentCommand; } }
 
         public void Dispose()
         {
@@ -70,8 +74,7 @@ namespace PatientInfoModule.ViewModels
         private void OnPatientSelected(int patientId)
         {
             this.patientId = patientId;
-            LoadSelectedPatientData();
-            ActivatePatientInfo();
+            ActivatePersonDocuments();
         }
 
         private void LoadSelectedPatientData()
@@ -84,9 +87,17 @@ namespace PatientInfoModule.ViewModels
             eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
         }
 
-        private void ActivatePatientInfo()
+        private void ActivatePersonDocuments()
         {
-           //TODO:
+            if (patientId == SpecialId.NonExisting)
+            {
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
+            }
+            else
+            {
+                var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonDocumentsViewModel>(), navigationParameters);
+            }
         }
 
         private bool isActive;
@@ -103,7 +114,7 @@ namespace PatientInfoModule.ViewModels
                     OnPropertyChanged(() => IsActive);
                     if (value)
                     {
-                        ActivatePatientInfo();
+                        ActivatePersonDocuments();
                     }
                 }
             }

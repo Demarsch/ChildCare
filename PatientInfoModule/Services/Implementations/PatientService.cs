@@ -49,5 +49,20 @@ namespace PatientInfoModule.Services
                 .Where(x => x.RecordTypeId == recordTypeId && x.RecordTypeMemberRoleId == memberRoleId)
                     .SelectMany(x => x.Permission.UserPermissions.SelectMany(a => a.User.Person.PersonStaffs)), context);
         }
+
+        public IDisposableQueryable<PersonOuterDocument> GetPersonOuterDocuments(int personId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<PersonOuterDocument>(context.Set<PersonOuterDocument>().Where(x => x.PersonId == personId), context);
+        }
+
+        public void DeletePersonOuterDocument(int documentId)
+        {
+            var context = contextProvider.CreateNewContext();
+            //var personOuterDoc = db.GetData<PersonOuterDocument>().FirstOrDefault(x => x.DocumentId == documentId);
+            //if (personOuterDoc == null) return;
+            //db.Remove<PersonOuterDocument>(personOuterDoc);
+            //db.Save();
+        }
     }
 }

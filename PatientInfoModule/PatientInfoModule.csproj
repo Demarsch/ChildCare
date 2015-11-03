@@ -109,10 +109,12 @@
     <Compile Include="Services\Implementations\ContractService.cs" />
     <Compile Include="Services\Implementations\AssignmentService.cs" />
     <Compile Include="Services\Implementations\PatientService.cs" />
+    <Compile Include="Services\Implementations\DocumentService.cs" />
     <Compile Include="Services\Interfaces\IContractService.cs" />
     <Compile Include="Services\Interfaces\IPatientService.cs" />
     <Compile Include="Services\Interfaces\IAssignmentService.cs" />
     <Compile Include="Services\Implementations\RecordService.cs" />
+    <Compile Include="Services\Interfaces\IDocumentService.cs" />
     <Compile Include="Services\Interfaces\IRecordService.cs" />
     <Compile Include="ViewModels\Contracts\ContractItemViewModel.cs" />
     <Compile Include="ViewModels\ContractsHeaderViewModel.cs" />
@@ -123,6 +125,8 @@
     <Compile Include="ViewModels\InfoHeaderViewModel.cs" />
     <Compile Include="ViewModels\InfoContentViewModel.cs" />
     <Compile Include="ViewModels\Contracts\PatientContractsViewModel.cs" />
+    <Compile Include="ViewModels\PersonDocumentsViewModel.cs" />
+    <Compile Include="ViewModels\ThumbnailViewModel.cs" />
     <Compile Include="Views\ContractsHeader.xaml.cs">
       <DependentUpon>ContractsHeader.xaml</DependentUpon>
     </Compile>
@@ -140,6 +144,9 @@
     </Compile>
     <Compile Include="Views\PatientContracts.xaml.cs">
       <DependentUpon>PatientContracts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PersonDocuments.xaml.cs">
+      <DependentUpon>PersonDocuments.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PatientContracts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PersonDocuments.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

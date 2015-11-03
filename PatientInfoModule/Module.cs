@@ -89,6 +89,7 @@ namespace PatientInfoModule
             container.RegisterType<EmptyPatientInfoViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<InfoContentViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PatientContractsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonDocumentsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
@@ -97,6 +98,7 @@ namespace PatientInfoModule
             container.RegisterType<object, EmptyPatientInfo>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, InfoContent>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PatientContracts>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PersonDocuments>(viewNameResolver.Resolve<PersonDocumentsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterInstance(Common.RibbonGroupName,
                                        new RibbonContextualTabGroup
                                        {
@@ -164,6 +166,7 @@ namespace PatientInfoModule
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
         }
     }
 }
