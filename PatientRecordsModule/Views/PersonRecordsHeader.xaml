@@ -9,6 +9,7 @@
                       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       xmlns:prism="http://www.codeplex.com/prism"
                       xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
+                      xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
@@ -22,6 +23,7 @@
             </popup:PopupWindowAction>
         </prism:InteractionRequestTrigger>
     </i:Interaction.Triggers>
+
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Случаи"
                    Style="{x:Null}" />
@@ -42,16 +44,46 @@
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/Cancel-48x48.png" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Случай">
-        <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Visit48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True"  >
+        <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Visit48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True" Command="{Binding CreateNewVisitCommand}" >
             <fluent:SplitButton.ItemContainerStyle>
                 <Style TargetType="{x:Type fluent:MenuItem}">
                     <Setter Property="Command" Value="{Binding DataContext.CreateNewVisitCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:SplitButton}}}"/>
                     <Setter Property="CommandParameter" Value="{Binding}"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 </Style>
             </fluent:SplitButton.ItemContainerStyle>
             <fluent:SplitButton.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" VerticalAlignment="Stretch" Background="AliceBlue" TextAlignment="Center" TextWrapping="Wrap"/>
+                    <!--<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Stretch">-->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Name}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0"  Foreground="Gray" Text="Договор:" Visibility="{Binding Contract, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Visibility="{Binding Contract, Converter={x:Static converters:StringToVisibilityConverter.Instance}}" Text="{Binding Contract}"
+                                   Foreground="Gray"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0"  Foreground="Gray" Text="Ист. фин.:" 
+                                   Visibility="{Binding FinancingSource, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FinancingSource}" 
+                                   Visibility="{Binding FinancingSource, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"  Foreground="Gray"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0"  Foreground="Gray" Text="Срочность:" 
+                                   Visibility="{Binding Urgently, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Urgently}" Visibility="{Binding Urgently, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"
+                                   Foreground="Gray"/>
+                    </Grid>
+                    <!--</Border>-->
                 </DataTemplate>
             </fluent:SplitButton.ItemTemplate>
         </fluent:SplitButton>

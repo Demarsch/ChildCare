@@ -103,16 +103,25 @@
     <Compile Include="CommissionType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="FinancingSource.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Misc\DisposableQueryable.cs" />
     <Compile Include="Misc\EmptyDbAsyncEnumerable.cs" />
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
     <Compile Include="Misc\SpecialId.cs" />
+    <Compile Include="Org.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="PartialClasses\Gender.cs" />
     <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
     <Compile Include="PartialClasses\PersonName.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />
+    <Compile Include="RecordContract.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Services\Implementations\DbContextCacheService.cs" />
     <Compile Include="Services\Implementations\DbContextProvider.cs" />
     <Compile Include="Country.cs">
@@ -134,9 +143,6 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ExecutionPlace.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="FinancingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Gender.cs">
@@ -165,9 +171,6 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Okato.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="OuterDocumentType.cs">
@@ -232,9 +235,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordContract.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordContractItem.cs">

@@ -28,8 +28,8 @@ namespace Core.Data
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonTalon> PersonTalons { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }

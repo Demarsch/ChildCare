@@ -21,7 +21,7 @@ namespace Core.Data
         public System.DateTime EndDate { get; set; }
         public Nullable<double> FullPrice { get; set; }
     
-        public virtual FinancingSource FinancingSource { get; set; }
         public virtual RecordType RecordType { get; set; }
+        public virtual FinancingSource FinancingSource { get; set; }
     }
 }

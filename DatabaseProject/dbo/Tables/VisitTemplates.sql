@@ -11,8 +11,11 @@
     CONSTRAINT [PK_VisitTemplates] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_VisitTemplates_ExecutionPlaces] FOREIGN KEY ([ExecutionPlaceId]) REFERENCES [dbo].[ExecutionPlaces] ([Id]),
     CONSTRAINT [FK_VisitTemplates_ExecutionPlaces1] FOREIGN KEY ([UrgentlyId]) REFERENCES [dbo].[Urgentlies] ([Id]),
-    CONSTRAINT [FK_VisitTemplates_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id])
+    CONSTRAINT [FK_VisitTemplates_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
+    CONSTRAINT [FK_VisitTemplates_RecordContracts] FOREIGN KEY ([ContractId]) REFERENCES [dbo].[RecordContracts] ([Id])
 );
+
+
 
 
 

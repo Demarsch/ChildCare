@@ -74,6 +74,7 @@
     <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\Converter.cs" />
     <Compile Include="Converters\GenderToImageConverter.cs" />

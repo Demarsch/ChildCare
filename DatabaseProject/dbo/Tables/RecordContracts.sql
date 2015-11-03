@@ -8,7 +8,6 @@
     [ClientId]          INT            NULL,
     [ConsumerId]        INT            NULL,
     [OrgId]             INT            NULL,
-    [OrgDetails]        VARCHAR (1000) NOT NULL,
     [ContractCost]      FLOAT (53)     CONSTRAINT [DF_RecordContracts_ContractCost] DEFAULT ((0.0)) NOT NULL,
     [PaymentTypeId]     INT            NOT NULL,
     [TransactionNumber] VARCHAR (50)   CONSTRAINT [DF_RecordContracts_TransactionNumber] DEFAULT ('') NOT NULL,
@@ -25,6 +24,8 @@
     CONSTRAINT [FK_RecordContracts_PaymentTypes] FOREIGN KEY ([PaymentTypeId]) REFERENCES [dbo].[PaymentTypes] ([Id]),
     CONSTRAINT [FK_RecordContracts_PersonStaffs] FOREIGN KEY ([InUserId]) REFERENCES [dbo].[PersonStaffs] ([Id])
 );
+
+
 
 
 

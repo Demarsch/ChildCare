@@ -44,7 +44,6 @@ namespace Core.Data
         public virtual DbSet<Document> Documents { get; set; }
         public virtual DbSet<Education> Educations { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
-        public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<Gender> Genders { get; set; }
         public virtual DbSet<HealthGroup> HealthGroups { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
@@ -54,7 +53,6 @@ namespace Core.Data
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public virtual DbSet<MedicalHelpType> MedicalHelpTypes { get; set; }
         public virtual DbSet<Okato> Okatos { get; set; }
-        public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<OuterDocumentType> OuterDocumentTypes { get; set; }
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
         public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
@@ -75,7 +73,6 @@ namespace Core.Data
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
         public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
-        public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
@@ -95,5 +92,8 @@ namespace Core.Data
         public virtual DbSet<VisitResult> VisitResults { get; set; }
         public virtual DbSet<Visit> Visits { get; set; }
         public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
+        public virtual DbSet<FinancingSource> FinancingSources { get; set; }
+        public virtual DbSet<Org> Orgs { get; set; }
+        public virtual DbSet<RecordContract> RecordContracts { get; set; }
     }
 }

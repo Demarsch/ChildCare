@@ -73,11 +73,11 @@ namespace PatientRecordsModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
-            VisitTemplates = new ObservableCollectionEx<CommonIdName>();
+            VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
             patientId = SpecialId.NonExisting;
             SubscribeToEvents();
             BusyMediator = new BusyMediator();
-            createNewVisitCommand = new DelegateCommand<CommonIdName>(CreateNewVisit);
+            createNewVisitCommand = new DelegateCommand<VisitTemplateDTO>(CreateNewVisit);
             this.NewVisitCreatingInteractionRequest = new InteractionRequest<NewVisitCreatingViewModel>();
             LoadItemsAsync();
         }
@@ -137,7 +137,15 @@ namespace PatientRecordsModule.ViewModels
             try
             {
                 visitTemplates = patientRecordsService.GetActualVisitTemplates(DateTime.Now);
-                var loadVisitTemplatesTask = visitTemplates.Select(x => new CommonIdName() { Id = x.Id, Name = x.Name }).ToListAsync(token);
+                var loadVisitTemplatesTask = visitTemplates.Select(x => new VisitTemplateDTO()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Contract = x.ContractId.HasValue ? ((x.RecordContract.Number.HasValue ? "Договор №" + x.RecordContract.Number.ToString() + " - " : string.Empty) + 
+                        x.RecordContract.ContractName) : string.Empty,
+                    FinancingSource = x.FinancingSource.Name,
+                    Urgently = x.Urgently.Name
+                }).ToListAsync(token);
                 await Task.WhenAll(loadVisitTemplatesTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
                 VisitTemplates.AddRange(loadVisitTemplatesTask.Result);
                 loadingIsCompleted = true;
@@ -166,9 +174,9 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private void CreateNewVisit(CommonIdName selectedTemplate)
+        private void CreateNewVisit(VisitTemplateDTO selectedTemplate)
         {
-            NewVisitCreatingInteractionRequest.Raise(new NewVisitCreatingViewModel(patientRecordsService, logService) { Title ="Создать случай"},
+            NewVisitCreatingInteractionRequest.Raise(new NewVisitCreatingViewModel(patientRecordsService, logService) { Title = "Создать случай" },
                            (vm) => { CreatedVisitId = vm.VisitId; });
         }
 
@@ -201,15 +209,15 @@ namespace PatientRecordsModule.ViewModels
             set { SetProperty(ref createdVisitId, value); }
         }
 
-        private ObservableCollectionEx<CommonIdName> visitTemplates;
-        public ObservableCollectionEx<CommonIdName> VisitTemplates
+        private ObservableCollectionEx<VisitTemplateDTO> visitTemplates;
+        public ObservableCollectionEx<VisitTemplateDTO> VisitTemplates
         {
             get { return visitTemplates; }
             set { SetProperty(ref visitTemplates, value); }
         }
 
-        private CommonIdName selectedVisitTemplate;
-        public CommonIdName SelectedVisitTemplate
+        private VisitTemplateDTO selectedVisitTemplate;
+        public VisitTemplateDTO SelectedVisitTemplate
         {
             get { return selectedVisitTemplate; }
             set { SetProperty(ref selectedVisitTemplate, value); }
@@ -225,7 +233,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Commands
-        private readonly DelegateCommand<CommonIdName> createNewVisitCommand;
+        private readonly DelegateCommand<VisitTemplateDTO> createNewVisitCommand;
         public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
         #endregion
     }

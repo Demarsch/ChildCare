@@ -19,7 +19,7 @@ namespace Core.Data
         public int RecordTypeId { get; set; }
         public int Count { get; set; }
     
-        public virtual RecordContract RecordContract { get; set; }
         public virtual RecordType RecordType { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }

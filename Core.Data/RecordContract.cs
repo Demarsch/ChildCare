@@ -23,6 +23,7 @@ namespace Core.Data
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Visits = new HashSet<Visit>();
+            this.VisitTemplates = new HashSet<VisitTemplate>();
         }
     
         public int Id { get; set; }
@@ -34,7 +35,6 @@ namespace Core.Data
         public Nullable<int> ClientId { get; set; }
         public Nullable<int> ConsumerId { get; set; }
         public Nullable<int> OrgId { get; set; }
-        public string OrgDetails { get; set; }
         public double ContractCost { get; set; }
         public int PaymentTypeId { get; set; }
         public string TransactionNumber { get; set; }
@@ -62,5 +62,7 @@ namespace Core.Data
         public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VisitTemplate> VisitTemplates { get; set; }
     }
 }
