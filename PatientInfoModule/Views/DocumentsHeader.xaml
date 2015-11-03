@@ -13,4 +13,15 @@
         <TextBlock Text="Прикрепленные документы"
                    Style="{x:Null}" />
     </fluent:RibbonTabItem.Header>
+
+    <fluent:RibbonGroupBox Header="Сканирование" FontWeight="Medium">
+        <fluent:Button x:Name="btnScanning" Command="{Binding ScanningCommand}" 
+                       Header="Сканировать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Scanner48x48.png" />
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Документы" FontWeight="Medium">
+        <fluent:Button x:Name="btnAddDocument" Command="{Binding AddDocumentCommand}"
+                       Header="Прикрепить эл. док." LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddAppendix48x48.png" />
+        <fluent:Button x:Name="btnRemoveDocument" Command="{Binding RemoveDocumentCommand}"
+                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveAppendix48x48.png" />
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>
