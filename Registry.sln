@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseUpdate", "DatabaseU
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientRecordsModule", "PatientRecordsModule\PatientRecordsModule.csproj", "{5B63C016-181B-49E5-9B91-9120A78EBF72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizationContractsModule", "OrganizationContracts\OrganizationContractsModule.csproj", "{3139D047-8FAA-4481-AFF4-D47315F6EEED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,10 @@ Global
 		{5B63C016-181B-49E5-9B91-9120A78EBF72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B63C016-181B-49E5-9B91-9120A78EBF72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B63C016-181B-49E5-9B91-9120A78EBF72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3139D047-8FAA-4481-AFF4-D47315F6EEED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3139D047-8FAA-4481-AFF4-D47315F6EEED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3139D047-8FAA-4481-AFF4-D47315F6EEED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3139D047-8FAA-4481-AFF4-D47315F6EEED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,5 +137,6 @@ Global
 		{8D76E630-B26E-4B02-A43E-B0944711C702} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
 		{53C0EFF3-2F75-42C3-87C2-F59DD01D02B4} = {7058AE0F-F40D-481D-BC1B-67A27D5612DD}
 		{5B63C016-181B-49E5-9B91-9120A78EBF72} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
+		{3139D047-8FAA-4481-AFF4-D47315F6EEED} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
 	EndGlobalSection
 EndGlobal
