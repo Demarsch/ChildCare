@@ -22,6 +22,8 @@ using System.Data.Entity;
 using Core.Extensions;
 using PatientRecordsModule.DTO;
 using PatientRecordsModule.DTOs;
+using Prism.Interactivity.InteractionRequest;
+using Microsoft.Practices.Unity;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -76,6 +78,7 @@ namespace PatientRecordsModule.ViewModels
             SubscribeToEvents();
             BusyMediator = new BusyMediator();
             createNewVisitCommand = new DelegateCommand<CommonIdName>(CreateNewVisit);
+            this.NewVisitCreatingInteractionRequest = new InteractionRequest<NewVisitCreatingViewModel>();
             LoadItemsAsync();
         }
 
@@ -165,8 +168,10 @@ namespace PatientRecordsModule.ViewModels
 
         private void CreateNewVisit(CommonIdName selectedTemplate)
         {
-            throw new NotImplementedException();
+            NewVisitCreatingInteractionRequest.Raise(new NewVisitCreatingViewModel(patientRecordsService, logService) { Title ="Создать случай"},
+                           (vm) => { CreatedVisitId = vm.VisitId; });
         }
+
         #endregion
 
         #region Properties
@@ -189,6 +194,13 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        private int createdVisitId;
+        public int CreatedVisitId
+        {
+            get { return this.createdVisitId; }
+            set { SetProperty(ref createdVisitId, value); }
+        }
+
         private ObservableCollectionEx<CommonIdName> visitTemplates;
         public ObservableCollectionEx<CommonIdName> VisitTemplates
         {
@@ -204,6 +216,8 @@ namespace PatientRecordsModule.ViewModels
         }
 
         public BusyMediator BusyMediator { get; set; }
+
+        public InteractionRequest<NewVisitCreatingViewModel> NewVisitCreatingInteractionRequest { get; private set; }
         #endregion
 
         #region Events

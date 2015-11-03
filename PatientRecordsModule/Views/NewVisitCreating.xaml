@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="PatientRecordsModule.Views.NewVisitCreating"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:Name="confirmationWindow">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Дата/время начала случая:"/>
+        <DatePicker Grid.Row="0" Grid.Column="1" SelectedDate="{Binding Date}" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Шаблон случая:"/>
+        <ComboBox Grid.Row="1" Grid.Column="1"  ItemsSource="{Binding VisitTemplates}" SelectedItem="{Binding SelectedVisitTemplate}" SelectedValue="Id" DisplayMemberPath="Name"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Договор:"/>
+        <ComboBox Grid.Row="2" Grid.Column="1"  ItemsSource="{Binding Contracts}" SelectedItem="{Binding SelectedContract}" SelectedValue="Id" DisplayMemberPath="Name"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Источник финансирования:"/>
+        <ComboBox Grid.Row="3" Grid.Column="1"  ItemsSource="{Binding FinancingSources}" SelectedItem="{Binding SelectedFinancingSource}" SelectedValue="Id" DisplayMemberPath="Name"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Срочность:"/>
+        <ComboBox Grid.Row="4" Grid.Column="1"  ItemsSource="{Binding Urgentlies}" SelectedItem="{Binding SelectedUrgently}" SelectedValue="Id" DisplayMemberPath="Name"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Примечание:"/>
+        <TextBox Grid.Row="5" Grid.Column="1" MinLines="2" Width="250" Text="{Binding Note}"/>
+
+        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Создать" Margin="3" Command="{Binding CreateVisitCommand}">
+                <!--<i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <ei:CallMethodAction TargetObject="{Binding ElementName=confirmationWindow}" MethodName="Close"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>-->
+            </Button>
+            <Button Content="Отмена" Margin="3" Command="{Binding CancelCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
