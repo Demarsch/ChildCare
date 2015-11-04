@@ -25,5 +25,14 @@ namespace PatientRecordsModule.Services
         IDisposableQueryable<Assignment> GetAssignmentsChildAssignmentsQuery(int assignmentId);
 
         IDisposableQueryable<VisitTemplate> GetActualVisitTemplates(DateTime onDate);
+
+        IDisposableQueryable<VisitTemplate> GetVisitTemplate(int visitTemplateId);
+
+        IDisposableQueryable<RecordContract> GetActualRecordContracts(DateTime onDate);
+
+        IDisposableQueryable<FinancingSource> GetActualFinancingSources();
+
+        IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
+
     }
 }

@@ -82,5 +82,31 @@ namespace PatientRecordsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<VisitTemplate>(context.Set<VisitTemplate>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
         }
+
+
+        public IDisposableQueryable<RecordContract> GetActualRecordContracts(DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordContract>(context.Set<RecordContract>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
+
+        public IDisposableQueryable<FinancingSource> GetActualFinancingSources()
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().AsNoTracking().Where(x => x.IsActive), context);
+        }
+
+        public IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Urgently>(context.Set<Urgently>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
+
+
+        public IDisposableQueryable<VisitTemplate> GetVisitTemplate(int visitTemplateId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<VisitTemplate>(context.Set<VisitTemplate>().AsNoTracking().Where(x => x.Id == visitTemplateId), context);
+        }
     }
 }

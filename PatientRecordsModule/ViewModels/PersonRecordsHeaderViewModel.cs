@@ -40,17 +40,23 @@ namespace PatientRecordsModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
+        private readonly IUnityContainer container;
+
         private int patientId;
 
         private CancellationTokenSource currentLoadingToken;
         #endregion
 
         #region Constructors
-        public PersonRecordsHeaderViewModel(IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public PersonRecordsHeaderViewModel(IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
         {
             if (patientRecordsService == null)
             {
                 throw new ArgumentNullException("patientRecordsService");
+            }
+            if (container == null)
+            {
+                throw new ArgumentNullException("container");
             }
             if (logSevice == null)
             {
@@ -73,6 +79,7 @@ namespace PatientRecordsModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.container = container;
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
             patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
@@ -141,7 +148,7 @@ namespace PatientRecordsModule.ViewModels
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    Contract = x.ContractId.HasValue ? ((x.RecordContract.Number.HasValue ? "Договор №" + x.RecordContract.Number.ToString() + " - " : string.Empty) + 
+                    Contract = x.ContractId.HasValue ? ((x.RecordContract.Number.HasValue ? "Договор №" + x.RecordContract.Number.ToString() + " - " : string.Empty) +
                         x.RecordContract.ContractName) : string.Empty,
                     FinancingSource = x.FinancingSource.Name,
                     Urgently = x.Urgently.Name
@@ -176,8 +183,11 @@ namespace PatientRecordsModule.ViewModels
 
         private void CreateNewVisit(VisitTemplateDTO selectedTemplate)
         {
-            NewVisitCreatingInteractionRequest.Raise(new NewVisitCreatingViewModel(patientRecordsService, logService) { Title = "Создать случай" },
-                           (vm) => { CreatedVisitId = vm.VisitId; });
+            var newVisitCreatingViewModel = container.Resolve<NewVisitCreatingViewModel>();
+            newVisitCreatingViewModel.Title = "Создать случай";
+            newVisitCreatingViewModel.Date = DateTime.Now;
+            newVisitCreatingViewModel.SelectedVisitTemplateId = selectedTemplate != null ? selectedTemplate.Id : (int?)null;
+            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { CreatedVisitId = vm.VisitId; });
         }
 
         #endregion
