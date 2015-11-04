@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using Core.Data;
 using Core.Data.Misc;
 using Core.Extensions;
-using Core.Misc;
 using Core.Services;
-using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
@@ -28,14 +21,19 @@ namespace PatientInfoModule.ViewModels
     public class PersonDocumentsViewModel : BindableBase, INavigationAware
     {
         private readonly IPatientService patientService;
+
         private readonly IDocumentService documentService;
+
         private readonly ILog log;
+
         private readonly ICacheService cacheService;
+
         private readonly IEventAggregator eventAggregator;
-        public BusyMediator BusyMediator { get; set; }
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+
         private readonly CommandWrapper reloadPatientDataCommandWrapper;
+
         private CancellationTokenSource currentLoadingToken;
+
         private int personId;
 
         public PersonDocumentsViewModel(IPatientService patientService, IDocumentService documentService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
@@ -80,6 +78,10 @@ namespace PatientInfoModule.ViewModels
             AllDocuments = new ObservableCollectionEx<ThumbnailViewModel>();
         }
 
+        public BusyMediator BusyMediator { get; set; }
+
+        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+
         public async void LoadPersonDocumentsAsync(int personId)
         {
             this.personId = personId;
@@ -97,26 +99,22 @@ namespace PatientInfoModule.ViewModels
             var token = currentLoadingToken.Token;
             BusyMediator.Activate("Загрузка документов пациента...");
             log.InfoFormat("Loading documents for patient with Id {0}...", personId);
-            IDisposableQueryable<PersonOuterDocument> personOuterDocumentsQuery = null;
             try
             {
                 AllDocuments.Clear();
-                personOuterDocumentsQuery = patientService.GetPersonOuterDocuments(this.personId);
-                var loadDocumentsTask = personOuterDocumentsQuery.ToArrayAsync(token);
-                await Task.WhenAll(loadDocumentsTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
-                var result = loadDocumentsTask.Result;
-                AllDocuments.AddRange(result.Select(x => new ThumbnailViewModel()
-                    {
-                        DocumentId = x.DocumentId,
-                        DocumentTypeId = x.OuterDocumentTypeId,
-                        DocumentType = x.Document.FileName,
-                        DocumentTypeParentName = x.OuterDocumentType.OuterDocumentType1.Name,
-                        Comment = x.Document.Description,
-                        DocumentDate = x.Document.DocumentFromDate,
-                        ThumbnailImage = documentService.GetThumbnailForFile(x.Document.FileData, x.Document.Extension),
-                        ThumbnailChecked = false
-                    }));
-                loadingIsCompleted = true;                
+                var result = await patientService.GetPersonOuterDocuments(this.personId).ToArrayAsync(token);
+                AllDocuments.AddRange(result.Select(x => new ThumbnailViewModel
+                                                         {
+                                                             DocumentId = x.DocumentId,
+                                                             DocumentTypeId = x.OuterDocumentTypeId,
+                                                             DocumentType = x.Document.FileName,
+                                                             DocumentTypeParentName = x.OuterDocumentType.OuterDocumentType1.Name,
+                                                             Comment = x.Document.Description,
+                                                             DocumentDate = x.Document.DocumentFromDate,
+                                                             ThumbnailImage = documentService.GetThumbnailForFile(x.Document.FileData, x.Document.Extension),
+                                                             ThumbnailChecked = false
+                                                         }));
+                loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
             {
@@ -135,23 +133,41 @@ namespace PatientInfoModule.ViewModels
                 {
                     BusyMediator.Deactivate();
                 }
-                if (personOuterDocumentsQuery != null)
+                if (patientService.GetPersonOuterDocuments(this.personId) != null)
                 {
-                    personOuterDocumentsQuery.Dispose();
+                    patientService.GetPersonOuterDocuments(this.personId).Dispose();
                 }
-            }   
+            }
         }
 
         private readonly DelegateCommand scanningCommand;
+
         private readonly DelegateCommand addDocumentCommand;
+
         private readonly DelegateCommand removeDocumentCommand;
+
         private readonly DelegateCommand openDocumentCommand;
 
-        public ICommand ScanningCommand { get { return scanningCommand; } }
-        public ICommand AddDocumentCommand { get { return addDocumentCommand; } }
-        public ICommand RemoveDocumentCommand { get { return removeDocumentCommand; } }
-        public ICommand OpenDocumentCommand { get { return openDocumentCommand; } }   
-        
+        public ICommand ScanningCommand
+        {
+            get { return scanningCommand; }
+        }
+
+        public ICommand AddDocumentCommand
+        {
+            get { return addDocumentCommand; }
+        }
+
+        public ICommand RemoveDocumentCommand
+        {
+            get { return removeDocumentCommand; }
+        }
+
+        public ICommand OpenDocumentCommand
+        {
+            get { return openDocumentCommand; }
+        }
+
         private void Scanning()
         {
         }
@@ -170,12 +186,12 @@ namespace PatientInfoModule.ViewModels
 
             //if (this.dialogService.AskUser("Удалить отмеченные документы ?", true) == true)
             //{
-                foreach (var item in allDocuments.Where(x => x.ThumbnailChecked).ToList())
-                {
-                    patientService.DeletePersonOuterDocument(item.DocumentId);
-                    documentService.DeleteDocumentById(item.DocumentId);
-                    AllDocuments.Remove(item);
-                }
+            foreach (var item in allDocuments.Where(x => x.ThumbnailChecked).ToList())
+            {
+                patientService.DeletePersonOuterDocument(item.DocumentId);
+                documentService.DeleteDocumentById(item.DocumentId);
+                AllDocuments.Remove(item);
+            }
             //}
         }
 
@@ -186,6 +202,7 @@ namespace PatientInfoModule.ViewModels
         }
 
         private ObservableCollectionEx<ThumbnailViewModel> allDocuments;
+
         public ObservableCollectionEx<ThumbnailViewModel> AllDocuments
         {
             get { return allDocuments; }
@@ -193,12 +210,13 @@ namespace PatientInfoModule.ViewModels
         }
 
         private ThumbnailViewModel selectedDocument;
+
         public ThumbnailViewModel SelectedDocument
         {
             get { return selectedDocument; }
             set { SetProperty(ref selectedDocument, value); }
         }
-       
+
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             var targetPersonId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;

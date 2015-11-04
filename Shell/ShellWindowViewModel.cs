@@ -51,9 +51,7 @@ namespace Shell
         {
             BusyMediator.Activate("Подключение к базе данных...");
             OnPropertyChanged(() => CanOpenMenu);
-            var checkDataBaseConnectionTask = Task.Run(() => CheckDatabaseConnection());
-            await Task.WhenAll(checkDataBaseConnectionTask, Task.Delay(AppConfiguration.PendingOperationDelay));
-            var success = checkDataBaseConnectionTask.Result;
+            var success = await Task.Run(() => CheckDatabaseConnection());
             BusyMediator.Deactivate();
             if (!success)
             {

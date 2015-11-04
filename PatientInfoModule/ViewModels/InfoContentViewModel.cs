@@ -350,9 +350,7 @@ namespace PatientInfoModule.ViewModels
                 saveData.NewName.FirstName = FirstName;
                 saveData.NewName.MiddleName = MiddleName;
 
-                var savePatientTask = patientService.SavePatientAsync(saveData, token);
-                await Task.WhenAll(Task.Delay(AppConfiguration.PendingOperationDelay, token), savePatientTask);
-                var result = savePatientTask.Result;
+                var result = await patientService.SavePatientAsync(saveData, token);
                 currentPerson = result.CurrentPerson;
                 currentName = result.CurrentName;
                 saveSuccesfull = true;
@@ -458,14 +456,12 @@ namespace PatientInfoModule.ViewModels
             try
             {
                 patientQuery = patientService.GetPatientQuery(patientId);
-                var loadPatientTask = patientQuery.Select(x => new
+                var result = await patientQuery.Select(x => new
                                                                {
                                                                    CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == null || y.EndDateTime == DateTime.MaxValue),
                                                                    CurrentPerson = x
                                                                })
                                                   .FirstOrDefaultAsync(token);
-                await Task.WhenAll(loadPatientTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
-                var result = loadPatientTask.Result;
                 if (result == null)
                 {
                     CriticalFailureMediator.Activate("Указанный пациент по какой-то причине отсутсвует в базе данных. Пожалуйста, обратитесь в службу поддержки");

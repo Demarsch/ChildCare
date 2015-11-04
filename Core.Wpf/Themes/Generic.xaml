@@ -4,7 +4,7 @@
                     xmlns:converters="clr-namespace:Core.Wpf.Converters"
                     xmlns:misc="clr-namespace:Core.Wpf.Misc"
                     xmlns:gif="http://wpfanimatedgif.codeplex.com">
-    <Duration x:Key="AnimationDuration">0:0:0.75</Duration>
+    <Duration x:Key="AnimationDuration">0:0:1</Duration>
     <!--Default styles-->
     <Style x:Key="TextHighlightStyle"
            TargetType="{x:Type Run}">
@@ -120,6 +120,7 @@
                         <Storyboard TargetName="innerBorder"
                                     TargetProperty="Opacity">
                             <DoubleAnimation To="0"
+                                             From="1"
                                              Duration="{StaticResource AnimationDuration}" />
                         </Storyboard>
                     </BeginStoryboard>
