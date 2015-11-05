@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientRecordsModule", "Pat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizationContractsModule", "OrganizationContracts\OrganizationContractsModule.csproj", "{3139D047-8FAA-4481-AFF4-D47315F6EEED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportingModule", "ReportingModule\ReportingModule.csproj", "{E8B73148-5CB3-4FC4-A75E-6BD471ACEFC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,6 +118,10 @@ Global
 		{3139D047-8FAA-4481-AFF4-D47315F6EEED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3139D047-8FAA-4481-AFF4-D47315F6EEED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3139D047-8FAA-4481-AFF4-D47315F6EEED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8B73148-5CB3-4FC4-A75E-6BD471ACEFC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8B73148-5CB3-4FC4-A75E-6BD471ACEFC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8B73148-5CB3-4FC4-A75E-6BD471ACEFC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8B73148-5CB3-4FC4-A75E-6BD471ACEFC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,5 +144,6 @@ Global
 		{53C0EFF3-2F75-42C3-87C2-F59DD01D02B4} = {7058AE0F-F40D-481D-BC1B-67A27D5612DD}
 		{5B63C016-181B-49E5-9B91-9120A78EBF72} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
 		{3139D047-8FAA-4481-AFF4-D47315F6EEED} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
+		{E8B73148-5CB3-4FC4-A75E-6BD471ACEFC6} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
 	EndGlobalSection
 EndGlobal
