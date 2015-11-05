@@ -212,22 +212,8 @@
                         </wpf:AutoCompleteTextBox>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Потребитель" Margin="2"/>
-                        <wpf:AutoCompleteTextBox Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" Height="23"
-                                Watermark="Введите Ф.И.О. потребителя для поиска..."
-                                DisplayMember="FullName"
-                                ItemTemplate="{StaticResource PersonAutoCompleteTemplate}"
-                                SelectedItem="{Binding SelectedConsumer, Mode=TwoWay}"
-                                IconPlacement="Left"
-                                IconVisibility="Visible"
-                                Provider="{Binding PersonSuggestionProvider}"
-                                x:Name="searchConsumer">
-                            <wpf:AutoCompleteTextBox.LoadingContent>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Загрузка данных..." Margin="2" FontSize="13" />
-                                </StackPanel>
-                            </wpf:AutoCompleteTextBox.LoadingContent>
-                        </wpf:AutoCompleteTextBox>
-
+                        <TextBox Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" Height="23"
+                                   Text="{Binding Consumer}" IsReadOnly="True"/>                                
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="Метод оплаты" Margin="2"/>
                         <ComboBox Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2"
             ItemsSource="{Binding PaymentTypes}" 

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Misc;
@@ -11,6 +12,14 @@ namespace PatientInfoModule.Services
     {
         IDisposableQueryable<Person> GetPatientQuery(int patientId);
 
+        IQueryable<Country> GetCountries();
+
+        IQueryable<Education> GetEducations();
+
+        IQueryable<MaritalStatus> GetMaritalStatuses();
+
+        IQueryable<HealthGroup> GetHealthGroups();
+            
         Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token);
 
         IDisposableQueryable<Person> GetPersonsByFullName(string fullname);

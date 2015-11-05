@@ -50,8 +50,8 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref client, value); }
         }
 
-        private string contractCost;
-        public string ContractCost
+        private double contractCost;
+        public double ContractCost
         {
             get { return contractCost; }
             set { SetProperty(ref contractCost, value); }
