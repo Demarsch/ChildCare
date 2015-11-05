@@ -9,5 +9,7 @@ namespace Core.Data.Misc
         public const int NewId = 0;
 
         public static readonly DateTime MinDate = new DateTime(1900, 1, 1);
+
+        public static readonly DateTime MaxDate = new DateTime(9998, 12, 31);
     }
 }
