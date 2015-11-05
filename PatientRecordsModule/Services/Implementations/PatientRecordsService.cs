@@ -3,6 +3,8 @@ using System.Linq;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PatientRecordsModule.Services
 {
@@ -96,6 +98,12 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().AsNoTracking().Where(x => x.IsActive), context);
         }
 
+        public IDisposableQueryable<ExecutionPlace> GetActualExecutionPlaces()
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<ExecutionPlace>(context.Set<ExecutionPlace>().AsNoTracking().Where(x => x.IsActive), context);
+        }
+
         public IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate)
         {
             var context = contextProvider.CreateNewContext();
@@ -107,6 +115,33 @@ namespace PatientRecordsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<VisitTemplate>(context.Set<VisitTemplate>().AsNoTracking().Where(x => x.Id == visitTemplateId), context);
+        }
+
+        public IDisposableQueryable<Org> GetLPUs()
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Org>(context.Set<Org>().AsNoTracking().Where(x => x.IsLpu), context);
+        }
+
+        public async Task<int> SaveVisitAsync(Visit visit, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                if (visit.Id > 0)
+                    context.Entry<Visit>(visit).State = System.Data.Entity.EntityState.Modified;
+                else
+                    context.Entry<Visit>(visit).State = System.Data.Entity.EntityState.Added;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return visit.Id;
+            }
         }
     }
 }

@@ -6,8 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
-             x:Name="confirmationWindow">
+             d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -15,6 +14,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -30,19 +31,25 @@
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Шаблон случая:"/>
             <ComboBox Grid.Row="1" Grid.Column="1"  ItemsSource="{Binding VisitTemplates}" SelectedValue="{Binding SelectedVisitTemplateId}" SelectedValuePath="Id" DisplayMemberPath="Name"/>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Договор:"/>
-            <ComboBox Grid.Row="2" Grid.Column="1"  ItemsSource="{Binding Contracts}" SelectedValue="{Binding SelectedContractId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Место выполнения:"/>
+            <ComboBox Grid.Row="2" Grid.Column="1"  ItemsSource="{Binding ExecutionPlaces}" SelectedValue="{Binding SelectedExecutionPlaceId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Договор:"/>
+            <ComboBox Grid.Row="3" Grid.Column="1"  ItemsSource="{Binding Contracts}" SelectedValue="{Binding SelectedContractId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Источник финансирования:"/>
-            <ComboBox Grid.Row="3" Grid.Column="1"  ItemsSource="{Binding FinancingSources}" SelectedValue="{Binding SelectedFinancingSourceId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Источник финансирования:"/>
+            <ComboBox Grid.Row="4" Grid.Column="1"  ItemsSource="{Binding FinancingSources}" SelectedValue="{Binding SelectedFinancingSourceId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Срочность:"/>
-            <ComboBox Grid.Row="4" Grid.Column="1"  ItemsSource="{Binding Urgentlies}" SelectedValue="{Binding SelectedUrgentlyId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Срочность:"/>
+            <ComboBox Grid.Row="5" Grid.Column="1"  ItemsSource="{Binding Urgentlies}" SelectedValue="{Binding SelectedUrgentlyId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Примечание:"/>
-            <TextBox Grid.Row="5" Grid.Column="1" Height="48" Text="{Binding Note}" TextWrapping="Wrap"/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Направившее ЛПУ:"/>
+            <ComboBox Grid.Row="6" Grid.Column="1"  ItemsSource="{Binding LPUs}" SelectedValue="{Binding SelectedLPUId}" SelectedValuePath="Id" DisplayMemberPath="Name"/>
 
-            <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Примечание:"/>
+            <TextBox Grid.Row="7" Grid.Column="1" Height="48" Text="{Binding Note}" TextWrapping="Wrap"/>
+
+            <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Content="Создать" Margin="3" Command="{Binding CreateVisitCommand}"/>
                 <Button Content="Отмена" Margin="3" Command="{Binding CancelCommand}"/>
             </StackPanel>

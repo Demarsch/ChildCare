@@ -1,6 +1,8 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PatientRecordsModule.Services
 {
@@ -32,7 +34,12 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<FinancingSource> GetActualFinancingSources();
 
+        IDisposableQueryable<ExecutionPlace> GetActualExecutionPlaces();
+
+        IDisposableQueryable<Org> GetLPUs();
+
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
 
+        Task<int> SaveVisitAsync(Visit visit, CancellationToken token);
     }
 }

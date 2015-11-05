@@ -22,7 +22,6 @@ using System.Data.Entity;
 using Core.Extensions;
 using PatientRecordsModule.DTO;
 using PatientRecordsModule.DTOs;
-using Prism.Interactivity.InteractionRequest;
 using Microsoft.Practices.Unity;
 
 namespace PatientRecordsModule.ViewModels
@@ -42,13 +41,15 @@ namespace PatientRecordsModule.ViewModels
 
         private readonly IUnityContainer container;
 
+        private readonly PersonRecordListViewModel personRecordListViewModel;
+
         private int patientId;
 
         private CancellationTokenSource currentLoadingToken;
         #endregion
 
         #region Constructors
-        public PersonRecordsHeaderViewModel(IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
+        public PersonRecordsHeaderViewModel(PersonRecordListViewModel personRecordListViewModel, IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
         {
             if (patientRecordsService == null)
             {
@@ -74,6 +75,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (personRecordListViewModel == null)
+            {
+                throw new ArgumentNullException("personRecordListViewModel");
+            }
+            this.personRecordListViewModel = personRecordListViewModel;
             this.patientRecordsService = patientRecordsService;
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
@@ -84,8 +90,8 @@ namespace PatientRecordsModule.ViewModels
             patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
             BusyMediator = new BusyMediator();
-            createNewVisitCommand = new DelegateCommand<VisitTemplateDTO>(CreateNewVisit);
-            this.NewVisitCreatingInteractionRequest = new InteractionRequest<NewVisitCreatingViewModel>();
+            
+            
             LoadItemsAsync();
         }
 
@@ -181,14 +187,6 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private void CreateNewVisit(VisitTemplateDTO selectedTemplate)
-        {
-            var newVisitCreatingViewModel = container.Resolve<NewVisitCreatingViewModel>();
-            newVisitCreatingViewModel.Title = "Создать случай";
-            newVisitCreatingViewModel.Date = DateTime.Now;
-            newVisitCreatingViewModel.SelectedVisitTemplateId = selectedTemplate != null ? selectedTemplate.Id : (int?)null;
-            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { CreatedVisitId = vm.VisitId; });
-        }
 
         #endregion
 
@@ -234,8 +232,6 @@ namespace PatientRecordsModule.ViewModels
         }
 
         public BusyMediator BusyMediator { get; set; }
-
-        public InteractionRequest<NewVisitCreatingViewModel> NewVisitCreatingInteractionRequest { get; private set; }
         #endregion
 
         #region Events
@@ -243,8 +239,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Commands
-        private readonly DelegateCommand<VisitTemplateDTO> createNewVisitCommand;
-        public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
+        public ICommand CreateNewVisitCommand { get { return personRecordListViewModel.CreateNewVisitCommand; } }
         #endregion
     }
 }
