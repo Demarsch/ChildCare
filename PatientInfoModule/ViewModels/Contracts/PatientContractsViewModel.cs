@@ -106,20 +106,20 @@ namespace PatientInfoModule.ViewModels
 
         private int patientId;
 
-        public void LoadDataSources()
+        public async void LoadDataSources()
         {
             CriticalFailureMediator.Deactivate();
-            var contractRecord = recordService.GetRecordTypesByOptions("|contract|").FirstOrDefault();
-            var reliableStaff = recordService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefault();
+            var contractRecord = await recordService.GetRecordTypesByOptions("|contract|").FirstOrDefaultAsync();
+            var reliableStaff = await recordService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
                 return;
             }
-            var personStaffs = personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id);
+            var personStaffs = await personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
             if (!personStaffs.Any())
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions.", reloadDataSourcesCommandWrapper, null);
                 return;
             }
             List<FieldValue> elements = new List<FieldValue>();
@@ -129,13 +129,15 @@ namespace PatientInfoModule.ViewModels
             Registrators = new ObservableCollectionEx<FieldValue>(elements);
 
             List<FieldValue> finSources = new List<FieldValue>();
+            var fSources = await recordService.GetActiveFinancingSources().ToArrayAsync();
             finSources.Add(new FieldValue() { Value = -1, Field = "- выберите ист. финансирования -" });
-            finSources.AddRange(recordService.GetActiveFinancingSources().Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
+            finSources.AddRange(fSources.Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
             FinancingSources = new ObservableCollectionEx<FieldValue>(finSources);
 
             List<FieldValue> paymentTypesSource = new List<FieldValue>();
+            var paymentSources = await recordService.GetPaymentTypes().ToArrayAsync();
             paymentTypesSource.Add(new FieldValue() { Value = -1, Field = "- выберите метод оплаты -" });
-            paymentTypesSource.AddRange(recordService.GetPaymentTypes().Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
+            paymentTypesSource.AddRange(paymentSources.Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
             PaymentTypes = new ObservableCollectionEx<FieldValue>(paymentTypesSource);
 
             IsCashless = false;
@@ -181,35 +183,32 @@ namespace PatientInfoModule.ViewModels
             var token = currentLoadingToken.Token;
             BusyMediator.Activate("Загрузка договоров пациента...");
             log.InfoFormat("Loading contracts for patient with Id {0}...", patientId);
-            IDisposableQueryable<RecordContract> contractsQuery = null;
             try
             {
-                contractsQuery = contractService.GetContracts(patientId, null, null, selectedFilterRegistratorId);
-                var loadContractsTask = contractsQuery.OrderBy(x => x.BeginDateTime)
-                                        .Select(x => new
-                                        {
-                                            Id = x.Id,
-                                            ContractNumber = x.Number,
-                                            Client = x.Person.ShortName,
-                                            Cost = x.RecordContractItems.Where(a => a.IsPaid).Sum(a => a.Cost),
-                                            ContractDate = x.BeginDateTime
-                                        }).ToArrayAsync(token);
-                await Task.WhenAll(loadContractsTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
-                var result = loadContractsTask.Result;
-
+                var result = await contractService
+                                .GetContracts(patientId, null, null, selectedFilterRegistratorId)
+                                .OrderBy(x => x.BeginDateTime)
+                                .Select(x => new
+                                {
+                                    Id = x.Id,
+                                    ContractNumber = x.Number,
+                                    Client = x.Person.ShortName,
+                                    ContractCost = x.RecordContractItems.Where(a => a.IsPaid).Sum(a => a.Cost),
+                                    ContractBeginDate = x.BeginDateTime
+                                }).ToArrayAsync(token);
+               
                 ContractsCount = result.Count();
-                ContractsSum = result.Sum(x => x.Cost) + " руб.";
+                ContractsSum = result.Sum(x => x.ContractCost) + " руб.";
                 Contracts = new ObservableCollectionEx<ContractViewModel>();
                 ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
-                foreach (var contract in contractsQuery)
-                    Contracts.Add(new ContractViewModel()
+                Contracts.AddRange(result.Select(x => new ContractViewModel()
                     {
-                        Id = contract.Id,
-                        ContractNumber = contract.Number.ToSafeString(),
-                        Client = contract.Person.ShortName,
-                        ContractCost = contractService.GetContractCost(contract.Id).ToString() + " руб.",
-                        ContractBeginDate = contract.BeginDateTime.ToShortDateString()
-                    });
+                        Id = x.Id,
+                        ContractNumber = x.ContractNumber.ToSafeString(),
+                        Client = x.Client,
+                        ContractCost = x.ContractCost + " руб.",
+                        ContractBeginDate = x.ContractBeginDate.ToShortDateString()
+                    }));
                 if (contracts.Any())
                     SelectedContract = contracts.OrderByDescending(x => x.ContractBeginDate).First();
                 else
@@ -224,7 +223,7 @@ namespace PatientInfoModule.ViewModels
             catch (Exception ex)
             {
                 log.ErrorFormatEx(ex, "Failed to load contracts for patient with Id {0}", patientId);
-                CriticalFailureMediator.Activate("Не удалость загрузить договора пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadContractsDataCommandWrapper, ex);
+                CriticalFailureMediator.Activate("Не удалость загрузить договоры пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadContractsDataCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally
@@ -232,10 +231,6 @@ namespace PatientInfoModule.ViewModels
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
-                }
-                if (contractsQuery != null)
-                {
-                    contractsQuery.Dispose();
                 }
             }   
         }
@@ -255,8 +250,8 @@ namespace PatientInfoModule.ViewModels
                 SelectedPaymentTypeId = contract.PaymentTypeId;
                 SelectedClient = contract.Person;
                 SelectedConsumer = contract.Person1;                
-                IsCashless = false;               
-
+                IsCashless = false;
+                
                 Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>(assignmentService.GetPersonAssignments(this.patientId).ToList()
                                             .Select(x => new ContractAssignmentsViewModel()
                                             {
@@ -266,7 +261,6 @@ namespace PatientInfoModule.ViewModels
                                                 RecordTypeName = x.RecordType.Name,
                                                 RecordTypeCost = recordService.GetRecordTypeCost(x.RecordTypeId)
                                             }));
-
                 LoadContractItems();
             }
         }
@@ -912,6 +906,8 @@ namespace PatientInfoModule.ViewModels
             SelectedContract = contracts.First(x => x.Id == 0);
             SelectedPaymentTypeId = recordService.GetPaymentTypes().First(x => x.Options.Contains("|cash|")).Id;
             SelectedConsumer = personService.GetPatientQuery(this.patientId).First();
+            ContractBeginDateTime = DateTime.Now.Date;
+            ContractEndDateTime = DateTime.Now.Date;
             saveContractCommand.RaiseCanExecuteChanged();
             removeContractCommand.RaiseCanExecuteChanged();
         }

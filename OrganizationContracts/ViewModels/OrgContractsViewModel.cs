@@ -258,20 +258,20 @@ namespace OrganizationContractsModule.ViewModels
         }
         #endregion
 
-        private void LoadDataSources()
+        private async void LoadDataSources()
         {
             CriticalFailureMediator.Deactivate();
-            var contractRecord = contractService.GetRecordTypesByOptions("|contract|").FirstOrDefault();
-            var reliableStaff = contractService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefault();
+            var contractRecord = await contractService.GetRecordTypesByOptions("|contract|").FirstOrDefaultAsync();
+            var reliableStaff = await contractService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
                 return;
             }
-            var personStaffs = contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id);
+            var personStaffs = await contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
             if (!personStaffs.Any())
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions.", reloadDataSourcesCommandWrapper, null);
                 return;
             }
             List<FieldValue> users = new List<FieldValue>();
@@ -280,14 +280,16 @@ namespace OrganizationContractsModule.ViewModels
             Registrators = new ObservableCollectionEx<FieldValue>(users);
 
             List<FieldValue> finSources = new List<FieldValue>();
+            var fSources = await contractService.GetActiveFinancingSources().ToArrayAsync();
             finSources.Add(new FieldValue() { Value = -1, Field = "- выберите ист. финансирования -" });
-            finSources.AddRange(contractService.GetActiveFinancingSources().Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
+            finSources.AddRange(fSources.Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
             FinSources = new ObservableCollectionEx<FieldValue>(finSources);
             FilterFinSources = new ObservableCollectionEx<FieldValue>(finSources);
 
             List<FieldValue> orgs = new List<FieldValue>();
-            orgs.Add(new FieldValue() { Value = -1, Field = "- выберите организацию -" });
-            orgs.AddRange(contractService.GetOrganizations().Where(x => x.UseInContract).Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
+            var orgsSource = await contractService.GetOrganizations().ToArrayAsync();
+            orgs.Add(new FieldValue() { Value = -1, Field = "- выберите организацию -" });            
+            orgs.AddRange(orgsSource.Where(x => x.UseInContract).Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
             Organizations = new ObservableCollectionEx<FieldValue>(orgs);
             SelectedOrganizationId = -1;
 
@@ -319,31 +321,30 @@ namespace OrganizationContractsModule.ViewModels
             var token = currentLoadingToken.Token;
             BusyMediator.Activate("Загрузка договоров...");
             log.InfoFormat("Loading org contracts...", "");
-            IDisposableQueryable<RecordContract> contractsQuery = null;
             try
             {
-                contractsQuery = contractService.GetContractsWithOrgs(new DateTime(selectedYear, 1, 1), new DateTime(selectedYear, 12, 31), selectedFilterFinSourceId);
-                var loadContractsTask = contractsQuery.OrderBy(x => x.BeginDateTime)
-                                        .Select(x => new
-                                        {
-                                            Id = x.Id,
-                                            ContractNumber = x.Number,
-                                            Organization = x.Org.Name,
-                                            BeginDate = x.BeginDateTime,
-                                            EndDate = x.EndDateTime
-                                        }).ToArrayAsync(token);
-                await Task.WhenAll(loadContractsTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
-                var result = loadContractsTask.Result;
-                
-                foreach (var contract in result)
-                    Contracts.Add(new ContractViewModel()
+                var result = await contractService
+                                .GetContractsWithOrgs(new DateTime(selectedYear, 1, 1), new DateTime(selectedYear, 12, 31), selectedFilterFinSourceId)
+                                .OrderBy(x => x.BeginDateTime)
+                                .Select(x => new
+                                {
+                                    Id = x.Id,
+                                    ContractNumber = x.Number,
+                                    Organization = x.Org.Name,
+                                    BeginDate = x.BeginDateTime,
+                                    EndDate = x.EndDateTime
+                                }).ToArrayAsync(token);
+
+                Contracts.Clear();
+                Contracts.AddRange(result.Select(x => 
+                    new ContractViewModel()
                     {
-                        Id = contract.Id,
-                        ContractNumber = contract.ContractNumber.ToSafeString(),
-                        OrganizationName = contract.Organization,
-                        BeginDate = contract.BeginDate,
-                        EndDate = contract.EndDate
-                    });
+                        Id = x.Id,
+                        ContractNumber = x.ContractNumber.ToSafeString(),
+                        OrganizationName = x.Organization,
+                        BeginDate = x.BeginDate,
+                        EndDate = x.EndDate
+                    }));
                 if (contracts.Any())
                     SelectedContract = contracts.OrderByDescending(x => x.BeginDate).First();
                 else
@@ -365,10 +366,6 @@ namespace OrganizationContractsModule.ViewModels
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
-                }
-                if (contractsQuery != null)
-                {
-                    contractsQuery.Dispose();
                 }
             }
         }

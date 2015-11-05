@@ -30,7 +30,7 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IEventAggregator eventAggregator;
 
-        private readonly CommandWrapper reloadPatientDataCommandWrapper;
+        private readonly CommandWrapper reloadDocumentsCommandWrapper;
 
         private CancellationTokenSource currentLoadingToken;
 
@@ -66,7 +66,7 @@ namespace PatientInfoModule.ViewModels
             personId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
             CriticalFailureMediator = new CriticalFailureMediator();
-            reloadPatientDataCommandWrapper = new CommandWrapper
+            reloadDocumentsCommandWrapper = new CommandWrapper
                                               {
                                                   Command = new DelegateCommand(() => LoadPersonDocumentsAsync(personId)),
                                                   CommandName = "Повторить",
@@ -123,7 +123,7 @@ namespace PatientInfoModule.ViewModels
             catch (Exception ex)
             {
                 log.ErrorFormatEx(ex, "Failed to load documents for patient with Id {0}", personId);
-                CriticalFailureMediator.Activate("Не удалость загрузить документы пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientDataCommandWrapper, ex);
+                CriticalFailureMediator.Activate("Не удалость загрузить документы пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadDocumentsCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally

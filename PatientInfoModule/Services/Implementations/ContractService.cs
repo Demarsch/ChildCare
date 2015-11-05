@@ -27,8 +27,8 @@ namespace PatientInfoModule.Services
             {
                 using (var db = contextProvider.CreateNewContext())
                 {
-                    msg = exception;
-                    /*var saveContract = contract.Id > 0 ? db.GetById<RecordContract>(contract.Id) : new RecordContract();
+                    var saveContract = contract.Id == SpecialValues.NewId ? new RecordContract() : db.Set<RecordContract>().First(x => x.Id == contract.Id);
+
                     saveContract.Number = contract.Number;
                     saveContract.ContractName = contract.ContractName;
                     saveContract.BeginDateTime = contract.BeginDateTime;
@@ -37,20 +37,20 @@ namespace PatientInfoModule.Services
                     saveContract.ClientId = contract.ClientId;
                     saveContract.ConsumerId = contract.ConsumerId;
                     saveContract.OrgId = contract.OrgId;
+                    saveContract.OrgDetails = contract.OrgDetails;
                     saveContract.ContractCost = contract.ContractCost;
                     saveContract.PaymentTypeId = contract.PaymentTypeId;
-                    saveContract.TransactionNumber = contract.TransactionNumber.ToSafeString();
-                    saveContract.TransactionDate = contract.TransactionDate.ToSafeString();
+                    saveContract.TransactionNumber = contract.TransactionNumber;
+                    saveContract.TransactionDate = contract.TransactionDate;
                     saveContract.Priority = contract.Priority;
                     saveContract.Options = contract.Options;
                     saveContract.InUserId = contract.InUserId;
                     saveContract.InDateTime = contract.InDateTime;
-                    if (saveContract.Id == 0)
-                        db.Add<RecordContract>(saveContract);
-                    db.Save();
+
+                    db.Entry(saveContract).State = saveContract.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                    db.SaveChanges();
                     msg = exception;
-                    return saveContract.Id;*/
-                    return 0;
+                    return saveContract.Id;
                 }
             }
             catch (Exception ex)
