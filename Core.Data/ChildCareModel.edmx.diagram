@@ -41,7 +41,6 @@
         <EntityTypeShape EntityType="DataLib.PersonHealthGroup" Width="1.5" PointX="11.25" PointY="44.625" />
         <EntityTypeShape EntityType="DataLib.PersonIdentityDocument" Width="1.5" PointX="8.25" PointY="40.25" />
         <EntityTypeShape EntityType="DataLib.PersonMaritalStatus" Width="1.5" PointX="8.25" PointY="36.625" />
-        <EntityTypeShape EntityType="DataLib.PersonName" Width="1.5" PointX="5.25" PointY="40.25" />
         <EntityTypeShape EntityType="DataLib.PersonNationality" Width="1.5" PointX="8.25" PointY="52.625" />
         <EntityTypeShape EntityType="DataLib.PersonOuterDocument" Width="1.5" PointX="5.25" PointY="44.625" />
         <EntityTypeShape EntityType="DataLib.PersonRelative" Width="1.5" PointX="11.25" PointY="40.5" />
@@ -128,7 +127,6 @@
         <AssociationConnector Association="DataLib.FK_PersonHealthGroups_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonMaritalStatuses_Persons" />
-        <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonNationalities_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons" />
@@ -190,6 +188,8 @@
         <AssociationConnector Association="DataLib.FK_Visits_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_RecordContracts" />
         <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="3.375" PointY="3.75" />
+        <EntityTypeShape EntityType="DataLib.PersonName" Width="1.5" PointX="5.25" PointY="40.375" />
+        <AssociationConnector Association="DataLib.FK_PersonNames_Persons" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

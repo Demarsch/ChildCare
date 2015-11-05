@@ -10,7 +10,6 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Extensions;
 using Core.Misc;
-using Core.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
@@ -35,11 +34,9 @@ namespace PatientInfoModule.ViewModels
 
         private readonly ILog log;
 
-        private readonly ICacheService cacheService;
-
         private readonly IEventAggregator eventAggregator;
 
-        public InfoContentViewModel(IPatientService patientService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
+        public InfoContentViewModel(IPatientService patientService, ILog log, IEventAggregator eventAggregator)
         {
             if (patientService == null)
             {
@@ -49,17 +46,12 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("log");
             }
-            if (cacheService == null)
-            {
-                throw new ArgumentNullException("cacheService");
-            }
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
             }
             this.patientService = patientService;
             this.log = log;
-            this.cacheService = cacheService;
             this.eventAggregator = eventAggregator;
             changeTracker = new ChangeTracker();
             changeTracker.RegisterComparer(() => LastName, StringComparer.CurrentCultureIgnoreCase);
@@ -71,17 +63,94 @@ namespace PatientInfoModule.ViewModels
             createNewPatientCommand = new DelegateCommand(CreatetNewPatient);
             saveChangesCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
             cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
-            reloadPatientDataCommandWrapper = new CommandWrapper
-                                              {
-                                                  Command = new DelegateCommand(() => SelectPatientAsync(patientIdBeingSelected)),
-                                                  CommandName = "Повторить",
-                                              };
-            saveChangesCommandWrapper = new CommandWrapper
-                                        {
-                                            Command = saveChangesCommand,
-                                            CommandName = "Повторить",
-                                        };
+            reloadPatientDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SelectPatientAsync(patientIdBeingSelected)) };
+            saveChangesCommandWrapper = new CommandWrapper { Command = saveChangesCommand };
+            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => EnsureDataSourceLoaded()) };
         }
+
+        #region Data source
+
+        private TaskCompletionSource<bool> dataSourcesLoadingTaskSource; 
+
+        private async Task<bool> EnsureDataSourceLoaded()
+        {
+            if (dataSourcesLoadingTaskSource != null)
+            {
+                return await dataSourcesLoadingTaskSource.Task;
+            }
+            dataSourcesLoadingTaskSource = new TaskCompletionSource<bool>();
+            log.InfoFormat("Loading data sources for patient info content...");
+            BusyMediator.Activate("Загрузка общих данных...");
+            try
+            {
+                var result = await Task<DataSource>.Factory.StartNew(LoadDataSource);
+                Educations = result.Educations;
+                HealthGroups = result.HealthGroups;
+                Countries = result.Countries;
+                MaritalStatuses = result.MaritalStatuses;
+                log.InfoFormat("Data sources for patient info content are successfully loaded");
+                dataSourcesLoadingTaskSource.SetResult(true);
+                
+            }
+            catch (Exception ex)
+            {
+                log.Error("Failed to load data sources for patient info content", ex);
+                CriticalFailureMediator.Activate("Не удалось загрузить общие данные. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
+                dataSourcesLoadingTaskSource.SetResult(false);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+            return await dataSourcesLoadingTaskSource.Task;
+        }
+
+        private DataSource LoadDataSource()
+        {
+            return new DataSource
+                   {
+                       Countries = patientService.GetCountries().ToArray(),
+                       Educations = patientService.GetEducations().ToArray(),
+                       HealthGroups = patientService.GetHealthGroups().ToArray(),
+                       MaritalStatuses = patientService.GetMaritalStatuses().ToArray()
+                   };
+        }
+
+        private readonly CommandWrapper reloadDataSourceCommandWrapper;
+
+        private IEnumerable<HealthGroup> healthGroups;
+
+        public IEnumerable<HealthGroup> HealthGroups
+        {
+            get { return healthGroups; }
+            set { SetProperty(ref healthGroups, value); }
+        }
+
+        private IEnumerable<Education> educations;
+
+        public IEnumerable<Education> Educations
+        {
+            get { return educations; }
+            set { SetProperty(ref educations, value); }
+        }
+
+        private IEnumerable<Country> countries;
+
+        public IEnumerable<Country> Countries
+        {
+            get { return countries; }
+            set { SetProperty(ref countries, value); }
+        }
+
+        private IEnumerable<MaritalStatus> maritalStatuses;
+
+        public IEnumerable<MaritalStatus> MaritalStatuses
+        {
+            get { return maritalStatuses; }
+            set { SetProperty(ref maritalStatuses, value); }
+        }
+
+        #endregion
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {
@@ -333,7 +402,7 @@ namespace PatientInfoModule.ViewModels
                 var saveData = new SavePatientInput
                                {
                                    CurrentName = currentName,
-                                   NewName = new PersonName { BeginDateTime = SpecialValues.MinDate },
+                                   NewName = new PersonName(),
                                    CurrentPerson = currentPerson ?? new Person(),
                                    IsIncorrectName = IsIncorrectName,
                                    IsNewName = IsNewName || currentName == null,
@@ -434,6 +503,11 @@ namespace PatientInfoModule.ViewModels
             {
                 return;
             }
+            var dataSourcesLoaded = await EnsureDataSourceLoaded();
+            if (!dataSourcesLoaded)
+            {
+                return;
+            }
             ClearData();
             saveChangesCommand.RaiseCanExecuteChanged();
             cancelChangesCommand.RaiseCanExecuteChanged();
@@ -457,14 +531,14 @@ namespace PatientInfoModule.ViewModels
             {
                 patientQuery = patientService.GetPatientQuery(patientId);
                 var result = await patientQuery.Select(x => new
-                                                               {
-                                                                   CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == null || y.EndDateTime == DateTime.MaxValue),
-                                                                   CurrentPerson = x
-                                                               })
-                                                  .FirstOrDefaultAsync(token);
+                                                            {
+                                                                CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
+                                                                CurrentPerson = x
+                                                            })
+                                               .FirstOrDefaultAsync(token);
                 if (result == null)
                 {
-                    CriticalFailureMediator.Activate("Указанный пациент по какой-то причине отсутсвует в базе данных. Пожалуйста, обратитесь в службу поддержки");
+                    CriticalFailureMediator.Activate("Указанный пациент по какой-то причине отсутствует в базе данных. Пожалуйста, обратитесь в службу поддержки");
                     return;
                 }
                 currentName = result.CurrentName;
@@ -624,5 +698,16 @@ namespace PatientInfoModule.ViewModels
         }
 
         #endregion
+
+        private class DataSource
+        {
+            public IEnumerable<Country> Countries { get; set; }
+
+            public IEnumerable<Education> Educations { get; set; }
+
+            public IEnumerable<MaritalStatus> MaritalStatuses { get; set; }
+
+            public IEnumerable<HealthGroup> HealthGroups { get; set; }
+        }
     }
 }

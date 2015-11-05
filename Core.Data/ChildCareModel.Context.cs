@@ -61,7 +61,6 @@ namespace Core.Data
         public virtual DbSet<PersonHealthGroup> PersonHealthGroups { get; set; }
         public virtual DbSet<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
         public virtual DbSet<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
-        public virtual DbSet<PersonName> PersonNames { get; set; }
         public virtual DbSet<PersonNationality> PersonNationalities { get; set; }
         public virtual DbSet<PersonOuterDocument> PersonOuterDocuments { get; set; }
         public virtual DbSet<PersonRelative> PersonRelatives { get; set; }
@@ -94,5 +93,6 @@ namespace Core.Data
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
+        public virtual DbSet<PersonName> PersonNames { get; set; }
     }
 }

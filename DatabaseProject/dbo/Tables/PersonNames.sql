@@ -5,7 +5,7 @@
     [FirstName]     VARCHAR (100) NOT NULL,
     [MiddleName]    VARCHAR (100) NOT NULL,
     [BeginDateTime] DATETIME      NOT NULL,
-    [EndDateTime]   DATETIME      NULL,
+    [EndDateTime]   DATETIME      NOT NULL,
     CONSTRAINT [PK_PersonNames] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_PersonNames_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id])
 );

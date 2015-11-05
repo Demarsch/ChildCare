@@ -5,6 +5,8 @@ namespace Core.Wpf.Misc
 {
     public class CommandWrapper : BindableBase
     {
+        public static readonly string DefaultCommandName = "Повторить";
+
         public static CommandWrapper Empty = new CommandWrapper();
 
         private ICommand command;

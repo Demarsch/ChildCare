@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Extensions;
 using Core.Misc;
 using Core.Services;
@@ -174,8 +175,8 @@ namespace PatientSearchModule.ViewModels
                                                          x.IsMale,
                                                          x.Snils,
                                                          x.MedNumber,
-                                                         CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == null || y.EndDateTime == DateTime.MaxValue),
-                                                         PreviousName = x.PersonNames.Where(y => y.EndDateTime != null && y.EndDateTime != DateTime.MaxValue)
+                                                         CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == SpecialValues.MinDate),
+                                                         PreviousName = x.PersonNames.Where(y => y.EndDateTime != SpecialValues.MinDate)
                                                                          .OrderByDescending(y => y.BeginDateTime)
                                                                          .FirstOrDefault(),
                                                          IdentityDocument = x.PersonIdentityDocuments

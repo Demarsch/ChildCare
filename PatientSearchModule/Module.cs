@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows;
 using Core.Data;
 using Core.Expressions;
-using log4net;
 using Microsoft.Practices.Unity;
 using PatientSearchModule.Model;
 using PatientSearchModule.Services;
@@ -32,7 +31,7 @@ namespace PatientSearchModule
                 throw new ArgumentNullException("regionManager");
             }
             this.regionManager = regionManager;
-            this.container = container.CreateChildContainer();
+            this.container = container;
         }
 
         public void Initialize()
@@ -43,8 +42,6 @@ namespace PatientSearchModule
 
         private void RegisterServices()
         {
-            container.RegisterInstance(LogManager.GetLogger("PATSEARCH"));
-
             container.RegisterType<IUserInputNormalizer, UserInputNormalizer>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISearchExpressionProvider<Person>, PersonBirthDateSearchExpressionProvider>("PersonBirthDate", new ContainerControlledLifetimeManager());
             container.RegisterType<ISearchExpressionProvider<Person>, PersonIdentityDocumentNumberSearchExpressionProvider>("PersonIdentityNumber", new ContainerControlledLifetimeManager());

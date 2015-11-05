@@ -453,7 +453,7 @@
           <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="MiddleName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonNationalities">
           <Key>
@@ -2805,7 +2805,6 @@
           <EntitySet Name="PersonHealthGroups" EntityType="DataLib.PersonHealthGroup" />
           <EntitySet Name="PersonIdentityDocuments" EntityType="DataLib.PersonIdentityDocument" />
           <EntitySet Name="PersonMaritalStatuses" EntityType="DataLib.PersonMaritalStatus" />
-          <EntitySet Name="PersonNames" EntityType="DataLib.PersonName" />
           <EntitySet Name="PersonNationalities" EntityType="DataLib.PersonNationality" />
           <EntitySet Name="PersonOuterDocuments" EntityType="DataLib.PersonOuterDocument" />
           <EntitySet Name="PersonRelatives" EntityType="DataLib.PersonRelative" />
@@ -3066,10 +3065,6 @@
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonMaritalStatus" EntitySet="PersonMaritalStatuses" />
           </AssociationSet>
-          <AssociationSet Name="FK_PersonNames_Persons" Association="DataLib.FK_PersonNames_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonName" EntitySet="PersonNames" />
-          </AssociationSet>
           <AssociationSet Name="FK_PersonNationalities_Persons" Association="DataLib.FK_PersonNationalities_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonNationality" EntitySet="PersonNationalities" />
@@ -3302,6 +3297,11 @@
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
           </AssociationSet>
           <EntitySet Name="ReportTemplates" EntityType="DataLib.ReportTemplate" />
+          <EntitySet Name="PersonNames" EntityType="DataLib.PersonName" />
+          <AssociationSet Name="FK_PersonNames_Persons" Association="DataLib.FK_PersonNames_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonName" EntitySet="PersonNames" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -3811,19 +3811,6 @@
           <NavigationProperty Name="MaritalStatus" Relationship="DataLib.FK_PersonMaritalStatuses_MaritalStatuses" FromRole="PersonMaritalStatus" ToRole="MaritalStatus" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonMaritalStatuses_Persons" FromRole="PersonMaritalStatus" ToRole="Person" />
         </EntityType>
-        <EntityType Name="PersonName">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PersonId" Type="Int32" Nullable="false" />
-          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="MiddleName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonNames_Persons" FromRole="PersonName" ToRole="Person" />
-        </EntityType>
         <EntityType Name="PersonNationality">
           <Key>
             <PropertyRef Name="Id" />
@@ -3892,7 +3879,6 @@
           <NavigationProperty Name="PersonHealthGroups" Relationship="DataLib.FK_PersonHealthGroups_Persons" FromRole="Person" ToRole="PersonHealthGroup" />
           <NavigationProperty Name="PersonIdentityDocuments" Relationship="DataLib.FK_PersonIdentityDocuments_Persons" FromRole="Person" ToRole="PersonIdentityDocument" />
           <NavigationProperty Name="PersonMaritalStatuses" Relationship="DataLib.FK_PersonMaritalStatuses_Persons" FromRole="Person" ToRole="PersonMaritalStatus" />
-          <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_Persons" FromRole="Person" ToRole="PersonName" />
           <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Persons" FromRole="Person" ToRole="PersonNationality" />
           <NavigationProperty Name="PersonOuterDocuments" Relationship="DataLib.FK_PersonOuterDocuments_Persons" FromRole="Person" ToRole="PersonOuterDocument" />
           <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_Persons" FromRole="Person" ToRole="PersonRelative" />
@@ -3905,6 +3891,7 @@
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="Person" ToRole="RecordContract" />
           <NavigationProperty Name="RecordContracts1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="Person" ToRole="RecordContract" />
+          <NavigationProperty Name="PersonNames" Relationship="DataLib.FK_PersonNames_Persons" FromRole="Person" ToRole="PersonName" />
           </EntityType>
         <EntityType Name="PersonSocialStatus">
           <Key>
@@ -4987,18 +4974,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonNames_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonName" Role="PersonName" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonName">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PersonNationalities_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
           <End Type="DataLib.PersonNationality" Role="PersonNationality" Multiplicity="*" />
@@ -5759,6 +5734,31 @@
           <Property Name="IsDocXTemplate" Type="Boolean" Nullable="false" />
           <Property Name="Template" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="PersonName">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MiddleName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonNames_Persons" FromRole="PersonName" ToRole="Person" />
+        </EntityType>
+        <Association Name="FK_PersonNames_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonName" Role="PersonName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonName">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6219,19 +6219,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PersonNames">
-            <EntityTypeMapping TypeName="DataLib.PersonName">
-              <MappingFragment StoreEntitySet="PersonNames">
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PersonNationalities">
             <EntityTypeMapping TypeName="DataLib.PersonNationality">
               <MappingFragment StoreEntitySet="PersonNationalities">
@@ -6660,6 +6647,19 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="ReportTitle" ColumnName="ReportTitle" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonNames">
+            <EntityTypeMapping TypeName="DataLib.PersonName">
+              <MappingFragment StoreEntitySet="PersonNames">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

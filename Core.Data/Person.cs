@@ -26,7 +26,6 @@ namespace Core.Data
             this.PersonHealthGroups = new HashSet<PersonHealthGroup>();
             this.PersonIdentityDocuments = new HashSet<PersonIdentityDocument>();
             this.PersonMaritalStatuses = new HashSet<PersonMaritalStatus>();
-            this.PersonNames = new HashSet<PersonName>();
             this.PersonNationalities = new HashSet<PersonNationality>();
             this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
             this.PersonRelatives = new HashSet<PersonRelative>();
@@ -39,6 +38,7 @@ namespace Core.Data
             this.Visits = new HashSet<Visit>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.RecordContracts1 = new HashSet<RecordContract>();
+            this.PersonNames = new HashSet<PersonName>();
         }
     
         public int Id { get; set; }
@@ -79,8 +79,6 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonName> PersonNames { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
@@ -104,5 +102,7 @@ namespace Core.Data
         public virtual ICollection<RecordContract> RecordContracts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContract> RecordContracts1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonName> PersonNames { get; set; }
     }
 }

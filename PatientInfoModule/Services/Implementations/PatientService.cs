@@ -30,6 +30,26 @@ namespace PatientInfoModule.Services
             return new DisposableQueryable<Person>(context.Set<Person>().AsNoTracking().Where(x => x.Id == patientId), context);
         }
 
+        public IQueryable<Country> GetCountries()
+        {
+            return contextProvider.SharedContext.Set<Country>();
+        }
+
+        public IQueryable<Education> GetEducations()
+        {
+            return contextProvider.SharedContext.Set<Education>();
+        }
+
+        public IQueryable<MaritalStatus> GetMaritalStatuses()
+        {
+            return contextProvider.SharedContext.Set<MaritalStatus>();
+        }
+
+        public IQueryable<HealthGroup> GetHealthGroups()
+        {
+            return contextProvider.SharedContext.Set<HealthGroup>();
+        }
+
         public async Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token)
         {
             if (token.IsCancellationRequested)
@@ -60,6 +80,11 @@ namespace PatientInfoModule.Services
                         data.NewName.BeginDateTime = data.NewNameStartDate;
                         context.Entry(data.CurrentName).State = EntityState.Modified;
                     }
+                    else
+                    {
+                        data.NewName.BeginDateTime = SpecialValues.MinDate;
+                    }
+                    data.NewName.EndDateTime = SpecialValues.MaxDate;
                     data.NewName.Person = data.CurrentPerson;
                 }
                 if (token.IsCancellationRequested)

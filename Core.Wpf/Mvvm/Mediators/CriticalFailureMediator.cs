@@ -69,7 +69,7 @@ namespace Core.Wpf.Mvvm
             Activate(failureMessage, CommandWrapper.Empty, null);
         }
 
-        public void Activate(object failureMessage, CommandWrapper retryCommand, Exception exception)
+        public void Activate(object failureMessage, CommandWrapper retryCommand, Exception exception = null)
         {
             Message = failureMessage;
             RetryCommand = retryCommand;

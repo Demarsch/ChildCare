@@ -61,16 +61,8 @@ namespace OrganizationContractsModule.ViewModels
             CriticalFailureMediator = new CriticalFailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
-            reloadContractsDataCommandWrapper = new CommandWrapper
-            {
-                Command = new DelegateCommand(() => LoadContractsAsync()),
-                CommandName = "Повторить",
-            };
-            reloadDataSourcesCommandWrapper = new CommandWrapper
-            {
-                Command = new DelegateCommand(() => LoadDataSources()),
-                CommandName = "Повторить",
-            };
+            reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadContractsAsync) };
+            reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources) };
 
             addContractCommand = new DelegateCommand(AddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
@@ -265,13 +257,13 @@ namespace OrganizationContractsModule.ViewModels
             var reliableStaff = contractService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefault();
             if (contractRecord == null || reliableStaff == null)
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение", reloadDataSourcesCommandWrapper);
                 return;
             }
             var personStaffs = contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id);
             if (!personStaffs.Any())
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги", reloadDataSourcesCommandWrapper);
                 return;
             }
             List<FieldValue> users = new List<FieldValue>();
