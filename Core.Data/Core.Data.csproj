@@ -118,6 +118,9 @@
     <Compile Include="RecordContract.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ReportTemplate.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Services\Implementations\DbContextCacheService.cs" />
     <Compile Include="Services\Implementations\DbContextProvider.cs" />
     <Compile Include="Country.cs">
