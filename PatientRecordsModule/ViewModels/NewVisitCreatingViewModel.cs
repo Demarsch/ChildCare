@@ -35,6 +35,8 @@ namespace PatientRecordsModule.ViewModels
         private readonly CommandWrapper reloadDataSourceCommandWrapper;
         private readonly CommandWrapper saveChangesCommandWrapper;
         private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
+
+        private Visit visit;
         #endregion
 
         #region Constructors
@@ -89,15 +91,13 @@ namespace PatientRecordsModule.ViewModels
             {
                 if (SetProperty(ref selectedVisitTemplateId, value))
                 {
-                    OnPropertyChanged(() => IsNotSelectedVisitTemplate);
                     SetFieldByVisitTemplateAsync(SelectedVisitTemplateId.ToInt());
                 }
+                OnPropertyChanged(() => ContractEnabled);
+                OnPropertyChanged(() => FinancingSourceEnabled);
+                OnPropertyChanged(() => UrgentlyEnabled);
+                OnPropertyChanged(() => ExecutionPlaceEnabled);
             }
-        }
-
-        public bool IsNotSelectedVisitTemplate
-        {
-            get { return !SelectedVisitTemplateId.HasValue; }
         }
 
         public ObservableCollectionEx<CommonIdName> Contracts { get; set; }
@@ -106,7 +106,18 @@ namespace PatientRecordsModule.ViewModels
         public int? SelectedContractId
         {
             get { return selectedContractId; }
-            set { SetProperty(ref selectedContractId, value); }
+            set
+            {
+                SetProperty(ref selectedContractId, value);
+                OnPropertyChanged(() => ContractEnabled);
+            }
+        }
+
+        private bool ContractSetByVisitTemplate { get; set; }
+
+        public bool ContractEnabled
+        {
+            get { return !(SelectedVisitTemplateId.HasValue && SelectedContractId.HasValue && ContractSetByVisitTemplate); }
         }
 
         public ObservableCollectionEx<CommonIdName> FinancingSources { get; set; }
@@ -115,7 +126,18 @@ namespace PatientRecordsModule.ViewModels
         public int? SelectedFinancingSourceId
         {
             get { return selectedFinancingSourceId; }
-            set { SetProperty(ref selectedFinancingSourceId, value); }
+            set
+            {
+                SetProperty(ref selectedFinancingSourceId, value);
+                OnPropertyChanged(() => FinancingSourceEnabled);
+            }
+        }
+
+        private bool FinancingSourceSetByVisitTemplate { get; set; }
+
+        public bool FinancingSourceEnabled
+        {
+            get { return !(SelectedVisitTemplateId.HasValue && SelectedFinancingSourceId.HasValue && FinancingSourceSetByVisitTemplate); }
         }
 
         public ObservableCollectionEx<CommonIdName> Urgentlies { get; set; }
@@ -124,7 +146,18 @@ namespace PatientRecordsModule.ViewModels
         public int? SelectedUrgentlyId
         {
             get { return selectedUrgentlyId; }
-            set { SetProperty(ref selectedUrgentlyId, value); }
+            set
+            {
+                SetProperty(ref selectedUrgentlyId, value);
+                OnPropertyChanged(() => UrgentlyEnabled);
+            }
+        }
+
+        private bool UrgentlySetByVisitTemplate { get; set; }
+
+        public bool UrgentlyEnabled
+        {
+            get { return !(SelectedVisitTemplateId.HasValue && SelectedUrgentlyId.HasValue && UrgentlySetByVisitTemplate); }
         }
 
         public ObservableCollectionEx<CommonIdName> ExecutionPlaces { get; set; }
@@ -133,7 +166,18 @@ namespace PatientRecordsModule.ViewModels
         public int? SelectedExecutionPlaceId
         {
             get { return selectedExecutionPlaceId; }
-            set { SetProperty(ref selectedExecutionPlaceId, value); }
+            set
+            {
+                SetProperty(ref selectedExecutionPlaceId, value);
+                OnPropertyChanged(() => ExecutionPlaceEnabled);
+            }
+        }
+
+        private bool ExecutionPlaceSetByVisitTemplate { get; set; }
+
+        public bool ExecutionPlaceEnabled
+        {
+            get { return !(SelectedVisitTemplateId.HasValue && SelectedExecutionPlaceId.HasValue && ExecutionPlaceSetByVisitTemplate); }
         }
 
         public ObservableCollectionEx<CommonIdName> LPUs { get; set; }
@@ -150,13 +194,6 @@ namespace PatientRecordsModule.ViewModels
         {
             get { return note; }
             set { SetProperty(ref note, value); }
-        }
-
-        private int visitId;
-        public int VisitId
-        {
-            get { return visitId; }
-            set { SetProperty(ref visitId, value); }
         }
 
         private int personId;
@@ -188,27 +225,30 @@ namespace PatientRecordsModule.ViewModels
             }
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
-            logService.InfoFormat("Saving data for visit with Id = {0} for person with Id = {1}", VisitId > 0 ? VisitId.ToString() : "(new visit)", personId);
+            string visitIdString = visit != null ? visit.Id.ToString() : "(new visit)";
+            logService.InfoFormat("Saving data for visit with Id = {0} for person with Id = {1}", visitIdString, personId);
             BusyMediator.Activate("Сохранение изменений...");
             var saveSuccesfull = false;
             try
             {
-                var visit = new Visit()
-                {
-                    Id = VisitId,
-                    PersonId = PersonId,
-                    ContractId = SelectedContractId.Value,
-                    FinancingSourceId = SelectedFinancingSourceId.Value,
-                    UrgentlyId = SelectedUrgentlyId.Value,
-                    VisitTemplateId = SelectedVisitTemplateId.Value,
-                    ExecutionPlaceId = SelectedExecutionPlaceId.Value,
-                    SentLPUId = SelectedLPUId.Value,
-                    BeginDateTime = Date,
-                    Note = Note
-                };
+                if (visit == null)
+                    visit = new Visit()
+                    {
+                        MKB = string.Empty,
+                        OKATO = string.Empty
+                    };
+                visit.PersonId = PersonId;
+                visit.ContractId = SelectedContractId.Value;
+                visit.FinancingSourceId = SelectedFinancingSourceId.Value;
+                visit.UrgentlyId = SelectedUrgentlyId.Value;
+                visit.VisitTemplateId = SelectedVisitTemplateId.Value;
+                visit.ExecutionPlaceId = SelectedExecutionPlaceId.Value;
+                visit.SentLPUId = SelectedLPUId.Value;
+                visit.BeginDateTime = Date;
+                visit.Note = Note;
 
                 var result = await patientRecordsService.SaveVisitAsync(visit, token);
-                VisitId = result;
+                visit.Id = result;
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -217,7 +257,7 @@ namespace PatientRecordsModule.ViewModels
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to save data for visit with Id = {0} for person with Id = {1}", VisitId > 0 ? VisitId.ToString() : "(new visit)", personId);
+                logService.ErrorFormatEx(ex, "Failed to save data for visit with Id = {0} for person with Id = {1}", visitIdString, personId);
                 CriticalFailureMediator.Activate("Не удалось сохранить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
             }
             finally
@@ -226,6 +266,7 @@ namespace PatientRecordsModule.ViewModels
                 if (saveSuccesfull)
                 {
                     //changeTracker.UntrackAll();
+                    HostWindow.Close();
                 }
             }
         }
@@ -233,12 +274,28 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CancelCommand { get; private set; }
         private void Cancel()
         {
-            VisitId = -1;
+            visit = null;
             HostWindow.Close();
         }
         #endregion
 
         #region Methods
+
+        public void IntializeCreation(int personId, int? visitTemplateId, Visit visit, DateTime date, string title)
+        {
+            ContractSetByVisitTemplate = false;
+            FinancingSourceSetByVisitTemplate = false;
+            UrgentlySetByVisitTemplate = false;
+            ExecutionPlaceSetByVisitTemplate = false;
+            this.PersonId = personId;
+            this.SelectedVisitTemplateId = visitTemplateId;
+            this.visit = visit;
+            this.Date = date;
+            this.Title = title;
+            BusyMediator.Deactivate();
+            CriticalFailureMediator.Deactivate();
+            CriticalFailureMediator = new CriticalFailureMediator();
+        }
 
         private async Task<bool> EnsureDataSourceLoaded()
         {
@@ -353,6 +410,10 @@ namespace PatientRecordsModule.ViewModels
         public async void SetFieldByVisitTemplateAsync(int visitTemplateId)
         {
             var dataSourcesLoaded = await EnsureDataSourceLoaded();
+            ContractSetByVisitTemplate = false;
+            FinancingSourceSetByVisitTemplate = false;
+            UrgentlySetByVisitTemplate = false;
+            ExecutionPlaceSetByVisitTemplate = false;
             if (!dataSourcesLoaded)
             {
                 return;
@@ -381,9 +442,13 @@ namespace PatientRecordsModule.ViewModels
                     x.UrgentlyId,
                     x.ExecutionPlaceId
                 }).FirstOrDefaultAsync(token);
+                ContractSetByVisitTemplate = visitTemplate.ContractId.HasValue;
                 SelectedContractId = visitTemplate.ContractId;
+                FinancingSourceSetByVisitTemplate = visitTemplate.FinancingSourceId.HasValue;
                 SelectedFinancingSourceId = visitTemplate.FinancingSourceId;
+                UrgentlySetByVisitTemplate = visitTemplate.UrgentlyId.HasValue;
                 SelectedUrgentlyId = visitTemplate.UrgentlyId;
+                ExecutionPlaceSetByVisitTemplate = visitTemplate.ExecutionPlaceId.HasValue;
                 SelectedExecutionPlaceId = visitTemplate.ExecutionPlaceId;
                 loadingIsCompleted = true;
             }
@@ -452,8 +517,20 @@ namespace PatientRecordsModule.ViewModels
                 var result = string.Empty;
                 switch (columnName)
                 {
-                    case "LastName":
-                        //result = string.IsNullOrWhiteSpace(LastName) ? "Фамилия не указана" : string.Empty;
+                    case "SelectedContractId":
+                        result = SelectedContractId == null ? "Не указан договор" : string.Empty;
+                        break;
+                    case "SelectedFinancingSourceId":
+                        result = SelectedFinancingSourceId == null ? "Не указан источник финансирования" : string.Empty;
+                        break;
+                    case "SelectedExecutionPlaceId":
+                        result = SelectedExecutionPlaceId == null ? "Не указано место выполнения" : string.Empty;
+                        break;
+                    case "SelectedUrgentlyId":
+                        result = SelectedUrgentlyId == null ? "Не указана срочность" : string.Empty;
+                        break;
+                    case "SelectedLPUId":
+                        result = SelectedLPUId == null ? "Не указано направившее ЛПУ" : string.Empty;
                         break;
                 }
                 if (string.IsNullOrEmpty(result))

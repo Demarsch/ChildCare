@@ -113,10 +113,8 @@ namespace PatientRecordsModule.ViewModels
         private void CreateNewVisit(int? selectedTemplate)
         {
             var newVisitCreatingViewModel = newVisitCreatingViewModelFactory();
-            newVisitCreatingViewModel.Title = "Создать случай";
-            newVisitCreatingViewModel.Date = DateTime.Now;
-            newVisitCreatingViewModel.SelectedVisitTemplateId = selectedTemplate;
-            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { int i = vm.VisitId; });
+            newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
+            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
         }
         #endregion
 

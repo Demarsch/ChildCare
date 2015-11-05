@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Visits] (
     [Id]                INT           IDENTITY (1, 1) NOT NULL,
-    [VisitTemplateId]   INT           NOT NULL,
+    [VisitTemplateId]   INT           NULL,
     [PersonId]          INT           NOT NULL,
     [BeginDateTime]     DATETIME      NOT NULL,
     [EndDateTime]       DATETIME      NULL,
@@ -27,6 +27,8 @@
     CONSTRAINT [FK_Visits_VisitResults] FOREIGN KEY ([VisitResultId]) REFERENCES [dbo].[VisitResults] ([Id]),
     CONSTRAINT [FK_Visits_VisitTemplates] FOREIGN KEY ([VisitTemplateId]) REFERENCES [dbo].[VisitTemplates] ([Id])
 );
+
+
 
 
 

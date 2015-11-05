@@ -88,10 +88,10 @@ namespace Core.Data
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
         public virtual DbSet<VisitResult> VisitResults { get; set; }
-        public virtual DbSet<Visit> Visits { get; set; }
-        public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
         public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
+        public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
+        public virtual DbSet<Visit> Visits { get; set; }
     }
 }

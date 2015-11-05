@@ -5,8 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance viewModels:NewVisitCreatingViewModel}">
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -29,22 +31,36 @@
             <DatePicker Grid.Row="0" Grid.Column="1" SelectedDate="{Binding Date}" SelectedDateFormat="Long" FirstDayOfWeek="Monday" HorizontalAlignment="Left"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Шаблон случая:"/>
-            <ComboBox Grid.Row="1" Grid.Column="1"  ItemsSource="{Binding VisitTemplates}" SelectedValue="{Binding SelectedVisitTemplateId}" SelectedValuePath="Id" DisplayMemberPath="Name"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding VisitTemplates}" 
+                      SelectedValue="{Binding SelectedVisitTemplateId, ValidatesOnDataErrors=True}" 
+                      Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"
+                      SelectedValuePath="Id" DisplayMemberPath="Name"/>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Место выполнения:"/>
-            <ComboBox Grid.Row="2" Grid.Column="1"  ItemsSource="{Binding ExecutionPlaces}" SelectedValue="{Binding SelectedExecutionPlaceId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            <ComboBox Grid.Row="2" Grid.Column="1"  ItemsSource="{Binding ExecutionPlaces}" 
+                      SelectedValue="{Binding SelectedExecutionPlaceId, ValidatesOnDataErrors=True}" 
+                      Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" 
+                      SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding ExecutionPlaceEnabled}"/>
             
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Договор:"/>
-            <ComboBox Grid.Row="3" Grid.Column="1"  ItemsSource="{Binding Contracts}" SelectedValue="{Binding SelectedContractId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            <ComboBox Grid.Row="3" Grid.Column="1"  ItemsSource="{Binding Contracts}" SelectedValue="{Binding SelectedContractId, ValidatesOnDataErrors=True}"
+                      Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" SelectedValuePath="Id" DisplayMemberPath="Name" 
+                      IsEnabled="{Binding ContractEnabled}"/>
 
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Источник финансирования:"/>
-            <ComboBox Grid.Row="4" Grid.Column="1"  ItemsSource="{Binding FinancingSources}" SelectedValue="{Binding SelectedFinancingSourceId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            <ComboBox Grid.Row="4" Grid.Column="1"  ItemsSource="{Binding FinancingSources}" 
+                      SelectedValue="{Binding SelectedFinancingSourceId, ValidatesOnDataErrors=True}" 
+                      Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" 
+                      SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding FinancingSourceEnabled}"/>
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Срочность:"/>
-            <ComboBox Grid.Row="5" Grid.Column="1"  ItemsSource="{Binding Urgentlies}" SelectedValue="{Binding SelectedUrgentlyId}" SelectedValuePath="Id" DisplayMemberPath="Name" IsEnabled="{Binding IsNotSelectedVisitTemplate}"/>
+            <ComboBox Grid.Row="5" Grid.Column="1"  ItemsSource="{Binding Urgentlies}" SelectedValue="{Binding SelectedUrgentlyId, ValidatesOnDataErrors=True}" 
+                      Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" SelectedValuePath="Id" DisplayMemberPath="Name" 
+                      IsEnabled="{Binding UrgentlyEnabled}"/>
 
             <TextBlock Grid.Row="6" Grid.Column="0" Text="Направившее ЛПУ:"/>
-            <ComboBox Grid.Row="6" Grid.Column="1"  ItemsSource="{Binding LPUs}" SelectedValue="{Binding SelectedLPUId}" SelectedValuePath="Id" DisplayMemberPath="Name"/>
+            <ComboBox Grid.Row="6" Grid.Column="1"  ItemsSource="{Binding LPUs}" SelectedValue="{Binding SelectedLPUId, ValidatesOnDataErrors=True}" 
+                      Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" SelectedValuePath="Id" DisplayMemberPath="Name"/>
 
             <TextBlock Grid.Row="7" Grid.Column="0" Text="Примечание:"/>
             <TextBox Grid.Row="7" Grid.Column="1" Height="48" Text="{Binding Note}" TextWrapping="Wrap"/>

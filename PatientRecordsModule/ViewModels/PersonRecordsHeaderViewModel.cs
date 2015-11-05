@@ -26,7 +26,7 @@ using Microsoft.Practices.Unity;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonRecordsHeaderViewModel : BindableBase, IDisposable, IActiveAware
+    public class PersonRecordsHeaderViewModel : BindableBase, IActiveAware
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -88,7 +88,6 @@ namespace PatientRecordsModule.ViewModels
             this.container = container;
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
             patientId = SpecialValues.NonExistingId;
-            SubscribeToEvents();
             BusyMediator = new BusyMediator();
             
             
@@ -98,45 +97,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Methods
-        public void Dispose()
-        {
-            UnsubscriveFromEvents();
-        }
 
-        private void SubscribeToEvents()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
-        }
-
-        private void OnPatientSelected(int patientId)
-        {
-            this.patientId = patientId;
-            LoadSelectedPatientData();
-            ActivatePatientInfo();
-        }
-
-        private void LoadSelectedPatientData()
-        {
-            //TODO:
-        }
-
-        private void UnsubscriveFromEvents()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
-        }
-
-        private void ActivatePatientInfo()
-        {
-            if (patientId == SpecialValues.NonExistingId)
-            {
-                //regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
-            }
-            else
-            {
-                var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
-                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonRecordsViewModel>(), navigationParameters);
-            }
-        }
 
         private async void LoadItemsAsync()
         {
@@ -204,17 +165,10 @@ namespace PatientRecordsModule.ViewModels
                     OnPropertyChanged(() => IsActive);
                     if (value)
                     {
-                        ActivatePatientInfo();
+                        //ActivatePatientInfo();
                     }
                 }
             }
-        }
-
-        private int createdVisitId;
-        public int CreatedVisitId
-        {
-            get { return this.createdVisitId; }
-            set { SetProperty(ref createdVisitId, value); }
         }
 
         private ObservableCollectionEx<VisitTemplateDTO> visitTemplates;
@@ -222,13 +176,6 @@ namespace PatientRecordsModule.ViewModels
         {
             get { return visitTemplates; }
             set { SetProperty(ref visitTemplates, value); }
-        }
-
-        private VisitTemplateDTO selectedVisitTemplate;
-        public VisitTemplateDTO SelectedVisitTemplate
-        {
-            get { return selectedVisitTemplate; }
-            set { SetProperty(ref selectedVisitTemplate, value); }
         }
 
         public BusyMediator BusyMediator { get; set; }

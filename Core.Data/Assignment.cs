@@ -50,10 +50,10 @@ namespace Core.Data
         public virtual Room Room { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
-        public virtual Visit Visit { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual Org Org { get; set; }
+        public virtual Visit Visit { get; set; }
     }
 }
