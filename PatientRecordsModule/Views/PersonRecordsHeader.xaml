@@ -5,25 +5,11 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
-                      xmlns:views="clr-namespace:PatientRecordsModule.Views"
-                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-                      xmlns:prism="http://www.codeplex.com/prism"
-                      xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
                       xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:PersonRecordsHeaderViewModel}">
-    <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding NewVisitCreatingInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction IsModal="True">
-                <popup:PopupWindowAction.WindowContent>
-                    <views:NewVisitCreating/>
-                </popup:PopupWindowAction.WindowContent>
-            </popup:PopupWindowAction>
-        </prism:InteractionRequestTrigger>
-    </i:Interaction.Triggers>
-
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Случаи"
                    Style="{x:Null}" />
@@ -48,7 +34,7 @@
             <fluent:SplitButton.ItemContainerStyle>
                 <Style TargetType="{x:Type fluent:MenuItem}">
                     <Setter Property="Command" Value="{Binding DataContext.CreateNewVisitCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:SplitButton}}}"/>
-                    <Setter Property="CommandParameter" Value="{Binding}"/>
+                    <Setter Property="CommandParameter" Value="{Binding Id}"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 </Style>

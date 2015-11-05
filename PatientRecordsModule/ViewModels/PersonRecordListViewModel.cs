@@ -22,6 +22,7 @@ using System.Windows.Input;
 using Prism.Commands;
 using Prism.Events;
 using Core.Wpf.Events;
+using Prism.Interactivity.InteractionRequest;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -34,11 +35,15 @@ namespace PatientRecordsModule.ViewModels
         private readonly ILog logService;
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
         private readonly ChangeTracker changeTracker;
+        private readonly DelegateCommand<int?> createNewVisitCommand;
+        private readonly Func<NewVisitCreatingViewModel> newVisitCreatingViewModelFactory;
+
         private CancellationTokenSource currentLoadingToken;
+
         #endregion
 
         #region  Constructors
-        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator)
+        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator, Func<NewVisitCreatingViewModel> newVisitCreatingViewModelFactory)
         {
             if (patientRecordsService == null)
             {
@@ -52,6 +57,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
+            if (newVisitCreatingViewModelFactory == null)
+            {
+                throw new ArgumentNullException("newVisitCreatingViewModelFactory");
+            }
+            this.newVisitCreatingViewModelFactory = newVisitCreatingViewModelFactory;
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
@@ -63,6 +73,8 @@ namespace PatientRecordsModule.ViewModels
                 Command = new DelegateCommand(() => LoadRootItemsAsync(PersonId)),
                 CommandName = "Повторить",
             };
+            createNewVisitCommand = new DelegateCommand<int?>(CreateNewVisit);
+            NewVisitCreatingInteractionRequest = new InteractionRequest<NewVisitCreatingViewModel>();
             RootItems = new ObservableCollectionEx<object>();
             this.PersonId = SpecialValues.NonExistingId;
             SubscribeToEvents();
@@ -93,9 +105,19 @@ namespace PatientRecordsModule.ViewModels
 
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }
 
+        public InteractionRequest<NewVisitCreatingViewModel> NewVisitCreatingInteractionRequest { get; private set; }
         #endregion
 
         #region Commands
+        public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
+        private void CreateNewVisit(int? selectedTemplate)
+        {
+            var newVisitCreatingViewModel = newVisitCreatingViewModelFactory();
+            newVisitCreatingViewModel.Title = "Создать случай";
+            newVisitCreatingViewModel.Date = DateTime.Now;
+            newVisitCreatingViewModel.SelectedVisitTemplateId = selectedTemplate;
+            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { int i = vm.VisitId; });
+        }
         #endregion
 
         #region Methods

@@ -27,6 +27,7 @@ namespace Core.Data
         public string Name { get; set; }
         public string ShortName { get; set; }
         public string UseName { get; set; }
+        public bool IsActive { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VisitOutcome> VisitOutcomes { get; set; }

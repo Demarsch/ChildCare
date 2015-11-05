@@ -3,8 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:prism="http://www.codeplex.com/prism"
+             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
+             xmlns:views="clr-namespace:PatientRecordsModule.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <i:Interaction.Triggers>
+        <prism:InteractionRequestTrigger SourceObject="{Binding NewVisitCreatingInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction IsModal="True">
+                <popup:PopupWindowAction.WindowContent>
+                    <views:NewVisitCreating/>
+                </popup:PopupWindowAction.WindowContent>
+            </popup:PopupWindowAction>
+        </prism:InteractionRequestTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.ColumnDefinitions >
             <ColumnDefinition Width="auto"/>
