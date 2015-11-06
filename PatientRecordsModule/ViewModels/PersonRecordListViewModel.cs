@@ -114,7 +114,7 @@ namespace PatientRecordsModule.ViewModels
         {
             var newVisitCreatingViewModel = newVisitCreatingViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => {  });
         }
         #endregion
 

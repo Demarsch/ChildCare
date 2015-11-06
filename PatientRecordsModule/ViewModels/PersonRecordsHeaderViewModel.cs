@@ -26,7 +26,7 @@ using Microsoft.Practices.Unity;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonRecordsHeaderViewModel : BindableBase, IActiveAware
+    public class PersonRecordsHeaderViewModel : BindableBase, IActiveAware, IDisposable
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -89,8 +89,7 @@ namespace PatientRecordsModule.ViewModels
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
             patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
-            
-            
+            SubscribeToEvents();            
             LoadItemsAsync();
         }
 
@@ -98,6 +97,26 @@ namespace PatientRecordsModule.ViewModels
 
         #region Methods
 
+        public void Dispose()
+        {
+            UnsubscriveFromEvents();
+        }
+
+        private void SubscribeToEvents()
+        {
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
+        }
+
+        private void OnPatientSelected(int patientId)
+        {
+            this.patientId = patientId;
+            ActivatePersonRecords();
+        }
+
+        private void UnsubscriveFromEvents()
+        {
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
+        }
 
         private async void LoadItemsAsync()
         {
@@ -148,6 +167,18 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        private void ActivatePersonRecords()
+        {
+            if (patientId == SpecialValues.NonExistingId)
+            {
+                //regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
+            }
+            else
+            {
+                var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonRecordsViewModel>(), navigationParameters);
+            }
+        }
 
         #endregion
 
@@ -165,7 +196,7 @@ namespace PatientRecordsModule.ViewModels
                     OnPropertyChanged(() => IsActive);
                     if (value)
                     {
-                        //ActivatePatientInfo();
+                        ActivatePersonRecords();
                     }
                 }
             }

@@ -27,9 +27,9 @@
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" />
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}" />
                 
-                <ContentControl Content="{Binding CriticalFailureMediator}"
+                <!--<ContentControl Content="{Binding CriticalFailureMediator}"
                         HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
+                        VerticalAlignment="Stretch" />-->
 
             </Grid>
         </Border>

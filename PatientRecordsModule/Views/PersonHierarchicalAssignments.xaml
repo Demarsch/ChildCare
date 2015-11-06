@@ -4,7 +4,7 @@
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <HierarchicalDataTemplate DataType="{x:Type viewModels:PersonHierarchicalAssignmentsViewModel}" ItemsSource="{Binding NestedItems}">
         <Border BorderThickness="1" BorderBrush="Black" Background="#FFDACC6F" HorizontalAlignment="Stretch">
-            <Grid >
+            <Grid HorizontalAlignment="Left">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -20,13 +20,13 @@
                 <ContentControl Grid.Column="0" Grid.Row="1" Grid.RowSpan="2"  Content="{Binding BusyMediator}"
                         HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0"/>
 
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AssignDateTime}"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AssignDateTime}" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}" />
 
-                <ContentControl Content="{Binding CriticalFailureMediator}"
+                <!--<ContentControl Content="{Binding CriticalFailureMediator}"
                         HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
+                        VerticalAlignment="Stretch" />-->
             </Grid>
         </Border>
     </HierarchicalDataTemplate>

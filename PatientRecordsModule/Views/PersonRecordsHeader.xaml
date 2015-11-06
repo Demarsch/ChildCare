@@ -14,23 +14,8 @@
         <TextBlock Text="Случаи"
                    Style="{x:Null}" />
     </fluent:RibbonTabItem.Header>
-    <fluent:RibbonGroupBox Header="Новый пациент"
-                           MinWidth="100">
-        <fluent:Button Header="Создать"
-                       LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/AddPatient-48x48.png"
-                       SizeDefinition="Large"
-                       Command="{Binding CreateNewPatientCommand}"/>
-    </fluent:RibbonGroupBox>
-    <fluent:RibbonGroupBox Header="Изменения">
-        <fluent:Button Header="Сохранить"
-                       SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/SaveChanges-48x48.png" />
-        <fluent:Button Header="Отменить"
-                       SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/Cancel-48x48.png" />
-    </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Случай">
-        <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Visit48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True" Command="{Binding CreateNewVisitCommand}" >
+        <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitAdd48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True" Command="{Binding CreateNewVisitCommand}" >
             <fluent:SplitButton.ItemContainerStyle>
                 <Style TargetType="{x:Type fluent:MenuItem}">
                     <Setter Property="Command" Value="{Binding DataContext.CreateNewVisitCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:SplitButton}}}"/>
@@ -41,7 +26,6 @@
             </fluent:SplitButton.ItemContainerStyle>
             <fluent:SplitButton.ItemTemplate>
                 <DataTemplate>
-                    <!--<Border BorderBrush="Gray" BorderThickness="1" HorizontalAlignment="Stretch">-->
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
@@ -53,8 +37,9 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-
                         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Name}" />
 
                         <TextBlock Grid.Row="1" Grid.Column="0"  Foreground="Gray" Text="Договор:" Visibility="{Binding Contract, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
@@ -68,18 +53,33 @@
                                    Visibility="{Binding Urgently, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
                         <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Urgently}" Visibility="{Binding Urgently, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"
                                    Foreground="Gray"/>
+                        <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
                     </Grid>
-                    <!--</Border>-->
                 </DataTemplate>
             </fluent:SplitButton.ItemTemplate>
         </fluent:SplitButton>
-        <!--<fluent:InRibbonGallery MinItemsInRow="3" MaxItemsInRow="5" VerticalContentAlignment="Stretch" ItemWidth="75" ItemsSource="{Binding VisitTemplates}" SelectedItem="{Binding SelectedVisitTemplate}">
-            <fluent:InRibbonGallery.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Name}" VerticalAlignment="Stretch" Background="AliceBlue" TextAlignment="Center" TextWrapping="Wrap"/>
-                </DataTemplate>
-            </fluent:InRibbonGallery.ItemTemplate>
-        </fluent:InRibbonGallery>-->
+        <StackPanel>
+            <fluent:Button Header="Изменить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitEdit48x48.png" Command="{Binding EditVisitCommand}"/>
+            <fluent:Button Header="Удалить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitRemove48x48.png" Command="{Binding RemoveVisitCommand}"/>
+        </StackPanel>
         <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
     </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Назначения">
+        <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Assignment48x48.png"/>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Услуги">
+        <fluent:Button Header="Изменить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Record48x48.png"/>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Изменения">
+        <fluent:Button Header="Сохранить"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/SaveChanges-48x48.png" />
+        <fluent:Button Header="Закрыть"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/Cancel-48x48.png" />
+        <fluent:Button Header="Печать"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" />
+    </fluent:RibbonGroupBox>
+
 </fluent:RibbonTabItem>
