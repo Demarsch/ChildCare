@@ -20,63 +20,69 @@ namespace OrganizationContractsModule.Services
             this.contextProvider = contextProvider;
         }
 
-        public int SaveContractData(RecordContract contract, out string msg)
-        {
-            string exception = string.Empty;
-            try
+        public int SaveContractData(RecordContract contract, RecordContractItem[] contractItems)
+        {           
+            using (var db = contextProvider.CreateNewContext())
             {
-                using (var db = contextProvider.CreateNewContext())
+                var saveContract = contract.Id == SpecialValues.NewId ? new RecordContract() : db.Set<RecordContract>().First(x => x.Id == contract.Id);
+                saveContract.Number = contract.Number;
+                saveContract.ContractName = contract.ContractName;
+                saveContract.BeginDateTime = contract.BeginDateTime;
+                saveContract.EndDateTime = contract.EndDateTime;
+                saveContract.FinancingSourceId = contract.FinancingSourceId;
+                saveContract.ClientId = contract.ClientId;
+                saveContract.ConsumerId = contract.ConsumerId;
+                saveContract.OrgId = contract.OrgId;
+                saveContract.OrgDetails = contract.OrgDetails == null ? string.Empty : contract.OrgDetails;
+                saveContract.ContractCost = contract.ContractCost;
+                saveContract.PaymentTypeId = contract.PaymentTypeId;
+                saveContract.TransactionNumber = contract.TransactionNumber == null ? string.Empty : contract.TransactionNumber;
+                saveContract.TransactionDate = contract.TransactionDate == null ? string.Empty : contract.TransactionDate;
+                saveContract.Priority = contract.Priority;
+                saveContract.Options = contract.Options;
+                saveContract.InUserId = contract.InUserId;
+                saveContract.InDateTime = contract.InDateTime;
+
+                db.Entry(saveContract).State = saveContract.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+
+                foreach (var item in contractItems)
                 {
-                    msg = exception;
-                    /*var saveContract = contract.Id > 0 ? db.GetById<RecordContract>(contract.Id) : new RecordContract();
-                    saveContract.Number = contract.Number;
-                    saveContract.ContractName = contract.ContractName;
-                    saveContract.BeginDateTime = contract.BeginDateTime;
-                    saveContract.EndDateTime = contract.EndDateTime;
-                    saveContract.FinancingSourceId = contract.FinancingSourceId;
-                    saveContract.ClientId = contract.ClientId;
-                    saveContract.ConsumerId = contract.ConsumerId;
-                    saveContract.OrgId = contract.OrgId;
-                    saveContract.ContractCost = contract.ContractCost;
-                    saveContract.PaymentTypeId = contract.PaymentTypeId;
-                    saveContract.TransactionNumber = contract.TransactionNumber.ToSafeString();
-                    saveContract.TransactionDate = contract.TransactionDate.ToSafeString();
-                    saveContract.Priority = contract.Priority;
-                    saveContract.Options = contract.Options;
-                    saveContract.InUserId = contract.InUserId;
-                    saveContract.InDateTime = contract.InDateTime;
-                    if (saveContract.Id == 0)
-                        db.Add<RecordContract>(saveContract);
-                    db.Save();
-                    msg = exception;
-                    return saveContract.Id;*/
-                    return 0;
+                    var contractItem = item.Id == SpecialValues.NewId ? new RecordContractItem() : db.Set<RecordContractItem>().First(x => x.Id == item.Id);
+                    contractItem.RecordContract = saveContract;
+                    contractItem.AssignmentId = item.AssignmentId;
+                    contractItem.RecordTypeId = item.RecordTypeId;
+                    contractItem.Count = item.Count;
+                    contractItem.Cost = item.Cost;
+                    contractItem.IsPaid = item.IsPaid;
+                    contractItem.Appendix = item.Appendix;
+                    contractItem.InUserId = item.InUserId;
+                    contractItem.InDateTime = item.InDateTime;
+                    db.Entry(contractItem).State = contractItem.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                 }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
-                return 0;
-            }
+                db.SaveChanges();
+                return saveContract.Id;
+            }                 
         }
 
         public void DeleteContract(int contractId)
         {
             using (var db = contextProvider.CreateNewContext())
             {
-                /*var contract = db.GetById<RecordContract>(contractId);
-                db.Remove<RecordContract>(contract);
-                db.Save();*/
+                var contract = db.Set<RecordContract>().First(x => x.Id == contractId);
+                foreach (var item in contract.RecordContractItems.ToList())
+                    db.Entry(item).State = EntityState.Deleted;
+                db.Entry(contract).State = EntityState.Deleted;
+                db.SaveChanges();
             }
         }
 
-        public void DeleteContractItems(int contractId)
+        public void DeleteContractItemById(int id)
         {
             using (var db = contextProvider.CreateNewContext())
             {
-                /*var contractItems = db.GetData<RecordContractItem>().Where(x => x.RecordContractId == contractId);
-                db.RemoveRange<RecordContractItem>(contractItems);
-                db.Save();*/
+                var contractItem = db.Set<RecordContractItem>().First(x => x.Id == id);
+                db.Entry(contractItem).State = EntityState.Deleted;
+                db.SaveChanges();
             }
         }
 

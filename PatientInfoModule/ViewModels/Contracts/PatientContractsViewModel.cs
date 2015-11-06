@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Input;
 using Prism.Events;
 using System.ComponentModel;
+using Prism.Interactivity.InteractionRequest;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -70,7 +71,9 @@ namespace PatientInfoModule.ViewModels
             changeTracker.PropertyChanged += OnChangesTracked;
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadContractsAsync(patientId)) };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources) };
-           
+            ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
+            NotificationInteractionRequest = new InteractionRequest<Notification>();
+
             addContractCommand = new DelegateCommand(AddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
             removeContractCommand = new DelegateCommand(RemoveContract, CanRemoveContract);
@@ -96,7 +99,9 @@ namespace PatientInfoModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }        
+        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
+        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
 
         private int patientId;
 
@@ -104,7 +109,7 @@ namespace PatientInfoModule.ViewModels
         {
             CriticalFailureMediator.Deactivate();
             var contractRecord = await recordService.GetRecordTypesByOptions("|contract|").FirstOrDefaultAsync();
-            var reliableStaff = await recordService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefaultAsync();
+            var reliableStaff = await recordService.GetRecordTypeRolesByOptions("|responsibleForContract|").FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
                 CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
@@ -673,8 +678,15 @@ namespace PatientInfoModule.ViewModels
        
         private void RemoveAppendix()
         {
-            if (selectedContractItem != null && selectedContractItem.IsSection /*&& this.dialogService.AskUser("Удалить " + SelectedContractItem.SectionName + " вместе со вложенными услугами ?", true) == true*/)
-            {
+            if (selectedContractItem == null || !selectedContractItem.IsSection) return;
+            
+            ConfirmationInteractionRequest.Raise(new Confirmation()
+                {
+                    Title = "Внимание",
+                    Content = "Удалить " + selectedContractItem.SectionName + " вместе со вложенными услугами ?"
+                },
+             (confirmation) =>
+             {
                 int? appendix = selectedContractItem.Appendix;
                 foreach (var item in ContractItems.ToList())
                 {
@@ -686,7 +698,7 @@ namespace PatientInfoModule.ViewModels
                     }
                 }
                 UpdateTotalSumRow();
-            }
+            });
         }
 
         private void AddAppendix()
@@ -698,13 +710,21 @@ namespace PatientInfoModule.ViewModels
 
         private void RemoveRecord()
         {
-            if (selectedRecord == null) return;
-            //if (this.dialogService.AskUser("Удалить услугу " + SelectedContractItem.RecordTypeName + " из договора ?", true) == true)
-            //{
-                contractService.DeleteContractItemById(selectedContractItem.Id);
-                ContractItems.Remove(selectedContractItem);
-                UpdateTotalSumRow();
-            //}
+            if (selectedContractItem == null || selectedContractItem.IsSection) return;
+            ConfirmationInteractionRequest.Raise(new Confirmation()
+                {
+                    Title = "Внимание",
+                    Content = "Удалить услугу " + SelectedContractItem.RecordTypeName + " из договора ?"
+                },
+             (confirmation) =>
+             {
+                 if (confirmation.Confirmed)
+                 {
+                     contractService.DeleteContractItemById(selectedContractItem.Id);
+                     ContractItems.Remove(selectedContractItem);
+                     UpdateTotalSumRow();
+                 }
+             });
         }
 
         private void AddRecord()
@@ -763,22 +783,33 @@ namespace PatientInfoModule.ViewModels
 
         private void RemoveContract()
         {
-            //if (this.dialogService.AskUser("Удалить договор " + SelectedContract.ContractName + "?", true) == true)
-            //{
-                var visit = recordService.GetVisitsByContractId(SelectedContract.Id).FirstOrDefault();
-                if (visit != null)
-                {
-                    //this.dialogService.ShowMessage("Данный договор уже закреплен за случаем обращения пациента " + personService.GetPersonById(visit.PersonId).ShortName + ". Удаление договора невозможно.");
-                    return;
-                }
-                if (selectedContract.Id != SpecialValues.NewId)
-                    contractService.DeleteContract(selectedContract.Id);
-
-                Contracts.Remove(selectedContract);
-                UpdateTotalSumRow();
-                saveContractCommand.RaiseCanExecuteChanged();
-                removeContractCommand.RaiseCanExecuteChanged();
-            //}
+            if (selectedContract == null) return;
+            ConfirmationInteractionRequest.Raise(new Confirmation() 
+                { 
+                    Title = "Внимание", 
+                    Content = "Вы уверены, что хотите удалить договор " + ContractName + "?"
+                }, 
+             (confirmation) => 
+             { 
+                 if (confirmation.Confirmed)
+                 {
+                     var visit = recordService.GetVisitsByContractId(selectedContract.Id).FirstOrDefault();
+                     if (visit != null)
+                     {
+                         NotificationInteractionRequest.Raise(new Notification()
+                         {
+                             Title = "Внимание",
+                             Content = "Данный договор уже закреплен за случаем обращения пациента \"" + visit.VisitTemplate.ShortName + "\". Удаление договора невозможно."
+                         }, (notification) => { return; });
+                     }
+                     if (selectedContract.Id != SpecialValues.NewId)
+                         contractService.DeleteContract(selectedContract.Id);
+                     Contracts.Remove(selectedContract);
+                     UpdateTotalSumRow();
+                     saveContractCommand.RaiseCanExecuteChanged();
+                     removeContractCommand.RaiseCanExecuteChanged();
+                 }             
+             });
         }
 
         private bool CanSaveChanges()
@@ -811,19 +842,10 @@ namespace PatientInfoModule.ViewModels
         }
 
         private readonly CommandWrapper saveChangesCommandWrapper;
-        private CancellationTokenSource currentOperationToken;
 
         private void SaveContract()
         {
-            CriticalFailureMediator.Deactivate();
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-
+            CriticalFailureMediator.Deactivate();       
             RecordContract contract = new RecordContract();
             if (selectedContract.Id != SpecialValues.NewId)
                 contract = contractService.GetContractById(selectedContract.Id).First();
@@ -845,6 +867,8 @@ namespace PatientInfoModule.ViewModels
             contract.ConsumerId = patientId;
             contract.ContractName = selectedClient.ShortName;
             contract.PaymentTypeId = selectedPaymentTypeId;
+            contract.TransactionNumber = string.Empty;
+            contract.TransactionDate = string.Empty;  
             if (recordService.GetPaymentTypeById(selectedPaymentTypeId).Select(x => x.Options).Contains("|cashless|"))
             {
                 contract.TransactionNumber = transationNumber;
@@ -854,6 +878,7 @@ namespace PatientInfoModule.ViewModels
             contract.InUserId = selectedRegistratorId;
             contract.InDateTime = DateTime.Now;
             contract.OrgId = (int?)null;
+            contract.OrgDetails = string.Empty;
             contract.ContractCost = 0;
             contract.Options = string.Empty;
             
@@ -871,15 +896,14 @@ namespace PatientInfoModule.ViewModels
                     InDateTime = contract.InDateTime
                 }).ToArray();
 
-            string message = string.Empty;
             try
             {
-                contract.Id = contractService.SaveContractData(contract, recordContractsItems, out message);
+                contract.Id = contractService.SaveContractData(contract, recordContractsItems);
                 saveSuccesfull = true;
             }
             catch (Exception ex)
             {
-                log.Error(string.Format("Failed to Save RecordContract. " + message));
+                log.Error(string.Format("Failed to Save RecordContract. " + ex.Message));
                 log.ErrorFormatEx(ex, "Failed to save RecordContract with Id {0} for patient with Id {1}", ((contract == null || contract.Id == SpecialValues.NewId) ? "(New contract)" : contract.Id.ToString()), patientId);
                 CriticalFailureMediator.Activate("Не удалось сохранить договор. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
                 return;
