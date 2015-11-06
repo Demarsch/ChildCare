@@ -22,6 +22,7 @@ using System.Windows.Input;
 using Prism.Events;
 using System.ComponentModel;
 using OrganizationContractsModule.Misc;
+using Prism.Interactivity.InteractionRequest;
 
 namespace OrganizationContractsModule.ViewModels
 {
@@ -37,6 +38,8 @@ namespace OrganizationContractsModule.ViewModels
         public BusyMediator BusyMediator { get; set; }
         public CriticalFailureMediator CriticalFailureMediator { get; private set; }
         private CancellationTokenSource currentLoadingToken;
+        public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
+        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
 
         public OrgContractsViewModel(IContractService contractService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
         {            
@@ -61,6 +64,8 @@ namespace OrganizationContractsModule.ViewModels
             CriticalFailureMediator = new CriticalFailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
+            ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
+            NotificationInteractionRequest = new InteractionRequest<Notification>();
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadContractsAsync) };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources) };
 
@@ -68,7 +73,9 @@ namespace OrganizationContractsModule.ViewModels
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
             removeContractCommand = new DelegateCommand(RemoveContract, CanRemoveContract);
             addOrganizationCommand = new DelegateCommand(AddOrganization);
-            IsContractSelected = false;            
+            IsContractSelected = false;
+
+            saveChangesCommandWrapper = new CommandWrapper { Command = saveContractCommand };
         }
 
         #region Properties
@@ -87,7 +94,7 @@ namespace OrganizationContractsModule.ViewModels
             set
             {
                 SetProperty(ref selectedYear, value);
-                LoadContractsAsync();
+                if (value != SpecialValues.NonExistingId) LoadContractsAsync();
             }
         }
 
@@ -254,7 +261,7 @@ namespace OrganizationContractsModule.ViewModels
         {
             CriticalFailureMediator.Deactivate();
             var contractRecord = await contractService.GetRecordTypesByOptions("|contract|").FirstOrDefaultAsync();
-            var reliableStaff = await contractService.GetRecordTypeRolesByOptions("|responsible|contract|pay|").FirstOrDefaultAsync();
+            var reliableStaff = await contractService.GetRecordTypeRolesByOptions("|responsibleForContract|").FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
                 CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
@@ -294,8 +301,9 @@ namespace OrganizationContractsModule.ViewModels
             for(int i = begin; i < end; i++)
                 elements.Add(new FieldValue() { Value = i, Field = i + " год" });
             Years = new ObservableCollectionEx<FieldValue>(elements);
-            SelectedYear = -1;
-            SelectedYear = DateTime.Now.Year;            
+            SelectedYear = SpecialValues.NonExistingId;
+            SelectedYear = DateTime.Now.Year;
+            SelectedFilterFinSourceId = -1;
         }
 
         private async void LoadContractsAsync()
@@ -369,12 +377,14 @@ namespace OrganizationContractsModule.ViewModels
             else
             {
                 var contract = contractService.GetContractById(selectedContract.Id).First();
-                Number = "НОВЫЙ ДОГОВОР";
+                Number = contract.DisplayName;
+                SelectedFinSourceId = contract.FinancingSourceId;
                 SelectedOrganizationId = contract.OrgId.Value;
                 ContractBeginDate = contract.BeginDateTime;
                 ContractEndDate = contract.EndDateTime;
                 Cost = contract.ContractCost;
                 Info = contract.OrgDetails;
+                SelectedRegistratorId = contract.InUserId;
             }
         }
 
@@ -431,11 +441,17 @@ namespace OrganizationContractsModule.ViewModels
             return i;
         }
 
+        private readonly CommandWrapper saveChangesCommandWrapper;
         private void SaveContract()
         {
+            CriticalFailureMediator.Deactivate();
             RecordContract contract = new RecordContract();
             if (selectedContract.Id != SpecialValues.NewId)
                 contract = contractService.GetContractById(selectedContract.Id).First();
+            log.InfoFormat("Saving contract data with Id {0} for Org", ((contract == null || contract.Id == SpecialValues.NewId) ? "(New contract)" : contract.Id.ToString()));
+            BusyMediator.Activate("Сохранение изменений...");
+            var saveSuccesfull = false;
+
             if (!contract.Number.HasValue)
             {
                 DateTime beginYear = new DateTime(contractBeginDate.Year, 1, 1);
@@ -459,42 +475,64 @@ namespace OrganizationContractsModule.ViewModels
             contract.ContractCost = cost;
             contract.Options = string.Empty;
 
-            string message = string.Empty;
-            contract.Id = contractService.SaveContractData(contract, out message);
-            if (contract.Id == 0)
+            try
             {
-                //dialogService.ShowError("При сохранении договора возникла ошибка: " + message);
-                log.Error(string.Format("Failed to Save RecordContract. " + message));
+                contract.Id = contractService.SaveContractData(contract, new RecordContractItem[0]);
+                saveSuccesfull = true;
+            }
+            catch (Exception ex)
+            {
+                log.Error(string.Format("Failed to Save RecordContract. " + ex.Message));
+                log.ErrorFormatEx(ex, "Failed to save RecordContract with Id {0} for Org", ((contract == null || contract.Id == SpecialValues.NewId) ? "(New contract)" : contract.Id.ToString()));
+                CriticalFailureMediator.Activate("Не удалось сохранить договор. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
                 return;
             }
-            selectedContract.Id = contract.Id;
-                       
-            selectedContract.ContractNumber = contract.Number.ToSafeString();
-            selectedContract.OrganizationName = contract.ContractName;
-            selectedContract.BeginDate = contract.BeginDateTime;
-            selectedContract.EndDate = contract.EndDateTime;
-            saveContractCommand.RaiseCanExecuteChanged();
-            removeContractCommand.RaiseCanExecuteChanged();
-            //dialogService.ShowMessage("Данные сохранены");
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+                    selectedContract.Id = contract.Id;
+                    selectedContract.ContractNumber = contract.Number.ToSafeString();
+                    selectedContract.OrganizationName = contract.ContractName;
+                    selectedContract.BeginDate = contract.BeginDateTime;
+                    selectedContract.EndDate = contract.EndDateTime;
+                    Number = contract.DisplayName;
+                    changeTracker.UntrackAll();
+                    saveContractCommand.RaiseCanExecuteChanged();
+                    removeContractCommand.RaiseCanExecuteChanged();
+                }
+            }
         }
 
         private void RemoveContract()
         {
-            //if (this.dialogService.AskUser("Удалить договор " + SelectedContract.ContractName + "?", true) == true)
-            //{
-            var visit = contractService.GetVisitsByContractId(SelectedContract.Id).FirstOrDefault();
-            if (visit != null)
+            if (selectedContract == null) return;
+            ConfirmationInteractionRequest.Raise(new Confirmation()
             {
-                //this.dialogService.ShowMessage("Данный договор уже закреплен за случаем обращения пациента " + personService.GetPersonById(visit.PersonId).ShortName + ". Удаление договора невозможно.");
-                return;
-            }
-            if (selectedContract.Id != SpecialValues.NewId)
-                contractService.DeleteContract(selectedContract.Id);
-
-            Contracts.Remove(selectedContract);
-            saveContractCommand.RaiseCanExecuteChanged();
-            removeContractCommand.RaiseCanExecuteChanged();
-            //}
+                Title = "Внимание",
+                Content = "Вы уверены, что хотите удалить договор?"
+            },
+             (confirmation) =>
+             {
+                 if (confirmation.Confirmed)
+                 {
+                     var visit = contractService.GetVisitsByContractId(selectedContract.Id).FirstOrDefault();
+                     if (visit != null)
+                     {
+                         NotificationInteractionRequest.Raise(new Notification()
+                         {
+                             Title = "Внимание",
+                             Content = "Данный договор уже закреплен за случаем обращения пациента \"" + visit.VisitTemplate.ShortName + "\". Удаление договора невозможно."
+                         }, (notification) => { return; });
+                     }
+                     if (selectedContract.Id != SpecialValues.NewId)
+                         contractService.DeleteContract(selectedContract.Id);
+                     Contracts.Remove(selectedContract);
+                     saveContractCommand.RaiseCanExecuteChanged();
+                     removeContractCommand.RaiseCanExecuteChanged();
+                 }
+             });
         }
 
         private void AddOrganization()

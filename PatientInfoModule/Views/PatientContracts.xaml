@@ -8,13 +8,22 @@
              xmlns:wpf="http://wpfcontrols.com/"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+             xmlns:views="clr-namespace:PatientInfoModule.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:prism="http://www.codeplex.com/prism"
+             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="1024"
              d:DataContext="{d:DesignInstance viewModels:PatientContractsViewModel}">
     
     <UserControl.Resources>
+        <DataTemplate x:Key="NotificationWindowTemplate">
+            <Grid MinWidth="200" MinHeight="100">
+                <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
+            </Grid>
+        </DataTemplate>
         <converters:Converter x:Key="BooleanToCollapsedConverter" DefaultValue="{x:Static Visibility.Collapsed}">
             <converters:ConverterItem To="{x:Static Visibility.Visible}">
                 <converters:ConverterItem.From>
@@ -80,6 +89,18 @@
         <misc:ItemTemplateSelector x:Key="itemTemplateSelector"/>
     </UserControl.Resources>
 
+    <i:Interaction.Triggers>
+        <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
+                                     ContentTemplate="{StaticResource NotificationWindowTemplate}">
+            </popup:PopupWindowAction>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
+                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+    </i:Interaction.Triggers>
+    
     <Grid>
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>

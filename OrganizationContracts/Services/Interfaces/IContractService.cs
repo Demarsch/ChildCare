@@ -7,9 +7,9 @@ namespace OrganizationContractsModule.Services
     public interface IContractService
     {
         IDisposableQueryable<RecordContract> GetContractById(int id);
-        int SaveContractData(RecordContract contract, out string msg);
+        int SaveContractData(RecordContract contract, RecordContractItem[] contractItems);
         void DeleteContract(int contractId);
-        void DeleteContractItems(int contractId);
+        void DeleteContractItemById(int id); 
         IDisposableQueryable<Org> GetOrganizations();
         IDisposableQueryable<RecordContract> GetContractsWithOrgs(DateTime begin, DateTime end, int finSourceId = -1);
         IDisposableQueryable<PaymentType> GetPaymentTypes();
