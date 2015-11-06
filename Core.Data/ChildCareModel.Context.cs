@@ -93,5 +93,6 @@ namespace Core.Data
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
         public virtual DbSet<Visit> Visits { get; set; }
+        public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
     }
 }
