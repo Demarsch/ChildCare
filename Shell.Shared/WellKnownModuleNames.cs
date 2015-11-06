@@ -11,5 +11,9 @@
         public const string OrganizationContractsModule = "OrganizationContracts";
 
         public const string CoreModule = "CoreModule";
+
+        public const string ReportingModule = "ReportingModule";
+
+        public const string AdminModule = "AdminModule";
     }
 }

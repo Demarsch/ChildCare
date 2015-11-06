@@ -189,6 +189,7 @@
         <AssociationConnector Association="DataLib.FK_Visits_VisitOutcomes" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitResults" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitTemplates" />
+        <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="3.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
