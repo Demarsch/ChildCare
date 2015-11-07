@@ -53,7 +53,7 @@ namespace PatientRecordsModule.ViewModels
             this.patientRecordsService = patientRecordsService;
             this.assignment = assignment;
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             reloadPatientVisitsCommandWrapper = new CommandWrapper
             {
                 Command = new DelegateCommand(() => LoadItemsAsync()),
@@ -85,7 +85,7 @@ namespace PatientRecordsModule.ViewModels
             set { SetProperty(ref nestedItems, value); }
         }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
 
         public BusyMediator BusyMediator { get; set; }
         #endregion
@@ -124,7 +124,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load child items for assignment with Id {0}", assignment.Id);
-                CriticalFailureMediator.Activate("Не удалость загрузить вложенные элементы назначения. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить вложенные элементы назначения. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally

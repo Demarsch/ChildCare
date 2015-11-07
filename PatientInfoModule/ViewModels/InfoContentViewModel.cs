@@ -59,7 +59,7 @@ namespace PatientInfoModule.ViewModels
             changeTracker.RegisterComparer(() => MiddleName, StringComparer.CurrentCultureIgnoreCase);
             changeTracker.PropertyChanged += OnChangesTracked;
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             createNewPatientCommand = new DelegateCommand(CreatetNewPatient);
             saveChangesCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
             cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
@@ -86,7 +86,7 @@ namespace PatientInfoModule.ViewModels
                 var result = await Task<DataSource>.Factory.StartNew(LoadDataSource);
                 Educations = result.Educations;
                 HealthGroups = result.HealthGroups;
-                Countries = result.Countries;
+                Nationalities = result.Countries;
                 MaritalStatuses = result.MaritalStatuses;
                 log.InfoFormat("Data sources for patient info content are successfully loaded");
                 dataSourcesLoadingTaskSource.SetResult(true);
@@ -95,7 +95,7 @@ namespace PatientInfoModule.ViewModels
             catch (Exception ex)
             {
                 log.Error("Failed to load data sources for patient info content", ex);
-                CriticalFailureMediator.Activate("Не удалось загрузить общие данные. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось загрузить общие данные. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
                 dataSourcesLoadingTaskSource.SetResult(false);
             }
             finally
@@ -134,12 +134,12 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref educations, value); }
         }
 
-        private IEnumerable<Country> countries;
+        private IEnumerable<Country> nationalities;
 
-        public IEnumerable<Country> Countries
+        public IEnumerable<Country> Nationalities
         {
-            get { return countries; }
-            set { SetProperty(ref countries, value); }
+            get { return nationalities; }
+            set { SetProperty(ref nationalities, value); }
         }
 
         private IEnumerable<MaritalStatus> maritalStatuses;
@@ -165,11 +165,19 @@ namespace PatientInfoModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
 
         private PersonName currentName;
 
         private Person currentPerson;
+
+        private PersonEducation currentEducation;
+
+        private PersonNationality currentNationality;
+
+        private PersonMaritalStatus currentMaritalStatus;
+
+        private PersonHealthGroup currentHealthGroup;
 
         private int patientIdBeingSelected;
 
@@ -228,9 +236,25 @@ namespace PatientInfoModule.ViewModels
             get { return birthDate; }
             set
             {
+                if (value.HasValue)
+                {
+                    value = value.Value.Date;
+                }
                 changeTracker.Track(birthDate, value);
-                SetProperty(ref birthDate, value);
+                if (SetProperty(ref birthDate, value))
+                {
+                    if (!IsChild)
+                    {
+                        HealthGroupId = SpecialValues.NonExistingId;
+                    }
+                    OnPropertyChanged(() => IsChild);
+                }
             }
+        }
+
+        public bool IsChild
+        {
+            get { return BirthDate != null && BirthDate.Value.AddYears(18) > DateTime.Today; }
         }
 
         private string snils;
@@ -290,6 +314,54 @@ namespace PatientInfoModule.ViewModels
             {
                 changeTracker.Track(email, value);
                 SetProperty(ref email, value);
+            }
+        }
+
+        private int nationalityId;
+
+        public int NationalityId
+        {
+            get { return nationalityId; }
+            set
+            {
+                changeTracker.Track(nationalityId, value);
+                SetProperty(ref nationalityId, value);
+            }
+        }
+
+        private int educationId;
+
+        public int EducationId
+        {
+            get { return educationId; }
+            set
+            {
+                changeTracker.Track(educationId, value);
+                SetProperty(ref educationId, value);
+            }
+        }
+
+        private int maritalStatusId;
+
+        public int MaritalStatusId
+        {
+            get { return maritalStatusId; }
+            set
+            {
+                changeTracker.Track(maritalStatusId, value);
+                SetProperty(ref maritalStatusId, value);
+            }
+        }
+
+        private int healthGroupId;
+
+        public int HealthGroupId
+        {
+            get { return healthGroupId; }
+            set
+            {
+                changeTracker.Track(healthGroupId, value);
+                SetProperty(ref healthGroupId, value);
             }
         }
 
@@ -381,7 +453,7 @@ namespace PatientInfoModule.ViewModels
 
         private async void SaveChangesAsync()
         {
-            CriticalFailureMediator.Deactivate();
+            FailureMediator.Deactivate();
             if (!IsValid)
             {
                 return;
@@ -407,6 +479,14 @@ namespace PatientInfoModule.ViewModels
                                    IsIncorrectName = IsIncorrectName,
                                    IsNewName = IsNewName || currentName == null,
                                    NewNameStartDate = (NewNameStartDate ?? SpecialValues.MinDate).Date,
+                                   CurrentEducation = currentEducation,
+                                   NewEducation = new PersonEducation { EducationId = EducationId },
+                                   CurrentHealthGroup = currentHealthGroup,
+                                   NewHealthGroup = new PersonHealthGroup { HealthGroupId = HealthGroupId },
+                                   CurrentMaritalStatus = currentMaritalStatus,
+                                   NewMaritalStatus = new PersonMaritalStatus { MaritalStatusId = MaritalStatusId },
+                                   CurrentNationality = currentNationality,
+                                   NewNationality = new PersonNationality { CountryId = NationalityId }
                                };
                 saveData.CurrentPerson.BirthDate = BirthDate.Value.Date;
                 saveData.CurrentPerson.Snils = Snils;
@@ -420,8 +500,12 @@ namespace PatientInfoModule.ViewModels
                 saveData.NewName.MiddleName = MiddleName;
 
                 var result = await patientService.SavePatientAsync(saveData, token);
-                currentPerson = result.CurrentPerson;
-                currentName = result.CurrentName;
+                currentPerson = result.Person;
+                currentName = result.Name;
+                currentNationality = result.Nationality;
+                currentHealthGroup = result.HealthGroup;
+                currentMaritalStatus = result.MaritalStatus;
+                currentEducation = result.Education;
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -433,7 +517,7 @@ namespace PatientInfoModule.ViewModels
                 log.ErrorFormatEx(ex, "Failed to save patient info for patient with Id {0}", currentPerson == null || currentPerson.Id == SpecialValues.NewId
                                                                                                  ? "(New patient)"
                                                                                                  : currentPerson.Id.ToString());
-                CriticalFailureMediator.Activate("Не удалось сохранить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось сохранить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
             }
             finally
             {
@@ -467,7 +551,7 @@ namespace PatientInfoModule.ViewModels
 
         private void CancelChanges()
         {
-            CriticalFailureMediator.Deactivate();
+            FailureMediator.Deactivate();
             changeTracker.Untrack(ref lastName, () => LastName);
             changeTracker.Untrack(ref firstName, () => FirstName);
             changeTracker.Untrack(ref middleName, () => MiddleName);
@@ -477,6 +561,10 @@ namespace PatientInfoModule.ViewModels
             changeTracker.Untrack(ref medNumber, () => MedNumber);
             changeTracker.Untrack(ref phones, () => Phones);
             changeTracker.Untrack(ref email, () => Email);
+            changeTracker.Untrack(ref nationalityId, () => NationalityId);
+            changeTracker.Untrack(ref healthGroupId, () => HealthGroupId);
+            changeTracker.Untrack(ref maritalStatusId, () => MaritalStatusId);
+            changeTracker.Untrack(ref educationId, () => EducationId);
             saveWasRequested = false;
             OnPropertyChanged(string.Empty);
             UpdateNameIsChanged();
@@ -499,6 +587,10 @@ namespace PatientInfoModule.ViewModels
 
         public async void SelectPatientAsync(int patientId)
         {
+            if (Interlocked.Exchange(ref patientIdBeingSelected, patientId) == patientId)
+            {
+                return;
+            }
             if (currentPerson != null && currentPerson.Id == patientId)
             {
                 return;
@@ -515,7 +607,6 @@ namespace PatientInfoModule.ViewModels
             {
                 return;
             }
-            patientIdBeingSelected = patientId;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -533,16 +624,25 @@ namespace PatientInfoModule.ViewModels
                 var result = await patientQuery.Select(x => new
                                                             {
                                                                 CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
-                                                                CurrentPerson = x
+                                                                CurrentPerson = x,
+                                                                CurrentHealthGroup = x.PersonHealthGroups.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
+                                                                CurrentEducation = x.PersonEducations.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
+                                                                CurrentMaritalStatus = x.PersonMaritalStatuses.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
+                                                                CurrentNationality = x.PersonNationalities.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate)
                                                             })
                                                .FirstOrDefaultAsync(token);
                 if (result == null)
                 {
-                    CriticalFailureMediator.Activate("Указанный пациент по какой-то причине отсутствует в базе данных. Пожалуйста, обратитесь в службу поддержки");
+                    FailureMediator.Activate("Указанный пациент по какой-то причине отсутствует в базе данных. Пожалуйста, обратитесь в службу поддержки");
                     return;
                 }
                 currentName = result.CurrentName;
                 currentPerson = result.CurrentPerson;
+                currentHealthGroup = result.CurrentHealthGroup;
+                currentEducation = result.CurrentEducation;
+                currentMaritalStatus = result.CurrentMaritalStatus;
+                currentNationality = result.CurrentNationality;
+
                 LastName = currentName == null ? PersonName.UnknownLastName : currentName.LastName;
                 FirstName = currentName == null ? PersonName.UnknownFirstName : currentName.FirstName;
                 MiddleName = currentName == null ? string.Empty : currentName.MiddleName;
@@ -552,6 +652,11 @@ namespace PatientInfoModule.ViewModels
                 MedNumber = currentPerson.MedNumber;
                 Phones = currentPerson.Phones;
                 Email = currentPerson.Email;
+
+                HealthGroupId = currentHealthGroup == null ? SpecialValues.NonExistingId : currentHealthGroup.HealthGroupId;
+                NationalityId = currentNationality == null ? SpecialValues.NonExistingId : currentNationality.CountryId;
+                EducationId = currentEducation == null ? SpecialValues.NonExistingId : currentEducation.EducationId;
+                MaritalStatusId = currentMaritalStatus == null ? SpecialValues.NonExistingId : currentMaritalStatus.MaritalStatusId;
 
                 changeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
@@ -563,7 +668,7 @@ namespace PatientInfoModule.ViewModels
             catch (Exception ex)
             {
                 log.ErrorFormatEx(ex, "Failed to load common patient info for patient with Id {0}", patientId);
-                CriticalFailureMediator.Activate("Не удалость загрузить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientDataCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientDataCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally
@@ -594,6 +699,10 @@ namespace PatientInfoModule.ViewModels
             IsMale = true;
             Phones = string.Empty;
             Email = string.Empty;
+            NationalityId = SpecialValues.NonExistingId;
+            MaritalStatusId = SpecialValues.NonExistingId;
+            EducationId = SpecialValues.NonExistingId;
+            HealthGroupId = SpecialValues.NonExistingId;
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)

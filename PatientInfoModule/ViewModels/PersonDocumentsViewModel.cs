@@ -65,7 +65,7 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             personId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             reloadDocumentsCommandWrapper = new CommandWrapper
                                               {
                                                   Command = new DelegateCommand(() => LoadPersonDocumentsAsync(personId)),
@@ -80,7 +80,7 @@ namespace PatientInfoModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
 
         public async void LoadPersonDocumentsAsync(int personId)
         {
@@ -123,7 +123,7 @@ namespace PatientInfoModule.ViewModels
             catch (Exception ex)
             {
                 log.ErrorFormatEx(ex, "Failed to load documents for patient with Id {0}", personId);
-                CriticalFailureMediator.Activate("Не удалость загрузить документы пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadDocumentsCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить документы пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadDocumentsCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally

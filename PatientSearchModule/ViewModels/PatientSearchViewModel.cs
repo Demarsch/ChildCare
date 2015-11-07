@@ -67,7 +67,7 @@ namespace PatientSearchModule.ViewModels
             this.patientSearchService = patientSearchService;
             Header = "Поиск Пациента";
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             Patients = new ObservableCollectionEx<FoundPatientViewModel>();
             SearchPatientsCommand = new DelegateCommand<bool?>(SearchPatients);
             searchPatientsCommandWrapper = new CommandWrapper
@@ -106,7 +106,7 @@ namespace PatientSearchModule.ViewModels
 
         public BusyMediator BusyMediator { get; private set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
 
         private readonly CommandWrapper searchPatientsCommandWrapper;
 
@@ -160,7 +160,7 @@ namespace PatientSearchModule.ViewModels
         private async void SearchPatientsAsync(string userInput, CancellationToken token)
         {
             var searchIsCompleted = false;
-            CriticalFailureMediator.Deactivate();
+            FailureMediator.Deactivate();
             log.InfoFormat("Searching patients by user input \"{0}\"", userInput);
             PatientSearchQuery query = null;
             try
@@ -211,7 +211,7 @@ namespace PatientSearchModule.ViewModels
             {
                 log.Error("Failed to find patients", ex);
                 searchIsCompleted = true;
-                CriticalFailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", searchPatientsCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", searchPatientsCommandWrapper, ex);
             }
             finally
             {

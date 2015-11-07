@@ -67,7 +67,7 @@ namespace PatientRecordsModule.ViewModels
             this.logService = logService;
             changeTracker = new ChangeTracker();
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             reloadPatientVisitsCommandWrapper = new CommandWrapper
             {
                 Command = new DelegateCommand(() => LoadRootItemsAsync(PersonId)),
@@ -103,7 +103,7 @@ namespace PatientRecordsModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
 
         public InteractionRequest<NewVisitCreatingViewModel> NewVisitCreatingInteractionRequest { get; private set; }
         #endregion
@@ -179,7 +179,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load person visits for patient with Id {0}", personId);
-                CriticalFailureMediator.Activate("Не удалость загрузить случаи пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить случаи пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally

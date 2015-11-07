@@ -16,5 +16,21 @@ namespace PatientInfoModule.Data
         public bool IsNewName { get; set; }
         
         public DateTime NewNameStartDate { get; set; }
+
+        public PersonEducation CurrentEducation { get; set; }
+
+        public PersonEducation NewEducation { get; set; }
+
+        public PersonMaritalStatus CurrentMaritalStatus { get; set; }
+
+        public PersonMaritalStatus NewMaritalStatus { get; set; }
+
+        public PersonHealthGroup CurrentHealthGroup { get; set; }
+
+        public PersonHealthGroup NewHealthGroup { get; set; }
+
+        public PersonNationality CurrentNationality { get; set; }
+
+        public PersonNationality NewNationality { get; set; }
     }
 }

@@ -66,7 +66,7 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadContractsAsync(patientId)) };
@@ -99,7 +99,7 @@ namespace PatientInfoModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
         public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
         public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
 
@@ -107,18 +107,18 @@ namespace PatientInfoModule.ViewModels
 
         public async void LoadDataSources()
         {
-            CriticalFailureMediator.Deactivate();
+            FailureMediator.Deactivate();
             var contractRecord = await recordService.GetRecordTypesByOptions("|contract|").FirstOrDefaultAsync();
             var reliableStaff = await recordService.GetRecordTypeRolesByOptions("|responsibleForContract|").FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
+                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
                 return;
             }
             var personStaffs = await personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
             if (!personStaffs.Any())
             {
-                CriticalFailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions.", reloadDataSourcesCommandWrapper, null);
+                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions.", reloadDataSourcesCommandWrapper, null);
                 return;
             }
             List<FieldValue> elements = new List<FieldValue>();
@@ -176,7 +176,7 @@ namespace PatientInfoModule.ViewModels
                 currentLoadingToken.Cancel();
                 currentLoadingToken.Dispose();
             }
-            CriticalFailureMediator.Deactivate();
+            FailureMediator.Deactivate();
             var loadingIsCompleted = false;
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
@@ -222,7 +222,7 @@ namespace PatientInfoModule.ViewModels
             catch (Exception ex)
             {
                 log.ErrorFormatEx(ex, "Failed to load contracts for patient with Id {0}", patientId);
-                CriticalFailureMediator.Activate("Не удалость загрузить договоры пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadContractsDataCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить договоры пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadContractsDataCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally
@@ -845,7 +845,7 @@ namespace PatientInfoModule.ViewModels
 
         private void SaveContract()
         {
-            CriticalFailureMediator.Deactivate();       
+            FailureMediator.Deactivate();       
             RecordContract contract = new RecordContract();
             if (selectedContract.Id != SpecialValues.NewId)
                 contract = contractService.GetContractById(selectedContract.Id).First();
@@ -905,7 +905,7 @@ namespace PatientInfoModule.ViewModels
             {
                 log.Error(string.Format("Failed to Save RecordContract. " + ex.Message));
                 log.ErrorFormatEx(ex, "Failed to save RecordContract with Id {0} for patient with Id {1}", ((contract == null || contract.Id == SpecialValues.NewId) ? "(New contract)" : contract.Id.ToString()), patientId);
-                CriticalFailureMediator.Activate("Не удалось сохранить договор. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось сохранить договор. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
                 return;
             }
             finally

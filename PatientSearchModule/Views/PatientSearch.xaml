@@ -34,7 +34,7 @@
             <ContentControl Content="{Binding BusyMediator}"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch" />
-            <ContentControl Content="{Binding CriticalFailureMediator}"
+            <ContentControl Content="{Binding FailureMediator}"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch" />
         </Grid>

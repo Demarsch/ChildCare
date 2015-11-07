@@ -85,7 +85,7 @@
     <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />
-    <Compile Include="Mvvm\Mediators\CriticalFailureMediator.cs" />
+    <Compile Include="Mvvm\Mediators\FailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />
     <Compile Include="Mvvm\Misc\FieldValue.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionEx.cs" />

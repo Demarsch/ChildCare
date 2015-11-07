@@ -29,15 +29,15 @@ namespace Shell
             this.contextProvider = contextProvider;
             this.eventAggregator = eventAggregator;
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             SubscribeToEvents();
         }
 
         public BusyMediator BusyMediator { get; private set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
 
-        public bool CanOpenMenu { get { return !CriticalFailureMediator.IsActive && !BusyMediator.IsActive; } }
+        public bool CanOpenMenu { get { return !FailureMediator.IsActive && !BusyMediator.IsActive; } }
 
         private bool isMenuOpen;
 
@@ -55,7 +55,7 @@ namespace Shell
             BusyMediator.Deactivate();
             if (!success)
             {
-                CriticalFailureMediator.Activate("Не удалось подключиться к базе данных. Пожалуйста, обратитесь в службу поддержки");
+                FailureMediator.Activate("Не удалось подключиться к базе данных. Пожалуйста, обратитесь в службу поддержки");
             }
             OnPropertyChanged(() => CanOpenMenu);
         }

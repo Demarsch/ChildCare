@@ -19,6 +19,8 @@
                         Value="Center" />
                 <Setter Property="Margin"
                         Value="3" />
+                <Setter Property="TextWrapping"
+                        Value="WrapWithOverflow" />
             </Style>
             <Style TargetType="{x:Type TextBox}">
                 <Setter Property="VerticalAlignment"
@@ -46,13 +48,17 @@
                 <Setter Property="Margin"
                         Value="3" />
             </Style>
-            <Style TargetType="ComboBox">
+            <Style TargetType="{x:Type ComboBox}">
                 <Setter Property="Margin"
                         Value="3" />
                 <Setter Property="VerticalAlignment"
                         Value="Center" />
+                <Setter Property="DisplayMemberPath"
+                        Value="Name" />
+                <Setter Property="SelectedValuePath"
+                        Value="Id" />
             </Style>
-            <Style TargetType="RadioButton">
+            <Style TargetType="{x:Type RadioButton}">
                 <Setter Property="Margin"
                         Value="3" />
                 <Setter Property="VerticalAlignment"
@@ -60,7 +66,7 @@
                 <Setter Property="VerticalContentAlignment"
                         Value="Center" />
             </Style>
-            <Style TargetType="ToggleButton">
+            <Style TargetType="{x:Type ToggleButton}">
                 <Setter Property="Margin"
                         Value="3" />
                 <Setter Property="VerticalAlignment"

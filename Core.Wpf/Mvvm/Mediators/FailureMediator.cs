@@ -7,11 +7,12 @@ using Prism.Mvvm;
 
 namespace Core.Wpf.Mvvm
 {
-    public class CriticalFailureMediator : BindableBase, IMediator
+    public class FailureMediator : BindableBase, IMediator
     {
-        public CriticalFailureMediator()
+        public FailureMediator()
         {
             CopyToClipboardCommand = new DelegateCommand(CopyToClipboard);
+            deactivateCommand = new DelegateCommand(Deactivate, () => CanBeDeactivated);
         }
 
         private bool isActive;
@@ -54,6 +55,24 @@ namespace Core.Wpf.Mvvm
 
         public bool HasException { get { return Exception != null; } }
 
+        private readonly DelegateCommand deactivateCommand;
+
+        public ICommand DeactivateCommand { get { return deactivateCommand; } }
+
+        private bool canBeDeactivated;
+
+        public bool CanBeDeactivated
+        {
+            get { return canBeDeactivated; }
+            private set
+            {
+                if (SetProperty(ref canBeDeactivated, value))
+                {
+                    deactivateCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         public ICommand CopyToClipboardCommand { get; private set; }
 
         private void CopyToClipboard()
@@ -64,22 +83,21 @@ namespace Core.Wpf.Mvvm
             }
         }
 
-        public void Activate(object failureMessage)
-        {
-            Activate(failureMessage, CommandWrapper.Empty, null);
-        }
-
-        public void Activate(object failureMessage, CommandWrapper retryCommand, Exception exception)
+        public void Activate(object failureMessage, CommandWrapper retryCommand = null, Exception exception = null, bool canBeDeactivated = false)
         {
             Message = failureMessage;
-            RetryCommand = retryCommand;
+            RetryCommand = retryCommand ?? CommandWrapper.Empty;
             Exception = exception;
+            CanBeDeactivated = canBeDeactivated;
             IsActive = true;
         }
 
         public void Deactivate()
         {
-            IsActive = false;
+            if (canBeDeactivated)
+            {
+                IsActive = false;
+            }
         }
     }
 }

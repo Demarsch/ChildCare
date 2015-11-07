@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using Core.Extensions;
 using Fluent;
 using Prism.Regions;
 using Prism.Regions.Behaviors;
-using System.Linq;
 
 namespace Shell
 {

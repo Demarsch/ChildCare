@@ -14,6 +14,7 @@
                 Value="White" />
     </Style>
     <!--Control templates-->
+    <!--Validtion template-->
     <ControlTemplate x:Key="ValidationTemplate">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -46,6 +47,7 @@
             </Image>
         </Grid>
     </ControlTemplate>
+    <!--Validation template where icon is placed on top of the validated control-->
     <ControlTemplate x:Key="ValidationTemplateRightIcon">
         <Grid>
            <AdornedElementPlaceholder Grid.Column="0" 
@@ -72,6 +74,33 @@
                 </Image.Triggers>
             </Image>
         </Grid>
+    </ControlTemplate>
+    <!--Close button-->
+    <ControlTemplate x:Key="CloseButtonTemplate"
+                     TargetType="{x:Type Button}">
+        <Border BorderBrush="Transparent"
+                BorderThickness="1"
+                Name="border">
+            <Path Data="M 0,0 l 12,12 m -12,0 l 12,-12"
+                  Stroke="Black"
+                  StrokeThickness="2"
+                  Margin="4"
+                  Name="cross"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter TargetName="border"
+                        Property="BorderBrush"
+                        Value="DimGray" />
+                <Setter TargetName="border"
+                        Property="Background"
+                        Value="LightGray" />
+                <Setter TargetName="cross"
+                        Property="Stroke"
+                        Value="DimGray" />
+            </Trigger>
+        </ControlTemplate.Triggers>
     </ControlTemplate>
     <!--Data templates-->
     <!--Busy Mediator-->
@@ -129,7 +158,7 @@
         </DataTemplate.Triggers>
     </DataTemplate>
     <!--CriticalFailureMediator-->
-    <DataTemplate DataType="{x:Type mvvm:CriticalFailureMediator}">
+    <DataTemplate DataType="{x:Type mvvm:FailureMediator}">
         <DataTemplate.Resources>
             <converters:Converter x:Key="IsExpandedToTextConverter">
                 <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
@@ -159,15 +188,15 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0"
+                    <ContentControl Grid.Row="0"
                                Grid.Column="0"
-                               Text="{Binding Message}"
-                               TextWrapping="Wrap" />
+                               Content="{Binding Message}" />
                     <Button Grid.Row="0"
                             Grid.Column="1"
                             Margin="5"
@@ -177,9 +206,16 @@
                             MinWidth="100"
                             Content="{Binding RetryCommand.CommandName}"
                             Visibility="{Binding RetryCommand.HasCommand, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
+                    <Button Grid.Row="0"
+                            Grid.Column="2"
+                            Margin="2"
+                            Template="{StaticResource CloseButtonTemplate}"
+                            Command="{Binding DeactivateCommand}"
+                            VerticalAlignment="Center"
+                            Visibility="{Binding CanBeDeactivated, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
                     <Expander Grid.Row="1"
                               Grid.Column="0"
-                              Grid.ColumnSpan="2"
+                              Grid.ColumnSpan="3"
                               Visibility="{Binding HasException, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                               FocusVisualStyle="{x:Null}">
                         <Expander.Header>

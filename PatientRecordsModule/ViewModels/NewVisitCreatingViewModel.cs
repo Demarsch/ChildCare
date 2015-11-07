@@ -61,7 +61,7 @@ namespace PatientRecordsModule.ViewModels
             ExecutionPlaces = new ObservableCollectionEx<CommonIdName>();
             LPUs = new ObservableCollectionEx<CommonIdName>();
             BusyMediator = new BusyMediator();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator = new FailureMediator();
             reloadPatientDataCommandWrapper = new CommandWrapper
             {
                 Command = new DelegateCommand(() => SetFieldByVisitTemplateAsync(SelectedVisitTemplateId.ToInt())),
@@ -205,7 +205,7 @@ namespace PatientRecordsModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
 
-        public CriticalFailureMediator CriticalFailureMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
 
         #endregion
 
@@ -213,7 +213,7 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CreateVisitCommand { get; private set; }
         private async void SaveChangesAsync()
         {
-            CriticalFailureMediator.Deactivate();
+            FailureMediator.Deactivate();
             if (!IsValid)
             {
                 return;
@@ -258,7 +258,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to save data for visit with Id = {0} for person with Id = {1}", visitIdString, personId);
-                CriticalFailureMediator.Activate("Не удалось сохранить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось сохранить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
             }
             finally
             {
@@ -293,8 +293,8 @@ namespace PatientRecordsModule.ViewModels
             this.Date = date;
             this.Title = title;
             BusyMediator.Deactivate();
-            CriticalFailureMediator.Deactivate();
-            CriticalFailureMediator = new CriticalFailureMediator();
+            FailureMediator.Deactivate();
+            FailureMediator = new FailureMediator();
         }
 
         private async Task<bool> EnsureDataSourceLoaded()
@@ -373,7 +373,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load data sources for visit creating");
-                CriticalFailureMediator.Activate("Не удалость загрузить данные для создания случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить данные для создания случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
                 dataSourcesLoadingTaskSource.SetResult(false);
             }
             finally
@@ -459,7 +459,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load data from visit template with Id {0}", visitTemplateId);
-                CriticalFailureMediator.Activate("Не удалость загрузить из шаблона случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientDataCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить из шаблона случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientDataCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally
