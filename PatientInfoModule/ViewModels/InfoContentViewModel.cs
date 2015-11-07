@@ -70,7 +70,7 @@ namespace PatientInfoModule.ViewModels
 
         #region Data source
 
-        private TaskCompletionSource<bool> dataSourcesLoadingTaskSource; 
+        private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
 
         private async Task<bool> EnsureDataSourceLoaded()
         {
@@ -90,7 +90,7 @@ namespace PatientInfoModule.ViewModels
                 MaritalStatuses = result.MaritalStatuses;
                 log.InfoFormat("Data sources for patient info content are successfully loaded");
                 dataSourcesLoadingTaskSource.SetResult(true);
-                
+
             }
             catch (Exception ex)
             {
@@ -787,6 +787,12 @@ namespace PatientInfoModule.ViewModels
                                                  ? "Дата смены Ф.И.О. не может быть в будущем"
                                                  : string.Empty
                                      : string.Empty;
+                        break;
+                    case "NationalityId":
+                        result = NationalityId == SpecialValues.NonExistingId ? "Укажите гражданство пациента" : string.Empty;
+                        break;
+                    case "HealthGroupId":
+                        result = IsChild && HealthGroupId == SpecialValues.NonExistingId ? "Группа здоровья обязательна для лиц до 18 лет" : string.Empty;
                         break;
                 }
                 if (string.IsNullOrEmpty(result))

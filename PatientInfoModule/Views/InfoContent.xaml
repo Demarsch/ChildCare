@@ -224,30 +224,34 @@
                            Text="Гражданство" />
                 <ComboBox Grid.Column="1"
                           ItemsSource="{Binding Nationalities}"
-                          SelectedValue="{Binding NationalityId}"
+                          Margin="3 3 22 3"
+                          SelectedValue="{Binding NationalityId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                          Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
                           HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="2"
                            Text="Образование" />
                 <ComboBox Grid.Column="3"
                           ItemsSource="{Binding Educations}"
-                          SelectedValue="{Binding EducationId}"
+                          SelectedValue="{Binding EducationId, UpdateSourceTrigger=PropertyChanged}"
                           HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="4"
                            Text="Семейное положение" />
                 <ComboBox Grid.Column="5"
                           ItemsSource="{Binding MaritalStatuses}"
-                          SelectedValue="{Binding MaritalStatusId}"
+                          SelectedValue="{Binding MaritalStatusId, UpdateSourceTrigger=PropertyChanged}"
                           HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="6"
                            Text="Группа здоровья"
                            Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
                 <ComboBox Grid.Column="7"
                           ItemsSource="{Binding HealthGroups}"
-                          SelectedValue="{Binding HealthGroupId}"
+                          SelectedValue="{Binding HealthGroupId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                           HorizontalAlignment="Stretch"
+                          Margin="3 3 22 3"
+                          Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
                           Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
             </Grid>
-            
+
             <!--Placeholder-->
             <Border />
         </DockPanel>
