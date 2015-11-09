@@ -90,11 +90,13 @@ namespace PatientInfoModule
             container.RegisterType<InfoContentViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PatientContractsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonDocumentsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ScanDocumentsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
             //This is required by Prism navigation mechanism to resolve view
+            container.RegisterType<object, ScanDocuments>(viewNameResolver.Resolve<ScanDocumentsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, EmptyPatientInfo>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, InfoContent>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PatientContracts>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());

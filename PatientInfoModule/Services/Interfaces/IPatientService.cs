@@ -31,5 +31,7 @@ namespace PatientInfoModule.Services
         IDisposableQueryable<PersonOuterDocument> GetPersonOuterDocuments(int personId);
 
         void DeletePersonOuterDocument(int documentId);
+
+        bool SavePersonDocument(PersonOuterDocument document);
     }
 }

@@ -26,7 +26,7 @@ using Prism.Interactivity.InteractionRequest;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class PatientContractsViewModel : BindableBase, IConfirmNavigationRequest
+    public class PatientContractsViewModel : BindableBase, IConfirmNavigationRequest, INavigationAware, IDataErrorInfo
     {
         private readonly IPatientService personService;
         private readonly IContractService contractService;
@@ -38,12 +38,31 @@ namespace PatientInfoModule.ViewModels
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
         private readonly CommandWrapper reloadDataSourcesCommandWrapper;
         private readonly ChangeTracker changeTracker;
+        public BusyMediator BusyMediator { get; set; }
+        public FailureMediator FailureMediator { get; private set; }
+        private CancellationTokenSource currentLoadingToken;
+        public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
+        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
+
+        private int patientId;
 
         public PatientContractsViewModel(IPatientService personService, IContractService contractService, IRecordService recordService, IAssignmentService assignmentService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
         {
             if (personService == null)
             {
                 throw new ArgumentNullException("patientService");
+            }
+            if (contractService == null)
+            {
+                throw new ArgumentNullException("contractService");
+            }
+            if (recordService == null)
+            {
+                throw new ArgumentNullException("recordService");
+            }
+            if (assignmentService == null)
+            {
+                throw new ArgumentNullException("assignmentService");
             }
             if (log == null)
             {
@@ -96,20 +115,12 @@ namespace PatientInfoModule.ViewModels
                 removeContractCommand.RaiseCanExecuteChanged();
             }
         }
-
-        public BusyMediator BusyMediator { get; set; }
-
-        public FailureMediator FailureMediator { get; private set; }
-        public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
-        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
-
-        private int patientId;
-
+        
         public async void LoadDataSources()
         {
             FailureMediator.Deactivate();
-            var contractRecord = await recordService.GetRecordTypesByOptions("|contract|").FirstOrDefaultAsync();
-            var reliableStaff = await recordService.GetRecordTypeRolesByOptions("|responsibleForContract|").FirstOrDefaultAsync();
+            var contractRecord = await recordService.GetRecordTypesByOptions(OptionValues.Contract).FirstOrDefaultAsync();
+            var reliableStaff = await recordService.GetRecordTypeRolesByOptions(OptionValues.ResponsibleForContract).FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
                 FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
@@ -145,9 +156,9 @@ namespace PatientInfoModule.ViewModels
             Contracts = new ObservableCollectionEx<ContractViewModel>();
             Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
 
-            SelectedRegistratorId = -1;
-            SelectedPaymentTypeId = -1;
-            SelectedFinancingSourceId = -1;
+            SelectedRegistratorId = SpecialValues.NonExistingId;
+            SelectedPaymentTypeId = SpecialValues.NonExistingId;
+            SelectedFinancingSourceId = SpecialValues.NonExistingId;
             ContractBeginDateTime = DateTime.Now;
             ContractEndDateTime = DateTime.Now;
             ContractName = "НОВЫЙ ДОГОВОР";
@@ -157,11 +168,9 @@ namespace PatientInfoModule.ViewModels
             IsAssignRecordsChecked = false;
             IsNewRecordChecked = false;
 
-            SelectedFilterRegistratorId = -1;
+            SelectedFilterRegistratorId = SpecialValues.NonExistingId;
         }
-
-        private CancellationTokenSource currentLoadingToken;
-
+        
         private async void LoadContractsAsync(int patientId)
         {
             this.patientId = patientId;
@@ -186,7 +195,7 @@ namespace PatientInfoModule.ViewModels
             {
                 var result = await contractService
                                 .GetContracts(patientId, null, null, selectedFilterRegistratorId)
-                                .OrderBy(x => x.BeginDateTime)
+                                .OrderByDescending(x => x.BeginDateTime)
                                 .Select(x => new
                                 {
                                     Id = x.Id,
@@ -236,6 +245,8 @@ namespace PatientInfoModule.ViewModels
 
         private void LoadContractData()
         {
+            IsAssignRecordsChecked = false;
+            IsNewRecordChecked = false;
             if (SelectedContract.Id == SpecialValues.NewId)
                 ClearData();
             else
@@ -312,7 +323,7 @@ namespace PatientInfoModule.ViewModels
             var item = new ContractItemViewModel(recordService)
             {
                 IsSection = true,
-                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + contractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб."),
+                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + contractItems.Sum(x => x.RecordCost) + " руб."),
                 Appendix = appendix,
                 SectionAlignment = alignment,
                 SectionBackColor = backColor
@@ -326,14 +337,16 @@ namespace PatientInfoModule.ViewModels
         private void UpdateTotalSumRow()
         {
             if (contractItems.Any(x => x.IsSection && x.Appendix == -1))
-                contractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + contractItems.Sum(x => x.RecordCost * x.RecordCount) + " руб.";
+                contractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + contractItems.Sum(x => x.RecordCost) + " руб.";
             else
                 AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);
-            if (selectedContract != null)
+            if (selectedContract != null && selectedContract.Id != SpecialValues.NewId)
                 SelectedContract.ContractCost = contractService.GetContractCost(selectedContract.Id);
             ContractsCount = Contracts.Count();
             ContractsSum = Contracts.Sum(x => x.ContractCost) + " руб.";            
         }
+
+        #region Properties
 
         private string contractName;
         public string ContractName
@@ -392,7 +405,6 @@ namespace PatientInfoModule.ViewModels
                     if (value != null)
                     {
                         IsContractSelected = true;
-                        changeTracker.IsEnabled = false;
                         LoadContractData();
                         changeTracker.IsEnabled = true;
                     }
@@ -453,7 +465,7 @@ namespace PatientInfoModule.ViewModels
             {
                 changeTracker.Track(selectedFinancingSourceId, value); 
                 if (SetProperty(ref selectedPaymentTypeId, value))
-                    IsCashless = (value == -1) || recordService.GetPaymentTypeById(value).Any(x => x.Options.Contains("|cashless|"));
+                    IsCashless = (value != SpecialValues.NonExistingId) && recordService.GetPaymentTypeById(value).First().Options.Contains(OptionValues.Cashless);
             }
         }
 
@@ -628,6 +640,8 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref selectedAssignment, value); }
         }
 
+        #endregion
+
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
@@ -678,7 +692,15 @@ namespace PatientInfoModule.ViewModels
        
         private void RemoveAppendix()
         {
-            if (selectedContractItem == null || !selectedContractItem.IsSection) return;
+            if (selectedContractItem == null || !selectedContractItem.IsSection)
+                {
+                    NotificationInteractionRequest.Raise(new Notification()
+                    {
+                        Title = "Внимание",
+                        Content = "Не выбрано соглашение для удаления."
+                    });
+                    return;
+                }
             
             ConfirmationInteractionRequest.Raise(new Confirmation()
                 {
@@ -710,7 +732,15 @@ namespace PatientInfoModule.ViewModels
 
         private void RemoveRecord()
         {
-            if (selectedContractItem == null || selectedContractItem.IsSection) return;
+            if (selectedContractItem == null || selectedContractItem.IsSection)
+            {
+                NotificationInteractionRequest.Raise(new Notification()
+                {
+                    Title = "Внимание",
+                    Content = "Не выбрана услуга для удаления."
+                });
+                return;
+            }
             ConfirmationInteractionRequest.Raise(new Confirmation()
                 {
                     Title = "Внимание",
@@ -767,6 +797,8 @@ namespace PatientInfoModule.ViewModels
                 });
             }
             UpdateTotalSumRow();
+            SelectedRecord = null;
+            AssignRecordTypeCost = 0;
             changeTracker.Track(null, contractItems);
             saveContractCommand.RaiseCanExecuteChanged();
         }
@@ -783,7 +815,15 @@ namespace PatientInfoModule.ViewModels
 
         private void RemoveContract()
         {
-            if (selectedContract == null) return;
+            if (selectedContract == null)
+            {
+                NotificationInteractionRequest.Raise(new Notification()
+                {
+                    Title = "Внимание",
+                    Content = "Не выбран договор."
+                });
+                return;
+            }
             ConfirmationInteractionRequest.Raise(new Confirmation() 
                 { 
                     Title = "Внимание", 
@@ -845,7 +885,12 @@ namespace PatientInfoModule.ViewModels
 
         private void SaveContract()
         {
-            FailureMediator.Deactivate();       
+            FailureMediator.Deactivate();
+            if (!IsValid)
+            {
+                FailureMediator.Activate("Проверьте правильность заполнения полей.", null, null, true);
+                return;                
+            }
             RecordContract contract = new RecordContract();
             if (selectedContract.Id != SpecialValues.NewId)
                 contract = contractService.GetContractById(selectedContract.Id).First();
@@ -869,7 +914,7 @@ namespace PatientInfoModule.ViewModels
             contract.PaymentTypeId = selectedPaymentTypeId;
             contract.TransactionNumber = string.Empty;
             contract.TransactionDate = string.Empty;  
-            if (recordService.GetPaymentTypeById(selectedPaymentTypeId).Select(x => x.Options).Contains("|cashless|"))
+            if (IsCashless)
             {
                 contract.TransactionNumber = transationNumber;
                 contract.TransactionDate = transationDate;
@@ -881,29 +926,30 @@ namespace PatientInfoModule.ViewModels
             contract.OrgDetails = string.Empty;
             contract.ContractCost = 0;
             contract.Options = string.Empty;
-            
-            var recordContractsItems = contractItems.Where(x => !x.IsSection)
-                .Select(x => new RecordContractItem()
-                {
-                    Id = x.Id,
-                    AssignmentId = x.AssignmentId,
-                    RecordTypeId = x.RecordTypeId,
-                    IsPaid = x.IsPaid,
-                    Count = x.RecordCount,
-                    Cost = x.RecordCost,
-                    Appendix = x.Appendix,
-                    InUserId = contract.InUserId,
-                    InDateTime = contract.InDateTime
-                }).ToArray();
+
+            var items = contractItems.Where(x => !x.IsSection && !contract.RecordContractItems.Select(a => a.Id).Contains(x.Id))
+                                     .Select(x => new RecordContractItem()
+                                    {
+                                        Id = x.Id,
+                                        AssignmentId = x.AssignmentId,
+                                        RecordTypeId = x.RecordTypeId,
+                                        IsPaid = x.IsPaid,
+                                        Count = x.RecordCount,
+                                        Cost = x.RecordCost,
+                                        Appendix = x.Appendix,
+                                        InUserId = contract.InUserId,
+                                        InDateTime = contract.InDateTime
+                                    });
+            foreach (var item in items)
+                contract.RecordContractItems.Add(item);    
 
             try
             {
-                contract.Id = contractService.SaveContractData(contract, recordContractsItems);
+                contract.Id = contractService.SaveContractData(contract);
                 saveSuccesfull = true;
             }
             catch (Exception ex)
             {
-                log.Error(string.Format("Failed to Save RecordContract. " + ex.Message));
                 log.ErrorFormatEx(ex, "Failed to save RecordContract with Id {0} for patient with Id {1}", ((contract == null || contract.Id == SpecialValues.NewId) ? "(New contract)" : contract.Id.ToString()), patientId);
                 FailureMediator.Activate("Не удалось сохранить договор. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
                 return;
@@ -914,11 +960,14 @@ namespace PatientInfoModule.ViewModels
                 if (saveSuccesfull)
                 {
                     selectedContract.Id = contract.Id;
+                    saveWasRequested = false;
+                    OnPropertyChanged(string.Empty);
                     LoadContractItems();
                     SelectedContract.ContractNumber = contract.Number.ToSafeString();
                     SelectedContract.Client = contract.ContractName;
                     SelectedContract.ContractBeginDate = contract.BeginDateTime.ToShortDateString();
                     SelectedContract.ContractEndDate = contract.EndDateTime.ToShortDateString();
+                    ContractName = contract.DisplayName;
                     UpdateTotalSumRow();
                     changeTracker.UntrackAll();
                     saveContractCommand.RaiseCanExecuteChanged();
@@ -941,12 +990,81 @@ namespace PatientInfoModule.ViewModels
                 ContractEndDate = DateTime.Now.ToShortDateString()
             });            
             SelectedContract = contracts.First(x => x.Id == 0);
-            SelectedPaymentTypeId = recordService.GetPaymentTypes().First(x => x.Options.Contains("|cash|")).Id;
+            SelectedPaymentTypeId = recordService.GetPaymentTypes().First(x => x.Options.Contains(OptionValues.Cash)).Id;
             Consumer = personService.GetPatientQuery(this.patientId).First().FullName;
             ContractBeginDateTime = DateTime.Now.Date;
             ContractEndDateTime = DateTime.Now.Date;
             saveContractCommand.RaiseCanExecuteChanged();
             removeContractCommand.RaiseCanExecuteChanged();
         }
+
+        #region Inplementation IDataErrorInfo
+
+        private bool saveWasRequested;
+
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        private bool IsValid
+        {
+            get
+            {
+                saveWasRequested = true;
+                OnPropertyChanged(string.Empty);
+                return invalidProperties.Count < 1;
+            }
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                switch (columnName)
+                {
+                    case "SelectedFinancingSourceId":
+                        result = SelectedFinancingSourceId == SpecialValues.NonExistingId ? "Укажите источник финансирования" : string.Empty;
+                        break;
+                    case "SelectedRegistratorId":
+                        result = SelectedRegistratorId == SpecialValues.NonExistingId ? "Укажите ответственного за договор" : string.Empty;
+                        break;
+                    case "SelectedPaymentTypeId":
+                        result = SelectedPaymentTypeId == SpecialValues.NonExistingId ? "Укажите метод оплаты" : string.Empty;
+                        break;
+                    case "SelectedClient":
+                        result = SelectedClient == null ? "Укажите заказчика" : string.Empty;
+                        break;
+                    case "TransationNumber":
+                        result = string.IsNullOrEmpty(TransationNumber) && IsCashless ? "Укажите № транзакции" : string.Empty;
+                        break;
+                    case "TransationDate":
+                        result = string.IsNullOrEmpty(TransationDate) && IsCashless ? "Укажите дату транзакции" : string.Empty;
+                        break;
+                    case "ContractItems":
+                        result = !ContractItems.Any() ? "Договор должен содержать хотя бы одну услугу" : string.Empty;
+                        break;
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
     }
 }

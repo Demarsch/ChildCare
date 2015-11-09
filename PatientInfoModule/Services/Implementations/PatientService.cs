@@ -246,10 +246,30 @@ namespace PatientInfoModule.Services
         public void DeletePersonOuterDocument(int documentId)
         {
             var context = contextProvider.CreateNewContext();
-            //var personOuterDoc = db.GetData<PersonOuterDocument>().FirstOrDefault(x => x.DocumentId == documentId);
-            //if (personOuterDoc == null) return;
-            //db.Remove<PersonOuterDocument>(personOuterDoc);
-            //db.Save();
+            var document = context.Set<PersonOuterDocument>().First(x => x.DocumentId == documentId);
+            context.Entry(document).State = EntityState.Deleted;
+            context.SaveChanges();
+        }
+
+        public bool SavePersonDocument(PersonOuterDocument document)
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var saveDocument = document.Id == SpecialValues.NewId ? new PersonOuterDocument() : db.Set<PersonOuterDocument>().First(x => x.Id == document.Id);
+                saveDocument.PersonId = document.PersonId;
+                saveDocument.OuterDocumentTypeId = document.OuterDocumentTypeId;
+                saveDocument.DocumentId = document.DocumentId;
+                db.Entry<PersonOuterDocument>(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                try
+                {
+                    db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
     }
 }

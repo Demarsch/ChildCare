@@ -46,7 +46,7 @@
             </converters:ConverterItem>
         </converters:Converter>
     </UserControl.Resources>
-
+    
     <i:Interaction.Triggers>
         <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
@@ -55,6 +55,13 @@
         <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
                                      ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding AddContractOrgInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True">
+                <popup:PopupWindowAction.WindowContent>
+                    <views:AddContractOrganization/>
+                </popup:PopupWindowAction.WindowContent>
+            </popup:PopupWindowAction>
         </prism:InteractionRequestTrigger>
     </i:Interaction.Triggers>
     
@@ -146,12 +153,14 @@
                         <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding FinSources}" 
                               DisplayMemberPath="Field" 
                               SelectedValuePath="Value"
-                              SelectedValue="{Binding SelectedFinSourceId, Mode=TwoWay}" Margin="2"/>
+                              SelectedValue="{Binding SelectedFinSourceId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                            Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" Margin="2"/>
                         <Label Grid.Row="2" Grid.Column="0" Content="Организация" />
                         <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Organizations}" 
                               DisplayMemberPath="Field" 
                               SelectedValuePath="Value"
-                              SelectedValue="{Binding SelectedOrganizationId, Mode=TwoWay}" Margin="2"/>
+                              SelectedValue="{Binding SelectedOrganizationId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                            Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" Margin="2"/>
                         <Label Grid.Row="3" Grid.Column="0" Content="Начало действия договора" />
                         <Label Grid.Row="4" Grid.Column="0" Content="Конец действия договора" />
                         <DatePicker Grid.Row="3" Grid.Column="1" 
@@ -166,13 +175,14 @@
                                     ParsingNumberStyle="Integer" TextAlignment="Left"
                                     Value="{Binding Cost}" Margin="2" />
                         <Label Grid.Row="6" Grid.Column="0" Content="Доп. информация" />
-                        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Info}" MinHeight="23"
+                        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Info, UpdateSourceTrigger=PropertyChanged}" MinHeight="23"
                              TextWrapping="Wrap" AcceptsReturn="True" Margin="2" Height="Auto"/>
                         <Label Grid.Row="7" Grid.Column="0" Content="Ответственный" />
                         <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding Registrators}" 
                               DisplayMemberPath="Field" 
                               SelectedValuePath="Value"
-                              SelectedValue="{Binding SelectedRegistratorId, Mode=TwoWay}" Margin="2"/>
+                              SelectedValue="{Binding SelectedRegistratorId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                            Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" Margin="2"/>
                     </Grid>
                 </Grid>
             </Border>

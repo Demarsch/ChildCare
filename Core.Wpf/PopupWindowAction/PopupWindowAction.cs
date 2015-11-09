@@ -120,6 +120,8 @@ namespace Core.Wpf.PopupWindowActionAware
                 return;
             }
 
+            if (this.AssociatedObject.Parent == null) return;
+
             var wrapperWindow = this.GetWindow(args.Context);
 
             var callback = args.Callback;
@@ -140,10 +142,8 @@ namespace Core.Wpf.PopupWindowActionAware
                     (o, e) =>
                     {
                         wrapperWindow.SizeChanged -= sizeHandler;
-
                         FrameworkElement invoker = this.AssociatedObject;
                         Point position = invoker.PointToScreen(new Point(0, 0));
-
                         wrapperWindow.Top = position.Y + ((invoker.ActualHeight - wrapperWindow.ActualHeight) / 2);
                         wrapperWindow.Left = position.X + ((invoker.ActualWidth - wrapperWindow.ActualWidth) / 2);
                     };

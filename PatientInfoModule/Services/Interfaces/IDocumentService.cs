@@ -1,6 +1,8 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -8,7 +10,7 @@ namespace PatientInfoModule.Services
 {
     public interface IDocumentService
     {
-        int UploadDocument(Document document, out string msg);
+        Task<int> UploadDocument(Document document);
         void DeleteDocumentById(int documentId);
         IDisposableQueryable<Document> GetDocumentById(int documentId);
 

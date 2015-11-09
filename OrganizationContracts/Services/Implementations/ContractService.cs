@@ -4,6 +4,8 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
 using System.Data.Entity;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace OrganizationContractsModule.Services
 {
@@ -20,7 +22,7 @@ namespace OrganizationContractsModule.Services
             this.contextProvider = contextProvider;
         }
 
-        public int SaveContractData(RecordContract contract, RecordContractItem[] contractItems)
+        public int SaveContractData(RecordContract contract)
         {           
             using (var db = contextProvider.CreateNewContext())
             {
@@ -42,23 +44,7 @@ namespace OrganizationContractsModule.Services
                 saveContract.Options = contract.Options;
                 saveContract.InUserId = contract.InUserId;
                 saveContract.InDateTime = contract.InDateTime;
-
                 db.Entry(saveContract).State = saveContract.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
-
-                foreach (var item in contractItems)
-                {
-                    var contractItem = item.Id == SpecialValues.NewId ? new RecordContractItem() : db.Set<RecordContractItem>().First(x => x.Id == item.Id);
-                    contractItem.RecordContract = saveContract;
-                    contractItem.AssignmentId = item.AssignmentId;
-                    contractItem.RecordTypeId = item.RecordTypeId;
-                    contractItem.Count = item.Count;
-                    contractItem.Cost = item.Cost;
-                    contractItem.IsPaid = item.IsPaid;
-                    contractItem.Appendix = item.Appendix;
-                    contractItem.InUserId = item.InUserId;
-                    contractItem.InDateTime = item.InDateTime;
-                    db.Entry(contractItem).State = contractItem.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
-                }
                 db.SaveChanges();
                 return saveContract.Id;
             }                 
@@ -69,8 +55,6 @@ namespace OrganizationContractsModule.Services
             using (var db = contextProvider.CreateNewContext())
             {
                 var contract = db.Set<RecordContract>().First(x => x.Id == contractId);
-                foreach (var item in contract.RecordContractItems.ToList())
-                    db.Entry(item).State = EntityState.Deleted;
                 db.Entry(contract).State = EntityState.Deleted;
                 db.SaveChanges();
             }
@@ -148,6 +132,16 @@ namespace OrganizationContractsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Visit>(context.Set<Visit>().Where(x => x.ContractId == contractId), context);
+        }
+
+        public async Task<int> SaveOrgAsync(Org org)
+        {           
+            using (var db = contextProvider.CreateNewContext())
+            {                
+                db.Entry<Org>(org).State = org.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;  
+                await db.SaveChangesAsync();
+                return org.Id;
+            }
         }
     }
 }

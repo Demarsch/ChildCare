@@ -21,7 +21,7 @@ namespace PatientInfoModule.Services
             this.contextProvider = contextProvider;
         }
 
-        public int SaveContractData(RecordContract contract, RecordContractItem[] contractItems)
+        public int SaveContractData(RecordContract contract)
         {            
             using (var db = contextProvider.CreateNewContext())
             {
@@ -43,10 +43,9 @@ namespace PatientInfoModule.Services
                 saveContract.Options = contract.Options;
                 saveContract.InUserId = contract.InUserId;
                 saveContract.InDateTime = contract.InDateTime;
-
                 db.Entry(saveContract).State = saveContract.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
-                    
-                foreach (var item in contractItems)
+
+                foreach (var item in contract.RecordContractItems)
                 {
                     var contractItem = item.Id == SpecialValues.NewId ? new RecordContractItem() : db.Set<RecordContractItem>().First(x => x.Id == item.Id);
                     contractItem.RecordContract = saveContract;
@@ -70,9 +69,7 @@ namespace PatientInfoModule.Services
         {
             using (var db = contextProvider.CreateNewContext())
             {
-                var contract = db.Set<RecordContract>().First(x => x.Id == contractId);
-                foreach (var item in contract.RecordContractItems.ToList())
-                    db.Entry(item).State = EntityState.Deleted;
+                var contract = db.Set<RecordContract>().First(x => x.Id == contractId);                
                 db.Entry(contract).State = EntityState.Deleted;                
                 db.SaveChanges();
             }

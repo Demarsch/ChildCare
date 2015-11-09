@@ -18,7 +18,7 @@ namespace PatientInfoModule.Services
 
         IDisposableQueryable<RecordContractItem> GetContractItemById(int id);
 
-        int SaveContractData(RecordContract contract, RecordContractItem[] contractItems);
+        int SaveContractData(RecordContract contract);
 
         void DeleteContract(int contractId);
               

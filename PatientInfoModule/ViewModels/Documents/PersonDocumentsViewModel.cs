@@ -15,28 +15,31 @@ using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
+using Prism.Interactivity.InteractionRequest;
+using PatientInfoModule.Views;
+using Core.Data;
+using System.Collections.Generic;
 
 namespace PatientInfoModule.ViewModels
 {
     public class PersonDocumentsViewModel : BindableBase, INavigationAware
     {
         private readonly IPatientService patientService;
-
         private readonly IDocumentService documentService;
-
         private readonly ILog log;
-
         private readonly ICacheService cacheService;
-
         private readonly IEventAggregator eventAggregator;
-
         private readonly CommandWrapper reloadDocumentsCommandWrapper;
-
         private CancellationTokenSource currentLoadingToken;
-
+        public FailureMediator FailureMediator { get; private set; }
+        public BusyMediator BusyMediator { get; set; }
+        public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
+        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
+        public InteractionRequest<SelectPersonDocumentTypeViewModel> SelectPersonDocumentTypeInteractionRequest { get; private set; }
+        private readonly Func<SelectPersonDocumentTypeViewModel> selectPersonDocumentTypeViewModelFactory;
         private int personId;
 
-        public PersonDocumentsViewModel(IPatientService patientService, IDocumentService documentService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
+        public PersonDocumentsViewModel(IPatientService patientService, IDocumentService documentService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator, Func<SelectPersonDocumentTypeViewModel> selectPersonDocumentTypeViewModelFactory)
         {
             if (patientService == null)
             {
@@ -63,9 +66,13 @@ namespace PatientInfoModule.ViewModels
             this.log = log;
             this.cacheService = cacheService;
             this.eventAggregator = eventAggregator;
+            this.selectPersonDocumentTypeViewModelFactory = selectPersonDocumentTypeViewModelFactory;
             personId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
+            NotificationInteractionRequest = new InteractionRequest<Notification>();
+            SelectPersonDocumentTypeInteractionRequest = new InteractionRequest<SelectPersonDocumentTypeViewModel>();
             reloadDocumentsCommandWrapper = new CommandWrapper
                                               {
                                                   Command = new DelegateCommand(() => LoadPersonDocumentsAsync(personId)),
@@ -77,10 +84,6 @@ namespace PatientInfoModule.ViewModels
             openDocumentCommand = new DelegateCommand(OpenDocument);
             AllDocuments = new ObservableCollectionEx<ThumbnailViewModel>();
         }
-
-        public BusyMediator BusyMediator { get; set; }
-
-        public FailureMediator FailureMediator { get; private set; }
 
         public async void LoadPersonDocumentsAsync(int personId)
         {
@@ -130,13 +133,9 @@ namespace PatientInfoModule.ViewModels
             {
                 CommandManager.InvalidateRequerySuggested();
                 if (loadingIsCompleted)
-                {
                     BusyMediator.Deactivate();
-                }
                 if (patientService.GetPersonOuterDocuments(this.personId) != null)
-                {
                     patientService.GetPersonOuterDocuments(this.personId).Dispose();
-                }
             }
         }
 
@@ -170,29 +169,123 @@ namespace PatientInfoModule.ViewModels
 
         private void Scanning()
         {
+            var scanDocumentViewModel = new ScanDocumentsViewModel(this.documentService, this.log);
+            (new ScanDocuments() { DataContext = scanDocumentViewModel }).ShowDialog();
+            
+            foreach (var item in scanDocumentViewModel.PreviewImages.Where(x => x.ThumbnailSaved))
+            {
+                var doc = documentService.GetDocumentById(item.DocumentId).First();
+
+                PersonOuterDocument personOuterDocument = new PersonOuterDocument();
+                personOuterDocument.PersonId = this.personId;
+                personOuterDocument.DocumentId = item.DocumentId;
+                personOuterDocument.OuterDocumentTypeId = item.DocumentTypeId;
+
+                if (patientService.SavePersonDocument(personOuterDocument))
+                {
+                    AllDocuments.Add(new ThumbnailViewModel()
+                    {
+                        DocumentId = item.DocumentId,
+                        DocumentTypeId = item.DocumentTypeId,
+                        DocumentType = doc.FileName,
+                        DocumentTypeParentName = doc.PersonOuterDocuments.First().OuterDocumentType.OuterDocumentType1.Name,
+                        Comment = doc.Description,
+                        DocumentDate = doc.DocumentFromDate,
+                        ThumbnailImage = documentService.GetThumbnailForFile(doc.FileData, doc.Extension),
+                        ThumbnailChecked = false
+                    });
+                }
+            }
+            
         }
+
+        private List<string> files = new List<string>();
 
         private void AddDocument()
         {
+            files.Clear();
+            System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
+            dialog.Filter = "All files (*.*)|*.*|Office Files|*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx|Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|Text files (*.txt)|*.txt";
+            dialog.Multiselect = false;
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                files.AddRange(dialog.FileNames);
+            if (files.Any())
+            {
+                var selectPersonDocumentTypeViewModel = selectPersonDocumentTypeViewModelFactory();
+                selectPersonDocumentTypeViewModel.IntializeCreation("Информация о документе");
+                SelectPersonDocumentTypeInteractionRequest.Raise(selectPersonDocumentTypeViewModel, OnAddDocumentDialogClosed);
+            }
+        }
+
+        private async void OnAddDocumentDialogClosed(SelectPersonDocumentTypeViewModel viewModel)
+        {
+            if (viewModel.SelectedDocumentType == null) return;
+            int documentTypeId = viewModel.SelectedDocumentType.Id;
+            Document document = new Document();
+            document.FileName = documentService.GetOuterDocumentTypeById(documentTypeId).First().Name;
+            document.DocumentFromDate = viewModel.SelectedDocumentDate;
+            document.Description = viewModel.Description;
+            document.DisplayName = document.FileName + (document.DocumentFromDate.HasValue ? " от " + document.DocumentFromDate.Value.ToShortDateString() : string.Empty);
+
+            document.Extension = files[0].Substring(files[0].LastIndexOf('.') + 1);
+            document.FileData = documentService.GetBinaryDataFromFile(files[0]);
+            document.FileSize = document.FileData.Length;
+            document.UploadDate = DateTime.Now;
+
+            int documentId = await documentService.UploadDocument(document);
+            if (documentId != 0)
+            {
+                PersonOuterDocument personOuterDocument = new PersonOuterDocument();
+                personOuterDocument.PersonId = this.personId;
+                personOuterDocument.DocumentId = documentId;
+                personOuterDocument.OuterDocumentTypeId = documentTypeId;
+
+                if (patientService.SavePersonDocument(personOuterDocument))
+                {
+                    AllDocuments.Add(new ThumbnailViewModel()
+                    {
+                        DocumentId = documentId,
+                        DocumentTypeId = documentTypeId,
+                        DocumentType = document.FileName,
+                        DocumentTypeParentName = documentService.GetDocumentById(documentId).First().PersonOuterDocuments.First().OuterDocumentType.OuterDocumentType1.Name,
+                        Comment = document.Description,
+                        DocumentDate = document.DocumentFromDate,
+                        ThumbnailImage = documentService.GetThumbnailForFile(document.FileData, document.Extension),
+                        ThumbnailChecked = false
+                    });
+                }
+            }                        
         }
 
         private void RemoveDocument()
         {
             if (!allDocuments.Any() || allDocuments.All(x => !x.ThumbnailChecked))
             {
-                //this.dialogService.ShowMessage("Отсутствуют документы для удаления");
+                NotificationInteractionRequest.Raise(new Notification()
+                {
+                    Title = "Внимание",
+                    Content = "Отсутствуют документы для удаления."
+                });
                 return;
             }
-
-            //if (this.dialogService.AskUser("Удалить отмеченные документы ?", true) == true)
-            //{
-            foreach (var item in allDocuments.Where(x => x.ThumbnailChecked).ToList())
+            ConfirmationInteractionRequest.Raise(new Confirmation()
             {
-                patientService.DeletePersonOuterDocument(item.DocumentId);
-                documentService.DeleteDocumentById(item.DocumentId);
-                AllDocuments.Remove(item);
-            }
-            //}
+                Title = "Внимание",
+                Content = "Удалить отмеченные документы ?"
+            }, OnDialogClosed);
+        }
+
+        private void OnDialogClosed(Confirmation confirmation)
+        {
+            if (confirmation.Confirmed)
+            {
+                foreach (var item in allDocuments.Where(x => x.ThumbnailChecked).ToList())
+                {
+                    patientService.DeletePersonOuterDocument(item.DocumentId);
+                    documentService.DeleteDocumentById(item.DocumentId);
+                    AllDocuments.Remove(item);
+                }
+            }            
         }
 
         private void OpenDocument()
