@@ -1,6 +1,5 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;

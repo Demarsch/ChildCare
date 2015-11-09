@@ -10,6 +10,13 @@
              mc:Ignorable="d"
              d:DesignHeight="300"
              d:DesignWidth="1024" d:DataContext="{d:DesignInstance viewModels:InfoContentViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
 
         <DockPanel LastChildFill="True"
@@ -64,7 +71,7 @@
                          Grid.Column="2"
                          HorizontalAlignment="Stretch"
                          Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                         Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
                          MaxLength="100" />
                 <StackPanel Grid.Row="0"
                             Grid.Column="3"
@@ -108,19 +115,19 @@
                     <RadioButton Content="Ошибочный ввод"
                                  Margin="5 5 25 5"
                                  IsChecked="{Binding IsIncorrectName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                                 Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  IsTabStop="{Binding IsNameChanged}" />
                     <RadioButton Content="Иная причина"
                                  Margin="5 5 25 5"
                                  IsChecked="{Binding IsNewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                                 Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  IsTabStop="{Binding IsNameChanged}" />
                     <TextBlock Text="Новые данные вступают в силу с"
                                Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
                     <DatePicker HorizontalAlignment="Left"
                                 SelectedDate="{Binding NewNameStartDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                 Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                                Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                 IsTabStop="{Binding IsNameChanged}" />
                 </StackPanel>
                 <TextBlock Grid.Row="1"
@@ -131,7 +138,7 @@
                          HorizontalAlignment="Stretch"
                          MaxLength="100"
                          Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                         Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" />
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
                 <TextBlock Grid.Row="2"
                            Grid.Column="1"
                            Text="Отчество" />
@@ -149,7 +156,7 @@
                             Orientation="Horizontal">
                     <DatePicker SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True}"
                                 Margin="5 5 22 5"
-                                Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" />
+                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
                     <TextBlock Text="Пол" />
                     <ToggleButton Background="Transparent"
                                   IsChecked="{Binding IsMale}"
@@ -169,7 +176,7 @@
                     <TextBox Text="{Binding Snils, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                              Width="140"
                              MaxLength="14"
-                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}">
+                             Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
                             <behaviors:SnilsInputHelperBehavior />
                         </i:Interaction.Behaviors>
@@ -179,7 +186,7 @@
                         Text="{Binding MedNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Width="140"
                         MaxLength="16"
-                        Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}">
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
                             <behaviors:MedNumberInputHelperBehavior />
                         </i:Interaction.Behaviors>
@@ -226,7 +233,7 @@
                           ItemsSource="{Binding Nationalities}"
                           Margin="3 3 22 3"
                           SelectedValue="{Binding NationalityId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                          Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                          Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                           HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="2"
                            Text="Образование" />
@@ -248,7 +255,7 @@
                           SelectedValue="{Binding HealthGroupId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                           HorizontalAlignment="Stretch"
                           Margin="3 3 22 3"
-                          Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"
+                          Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                           Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
             </Grid>
 

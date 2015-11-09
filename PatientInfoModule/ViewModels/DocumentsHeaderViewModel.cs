@@ -10,7 +10,6 @@ using Prism;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
-using Prism.Commands;
 using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels

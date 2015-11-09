@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Core.Wpf.Mvvm
 {
@@ -21,17 +22,20 @@ namespace Core.Wpf.Mvvm
 
         public void AddRange(IEnumerable<TItem> items)
         {
-            var wasAdded = false;
             if (items == null)
             {
                 return;
             }
-            foreach (var item in items)
+            var newItems = items.ToArray();
+            if (newItems.Length > 0)
+            {
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems));
+            }
+            foreach (var item in newItems)
             {
                 Items.Add(item);
-                wasAdded = true;
             }
-            if (!wasAdded)
+            if (newItems.Length == 0)
             {
                 return;
             }
@@ -40,11 +44,11 @@ namespace Core.Wpf.Mvvm
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        public event EventHandler<IEnumerable<TItem>>  BeforeItemsRemoved;
+        public event NotifyCollectionChangedEventHandler BeforeCollectionChanged;
 
-        protected virtual void OnBeforeItemsRemoved(IEnumerable<TItem> e)
+        protected virtual void OnBeforeCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            var handler = BeforeItemsRemoved;
+            var handler = BeforeCollectionChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -53,20 +57,41 @@ namespace Core.Wpf.Mvvm
 
         protected override void ClearItems()
         {
-            OnBeforeItemsRemoved(Items);
+            if (Items.Count > 0)
+            {
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, Items));
+            }
             base.ClearItems();
         }
 
         protected override void RemoveItem(int index)
         {
-            OnBeforeItemsRemoved(new[] { Items[index]});
+            if (index < Items.Count)
+            {
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, Items[index], index));
+            }
             base.RemoveItem(index);
         }
 
         protected override void SetItem(int index, TItem item)
         {
-            OnBeforeItemsRemoved(new[] { Items[index]});
+            if (index < Items.Count)
+            {
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, Items[index], index));
+            }
             base.SetItem(index, item);
+        }
+
+        protected override void InsertItem(int index, TItem item)
+        {
+            OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+            base.InsertItem(index, item);
+        }
+
+        protected override void MoveItem(int oldIndex, int newIndex)
+        {
+            OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, Items[oldIndex], newIndex, oldIndex));
+            base.MoveItem(oldIndex, newIndex);
         }
 
         public void Replace(IEnumerable<TItem> items)
@@ -74,7 +99,7 @@ namespace Core.Wpf.Mvvm
             var wasChanged = Items.Count > 0;
             if (wasChanged)
             {
-                OnBeforeItemsRemoved(Items);
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, items, Items));
             }
             Items.Clear();
             if (items != null)
@@ -100,22 +125,25 @@ namespace Core.Wpf.Mvvm
             {
                 return false;
             }
-            var wasRemoved = false;
             var removedItems = new List<TItem>();
+            var removedIndices = new List<int>();
             for (var index = Items.Count - 1; index >= 0; index--)
             {
                 if (predicate(Items[index]))
                 {
                     removedItems.Add(Items[index]);
-                    Items.RemoveAt(index);
-                    wasRemoved = true;
+                    removedIndices.Insert(0, index);
                 }
             }
-            if (!wasRemoved)
+            if (removedIndices.Count == 0)
             {
                 return false;
             }
-            OnBeforeItemsRemoved(removedItems);
+            OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedItems));
+            foreach (var index in removedIndices)
+            {
+                Items.RemoveAt(index);
+            }
             OnPropertyChanged(new PropertyChangedEventArgs("Count"));
             OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));

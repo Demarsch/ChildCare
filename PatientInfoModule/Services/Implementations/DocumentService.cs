@@ -3,13 +3,13 @@ using System.Linq;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
-using System.Data.Entity;
 using System.IO;
 using System.Windows.Media;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Data.Entity;
 
 namespace PatientInfoModule.Services
 {

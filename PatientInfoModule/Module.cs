@@ -19,6 +19,7 @@ using Prism.Events;
 using Prism.Modularity;
 using Prism.Regions;
 using Shell.Shared;
+using WpfControls.Editors;
 
 namespace PatientInfoModule
 {
@@ -174,6 +175,8 @@ namespace PatientInfoModule
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
+
+            container.RegisterType<ISuggestionProvider, IdentityDocumentsGivenOrgSuggestionProvider>(SuggestionProviderNames.IdentityDocumentGivenOrg, new ContainerControlledLifetimeManager());
         }
     }
 }

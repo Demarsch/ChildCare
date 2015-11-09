@@ -1,0 +1,125 @@
+﻿<UserControl x:Class="PatientInfoModule.Views.IdentityDocumentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+             xmlns:editors="http://wpfcontrols.com/"
+             mc:Ignorable="d" 
+             d:DesignHeight="300"
+             d:DesignWidth="450" 
+             d:DataContext="{d:DesignInstance viewModels:IdentityDocumentViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:Converter x:Key="IsActiveToTextConverter">
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                          To="Действующий документ" />
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                          To="Недействующий документ" />
+            </converters:Converter>
+            <converters:Converter x:Key="IsActiveToForegroundConverter">
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                          To="{x:Static Brushes.Green}" />
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                          To="{x:Static Brushes.Red}" />
+            </converters:Converter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0"
+                   Grid.Column="1"
+                   Grid.ColumnSpan="3"
+                   Text="{Binding IsActive, Converter={StaticResource IsActiveToTextConverter}}"
+                   Foreground="{Binding IsActive, Converter={StaticResource IsActiveToForegroundConverter}}" />
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                HorizontalAlignment="Right"
+                ToolTip="Удалить документ"
+                Template="{StaticResource CloseButtonTemplate}" />
+        <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   Text="Тип документа" />
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="3"
+                  Margin="3 3 22 3"
+                  HorizontalAlignment="Stretch"
+                  ItemsSource="{Binding DocumentTypes}"
+                  SelectedValue="{Binding DocumentTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+        <TextBlock Grid.Row="2"
+                   Grid.Column="0"
+                   Text="Серия" />
+        <TextBox Grid.Row="2"
+                 Grid.Column="1"
+                 HorizontalAlignment="Stretch"
+                 Text="{Binding Series, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                 Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
+        <TextBlock Grid.Row="2"
+                   Grid.Column="2"
+                   Text="Номер" />
+        <TextBox Grid.Row="2"
+                 Grid.Column="3"
+                 HorizontalAlignment="Stretch"
+                 Text="{Binding Number, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                 Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
+        <TextBlock Grid.Row="3"
+                   Grid.Column="0"
+                   Text="Кем выдан" />
+        <editors:AutoCompleteTextBox Grid.Row="3"
+                                     Grid.Column="1"
+                                     Grid.ColumnSpan="3"
+                                     Margin="3"
+                                     MinHeight="40"
+                                     Provider="{Binding GivenOrgSuggestionProvider}"
+                                     SelectedItem="{Binding GivenOrg, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                     Text="{Binding GivenOrgText, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                     Watermark="Введите любое слово из названия выдавшей организации"
+                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
+            <editors:AutoCompleteTextBox.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius"
+                            Value="0" />
+                </Style>
+            </editors:AutoCompleteTextBox.Resources>
+        </editors:AutoCompleteTextBox>
+        <TextBlock Grid.Row="4"
+                   Grid.Column="0"
+                   Text="Действителен с" />
+        <StackPanel Grid.Row="4"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="3"
+                    HorizontalAlignment="Stretch"
+                    Orientation="Horizontal">
+            <DatePicker SelectedDate="{Binding FromDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                        Margin="3 3 22 3"
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+            <TextBlock Text="по" />
+            <DatePicker SelectedDate="{Binding ToDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                        Margin="3 3 22 3"
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                        IsEnabled="{Binding HasToDate}" />
+            <CheckBox IsChecked="{Binding HasToDate, UpdateSourceTrigger=PropertyChanged}"
+                      Content="Бессрочно"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

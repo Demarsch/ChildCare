@@ -565,7 +565,7 @@ namespace PatientInfoModule.ViewModels
             changeTracker.Untrack(ref healthGroupId, () => HealthGroupId);
             changeTracker.Untrack(ref maritalStatusId, () => MaritalStatusId);
             changeTracker.Untrack(ref educationId, () => EducationId);
-            saveWasRequested = false;
+            isValidationRequested = false;
             OnPropertyChanged(string.Empty);
             UpdateNameIsChanged();
         }
@@ -724,7 +724,7 @@ namespace PatientInfoModule.ViewModels
 
         #region Inplementation IDataErrorInfo
 
-        private bool saveWasRequested;
+        private bool isValidationRequested;
 
         private readonly HashSet<string> invalidProperties = new HashSet<string>();
 
@@ -732,7 +732,7 @@ namespace PatientInfoModule.ViewModels
         {
             get
             {
-                saveWasRequested = true;
+                isValidationRequested = true;
                 OnPropertyChanged(string.Empty);
                 return invalidProperties.Count < 1;
             }
@@ -742,7 +742,7 @@ namespace PatientInfoModule.ViewModels
         {
             get
             {
-                if (!saveWasRequested)
+                if (!isValidationRequested)
                 {
                     invalidProperties.Remove(columnName);
                     return string.Empty;
