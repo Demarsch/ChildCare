@@ -61,6 +61,7 @@
     <Compile Include="Misc\AppConfiguration.cs" />
     <Compile Include="Misc\ChangeTracker.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
+    <Compile Include="Misc\IChangeTracker.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
     <Compile Include="Expressions\ISearchExpressionProvider.cs" />

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
+using Core.Misc;
 using PatientInfoModule.Data;
 
 namespace PatientInfoModule.Services
@@ -29,6 +29,22 @@ namespace PatientInfoModule.Services
             var context = contextProvider.CreateNewContext();
             context.Configuration.ProxyCreationEnabled = false;
             return new DisposableQueryable<Person>(context.Set<Person>().AsNoTracking().Where(x => x.Id == patientId), context);
+        }
+
+        public IQueryable<string> GetDocumentGivenOrganizations(string filter)
+        {
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new string[0].AsQueryable();
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                return context.Set<PersonIdentityDocument>()
+                              .Where(x => x.GivenOrg.Contains(filter))
+                              .Select(x => x.GivenOrg)
+                              .Distinct();
+            }
         }
 
         public IQueryable<Country> GetCountries()

@@ -3,7 +3,6 @@ using System.Linq;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
-using System.Data.Entity;
 using System.IO;
 using System.Windows.Media;
 using System.Diagnostics;
@@ -30,7 +29,7 @@ namespace PatientInfoModule.Services
             try
             {
                 var context = contextProvider.CreateNewContext();
-                /*var dbDocument = document.Id > 0 ? db.GetById<Document>(document.Id) : new Document();
+                /*var dbDocument = document.Id > 0 ? db.GetById<Model>(document.Id) : new Model();
                 dbDocument.FileName = document.FileName;
                 dbDocument.DocumentFromDate = document.DocumentFromDate;
                 dbDocument.Description = document.Description;
@@ -40,7 +39,7 @@ namespace PatientInfoModule.Services
                 dbDocument.FileSize = document.FileSize;
                 dbDocument.UploadDate = document.UploadDate;
                 if (dbDocument.Id == 0)
-                    db.Add<Document>(dbDocument);
+                    db.Add<Model>(dbDocument);
                 db.Save();
                 msg = exception;
                 return dbDocument.Id;*/
@@ -57,8 +56,8 @@ namespace PatientInfoModule.Services
         public void DeleteDocumentById(int documentId)
         {
             var context = contextProvider.CreateNewContext();
-            /*var document = db.GetById<Document>(documentId);
-            db.Remove<Document>(document);
+            /*var document = db.GetById<Model>(documentId);
+            db.Remove<Model>(document);
             db.Save();*/
         }
 
