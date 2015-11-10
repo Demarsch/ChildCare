@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -10,15 +11,15 @@ namespace Core.Wpf.Mvvm
     public class ObservableCollectionEx<TItem> : ObservableCollection<TItem>
     {
         public ObservableCollectionEx()
-        {}
+        { }
 
         public ObservableCollectionEx(IEnumerable<TItem> collection)
             : base(collection)
-        {}
+        { }
 
         public ObservableCollectionEx(List<TItem> list)
             : base(list)
-        {}
+        { }
 
         public void AddRange(IEnumerable<TItem> items)
         {
@@ -59,7 +60,7 @@ namespace Core.Wpf.Mvvm
         {
             if (Items.Count > 0)
             {
-                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, Items));
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, Items as IList));
             }
             base.ClearItems();
         }
@@ -96,19 +97,17 @@ namespace Core.Wpf.Mvvm
 
         public void Replace(IEnumerable<TItem> items)
         {
+            items = items ?? new TItem[0];
             var wasChanged = Items.Count > 0;
             if (wasChanged)
             {
-                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, items, Items));
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, items as IList, Items as IList));
             }
             Items.Clear();
-            if (items != null)
+            foreach (var item in items)
             {
-                foreach (var item in items)
-                {
-                    Items.Add(item);
-                    wasChanged = true;
-                }
+                Items.Add(item);
+                wasChanged = true;
             }
             if (!wasChanged)
             {

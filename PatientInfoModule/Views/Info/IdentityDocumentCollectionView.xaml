@@ -6,7 +6,6 @@
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              xmlns:views="clr-namespace:PatientInfoModule.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:ext="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300"

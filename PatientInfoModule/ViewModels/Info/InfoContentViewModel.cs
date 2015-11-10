@@ -35,12 +35,9 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IEventAggregator eventAggregator;
 
-        private readonly IRegionManager regionManager;
-
         public InfoContentViewModel(IPatientService patientService,
                                     ILog log,
                                     IEventAggregator eventAggregator,
-                                    IRegionManager regionManager,
                                     IdentityDocumentCollectionViewModel identityDocumentCollectionViewModel)
         {
             if (patientService == null)
@@ -55,10 +52,6 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
-            if (regionManager == null)
-            {
-                throw new ArgumentNullException("regionManager");
-            }
             if (identityDocumentCollectionViewModel == null)
             {
                 throw new ArgumentNullException("identityDocumentCollectionViewModel");
@@ -67,7 +60,6 @@ namespace PatientInfoModule.ViewModels
             this.patientService = patientService;
             this.log = log;
             this.eventAggregator = eventAggregator;
-            this.regionManager = regionManager;
             patientIdBeingSelected = SpecialValues.NonExistingId;
             currentInstanceChangeTracker = new ChangeTrackerEx<InfoContentViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, IdentityDocuments.ChangeTracker);

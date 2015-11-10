@@ -11,7 +11,7 @@
             <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <views:PersonRecordList Grid.Column="0" Grid.Row="0" x:Name="personVisitItemsList"/>
-        <views:PersonRecordEditor Grid.Column="1" Grid.Row="0" />
+        <views:PersonRecordListView Grid.Column="0" Grid.Row="0" x:Name="personVisitItemsList"/>
+        <views:PersonRecordEditorView Grid.Column="1" Grid.Row="0" />
     </Grid>
 </UserControl>

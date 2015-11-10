@@ -59,7 +59,7 @@
         <prism:InteractionRequestTrigger SourceObject="{Binding AddContractOrgInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True">
                 <popup:PopupWindowAction.WindowContent>
-                    <views:AddContractOrganization/>
+                    <views:AddContractOrganizationView/>
                 </popup:PopupWindowAction.WindowContent>
             </popup:PopupWindowAction>
         </prism:InteractionRequestTrigger>

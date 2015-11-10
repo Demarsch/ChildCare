@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Windows.Input;
 using Core.Data;
 using Core.Misc;
@@ -43,6 +45,7 @@ namespace PatientInfoModule.ViewModels
                 foreach (var newItem in e.NewItems.Cast<IdentityDocumentViewModel>())
                 {
                     newItem.DeleteRequested += OnIdentityDocumentDeleteRequested;
+                    newItem.PropertyChanged += OnIdentityDocumentPropertyChanged;
                 }
             }
             if (e.OldItems != null)
@@ -50,7 +53,16 @@ namespace PatientInfoModule.ViewModels
                 foreach (var oldItem in e.OldItems.Cast<IdentityDocumentViewModel>())
                 {
                     oldItem.DeleteRequested -= OnIdentityDocumentDeleteRequested;
+                    oldItem.PropertyChanged -= OnIdentityDocumentPropertyChanged;
                 }
+            }
+        }
+
+        private void OnIdentityDocumentPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (string.IsNullOrEmpty(propertyChangedEventArgs.PropertyName) || string.CompareOrdinal(propertyChangedEventArgs.PropertyName, "StringRepresentation") == 0)
+            {
+                OnPropertyChanged(() => StringRepresentation);
             }
         }
 
@@ -77,6 +89,7 @@ namespace PatientInfoModule.ViewModels
             foreach (var identityDocument in IdentityDocuments)
             {
                 identityDocument.DeleteRequested -= OnIdentityDocumentDeleteRequested;
+                identityDocument.PropertyChanged -= OnIdentityDocumentPropertyChanged;
             }
             IdentityDocuments.BeforeCollectionChanged -= OnBeforeIdentityDocumentsCollectionChanged;
         }
@@ -87,5 +100,33 @@ namespace PatientInfoModule.ViewModels
         }
 
         public IChangeTracker ChangeTracker { get; private set; }
+
+        public string StringRepresentation
+        {
+            get
+            {
+                var documentsRepresentations = IdentityDocuments.Select(x => x.StringRepresentation)
+                                                                .Where(x => !string.IsNullOrEmpty(x))
+                                                                .ToArray();
+                if (documentsRepresentations.Length == 0)
+                {
+                    return string.Empty;
+                }
+                if (documentsRepresentations.Length == 1)
+                {
+                    return documentsRepresentations[0];
+                }
+                var result = new StringBuilder();
+                var index = 1;
+                foreach (var documentsRepresentation in documentsRepresentations)
+                {
+                    result.Append(index)
+                          .Append(". ")
+                          .AppendLine(documentsRepresentation);
+                    index++;
+                }
+                return result.ToString();
+            }
+        }
     }
 }

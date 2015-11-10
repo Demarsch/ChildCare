@@ -305,7 +305,8 @@
                 <TextBox Grid.Row="1"
                          Grid.Column="0"
                          IsReadOnly="True"
-                         VerticalAlignment="Stretch">
+                         VerticalAlignment="Stretch"
+                         Text="{Binding IdentityDocuments.StringRepresentation, Mode=OneWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="GotKeyboardFocus">
                             <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
