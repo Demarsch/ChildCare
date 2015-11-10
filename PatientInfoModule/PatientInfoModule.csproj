@@ -160,14 +160,17 @@
     <Compile Include="Views\EmptyPatientInfo.xaml.cs">
       <DependentUpon>EmptyPatientInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Info\IdentityDocumentCollectionView.xaml.cs">
+      <DependentUpon>IdentityDocumentCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Info\IdentityDocumentView.xaml.cs">
       <DependentUpon>IdentityDocumentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Info\InfoHeader.xaml.cs">
-      <DependentUpon>InfoHeader.xaml</DependentUpon>
+    <Compile Include="Views\Info\InfoHeaderView.xaml.cs">
+      <DependentUpon>InfoHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Info\InfoContent.xaml.cs">
-      <DependentUpon>InfoContent.xaml</DependentUpon>
+    <Compile Include="Views\Info\InfoContentView.xaml.cs">
+      <DependentUpon>InfoContentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PatientContracts.xaml.cs">
       <DependentUpon>PatientContracts.xaml</DependentUpon>
@@ -219,15 +222,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Info\IdentityDocumentCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Info\IdentityDocumentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Info\InfoHeader.xaml">
+    <Page Include="Views\Info\InfoHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Info\InfoContent.xaml">
+    <Page Include="Views\Info\InfoContentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

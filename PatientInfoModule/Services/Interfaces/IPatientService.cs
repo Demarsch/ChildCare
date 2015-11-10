@@ -12,7 +12,7 @@ namespace PatientInfoModule.Services
     {
         IDisposableQueryable<Person> GetPatientQuery(int patientId);
 
-        IQueryable<string> GetDocumentGivenOrganizations(string filter);
+        IDisposableQueryable<string> GetDocumentGivenOrganizations(string filter);
         
         IQueryable<Country> GetCountries();
 

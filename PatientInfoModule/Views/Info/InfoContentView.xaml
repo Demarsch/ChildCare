@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PatientInfoModule.Views.InfoContent"
+﻿<UserControl x:Class="PatientInfoModule.Views.InfoContentView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,18 +7,22 @@
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
+             xmlns:views="clr-namespace:PatientInfoModule.Views"
              mc:Ignorable="d"
-             d:DesignHeight="300"
-             d:DesignWidth="1024" d:DataContext="{d:DesignInstance viewModels:InfoContentViewModel}">
+             d:DesignHeight="500"
+             d:DesignWidth="1024"
+             d:DataContext="{d:DesignInstance viewModels:InfoContentViewModel}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <DataTemplate DataType="{x:Type viewModels:IdentityDocumentCollectionViewModel}">
+                <views:IdentityDocumentCollectionView Width="450" />
+            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-
         <DockPanel LastChildFill="True"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch">
@@ -154,9 +158,10 @@
                             Grid.Column="2"
                             Grid.ColumnSpan="2"
                             Orientation="Horizontal">
-                    <DatePicker SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True}"
-                                Margin="5 5 22 5"
-                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+                    <DatePicker
+                        SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                        Margin="5 5 22 5"
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
                     <TextBlock Text="Пол" />
                     <ToggleButton Background="Transparent"
                                   IsChecked="{Binding IsMale}"
@@ -258,9 +263,217 @@
                           Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                           Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
             </Grid>
-
-            <!--Placeholder-->
-            <Border />
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <!--Identity documents-->
+                <TextBlock Grid.Row="0"
+                           Grid.Column="0"
+                           Text="Удостоверение личности" />
+                <Border Grid.Row="0"
+                        Grid.Column="1"
+                        Grid.RowSpan="10"
+                        BorderBrush="Black"
+                        BorderThickness="0 0 1 0" />
+                <Path Grid.Row="1"
+                      Grid.Column="1"
+                      Data="M 12,-12 l -12, 6 l 12,6"
+                      VerticalAlignment="Center"
+                      Stroke="Black"
+                      Fill="Black"
+                      x:Name="arrow"
+                      Visibility="Collapsed" />
+                <ContentControl Grid.Row="0"
+                                Grid.RowSpan="10"
+                                Grid.Column="2"
+                                Content="{Binding ActiveChildContent}"/>
+                <TextBox Grid.Row="1"
+                         Grid.Column="0"
+                         IsReadOnly="True"
+                         VerticalAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="GotKeyboardFocus">
+                            <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
+                                                   CommandParameter="{Binding IdentityDocuments, Mode=OneTime}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <TextBox.Triggers>
+                        <EventTrigger RoutedEvent="FocusManager.GotFocus">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Duration="0:0:0"
+                                                                   Storyboard.TargetName="arrow"
+                                                                   Storyboard.TargetProperty="Visibility">
+                                        <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}"
+                                                                KeyTime="0:0:0" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <Int32AnimationUsingKeyFrames Duration="0:0:0"
+                                                                  Storyboard.TargetName="arrow"
+                                                                  Storyboard.TargetProperty="(Grid.Row)">
+                                        <DiscreteInt32KeyFrame Value="1"
+                                                               KeyTime="0:0:0" />
+                                    </Int32AnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </TextBox.Triggers>
+                </TextBox>
+                <!--Addresses-->
+                <TextBlock Grid.Row="2"
+                           Grid.Column="0"
+                           Text="Адрес" />
+                <TextBox Grid.Row="3"
+                         Grid.Column="0"
+                         IsReadOnly="True"
+                         VerticalAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="GotKeyboardFocus">
+                            <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
+                                                   CommandParameter="{x:Null}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <TextBox.Triggers>
+                        <EventTrigger RoutedEvent="FocusManager.GotFocus">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Duration="0:0:0"
+                                                                   Storyboard.TargetName="arrow"
+                                                                   Storyboard.TargetProperty="Visibility">
+                                        <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}"
+                                                                KeyTime="0:0:0" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <Int32AnimationUsingKeyFrames Duration="0:0:0"
+                                                                  Storyboard.TargetName="arrow"
+                                                                  Storyboard.TargetProperty="(Grid.Row)">
+                                        <DiscreteInt32KeyFrame Value="3"
+                                                               KeyTime="0:0:0" />
+                                    </Int32AnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </TextBox.Triggers>
+                </TextBox>
+                <!--Insurance Documents-->
+                <TextBlock Grid.Row="4"
+                           Grid.Column="0"
+                           Text="Страховые документы" />
+                <TextBox Grid.Row="5"
+                         Grid.Column="0"
+                         IsReadOnly="True"
+                         VerticalAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="GotKeyboardFocus">
+                            <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
+                                                   CommandParameter="{Binding InsuranceDocuments, Mode=OneTime}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <TextBox.Triggers>
+                        <EventTrigger RoutedEvent="FocusManager.GotFocus">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Duration="0:0:0"
+                                                                   Storyboard.TargetName="arrow"
+                                                                   Storyboard.TargetProperty="Visibility">
+                                        <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}"
+                                                                KeyTime="0:0:0" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <Int32AnimationUsingKeyFrames Duration="0:0:0"
+                                                                  Storyboard.TargetName="arrow"
+                                                                  Storyboard.TargetProperty="(Grid.Row)">
+                                        <DiscreteInt32KeyFrame Value="5"
+                                                               KeyTime="0:0:0" />
+                                    </Int32AnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </TextBox.Triggers>
+                </TextBox>
+                <!--Social Statuses-->
+                <TextBlock Grid.Row="6"
+                           Grid.Column="0"
+                           Text="Социальный статус" />
+                <TextBox Grid.Row="7"
+                         Grid.Column="0"
+                         IsReadOnly="True"
+                         VerticalAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="GotKeyboardFocus">
+                            <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
+                                                   CommandParameter="{Binding SocialStatuses, Mode=OneTime}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <TextBox.Triggers>
+                        <EventTrigger RoutedEvent="FocusManager.GotFocus">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Duration="0:0:0"
+                                                                   Storyboard.TargetName="arrow"
+                                                                   Storyboard.TargetProperty="Visibility">
+                                        <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}"
+                                                                KeyTime="0:0:0" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <Int32AnimationUsingKeyFrames Duration="0:0:0"
+                                                                  Storyboard.TargetName="arrow"
+                                                                  Storyboard.TargetProperty="(Grid.Row)">
+                                        <DiscreteInt32KeyFrame Value="7"
+                                                               KeyTime="0:0:0" />
+                                    </Int32AnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </TextBox.Triggers>
+                </TextBox>
+                <!--Disabilities-->
+                <TextBlock Grid.Row="8"
+                           Grid.Column="0"
+                           Text="Инвалидность" />
+                <TextBox Grid.Row="9"
+                         Grid.Column="0"
+                         IsReadOnly="True"
+                         VerticalAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="GotKeyboardFocus">
+                            <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
+                                                   CommandParameter="{Binding Disabilities, Mode=OneTime}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <TextBox.Triggers>
+                        <EventTrigger RoutedEvent="FocusManager.GotFocus">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Duration="0:0:0"
+                                                                   Storyboard.TargetName="arrow"
+                                                                   Storyboard.TargetProperty="Visibility">
+                                        <DiscreteObjectKeyFrame Value="{x:Static Visibility.Visible}"
+                                                                KeyTime="0:0:0" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                    <Int32AnimationUsingKeyFrames Duration="0:0:0"
+                                                                  Storyboard.TargetName="arrow"
+                                                                  Storyboard.TargetProperty="(Grid.Row)">
+                                        <DiscreteInt32KeyFrame Value="9"
+                                                               KeyTime="0:0:0" />
+                                    </Int32AnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </TextBox.Triggers>
+                </TextBox>
+            </Grid>
         </DockPanel>
         <ContentControl Content="{Binding BusyMediator}"
                         HorizontalAlignment="Stretch"

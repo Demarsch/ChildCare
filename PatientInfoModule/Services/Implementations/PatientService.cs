@@ -31,20 +31,19 @@ namespace PatientInfoModule.Services
             return new DisposableQueryable<Person>(context.Set<Person>().AsNoTracking().Where(x => x.Id == patientId), context);
         }
 
-        public IQueryable<string> GetDocumentGivenOrganizations(string filter)
+        public IDisposableQueryable<string> GetDocumentGivenOrganizations(string filter)
         {
             filter = (filter ?? string.Empty).Trim();
             if (filter.Length < AppConfiguration.UserInputSearchThreshold)
             {
-                return new string[0].AsQueryable();
+                return DisposableQueryable<string>.Empty;
             }
-            using (var context = contextProvider.CreateNewContext())
-            {
-                return context.Set<PersonIdentityDocument>()
-                              .Where(x => x.GivenOrg.Contains(filter))
-                              .Select(x => x.GivenOrg)
-                              .Distinct();
-            }
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<string>(context.Set<PersonIdentityDocument>()
+                                                          .Where(x => x.GivenOrg.Contains(filter))
+                                                          .Select(x => x.GivenOrg)
+                                                          .Distinct(),
+                                                   context);
         }
 
         public IQueryable<Country> GetCountries()
@@ -77,7 +76,7 @@ namespace PatientInfoModule.Services
             {
                 var result = new SavePatientOutput
                              {
-                                 Person = data.CurrentPerson, 
+                                 Person = data.CurrentPerson,
                                  Name = data.IsNewName ? data.NewName : data.CurrentName
                              };
                 data.CurrentPerson.FullName = data.NewName.FullName;
@@ -91,7 +90,7 @@ namespace PatientInfoModule.Services
                     data.CurrentName.MiddleName = data.NewName.MiddleName;
                     context.Entry(data.CurrentName).State = EntityState.Modified;
                 }
-                //We should create new name whether because of real name change or because of new person
+                    //We should create new name whether because of real name change or because of new person
                 else if (data.IsNewName)
                 {
                     context.Entry(data.NewName).State = EntityState.Added;
