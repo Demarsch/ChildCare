@@ -7,6 +7,9 @@ using System.IO;
 using System.Windows.Media;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Data.Entity;
 
 namespace PatientInfoModule.Services
 {
@@ -23,42 +26,33 @@ namespace PatientInfoModule.Services
             this.contextProvider = contextProvider;
         }
 
-        public int UploadDocument(Document document, out string msg)
-        {
-            string exception = string.Empty;
-            try
+        public async Task<int> UploadDocument(Document document)
+        {            
+            using (var db = contextProvider.CreateNewContext())
             {
-                var context = contextProvider.CreateNewContext();
-                /*var dbDocument = document.Id > 0 ? db.GetById<Model>(document.Id) : new Model();
-                dbDocument.FileName = document.FileName;
-                dbDocument.DocumentFromDate = document.DocumentFromDate;
-                dbDocument.Description = document.Description;
-                dbDocument.DisplayName = document.DisplayName;
-                dbDocument.Extension = document.Extension;
-                dbDocument.FileData = document.FileData;
-                dbDocument.FileSize = document.FileSize;
-                dbDocument.UploadDate = document.UploadDate;
-                if (dbDocument.Id == 0)
-                    db.Add<Model>(dbDocument);
-                db.Save();
-                msg = exception;
-                return dbDocument.Id;*/
-                msg = exception;
-                return 0;
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
-                return 0;
-            }
+                var saveDocument = document.Id == SpecialValues.NewId ? new Document() : db.Set<Document>().First(x => x.Id == document.Id);
+                saveDocument.FileName = document.FileName;
+                saveDocument.DocumentFromDate = document.DocumentFromDate;
+                saveDocument.Description = document.Description;
+                saveDocument.DisplayName = document.DisplayName;
+                saveDocument.Extension = document.Extension;
+                saveDocument.FileData = document.FileData;
+                saveDocument.FileSize = document.FileSize;
+                saveDocument.UploadDate = document.UploadDate;
+                db.Entry<Document>(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                await db.SaveChangesAsync();
+                return saveDocument.Id;
+            }            
         }
 
         public void DeleteDocumentById(int documentId)
         {
-            var context = contextProvider.CreateNewContext();
-            /*var document = db.GetById<Model>(documentId);
-            db.Remove<Model>(document);
-            db.Save();*/
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var document = db.Set<Document>().First(x => x.Id == documentId);
+                db.Entry(document).State = EntityState.Deleted;
+                db.SaveChanges();
+            }
         }
 
         public IDisposableQueryable<Document> GetDocumentById(int documentId)

@@ -108,6 +108,7 @@
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
+    <Compile Include="Misc\OptionValues.cs" />
     <Compile Include="Misc\SpecialValues.cs" />
     <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>

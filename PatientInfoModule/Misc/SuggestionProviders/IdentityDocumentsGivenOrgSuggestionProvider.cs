@@ -21,7 +21,10 @@ namespace PatientInfoModule.Misc
 
         public IEnumerable GetSuggestions(string filter)
         {
-            return patientService.GetDocumentGivenOrganizations(filter).ToArray();
+            using (var query = patientService.GetDocumentGivenOrganizations(filter))
+            {
+                return query.ToArray();
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace PatientInfoModule.Services
     {
         IDisposableQueryable<Person> GetPatientQuery(int patientId);
 
-        IQueryable<string> GetDocumentGivenOrganizations(string filter);
+        IDisposableQueryable<string> GetDocumentGivenOrganizations(string filter);
         
         IQueryable<Country> GetCountries();
 
@@ -33,5 +33,7 @@ namespace PatientInfoModule.Services
         IDisposableQueryable<PersonOuterDocument> GetPersonOuterDocuments(int personId);
 
         void DeletePersonOuterDocument(int documentId);
+
+        bool SavePersonDocument(PersonOuterDocument document);
     }
 }

@@ -4,11 +4,11 @@
 namespace PatientInfoModule.Views
 {
     /// <summary>
-    /// Interaction logic for InfoContent.xaml
+    /// Interaction logic for InfoContentView.xaml
     /// </summary>
-    public partial class InfoContent
+    public partial class InfoContentView
     {
-        public InfoContent()
+        public InfoContentView()
         {
             InitializeComponent();
         }

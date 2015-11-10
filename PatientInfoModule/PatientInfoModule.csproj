@@ -44,8 +44,8 @@
       <HintPath>..\packages\Fluent.Ribbon.3.5.1.198\lib\net45\Fluent.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -89,6 +89,21 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="TwainDotNet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d3cd6e1539fa8c71, processorArchitecture=x86">
+      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TwainDotNet.WinFroms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d3cd6e1539fa8c71, processorArchitecture=x86">
+      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.WinFroms.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TwainDotNet.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d3cd6e1539fa8c71, processorArchitecture=x86">
+      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.Wpf.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WpfControls">
       <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
@@ -125,15 +140,17 @@
     <Compile Include="ViewModels\Contracts\ContractAssignmentsViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractViewModel.cs" />
     <Compile Include="ViewModels\DocumentsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\Documents\SelectPersonDocumentTypeViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\InfoHeaderViewModel.cs" />
     <Compile Include="ViewModels\Info\InfoContentViewModel.cs" />
     <Compile Include="ViewModels\Contracts\PatientContractsViewModel.cs" />
+    <Compile Include="ViewModels\Documents\PersonDocumentsViewModel.cs" />
+    <Compile Include="ViewModels\Documents\ScanDocumentsViewModel.cs" />
     <Compile Include="ViewModels\Info\AddressViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentViewModel.cs" />
-    <Compile Include="ViewModels\PersonDocumentsViewModel.cs" />
-    <Compile Include="ViewModels\ThumbnailViewModel.cs" />
+    <Compile Include="ViewModels\Documents\ThumbnailViewModel.cs" />
     <Compile Include="Views\ContractsHeader.xaml.cs">
       <DependentUpon>ContractsHeader.xaml</DependentUpon>
     </Compile>
@@ -143,20 +160,29 @@
     <Compile Include="Views\EmptyPatientInfo.xaml.cs">
       <DependentUpon>EmptyPatientInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Info\IdentityDocumentCollectionView.xaml.cs">
+      <DependentUpon>IdentityDocumentCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Info\IdentityDocumentView.xaml.cs">
       <DependentUpon>IdentityDocumentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Info\InfoHeader.xaml.cs">
-      <DependentUpon>InfoHeader.xaml</DependentUpon>
+    <Compile Include="Views\Info\InfoHeaderView.xaml.cs">
+      <DependentUpon>InfoHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Info\InfoContent.xaml.cs">
-      <DependentUpon>InfoContent.xaml</DependentUpon>
+    <Compile Include="Views\Info\InfoContentView.xaml.cs">
+      <DependentUpon>InfoContentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PatientContracts.xaml.cs">
       <DependentUpon>PatientContracts.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PersonDocuments.xaml.cs">
       <DependentUpon>PersonDocuments.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ScanDocuments.xaml.cs">
+      <DependentUpon>ScanDocuments.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SelectPersonDocumentTypeView.xaml.cs">
+      <DependentUpon>SelectPersonDocumentTypeView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -196,15 +222,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Info\IdentityDocumentCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Info\IdentityDocumentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Info\InfoHeader.xaml">
+    <Page Include="Views\Info\InfoHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Info\InfoContent.xaml">
+    <Page Include="Views\Info\InfoContentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -213,6 +243,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PersonDocuments.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ScanDocuments.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SelectPersonDocumentTypeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

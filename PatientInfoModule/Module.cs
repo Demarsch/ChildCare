@@ -91,13 +91,15 @@ namespace PatientInfoModule
             container.RegisterType<InfoContentViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PatientContractsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonDocumentsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ScanDocumentsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
             //This is required by Prism navigation mechanism to resolve view
+            container.RegisterType<object, ScanDocuments>(viewNameResolver.Resolve<ScanDocumentsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, EmptyPatientInfo>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, InfoContent>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, InfoContentView>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PatientContracts>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonDocuments>(viewNameResolver.Resolve<PersonDocumentsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterInstance(Common.RibbonGroupName,
@@ -109,7 +111,7 @@ namespace PatientInfoModule
                                            Header = PatientIsNotSelected
                                        });
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync, true);
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeader));
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeaderView));
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeader));
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeader));
         }

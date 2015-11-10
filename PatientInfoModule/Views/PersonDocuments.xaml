@@ -4,20 +4,46 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+             xmlns:views="clr-namespace:PatientInfoModule.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:prism="http://www.codeplex.com/prism"
+             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance viewModels:PersonDocumentsViewModel}">
     <UserControl.Resources>
+        <DataTemplate x:Key="NotificationWindowTemplate">
+            <Grid MinWidth="200" MinHeight="100">
+                <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
+            </Grid>
+        </DataTemplate>
         <CollectionViewSource x:Key="DocumentsGroup" Source="{Binding Path=AllDocuments}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="DocumentTypeParentName" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>
-    
+
+    <i:Interaction.Triggers>
+        <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
+                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
+                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding SelectPersonDocumentTypeInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True">
+                <popup:PopupWindowAction.WindowContent>
+                    <views:SelectPersonDocumentTypeView/>
+                </popup:PopupWindowAction.WindowContent>
+            </popup:PopupWindowAction>
+        </prism:InteractionRequestTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
         <ListView AlternationCount="2" Padding="0,0,0,10" BorderThickness="0"
                         IsSynchronizedWithCurrentItem="True"
@@ -97,5 +123,8 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
+
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

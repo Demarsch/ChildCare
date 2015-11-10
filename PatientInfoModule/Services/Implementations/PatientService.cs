@@ -31,20 +31,19 @@ namespace PatientInfoModule.Services
             return new DisposableQueryable<Person>(context.Set<Person>().AsNoTracking().Where(x => x.Id == patientId), context);
         }
 
-        public IQueryable<string> GetDocumentGivenOrganizations(string filter)
+        public IDisposableQueryable<string> GetDocumentGivenOrganizations(string filter)
         {
             filter = (filter ?? string.Empty).Trim();
             if (filter.Length < AppConfiguration.UserInputSearchThreshold)
             {
-                return new string[0].AsQueryable();
+                return DisposableQueryable<string>.Empty;
             }
-            using (var context = contextProvider.CreateNewContext())
-            {
-                return context.Set<PersonIdentityDocument>()
-                              .Where(x => x.GivenOrg.Contains(filter))
-                              .Select(x => x.GivenOrg)
-                              .Distinct();
-            }
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<string>(context.Set<PersonIdentityDocument>()
+                                                          .Where(x => x.GivenOrg.Contains(filter))
+                                                          .Select(x => x.GivenOrg)
+                                                          .Distinct(),
+                                                   context);
         }
 
         public IQueryable<Country> GetCountries()
@@ -77,7 +76,7 @@ namespace PatientInfoModule.Services
             {
                 var result = new SavePatientOutput
                              {
-                                 Person = data.CurrentPerson, 
+                                 Person = data.CurrentPerson,
                                  Name = data.IsNewName ? data.NewName : data.CurrentName
                              };
                 data.CurrentPerson.FullName = data.NewName.FullName;
@@ -91,7 +90,7 @@ namespace PatientInfoModule.Services
                     data.CurrentName.MiddleName = data.NewName.MiddleName;
                     context.Entry(data.CurrentName).State = EntityState.Modified;
                 }
-                //We should create new name whether because of real name change or because of new person
+                    //We should create new name whether because of real name change or because of new person
                 else if (data.IsNewName)
                 {
                     context.Entry(data.NewName).State = EntityState.Added;
@@ -262,10 +261,30 @@ namespace PatientInfoModule.Services
         public void DeletePersonOuterDocument(int documentId)
         {
             var context = contextProvider.CreateNewContext();
-            //var personOuterDoc = db.GetData<PersonOuterDocument>().FirstOrDefault(x => x.DocumentId == documentId);
-            //if (personOuterDoc == null) return;
-            //db.Remove<PersonOuterDocument>(personOuterDoc);
-            //db.Save();
+            var document = context.Set<PersonOuterDocument>().First(x => x.DocumentId == documentId);
+            context.Entry(document).State = EntityState.Deleted;
+            context.SaveChanges();
+        }
+
+        public bool SavePersonDocument(PersonOuterDocument document)
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var saveDocument = document.Id == SpecialValues.NewId ? new PersonOuterDocument() : db.Set<PersonOuterDocument>().First(x => x.Id == document.Id);
+                saveDocument.PersonId = document.PersonId;
+                saveDocument.OuterDocumentTypeId = document.OuterDocumentTypeId;
+                saveDocument.DocumentId = document.DocumentId;
+                db.Entry<PersonOuterDocument>(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                try
+                {
+                    db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
     }
 }

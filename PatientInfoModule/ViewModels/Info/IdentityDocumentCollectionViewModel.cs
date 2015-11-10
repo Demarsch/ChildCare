@@ -11,7 +11,7 @@ using Prism.Mvvm;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class IdentityDocumentCollectionViewModel : BindableBase, IDisposable
+    public class IdentityDocumentCollectionViewModel : BindableBase, IDisposable, IChangeTrackerMediator
     {
         private readonly Func<IdentityDocumentViewModel> identityDocumentFactory;
 
@@ -24,7 +24,7 @@ namespace PatientInfoModule.ViewModels
             this.identityDocumentFactory = identityDocumentFactory;
             IdentityDocuments = new ObservableCollectionEx<IdentityDocumentViewModel>();
             IdentityDocuments.BeforeCollectionChanged += OnBeforeIdentityDocumentsCollectionChanged;
-            ChangeTracker = new ObservableCollectionChangeTracker<IdentityDocumentViewModel>(IdentityDocuments);
+            ChangeTracker = new CompositeChangeTracker(new ObservableCollectionChangeTracker<IdentityDocumentViewModel>(IdentityDocuments));
             AddNewIdentityDocumentCommand = new DelegateCommand(AddNewIdentityDocument);
         }
 
@@ -38,20 +38,24 @@ namespace PatientInfoModule.ViewModels
 
         private void OnBeforeIdentityDocumentsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            foreach (var newItem in e.NewItems.Cast<IdentityDocumentViewModel>())
+            if (e.NewItems != null)
             {
-                newItem.DeleteRequested += OnIdentityDocumentDeleteRequested;
+                foreach (var newItem in e.NewItems.Cast<IdentityDocumentViewModel>())
+                {
+                    newItem.DeleteRequested += OnIdentityDocumentDeleteRequested;
+                }
             }
-            foreach (var oldItem in e.OldItems.Cast<IdentityDocumentViewModel>())
+            if (e.OldItems != null)
             {
-                oldItem.DeleteRequested -= OnIdentityDocumentDeleteRequested;
+                foreach (var oldItem in e.OldItems.Cast<IdentityDocumentViewModel>())
+                {
+                    oldItem.DeleteRequested -= OnIdentityDocumentDeleteRequested;
+                }
             }
         }
 
         public ObservableCollectionEx<IdentityDocumentViewModel> IdentityDocuments { get; private set; }
-
-        public IChangeTracker ChangeTracker { get; private set; }
-
+        
         public IEnumerable<PersonIdentityDocument> Model
         {
             get { return IdentityDocuments.Select(x => x.Model).ToArray(); }
@@ -69,6 +73,7 @@ namespace PatientInfoModule.ViewModels
 
         public void Dispose()
         {
+            ChangeTracker.Dispose();
             foreach (var identityDocument in IdentityDocuments)
             {
                 identityDocument.DeleteRequested -= OnIdentityDocumentDeleteRequested;
@@ -80,5 +85,7 @@ namespace PatientInfoModule.ViewModels
         {
             IdentityDocuments.Remove(sender as IdentityDocumentViewModel);
         }
+
+        public IChangeTracker ChangeTracker { get; private set; }
     }
 }

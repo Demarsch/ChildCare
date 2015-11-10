@@ -73,5 +73,12 @@ namespace PatientInfoModule.ViewModels
             get { return thumbnailSaved; }
             set { SetProperty(ref thumbnailSaved, value); }
         }
+
+        private bool needDate;
+        public bool NeedDate
+        {
+            get { return needDate; }
+            set { SetProperty(ref needDate, value); }
+        }
     }
 }

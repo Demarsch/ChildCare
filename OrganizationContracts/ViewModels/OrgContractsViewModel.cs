@@ -26,12 +26,13 @@ using Prism.Interactivity.InteractionRequest;
 
 namespace OrganizationContractsModule.ViewModels
 {
-    public class OrgContractsViewModel : BindableBase, IConfirmNavigationRequest
+    public class OrgContractsViewModel : BindableBase, IConfirmNavigationRequest, INavigationAware, IDataErrorInfo
     {
         private readonly IContractService contractService;
         private readonly ILog log;
         private readonly ICacheService cacheService;
         private readonly IEventAggregator eventAggregator;
+        private readonly Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
         private readonly CommandWrapper reloadDataSourcesCommandWrapper;
         private readonly ChangeTracker changeTracker;
@@ -40,8 +41,9 @@ namespace OrganizationContractsModule.ViewModels
         private CancellationTokenSource currentLoadingToken;
         public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
         public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
-
-        public OrgContractsViewModel(IContractService contractService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator)
+        public InteractionRequest<AddContractOrganizationViewModel> AddContractOrgInteractionRequest { get; private set; }
+        
+        public OrgContractsViewModel(IContractService contractService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator, Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
         {            
             if (log == null)
             {
@@ -55,19 +57,25 @@ namespace OrganizationContractsModule.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
-           
+            if (addContractOrganizationViewModelFactory == null)
+            {
+                throw new ArgumentNullException("addContractOrganizationViewModelFactory");
+            }
             this.contractService = contractService;            
             this.log = log;
             this.cacheService = cacheService;
             this.eventAggregator = eventAggregator;
+            this.addContractOrganizationViewModelFactory = addContractOrganizationViewModelFactory;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
-            ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
-            NotificationInteractionRequest = new InteractionRequest<Notification>();
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadContractsAsync) };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources) };
+
+            ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
+            NotificationInteractionRequest = new InteractionRequest<Notification>();
+            AddContractOrgInteractionRequest = new InteractionRequest<AddContractOrganizationViewModel>();
 
             addContractCommand = new DelegateCommand(AddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
@@ -76,6 +84,7 @@ namespace OrganizationContractsModule.ViewModels
             IsContractSelected = false;
 
             saveChangesCommandWrapper = new CommandWrapper { Command = saveContractCommand };
+            LoadDataSources();
         }
 
         #region Properties
@@ -93,8 +102,8 @@ namespace OrganizationContractsModule.ViewModels
             get { return selectedYear; }
             set
             {
-                SetProperty(ref selectedYear, value);
-                if (value != SpecialValues.NonExistingId) LoadContractsAsync();
+                if (SetProperty(ref selectedYear, value))
+                    LoadContractsAsync();
             }
         }
 
@@ -111,8 +120,8 @@ namespace OrganizationContractsModule.ViewModels
             get { return selectedFilterFinSourceId; }
             set
             {
-                SetProperty(ref selectedFilterFinSourceId, value);
-                LoadContractsAsync();
+                if (SetProperty(ref selectedFilterFinSourceId, value))
+                    LoadContractsAsync();
             }
         }
 
@@ -260,8 +269,8 @@ namespace OrganizationContractsModule.ViewModels
         private async void LoadDataSources()
         {
             FailureMediator.Deactivate();
-            var contractRecord = await contractService.GetRecordTypesByOptions("|contract|").FirstOrDefaultAsync();
-            var reliableStaff = await contractService.GetRecordTypeRolesByOptions("|responsibleForContract|").FirstOrDefaultAsync();
+            var contractRecord = await contractService.GetRecordTypesByOptions(OptionValues.Contract).FirstOrDefaultAsync();
+            var reliableStaff = await contractService.GetRecordTypeRolesByOptions(OptionValues.ResponsibleForContract).FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
                 FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
@@ -274,7 +283,7 @@ namespace OrganizationContractsModule.ViewModels
                 return;
             }
             List<FieldValue> users = new List<FieldValue>();
-            users.Add(new FieldValue() { Value = -1, Field = "- все -" });
+            users.Add(new FieldValue() { Value = -1, Field = "- выберите ответственного -" });
             users.AddRange(personStaffs.Select(x => new FieldValue() { Value = x.Id, Field = x.Person.ShortName }));
             Registrators = new ObservableCollectionEx<FieldValue>(users);
 
@@ -290,7 +299,7 @@ namespace OrganizationContractsModule.ViewModels
             orgs.Add(new FieldValue() { Value = -1, Field = "- выберите организацию -" });            
             orgs.AddRange(orgsSource.Where(x => x.UseInContract).Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
             Organizations = new ObservableCollectionEx<FieldValue>(orgs);
-            SelectedOrganizationId = -1;
+            SelectedOrganizationId = SpecialValues.NonExistingId;
 
             Contracts = new ObservableCollectionEx<ContractViewModel>();
 
@@ -301,15 +310,12 @@ namespace OrganizationContractsModule.ViewModels
             for(int i = begin; i < end; i++)
                 elements.Add(new FieldValue() { Value = i, Field = i + " год" });
             Years = new ObservableCollectionEx<FieldValue>(elements);
-            SelectedYear = SpecialValues.NonExistingId;
             SelectedYear = DateTime.Now.Year;
-            SelectedFilterFinSourceId = -1;
+            SelectedFilterFinSourceId = SpecialValues.NonExistingId;
         }
 
         private async void LoadContractsAsync()
-        {
-            saveContractCommand.RaiseCanExecuteChanged();
-            removeContractCommand.RaiseCanExecuteChanged();
+        {            
             if (currentLoadingToken != null)
             {
                 currentLoadingToken.Cancel();
@@ -366,6 +372,8 @@ namespace OrganizationContractsModule.ViewModels
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
+                    saveContractCommand.RaiseCanExecuteChanged();
+                    removeContractCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -392,6 +400,8 @@ namespace OrganizationContractsModule.ViewModels
         {
             Number = "НОВЫЙ ДОГОВОР";
             SelectedOrganizationId = -1;
+            SelectedFinSourceId = -1;
+            SelectedRegistratorId = -1;
             ContractBeginDate = DateTime.Now;
             ContractEndDate = DateTime.Now;
             Cost = 0;
@@ -445,6 +455,11 @@ namespace OrganizationContractsModule.ViewModels
         private void SaveContract()
         {
             FailureMediator.Deactivate();
+            if (!IsValid)
+            {
+                FailureMediator.Activate("Проверьте правильность заполнения полей.", null, null, true);
+                return;
+            }
             RecordContract contract = new RecordContract();
             if (selectedContract.Id != SpecialValues.NewId)
                 contract = contractService.GetContractById(selectedContract.Id).First();
@@ -464,7 +479,7 @@ namespace OrganizationContractsModule.ViewModels
             contract.ClientId = (int?)null;
             contract.ConsumerId = (int?)null;
             contract.ContractName = contractService.GetOrganizationById(selectedOrganizationId).First().Name;
-            contract.PaymentTypeId = contractService.GetPaymentTypes().First(x => x.Options.Contains("|cashless|")).Id;
+            contract.PaymentTypeId = contractService.GetPaymentTypes().First(x => x.Options.Contains(OptionValues.Cashless)).Id;
             contract.TransactionNumber = string.Empty;
             contract.TransactionDate = string.Empty;            
             contract.Priority = 1;
@@ -477,12 +492,11 @@ namespace OrganizationContractsModule.ViewModels
 
             try
             {
-                contract.Id = contractService.SaveContractData(contract, new RecordContractItem[0]);
+                contract.Id = contractService.SaveContractData(contract);
                 saveSuccesfull = true;
             }
             catch (Exception ex)
             {
-                log.Error(string.Format("Failed to Save RecordContract. " + ex.Message));
                 log.ErrorFormatEx(ex, "Failed to save RecordContract with Id {0} for Org", ((contract == null || contract.Id == SpecialValues.NewId) ? "(New contract)" : contract.Id.ToString()));
                 FailureMediator.Activate("Не удалось сохранить договор. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
                 return;
@@ -507,37 +521,54 @@ namespace OrganizationContractsModule.ViewModels
 
         private void RemoveContract()
         {
-            if (selectedContract == null) return;
+            if (selectedContract == null)
+            {
+                NotificationInteractionRequest.Raise(new Notification()
+                         {
+                             Title = "Внимание",
+                             Content = "Не выбран договор."
+                         });
+                return;
+            }
             ConfirmationInteractionRequest.Raise(new Confirmation()
             {
                 Title = "Внимание",
                 Content = "Вы уверены, что хотите удалить договор?"
-            },
-             (confirmation) =>
-             {
-                 if (confirmation.Confirmed)
-                 {
-                     var visit = contractService.GetVisitsByContractId(selectedContract.Id).FirstOrDefault();
-                     if (visit != null)
-                     {
-                         NotificationInteractionRequest.Raise(new Notification()
-                         {
-                             Title = "Внимание",
-                             Content = "Данный договор уже закреплен за случаем обращения пациента \"" + visit.VisitTemplate.ShortName + "\". Удаление договора невозможно."
-                         }, (notification) => { return; });
-                     }
-                     if (selectedContract.Id != SpecialValues.NewId)
-                         contractService.DeleteContract(selectedContract.Id);
-                     Contracts.Remove(selectedContract);
-                     saveContractCommand.RaiseCanExecuteChanged();
-                     removeContractCommand.RaiseCanExecuteChanged();
-                 }
-             });
+            }, OnDialogClosed);
+        }
+
+        private void OnDialogClosed(Confirmation confirmation)
+        {
+            if (confirmation.Confirmed)
+            {
+                var visit = contractService.GetVisitsByContractId(selectedContract.Id).FirstOrDefault();
+                if (visit != null)
+                {
+                    NotificationInteractionRequest.Raise(new Notification()
+                    {
+                        Title = "Внимание",
+                        Content = "Данный договор уже закреплен за случаем обращения пациента \"" + visit.VisitTemplate.ShortName + "\". Удаление договора невозможно."
+                    }, (notification) => { return; });
+                }
+                if (selectedContract.Id != SpecialValues.NewId)
+                    contractService.DeleteContract(selectedContract.Id);
+                Contracts.Remove(selectedContract);
+                saveContractCommand.RaiseCanExecuteChanged();
+                removeContractCommand.RaiseCanExecuteChanged();
+            }
         }
 
         private void AddOrganization()
         {
-            throw new NotImplementedException();
+            var addContractOrganizationViewModel = addContractOrganizationViewModelFactory();
+            addContractOrganizationViewModel.IntializeCreation("Добавить организацию");
+            AddContractOrgInteractionRequest.Raise(addContractOrganizationViewModel, 
+                (vm) => 
+                {
+                    Organizations.Add(new FieldValue() { Value = vm.orgId, Field = contractService.GetOrganizationById(vm.orgId).First().Name });
+                    if (SelectedContract.Id == SpecialValues.NewId)
+                        SelectedOrganizationId = vm.orgId;
+                });
         }
 
         private readonly DelegateCommand addContractCommand;
@@ -561,7 +592,7 @@ namespace OrganizationContractsModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            LoadDataSources();
+            
         }
                
         public bool IsNavigationTarget(NavigationContext navigationContext)
@@ -580,5 +611,62 @@ namespace OrganizationContractsModule.ViewModels
             //TODO: probably implement proper logic
             continuationCallback(true);
         }
+
+        #region Inplementation IDataErrorInfo
+
+        private bool saveWasRequested;
+
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        private bool IsValid
+        {
+            get
+            {
+                saveWasRequested = true;
+                OnPropertyChanged(string.Empty);
+                return invalidProperties.Count < 1;
+            }
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                switch (columnName)
+                {
+                    case "SelectedFinSourceId":
+                        result = SelectedFinSourceId == SpecialValues.NonExistingId ? "Укажите источник финансирования" : string.Empty;
+                        break;
+                    case "SelectedRegistratorId":
+                        result = SelectedRegistratorId == SpecialValues.NonExistingId ? "Укажите ответственного за договор" : string.Empty;
+                        break;
+                    case "SelectedOrganizationId":
+                        result = SelectedOrganizationId == SpecialValues.NonExistingId ? "Укажите организацию, с которой заключен договор" : string.Empty;
+                        break;                    
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
     }
 }

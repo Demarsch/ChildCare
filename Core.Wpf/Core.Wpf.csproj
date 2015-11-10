@@ -82,8 +82,10 @@
     <Compile Include="Converters\ProportionConverter.cs" />
     <Compile Include="Converters\ToStringConverter.cs" />
     <Compile Include="Events\SelectionEvent.cs" />
+    <Compile Include="MarkupExtensions\Int32Extension.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
+    <Compile Include="Misc\TrackableBindableBase.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />
     <Compile Include="Mvvm\Mediators\FailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />

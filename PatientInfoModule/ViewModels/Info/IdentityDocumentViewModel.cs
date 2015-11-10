@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Misc;
 using Core.Services;
+using Core.Wpf.Misc;
 using Microsoft.Practices.Unity;
 using PatientInfoModule.Misc;
+using Prism;
 using Prism.Commands;
-using Prism.Mvvm;
 using WpfControls.Editors;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class IdentityDocumentViewModel : BindableBase, IDisposable
+    public class IdentityDocumentViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator
     {
-        private readonly ChangeTracker changeTracker;
-
         public IdentityDocumentViewModel(ICacheService cacheService)
         {
             if (cacheService == null)
@@ -25,30 +23,8 @@ namespace PatientInfoModule.ViewModels
                 throw new ArgumentNullException("cacheService");
             }
             DocumentTypes = cacheService.GetItems<IdentityDocumentType>();
-            changeTracker = new ChangeTracker();
             DeleteCommand = new DelegateCommand(Delete);
-            changeTracker.PropertyChanged += OnChangesTracked;
-        }
-
-        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
-            {
-                OnPropertyChanged(() => HasChanges);
-            }
-        }
-
-        public bool HasChanges { get { return changeTracker.HasChanges; } }
-
-        public void CancelChanges()
-        {
-            changeTracker.Untrack(ref documentTypeId, () => DocumentTypeId);
-            changeTracker.Untrack(ref series, () => Series);
-            changeTracker.Untrack(ref number, () => Number);
-            changeTracker.Untrack(ref givenOrg, () => GivenOrg);
-            changeTracker.Untrack(ref givenOrgText, () => GivenOrgText);
-            changeTracker.Untrack(ref fromDate, () => FromDate);
-            changeTracker.Untrack(ref toDate, () => ToDate);
+            ChangeTracker = new ChangeTrackerEx<IdentityDocumentViewModel>(this);
         }
 
         private ISuggestionProvider givenOrgSuggestionProvider;
@@ -65,11 +41,7 @@ namespace PatientInfoModule.ViewModels
         public int? DocumentTypeId
         {
             get { return documentTypeId; }
-            set
-            {
-                changeTracker.Track(documentTypeId, value);
-                SetProperty(ref documentTypeId, value);
-            }
+            set { SetTrackedProperty(ref documentTypeId, value); }
         }
 
         private string series;
@@ -77,11 +49,7 @@ namespace PatientInfoModule.ViewModels
         public string Series
         {
             get { return series; }
-            set
-            {
-                changeTracker.Track(series, value);
-                SetProperty(ref series, value);
-            }
+            set { SetTrackedProperty(ref series, value); }
         }
 
         private string number;
@@ -89,11 +57,7 @@ namespace PatientInfoModule.ViewModels
         public string Number
         {
             get { return number; }
-            set
-            {
-                changeTracker.Track(number, value);
-                SetProperty(ref number, value);
-            }
+            set { SetTrackedProperty(ref number, value); }
         }
 
         private string givenOrg;
@@ -101,11 +65,7 @@ namespace PatientInfoModule.ViewModels
         public string GivenOrg
         {
             get { return givenOrg; }
-            set
-            {
-                changeTracker.Track(givenOrg, value);
-                SetProperty(ref givenOrg, value);
-            }
+            set { SetTrackedProperty(ref givenOrg, value); }
         }
 
         private string givenOrgText;
@@ -113,11 +73,7 @@ namespace PatientInfoModule.ViewModels
         public string GivenOrgText
         {
             get { return givenOrgText; }
-            set
-            {
-                changeTracker.Track(givenOrgText, value);
-                SetProperty(ref givenOrgText, value);
-            }
+            set { SetTrackedProperty(ref givenOrgText, value); }
         }
 
         private DateTime? fromDate;
@@ -131,8 +87,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     value = value.Value.Date;
                 }
-                changeTracker.Track(fromDate, value);
-                if (SetProperty(ref fromDate, value))
+                if (SetTrackedProperty(ref fromDate, value))
                 {
                     OnPropertyChanged(() => IsActive);
                     if (FromDate.GetValueOrDefault(SpecialValues.MinDate) > ToDate.GetValueOrDefault(SpecialValues.MaxDate))
@@ -154,8 +109,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     value = value.Value.Date;
                 }
-                changeTracker.Track(toDate, value);
-                if (SetProperty(ref toDate, value))
+                if (SetTrackedProperty(ref toDate, value))
                 {
                     HasToDate = value.HasValue;
                     OnPropertyChanged(() => IsActive);
@@ -201,7 +155,7 @@ namespace PatientInfoModule.ViewModels
             }
             set
             {
-                changeTracker.IsEnabled = false;
+                ChangeTracker.IsEnabled = false;
                 if (value == null)
                 {
                     DocumentTypeId = null;
@@ -221,7 +175,7 @@ namespace PatientInfoModule.ViewModels
                     FromDate = value.BeginDate;
                     ToDate = value.EndDate;
                 }
-                changeTracker.IsEnabled = true;
+                ChangeTracker.IsEnabled = true;
                 model = value;
             }
         }
@@ -231,11 +185,13 @@ namespace PatientInfoModule.ViewModels
             get { return FromDate.GetValueOrDefault(SpecialValues.MinDate) <= DateTime.Today && DateTime.Today <= ToDate.GetValueOrDefault(SpecialValues.MaxDate); }
         }
 
+        public event EventHandler IsActiveChanged;
+
         public IEnumerable<IdentityDocumentType> DocumentTypes { get; private set; } 
 
         public void Dispose()
         {
-            changeTracker.PropertyChanged -= OnChangesTracked;
+            ChangeTracker.Dispose();
         }
 
         public ICommand DeleteCommand { get; private set; }
@@ -255,5 +211,7 @@ namespace PatientInfoModule.ViewModels
                 handler(this, EventArgs.Empty);
             }
         }
+
+        public IChangeTracker ChangeTracker { get; private set; }
     }
 }

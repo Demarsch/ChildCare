@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -56,12 +56,18 @@
     <Compile Include="Expressions\SearchExpressionProvider.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\ChangeTrackerExtensions.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Misc\AppConfiguration.cs" />
-    <Compile Include="Misc\ChangeTracker.cs" />
+    <Compile Include="Misc\Change Tracking\ChangeTracker.cs" />
+    <Compile Include="Misc\Change Tracking\ChangeTrackerEx.cs" />
+    <Compile Include="Misc\Change Tracking\CompositeChangeTracker.cs" />
+    <Compile Include="Misc\Change Tracking\IChangeTrackable.cs" />
+    <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
-    <Compile Include="Misc\IChangeTracker.cs" />
+    <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
     <Compile Include="Expressions\ISearchExpressionProvider.cs" />

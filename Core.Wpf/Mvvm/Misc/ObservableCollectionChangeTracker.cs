@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -7,7 +8,7 @@ using Prism.Mvvm;
 
 namespace Core.Wpf.Mvvm
 {
-    public class ObservableCollectionChangeTracker<TItem> : BindableBase, IDisposable, IChangeTracker
+    public sealed class ObservableCollectionChangeTracker<TItem> : BindableBase, IChangeTracker
     {
         private IEnumerable<TItem> originalItems;
 
@@ -32,6 +33,12 @@ namespace Core.Wpf.Mvvm
             }
         }
 
+        public bool PropertyHasChanges(string propertyName)
+        {
+            //This tracker doesn't track separate properties of items
+            return false;
+        }
+
         public void AcceptChanges()
         {
             originalItems = null;
@@ -43,6 +50,11 @@ namespace Core.Wpf.Mvvm
             collection.Replace(originalItems);
             originalItems = null;
             HasChanges = false;
+        }
+
+        public void RegisterComparer(string propertyName, IEqualityComparer comparer)
+        {
+            //This tracker doesn't use comparers to track properties
         }
 
         public void Dispose()
@@ -69,7 +81,7 @@ namespace Core.Wpf.Mvvm
         public bool HasChanges
         {
             get { return hasChanges; }
-            set { SetProperty(ref hasChanges, value); }
+            private set { SetProperty(ref hasChanges, value); }
         }
     }
 }

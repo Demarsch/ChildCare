@@ -27,7 +27,7 @@
                         Value="Center" />
                 <Setter Property="Margin"
                         Value="3" />
-                <Setter Property="Height"
+                <Setter Property="MinHeight"
                         Value="23" />
                 <Setter Property="VerticalContentAlignment"
                         Value="Center" />
@@ -70,6 +70,16 @@
                 <Setter Property="Margin"
                         Value="3" />
                 <Setter Property="VerticalAlignment"
+                        Value="Center" />
+                <Setter Property="VerticalContentAlignment"
+                        Value="Center" />
+            </Style>
+            <Style TargetType="{x:Type CheckBox}">
+                <Setter Property="Margin"
+                        Value="3" />
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+                <Setter Property="VerticalContentAlignment"
                         Value="Center" />
             </Style>
         </ResourceDictionary>

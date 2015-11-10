@@ -2,6 +2,8 @@
 {
     internal static class Common
     {
-        internal const string RibbonGroupName = "PatientInfoGroup";
+        public const string RibbonGroupName = "PatientInfoGroup";
+
+        public static readonly string PatientInfoChildContentRegionName = "PatientInfoChildContentRegionName";
     }
 }
