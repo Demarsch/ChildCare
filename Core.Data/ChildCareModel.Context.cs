@@ -26,7 +26,6 @@ namespace Core.Data
         }
     
         public virtual DbSet<AddressType> AddressTypes { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Branch> Branches { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
@@ -92,7 +91,8 @@ namespace Core.Data
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
-        public virtual DbSet<Visit> Visits { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<Visit> Visits { get; set; }
     }
 }

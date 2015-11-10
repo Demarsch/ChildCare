@@ -100,7 +100,7 @@ namespace PatientRecordsModule
             container.RegisterType<PersonHierarchicalAssignmentsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonHierarchicalVisitsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonHierarchicalRecordsViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<NewVisitCreatingViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<VisitEditorViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
@@ -108,7 +108,7 @@ namespace PatientRecordsModule
             container.RegisterType<object, PersonRecords>(viewNameResolver.Resolve<PersonRecordsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordList>(viewNameResolver.Resolve<PersonRecordListViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordEditor>(viewNameResolver.Resolve<PersonRecordEditorViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, NewVisitCreating>(viewNameResolver.Resolve<NewVisitCreatingViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, VisitEditorViewModel>(viewNameResolver.Resolve<VisitEditorViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonRecordsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecords>());
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientRecordsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });

@@ -1,4 +1,5 @@
-﻿using Prism.Events;
+﻿using Core.Wpf.Misc;
+using Prism.Events;
 
 namespace Core.Wpf.Events
 {

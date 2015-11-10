@@ -30,31 +30,31 @@ namespace PatientRecordsModule.Services
         public IDisposableQueryable<Record> GetPersonRecordsQuery(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.PersonId == personId), context);
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.PersonId == personId && x.RemovedByUserId == null), context);
         }
 
         public IDisposableQueryable<Assignment> GetPersonRootAssignmentsQuery(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.PersonId == personId && !x.VisitId.HasValue && !x.RecordId.HasValue), context);
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.PersonId == personId && !x.VisitId.HasValue && !x.RecordId.HasValue && x.RemovedByUserId == null), context);
         }
 
         public IDisposableQueryable<Visit> GetPersonVisitsQuery(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.PersonId == personId), context);
+            return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.PersonId == personId && x.RemovedByUserId == null), context);
         }
 
         public IDisposableQueryable<Assignment> GetVisitsChildAssignmentsQuery(int visitId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.VisitId == visitId && !x.RecordId.HasValue), context);
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.VisitId == visitId && !x.RecordId.HasValue && x.RemovedByUserId == null), context);
         }
 
         public IDisposableQueryable<Record> GetVisitsChildRecordsQuery(int visitId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.VisitId == visitId), context);
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.VisitId == visitId && x.RemovedByUserId == null), context);
         }
 
 
@@ -68,14 +68,14 @@ namespace PatientRecordsModule.Services
         public IDisposableQueryable<Record> GetRecordsChildRecordsQuery(int recordId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.ParentId == recordId), context);
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.ParentId == recordId && x.RemovedByUserId == null), context);
         }
 
 
         public IDisposableQueryable<Assignment> GetAssignmentsChildAssignmentsQuery(int assignmentId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.ParentId == assignmentId), context);
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.ParentId == assignmentId && x.RemovedByUserId == null), context);
         }
 
 
@@ -123,6 +123,12 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<Org>(context.Set<Org>().AsNoTracking().Where(x => x.IsLpu), context);
         }
 
+        public IDisposableQueryable<Visit> GetVisit(int visitId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.Id == visitId && x.RemovedByUserId == null), context);
+        }
+
         public async Task<int> SaveVisitAsync(Visit visit, CancellationToken token)
         {
             if (token.IsCancellationRequested)
@@ -141,6 +147,25 @@ namespace PatientRecordsModule.Services
                 }
                 await context.SaveChangesAsync(token);
                 return visit.Id;
+            }
+        }
+
+        public async void DeleteVisitAsync(int visitId, int removedByUserId, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                if (visitId < 1) return;
+                var visit = context.Set<Visit>().FirstOrDefault(x => x.Id == visitId);
+                visit.RemovedByUserId = removedByUserId;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
             }
         }
     }

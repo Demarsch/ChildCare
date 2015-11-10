@@ -22,7 +22,7 @@ namespace Core.Data
         }
     
         public int Id { get; set; }
-        public Nullable<int> VisitTemplateId { get; set; }
+        public int VisitTemplateId { get; set; }
         public int PersonId { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public Nullable<System.DateTime> EndDateTime { get; set; }
@@ -38,6 +38,7 @@ namespace Core.Data
         public double TotalCost { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
         public int ExecutionPlaceId { get; set; }
+        public Nullable<int> RemovedByUserId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
@@ -45,10 +46,10 @@ namespace Core.Data
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
         public virtual Urgently Urgently { get; set; }
+        public virtual User User { get; set; }
         public virtual VisitOutcome VisitOutcome { get; set; }
         public virtual VisitResult VisitResult { get; set; }
         public virtual VisitTemplate VisitTemplate { get; set; }

@@ -89,7 +89,7 @@ namespace PatientRecordsModule.ViewModels
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
             patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
-            SubscribeToEvents();            
+            SubscribeToEvents();
             LoadItemsAsync();
         }
 
@@ -105,6 +105,31 @@ namespace PatientRecordsModule.ViewModels
         private void SubscribeToEvents()
         {
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
+            eventAggregator.GetEvent<SelectionEvent<Visit>>().Subscribe(OnVisitSelected);
+            eventAggregator.GetEvent<SelectionEvent<Assignment>>().Subscribe(OnAssignmentSelected);
+            eventAggregator.GetEvent<SelectionEvent<Record>>().Subscribe(OnRecordSelected);
+        }
+
+        private void OnRecordSelected(int recordId)
+        {
+            SetRVAIds(0, 0, recordId);
+        }
+
+        private void OnAssignmentSelected(int assignmentId)
+        {
+            SetRVAIds(0, assignmentId, 0);
+        }
+
+        private void OnVisitSelected(int visitId)
+        {
+            SetRVAIds(visitId, 0, 0);
+        }
+
+        private void SetRVAIds(int visitId, int assignmentId, int recordId)
+        {
+            VisitId = visitId;
+            AssignmentId = assignmentId;
+            RecordId = recordId;
         }
 
         private void OnPatientSelected(int patientId)
@@ -116,6 +141,9 @@ namespace PatientRecordsModule.ViewModels
         private void UnsubscriveFromEvents()
         {
             eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
+            eventAggregator.GetEvent<SelectionEvent<Visit>>().Subscribe(OnVisitSelected);
+            eventAggregator.GetEvent<SelectionEvent<Assignment>>().Subscribe(OnAssignmentSelected);
+            eventAggregator.GetEvent<SelectionEvent<Record>>().Subscribe(OnRecordSelected);
         }
 
         private async void LoadItemsAsync()
@@ -202,6 +230,54 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        private int visitId;
+        public int VisitId
+        {
+            get { return visitId; }
+            set
+            {
+                SetProperty(ref visitId, value);
+                OnPropertyChanged(() => IsVisitSelected);
+            }
+        }
+
+        public bool IsVisitSelected
+        {
+            get { return VisitId > 0; }
+        }
+
+        private int assignmentId;
+        public int AssignmentId
+        {
+            get { return assignmentId; }
+            set
+            {
+                SetProperty(ref assignmentId, value);
+                OnPropertyChanged(() => IsAssignmentSelected);
+            }
+        }
+
+        public bool IsAssignmentSelected
+        {
+            get { return AssignmentId > 0; }
+        }
+
+        private int recordId;
+        public int RecordId
+        {
+            get { return recordId; }
+            set
+            {
+                SetProperty(ref recordId, value);
+                OnPropertyChanged(() => IsRecordSelected);
+            }
+        }
+
+        public bool IsRecordSelected
+        {
+            get { return RecordId > 0; }
+        }
+
         private ObservableCollectionEx<VisitTemplateDTO> visitTemplates;
         public ObservableCollectionEx<VisitTemplateDTO> VisitTemplates
         {
@@ -218,6 +294,8 @@ namespace PatientRecordsModule.ViewModels
 
         #region Commands
         public ICommand CreateNewVisitCommand { get { return personRecordListViewModel.CreateNewVisitCommand; } }
+
+        public ICommand EditVisitCommand { get { return personRecordListViewModel.EditVisitCommand; } }
         #endregion
     }
 }

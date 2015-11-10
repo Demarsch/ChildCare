@@ -34,16 +34,20 @@ namespace PatientRecordsModule.ViewModels
         private readonly IEventAggregator eventAggregator;
         private readonly ILog logService;
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
+        private readonly CommandWrapper deleteVisitCommandWrapper;
         private readonly ChangeTracker changeTracker;
         private readonly DelegateCommand<int?> createNewVisitCommand;
-        private readonly Func<NewVisitCreatingViewModel> newVisitCreatingViewModelFactory;
+        private readonly DelegateCommand<int?> editVisitCommand;
+        private readonly DelegateCommand<int?> deleteVisitCommand;
+        private readonly Func<VisitEditorViewModel> VisitEditorViewModelFactory;
 
-        private CancellationTokenSource currentLoadingToken;
+        private CancellationTokenSource currentOperationToken;
+        private int? visitId;
 
         #endregion
 
         #region  Constructors
-        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator, Func<NewVisitCreatingViewModel> newVisitCreatingViewModelFactory)
+        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator, Func<VisitEditorViewModel> visitEditorViewModelFactory)
         {
             if (patientRecordsService == null)
             {
@@ -57,11 +61,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
-            if (newVisitCreatingViewModelFactory == null)
+            if (visitEditorViewModelFactory == null)
             {
                 throw new ArgumentNullException("newVisitCreatingViewModelFactory");
             }
-            this.newVisitCreatingViewModelFactory = newVisitCreatingViewModelFactory;
+            this.VisitEditorViewModelFactory = visitEditorViewModelFactory;
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
@@ -73,8 +77,11 @@ namespace PatientRecordsModule.ViewModels
                 Command = new DelegateCommand(() => LoadRootItemsAsync(PersonId)),
                 CommandName = "Повторить",
             };
+            deleteVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => DeleteVisitAsync(visitId)) };
             createNewVisitCommand = new DelegateCommand<int?>(CreateNewVisit);
-            NewVisitCreatingInteractionRequest = new InteractionRequest<NewVisitCreatingViewModel>();
+            editVisitCommand = new DelegateCommand<int?>(EditVisit);
+            deleteVisitCommand = new DelegateCommand<int?>(DeleteVisitAsync);
+            NewVisitCreatingInteractionRequest = new InteractionRequest<VisitEditorViewModel>();
             RootItems = new ObservableCollectionEx<object>();
             this.PersonId = SpecialValues.NonExistingId;
             SubscribeToEvents();
@@ -101,20 +108,75 @@ namespace PatientRecordsModule.ViewModels
             set { SetProperty(ref ambNumber, value); }
         }
 
+        private object selectedItem;
+        public object SelectedItem
+        {
+            get { return selectedItem; }
+            set { SetProperty(ref selectedItem, value); }
+        }
+
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
 
-        public InteractionRequest<NewVisitCreatingViewModel> NewVisitCreatingInteractionRequest { get; private set; }
+        public InteractionRequest<VisitEditorViewModel> NewVisitCreatingInteractionRequest { get; private set; }
         #endregion
 
         #region Commands
         public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
         private void CreateNewVisit(int? selectedTemplate)
         {
-            var newVisitCreatingViewModel = newVisitCreatingViewModelFactory();
+            var newVisitCreatingViewModel = VisitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => {  });
+            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+        }
+
+        public ICommand EditVisitCommand { get { return editVisitCommand; } }
+        private void EditVisit(int? visitId)
+        {
+            var newVisitCreatingViewModel = VisitEditorViewModelFactory();
+            newVisitCreatingViewModel.IntializeCreation(PersonId, null, visitId, DateTime.Now, "Редактировать случай");
+            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+        }
+
+        public ICommand DeleteVisitCommand { get { return deleteVisitCommand; } }
+        private async void DeleteVisitAsync(int? visitId)
+        {
+            FailureMediator.Deactivate();
+            this.visitId = visitId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Deleting visit with Id = {0} for person with Id = {1}", visitId, personId);
+            BusyMediator.Activate("Удаление случая...");
+            var saveSuccesfull = false;
+            try
+            {
+                patientRecordsService.DeleteVisitAsync(visitId.Value, 1, token);
+                saveSuccesfull = true;
+                this.visitId = 0;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to delete visit with Id = {0} for person with Id = {1}", visitId, personId);
+                FailureMediator.Activate("Не удалось удалить случай. Попробуйте еще раз или обратитесь в службу поддержки", deleteVisitCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
         }
         #endregion
 
@@ -151,14 +213,14 @@ namespace PatientRecordsModule.ViewModels
             {
                 return;
             }
-            if (currentLoadingToken != null)
+            if (currentOperationToken != null)
             {
-                currentLoadingToken.Cancel();
-                currentLoadingToken.Dispose();
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
             }
             var loadingIsCompleted = false;
-            currentLoadingToken = new CancellationTokenSource();
-            var token = currentLoadingToken.Token;
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
             BusyMediator.Activate("Загрузка данных...");
             logService.InfoFormat("Loading patient visits for patient with Id {0}...", personId);
             IDisposableQueryable<Person> patientQuery = null;
@@ -209,7 +271,7 @@ namespace PatientRecordsModule.ViewModels
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
                 })
                 .ToArray()
-                .Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, logService));
+                .Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService));
             var visitsViewModels = patientRecordsService.GetPersonVisitsQuery(PersonId)
                 .Select(x => new VisitDTO()
                 {
@@ -222,7 +284,7 @@ namespace PatientRecordsModule.ViewModels
                     IsCompleted = x.IsCompleted,
                 })
                 .ToArray()
-                .Select(x => new PersonHierarchicalVisitsViewModel(x, patientRecordsService, logService));
+                .Select(x => new PersonHierarchicalVisitsViewModel(x, patientRecordsService, eventAggregator, logService));
             resList.AddRange(assignmentsViewModels);
             resList.AddRange(visitsViewModels);
             return resList.ToList();

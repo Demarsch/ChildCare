@@ -38,8 +38,12 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Org> GetLPUs();
 
+        IDisposableQueryable<Visit> GetVisit(int visitId);
+
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
 
         Task<int> SaveVisitAsync(Visit visit, CancellationToken token);
+
+        void DeleteVisitAsync(int visitId, int removedByUserId, CancellationToken token);
     }
 }

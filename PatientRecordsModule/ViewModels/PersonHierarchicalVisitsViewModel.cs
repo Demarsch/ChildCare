@@ -18,6 +18,8 @@ using Core.Data.Misc;
 using System.Threading;
 using System.Data.Entity;
 using Core.Misc;
+using Core.Wpf.Events;
+using Prism.Events;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -28,6 +30,8 @@ namespace PatientRecordsModule.ViewModels
 
         private readonly IPatientRecordsService patientRecordsService;
 
+        private readonly IEventAggregator eventAggregator;
+
         private readonly ILog logService;
 
 
@@ -37,7 +41,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Constructors
-        public PersonHierarchicalVisitsViewModel(VisitDTO visitDTO, IPatientRecordsService patientRecordsService, ILog logService)
+        public PersonHierarchicalVisitsViewModel(VisitDTO visitDTO, IPatientRecordsService patientRecordsService, IEventAggregator eventAggregator, ILog logService)
         {
             if (visitDTO == null)
             {
@@ -51,6 +55,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("logService");
             }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
+            this.eventAggregator = eventAggregator;
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
             this.visit = visitDTO;
@@ -85,6 +94,17 @@ namespace PatientRecordsModule.ViewModels
                 return nestedItems;
             }
             set { SetProperty(ref nestedItems, value); }
+        }
+
+        private bool isSelected;
+        public bool IsSelected
+        {
+            get { return isSelected; }
+            set
+            {
+                SetProperty(ref isSelected, value);
+                eventAggregator.GetEvent<SelectionEvent<Visit>>().Publish(this.Id);
+            }
         }
 
         public FailureMediator FailureMediator { get; private set; }
@@ -130,8 +150,8 @@ namespace PatientRecordsModule.ViewModels
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
                 }).ToListAsync(token);
                 await Task.WhenAll(loadChildAssignmentsTask, loadChildRecordsTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
-                NestedItems.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, logService)));
-                NestedItems.AddRange(loadChildRecordsTask.Result.Select(x => new PersonHierarchicalRecordsViewModel(x, patientRecordsService, logService)));
+                NestedItems.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
+                NestedItems.AddRange(loadChildRecordsTask.Result.Select(x => new PersonHierarchicalRecordsViewModel(x, patientRecordsService, eventAggregator, logService)));
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)

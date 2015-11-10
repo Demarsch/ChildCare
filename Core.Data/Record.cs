@@ -17,8 +17,8 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Record()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.Records1 = new HashSet<Record>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -40,8 +40,6 @@ namespace Core.Data
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual Person Person { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records1 { get; set; }
@@ -50,6 +48,8 @@ namespace Core.Data
         public virtual Room Room { get; set; }
         public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual Visit Visit { get; set; }
     }
 }

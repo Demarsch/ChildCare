@@ -59,8 +59,10 @@
             </fluent:SplitButton.ItemTemplate>
         </fluent:SplitButton>
         <StackPanel>
-            <fluent:Button Header="Изменить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitEdit48x48.png" Command="{Binding EditVisitCommand}"/>
-            <fluent:Button Header="Удалить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitRemove48x48.png" Command="{Binding RemoveVisitCommand}"/>
+            <fluent:Button Header="Изменить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitEdit48x48.png" 
+                           Command="{Binding EditVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
+            <fluent:Button Header="Удалить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitRemove48x48.png" 
+                           Command="{Binding RemoveVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
         </StackPanel>
         <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
     </fluent:RibbonGroupBox>
@@ -68,7 +70,7 @@
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Assignment48x48.png"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Услуги">
-        <fluent:Button Header="Изменить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Record48x48.png"/>
+        <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Record48x48.png"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Изменения">
         <fluent:Button Header="Сохранить"

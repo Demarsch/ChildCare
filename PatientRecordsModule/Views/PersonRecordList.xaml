@@ -13,12 +13,9 @@
         <prism:InteractionRequestTrigger SourceObject="{Binding NewVisitCreatingInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction IsModal="True">
                 <popup:PopupWindowAction.WindowContent>
-                    <views:NewVisitCreating/>
+                    <views:VisitEditor/>
                 </popup:PopupWindowAction.WindowContent>
             </popup:PopupWindowAction>
-        </prism:InteractionRequestTrigger>
-        <prism:InteractionRequestTrigger SourceObject="{Binding NewVisitCreatingInteractionRequest, Mode=OneWay}">
-            <prism:PopupWindowAction IsModal="True"/>
         </prism:InteractionRequestTrigger>
     </i:Interaction.Triggers>
     <Grid>
@@ -37,7 +34,7 @@
             </StackPanel>
         </ToggleButton>
         <Border Grid.Column="0" Grid.Row="1" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Stretch">
-            <TreeView ItemsSource="{Binding RootItems, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
+            <TreeView x:Name="itemsTree" ItemsSource="{Binding RootItems, Mode=TwoWay}" HorizontalContentAlignment="Stretch" PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown" MouseDown="PermissionTree_MouseDown">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />

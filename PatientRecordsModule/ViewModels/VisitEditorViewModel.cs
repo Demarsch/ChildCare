@@ -24,23 +24,25 @@ using Core.Misc;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class NewVisitCreatingViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo
+    public class VisitEditorViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
         private readonly ILog logService;
 
         private CancellationTokenSource currentOperationToken;
-        private readonly CommandWrapper reloadPatientDataCommandWrapper;
+        private readonly CommandWrapper reloadVisitTemplateDataFillingCommandWrapper;
+        private readonly CommandWrapper reloadVisitDataCommandWrapper;
         private readonly CommandWrapper reloadDataSourceCommandWrapper;
         private readonly CommandWrapper saveChangesCommandWrapper;
         private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
 
         private Visit visit;
+        private int visitId = 0;
         #endregion
 
         #region Constructors
-        public NewVisitCreatingViewModel(IPatientRecordsService patientRecordsService, ILog logService)
+        public VisitEditorViewModel(IPatientRecordsService patientRecordsService, ILog logService)
         {
             if (logService == null)
             {
@@ -62,12 +64,13 @@ namespace PatientRecordsModule.ViewModels
             LPUs = new ObservableCollectionEx<CommonIdName>();
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            reloadPatientDataCommandWrapper = new CommandWrapper
+            reloadVisitTemplateDataFillingCommandWrapper = new CommandWrapper
             {
                 Command = new DelegateCommand(() => SetFieldByVisitTemplateAsync(SelectedVisitTemplateId.ToInt())),
                 CommandName = "Повторить",
             };
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => EnsureDataSourceLoaded()) };
+            reloadVisitDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitDataAsync(visitId)) };
             saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveChangesAsync()) };
         }
         #endregion
@@ -281,7 +284,7 @@ namespace PatientRecordsModule.ViewModels
 
         #region Methods
 
-        public void IntializeCreation(int personId, int? visitTemplateId, Visit visit, DateTime date, string title)
+        public void IntializeCreation(int personId, int? visitTemplateId, int? visitId, DateTime date, string title)
         {
             ContractSetByVisitTemplate = false;
             FinancingSourceSetByVisitTemplate = false;
@@ -289,12 +292,74 @@ namespace PatientRecordsModule.ViewModels
             ExecutionPlaceSetByVisitTemplate = false;
             this.PersonId = personId;
             this.SelectedVisitTemplateId = visitTemplateId;
-            this.visit = visit;
             this.Date = date;
             this.Title = title;
             BusyMediator.Deactivate();
             FailureMediator.Deactivate();
             FailureMediator = new FailureMediator();
+            this.visitId = visitId.ToInt();
+            if (visitId.HasValue)
+                LoadVisitDataAsync(this.visitId);
+        }
+
+        private async void LoadVisitDataAsync(int visitId)
+        {
+            var dataSourcesLoaded = await EnsureDataSourceLoaded();
+            ContractSetByVisitTemplate = false;
+            FinancingSourceSetByVisitTemplate = false;
+            UrgentlySetByVisitTemplate = false;
+            ExecutionPlaceSetByVisitTemplate = false;
+            if (!dataSourcesLoaded)
+            {
+                return;
+            }
+            if (visitId < 1)
+                return;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            var loadingIsCompleted = false;
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            BusyMediator.Activate("Заполнение данных случая...");
+            logService.InfoFormat("Loading data from visit with id {0}...", visitId);
+            IDisposableQueryable<Visit> visitQuery = null;
+            DateTime curDate = DateTime.Now;
+            try
+            {
+                visitQuery = patientRecordsService.GetVisit(visitId);
+                var visit = await visitQuery.FirstOrDefaultAsync(token);
+                this.visit = visit;
+                Date = visit.BeginDateTime;
+                SelectedVisitTemplateId = visit.VisitTemplateId;
+                SelectedLPUId = visit.SentLPUId;
+                Note = visit.Note;
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load data from visit with Id {0}", visitId);
+                FailureMediator.Activate("Не удалость загрузить случай. Попробуйте еще раз или обратитесь в службу поддержки", reloadVisitDataCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (visitQuery != null)
+                {
+                    visitQuery.Dispose();
+                }
+            }
         }
 
         private async Task<bool> EnsureDataSourceLoaded()
@@ -459,7 +524,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load data from visit template with Id {0}", visitTemplateId);
-                FailureMediator.Activate("Не удалость загрузить из шаблона случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientDataCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость загрузить из шаблона случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadVisitTemplateDataFillingCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally
