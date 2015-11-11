@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Misc;
+using Core.Services;
 using PatientInfoModule.Data;
 
 namespace PatientInfoModule.Services
@@ -16,19 +18,25 @@ namespace PatientInfoModule.Services
     {
         private readonly IDbContextProvider contextProvider;
 
-        public PatientService(IDbContextProvider contextProvider)
+        private readonly ICacheService cacheService;
+
+        public PatientService(IDbContextProvider contextProvider, ICacheService cacheService)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
             this.contextProvider = contextProvider;
+            this.cacheService = cacheService;
         }
 
         public IDisposableQueryable<Person> GetPatientQuery(int patientId)
         {
             var context = contextProvider.CreateNewContext();
-            context.Configuration.ProxyCreationEnabled = false;
             return new DisposableQueryable<Person>(context.Set<Person>().AsNoTracking().Where(x => x.Id == patientId), context);
         }
 
@@ -47,25 +55,39 @@ namespace PatientInfoModule.Services
                                                    context);
         }
 
-        public IQueryable<Country> GetCountries()
+        public IEnumerable<InsuranceCompany> GetInsuranceCompanies(string filter)
         {
-            return contextProvider.SharedContext.Set<Country>();
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new InsuranceCompany[0];
+            }
+            var words = filter.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            return cacheService.GetItems<InsuranceCompany>().Where(x => words.All(y => x.NameSMOK.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1
+                                                                                       || x.AddressF.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
         }
 
-        public IQueryable<Education> GetEducations()
+        public IEnumerable<Country> GetCountries()
         {
-            return contextProvider.SharedContext.Set<Education>();
+            return cacheService.GetItems<Country>();
         }
 
-        public IQueryable<MaritalStatus> GetMaritalStatuses()
+        public IEnumerable<Education> GetEducations()
         {
-            return contextProvider.SharedContext.Set<MaritalStatus>();
+            return cacheService.GetItems<Education>();
         }
 
-        public IQueryable<HealthGroup> GetHealthGroups()
+        public IEnumerable<MaritalStatus> GetMaritalStatuses()
         {
-            return contextProvider.SharedContext.Set<HealthGroup>();
+            return cacheService.GetItems<MaritalStatus>();
         }
+
+        public IEnumerable<HealthGroup> GetHealthGroups()
+        {
+            return cacheService.GetItems<HealthGroup>();
+        }
+
+        #region SavePatientAsync
 
         public async Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token)
         {
@@ -86,6 +108,7 @@ namespace PatientInfoModule.Services
                 PrepareHealthGroup(data, context, result);
                 PrepareMaritalStatus(data, context, result);
                 PrepareIdentityDocuments(data, context, result);
+                PrepareInsuranceDocuments(data, context, result);
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
@@ -93,6 +116,33 @@ namespace PatientInfoModule.Services
                 await context.SaveChangesAsync(token);
                 return result;
             }
+        }
+
+        private static void PrepareInsuranceDocuments(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            var old = data.CurrentInsuranceDocuments.ToDictionary(x => x.Id);
+            var @new = data.NewInsuranceDocuments.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+            var added = data.NewInsuranceDocuments.Where(x => x.Id == SpecialValues.NewId).ToArray();
+            var removed = old.Where(x => !@new.ContainsKey(x.Key))
+                             .Select(removedDocument => removedDocument.Value)
+                             .ToArray();
+            var existed = @new.Where(x => old.ContainsKey(x.Key))
+                              .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                              .ToArray();
+            foreach (var document in added)
+            {
+                document.Person = data.CurrentPerson;
+                context.Entry(document).State = EntityState.Added;
+            }
+            foreach (var document in removed)
+            {
+                context.Entry(document).State = EntityState.Deleted;
+            }
+            foreach (var document in existed.Where(x => x.IsChanged))
+            {
+                context.Entry(document.New).State = EntityState.Modified;
+            }
+            result.InsuranceDocuments = added.Concat(existed.Select(x => x.New)).ToArray();
         }
 
         private static void PrepareIdentityDocuments(SavePatientInput data, DbContext context, SavePatientOutput result)
@@ -279,6 +329,8 @@ namespace PatientInfoModule.Services
                 data.NewName.Person = data.CurrentPerson;
             }
         }
+
+        #endregion
 
         public IDisposableQueryable<Person> GetPersonsByFullName(string fullname)
         {

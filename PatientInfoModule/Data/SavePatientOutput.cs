@@ -18,5 +18,7 @@ namespace PatientInfoModule.Data
         public PersonNationality Nationality { get; set; }
 
         public ICollection<PersonIdentityDocument> IdentityDocuments { get; set; }
+
+        public ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
     }
 }

@@ -113,6 +113,7 @@
     <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PartialClasses\InsuranceDocument.cs" />
     <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
     <Compile Include="PartialClasses\PersonName.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />

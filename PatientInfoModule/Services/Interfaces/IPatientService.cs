@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Data;
@@ -14,13 +15,13 @@ namespace PatientInfoModule.Services
 
         IDisposableQueryable<string> GetDocumentGivenOrganizations(string filter);
         
-        IQueryable<Country> GetCountries();
+        IEnumerable<Country> GetCountries();
 
-        IQueryable<Education> GetEducations();
+        IEnumerable<Education> GetEducations();
 
-        IQueryable<MaritalStatus> GetMaritalStatuses();
+        IEnumerable<MaritalStatus> GetMaritalStatuses();
 
-        IQueryable<HealthGroup> GetHealthGroups();
+        IEnumerable<HealthGroup> GetHealthGroups();
             
         Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token);
 
@@ -35,5 +36,7 @@ namespace PatientInfoModule.Services
         void DeletePersonOuterDocument(int documentId);
 
         bool SavePersonDocument(PersonOuterDocument document);
+
+        IEnumerable<InsuranceCompany> GetInsuranceCompanies(string filter);
     }
 }

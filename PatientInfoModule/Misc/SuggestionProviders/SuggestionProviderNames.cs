@@ -2,6 +2,8 @@
 {
     internal class SuggestionProviderNames
     {
-        public const string IdentityDocumentGivenOrg = "IdentityDocumentGivenOrg";
+        public const string InsuranceCompany = "InsuranceCompany";
+
+        public const string IdentityDocumentGiveOrg = "IdentityDocumentGiveOrg";
     }
 }

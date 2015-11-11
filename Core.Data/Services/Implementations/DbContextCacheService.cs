@@ -23,6 +23,8 @@ namespace Core.Data.Services
 
         private readonly Dictionary<Type, object> itemsByName;
 
+        private readonly object locker = new object();
+
         public DbContextCacheService(IDbContextProvider contextProvider)
         {
             if (contextProvider == null)
@@ -38,10 +40,13 @@ namespace Core.Data.Services
         {
             var type = typeof(TData);
             object dictionaryObj;
-            if (!itemsById.TryGetValue(type, out dictionaryObj))
+            lock (locker)
             {
-                dictionaryObj = dataContext.Set<TData>().ToDictionary(GetIdSelectorFunction<TData>());
-                itemsById.Add(type, dictionaryObj);
+                if (!itemsById.TryGetValue(type, out dictionaryObj))
+                {
+                    dictionaryObj = dataContext.Set<TData>().ToDictionary(GetIdSelectorFunction<TData>());
+                    itemsById.Add(type, dictionaryObj);
+                }
             }
             var dictionary = dictionaryObj as IDictionary<int, TData>;
             TData result;
@@ -52,10 +57,13 @@ namespace Core.Data.Services
         {
             var type = typeof(TData);
             object dictionaryObj;
-            if (!itemsByName.TryGetValue(type, out dictionaryObj))
+            lock (locker)
             {
-                dictionaryObj = dataContext.Set<TData>().ToDictionary(GetNameSelectorFunction<TData>());
-                itemsByName.Add(type, dictionaryObj);
+                if (!itemsByName.TryGetValue(type, out dictionaryObj))
+                {
+                    dictionaryObj = dataContext.Set<TData>().ToDictionary(GetNameSelectorFunction<TData>());
+                    itemsByName.Add(type, dictionaryObj);
+                }
             }
             var dictionary = dictionaryObj as IDictionary<string, TData>;
             TData result;

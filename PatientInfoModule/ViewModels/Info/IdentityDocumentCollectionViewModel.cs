@@ -84,6 +84,7 @@ namespace PatientInfoModule.ViewModels
             get { return IdentityDocuments.Select(x => x.Model).ToArray(); }
             set
             {
+                value = value ?? new PersonIdentityDocument[0];
                 ChangeTracker.IsEnabled = false;
                 IdentityDocuments.Clear();
                 foreach (var newModel in value)

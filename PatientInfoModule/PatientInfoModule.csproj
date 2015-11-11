@@ -120,6 +120,7 @@
     <Compile Include="Misc\ItemTemplateSelector.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
     <Compile Include="Misc\SuggestionProviders\IdentityDocumentsGivenOrgSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\PersonSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\RecordTypesSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
@@ -152,6 +153,8 @@
     <Compile Include="ViewModels\Info\AddressViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentViewModel.cs" />
     <Compile Include="ViewModels\Documents\ThumbnailViewModel.cs" />
+    <Compile Include="ViewModels\Info\InsuranceDocumentCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Info\InsuranceDocumentViewModel.cs" />
     <Compile Include="Views\Contracts\AddContractRecordsView.xaml.cs">
       <DependentUpon>AddContractRecordsView.xaml</DependentUpon>
     </Compile>
@@ -164,8 +167,14 @@
     <Compile Include="Views\EmptyPatientInfoView.xaml.cs">
       <DependentUpon>EmptyPatientInfoView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Info\InsuranceDocumentCollectionView.xaml.cs">
+      <DependentUpon>InsuranceDocumentCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Info\IdentityDocumentCollectionView.xaml.cs">
       <DependentUpon>IdentityDocumentCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Info\InsuranceDocumentView.xaml.cs">
+      <DependentUpon>InsuranceDocumentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Info\IdentityDocumentView.xaml.cs">
       <DependentUpon>IdentityDocumentView.xaml</DependentUpon>
@@ -230,9 +239,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Info\InsuranceDocumentCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Info\IdentityDocumentCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Info\InsuranceDocumentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Info\IdentityDocumentView.xaml">
       <SubType>Designer</SubType>

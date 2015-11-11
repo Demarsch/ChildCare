@@ -20,6 +20,9 @@
             <DataTemplate DataType="{x:Type viewModels:IdentityDocumentCollectionViewModel}">
                 <views:IdentityDocumentCollectionView Width="450" />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:InsuranceDocumentCollectionViewModel}">
+                <views:InsuranceDocumentCollectionView Width="450" />
+            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -158,23 +161,20 @@
                             Grid.Column="2"
                             Grid.ColumnSpan="2"
                             Orientation="Horizontal">
-                    <DatePicker
-                        SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                        Margin="5 5 22 5"
-                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+                    <DatePicker SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="3 3 22 3"
+                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
                     <TextBlock Text="Пол" />
                     <ToggleButton Background="Transparent"
                                   IsChecked="{Binding IsMale}"
                                   Width="90">
                         <StackPanel Orientation="Horizontal"
                                     VerticalAlignment="Stretch">
-                            <TextBlock
-                                Text="{Binding IsMale, Converter={x:Static converters:GenderToTextConverter.Instance}}" />
-                            <Image
-                                Source="{Binding IsMale, Converter={x:Static converters:GenderToImageConverter.Instance}}"
-                                Width="24"
-                                Height="24"
-                                Stretch="Fill" />
+                            <TextBlock Text="{Binding IsMale, Converter={x:Static converters:GenderToTextConverter.Instance}}" />
+                            <Image Source="{Binding IsMale, Converter={x:Static converters:GenderToImageConverter.Instance}}"
+                                   Width="24"
+                                   Height="24"
+                                   Stretch="Fill" />
                         </StackPanel>
                     </ToggleButton>
                     <TextBlock Text="СНИЛС" />
@@ -187,11 +187,10 @@
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock Text="ЕНП" />
-                    <TextBox
-                        Text="{Binding MedNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
-                        Width="140"
-                        MaxLength="16"
-                        Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
+                    <TextBox Text="{Binding MedNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                             Width="140"
+                             MaxLength="16"
+                             Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
                             <behaviors:MedNumberInputHelperBehavior />
                         </i:Interaction.Behaviors>
@@ -377,7 +376,9 @@
                 <TextBox Grid.Row="5"
                          Grid.Column="0"
                          IsReadOnly="True"
-                         VerticalAlignment="Stretch">
+                         VerticalAlignment="Stretch"
+                         Text="{Binding InsuranceDocuments.StringRepresentation, Mode=OneWay, ValidatesOnDataErrors=True}"
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="GotKeyboardFocus">
                             <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"

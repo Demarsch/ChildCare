@@ -176,7 +176,8 @@ namespace PatientInfoModule
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
 
-            container.RegisterType<ISuggestionProvider, IdentityDocumentsGivenOrgSuggestionProvider>(SuggestionProviderNames.IdentityDocumentGivenOrg, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionProvider, IdentityDocumentsGivenOrgSuggestionProvider>(SuggestionProviderNames.IdentityDocumentGiveOrg, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionProvider, InsuranceCompanySuggestionProvider>(SuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());
         }
     }
 }

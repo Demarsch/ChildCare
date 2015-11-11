@@ -37,5 +37,9 @@ namespace PatientInfoModule.Data
         public ICollection<PersonIdentityDocument> CurrentIdentityDocuments { get; set; }
 
         public ICollection<PersonIdentityDocument> NewIdentityDocuments { get; set; }
+
+        public ICollection<InsuranceDocument> CurrentInsuranceDocuments { get; set; }
+
+        public ICollection<InsuranceDocument> NewInsuranceDocuments { get; set; }
     }
 }

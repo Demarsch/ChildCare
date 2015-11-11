@@ -17,13 +17,13 @@ using WpfControls.Editors;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class IdentityDocumentViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator, IActiveDataErrorInfo
+    public class InsuranceDocumentViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator, IActiveDataErrorInfo
     {
         private readonly ICacheService cacheService;
 
         private readonly ValidationMediator validator;
 
-        public IdentityDocumentViewModel(ICacheService cacheService)
+        public InsuranceDocumentViewModel(ICacheService cacheService)
         {
             if (cacheService == null)
             {
@@ -31,18 +31,18 @@ namespace PatientInfoModule.ViewModels
             }
             this.cacheService = cacheService;
             validator = new ValidationMediator(this);
-            DocumentTypes = cacheService.GetItems<IdentityDocumentType>();
+            DocumentTypes = cacheService.GetItems<InsuranceDocumentType>();
             DeleteCommand = new DelegateCommand(Delete);
-            ChangeTracker = new ChangeTrackerEx<IdentityDocumentViewModel>(this);
+            ChangeTracker = new ChangeTrackerEx<InsuranceDocumentViewModel>(this);
         }
 
-        private ISuggestionProvider givenOrgSuggestionProvider;
+        private ISuggestionProvider insuranceCompanySuggestionProvider;
 
         [Dependency(SuggestionProviderNames.InsuranceCompany)]
-        public ISuggestionProvider GivenOrgSuggestionProvider
+        public ISuggestionProvider InsuranceCompanySuggestionProvider
         {
-            get { return givenOrgSuggestionProvider; }
-            set { SetProperty(ref givenOrgSuggestionProvider, value); }
+            get { return insuranceCompanySuggestionProvider; }
+            set { SetProperty(ref insuranceCompanySuggestionProvider, value); }
         }
 
         private int? documentTypeId;
@@ -87,28 +87,14 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        private string givenOrg;
+        private InsuranceCompany insuranceCompany;
 
-        public string GivenOrg
+        public InsuranceCompany InsuranceCompany
         {
-            get { return givenOrg; }
+            get { return insuranceCompany; }
             set
             {
-                if (SetTrackedProperty(ref givenOrg, value))
-                {
-                    OnPropertyChanged(() => StringRepresentation);
-                }
-            }
-        }
-
-        private string givenOrgText;
-
-        public string GivenOrgText
-        {
-            get { return givenOrgText; }
-            set
-            {
-                if (SetTrackedProperty(ref givenOrgText, value))
+                if (SetTrackedProperty(ref insuranceCompany, value))
                 {
                     OnPropertyChanged(() => StringRepresentation);
                 }
@@ -180,21 +166,21 @@ namespace PatientInfoModule.ViewModels
 
         private int personId;
 
-        public PersonIdentityDocument Model
+        public InsuranceDocument Model
         {
             get
             {
-                return new PersonIdentityDocument
-                       {
-                           Id = id,
-                           PersonId = personId,
-                           IdentityDocumentTypeId = DocumentTypeId ?? SpecialValues.NonExistingId,
-                           Series = Series,
-                           Number = Number,
-                           GivenOrg = GivenOrg ?? GivenOrgText,
-                           BeginDate = FromDate.GetValueOrDefault(SpecialValues.MinDate),
-                           EndDate = ToDate.GetValueOrDefault(SpecialValues.MaxDate)
-                       };
+                return new InsuranceDocument
+                {
+                    Id = id,
+                    PersonId = personId,
+                    InsuranceCompanyId = InsuranceCompany == null ? SpecialValues.NonExistingId : InsuranceCompany.Id,
+                    InsuranceDocumentTypeId = DocumentTypeId ?? SpecialValues.NonExistingId,
+                    Series = Series,
+                    Number = Number,
+                    BeginDate = FromDate.GetValueOrDefault(SpecialValues.MinDate),
+                    EndDate = ToDate.GetValueOrDefault(SpecialValues.MaxDate)
+                };
             }
             set
             {
@@ -204,8 +190,7 @@ namespace PatientInfoModule.ViewModels
                     documentTypeId = null;
                     series = string.Empty;
                     number = string.Empty;
-                    givenOrg = null;
-                    givenOrgText = string.Empty;
+                    insuranceCompany = null;
                     fromDate = null;
                     ToDate = null;
                     id = SpecialValues.NewId;
@@ -213,10 +198,10 @@ namespace PatientInfoModule.ViewModels
                 }
                 else
                 {
-                    documentTypeId = value.IdentityDocumentTypeId;
+                    documentTypeId = value.InsuranceDocumentTypeId;
                     series = value.Series;
                     number = value.Number;
-                    givenOrgText = value.GivenOrg;
+                    insuranceCompany = cacheService.GetItemById<InsuranceCompany>(value.InsuranceCompanyId);
                     fromDate = value.BeginDate;
                     toDate = value.EndDate == SpecialValues.MaxDate ? null : (DateTime?)value.EndDate;
                     id = value.Id;
@@ -232,7 +217,7 @@ namespace PatientInfoModule.ViewModels
             get { return FromDate.GetValueOrDefault(SpecialValues.MinDate) <= DateTime.Today && DateTime.Today <= ToDate.GetValueOrDefault(SpecialValues.MaxDate); }
         }
 
-        public IEnumerable<IdentityDocumentType> DocumentTypes { get; private set; } 
+        public IEnumerable<InsuranceDocumentType> DocumentTypes { get; private set; }
 
         public void Dispose()
         {
@@ -268,7 +253,7 @@ namespace PatientInfoModule.ViewModels
                     return string.Empty;
                 }
                 var result = new StringBuilder();
-                result.Append(cacheService.GetItemById<IdentityDocumentType>(documentTypeId.Value).Name);
+                result.Append(cacheService.GetItemById<InsuranceDocumentType>(documentTypeId.Value).Name);
                 if (!string.IsNullOrWhiteSpace(series))
                 {
                     result.Append(' ')
@@ -279,18 +264,13 @@ namespace PatientInfoModule.ViewModels
                     result.Append(' ')
                           .Append(number);
                 }
-                if (!string.IsNullOrWhiteSpace(givenOrgText) || !string.IsNullOrWhiteSpace(givenOrg) || fromDate != null)
+                if (insuranceCompany != null || fromDate != null)
                 {
                     result.Append(" выдан");
-                    if (!string.IsNullOrWhiteSpace(givenOrg))
+                    if (insuranceCompany != null)
                     {
                         result.Append(' ')
-                              .Append(givenOrg);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(givenOrgText))
-                    {
-                        result.Append(' ')
-                              .Append(givenOrgText);
+                              .Append(insuranceCompany.NameSMOK);
                     }
                     if (fromDate != null)
                     {
@@ -337,9 +317,10 @@ namespace PatientInfoModule.ViewModels
             validator.CancelValidation();
         }
 
-        private class ValidationMediator : ValidationMediator<IdentityDocumentViewModel>
+        private class ValidationMediator : ValidationMediator<InsuranceDocumentViewModel>
         {
-            public ValidationMediator(IdentityDocumentViewModel associatedItem) : base(associatedItem)
+            public ValidationMediator(InsuranceDocumentViewModel associatedItem)
+                : base(associatedItem)
             {
             }
 
@@ -357,9 +338,9 @@ namespace PatientInfoModule.ViewModels
                 {
                     ValidateFromDate();
                 }
-                else if (string.CompareOrdinal(propertyName, "GivenOrg") == 0 || string.CompareOrdinal(propertyName, "GivenOrgText") == 0)
+                else if (string.CompareOrdinal(propertyName, "InsuranceCompany") == 0)
                 {
-                    ValidateGivenOrg();
+                    ValidateInsuranceOrg();
                 }
             }
 
@@ -373,18 +354,18 @@ namespace PatientInfoModule.ViewModels
                 ValidateSeriesAndNumber();
                 ValidateDocumentType();
                 ValidateFromDate();
-                ValidateGivenOrg();
+                ValidateInsuranceOrg();
             }
 
-            private void ValidateGivenOrg()
+            private void ValidateInsuranceOrg()
             {
-                if (string.IsNullOrWhiteSpace(AssociatedItem.GivenOrg) && string.IsNullOrWhiteSpace(AssociatedItem.GivenOrgText))
+                if (AssociatedItem.InsuranceCompany == null)
                 {
-                    Errors["GivenOrg"] = Errors["GivenOrgText"] = "Не указана выдавшая организация";
+                    Errors["InsuranceCompany"] = "Не указана страховая компания";
                 }
                 else if (ValidationIsActive)
                 {
-                    Errors["GivenOrg"] = Errors["GivenOrgText"] = string.Empty;
+                    Errors["InsuranceCompany"] = string.Empty;
                 }
             }
 
