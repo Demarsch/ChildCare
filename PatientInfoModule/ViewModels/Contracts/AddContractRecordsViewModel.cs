@@ -159,7 +159,7 @@ namespace PatientInfoModule.ViewModels
         public ICommand CancelCommand { get; private set; }
         private void Cancel()
         {
-            isOk = false
+            isOk = false;
             HostWindow.Close();            
         }
 
