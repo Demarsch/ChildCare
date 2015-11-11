@@ -4,11 +4,11 @@ using OrganizationContractsModule.ViewModels;
 namespace OrganizationContractsModule.Views
 {
     /// <summary>
-    /// Interaction logic for AddContractOrganization.xaml
+    /// Interaction logic for AddContractOrganizationView.xaml
     /// </summary>
-    public partial class AddContractOrganization
+    public partial class AddContractOrganizationView
     {
-        public AddContractOrganization()
+        public AddContractOrganizationView()
         {
             InitializeComponent();
         }

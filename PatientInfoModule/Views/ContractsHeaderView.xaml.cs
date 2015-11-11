@@ -6,19 +6,19 @@ using PatientInfoModule.ViewModels;
 namespace PatientInfoModule.Views
 {
     /// <summary>
-    /// Interaction logic for InfoHeader.xaml
+    /// Interaction logic for CommonInfoHeader.xaml
     /// </summary>
-    public partial class DocumentsHeader
+    public partial class ContractsHeaderView
     {
-        public DocumentsHeader()
+        public ContractsHeaderView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public DocumentsHeaderViewModel InfoHeaderViewModel
+        public ContractsHeaderViewModel ViewModel
         {
-            get { return DataContext as DocumentsHeaderViewModel; }
+            get { return DataContext as ContractsHeaderViewModel; }
             set { DataContext = value; }
         }
 

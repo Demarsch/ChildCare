@@ -90,6 +90,7 @@
                                      Grid.Column="1"
                                      Grid.ColumnSpan="3"
                                      Margin="3"
+                                     Background="White"
                                      MinHeight="40"
                                      Provider="{Binding GivenOrgSuggestionProvider}"
                                      SelectedItem="{Binding GivenOrg, Mode=TwoWay, ValidatesOnDataErrors=True}"
@@ -114,13 +115,12 @@
             <DatePicker SelectedDate="{Binding FromDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Margin="3 3 22 3"
                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
-            <TextBlock Text="по" />
+            <CheckBox IsChecked="{Binding HasToDate, UpdateSourceTrigger=PropertyChanged}"
+                      Content="по"/>
             <DatePicker SelectedDate="{Binding ToDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Margin="3 3 22 3"
                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                         IsEnabled="{Binding HasToDate}" />
-            <CheckBox IsChecked="{Binding HasToDate, UpdateSourceTrigger=PropertyChanged}"
-                      Content="Бессрочно"/>
         </StackPanel>
     </Grid>
 </UserControl>

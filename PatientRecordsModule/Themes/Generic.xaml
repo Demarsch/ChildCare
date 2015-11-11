@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="../Views/PersonHierarchicalAssignments.xaml" />
-        <ResourceDictionary Source="../Views/PersonHierarchicalRecords.xaml" />
-        <ResourceDictionary Source="../Views/PersonHierarchicalVisits.xaml" />
+        <ResourceDictionary Source="../Views/PersonHierarchicalAssignmentsView.xaml" />
+        <ResourceDictionary Source="../Views/PersonHierarchicalRecordsView.xaml" />
+        <ResourceDictionary Source="../Views/PersonHierarchicalVisitsView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

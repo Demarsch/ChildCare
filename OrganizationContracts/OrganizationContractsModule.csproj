@@ -118,14 +118,14 @@
     <Compile Include="ViewModels\ContractViewModel.cs" />
     <Compile Include="ViewModels\OrgContractsHeaderViewModel.cs" />
     <Compile Include="ViewModels\OrgContractsViewModel.cs" />
-    <Compile Include="Views\AddContractOrganization.xaml.cs">
-      <DependentUpon>AddContractOrganization.xaml</DependentUpon>
+    <Compile Include="Views\AddContractOrganizationView.xaml.cs">
+      <DependentUpon>AddContractOrganizationView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\OrgContracts.xaml.cs">
-      <DependentUpon>OrgContracts.xaml</DependentUpon>
+    <Compile Include="Views\OrgContractsView.xaml.cs">
+      <DependentUpon>OrgContractsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\OrgContractsHeader.xaml.cs">
-      <DependentUpon>OrgContractsHeader.xaml</DependentUpon>
+    <Compile Include="Views\OrgContractsHeaderView.xaml.cs">
+      <DependentUpon>OrgContractsHeaderView.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -160,15 +160,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Views\AddContractOrganization.xaml">
+    <Page Include="Views\AddContractOrganizationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\OrgContracts.xaml">
+    <Page Include="Views\OrgContractsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\OrgContractsHeader.xaml">
+    <Page Include="Views\OrgContractsHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

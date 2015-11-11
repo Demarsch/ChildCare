@@ -20,9 +20,9 @@ namespace PatientRecordsModule.Views
     /// <summary>
     /// Interaction logic for PersonRecordListView.xaml
     /// </summary>
-    public partial class PersonRecordList
+    public partial class PersonRecordListView
     {
-        public PersonRecordList()
+        public PersonRecordListView()
         {
             InitializeComponent();
         }

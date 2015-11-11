@@ -10,7 +10,7 @@ namespace Core.Wpf.Mvvm
 {
     public sealed class ObservableCollectionChangeTracker<TItem> : BindableBase, IChangeTracker
     {
-        private IEnumerable<TItem> originalItems;
+        private TItem[] originalItems;
 
         private readonly ObservableCollectionEx<TItem> collection;
 
@@ -22,12 +22,32 @@ namespace Core.Wpf.Mvvm
             }
             this.collection = collection;
             collection.BeforeCollectionChanged += OnBeforeCollectionChanged;
-            originalItems = null;
+            collection.CollectionChanged += OnCollectionChanged;
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+            if (originalItems.Length == 0 && collection.Count == 0)
+            {
+                AcceptChanges();
+            }
+            else
+            {
+                HasChanges = true;
+            }
         }
 
         private void OnBeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            if (originalItems == null && IsEnabled)
+            if (!IsEnabled)
+            {
+                return;
+            }
+            if (originalItems == null)
             {
                 originalItems = collection.ToArray();
             }
@@ -47,9 +67,12 @@ namespace Core.Wpf.Mvvm
 
         public void RestoreChanges()
         {
-            collection.Replace(originalItems);
-            originalItems = null;
-            HasChanges = false;
+            if (originalItems != null)
+            {
+                collection.Replace(originalItems);
+                originalItems = null;
+                HasChanges = false;
+            }
         }
 
         public void RegisterComparer(string propertyName, IEqualityComparer comparer)
@@ -60,6 +83,7 @@ namespace Core.Wpf.Mvvm
         public void Dispose()
         {
             collection.BeforeCollectionChanged -= OnBeforeCollectionChanged;
+            collection.CollectionChanged -= OnCollectionChanged;
         }
 
         private bool isEnabled;

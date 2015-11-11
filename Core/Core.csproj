@@ -68,6 +68,8 @@
     <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
+    <Compile Include="Misc\Validation\IActiveDataErrorInfo.cs" />
+    <Compile Include="Misc\Validation\ValidationMediator.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
     <Compile Include="Expressions\ISearchExpressionProvider.cs" />

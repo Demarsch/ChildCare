@@ -121,8 +121,8 @@
     <Compile Include="Services\Implementations\PatientSearchService.cs" />
     <Compile Include="ViewModels\PatientSearchViewModel.cs" />
     <Compile Include="ViewModels\FoundPatientViewModel.cs" />
-    <Compile Include="Views\PatientSearch.xaml.cs">
-      <DependentUpon>PatientSearch.xaml</DependentUpon>
+    <Compile Include="Views\PatientSearchView.xaml.cs">
+      <DependentUpon>PatientSearchView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -134,11 +134,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\FoundPatient.xaml">
+    <Page Include="Views\FoundPatientView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PatientSearch.xaml">
+    <Page Include="Views\PatientSearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

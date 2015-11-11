@@ -4,9 +4,9 @@ using PatientSearchModule.ViewModels;
 namespace PatientSearchModule.Views
 {
     /// <summary>
-    /// Interaction logic for PatientSearch.xaml
+    /// Interaction logic for PatientSearchView.xaml
     /// </summary>
-    public partial class PatientSearch
+    public partial class PatientSearchView
     {
         [Dependency]
         public PatientSearchViewModel ViewModel
@@ -14,7 +14,7 @@ namespace PatientSearchModule.Views
             set { DataContext = value; }
         }
 
-        public PatientSearch()
+        public PatientSearchView()
         {
             InitializeComponent();
         }

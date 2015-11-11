@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -23,7 +24,7 @@ using Prism.Regions;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class InfoContentViewModel : TrackableBindableBase, INavigationAware, IDataErrorInfo, IChangeTrackerMediator, IDisposable
+    public class InfoContentViewModel : TrackableBindableBase, INavigationAware, IActiveDataErrorInfo, IChangeTrackerMediator, IDisposable
     {
         private const int FullSnilsLength = 14;
 
@@ -35,12 +36,9 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IEventAggregator eventAggregator;
 
-        private readonly IRegionManager regionManager;
-
         public InfoContentViewModel(IPatientService patientService,
                                     ILog log,
                                     IEventAggregator eventAggregator,
-                                    IRegionManager regionManager,
                                     IdentityDocumentCollectionViewModel identityDocumentCollectionViewModel)
         {
             if (patientService == null)
@@ -55,10 +53,6 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
-            if (regionManager == null)
-            {
-                throw new ArgumentNullException("regionManager");
-            }
             if (identityDocumentCollectionViewModel == null)
             {
                 throw new ArgumentNullException("identityDocumentCollectionViewModel");
@@ -67,7 +61,6 @@ namespace PatientInfoModule.ViewModels
             this.patientService = patientService;
             this.log = log;
             this.eventAggregator = eventAggregator;
-            this.regionManager = regionManager;
             patientIdBeingSelected = SpecialValues.NonExistingId;
             currentInstanceChangeTracker = new ChangeTrackerEx<InfoContentViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, IdentityDocuments.ChangeTracker);
@@ -201,6 +194,8 @@ namespace PatientInfoModule.ViewModels
         private PersonMaritalStatus currentMaritalStatus;
 
         private PersonHealthGroup currentHealthGroup;
+
+        private ICollection<PersonIdentityDocument> currentIdentityDocuments;  
 
         private int patientIdBeingSelected;
 
@@ -456,7 +451,7 @@ namespace PatientInfoModule.ViewModels
         private async void SaveChangesAsync()
         {
             FailureMediator.Deactivate();
-            if (!IsValid)
+            if (!Validate())
             {
                 return;
             }
@@ -488,7 +483,9 @@ namespace PatientInfoModule.ViewModels
                                    CurrentMaritalStatus = currentMaritalStatus,
                                    NewMaritalStatus = new PersonMaritalStatus { MaritalStatusId = MaritalStatusId },
                                    CurrentNationality = currentNationality,
-                                   NewNationality = new PersonNationality { CountryId = NationalityId }
+                                   NewNationality = new PersonNationality { CountryId = NationalityId },
+                                   CurrentIdentityDocuments = currentIdentityDocuments ?? new PersonIdentityDocument[0],
+                                   NewIdentityDocuments = IdentityDocuments.Model
                                };
                 saveData.CurrentPerson.BirthDate = BirthDate.Value.Date;
                 saveData.CurrentPerson.Snils = Snils;
@@ -508,6 +505,7 @@ namespace PatientInfoModule.ViewModels
                 currentHealthGroup = result.HealthGroup;
                 currentMaritalStatus = result.MaritalStatus;
                 currentEducation = result.Education;
+                IdentityDocuments.Model = currentIdentityDocuments = result.IdentityDocuments;
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -526,7 +524,7 @@ namespace PatientInfoModule.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
-                    isValidationRequested = false;
+                    CancelValidation();
                     ChangeTracker.AcceptChanges();
                     ChangeTracker.IsEnabled = true;
                     UpdateChangeCommandsState();
@@ -620,7 +618,8 @@ namespace PatientInfoModule.ViewModels
                                                                 CurrentHealthGroup = x.PersonHealthGroups.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
                                                                 CurrentEducation = x.PersonEducations.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
                                                                 CurrentMaritalStatus = x.PersonMaritalStatuses.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
-                                                                CurrentNationality = x.PersonNationalities.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate)
+                                                                CurrentNationality = x.PersonNationalities.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
+                                                                CurrentIdentityDocuments = x.PersonIdentityDocuments
                                                             })
                                                .FirstOrDefaultAsync(token);
                 if (result == null)
@@ -634,6 +633,7 @@ namespace PatientInfoModule.ViewModels
                 currentEducation = result.CurrentEducation;
                 currentMaritalStatus = result.CurrentMaritalStatus;
                 currentNationality = result.CurrentNationality;
+                currentIdentityDocuments = result.CurrentIdentityDocuments;
 
                 LastName = currentName == null ? PersonName.UnknownLastName : currentName.LastName;
                 FirstName = currentName == null ? PersonName.UnknownFirstName : currentName.FirstName;
@@ -649,6 +649,7 @@ namespace PatientInfoModule.ViewModels
                 NationalityId = currentNationality == null ? SpecialValues.NonExistingId : currentNationality.CountryId;
                 EducationId = currentEducation == null ? SpecialValues.NonExistingId : currentEducation.EducationId;
                 MaritalStatusId = currentMaritalStatus == null ? SpecialValues.NonExistingId : currentMaritalStatus.MaritalStatusId;
+                IdentityDocuments.Model = currentIdentityDocuments;
 
                 loadingIsCompleted = true;
             }
@@ -721,19 +722,23 @@ namespace PatientInfoModule.ViewModels
 
         #region Implementation IDataErrorInfo
 
+        public bool Validate()
+        {
+            isValidationRequested = true;
+            OnPropertyChanged(string.Empty);
+            return invalidProperties.Count == 0 & IdentityDocuments.Validate();
+        }
+
+        public void CancelValidation()
+        {
+            isValidationRequested = false;
+            OnPropertyChanged();
+            IdentityDocuments.CancelValidation();
+        }
+
         private bool isValidationRequested;
 
         private readonly HashSet<string> invalidProperties = new HashSet<string>();
-
-        private bool IsValid
-        {
-            get
-            {
-                isValidationRequested = true;
-                OnPropertyChanged(string.Empty);
-                return invalidProperties.Count < 1;
-            }
-        }
 
         string IDataErrorInfo.this[string columnName]
         {
