@@ -18,6 +18,7 @@
     [CreationDateTime]  DATETIME       CONSTRAINT [DF__Assignmen__Creat__498EEC8D] DEFAULT (getdate()) NOT NULL,
     [BillingDateTime]   DATETIME       NULL,
     [Cost]              FLOAT (53)     CONSTRAINT [DF_Assignments_Cost] DEFAULT ((0)) NOT NULL,
+    [RemovedByUserId]   INT            NULL,
     CONSTRAINT [PK_Assignments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Assignments_Assignments] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Assignments] ([Id]),
     CONSTRAINT [FK_Assignments_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
@@ -26,10 +27,13 @@
     CONSTRAINT [FK_Assignments_Records] FOREIGN KEY ([RecordId]) REFERENCES [dbo].[Records] ([Id]),
     CONSTRAINT [FK_Assignments_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]),
     CONSTRAINT [FK_Assignments_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [dbo].[Rooms] ([Id]),
-    CONSTRAINT [FK_Assignments_Users] FOREIGN KEY ([AssignUserId]) REFERENCES [dbo].[Users] ([Id]),
-    CONSTRAINT [FK_Assignments_Users1] FOREIGN KEY ([CancelUserId]) REFERENCES [dbo].[Users] ([Id]),
+    CONSTRAINT [FK_Assignments_Users_AssignUser] FOREIGN KEY ([AssignUserId]) REFERENCES [dbo].[Users] ([Id]),
+    CONSTRAINT [FK_Assignments_Users1_CancelUser] FOREIGN KEY ([CancelUserId]) REFERENCES [dbo].[Users] ([Id]),
+    CONSTRAINT [FK_Assignments_Users2_RemovedByUser] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 
