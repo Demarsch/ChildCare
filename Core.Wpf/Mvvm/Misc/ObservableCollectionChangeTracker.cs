@@ -67,9 +67,12 @@ namespace Core.Wpf.Mvvm
 
         public void RestoreChanges()
         {
-            collection.Replace(originalItems);
-            originalItems = null;
-            HasChanges = false;
+            if (originalItems != null)
+            {
+                collection.Replace(originalItems);
+                originalItems = null;
+                HasChanges = false;
+            }
         }
 
         public void RegisterComparer(string propertyName, IEqualityComparer comparer)

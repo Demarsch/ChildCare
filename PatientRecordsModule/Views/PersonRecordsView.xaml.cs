@@ -18,11 +18,11 @@ using System.Windows.Shapes;
 namespace PatientRecordsModule.Views
 {
     /// <summary>
-    /// Interaction logic for PersonRecords.xaml
+    /// Interaction logic for PersonRecordsView.xaml
     /// </summary>
-    public partial class PersonRecords
+    public partial class PersonRecordsView
     {
-        public PersonRecords()
+        public PersonRecordsView()
         {
             InitializeComponent();
         }

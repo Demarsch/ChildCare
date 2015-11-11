@@ -151,14 +151,14 @@
     <Compile Include="ViewModels\Info\AddressViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentViewModel.cs" />
     <Compile Include="ViewModels\Documents\ThumbnailViewModel.cs" />
-    <Compile Include="Views\ContractsHeader.xaml.cs">
-      <DependentUpon>ContractsHeader.xaml</DependentUpon>
+    <Compile Include="Views\ContractsHeaderView.xaml.cs">
+      <DependentUpon>ContractsHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DocumentsHeader.xaml.cs">
-      <DependentUpon>DocumentsHeader.xaml</DependentUpon>
+    <Compile Include="Views\DocumentsHeaderView.xaml.cs">
+      <DependentUpon>DocumentsHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EmptyPatientInfo.xaml.cs">
-      <DependentUpon>EmptyPatientInfo.xaml</DependentUpon>
+    <Compile Include="Views\EmptyPatientInfoView.xaml.cs">
+      <DependentUpon>EmptyPatientInfoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Info\IdentityDocumentCollectionView.xaml.cs">
       <DependentUpon>IdentityDocumentCollectionView.xaml</DependentUpon>
@@ -172,14 +172,14 @@
     <Compile Include="Views\Info\InfoContentView.xaml.cs">
       <DependentUpon>InfoContentView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PatientContracts.xaml.cs">
-      <DependentUpon>PatientContracts.xaml</DependentUpon>
+    <Compile Include="Views\PatientContractsView.xaml.cs">
+      <DependentUpon>PatientContractsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PersonDocuments.xaml.cs">
-      <DependentUpon>PersonDocuments.xaml</DependentUpon>
+    <Compile Include="Views\PersonDocumentsView.xaml.cs">
+      <DependentUpon>PersonDocumentsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ScanDocuments.xaml.cs">
-      <DependentUpon>ScanDocuments.xaml</DependentUpon>
+    <Compile Include="Views\ScanDocumentsView.xaml.cs">
+      <DependentUpon>ScanDocumentsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SelectPersonDocumentTypeView.xaml.cs">
       <DependentUpon>SelectPersonDocumentTypeView.xaml</DependentUpon>
@@ -210,15 +210,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Views\ContractsHeader.xaml">
+    <Page Include="Views\ContractsHeaderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\DocumentsHeader.xaml">
+    <Page Include="Views\DocumentsHeaderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EmptyPatientInfo.xaml">
+    <Page Include="Views\EmptyPatientInfoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -238,15 +238,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PatientContracts.xaml">
+    <Page Include="Views\PatientContractsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PersonDocuments.xaml">
+    <Page Include="Views\PersonDocumentsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ScanDocuments.xaml">
+    <Page Include="Views\ScanDocumentsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -8,11 +8,11 @@ using OrganizationContractsModule.ViewModels;
 namespace OrganizationContractsModule.Views
 {
     /// <summary>
-    /// Interaction logic for OrgContractsHeader.xaml
+    /// Interaction logic for OrgContractsHeaderView.xaml
     /// </summary>
-    public partial class OrgContractsHeader
+    public partial class OrgContractsHeaderView
     {
-        public OrgContractsHeader()
+        public OrgContractsHeaderView()
         {
             InitializeComponent();
         }

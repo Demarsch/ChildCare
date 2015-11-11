@@ -18,13 +18,13 @@ namespace PatientInfoModule.Views
     /// <summary>
     /// Interaction logic for ScanDocumentsView.xaml
     /// </summary>
-    public partial class ScanDocuments : Window
+    public partial class ScanDocumentsView : Window
     {
         //public static readonly DependencyProperty ThumbnailImageProperty = DependencyProperty.Register("CurrentScannedImage", typeof(Image), typeof(ScanDocumentsView), new PropertyMetadata(ScanPropertyChangedCallback));
         private Twain twain;
         private ScanSettings scannerSettings;
 
-        public ScanDocuments()
+        public ScanDocumentsView()
         {
             InitializeComponent();            
             Loaded += delegate

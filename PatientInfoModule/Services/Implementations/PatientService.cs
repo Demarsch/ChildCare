@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
@@ -11,7 +12,7 @@ using PatientInfoModule.Data;
 
 namespace PatientInfoModule.Services
 {
-    public class PatientService : IPatientService
+    public sealed class PatientService : IPatientService
     {
         private readonly IDbContextProvider contextProvider;
 
@@ -79,153 +80,203 @@ namespace PatientInfoModule.Services
                                  Person = data.CurrentPerson,
                                  Name = data.IsNewName ? data.NewName : data.CurrentName
                              };
-                data.CurrentPerson.FullName = data.NewName.FullName;
-                data.CurrentPerson.ShortName = data.NewName.ShortName;
-                context.Entry(data.CurrentPerson).State = data.CurrentPerson.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
-                //We already have current name, we should just copy new values to it
-                if (data.IsIncorrectName)
-                {
-                    data.CurrentName.LastName = data.NewName.LastName;
-                    data.CurrentName.FirstName = data.NewName.FirstName;
-                    data.CurrentName.MiddleName = data.NewName.MiddleName;
-                    context.Entry(data.CurrentName).State = EntityState.Modified;
-                }
-                    //We should create new name whether because of real name change or because of new person
-                else if (data.IsNewName)
-                {
-                    context.Entry(data.NewName).State = EntityState.Added;
-                    //This is existing person - we should mark old name as no longer active
-                    if (data.CurrentName != null)
-                    {
-                        data.CurrentName.EndDateTime = data.NewNameStartDate.AddDays(-1.0);
-                        data.NewName.BeginDateTime = data.NewNameStartDate;
-                        context.Entry(data.CurrentName).State = EntityState.Modified;
-                    }
-                    else
-                    {
-                        data.NewName.BeginDateTime = SpecialValues.MinDate;
-                    }
-                    data.NewName.EndDateTime = SpecialValues.MaxDate;
-                    data.NewName.Person = data.CurrentPerson;
-                }
-                //Nationality
-                if (data.CurrentNationality == null)
-                {
-                    if (data.NewNationality.CountryId != SpecialValues.NonExistingId)
-                    {
-                        data.NewNationality.BeginDateTime = SpecialValues.MinDate;
-                        data.NewNationality.EndDateTime = SpecialValues.MaxDate;
-                        data.NewNationality.Person = data.CurrentPerson;
-                        context.Entry(data.NewNationality).State = EntityState.Added;
-                        result.Nationality = data.NewNationality;
-                    }
-                }
-                else if (data.CurrentNationality.CountryId != data.NewNationality.CountryId)
-                {
-                    data.CurrentNationality.EndDateTime = DateTime.Today.AddDays(-1.0);
-                    data.NewNationality.BeginDateTime = DateTime.Today;
-                    data.NewNationality.EndDateTime = SpecialValues.MaxDate;
-                    data.NewNationality.Person = data.CurrentPerson;
-                    context.Entry(data.NewNationality).State = EntityState.Added;
-                    context.Entry(data.CurrentNationality).State = EntityState.Modified;
-                    result.Nationality = data.NewNationality;
-                }
-                else
-                {
-                    result.Nationality = data.CurrentNationality;
-                }
-                //Education
-                if (data.CurrentEducation == null)
-                {
-                    if (data.NewEducation.EducationId != SpecialValues.NonExistingId)
-                    {
-                        data.NewEducation.BeginDateTime = SpecialValues.MinDate;
-                        data.NewEducation.EndDateTime = SpecialValues.MaxDate;
-                        data.NewEducation.Person = data.CurrentPerson;
-                        context.Entry(data.NewEducation).State = EntityState.Added;
-                        result.Education = data.NewEducation;
-                    }
-                }
-                else if (data.CurrentEducation.EducationId != data.NewEducation.EducationId)
-                {
-                    data.CurrentEducation.EndDateTime = DateTime.Today.AddDays(-1.0);
-                    data.NewEducation.BeginDateTime = DateTime.Today;
-                    data.NewEducation.EndDateTime = SpecialValues.MaxDate;
-                    data.NewEducation.Person = data.CurrentPerson;
-                    context.Entry(data.NewEducation).State = EntityState.Added;
-                    context.Entry(data.CurrentEducation).State = EntityState.Modified;
-                    result.Education = data.NewEducation;
-                }
-                else
-                {
-                    result.Education = data.CurrentEducation;
-                }
-                //HealthGroup
-                if (data.CurrentHealthGroup == null)
-                {
-                    if (data.NewHealthGroup.HealthGroupId != SpecialValues.NonExistingId)
-                    {
-                        data.NewHealthGroup.BeginDateTime = SpecialValues.MinDate;
-                        data.NewHealthGroup.EndDateTime = SpecialValues.MaxDate;
-                        data.NewHealthGroup.Person = data.CurrentPerson;
-                        context.Entry(data.NewHealthGroup).State = EntityState.Added;
-                        result.HealthGroup = data.NewHealthGroup;
-                    }
-                }
-                else if (data.CurrentHealthGroup.HealthGroupId != data.NewHealthGroup.HealthGroupId)
-                {
-                    //Health group have special treatment as unlike other properties is can become empty
-                    data.CurrentHealthGroup.EndDateTime = DateTime.Today.AddDays(-1.0);
-                    context.Entry(data.CurrentHealthGroup).State = EntityState.Modified;
-                    if (data.NewHealthGroup.HealthGroupId == SpecialValues.NonExistingId)
-                    {
-                        result.HealthGroup = null;
-                    }
-                    else
-                    {
-                        data.NewHealthGroup.BeginDateTime = DateTime.Today;
-                        data.NewHealthGroup.EndDateTime = SpecialValues.MaxDate;
-                        data.NewHealthGroup.Person = data.CurrentPerson;
-                        context.Entry(data.NewHealthGroup).State = EntityState.Added;
-                        result.HealthGroup = data.NewHealthGroup;
-                    }
-                }
-                else
-                {
-                    result.HealthGroup = data.CurrentHealthGroup;
-                }
-                //MaritalStatus
-                if (data.CurrentMaritalStatus == null)
-                {
-                    if (data.NewMaritalStatus.MaritalStatusId != SpecialValues.NonExistingId)
-                    {
-                        data.NewMaritalStatus.BeginDateTime = SpecialValues.MinDate;
-                        data.NewMaritalStatus.EndDateTime = SpecialValues.MaxDate;
-                        data.NewMaritalStatus.EndDateTime = SpecialValues.MaxDate;
-                        data.NewMaritalStatus.Person = data.CurrentPerson;
-                        context.Entry(data.NewMaritalStatus).State = EntityState.Added;
-                        result.MaritalStatus = data.NewMaritalStatus;
-                    }
-                }
-                else if (data.CurrentMaritalStatus.MaritalStatusId != data.NewMaritalStatus.MaritalStatusId)
-                {
-                    data.CurrentMaritalStatus.EndDateTime = DateTime.Today.AddDays(-1.0);
-                    data.NewMaritalStatus.BeginDateTime = DateTime.Today;
-                    data.NewMaritalStatus.Person = data.CurrentPerson;
-                    context.Entry(data.NewMaritalStatus).State = EntityState.Added;
-                    context.Entry(data.CurrentMaritalStatus).State = EntityState.Modified;
-                    result.MaritalStatus = data.NewMaritalStatus;
-                }
-                else
-                {
-                    result.MaritalStatus = data.CurrentMaritalStatus;
-                }
+                PreparePerson(data, context);
+                PrepareNationality(data, context, result);
+                PrepareEducation(data, context, result);
+                PrepareHealthGroup(data, context, result);
+                PrepareMaritalStatus(data, context, result);
+                PrepareIdentityDocuments(data, context, result);
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
                 }
                 await context.SaveChangesAsync(token);
                 return result;
+            }
+        }
+
+        private static void PrepareIdentityDocuments(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            var old = data.CurrentIdentityDocuments.ToDictionary(x => x.Id);
+            var @new = data.NewIdentityDocuments.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+            var added = data.NewIdentityDocuments.Where(x => x.Id == SpecialValues.NewId).ToArray();
+            var removed = old.Where(x => !@new.ContainsKey(x.Key))
+                             .Select(removedDocument => removedDocument.Value)
+                             .ToArray();
+            var existed = @new.Where(x => old.ContainsKey(x.Key))
+                              .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                              .ToArray();
+            foreach (var document in added)
+            {
+                document.Person = data.CurrentPerson;
+                context.Entry(document).State = EntityState.Added;
+            }
+            foreach (var document in removed)
+            {
+                context.Entry(document).State = EntityState.Deleted;
+            }
+            foreach (var document in existed.Where(x => x.IsChanged))
+            {
+                context.Entry(document.New).State = EntityState.Modified;
+            }
+            result.IdentityDocuments = added.Concat(existed.Select(x => x.New)).ToArray();
+        }
+
+
+        private static void PrepareMaritalStatus(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            if (data.CurrentMaritalStatus == null)
+            {
+                if (data.NewMaritalStatus.MaritalStatusId != SpecialValues.NonExistingId)
+                {
+                    data.NewMaritalStatus.BeginDateTime = SpecialValues.MinDate;
+                    data.NewMaritalStatus.EndDateTime = SpecialValues.MaxDate;
+                    data.NewMaritalStatus.EndDateTime = SpecialValues.MaxDate;
+                    data.NewMaritalStatus.Person = data.CurrentPerson;
+                    context.Entry(data.NewMaritalStatus).State = EntityState.Added;
+                    result.MaritalStatus = data.NewMaritalStatus;
+                }
+            }
+            else if (data.CurrentMaritalStatus.MaritalStatusId != data.NewMaritalStatus.MaritalStatusId)
+            {
+                data.CurrentMaritalStatus.EndDateTime = DateTime.Today.AddDays(-1.0);
+                data.NewMaritalStatus.BeginDateTime = DateTime.Today;
+                data.NewMaritalStatus.Person = data.CurrentPerson;
+                context.Entry(data.NewMaritalStatus).State = EntityState.Added;
+                context.Entry(data.CurrentMaritalStatus).State = EntityState.Modified;
+                result.MaritalStatus = data.NewMaritalStatus;
+            }
+            else
+            {
+                result.MaritalStatus = data.CurrentMaritalStatus;
+            }
+        }
+
+        private static void PrepareHealthGroup(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            if (data.CurrentHealthGroup == null)
+            {
+                if (data.NewHealthGroup.HealthGroupId != SpecialValues.NonExistingId)
+                {
+                    data.NewHealthGroup.BeginDateTime = SpecialValues.MinDate;
+                    data.NewHealthGroup.EndDateTime = SpecialValues.MaxDate;
+                    data.NewHealthGroup.Person = data.CurrentPerson;
+                    context.Entry(data.NewHealthGroup).State = EntityState.Added;
+                    result.HealthGroup = data.NewHealthGroup;
+                }
+            }
+            else if (data.CurrentHealthGroup.HealthGroupId != data.NewHealthGroup.HealthGroupId)
+            {
+                //Health group have special treatment as unlike other properties is can become empty
+                data.CurrentHealthGroup.EndDateTime = DateTime.Today.AddDays(-1.0);
+                context.Entry(data.CurrentHealthGroup).State = EntityState.Modified;
+                if (data.NewHealthGroup.HealthGroupId == SpecialValues.NonExistingId)
+                {
+                    result.HealthGroup = null;
+                }
+                else
+                {
+                    data.NewHealthGroup.BeginDateTime = DateTime.Today;
+                    data.NewHealthGroup.EndDateTime = SpecialValues.MaxDate;
+                    data.NewHealthGroup.Person = data.CurrentPerson;
+                    context.Entry(data.NewHealthGroup).State = EntityState.Added;
+                    result.HealthGroup = data.NewHealthGroup;
+                }
+            }
+            else
+            {
+                result.HealthGroup = data.CurrentHealthGroup;
+            }
+        }
+
+        private static void PrepareEducation(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            if (data.CurrentEducation == null)
+            {
+                if (data.NewEducation.EducationId != SpecialValues.NonExistingId)
+                {
+                    data.NewEducation.BeginDateTime = SpecialValues.MinDate;
+                    data.NewEducation.EndDateTime = SpecialValues.MaxDate;
+                    data.NewEducation.Person = data.CurrentPerson;
+                    context.Entry(data.NewEducation).State = EntityState.Added;
+                    result.Education = data.NewEducation;
+                }
+            }
+            else if (data.CurrentEducation.EducationId != data.NewEducation.EducationId)
+            {
+                data.CurrentEducation.EndDateTime = DateTime.Today.AddDays(-1.0);
+                data.NewEducation.BeginDateTime = DateTime.Today;
+                data.NewEducation.EndDateTime = SpecialValues.MaxDate;
+                data.NewEducation.Person = data.CurrentPerson;
+                context.Entry(data.NewEducation).State = EntityState.Added;
+                context.Entry(data.CurrentEducation).State = EntityState.Modified;
+                result.Education = data.NewEducation;
+            }
+            else
+            {
+                result.Education = data.CurrentEducation;
+            }
+        }
+
+        private static void PrepareNationality(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            if (data.CurrentNationality == null)
+            {
+                if (data.NewNationality.CountryId != SpecialValues.NonExistingId)
+                {
+                    data.NewNationality.BeginDateTime = SpecialValues.MinDate;
+                    data.NewNationality.EndDateTime = SpecialValues.MaxDate;
+                    data.NewNationality.Person = data.CurrentPerson;
+                    context.Entry(data.NewNationality).State = EntityState.Added;
+                    result.Nationality = data.NewNationality;
+                }
+            }
+            else if (data.CurrentNationality.CountryId != data.NewNationality.CountryId)
+            {
+                data.CurrentNationality.EndDateTime = DateTime.Today.AddDays(-1.0);
+                data.NewNationality.BeginDateTime = DateTime.Today;
+                data.NewNationality.EndDateTime = SpecialValues.MaxDate;
+                data.NewNationality.Person = data.CurrentPerson;
+                context.Entry(data.NewNationality).State = EntityState.Added;
+                context.Entry(data.CurrentNationality).State = EntityState.Modified;
+                result.Nationality = data.NewNationality;
+            }
+            else
+            {
+                result.Nationality = data.CurrentNationality;
+            }
+        }
+
+        private static void PreparePerson(SavePatientInput data, DbContext context)
+        {
+            data.CurrentPerson.FullName = data.NewName.FullName;
+            data.CurrentPerson.ShortName = data.NewName.ShortName;
+            context.Entry(data.CurrentPerson).State = data.CurrentPerson.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+            //We already have current name, we should just copy new values to it
+            if (data.IsIncorrectName)
+            {
+                data.CurrentName.LastName = data.NewName.LastName;
+                data.CurrentName.FirstName = data.NewName.FirstName;
+                data.CurrentName.MiddleName = data.NewName.MiddleName;
+                context.Entry(data.CurrentName).State = EntityState.Modified;
+            }
+                //We should create new name whether because of real name change or because of new person
+            else if (data.IsNewName)
+            {
+                context.Entry(data.NewName).State = EntityState.Added;
+                //This is existing person - we should mark old name as no longer active
+                if (data.CurrentName != null)
+                {
+                    data.CurrentName.EndDateTime = data.NewNameStartDate.AddDays(-1.0);
+                    data.NewName.BeginDateTime = data.NewNameStartDate;
+                    context.Entry(data.CurrentName).State = EntityState.Modified;
+                }
+                else
+                {
+                    data.NewName.BeginDateTime = SpecialValues.MinDate;
+                }
+                data.NewName.EndDateTime = SpecialValues.MaxDate;
+                data.NewName.Person = data.CurrentPerson;
             }
         }
 
@@ -274,7 +325,7 @@ namespace PatientInfoModule.Services
                 saveDocument.PersonId = document.PersonId;
                 saveDocument.OuterDocumentTypeId = document.OuterDocumentTypeId;
                 saveDocument.DocumentId = document.DocumentId;
-                db.Entry<PersonOuterDocument>(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                db.Entry(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                 try
                 {
                     db.SaveChanges();

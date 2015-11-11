@@ -4,11 +4,11 @@ using PatientInfoModule.ViewModels;
 namespace PatientInfoModule.Views
 {
     /// <summary>
-    /// Interaction logic for PatientContracts.xaml
+    /// Interaction logic for PatientContractsView.xaml
     /// </summary>
-    public partial class PatientContracts
+    public partial class PatientContractsView
     {
-        public PatientContracts()
+        public PatientContractsView()
         {
             InitializeComponent();
         }

@@ -8,9 +8,9 @@ namespace PatientInfoModule.Views
     /// <summary>
     /// Interaction logic for InfoHeader.xaml
     /// </summary>
-    public partial class DocumentsHeader
+    public partial class DocumentsHeaderView
     {
-        public DocumentsHeader()
+        public DocumentsHeaderView()
         {
             InitializeComponent();
         }

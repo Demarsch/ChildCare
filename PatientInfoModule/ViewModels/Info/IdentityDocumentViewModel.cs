@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using Core.Data;
@@ -9,15 +12,16 @@ using Core.Services;
 using Core.Wpf.Misc;
 using Microsoft.Practices.Unity;
 using PatientInfoModule.Misc;
-using Prism;
 using Prism.Commands;
 using WpfControls.Editors;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class IdentityDocumentViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator
+    public class IdentityDocumentViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator, IActiveDataErrorInfo
     {
         private readonly ICacheService cacheService;
+
+        private readonly ValidationMediator validator;
 
         public IdentityDocumentViewModel(ICacheService cacheService)
         {
@@ -26,6 +30,7 @@ namespace PatientInfoModule.ViewModels
                 throw new ArgumentNullException("cacheService");
             }
             this.cacheService = cacheService;
+            validator = new ValidationMediator(this);
             DocumentTypes = cacheService.GetItems<IdentityDocumentType>();
             DeleteCommand = new DelegateCommand(Delete);
             ChangeTracker = new ChangeTrackerEx<IdentityDocumentViewModel>(this);
@@ -171,23 +176,25 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        private PersonIdentityDocument model;
+        private int id;
+
+        private int personId;
 
         public PersonIdentityDocument Model
         {
             get
             {
-                if (model == null)
-                {
-                    model = new PersonIdentityDocument();
-                }
-                model.IdentityDocumentTypeId = DocumentTypeId ?? SpecialValues.NonExistingId;
-                model.Series = Series;
-                model.Number = Number;
-                model.GivenOrg = GivenOrg ?? GivenOrgText;
-                model.BeginDate = FromDate ?? SpecialValues.MinDate;
-                model.EndDate = ToDate ?? SpecialValues.MaxDate;
-                return model;
+                return new PersonIdentityDocument
+                       {
+                           Id = id,
+                           PersonId = personId,
+                           IdentityDocumentTypeId = DocumentTypeId ?? SpecialValues.NonExistingId,
+                           Series = Series,
+                           Number = Number,
+                           GivenOrg = GivenOrg ?? GivenOrgText,
+                           BeginDate = FromDate ?? SpecialValues.MinDate,
+                           EndDate = ToDate ?? SpecialValues.MaxDate
+                       };
             }
             set
             {
@@ -201,6 +208,8 @@ namespace PatientInfoModule.ViewModels
                     givenOrgText = string.Empty;
                     fromDate = null;
                     ToDate = null;
+                    id = SpecialValues.NewId;
+                    personId = SpecialValues.NewId;
                 }
                 else
                 {
@@ -210,10 +219,11 @@ namespace PatientInfoModule.ViewModels
                     givenOrgText = value.GivenOrg;
                     fromDate = value.BeginDate;
                     toDate = value.EndDate;
+                    id = value.Id;
+                    personId = value.PersonId;
                 }
                 OnPropertyChanged(string.Empty);
                 ChangeTracker.IsEnabled = true;
-                model = value;
             }
         }
 
@@ -304,5 +314,117 @@ namespace PatientInfoModule.ViewModels
                 return result.ToString();
             }
         }
+
+        #region IDataErrorInfo validation
+
+        public string this[string columnName]
+        {
+            get { return validator[columnName]; }
+        }
+
+        public string Error
+        {
+            get { return validator.Error; }
+        }
+
+        public bool Validate()
+        {
+            return validator.Validate();
+        }
+
+        public void CancelValidation()
+        {
+            validator.CancelValidation();
+        }
+
+        private class ValidationMediator : ValidationMediator<IdentityDocumentViewModel>
+        {
+            public ValidationMediator(IdentityDocumentViewModel associatedItem) : base(associatedItem)
+            {
+            }
+
+            protected override void OnValidateProperty(string propertyName)
+            {
+                if (string.CompareOrdinal(propertyName, "Series") == 0 || string.CompareOrdinal(propertyName, "Number") == 0)
+                {
+                    ValidateSeriesAndNumber();
+                }
+                else if (string.CompareOrdinal(propertyName, "DocumentTypeId") == 0)
+                {
+                    ValidateDocumentType();
+                }
+                else if (string.CompareOrdinal(propertyName, "FromDate") == 0)
+                {
+                    ValidateFromDate();
+                }
+                else if (string.CompareOrdinal(propertyName, "GivenOrg") == 0 || string.CompareOrdinal(propertyName, "GivenOrgText") == 0)
+                {
+                    ValidateGivenOrg();
+                }
+            }
+
+            protected override void RaiseAssociatedObjectPropertyChanged()
+            {
+                AssociatedItem.OnPropertyChanged(string.Empty);
+            }
+
+            protected override void OnValidate()
+            {
+                ValidateSeriesAndNumber();
+                ValidateDocumentType();
+                ValidateFromDate();
+                ValidateGivenOrg();
+            }
+
+            private void ValidateGivenOrg()
+            {
+                if (string.IsNullOrWhiteSpace(AssociatedItem.GivenOrg) && string.IsNullOrWhiteSpace(AssociatedItem.GivenOrgText))
+                {
+                    Errors["GivenOrg"] = Errors["GivenOrgText"] = "Не указана выдавшая организация";
+                }
+                else if (ValidationIsActive)
+                {
+                    Errors["GivenOrg"] = Errors["GivenOrgText"] = string.Empty;
+                }
+            }
+
+            private void ValidateFromDate()
+            {
+                if (AssociatedItem.FromDate == null)
+                {
+                    Errors["FromDate"] = "Не указана дата выдачи";
+                }
+                else if (ValidationIsActive)
+                {
+                    Errors["FromDate"] = string.Empty;
+                }
+            }
+
+            private void ValidateSeriesAndNumber()
+            {
+                if (string.IsNullOrWhiteSpace(AssociatedItem.Series) && string.IsNullOrWhiteSpace(AssociatedItem.Number))
+                {
+                    Errors["Series"] = Errors["Number"] = "Серия и номер не могут быть пустыми одновременно";
+                }
+                else if (ValidationIsActive)
+                {
+                    Errors["Series"] = Errors["Number"] = string.Empty;
+                }
+            }
+
+            private void ValidateDocumentType()
+            {
+                if (AssociatedItem.DocumentTypeId == null)
+                {
+                    Errors["DocumentTypeId"] = "Не указан тип документа";
+                }
+                else if (ValidationIsActive)
+                {
+                    Errors["DocumentTypeId"] = string.Empty;
+                }
+            }
+        }
+
+        #endregion
     }
 }

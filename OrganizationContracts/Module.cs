@@ -96,9 +96,9 @@ namespace PatientRecordsModule
 
         private void RegisterViews()
         {
-            container.RegisterType<object, OrgContracts>(viewNameResolver.Resolve<OrgContractsViewModel>(), new ContainerControlledLifetimeManager());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<OrgContractsHeader>());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<OrgContracts>());    
+            container.RegisterType<object, OrgContractsView>(viewNameResolver.Resolve<OrgContractsViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<OrgContractsHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<OrgContractsView>());    
         }
        
         private void RegisterServices()

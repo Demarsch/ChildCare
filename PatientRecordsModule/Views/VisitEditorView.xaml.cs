@@ -20,17 +20,17 @@ namespace PatientRecordsModule.Views
     /// <summary>
     /// Interaction logic for NewVisitCreating.xaml
     /// </summary>
-    public partial class VisitEditor : UserControl
+    public partial class VisitEditorView : UserControl
     {
-        public VisitEditor()
+        public VisitEditorView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public VisitEditor ContentViewModel
+        public VisitEditorView ContentViewModel
         {
-            get { return DataContext as VisitEditor; }
+            get { return DataContext as VisitEditorView; }
             set { DataContext = value; }
         }
     }

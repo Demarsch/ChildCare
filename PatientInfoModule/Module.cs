@@ -97,11 +97,11 @@ namespace PatientInfoModule
         private void RegisterViews()
         {
             //This is required by Prism navigation mechanism to resolve view
-            container.RegisterType<object, ScanDocuments>(viewNameResolver.Resolve<ScanDocumentsViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, EmptyPatientInfo>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, ScanDocumentsView>(viewNameResolver.Resolve<ScanDocumentsViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, EmptyPatientInfoView>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, InfoContentView>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, PatientContracts>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, PersonDocuments>(viewNameResolver.Resolve<PersonDocumentsViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PatientContractsView>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PersonDocumentsView>(viewNameResolver.Resolve<PersonDocumentsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterInstance(Common.RibbonGroupName,
                                        new RibbonContextualTabGroup
                                        {
@@ -112,8 +112,8 @@ namespace PatientInfoModule
                                        });
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync, true);
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeaderView));
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeader));
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeader));
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeaderView));
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeaderView));
         }
 
         private async void OnPatientSelectedAsync(int patientId)

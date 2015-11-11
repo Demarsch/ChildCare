@@ -113,17 +113,17 @@
     <Compile Include="ViewModels\PersonHierarchicalRecordsViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalVisitsViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordListViewModel.cs" />
-    <Compile Include="Views\VisitEditor.xaml.cs">
-      <DependentUpon>VisitEditor.xaml</DependentUpon>
+    <Compile Include="Views\VisitEditorView.xaml.cs">
+      <DependentUpon>VisitEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PersonRecordEditor.xaml.cs">
-      <DependentUpon>PersonRecordEditor.xaml</DependentUpon>
+    <Compile Include="Views\PersonRecordEditorView.xaml.cs">
+      <DependentUpon>PersonRecordEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PersonRecords.xaml.cs">
-      <DependentUpon>PersonRecords.xaml</DependentUpon>
+    <Compile Include="Views\PersonRecordsView.xaml.cs">
+      <DependentUpon>PersonRecordsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PersonRecordList.xaml.cs">
-      <DependentUpon>PersonRecordList.xaml</DependentUpon>
+    <Compile Include="Views\PersonRecordListView.xaml.cs">
+      <DependentUpon>PersonRecordListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PersonRecordsHeader.xaml.cs">
       <DependentUpon>PersonRecordsHeader.xaml</DependentUpon>
@@ -156,31 +156,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\VisitEditor.xaml">
+    <Page Include="Views\VisitEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PersonRecordEditor.xaml">
+    <Page Include="Views\PersonRecordEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PersonRecords.xaml">
+    <Page Include="Views\PersonRecordsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PersonRecordList.xaml">
+    <Page Include="Views\PersonRecordListView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PersonHierarchicalAssignments.xaml">
+    <Page Include="Views\PersonHierarchicalAssignmentsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PersonHierarchicalRecords.xaml">
+    <Page Include="Views\PersonHierarchicalRecordsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\PersonHierarchicalVisits.xaml">
+    <Page Include="Views\PersonHierarchicalVisitsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

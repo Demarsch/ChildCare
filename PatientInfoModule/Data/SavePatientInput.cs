@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core.Data;
 
 namespace PatientInfoModule.Data
@@ -32,5 +33,9 @@ namespace PatientInfoModule.Data
         public PersonNationality CurrentNationality { get; set; }
 
         public PersonNationality NewNationality { get; set; }
+
+        public ICollection<PersonIdentityDocument> CurrentIdentityDocuments { get; set; }
+
+        public ICollection<PersonIdentityDocument> NewIdentityDocuments { get; set; }
     }
 }

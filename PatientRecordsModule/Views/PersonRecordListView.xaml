@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PatientRecordsModule.Views.PersonRecordList"
+﻿<UserControl x:Class="PatientRecordsModule.Views.PersonRecordListView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,7 +13,7 @@
         <prism:InteractionRequestTrigger SourceObject="{Binding NewVisitCreatingInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction IsModal="True">
                 <popup:PopupWindowAction.WindowContent>
-                    <views:VisitEditor/>
+                    <views:VisitEditorView/>
                 </popup:PopupWindowAction.WindowContent>
             </popup:PopupWindowAction>
         </prism:InteractionRequestTrigger>

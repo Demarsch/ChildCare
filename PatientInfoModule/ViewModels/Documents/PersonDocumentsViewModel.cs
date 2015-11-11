@@ -170,7 +170,7 @@ namespace PatientInfoModule.ViewModels
         private void Scanning()
         {
             var scanDocumentViewModel = new ScanDocumentsViewModel(this.documentService, this.log);
-            (new ScanDocuments() { DataContext = scanDocumentViewModel }).ShowDialog();
+            (new ScanDocumentsView() { DataContext = scanDocumentViewModel }).ShowDialog();
             
             foreach (var item in scanDocumentViewModel.PreviewImages.Where(x => x.ThumbnailSaved))
             {

@@ -105,7 +105,7 @@ namespace Core.Misc
                 return;
             }
             currentTrackerIsSourceOfChanges = true;
-            trackers.ForEach(x => x.RestoreChanges());
+            trackers.ToArray().ForEach(x => x.RestoreChanges());
             currentTrackerIsSourceOfChanges = false;
             OnPropertyChanged("HasChanges");
         }
