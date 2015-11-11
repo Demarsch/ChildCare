@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             d:DataContext="{d:DesignInstance viewModels:NewVisitCreatingViewModel}">
+             d:DataContext="{d:DesignInstance viewModels:VisitEditorViewModel}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
