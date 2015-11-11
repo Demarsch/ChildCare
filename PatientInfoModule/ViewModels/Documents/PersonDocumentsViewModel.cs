@@ -169,6 +169,15 @@ namespace PatientInfoModule.ViewModels
 
         private void Scanning()
         {
+            if (this.personId == SpecialValues.NewId || this.personId == SpecialValues.NonExistingId)
+            {
+                NotificationInteractionRequest.Raise(new Notification()
+                {
+                    Title = "Внимание",
+                    Content = "Не выбран пациент."
+                });
+                return;
+            };
             var scanDocumentViewModel = new ScanDocumentsViewModel(this.documentService, this.log);
             (new ScanDocumentsView() { DataContext = scanDocumentViewModel }).ShowDialog();
             
@@ -203,6 +212,15 @@ namespace PatientInfoModule.ViewModels
 
         private void AddDocument()
         {
+            if (this.personId == SpecialValues.NewId || this.personId == SpecialValues.NonExistingId)
+            {
+                NotificationInteractionRequest.Raise(new Notification()
+                {
+                    Title = "Внимание",
+                    Content = "Не выбран пациент."
+                });
+                return;
+            };
             files.Clear();
             System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
             dialog.Filter = "All files (*.*)|*.*|Office Files|*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx|Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|Text files (*.txt)|*.txt";

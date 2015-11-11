@@ -53,12 +53,7 @@
                 <TextBlock Text="{Binding Path=FullName}" Margin="2" FontWeight="Bold" />
                 <TextBlock Text="{Binding Path=BirthDate, StringFormat=dd-MM-yyyy}" Margin="2"/>
             </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="RecordTypesAutoCompleteTemplate">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Name}" Margin="2" FontWeight="Bold" />
-            </StackPanel>
-        </DataTemplate>
+        </DataTemplate>        
 
         <DataTemplate x:Key="SectionDataTemplate">
             <DockPanel LastChildFill="True">
@@ -97,6 +92,13 @@
         <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
                                      ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding AddContractRecordsInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True">
+                <popup:PopupWindowAction.WindowContent>
+                    <views:AddContractRecordsView/>
+                </popup:PopupWindowAction.WindowContent>
+            </popup:PopupWindowAction>
         </prism:InteractionRequestTrigger>
     </i:Interaction.Triggers>
     
@@ -254,71 +256,7 @@
                             Text="{Binding TransationDate, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"    
                             Visibility="{Binding IsCashless, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
-
-                        <GroupBox Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2">
-                            <StackPanel Orientation="Vertical" >
-                                <TextBlock Text="Услуги по договору" FontWeight="Bold"></TextBlock>
-                                <RadioButton Content="Назначенные услуги" IsChecked="{Binding IsAssignRecordsChecked, Mode=TwoWay}" Margin="2"/>
-                                <ListView ItemsSource="{Binding Assignments}" SelectedItem="{Binding SelectedAssignment, Mode=TwoWay}"
-                                    Visibility="{Binding IsAssignRecordsChecked, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                                    Margin="2" MaxHeight="200">
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridView.Columns>
-                                                <GridViewColumn x:Name="Checked" Width="30">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" />
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                                <GridViewColumn Width="120" Header="Дата" DisplayMemberBinding="{Binding Path=AssignDateTime}"></GridViewColumn>
-                                                <GridViewColumn Width="280" Header="Наименование услуги" DisplayMemberBinding="{Binding Path=RecordTypeName}"></GridViewColumn>
-                                                <GridViewColumn Width="80" Header="Сумма, руб." DisplayMemberBinding="{Binding Path=RecordTypeCost}"></GridViewColumn>
-                                            </GridView.Columns>
-                                        </GridView>
-                                    </ListView.View>
-                                </ListView>
-                                <RadioButton Content="Добавить услугу из номенклатуры" IsChecked="{Binding IsNewRecordChecked, Mode=TwoWay}" Margin="2"/>
-                                <StackPanel Orientation="Vertical" 
-                                    Visibility="{Binding IsNewRecordChecked, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                                    <wpf:AutoCompleteTextBox Margin="2"
-                                    Watermark="Введите наименование услуги для поиска..."
-                                    DisplayMember="Name"
-                                    ItemTemplate="{StaticResource RecordTypesAutoCompleteTemplate}"
-                                    SelectedItem="{Binding SelectedRecord, Mode=TwoWay}"
-                                    IconPlacement="Left"
-                                    IconVisibility="Visible"
-                                    Provider="{Binding RecordTypesSuggestionProvider}"
-                                    x:Name="searchRecord">
-                                        <wpf:AutoCompleteTextBox.LoadingContent>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Загрузка данных..." Margin="2" FontSize="13" />
-                                            </StackPanel>
-                                        </wpf:AutoCompleteTextBox.LoadingContent>
-                                    </wpf:AutoCompleteTextBox>
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="23*"/>
-                                            <ColumnDefinition Width="67*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Кол-во услуг" Margin="2"/>
-                                        <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1"
-                                        Height="20" Increment="1" Maximum="100" Minimum="1" 
-                                        ParsingNumberStyle="Integer" TextAlignment="Left"
-                                        Value="{Binding RecordsCount}" Grid.ColumnSpan="2" Margin="0,3" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Стоимость услуг, руб." Margin="2"/>
-                                        <TextBox Grid.Row="1" Grid.Column="1" Height="20" Text="{Binding AssignRecordTypeCost}" IsReadOnly="True" Grid.ColumnSpan="2" Margin="0,3"/>
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
-                        </GroupBox>
-
+                        
                         <Border BorderThickness="1" BorderBrush="Black" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Margin="3,0">
                             <DockPanel LastChildFill="True">
                                 <TextBlock Text="Оплата" DockPanel.Dock="Left" HorizontalAlignment="Center" Margin="10,0,0,0" FontWeight="Medium"></TextBlock>
