@@ -35,10 +35,14 @@ namespace PatientRecordsModule.ViewModels
         private readonly ILog logService;
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
         private readonly CommandWrapper deleteVisitCommandWrapper;
+        private readonly CommandWrapper completeVisitCommandWrapper;
         private readonly ChangeTracker changeTracker;
         private readonly DelegateCommand<int?> createNewVisitCommand;
         private readonly DelegateCommand<int?> editVisitCommand;
         private readonly DelegateCommand<int?> deleteVisitCommand;
+        private readonly DelegateCommand<int?> completeVisitCommand;
+        private readonly DelegateCommand<int?> returnToActiveVisitCommand;
+
         private readonly Func<VisitEditorViewModel> VisitEditorViewModelFactory;
 
         private CancellationTokenSource currentOperationToken;
@@ -78,9 +82,12 @@ namespace PatientRecordsModule.ViewModels
                 CommandName = "Повторить",
             };
             deleteVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => DeleteVisitAsync(visitId)) };
+            completeVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => CompleteVisitAsync(visitId)) };
             createNewVisitCommand = new DelegateCommand<int?>(CreateNewVisit);
             editVisitCommand = new DelegateCommand<int?>(EditVisit);
             deleteVisitCommand = new DelegateCommand<int?>(DeleteVisitAsync);
+            completeVisitCommand = new DelegateCommand<int?>(CompleteVisitAsync);
+            returnToActiveVisitCommand = new DelegateCommand<int?>(ReturnToActiveVisit);
             NewVisitCreatingInteractionRequest = new InteractionRequest<VisitEditorViewModel>();
             RootItems = new ObservableCollectionEx<object>();
             this.PersonId = SpecialValues.NonExistingId;
@@ -137,6 +144,52 @@ namespace PatientRecordsModule.ViewModels
             var newVisitCreatingViewModel = VisitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, null, visitId, DateTime.Now, "Редактировать случай");
             NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+        }
+
+        public ICommand CompleteVisitCommand { get { return completeVisitCommand; } }
+        private void CompleteVisitAsync(int? visitId)
+        {
+           
+        }
+
+        public ICommand ReturnToActiveVisitCommand { get { return returnToActiveVisitCommand; } }
+        private void ReturnToActiveVisit(int? visitId)
+        {
+            FailureMediator.Deactivate();
+            this.visitId = visitId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Uncompleting visit with Id = {0} for person with Id = {1}", visitId, personId);
+            BusyMediator.Activate("Открытие случая...");
+            var saveSuccesfull = false;
+            try
+            {
+                patientRecordsService.ReturnToActiveVisitAsync(visitId.Value, token);
+                saveSuccesfull = true;
+                this.visitId = 0;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to uncomplete visit with Id = {0} for person with Id = {1}", visitId, personId);
+                FailureMediator.Activate("Не удалось открыть случай. Попробуйте еще раз или обратитесь в службу поддержки", completeVisitCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
         }
 
         public ICommand DeleteVisitCommand { get { return deleteVisitCommand; } }

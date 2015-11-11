@@ -59,12 +59,19 @@
             </fluent:SplitButton.ItemTemplate>
         </fluent:SplitButton>
         <StackPanel>
+            <fluent:Button Header="Завершить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitCompleted48x48.png" 
+                           Command="{Binding CompleteVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitCanBeClosed}"/>
+            <fluent:Button Header="Продолжить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitInProgress48x48.png" 
+                           Command="{Binding ReturnToActiveVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitCanBeOpened}"/>
+        </StackPanel>
+        <StackPanel>
             <fluent:Button Header="Изменить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitEdit48x48.png" 
                            Command="{Binding EditVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
             <fluent:Button Header="Удалить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitRemove48x48.png" 
                            Command="{Binding RemoveVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
         </StackPanel>
         <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
+        <!--<ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" />-->
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Назначения">
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Assignment48x48.png"/>
@@ -73,6 +80,9 @@
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Record48x48.png"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Изменения">
+        <fluent:Button Header="Изменить"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" />
         <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/SaveChanges-48x48.png" />

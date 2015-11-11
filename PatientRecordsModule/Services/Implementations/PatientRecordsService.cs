@@ -168,5 +168,24 @@ namespace PatientRecordsModule.Services
                 await context.SaveChangesAsync(token);
             }
         }
+
+        public async void ReturnToActiveVisitAsync(int visitId, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                if (visitId < 1) return;
+                var visit = context.Set<Visit>().FirstOrDefault(x => x.Id == visitId);
+                visit.IsCompleted = false;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+            }
+        }
     }
 }

@@ -23,6 +23,7 @@ using Core.Extensions;
 using PatientRecordsModule.DTO;
 using PatientRecordsModule.DTOs;
 using Microsoft.Practices.Unity;
+using Core.Wpf.Misc;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -42,6 +43,8 @@ namespace PatientRecordsModule.ViewModels
         private readonly IUnityContainer container;
 
         private readonly PersonRecordListViewModel personRecordListViewModel;
+
+        private readonly CommandWrapper reloadPatientVisitCompletedCommandWrapper;
 
         private int patientId;
 
@@ -86,9 +89,11 @@ namespace PatientRecordsModule.ViewModels
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.container = container;
+            reloadPatientVisitCompletedCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitCompletedAsync(VisitId)) };
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
             patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
+            FailureMediator = new FailureMediator();
             SubscribeToEvents();
             LoadItemsAsync();
         }
@@ -167,8 +172,8 @@ namespace PatientRecordsModule.ViewModels
                     FinancingSource = x.FinancingSource.Name,
                     Urgently = x.Urgently.Name
                 }).ToListAsync(token);
-                await Task.WhenAll(loadVisitTemplatesTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
-                VisitTemplates.AddRange(loadVisitTemplatesTask.Result);
+                var result = await loadVisitTemplatesTask;
+                VisitTemplates.AddRange(result);
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -191,6 +196,47 @@ namespace PatientRecordsModule.ViewModels
                 if (visitTemplates != null)
                 {
                     visitTemplates.Dispose();
+                }
+            }
+        }
+
+        private async void LoadVisitCompletedAsync(int visitId)
+        {
+            FailureMediator.Deactivate();
+            var loadingIsCompleted = false;
+            currentLoadingToken = new CancellationTokenSource();
+            var token = currentLoadingToken.Token;
+            BusyMediator.Activate(string.Empty);
+            logService.InfoFormat("Loading IsComleted property for visit with Id ={0}", visitId);
+            IDisposableQueryable<Visit> visit = null;
+            try
+            {
+                visit = patientRecordsService.GetVisit(visitId);
+                var loadVisitTemplatesTask = visit.Select(x => x.IsCompleted).FirstOrDefaultAsync(token);
+                var isCompletedResult = await loadVisitTemplatesTask;
+                IsCompleted = isCompletedResult;
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load IsComleted property for visit with Id ={0}", visitId);
+                FailureMediator.Activate("Не удалость загрузить шаблоны. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitCompletedCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (visit != null)
+                {
+                    visit.Dispose();
                 }
             }
         }
@@ -238,12 +284,35 @@ namespace PatientRecordsModule.ViewModels
             {
                 SetProperty(ref visitId, value);
                 OnPropertyChanged(() => IsVisitSelected);
+                LoadVisitCompletedAsync(visitId);
             }
         }
 
         public bool IsVisitSelected
         {
             get { return VisitId > 0; }
+        }
+
+        private bool? isCompleted;
+        public bool? IsCompleted
+        {
+            get { return isCompleted; }
+            set
+            {
+                SetProperty(ref isCompleted, value);
+                OnPropertyChanged(() => IsVisitCanBeClosed);
+                OnPropertyChanged(() => IsVisitCanBeOpened);
+            }
+        }
+
+        public bool IsVisitCanBeClosed
+        {
+            get { return IsVisitSelected && (IsCompleted == null || IsCompleted == false); }
+        }
+
+        public bool IsVisitCanBeOpened
+        {
+            get { return IsVisitSelected && IsCompleted == true; }
         }
 
         private int assignmentId;
@@ -286,6 +355,8 @@ namespace PatientRecordsModule.ViewModels
         }
 
         public BusyMediator BusyMediator { get; set; }
+
+        public FailureMediator FailureMediator { get; set; }
         #endregion
 
         #region Events
@@ -296,6 +367,10 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CreateNewVisitCommand { get { return personRecordListViewModel.CreateNewVisitCommand; } }
 
         public ICommand EditVisitCommand { get { return personRecordListViewModel.EditVisitCommand; } }
+
+        public ICommand CompleteVisitCommand { get { return personRecordListViewModel.CompleteVisitCommand; } }
+
+        public ICommand ReturnToActiveVisitCommand { get { return personRecordListViewModel.ReturnToActiveVisitCommand; } }
         #endregion
     }
 }

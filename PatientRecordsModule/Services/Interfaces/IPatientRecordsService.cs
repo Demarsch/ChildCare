@@ -45,5 +45,7 @@ namespace PatientRecordsModule.Services
         Task<int> SaveVisitAsync(Visit visit, CancellationToken token);
 
         void DeleteVisitAsync(int visitId, int removedByUserId, CancellationToken token);
+
+        void ReturnToActiveVisitAsync(int visitId, CancellationToken token);
     }
 }
