@@ -562,13 +562,15 @@ namespace OrganizationContractsModule.ViewModels
         {
             var addContractOrganizationViewModel = addContractOrganizationViewModelFactory();
             addContractOrganizationViewModel.IntializeCreation("Добавить организацию");
-            AddContractOrgInteractionRequest.Raise(addContractOrganizationViewModel, 
-                (vm) => 
-                {
-                    Organizations.Add(new FieldValue() { Value = vm.orgId, Field = contractService.GetOrganizationById(vm.orgId).First().Name });
-                    if (SelectedContract.Id == SpecialValues.NewId)
-                        SelectedOrganizationId = vm.orgId;
-                });
+            AddContractOrgInteractionRequest.Raise(addContractOrganizationViewModel, OnAddOrgDialogClosed);
+        }
+
+        private void OnAddOrgDialogClosed(AddContractOrganizationViewModel viewModel)
+        {
+            if (!viewModel.saveSuccesfull) return;
+            Organizations.Add(new FieldValue() { Value = viewModel.orgId, Field = contractService.GetOrganizationById(viewModel.orgId).First().Name });
+            if (SelectedContract.Id == SpecialValues.NewId)
+                SelectedOrganizationId = viewModel.orgId;
         }
 
         private readonly DelegateCommand addContractCommand;
