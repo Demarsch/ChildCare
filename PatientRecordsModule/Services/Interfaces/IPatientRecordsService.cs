@@ -1,6 +1,8 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,11 +38,20 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<ExecutionPlace> GetActualExecutionPlaces();
 
+        IDisposableQueryable<VisitResult> GetActualVisitResults(int executionPlaceId, DateTime onDate);
+
+        IDisposableQueryable<VisitOutcome> GetActualVisitOutcomes(int executionPlaceId, DateTime onDate);
+
+
         IDisposableQueryable<Org> GetLPUs();
+
+        MKB GetMKB(string code);
 
         IDisposableQueryable<Visit> GetVisit(int visitId);
 
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
+
+        IEnumerable GetMKBs(string filter);
 
         Task<int> SaveVisitAsync(Visit visit, CancellationToken token);
 

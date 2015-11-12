@@ -43,7 +43,6 @@ namespace Core.Data
         public virtual DbSet<Education> Educations { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<HealthGroup> HealthGroups { get; set; }
-        public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
         public virtual DbSet<InsuranceCompany> InsuranceCompanies { get; set; }
         public virtual DbSet<InsuranceDocument> InsuranceDocuments { get; set; }
         public virtual DbSet<InsuranceDocumentType> InsuranceDocumentTypes { get; set; }
@@ -94,5 +93,7 @@ namespace Core.Data
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Visit> Visits { get; set; }
+        public virtual DbSet<MKB> MKBs { get; set; }
+        public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
     }
 }

@@ -43,7 +43,8 @@ namespace PatientRecordsModule.ViewModels
         private readonly DelegateCommand<int?> completeVisitCommand;
         private readonly DelegateCommand<int?> returnToActiveVisitCommand;
 
-        private readonly Func<VisitEditorViewModel> VisitEditorViewModelFactory;
+        private readonly Func<VisitEditorViewModel> visitEditorViewModelFactory;
+        private readonly Func<VisitCloseViewModel> visitCloseViewModelFactory;
 
         private CancellationTokenSource currentOperationToken;
         private int? visitId;
@@ -51,7 +52,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region  Constructors
-        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator, Func<VisitEditorViewModel> visitEditorViewModelFactory)
+        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IEventAggregator eventAggregator, Func<VisitEditorViewModel> visitEditorViewModelFactory, Func<VisitCloseViewModel> visitCloseViewModelFactory)
         {
             if (patientRecordsService == null)
             {
@@ -69,7 +70,12 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("newVisitCreatingViewModelFactory");
             }
-            this.VisitEditorViewModelFactory = visitEditorViewModelFactory;
+            if (visitCloseViewModelFactory == null)
+            {
+                throw new ArgumentNullException("visitCloseViewModelFactory");
+            }
+            this.visitCloseViewModelFactory = visitCloseViewModelFactory;
+            this.visitEditorViewModelFactory = visitEditorViewModelFactory;
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
@@ -88,7 +94,8 @@ namespace PatientRecordsModule.ViewModels
             deleteVisitCommand = new DelegateCommand<int?>(DeleteVisitAsync);
             completeVisitCommand = new DelegateCommand<int?>(CompleteVisitAsync);
             returnToActiveVisitCommand = new DelegateCommand<int?>(ReturnToActiveVisit);
-            NewVisitCreatingInteractionRequest = new InteractionRequest<VisitEditorViewModel>();
+            VisitEditorInteractionRequest = new InteractionRequest<VisitEditorViewModel>();
+            VisitCloseInteractionRequest = new InteractionRequest<VisitCloseViewModel>();
             RootItems = new ObservableCollectionEx<object>();
             this.PersonId = SpecialValues.NonExistingId;
             SubscribeToEvents();
@@ -126,30 +133,34 @@ namespace PatientRecordsModule.ViewModels
 
         public FailureMediator FailureMediator { get; private set; }
 
-        public InteractionRequest<VisitEditorViewModel> NewVisitCreatingInteractionRequest { get; private set; }
+        public InteractionRequest<VisitEditorViewModel> VisitEditorInteractionRequest { get; private set; }
+
+        public InteractionRequest<VisitCloseViewModel> VisitCloseInteractionRequest { get; private set; }
         #endregion
 
         #region Commands
         public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
         private void CreateNewVisit(int? selectedTemplate)
         {
-            var newVisitCreatingViewModel = VisitEditorViewModelFactory();
+            var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
         }
 
         public ICommand EditVisitCommand { get { return editVisitCommand; } }
         private void EditVisit(int? visitId)
         {
-            var newVisitCreatingViewModel = VisitEditorViewModelFactory();
+            var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, null, visitId, DateTime.Now, "Редактировать случай");
-            NewVisitCreatingInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
         }
 
         public ICommand CompleteVisitCommand { get { return completeVisitCommand; } }
         private void CompleteVisitAsync(int? visitId)
         {
-           
+            var visitCloseViewModel = visitCloseViewModelFactory();
+            visitCloseViewModel.IntializeCreation(visitId.Value, "Завершить случай");
+            VisitCloseInteractionRequest.Raise(visitCloseViewModel, (vm) => { });
         }
 
         public ICommand ReturnToActiveVisitCommand { get { return returnToActiveVisitCommand; } }

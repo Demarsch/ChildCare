@@ -5,6 +5,10 @@ using Core.Data.Misc;
 using Core.Data.Services;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections;
+using Core.Misc;
+using Core.Services;
+using System.Collections.Generic;
 
 namespace PatientRecordsModule.Services
 {
@@ -12,13 +16,20 @@ namespace PatientRecordsModule.Services
     {
         private readonly IDbContextProvider contextProvider;
 
-        public PatientRecordsService(IDbContextProvider contextProvider)
+        private readonly ICacheService cacheService;
+
+        public PatientRecordsService(IDbContextProvider contextProvider, ICacheService cacheService)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
             this.contextProvider = contextProvider;
+            this.cacheService = cacheService;
         }
 
         public IDisposableQueryable<Person> GetPersonQuery(int personId)
@@ -186,6 +197,37 @@ namespace PatientRecordsModule.Services
                 }
                 await context.SaveChangesAsync(token);
             }
+        }
+
+        public IEnumerable GetMKBs(string filter)
+        {
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new MKB[0];
+            }
+            var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            return cacheService.GetItems<MKB>().Where(x => words.All(y => x.DS.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1 || x.NAME_DS.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
+        }
+
+
+        public MKB GetMKB(string code)
+        {
+            var context = contextProvider.CreateNewContext();
+            return cacheService.GetItems<MKB>().FirstOrDefault(x => x.DS == code);
+        }
+
+
+        public IDisposableQueryable<VisitResult> GetActualVisitResults(int executionPlaceId, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<VisitResult>(context.Set<VisitResult>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.ExecutionPlaceId == executionPlaceId), context);
+        }
+
+        public IDisposableQueryable<VisitOutcome> GetActualVisitOutcomes(int executionPlaceId, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<VisitOutcome>(context.Set<VisitOutcome>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.ExecutionPlaceId == executionPlaceId), context);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Core.Data
         public int Id { get; set; }
         public string Name { get; set; }
         public bool WithoutEndDate { get; set; }
+        public int PriorityForOKATO { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonAddress> PersonAddresses { get; set; }

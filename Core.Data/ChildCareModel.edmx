@@ -12,6 +12,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="WithoutEndDate" Type="bit" Nullable="false" />
+          <Property Name="PriorityForOKATO" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Assignments">
           <Key>
@@ -315,6 +316,16 @@
           <Property Name="RecordContractId" Type="int" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MKB">
+          <Key>
+            <PropertyRef Name="DS" />
+            <PropertyRef Name="NAME_DS" />
+          </Key>
+          <Property Name="DS" Type="nvarchar" MaxLength="7" Nullable="false" />
+          <Property Name="NAME_DS" Type="nvarchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="Okatos">
           <Key>
@@ -2314,6 +2325,12 @@
           <EntitySet Name="VisitResults" EntityType="Self.VisitResults" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Visits" EntityType="Self.Visits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitTemplates" EntityType="Self.VisitTemplates" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MKB" EntityType="Self.MKB" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [MKB].[DS] AS [DS], 
+    [MKB].[NAME_DS] AS [NAME_DS]
+    FROM [dbo].[MKB] AS [MKB]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_Addresses_Persons" Association="Self.FK_Addresses_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
@@ -2806,7 +2823,6 @@
           <EntitySet Name="Educations" EntityType="DataLib.Education" />
           <EntitySet Name="ExecutionPlaces" EntityType="DataLib.ExecutionPlace" />
           <EntitySet Name="HealthGroups" EntityType="DataLib.HealthGroup" />
-          <EntitySet Name="IdentityDocumentTypes" EntityType="DataLib.IdentityDocumentType" />
           <EntitySet Name="InsuranceCompanies" EntityType="DataLib.InsuranceCompany" />
           <EntitySet Name="InsuranceDocuments" EntityType="DataLib.InsuranceDocument" />
           <EntitySet Name="InsuranceDocumentTypes" EntityType="DataLib.InsuranceDocumentType" />
@@ -2965,10 +2981,6 @@
           <AssociationSet Name="FK_PersonHealthGroups_HealthGroups" Association="DataLib.FK_PersonHealthGroups_HealthGroups">
             <End Role="HealthGroup" EntitySet="HealthGroups" />
             <End Role="PersonHealthGroup" EntitySet="PersonHealthGroups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonIdentityDocuments_IdentityDocumentTypes" Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes">
-            <End Role="IdentityDocumentType" EntitySet="IdentityDocumentTypes" />
-            <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
           </AssociationSet>
           <AssociationSet Name="FK_InsuranceDocuments_InsuranceCompanies" Association="DataLib.FK_InsuranceDocuments_InsuranceCompanies">
             <End Role="InsuranceCompany" EntitySet="InsuranceCompanies" />
@@ -3325,6 +3337,12 @@
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
+          <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
+          <EntitySet Name="IdentityDocumentTypes" EntityType="DataLib.IdentityDocumentType" />
+          <AssociationSet Name="FK_PersonIdentityDocuments_IdentityDocumentTypes" Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes">
+            <End Role="IdentityDocumentType" EntitySet="IdentityDocumentTypes" />
+            <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -3334,6 +3352,7 @@
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="WithoutEndDate" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="AddressType" ToRole="PersonAddress" />
+          <Property Name="PriorityForOKATO" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="Branch">
           <Key>
@@ -3582,14 +3601,6 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="PersonHealthGroups" Relationship="DataLib.FK_PersonHealthGroups_HealthGroups" FromRole="HealthGroup" ToRole="PersonHealthGroup" />
         </EntityType>
-        <EntityType Name="IdentityDocumentType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PersonIdentityDocuments" Relationship="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" FromRole="IdentityDocumentType" ToRole="PersonIdentityDocument" />
-        </EntityType>
         <EntityType Name="InsuranceCompany">
           <Key>
             <PropertyRef Name="Id" />
@@ -3784,8 +3795,8 @@
           <Property Name="GivenOrg" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="IdentityDocumentType" Relationship="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" FromRole="PersonIdentityDocument" ToRole="IdentityDocumentType" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonIdentityDocuments_Persons" FromRole="PersonIdentityDocument" ToRole="Person" />
+          <NavigationProperty Name="IdentityDocumentType" Relationship="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" FromRole="PersonIdentityDocument" ToRole="IdentityDocumentType" />
         </EntityType>
         <EntityType Name="PersonMaritalStatus">
           <Key>
@@ -4572,18 +4583,6 @@
             </Principal>
             <Dependent Role="PersonHealthGroup">
               <PropertyRef Name="HealthGroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonIdentityDocuments_IdentityDocumentTypes">
-          <End Type="DataLib.IdentityDocumentType" Role="IdentityDocumentType" Multiplicity="1" />
-          <End Type="DataLib.PersonIdentityDocument" Role="PersonIdentityDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IdentityDocumentType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonIdentityDocument">
-              <PropertyRef Name="IdentityDocumentTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5799,6 +5798,34 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="MKB">
+          <Key>
+            <PropertyRef Name="DS" />
+            <PropertyRef Name="NAME_DS" />
+          </Key>
+          <Property Name="DS" Type="String" Nullable="false" MaxLength="7" FixedLength="false" Unicode="true" />
+          <Property Name="NAME_DS" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="IdentityDocumentType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonIdentityDocuments" Relationship="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" FromRole="IdentityDocumentType" ToRole="PersonIdentityDocument" />
+        </EntityType>
+        <Association Name="FK_PersonIdentityDocuments_IdentityDocumentTypes">
+          <End Type="DataLib.IdentityDocumentType" Role="IdentityDocumentType" Multiplicity="1" />
+          <End Type="DataLib.PersonIdentityDocument" Role="PersonIdentityDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IdentityDocumentType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonIdentityDocument">
+              <PropertyRef Name="IdentityDocumentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5808,6 +5835,7 @@
           <EntitySetMapping Name="AddressTypes">
             <EntityTypeMapping TypeName="DataLib.AddressType">
               <MappingFragment StoreEntitySet="AddressTypes">
+                <ScalarProperty Name="PriorityForOKATO" ColumnName="PriorityForOKATO" />
                 <ScalarProperty Name="WithoutEndDate" ColumnName="WithoutEndDate" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -6028,14 +6056,6 @@
               <MappingFragment StoreEntitySet="HealthGroups">
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="IdentityDocumentTypes">
-            <EntityTypeMapping TypeName="DataLib.IdentityDocumentType">
-              <MappingFragment StoreEntitySet="IdentityDocumentTypes">
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -6703,6 +6723,22 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="VisitTemplateId" ColumnName="VisitTemplateId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MKBs">
+            <EntityTypeMapping TypeName="DataLib.MKB">
+              <MappingFragment StoreEntitySet="MKB">
+                <ScalarProperty Name="NAME_DS" ColumnName="NAME_DS" />
+                <ScalarProperty Name="DS" ColumnName="DS" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IdentityDocumentTypes">
+            <EntityTypeMapping TypeName="DataLib.IdentityDocumentType">
+              <MappingFragment StoreEntitySet="IdentityDocumentTypes">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

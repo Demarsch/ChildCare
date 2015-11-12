@@ -23,7 +23,7 @@ namespace Core.Data
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
-        public virtual IdentityDocumentType IdentityDocumentType { get; set; }
         public virtual Person Person { get; set; }
+        public virtual IdentityDocumentType IdentityDocumentType { get; set; }
     }
 }

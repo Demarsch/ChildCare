@@ -92,6 +92,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WpfControls, Version=1.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTOs\VisitTemplateDTO.cs" />
@@ -101,10 +105,13 @@
     <Compile Include="DTOs\VisitDTO.cs" />
     <Compile Include="Misc\Common.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
+    <Compile Include="Misc\SuggestionProviders\MKBSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\PatientRecordsService.cs" />
     <Compile Include="Services\Interfaces\IPatientRecordsService.cs" />
+    <Compile Include="ViewModels\VisitCloseViewModel.cs" />
     <Compile Include="ViewModels\VisitEditorViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordEditorViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordsViewModel.cs" />
@@ -113,6 +120,9 @@
     <Compile Include="ViewModels\PersonHierarchicalRecordsViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalVisitsViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordListViewModel.cs" />
+    <Compile Include="Views\VisitCloseView.xaml.cs">
+      <DependentUpon>VisitCloseView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VisitEditorView.xaml.cs">
       <DependentUpon>VisitEditorView.xaml</DependentUpon>
     </Compile>
@@ -153,6 +163,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\VisitCloseView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
