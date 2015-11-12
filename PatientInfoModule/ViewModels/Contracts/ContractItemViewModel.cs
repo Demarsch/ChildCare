@@ -1,4 +1,6 @@
-﻿using PatientInfoModule.Services;
+﻿using Core.Misc;
+using Core.Wpf.Misc;
+using PatientInfoModule.Services;
 using Prism.Mvvm;
 using System;
 using System.Drawing;
@@ -6,7 +8,7 @@ using System.Windows;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class ContractItemViewModel : BindableBase
+    public class ContractItemViewModel : TrackableBindableBase, IChangeTrackerMediator, IDisposable
     {
         private readonly IRecordService recordService;
 
@@ -17,6 +19,7 @@ namespace PatientInfoModule.ViewModels
                 throw new ArgumentNullException("recordService");
             }
             this.recordService = recordService;
+            ChangeTracker = new ChangeTrackerEx<ContractItemViewModel>(this);
         }
 
         private int id;
@@ -51,7 +54,10 @@ namespace PatientInfoModule.ViewModels
         public bool IsPaid
         {
             get { return isPaid; }
-            set { SetProperty(ref isPaid, value); }
+            set
+            {
+                SetTrackedProperty(ref isPaid, value);
+            }
         }
 
         private string recordTypeName;
@@ -66,7 +72,7 @@ namespace PatientInfoModule.ViewModels
         {
             get { return recordCount; }
             set 
-            { 
+            {
                 if (SetProperty(ref recordCount, value))
                     RecordCost = (recordService.GetRecordTypeCost(recordTypeId) * recordCount);    
             }
@@ -112,6 +118,13 @@ namespace PatientInfoModule.ViewModels
         {
             get { return sectionAlignment; }
             set { SetProperty(ref sectionAlignment, value); }
+        }
+
+        public IChangeTracker ChangeTracker { get; private set; }
+
+        public void Dispose()
+        {
+            ChangeTracker.Dispose();
         }
     }
 }

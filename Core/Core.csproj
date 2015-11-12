@@ -131,7 +131,6 @@
   <ItemGroup>
     <Resource Include="Resources\Images\VisitCompleted48x48.png" />
     <Resource Include="Resources\Images\VisitInProgress48x48.png" />
-    <Resource Include="Resources\Images\Completed48x48.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Edit48x48.png" />

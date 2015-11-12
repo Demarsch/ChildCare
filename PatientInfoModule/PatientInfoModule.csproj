@@ -138,10 +138,10 @@
     <Compile Include="Services\Interfaces\IRecordService.cs" />
     <Compile Include="ViewModels\Contracts\AddContractRecordsViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractItemViewModel.cs" />
-    <Compile Include="ViewModels\ContractsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\ContractsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractAssignmentsViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractViewModel.cs" />
-    <Compile Include="ViewModels\DocumentsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\Documents\DocumentsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Documents\SelectPersonDocumentTypeViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentCollectionViewModel.cs" />

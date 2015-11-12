@@ -22,10 +22,13 @@ using System.Windows.Input;
 using Prism.Events;
 using System.ComponentModel;
 using Prism.Interactivity.InteractionRequest;
+using WpfControls.Editors;
+using Microsoft.Practices.Unity;
+using System.Collections.Specialized;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class PatientContractsViewModel : BindableBase, IConfirmNavigationRequest, INavigationAware, IDataErrorInfo
+    public class PatientContractsViewModel : TrackableBindableBase, IConfirmNavigationRequest, INavigationAware, IDataErrorInfo, IChangeTrackerMediator
     {
         private readonly IPatientService personService;
         private readonly IContractService contractService;
@@ -36,7 +39,6 @@ namespace PatientInfoModule.ViewModels
         private readonly IEventAggregator eventAggregator;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
         private readonly CommandWrapper reloadDataSourcesCommandWrapper;
-        private readonly ChangeTracker changeTracker;
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; private set; }
         private CancellationTokenSource currentLoadingToken;
@@ -88,13 +90,20 @@ namespace PatientInfoModule.ViewModels
             patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            changeTracker = new ChangeTracker();
-            changeTracker.PropertyChanged += OnChangesTracked;
+
+            ChangeTracker = new ChangeTrackerEx<PatientContractsViewModel>(this);
+            ChangeTracker.PropertyChanged += OnChangesTracked;
+            
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadContractsAsync(patientId)) };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources) };
             ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
             NotificationInteractionRequest = new InteractionRequest<Notification>();
             AddContractRecordsInteractionRequest = new InteractionRequest<AddContractRecordsViewModel>();
+
+            Contracts = new ObservableCollectionEx<ContractViewModel>();
+            ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
+            
+            contractItemsTracker = new CompositeChangeTracker();
 
             addContractCommand = new DelegateCommand(AddContract, CanAddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
@@ -107,19 +116,61 @@ namespace PatientInfoModule.ViewModels
             removeAppendixCommand = new DelegateCommand(RemoveAppendix);
 
             saveChangesCommandWrapper = new CommandWrapper { Command = saveContractCommand };
-            IsContractSelected = false;            
+            IsActive = false;            
+        }
+
+        void OnBeforeContractItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (var newItem in e.NewItems.Cast<ContractItemViewModel>())
+                {
+                    if (!newItem.ChangeTracker.IsEnabled)
+                        newItem.ChangeTracker.IsEnabled = true;                    
+                    newItem.PropertyChanged += contractItem_PropertyChanged;
+                    contractItemsTracker.AddTracker(newItem.ChangeTracker);
+                }
+            }
+            if (e.OldItems != null)
+            {
+                foreach (var oldItem in e.OldItems.Cast<ContractItemViewModel>())
+                {
+                    oldItem.PropertyChanged -= contractItem_PropertyChanged;
+                    contractItemsTracker.RemoveTracker(oldItem.ChangeTracker);
+                }
+            }            
+        }
+
+        void contractItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            UpdateTotalSumRow();
+            UpdateChangeCommandsState();
+        }
+
+        public IChangeTracker ChangeTracker { get; private set; }
+        private CompositeChangeTracker contractItemsTracker;
+
+        public void Dispose()
+        {
+            ChangeTracker.Dispose();
+            contractItemsTracker.Dispose();
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
             {
-                saveContractCommand.RaiseCanExecuteChanged();
-                removeContractCommand.RaiseCanExecuteChanged();
-                addContractCommand.RaiseCanExecuteChanged();
+                UpdateChangeCommandsState();
             }
         }
-        
+
+        private void UpdateChangeCommandsState()
+        {
+            saveContractCommand.RaiseCanExecuteChanged();
+            removeContractCommand.RaiseCanExecuteChanged();
+            addContractCommand.RaiseCanExecuteChanged();
+        }
+
         public async void LoadDataSources()
         {
             FailureMediator.Deactivate();
@@ -154,9 +205,7 @@ namespace PatientInfoModule.ViewModels
             paymentTypesSource.AddRange(paymentSources.Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
             PaymentTypes = new ObservableCollectionEx<FieldValue>(paymentTypesSource);
 
-            IsCashless = false;
-            PersonSuggestionProvider = new PersonSuggestionProvider(personService);
-            
+            IsCashless = false;            
             Contracts = new ObservableCollectionEx<ContractViewModel>();
             
             SelectedRegistratorId = SpecialValues.NonExistingId;
@@ -208,8 +257,7 @@ namespace PatientInfoModule.ViewModels
                
                 ContractsCount = result.Count();
                 ContractsSum = result.Sum(x => x.ContractCost) + " руб.";
-                Contracts = new ObservableCollectionEx<ContractViewModel>();
-                ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
+                Contracts.Clear();
                 Contracts.AddRange(result.Select(x => new ContractViewModel()
                     {
                         Id = x.Id,
@@ -221,7 +269,7 @@ namespace PatientInfoModule.ViewModels
                 if (contracts.Any())
                     SelectedContract = contracts.OrderByDescending(x => x.ContractBeginDate).First();
                 else
-                    IsContractSelected = false;
+                    IsActive = false;
 
                 loadingIsCompleted = true;
             }
@@ -240,6 +288,7 @@ namespace PatientInfoModule.ViewModels
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
+                    UpdateChangeCommandsState();
                 }
             }   
         }
@@ -260,12 +309,14 @@ namespace PatientInfoModule.ViewModels
                 SelectedClient = contract.Person;
                 Consumer = contract.Person1.FullName;
                 IsCashless = false;
-                LoadContractItems();
+                LoadContractItems();                
             }
         }
 
         private void ClearData()
         {
+            ChangeTracker.IsEnabled = false;
+            contractItemsTracker.IsEnabled = false;
             ContractName = "НОВЫЙ ДОГОВОР";
             SelectedRegistratorId = -1;
             SelectedFinancingSourceId = -1;
@@ -278,7 +329,7 @@ namespace PatientInfoModule.ViewModels
 
         private void LoadContractItems()
         {
-            ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
+            ContractItems.Clear();            
             var items = contractService.GetContractItems(selectedContract.Id);
             foreach (var groupedItem in items.GroupBy(x => x.Appendix).OrderBy(x => x.Key))
             {
@@ -288,12 +339,12 @@ namespace PatientInfoModule.ViewModels
                     AddContractItemRow(item);
             }
             if (items.Any())
-                AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);
+                AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);            
         }
 
         private void AddContractItemRow(RecordContractItem item)
         {
-            ContractItems.Add(new ContractItemViewModel(recordService)
+            var contractItem = new ContractItemViewModel(recordService)
             {
                 Id = item.Id,
                 RecordContractId = item.RecordContractId,
@@ -304,7 +355,8 @@ namespace PatientInfoModule.ViewModels
                 RecordCount = item.Count,
                 RecordCost = item.Cost,
                 Appendix = item.Appendix
-            });
+            };
+            ContractItems.Add(contractItem);
         }
 
         private void AddSectionRow(int appendix, Color backColor, HorizontalAlignment alignment, int insertPosition = -1)
@@ -312,7 +364,7 @@ namespace PatientInfoModule.ViewModels
             var item = new ContractItemViewModel(recordService)
             {
                 IsSection = true,
-                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + contractItems.Sum(x => x.RecordCost) + " руб."),
+                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + contractItems.Where(x => x.IsPaid).Sum(x => x.RecordCost) + " руб."),
                 Appendix = appendix,
                 SectionAlignment = alignment,
                 SectionBackColor = backColor
@@ -326,7 +378,7 @@ namespace PatientInfoModule.ViewModels
         private void UpdateTotalSumRow()
         {
             if (contractItems.Any(x => x.IsSection && x.Appendix == -1))
-                contractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + contractItems.Sum(x => x.RecordCost) + " руб.";
+                contractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + contractItems.Where(x => x.IsPaid).Sum(x => x.RecordCost) + " руб.";
             else
                 AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);
             if (selectedContract != null && selectedContract.Id != SpecialValues.NewId)
@@ -336,6 +388,14 @@ namespace PatientInfoModule.ViewModels
         }
 
         #region Properties
+
+        private ISuggestionProvider personSuggestionProvider;
+        [Dependency(SuggestionProviderNames.Person)]
+        public ISuggestionProvider PersonSuggestionProvider
+        {
+            get { return personSuggestionProvider; }
+            set { SetProperty(ref personSuggestionProvider, value); }
+        }
 
         private string contractName;
         public string ContractName
@@ -393,12 +453,14 @@ namespace PatientInfoModule.ViewModels
                 {
                     if (value != null)
                     {
-                        IsContractSelected = true;
+                        IsActive = true;
                         LoadContractData();
-                        changeTracker.IsEnabled = true;
+                        ContractItems.BeforeCollectionChanged += OnBeforeContractItemsChanged;
+                        ChangeTracker.IsEnabled = true;
+                        contractItemsTracker.IsEnabled = true;
                     }
                     else
-                        IsContractSelected = false;
+                        IsActive = false;
                 }
             }
         }
@@ -414,11 +476,7 @@ namespace PatientInfoModule.ViewModels
         public int SelectedRegistratorId
         {
             get { return selectedRegistratorId; }
-            set 
-            {
-                changeTracker.Track(selectedRegistratorId, value); 
-                SetProperty(ref selectedRegistratorId, value);
-            }
+            set { SetTrackedProperty(ref selectedRegistratorId, value); }
         }
 
         private ObservableCollectionEx<FieldValue> financingSources;
@@ -432,11 +490,7 @@ namespace PatientInfoModule.ViewModels
         public int SelectedFinancingSourceId
         {
             get { return selectedFinancingSourceId; }
-            set
-            {
-                changeTracker.Track(selectedFinancingSourceId, value); 
-                SetProperty(ref selectedFinancingSourceId, value);
-            }
+            set { SetTrackedProperty(ref selectedFinancingSourceId, value); }
         }
 
         private ObservableCollectionEx<FieldValue> paymentTypes;
@@ -452,8 +506,7 @@ namespace PatientInfoModule.ViewModels
             get { return selectedPaymentTypeId; }
             set
             {
-                changeTracker.Track(selectedFinancingSourceId, value); 
-                if (SetProperty(ref selectedPaymentTypeId, value))
+                if (SetTrackedProperty(ref selectedPaymentTypeId, value))
                     IsCashless = (value != SpecialValues.NonExistingId) && recordService.GetPaymentTypeById(value).First().Options.Contains(OptionValues.Cashless);
             }
         }
@@ -462,68 +515,42 @@ namespace PatientInfoModule.ViewModels
         public DateTime ContractBeginDateTime
         {
             get { return contractBeginDateTime; }
-            set
-            {
-                changeTracker.Track(contractBeginDateTime, value); 
-                SetProperty(ref contractBeginDateTime, value);
-            }
+            set { SetTrackedProperty(ref contractBeginDateTime, value); }
         }
 
         private DateTime contractEndDateTime;
         public DateTime ContractEndDateTime
         {
             get { return contractEndDateTime; }
-            set
-            {
-                changeTracker.Track(contractEndDateTime, value); 
-                SetProperty(ref contractEndDateTime, value); 
-            }
+            set { SetTrackedProperty(ref contractEndDateTime, value); }
         }
 
         private bool isCashless;
         public bool IsCashless
         {
             get { return isCashless; }
-            set { SetProperty(ref isCashless, value); }
+            set { SetTrackedProperty(ref isCashless, value); }
         }
-
-        private PersonSuggestionProvider personSuggestionProvider;
-        public PersonSuggestionProvider PersonSuggestionProvider
-        {
-            get { return personSuggestionProvider; }
-            set { SetProperty(ref personSuggestionProvider, value); }
-        }
-
+      
         private Person selectedClient;
         public Person SelectedClient
         {
             get { return selectedClient; }
-            set 
-            {
-                changeTracker.Track(selectedClient, value); 
-                SetProperty(ref selectedClient, value);
-            }
+            set { SetTrackedProperty(ref selectedClient, value); }
         }
 
         private string consumer;
         public string Consumer
         {
             get { return consumer; }
-            set 
-            {
-                SetProperty(ref consumer, value);
-            }
+            set { SetProperty(ref consumer, value); }
         }
 
         private ObservableCollectionEx<ContractItemViewModel> contractItems;
         public ObservableCollectionEx<ContractItemViewModel> ContractItems
         {
             get { return contractItems; }
-            set 
-            {
-                changeTracker.Track(contractItems, value); 
-                SetProperty(ref contractItems, value);
-            }
+            set { SetTrackedProperty(ref contractItems, value); }
         }
 
         private ContractItemViewModel selectedContractItem;
@@ -533,36 +560,25 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref selectedContractItem, value); }
         }        
 
-        private bool isContractSelected;
-        public bool IsContractSelected
+        private bool isActive;
+        public bool IsActive
         {
-            get { return isContractSelected; }
-            set 
-            {
-                SetProperty(ref isContractSelected, value);
-            }
-        }
+            get { return isActive; }
+            set { SetProperty(ref isActive, value); }
+        }           
 
         private string transationNumber;
         public string TransationNumber
         {
             get { return transationNumber; }
-            set
-            {
-                changeTracker.Track(transationNumber, value); 
-                SetProperty(ref transationNumber, value); 
-            }
+            set { SetTrackedProperty(ref transationNumber, value); }
         }
 
         private string transationDate;
         public string TransationDate
         {
             get { return transationDate; }
-            set
-            {
-                changeTracker.Track(transationDate, value); 
-                SetProperty(ref transationDate, value);
-            }
+            set { SetTrackedProperty(ref transationDate, value); }
         }
         
         #endregion
@@ -718,7 +734,7 @@ namespace PatientInfoModule.ViewModels
                 foreach (var assignment in viewModel.Assignments.Where(x => x.IsSelected))
                 {
                     int insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
-                    ContractItems.Insert(insertPosition, new ContractItemViewModel(recordService)
+                    var contractItem = new ContractItemViewModel(recordService)
                     {
                         Id = 0,
                         RecordContractId = (int?)null,
@@ -729,29 +745,30 @@ namespace PatientInfoModule.ViewModels
                         RecordCount = 1,
                         RecordCost = assignment.RecordTypeCost,
                         Appendix = (appendixCount == 0 ? (int?)null : appendixCount)
-                    });
+                    };
+                    ContractItems.Insert(insertPosition, contractItem);
                 }
             }
             else
             {
                 if (viewModel.SelectedRecord == null) return;
                 int insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
-                ContractItems.Insert(insertPosition, new ContractItemViewModel(recordService)
-                {
-                    Id = 0,
-                    RecordContractId = (int?)null,
-                    AssignmentId = (int?)null,
-                    RecordTypeId = viewModel.SelectedRecord.Id,
-                    IsPaid = true,
-                    RecordTypeName = viewModel.SelectedRecord.Name,
-                    RecordCount = viewModel.RecordsCount,
-                    RecordCost = viewModel.AssignRecordTypeCost,
-                    Appendix = (appendixCount == 0 ? (int?)null : appendixCount)
-                });
+                var contractItem = new ContractItemViewModel(recordService);
+                contractItem.ChangeTracker.IsEnabled = true;
+                contractItem.Id = 0;
+                contractItem.RecordContractId = (int?)null;
+                contractItem.AssignmentId = (int?)null;
+                contractItem.RecordTypeId = viewModel.SelectedRecord.Id;
+                contractItem.IsPaid = true;
+                contractItem.RecordTypeName = viewModel.SelectedRecord.Name;
+                contractItem.RecordCount = viewModel.RecordsCount;
+                contractItem.RecordCost = viewModel.AssignRecordTypeCost;
+                contractItem.Appendix = (appendixCount == 0 ? (int?)null : appendixCount);
+                ContractItems.Insert(insertPosition, contractItem);
             }
+            
             UpdateTotalSumRow();
-            changeTracker.Track(null, contractItems);
-            saveContractCommand.RaiseCanExecuteChanged();
+            UpdateChangeCommandsState();
         }
 
         private void PrintAppendix()
@@ -824,9 +841,7 @@ namespace PatientInfoModule.ViewModels
                          contractService.DeleteContract(selectedContract.Id);
                      Contracts.Remove(selectedContract);
                      UpdateTotalSumRow();
-                     saveContractCommand.RaiseCanExecuteChanged();
-                     removeContractCommand.RaiseCanExecuteChanged();
-                     addContractCommand.RaiseCanExecuteChanged();
+                     UpdateChangeCommandsState();
                  }             
              });
         }
@@ -837,7 +852,7 @@ namespace PatientInfoModule.ViewModels
             {
                 return false;
             }
-            return changeTracker.HasChanges;
+            return ChangeTracker.HasChanges || contractItemsTracker.HasChanges;
         }
 
         private bool CanRemoveContract()
@@ -915,21 +930,25 @@ namespace PatientInfoModule.ViewModels
             contract.ContractCost = 0;
             contract.Options = string.Empty;
 
-            var items = contractItems.Where(x => !x.IsSection && !contract.RecordContractItems.Select(a => a.Id).Contains(x.Id))
-                                     .Select(x => new RecordContractItem()
-                                    {
-                                        Id = x.Id,
-                                        AssignmentId = x.AssignmentId,
-                                        RecordTypeId = x.RecordTypeId,
-                                        IsPaid = x.IsPaid,
-                                        Count = x.RecordCount,
-                                        Cost = x.RecordCost,
-                                        Appendix = x.Appendix,
-                                        InUserId = contract.InUserId,
-                                        InDateTime = contract.InDateTime
-                                    });
-            foreach (var item in items)
-                contract.RecordContractItems.Add(item);    
+            contract.RecordContractItems.Clear();
+
+            foreach (var item in contractItems.Where(x => !x.IsSection))
+            {
+                RecordContractItem contractItem = contractService.GetContractItemById(item.Id).FirstOrDefault();
+                if (contractItem == null)
+                    contractItem = new RecordContractItem();
+                contractItem.Id = item.Id;
+                contractItem.AssignmentId = item.AssignmentId;
+                contractItem.RecordTypeId = item.RecordTypeId;
+                contractItem.IsPaid = item.IsPaid;
+                contractItem.Count = item.RecordCount;
+                contractItem.Cost = item.RecordCost;
+                contractItem.Appendix = item.Appendix;
+                contractItem.InUserId = contract.InUserId;
+                contractItem.InDateTime = contract.InDateTime;
+
+                contract.RecordContractItems.Add(contractItem);
+            }
 
             try
             {
@@ -957,10 +976,11 @@ namespace PatientInfoModule.ViewModels
                     SelectedContract.ContractEndDate = contract.EndDateTime.ToShortDateString();
                     ContractName = contract.DisplayName;
                     UpdateTotalSumRow();
-                    changeTracker.UntrackAll();
-                    saveContractCommand.RaiseCanExecuteChanged();
-                    removeContractCommand.RaiseCanExecuteChanged();
-                    addContractCommand.RaiseCanExecuteChanged();
+                    ChangeTracker.AcceptChanges();
+                    ChangeTracker.IsEnabled = true;
+                    contractItemsTracker.AcceptChanges();
+                    contractItemsTracker.IsEnabled = true;
+                    UpdateChangeCommandsState();
                 }
             }                        
         }
@@ -983,9 +1003,7 @@ namespace PatientInfoModule.ViewModels
             Consumer = personService.GetPatientQuery(this.patientId).First().FullName;
             ContractBeginDateTime = DateTime.Now.Date;
             ContractEndDateTime = DateTime.Now.Date;
-            saveContractCommand.RaiseCanExecuteChanged();
-            removeContractCommand.RaiseCanExecuteChanged();
-            addContractCommand.RaiseCanExecuteChanged();
+            UpdateChangeCommandsState();
         }
 
         #region Inplementation IDataErrorInfo

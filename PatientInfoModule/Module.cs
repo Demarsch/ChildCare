@@ -91,13 +91,11 @@ namespace PatientInfoModule
             container.RegisterType<InfoContentViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PatientContractsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonDocumentsViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<ScanDocumentsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
             //This is required by Prism navigation mechanism to resolve view
-            container.RegisterType<object, ScanDocumentsView>(viewNameResolver.Resolve<ScanDocumentsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, EmptyPatientInfoView>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, InfoContentView>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PatientContractsView>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());
@@ -178,6 +176,7 @@ namespace PatientInfoModule
 
             container.RegisterType<ISuggestionProvider, IdentityDocumentsGivenOrgSuggestionProvider>(SuggestionProviderNames.IdentityDocumentGiveOrg, new ContainerControlledLifetimeManager());
             container.RegisterType<ISuggestionProvider, InsuranceCompanySuggestionProvider>(SuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionProvider, PersonSuggestionProvider>(SuggestionProviderNames.Person, new ContainerControlledLifetimeManager());
         }
     }
 }
