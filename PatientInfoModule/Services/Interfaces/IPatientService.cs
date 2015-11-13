@@ -6,6 +6,7 @@ using Core.Data;
 using Core.Data.Misc;
 using System;
 using PatientInfoModule.Data;
+using System.Collections;
 
 namespace PatientInfoModule.Services
 {
@@ -25,7 +26,7 @@ namespace PatientInfoModule.Services
             
         Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token);
 
-        IDisposableQueryable<Person> GetPersonsByFullName(string fullname);
+        IEnumerable GetPersonsByFullName(string filter);
 
         IDisposableQueryable<PersonStaff> GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end);
 
@@ -38,5 +39,7 @@ namespace PatientInfoModule.Services
         bool SavePersonDocument(PersonOuterDocument document);
 
         IEnumerable<InsuranceCompany> GetInsuranceCompanies(string filter);
+
+        Person GetPersonById(int id);
     }
 }

@@ -44,5 +44,10 @@
         {
             get { return DelimitizeSnils(Snils); }
         }
+
+        public override string ToString()
+        {
+            return this.FullName + ", " + this.BirthYear;
+        }
     }
 }

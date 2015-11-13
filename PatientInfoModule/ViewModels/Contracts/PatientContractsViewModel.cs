@@ -103,7 +103,7 @@ namespace PatientInfoModule.ViewModels
             Contracts = new ObservableCollectionEx<ContractViewModel>();
             ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
             
-            contractItemsTracker = new CompositeChangeTracker();
+            contractItemsTracker = new CompositeChangeTracker(ChangeTracker);
 
             addContractCommand = new DelegateCommand(AddContract, CanAddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
@@ -152,7 +152,6 @@ namespace PatientInfoModule.ViewModels
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
             contractItemsTracker.Dispose();
         }
 
@@ -178,13 +177,13 @@ namespace PatientInfoModule.ViewModels
             var reliableStaff = await recordService.GetRecordTypeRolesByOptions(OptionValues.ResponsibleForContract).FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
-                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
+                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
                 return;
             }
             var personStaffs = await personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
             if (!personStaffs.Any())
             {
-                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions.", reloadDataSourcesCommandWrapper, null);
+                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
                 return;
             }
             List<FieldValue> elements = new List<FieldValue>();
@@ -294,11 +293,13 @@ namespace PatientInfoModule.ViewModels
         }
 
         private void LoadContractData()
-        {            
+        {
+            contractItemsTracker.IsEnabled = false;
             if (SelectedContract.Id == SpecialValues.NewId)
                 ClearData();
             else
             {
+                needClear = false;
                 var contract = contractService.GetContractById(selectedContract.Id).First();
                 ContractBeginDateTime = contract.BeginDateTime;
                 ContractEndDateTime = contract.EndDateTime;
@@ -309,19 +310,21 @@ namespace PatientInfoModule.ViewModels
                 SelectedClient = contract.Person;
                 Consumer = contract.Person1.FullName;
                 IsCashless = false;
-                LoadContractItems();                
-            }
+                LoadContractItems();
+                ContractItems.BeforeCollectionChanged += OnBeforeContractItemsChanged;
+                contractItemsTracker.IsEnabled = true;
+            }            
         }
 
+        bool needClear = false;
         private void ClearData()
-        {
-            ChangeTracker.IsEnabled = false;
-            contractItemsTracker.IsEnabled = false;
+        {            
             ContractName = "НОВЫЙ ДОГОВОР";
             SelectedRegistratorId = -1;
             SelectedFinancingSourceId = -1;
             SelectedPaymentTypeId = -1;
             IsCashless = false;
+            needClear = true;
             SelectedClient = null;
             Consumer = string.Empty;
             ContractItems.Clear();            
@@ -454,10 +457,7 @@ namespace PatientInfoModule.ViewModels
                     if (value != null)
                     {
                         IsActive = true;
-                        LoadContractData();
-                        ContractItems.BeforeCollectionChanged += OnBeforeContractItemsChanged;
-                        ChangeTracker.IsEnabled = true;
-                        contractItemsTracker.IsEnabled = true;
+                        LoadContractData();                        
                     }
                     else
                         IsActive = false;
@@ -536,7 +536,11 @@ namespace PatientInfoModule.ViewModels
         public Person SelectedClient
         {
             get { return selectedClient; }
-            set { SetTrackedProperty(ref selectedClient, value); }
+            set 
+            {
+                if (value != null || needClear)
+                    SetTrackedProperty(ref selectedClient, value); 
+            }
         }
 
         private string consumer;
@@ -734,18 +738,17 @@ namespace PatientInfoModule.ViewModels
                 foreach (var assignment in viewModel.Assignments.Where(x => x.IsSelected))
                 {
                     int insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
-                    var contractItem = new ContractItemViewModel(recordService, personService, this.patientId, selectedFinancingSourceId, contractBeginDateTime)
-                    {
-                        Id = 0,
-                        RecordContractId = (int?)null,
-                        AssignmentId = assignment.Id,
-                        RecordTypeId = assignment.RecordTypeId,
-                        IsPaid = true,
-                        RecordTypeName = assignment.RecordTypeName,
-                        RecordCount = 1,
-                        RecordCost = assignment.RecordTypeCost,
-                        Appendix = (appendixCount == 0 ? (int?)null : appendixCount)
-                    };
+                    var contractItem = new ContractItemViewModel(recordService, personService, this.patientId, selectedFinancingSourceId, contractBeginDateTime);
+                    contractItem.ChangeTracker.IsEnabled = true;
+                    contractItem.Id = 0;
+                    contractItem.RecordContractId = (int?)null;
+                    contractItem.AssignmentId = assignment.Id;
+                    contractItem.RecordTypeId = assignment.RecordTypeId;
+                    contractItem.IsPaid = true;
+                    contractItem.RecordTypeName = assignment.RecordTypeName;
+                    contractItem.RecordCount = 1;
+                    contractItem.RecordCost = assignment.RecordTypeCost;
+                    contractItem.Appendix = (appendixCount == 0 ? (int?)null : appendixCount);
                     ContractItems.Insert(insertPosition, contractItem);
                 }
             }
@@ -852,7 +855,7 @@ namespace PatientInfoModule.ViewModels
             {
                 return false;
             }
-            return ChangeTracker.HasChanges || contractItemsTracker.HasChanges;
+            return contractItemsTracker.HasChanges;
         }
 
         private bool CanRemoveContract()
@@ -976,8 +979,6 @@ namespace PatientInfoModule.ViewModels
                     SelectedContract.ContractEndDate = contract.EndDateTime.ToShortDateString();
                     ContractName = contract.DisplayName;
                     UpdateTotalSumRow();
-                    ChangeTracker.AcceptChanges();
-                    ChangeTracker.IsEnabled = true;
                     contractItemsTracker.AcceptChanges();
                     contractItemsTracker.IsEnabled = true;
                     UpdateChangeCommandsState();

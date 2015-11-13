@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:misc="clr-namespace:PatientInfoModule.Misc"
-             xmlns:wpf="http://wpfcontrols.com/"
+             xmlns:editors="http://wpfcontrols.com/"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              xmlns:views="clr-namespace:PatientInfoModule.Views"
@@ -24,20 +24,7 @@
             <Grid MinWidth="200" MinHeight="100">
                 <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
             </Grid>
-        </DataTemplate>        
-        <converters:Converter x:Key="HidePreview" DefaultValue="{x:Static Visibility.Visible}">
-            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
-                                              To="{x:Static Visibility.Visible}" />
-            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
-                                              To="{x:Static Visibility.Collapsed}" />  
-        </converters:Converter>
-        <converters:Converter x:Key="ShowPreview" DefaultValue="{x:Static Visibility.Collapsed}">
-             <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
-                                              To="{x:Static Visibility.Collapsed}" />
-             <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
-                                              To="{x:Static Visibility.Visible}" />
-        </converters:Converter>
-               
+        </DataTemplate>                
         <DataTemplate x:Key="SectionDataTemplate">
             <DockPanel LastChildFill="True">
                 <TextBlock Text="{Binding SectionName}" HorizontalAlignment="{Binding SectionAlignment}" FontWeight="Medium" Foreground="Green"/>
@@ -63,6 +50,18 @@
                 -->
             </Grid>
         </DataTemplate>
+        <converters:Converter x:Key="HidePreview" DefaultValue="{x:Static Visibility.Visible}">
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
+                                              To="{x:Static Visibility.Visible}" />
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
+                                              To="{x:Static Visibility.Collapsed}" />
+        </converters:Converter>
+        <converters:Converter x:Key="ShowPreview" DefaultValue="{x:Static Visibility.Collapsed}">
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
+                                              To="{x:Static Visibility.Collapsed}" />
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
+                                              To="{x:Static Visibility.Visible}" />
+        </converters:Converter>
         <misc:ItemTemplateSelector x:Key="itemTemplateSelector"/>
     </UserControl.Resources>
 
@@ -144,21 +143,8 @@
             </DockPanel>
 
             <Border Grid.Column="1" Grid.Row="0" Margin="5,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" DockPanel.Dock="Top" Visibility="{Binding IsActive, Converter={StaticResource ShowPreview}}">
-                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Contract256x256.png" 
-                            Height="256" Width="256" Margin="0,200,0,10" HorizontalAlignment="Center" />
-                        <TextBlock Text="Договор не выбран" HorizontalAlignment="Center" FontSize="15" FontWeight="Medium"/>
-                    </StackPanel>
-                    <Grid Grid.Row="1" Grid.Column="0" Visibility="{Binding IsActive, Converter={StaticResource HidePreview}}">
+                <Grid>                     
+                    <Grid Visibility="{Binding IsActive, Converter={StaticResource HidePreview}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -202,34 +188,15 @@
                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Заказчик" Margin="2"/>
-                        <wpf:AutoCompleteTextBox 
-                            Grid.Row="4" Grid.Column="1" Margin="2" 
-                            HorizontalAlignment="Stretch" Height="23" Background="White"
-                            Watermark="Введите Ф.И.О. заказчика для поиска..."
-                            Provider="{Binding PersonSuggestionProvider}"
-                            SelectedItem="{Binding SelectedClient, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                            Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"
-                            DisplayMember="FullName"
-                            IconPlacement="Left"
-                            IconVisibility="Visible"
-                            x:Name="searchClient">
-                            <wpf:AutoCompleteTextBox.LoadingContent>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Загрузка данных..." Margin="2" FontSize="13" />
-                                </StackPanel>
-                            </wpf:AutoCompleteTextBox.LoadingContent>
-                            <wpf:AutoCompleteTextBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type data:Person}">
-                                    <Border Padding="5">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Path=FullName}" FontWeight="Bold" Margin="0 0 5 3" />
-                                            <TextBlock Text="{Binding Path=BirthDate, StringFormat=dd-MM-yyyy}" 
-                                                       Foreground="Gray" FontFamily="Segoe UI" Margin="0 0 0 3"/>                                        
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </wpf:AutoCompleteTextBox.ItemTemplate>
-                        </wpf:AutoCompleteTextBox>
+                        <editors:AutoCompleteTextBox Grid.Row="4" 
+                                                Grid.Column="1" 
+                                                Margin="2" 
+                                                Background="White" MinHeight="23"
+                                                Provider="{Binding PersonSuggestionProvider}"
+                                                SelectedItem="{Binding SelectedClient, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                                Watermark="Введите Ф.И.О. заказчика для поиска..."
+                                                Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}">
+                        </editors:AutoCompleteTextBox>   
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Потребитель" Margin="2"/>
                         <TextBox Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" Height="23"
@@ -273,6 +240,11 @@
                             </ListView.ItemContainerStyle>
                         </ListView>
                     </Grid>
+                    <StackPanel Orientation="Vertical" Visibility="{Binding IsActive, Converter={StaticResource ShowPreview}}">
+                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Contract256x256.png" 
+                            Height="256" Width="256" Margin="0,200,0,10" HorizontalAlignment="Center" />
+                        <TextBlock Text="Договор не выбран" HorizontalAlignment="Center" FontSize="15" FontWeight="Medium"/>
+                    </StackPanel>
                 </Grid>   
             </Border>            
         </Grid>

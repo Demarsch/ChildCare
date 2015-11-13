@@ -14,9 +14,7 @@ namespace PatientInfoModule.Misc
         }
 
         public IEnumerable GetSuggestions(string filter)
-        {
-            if (string.IsNullOrEmpty(filter) || (filter.Length < 3))
-                return null;
+        {            
             return service.GetPersonsByFullName(filter);
         }
     }

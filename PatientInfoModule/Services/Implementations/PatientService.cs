@@ -332,10 +332,21 @@ namespace PatientInfoModule.Services
 
         #endregion
 
-        public IDisposableQueryable<Person> GetPersonsByFullName(string fullname)
+        public IEnumerable GetPersonsByFullName(string filter)
+        {
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new Person[0];
+            }
+            var words = (filter.Contains(',') ? filter.Split(',')[0] : filter).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            return cacheService.GetItems<Person>().Where(x => words.All(y => x.FullName.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
+        }
+
+        public Person GetPersonById(int id)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Person>(context.Set<Person>().Where(x => x.FullName.StartsWith(fullname)), context);
+            return cacheService.GetItems<Person>().FirstOrDefault(x => x.Id == id);
         }
 
         public IDisposableQueryable<PersonStaff> GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end)
