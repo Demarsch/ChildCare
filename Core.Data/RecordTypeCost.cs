@@ -19,9 +19,16 @@ namespace Core.Data
         public int FinancingSourceId { get; set; }
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
-        public Nullable<double> FullPrice { get; set; }
+        public bool IsChild { get; set; }
+        public bool IsIncome { get; set; }
+        public double AccountMaterials { get; set; }
+        public double Amortisation { get; set; }
+        public double Salary { get; set; }
+        public double SoftInventory { get; set; }
+        public double Profitability { get; set; }
+        public double FullPrice { get; set; }
     
-        public virtual RecordType RecordType { get; set; }
         public virtual FinancingSource FinancingSource { get; set; }
+        public virtual RecordType RecordType { get; set; }
     }
 }

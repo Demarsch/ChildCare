@@ -53,5 +53,6 @@ namespace Core.Data
         public virtual VisitOutcome VisitOutcome { get; set; }
         public virtual VisitResult VisitResult { get; set; }
         public virtual VisitTemplate VisitTemplate { get; set; }
+        public virtual RecordContract RecordContract { get; set; }
     }
 }
