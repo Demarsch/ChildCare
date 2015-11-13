@@ -344,7 +344,7 @@ namespace PatientInfoModule.ViewModels
 
         private void AddContractItemRow(RecordContractItem item)
         {
-            var contractItem = new ContractItemViewModel(recordService)
+            var contractItem = new ContractItemViewModel(recordService, personService, this.patientId, selectedFinancingSourceId, contractBeginDateTime)
             {
                 Id = item.Id,
                 RecordContractId = item.RecordContractId,
@@ -361,7 +361,7 @@ namespace PatientInfoModule.ViewModels
 
         private void AddSectionRow(int appendix, Color backColor, HorizontalAlignment alignment, int insertPosition = -1)
         {
-            var item = new ContractItemViewModel(recordService)
+            var item = new ContractItemViewModel(recordService, personService, this.patientId, selectedFinancingSourceId, contractBeginDateTime)
             {
                 IsSection = true,
                 SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + contractItems.Where(x => x.IsPaid).Sum(x => x.RecordCost) + " руб."),
@@ -721,7 +721,7 @@ namespace PatientInfoModule.ViewModels
             }
 
             var addContractRecordsViewModel = addContractRecordsViewModelFactory();
-            addContractRecordsViewModel.IntializeCreation("Добавление услуг", this.patientId, false, false);
+            addContractRecordsViewModel.IntializeCreation("Добавление услуг", this.patientId, selectedFinancingSourceId, contractBeginDateTime, false, false);
             AddContractRecordsInteractionRequest.Raise(addContractRecordsViewModel, OnAddRecordDialogClosed);            
         }
 
@@ -734,7 +734,7 @@ namespace PatientInfoModule.ViewModels
                 foreach (var assignment in viewModel.Assignments.Where(x => x.IsSelected))
                 {
                     int insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
-                    var contractItem = new ContractItemViewModel(recordService)
+                    var contractItem = new ContractItemViewModel(recordService, personService, this.patientId, selectedFinancingSourceId, contractBeginDateTime)
                     {
                         Id = 0,
                         RecordContractId = (int?)null,
@@ -753,7 +753,7 @@ namespace PatientInfoModule.ViewModels
             {
                 if (viewModel.SelectedRecord == null) return;
                 int insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
-                var contractItem = new ContractItemViewModel(recordService);
+                var contractItem = new ContractItemViewModel(recordService, personService, this.patientId, selectedFinancingSourceId, contractBeginDateTime);
                 contractItem.ChangeTracker.IsEnabled = true;
                 contractItem.Id = 0;
                 contractItem.RecordContractId = (int?)null;

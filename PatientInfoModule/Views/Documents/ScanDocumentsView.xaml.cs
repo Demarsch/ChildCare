@@ -64,11 +64,11 @@ namespace PatientInfoModule.Views
                     }
                 };
 
-                var scannerSource = twain.SourceNames;
+                var scannerSource = twain.SourceNames.Where(x => !x.Contains("WIA")).ToArray();
                 if (scannerSource != null && scannerSource.Any())
                 {
                     context.Devices = new ObservableCollection<FieldValue>();
-                    for (int i = 0; i < scannerSource.Count; i++)
+                    for (int i = 0; i < scannerSource.Count(); i++)
                         context.Devices.Add(new FieldValue() { Value = i, Field = scannerSource[i].ToString()});
                     context.SelectedDevice = context.Devices.FirstOrDefault();
                 }

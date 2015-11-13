@@ -51,13 +51,13 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsPaid}" Margin="10,0"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}" Margin="20,0,10,0" />
-                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding RecordCount}" TextAlignment="Center" Margin="20,0" />
-                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RecordCost}" TextAlignment="Center" Margin="30,0"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding RecordCount}" TextAlignment="Left" HorizontalAlignment="Left" Margin="20,0,0,0" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RecordCost}" TextAlignment="Left" HorizontalAlignment="Left" Margin="30,0,0,0"/>
                 <!--<TextBox Grid.Row="0" Grid.Column="2" Text="{Binding RecordCount}" TextAlignment="Center" Width="50" BorderThickness="0" Margin="20,0" />
                 <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding RecordCost}" TextAlignment="Center" Width="50" BorderThickness="0" Margin="30,0"/>
                 -->
@@ -256,7 +256,7 @@
                             <DockPanel LastChildFill="True">
                                 <TextBlock Text="Оплата" DockPanel.Dock="Left" HorizontalAlignment="Center" Margin="10,0,0,0" FontWeight="Medium"></TextBlock>
                                 <TextBlock Text="Сумма, руб." DockPanel.Dock="Right" HorizontalAlignment="Center" Margin="10,0" FontWeight="Medium"></TextBlock>
-                                <TextBlock Text="Кол-во" DockPanel.Dock="Right" HorizontalAlignment="Center" Margin="10,0" FontWeight="Medium"></TextBlock>
+                                <TextBlock Text="Кол-во" DockPanel.Dock="Right" HorizontalAlignment="Center" Margin="10,0,40,0" FontWeight="Medium"></TextBlock>
                                 <TextBlock Text="Наименование услуги" Width="Auto" HorizontalAlignment="Center" FontWeight="Medium"/>
                             </DockPanel>
                         </Border>

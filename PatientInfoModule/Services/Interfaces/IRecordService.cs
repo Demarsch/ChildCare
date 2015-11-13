@@ -1,5 +1,6 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
+using System;
 
 namespace PatientInfoModule.Services
 {
@@ -10,7 +11,7 @@ namespace PatientInfoModule.Services
         IDisposableQueryable<RecordTypeRole> GetRecordTypeRolesByOptions(string options);
         IDisposableQueryable<RecordType> GetAllRecordTypes();
         IDisposableQueryable<RecordType> GetRecordTypesByName(string name);
-        double GetRecordTypeCost(int recordTypeId);
+        double GetRecordTypeCost(int recordTypeId, int financingSourceId, DateTime onDate, bool? isChild = null, bool isIncome = true);
         IDisposableQueryable<FinancingSource> GetActiveFinancingSources();
         IDisposableQueryable<PaymentType> GetPaymentTypes();
         IDisposableQueryable<PaymentType> GetPaymentTypeById(int id);

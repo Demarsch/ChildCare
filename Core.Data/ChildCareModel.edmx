@@ -634,7 +634,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="FinancingSourceId" Type="int" Nullable="false" />
           <Property Name="BeginDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
-          <Property Name="IsChild" Type="bit" Nullable="false" />
+          <Property Name="IsChild" Type="bit" />
           <Property Name="IsIncome" Type="bit" Nullable="false" />
           <Property Name="AccountMaterials" Type="float" Nullable="false" />
           <Property Name="Amortisation" Type="float" Nullable="false" />
@@ -642,6 +642,8 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="SoftInventory" Type="float" Nullable="false" />
           <Property Name="Profitability" Type="float" Nullable="false" />
           <Property Name="FullPrice" Type="float" Nullable="false" />
+          <Property Name="InDateTime" Type="datetime" Nullable="false" />
+          <Property Name="InUserLogin" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="RecordTypeRolePermissions">
           <Key>
@@ -3359,14 +3361,14 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="IdentityDocumentType" EntitySet="IdentityDocumentTypes" />
             <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
           </AssociationSet>
+          <AssociationSet Name="FK_Visits_RecordContracts" Association="DataLib.FK_Visits_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
           <EntitySet Name="RecordTypeCosts" EntityType="DataLib.RecordTypeCost" />
           <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="DataLib.FK_RecordTypeCosts_FinancingSources">
             <End Role="FinancingSource" EntitySet="FinancingSources" />
             <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Visits_RecordContracts" Association="DataLib.FK_Visits_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="DataLib.FK_RecordTypeCosts_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
@@ -5820,6 +5822,18 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Visits_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="ContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="RecordTypeCost">
           <Key>
             <PropertyRef Name="Id" />
@@ -5829,7 +5843,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
           <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="IsChild" Type="Boolean" Nullable="false" />
+          <Property Name="IsChild" Type="Boolean" />
           <Property Name="IsIncome" Type="Boolean" Nullable="false" />
           <Property Name="AccountMaterials" Type="Double" Nullable="false" />
           <Property Name="Amortisation" Type="Double" Nullable="false" />
@@ -5837,6 +5851,8 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="SoftInventory" Type="Double" Nullable="false" />
           <Property Name="Profitability" Type="Double" Nullable="false" />
           <Property Name="FullPrice" Type="Double" Nullable="false" />
+          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InUserLogin" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="RecordTypeCost" ToRole="FinancingSource" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordTypeCost" ToRole="RecordType" />
         </EntityType>
@@ -5849,18 +5865,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="RecordTypeCost">
               <PropertyRef Name="FinancingSourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Visits_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
-          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Visit">
-              <PropertyRef Name="ContractId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6784,6 +6788,8 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySetMapping Name="RecordTypeCosts">
             <EntityTypeMapping TypeName="DataLib.RecordTypeCost">
               <MappingFragment StoreEntitySet="RecordTypeCosts">
+                <ScalarProperty Name="InUserLogin" ColumnName="InUserLogin" />
+                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
                 <ScalarProperty Name="FullPrice" ColumnName="FullPrice" />
                 <ScalarProperty Name="Profitability" ColumnName="Profitability" />
                 <ScalarProperty Name="SoftInventory" ColumnName="SoftInventory" />

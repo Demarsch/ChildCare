@@ -3,6 +3,7 @@ using System.Linq;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
+using System.Data.Entity;
 
 namespace PatientInfoModule.Services
 {
@@ -73,10 +74,19 @@ namespace PatientInfoModule.Services
             return new DisposableQueryable<Visit>(context.Set<Visit>().Where(x => x.ContractId == contractId), context);
         }
 
-        public double GetRecordTypeCost(int recordTypeId)
+        public double GetRecordTypeCost(int recordTypeId, int financingSourceId, DateTime onDate, bool? isChild = null, bool isIncome = true)
         {
             var context = contextProvider.CreateNewContext();
-            return 1000;
+            double cost = 0.0;
+            var recordCost = context.Set<RecordTypeCost>()
+                                    .Where(x => x.RecordTypeId == recordTypeId && x.FinancingSourceId == financingSourceId &&
+                                                DbFunctions.TruncateTime(onDate) >= DbFunctions.TruncateTime(x.BeginDate) && DbFunctions.TruncateTime(onDate) < DbFunctions.TruncateTime(x.EndDate) &&
+                                                x.IsIncome == isIncome)
+                                    .OrderByDescending(x => x.InDateTime)
+                                    .FirstOrDefault(x => (x.IsChild != null ? x.IsChild == isChild : true));
+            if (recordCost != null)
+                cost = recordCost.FullPrice * recordCost.Profitability;
+            return cost;
         }
     }
 }
