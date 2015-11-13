@@ -78,6 +78,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -119,10 +120,14 @@
     <Compile Include="Misc\Common.cs" />
     <Compile Include="Misc\ItemTemplateSelector.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
-    <Compile Include="Misc\SuggestionProviders\IdentityDocumentsGivenOrgSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\AddressSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\IAddressSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\DisabilityDocumentGivenOrgSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\IdentityDocumentGivenOrgSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\PersonSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\RecordTypesSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\OkatoRegionSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -144,7 +149,10 @@
     <Compile Include="ViewModels\Documents\DocumentsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Documents\SelectPersonDocumentTypeViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
+    <Compile Include="ViewModels\Info\AddressCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Info\DisabilityDocumentCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Info\DisabilityDocumentViewModel.cs" />
     <Compile Include="ViewModels\Info\InfoHeaderViewModel.cs" />
     <Compile Include="ViewModels\Info\InfoContentViewModel.cs" />
     <Compile Include="ViewModels\Contracts\PatientContractsViewModel.cs" />
@@ -166,6 +174,18 @@
     </Compile>
     <Compile Include="Views\EmptyPatientInfoView.xaml.cs">
       <DependentUpon>EmptyPatientInfoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Info\AddressView.xaml.cs">
+      <DependentUpon>AddressView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Info\AddressCollectionView.xaml.cs">
+      <DependentUpon>AddressCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Info\DisabilityDocumentView.xaml.cs">
+      <DependentUpon>DisabilityDocumentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Info\DisabilityDocumentCollectionView.xaml.cs">
+      <DependentUpon>DisabilityDocumentCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Info\InsuranceDocumentCollectionView.xaml.cs">
       <DependentUpon>InsuranceDocumentCollectionView.xaml</DependentUpon>
@@ -238,6 +258,22 @@
     <Page Include="Views\EmptyPatientInfoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Info\AddressView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Info\AddressCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Info\DisabilityDocumentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Info\DisabilityDocumentCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Info\InsuranceDocumentCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -11,6 +10,7 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Extensions;
 using Core.Misc;
+using Core.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
@@ -36,11 +36,19 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IEventAggregator eventAggregator;
 
+        private readonly ICacheService cacheService;
+
+        private readonly IAddressSuggestionProvider addressSuggestionProvider;
+
         public InfoContentViewModel(IPatientService patientService,
                                     ILog log,
                                     IEventAggregator eventAggregator,
+                                    ICacheService cacheService,
+                                    IAddressSuggestionProvider addressSuggestionProvider,
                                     IdentityDocumentCollectionViewModel identityDocumentCollectionViewModel,
-                                    InsuranceDocumentCollectionViewModel insuranceDocumentCollectionViewModel)
+                                    InsuranceDocumentCollectionViewModel insuranceDocumentCollectionViewModel,
+                                    AddressCollectionViewModel addressCollectionViewModel,
+                                    DisabilityDocumentCollectionViewModel disabilityDocumentCollectionViewModel)
         {
             if (patientService == null)
             {
@@ -62,14 +70,38 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("insuranceDocumentCollectionViewModel");
             }
+            if (addressCollectionViewModel == null)
+            {
+                throw new ArgumentNullException("addressCollectionViewModel");
+            }
+            if (disabilityDocumentCollectionViewModel == null)
+            {
+                throw new ArgumentNullException("disabilityDocumentCollectionViewModel");
+            }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
+            if (addressSuggestionProvider == null)
+            {
+                throw new ArgumentNullException("addressSuggestionProvider");
+            }
+            this.cacheService = cacheService;
+            this.addressSuggestionProvider = addressSuggestionProvider;
             IdentityDocuments = identityDocumentCollectionViewModel;
             InsuranceDocuments = insuranceDocumentCollectionViewModel;
+            Addresses = addressCollectionViewModel;
+            DisabilityDocuments = disabilityDocumentCollectionViewModel;
             this.patientService = patientService;
             this.log = log;
             this.eventAggregator = eventAggregator;
             patientIdBeingSelected = SpecialValues.NonExistingId;
             currentInstanceChangeTracker = new ChangeTrackerEx<InfoContentViewModel>(this);
-            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, IdentityDocuments.ChangeTracker, InsuranceDocuments.ChangeTracker);
+            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker,
+                                                           IdentityDocuments.ChangeTracker,
+                                                           InsuranceDocuments.ChangeTracker,
+                                                           Addresses.ChangeTracker,
+                                                           DisabilityDocuments.ChangeTracker);
             currentInstanceChangeTracker.RegisterComparer(() => LastName, StringComparer.CurrentCultureIgnoreCase);
             currentInstanceChangeTracker.RegisterComparer(() => FirstName, StringComparer.CurrentCultureIgnoreCase);
             currentInstanceChangeTracker.RegisterComparer(() => MiddleName, StringComparer.CurrentCultureIgnoreCase);
@@ -83,12 +115,16 @@ namespace PatientInfoModule.ViewModels
             cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
             reloadPatientDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SelectPatientAsync(patientIdBeingSelected)) };
             saveChangesCommandWrapper = new CommandWrapper { Command = saveChangesCommand };
-            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => EnsureDataSourceLoaded()) };
+            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await EnsureDataSourceLoaded()) };
         }
 
         public IdentityDocumentCollectionViewModel IdentityDocuments { get; private set; }
 
         public InsuranceDocumentCollectionViewModel InsuranceDocuments { get; private set; }
+
+        public AddressCollectionViewModel Addresses { get; private set; }
+
+        public DisabilityDocumentCollectionViewModel DisabilityDocuments { get; private set; }
 
         #region Data source
 
@@ -105,7 +141,12 @@ namespace PatientInfoModule.ViewModels
             BusyMediator.Activate("Загрузка общих данных...");
             try
             {
-                var result = await Task<DataSource>.Factory.StartNew(LoadDataSource);
+                //Ensure data is loaded from OKATO table
+                var dataSourceLoadingTask = Task<DataSource>.Factory.StartNew(LoadDataSource);
+                await Task.WhenAll(dataSourceLoadingTask,
+                                   Task.Factory.StartNew(FillCache),
+                                   addressSuggestionProvider.EnsureDataSourceLoadedAsync());
+                var result = dataSourceLoadingTask.Result;
                 Educations = result.Educations;
                 HealthGroups = result.HealthGroups;
                 Nationalities = result.Countries;
@@ -124,6 +165,15 @@ namespace PatientInfoModule.ViewModels
                 BusyMediator.Deactivate();
             }
             return await dataSourcesLoadingTaskSource.Task;
+        }
+
+        private void FillCache()
+        {
+            //This is just to speed up loading process. Its ok if some data is not loaded at the below point
+            cacheService.GetItems<Okato>();
+            cacheService.GetItems<IdentityDocumentType>();
+            cacheService.GetItems<AddressType>();
+            cacheService.GetItems<DisabilityType>();
         }
 
         private DataSource LoadDataSource()
@@ -205,7 +255,11 @@ namespace PatientInfoModule.ViewModels
 
         private ICollection<PersonIdentityDocument> currentIdentityDocuments;
 
-        private ICollection<InsuranceDocument> currentInsuranceDocuments; 
+        private ICollection<InsuranceDocument> currentInsuranceDocuments;
+
+        private ICollection<PersonAddress> currentAddresses;
+
+        private ICollection<PersonDisability> currentDisabilityDocuments; 
 
         private int patientIdBeingSelected;
 
@@ -497,7 +551,11 @@ namespace PatientInfoModule.ViewModels
                                    CurrentIdentityDocuments = currentIdentityDocuments ?? new PersonIdentityDocument[0],
                                    NewIdentityDocuments = IdentityDocuments.Model,
                                    CurrentInsuranceDocuments = currentInsuranceDocuments ?? new InsuranceDocument[0],
-                                   NewInsuranceDocuments = InsuranceDocuments.Model
+                                   NewInsuranceDocuments = InsuranceDocuments.Model,
+                                   CurrentAddresses = currentAddresses ?? new PersonAddress[0],
+                                   NewAddresses = Addresses.Model,
+                                   CurrentDisabilities = currentDisabilityDocuments ?? new PersonDisability[0],
+                                   NewDisabilities = DisabilityDocuments.Model
                                };
                 saveData.CurrentPerson.BirthDate = BirthDate.Value.Date;
                 saveData.CurrentPerson.Snils = Snils;
@@ -519,6 +577,8 @@ namespace PatientInfoModule.ViewModels
                 currentEducation = result.Education;
                 IdentityDocuments.Model = currentIdentityDocuments = result.IdentityDocuments;
                 InsuranceDocuments.Model = currentInsuranceDocuments = result.InsuranceDocuments;
+                Addresses.Model = currentAddresses = result.Addresses;
+                DisabilityDocuments.Model = currentDisabilityDocuments = result.DisabilityDocuments;
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -569,8 +629,7 @@ namespace PatientInfoModule.ViewModels
         {
             FailureMediator.Deactivate();
             ChangeTracker.RestoreChanges();
-            isValidationRequested = false;
-            OnPropertyChanged(string.Empty);
+            CancelValidation();
             UpdateNameIsChanged();
         }
 
@@ -633,7 +692,9 @@ namespace PatientInfoModule.ViewModels
                                                                 CurrentMaritalStatus = x.PersonMaritalStatuses.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
                                                                 CurrentNationality = x.PersonNationalities.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
                                                                 CurrentIdentityDocuments = x.PersonIdentityDocuments,
-                                                                CurrentInsuranceDocuments = x.InsuranceDocuments
+                                                                CurrentInsuranceDocuments = x.InsuranceDocuments,
+                                                                CurrentAddresses = x.PersonAddresses,
+                                                                CurrentDisabilityDocuments = x.PersonDisabilities
                                                             })
                                                .FirstOrDefaultAsync(token);
                 if (result == null)
@@ -647,9 +708,10 @@ namespace PatientInfoModule.ViewModels
                 currentEducation = result.CurrentEducation;
                 currentMaritalStatus = result.CurrentMaritalStatus;
                 currentNationality = result.CurrentNationality;
-                currentIdentityDocuments = result.CurrentIdentityDocuments;
-                //Making sure insurance company is loaded too. Unfortunately we can't take them from cache as they are subject to change
-                currentInsuranceDocuments = result.CurrentInsuranceDocuments.Where(x => x.InsuranceCompany != null).ToArray();
+                IdentityDocuments.Model = currentIdentityDocuments = result.CurrentIdentityDocuments;
+                InsuranceDocuments.Model = currentInsuranceDocuments = result.CurrentInsuranceDocuments;
+                Addresses.Model = currentAddresses = result.CurrentAddresses;
+                DisabilityDocuments.Model = currentDisabilityDocuments = result.CurrentDisabilityDocuments;
 
                 LastName = currentName == null ? PersonName.UnknownLastName : currentName.LastName;
                 FirstName = currentName == null ? PersonName.UnknownFirstName : currentName.FirstName;
@@ -665,8 +727,6 @@ namespace PatientInfoModule.ViewModels
                 NationalityId = currentNationality == null ? SpecialValues.NonExistingId : currentNationality.CountryId;
                 EducationId = currentEducation == null ? SpecialValues.NonExistingId : currentEducation.EducationId;
                 MaritalStatusId = currentMaritalStatus == null ? SpecialValues.NonExistingId : currentMaritalStatus.MaritalStatusId;
-                IdentityDocuments.Model = currentIdentityDocuments;
-                InsuranceDocuments.Model = currentInsuranceDocuments;
 
                 loadingIsCompleted = true;
             }
@@ -707,6 +767,8 @@ namespace PatientInfoModule.ViewModels
             currentNationality = null;
             IdentityDocuments.Model = currentIdentityDocuments = null;
             InsuranceDocuments.Model = currentInsuranceDocuments = null;
+            Addresses.Model = currentAddresses = null;
+            DisabilityDocuments.Model = currentDisabilityDocuments = null;
             LastName = string.Empty;
             FirstName = string.Empty;
             MiddleName = string.Empty;
@@ -747,7 +809,9 @@ namespace PatientInfoModule.ViewModels
             OnPropertyChanged(string.Empty);
             return invalidProperties.Count == 0
                    & IdentityDocuments.Validate()
-                   & InsuranceDocuments.Validate();
+                   & InsuranceDocuments.Validate()
+                   & Addresses.Validate()
+                   & DisabilityDocuments.Validate();
         }
 
         public void CancelValidation()
@@ -755,6 +819,9 @@ namespace PatientInfoModule.ViewModels
             isValidationRequested = false;
             OnPropertyChanged();
             IdentityDocuments.CancelValidation();
+            InsuranceDocuments.CancelValidation();
+            Addresses.CancelValidation();
+            DisabilityDocuments.CancelValidation();
         }
 
         private bool isValidationRequested;

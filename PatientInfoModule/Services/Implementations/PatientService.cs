@@ -37,22 +37,42 @@ namespace PatientInfoModule.Services
         public IDisposableQueryable<Person> GetPatientQuery(int patientId)
         {
             var context = contextProvider.CreateNewContext();
+            context.Configuration.ProxyCreationEnabled = false;
             return new DisposableQueryable<Person>(context.Set<Person>().AsNoTracking().Where(x => x.Id == patientId), context);
         }
 
-        public IDisposableQueryable<string> GetDocumentGivenOrganizations(string filter)
+        public IEnumerable<string> GetIdentityDocumentGivenOrganizations(string filter)
         {
             filter = (filter ?? string.Empty).Trim();
             if (filter.Length < AppConfiguration.UserInputSearchThreshold)
             {
-                return DisposableQueryable<string>.Empty;
+                return new string[0];
             }
-            var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<string>(context.Set<PersonIdentityDocument>()
-                                                          .Where(x => x.GivenOrg.Contains(filter))
-                                                          .Select(x => x.GivenOrg)
-                                                          .Distinct(),
-                                                   context);
+            using (var context = contextProvider.CreateNewContext())
+            {
+                return context.Set<PersonIdentityDocument>()
+                              .Where(x => x.GivenOrg.Contains(filter))
+                              .Select(x => x.GivenOrg)
+                              .Distinct()
+                              .ToArray();
+            }
+        }
+
+        public IEnumerable<string> GetDisabilityDocumentGivenOrganizations(string filter)
+        {
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new string[0];
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                return context.Set<PersonDisability>()
+                              .Where(x => x.GivenOrg.Contains(filter))
+                              .Select(x => x.GivenOrg)
+                              .Distinct()
+                              .ToArray();
+            }
         }
 
         public IEnumerable<InsuranceCompany> GetInsuranceCompanies(string filter)
@@ -109,6 +129,8 @@ namespace PatientInfoModule.Services
                 PrepareMaritalStatus(data, context, result);
                 PrepareIdentityDocuments(data, context, result);
                 PrepareInsuranceDocuments(data, context, result);
+                PrepareAddresses(data, context, result);
+                PrepareDisabilityDocuments(data, context, result);
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
@@ -116,6 +138,60 @@ namespace PatientInfoModule.Services
                 await context.SaveChangesAsync(token);
                 return result;
             }
+        }
+
+        private void PrepareDisabilityDocuments(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            var old = data.CurrentDisabilities.ToDictionary(x => x.Id);
+            var @new = data.NewDisabilities.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+            var added = data.NewDisabilities.Where(x => x.Id == SpecialValues.NewId).ToArray();
+            var removed = old.Where(x => !@new.ContainsKey(x.Key))
+                             .Select(removedDocument => removedDocument.Value)
+                             .ToArray();
+            var existed = @new.Where(x => old.ContainsKey(x.Key))
+                              .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                              .ToArray();
+            foreach (var document in added)
+            {
+                document.Person = data.CurrentPerson;
+                context.Entry(document).State = EntityState.Added;
+            }
+            foreach (var document in removed)
+            {
+                context.Entry(document).State = EntityState.Deleted;
+            }
+            foreach (var document in existed.Where(x => x.IsChanged))
+            {
+                context.Entry(document.New).State = EntityState.Modified;
+            }
+            result.DisabilityDocuments = added.Concat(existed.Select(x => x.New)).ToArray();
+        }
+
+        private static void PrepareAddresses(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            var old = data.CurrentAddresses.ToDictionary(x => x.Id);
+            var @new = data.NewAddresses.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+            var added = data.NewAddresses.Where(x => x.Id == SpecialValues.NewId).ToArray();
+            var removed = old.Where(x => !@new.ContainsKey(x.Key))
+                             .Select(removedDocument => removedDocument.Value)
+                             .ToArray();
+            var existed = @new.Where(x => old.ContainsKey(x.Key))
+                              .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                              .ToArray();
+            foreach (var address in added)
+            {
+                address.Person = data.CurrentPerson;
+                context.Entry(address).State = EntityState.Added;
+            }
+            foreach (var address in removed)
+            {
+                context.Entry(address).State = EntityState.Deleted;
+            }
+            foreach (var address in existed.Where(x => x.IsChanged))
+            {
+                context.Entry(address.New).State = EntityState.Modified;
+            }
+            result.Addresses = added.Concat(existed.Select(x => x.New)).ToArray();
         }
 
         private static void PrepareInsuranceDocuments(SavePatientInput data, DbContext context, SavePatientOutput result)
@@ -171,7 +247,6 @@ namespace PatientInfoModule.Services
             }
             result.IdentityDocuments = added.Concat(existed.Select(x => x.New)).ToArray();
         }
-
 
         private static void PrepareMaritalStatus(SavePatientInput data, DbContext context, SavePatientOutput result)
         {

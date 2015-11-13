@@ -14,13 +14,13 @@ using WpfControls.Editors;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class IdentityDocumentViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator, IActiveDataErrorInfo
+    public class DisabilityDocumentViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator, IActiveDataErrorInfo
     {
         private readonly ICacheService cacheService;
 
         private readonly ValidationMediator validator;
 
-        public IdentityDocumentViewModel(ICacheService cacheService)
+        public DisabilityDocumentViewModel(ICacheService cacheService)
         {
             if (cacheService == null)
             {
@@ -28,28 +28,28 @@ namespace PatientInfoModule.ViewModels
             }
             this.cacheService = cacheService;
             validator = new ValidationMediator(this);
-            DocumentTypes = cacheService.GetItems<IdentityDocumentType>();
+            DisabilityTypes = cacheService.GetItems<DisabilityType>();
             DeleteCommand = new DelegateCommand(Delete);
-            ChangeTracker = new ChangeTrackerEx<IdentityDocumentViewModel>(this);
+            ChangeTracker = new ChangeTrackerEx<DisabilityDocumentViewModel>(this);
         }
 
         private ISuggestionProvider givenOrgSuggestionProvider;
 
-        [Dependency(SuggestionProviderNames.IdentityDocumentGiveOrg)]
+        [Dependency(SuggestionProviderNames.DisabilityDocumentGivenOrg)]
         public ISuggestionProvider GivenOrgSuggestionProvider
         {
             get { return givenOrgSuggestionProvider; }
             set { SetProperty(ref givenOrgSuggestionProvider, value); }
         }
 
-        private int? documentTypeId;
+        private int? disabilityTypeId;
 
-        public int? DocumentTypeId
+        public int? DisabilityTypeId
         {
-            get { return documentTypeId; }
+            get { return disabilityTypeId; }
             set
             {
-                if (SetTrackedProperty(ref documentTypeId, value))
+                if (SetTrackedProperty(ref disabilityTypeId, value))
                 {
                     OnPropertyChanged(() => StringRepresentation);
                 }
@@ -177,15 +177,15 @@ namespace PatientInfoModule.ViewModels
 
         private int personId;
 
-        public PersonIdentityDocument Model
+        public PersonDisability Model
         {
             get
             {
-                return new PersonIdentityDocument
+                return new PersonDisability
                        {
                            Id = id,
                            PersonId = personId,
-                           IdentityDocumentTypeId = DocumentTypeId ?? SpecialValues.NonExistingId,
+                           DisabilityTypeId = DisabilityTypeId ?? SpecialValues.NonExistingId,
                            Series = Series,
                            Number = Number,
                            GivenOrg = GivenOrg ?? GivenOrgText,
@@ -198,7 +198,7 @@ namespace PatientInfoModule.ViewModels
                 ChangeTracker.IsEnabled = false;
                 if (value == null)
                 {
-                    documentTypeId = null;
+                    disabilityTypeId = null;
                     series = string.Empty;
                     number = string.Empty;
                     givenOrg = null;
@@ -210,7 +210,7 @@ namespace PatientInfoModule.ViewModels
                 }
                 else
                 {
-                    documentTypeId = value.IdentityDocumentTypeId;
+                    disabilityTypeId = value.DisabilityTypeId;
                     series = value.Series;
                     number = value.Number;
                     givenOrgText = value.GivenOrg;
@@ -230,7 +230,7 @@ namespace PatientInfoModule.ViewModels
             get { return FromDate.GetValueOrDefault(SpecialValues.MinDate) <= DateTime.Today && DateTime.Today <= ToDate.GetValueOrDefault(SpecialValues.MaxDate); }
         }
 
-        public IEnumerable<IdentityDocumentType> DocumentTypes { get; private set; } 
+        public IEnumerable<DisabilityType> DisabilityTypes { get; private set; } 
 
         public void Dispose()
         {
@@ -261,12 +261,12 @@ namespace PatientInfoModule.ViewModels
         {
             get
             {
-                if (documentTypeId == null)
+                if (disabilityTypeId == null)
                 {
                     return string.Empty;
                 }
                 var result = new StringBuilder();
-                result.Append(cacheService.GetItemById<IdentityDocumentType>(documentTypeId.Value).Name);
+                result.Append(cacheService.GetItemById<DisabilityType>(disabilityTypeId.Value).Name);
                 if (!string.IsNullOrWhiteSpace(series))
                 {
                     result.Append(' ')
@@ -335,9 +335,10 @@ namespace PatientInfoModule.ViewModels
             validator.CancelValidation();
         }
 
-        private class ValidationMediator : ValidationMediator<IdentityDocumentViewModel>
+        private class ValidationMediator : ValidationMediator<DisabilityDocumentViewModel>
         {
-            public ValidationMediator(IdentityDocumentViewModel associatedItem) : base(associatedItem)
+            public ValidationMediator(DisabilityDocumentViewModel associatedItem)
+                : base(associatedItem)
             {
             }
 
@@ -347,9 +348,9 @@ namespace PatientInfoModule.ViewModels
                 {
                     ValidateSeriesAndNumber();
                 }
-                else if (string.CompareOrdinal(propertyName, "DocumentTypeId") == 0)
+                else if (string.CompareOrdinal(propertyName, "DisabilityTypeId") == 0)
                 {
-                    ValidateDocumentType();
+                    ValidatetDisabilityType();
                 }
                 else if (string.CompareOrdinal(propertyName, "FromDate") == 0)
                 {
@@ -369,7 +370,7 @@ namespace PatientInfoModule.ViewModels
             protected override void OnValidate()
             {
                 ValidateSeriesAndNumber();
-                ValidateDocumentType();
+                ValidatetDisabilityType();
                 ValidateFromDate();
                 ValidateGivenOrg();
             }
@@ -410,15 +411,15 @@ namespace PatientInfoModule.ViewModels
                 }
             }
 
-            private void ValidateDocumentType()
+            private void ValidatetDisabilityType()
             {
-                if (AssociatedItem.DocumentTypeId == null)
+                if (AssociatedItem.DisabilityTypeId == null)
                 {
-                    Errors["DocumentTypeId"] = "Не указан тип документа";
+                    Errors["DisabilityTypeId"] = "Не указан тип документа";
                 }
                 else if (ValidationIsActive)
                 {
-                    Errors["DocumentTypeId"] = string.Empty;
+                    Errors["DisabilityTypeId"] = string.Empty;
                 }
             }
         }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Data;
@@ -14,7 +13,9 @@ namespace PatientInfoModule.Services
     {
         IDisposableQueryable<Person> GetPatientQuery(int patientId);
 
-        IDisposableQueryable<string> GetDocumentGivenOrganizations(string filter);
+        IEnumerable<string> GetIdentityDocumentGivenOrganizations(string filter);
+
+        IEnumerable<string> GetDisabilityDocumentGivenOrganizations(string filter);
         
         IEnumerable<Country> GetCountries();
 

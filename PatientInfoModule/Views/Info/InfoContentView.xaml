@@ -23,6 +23,12 @@
             <DataTemplate DataType="{x:Type viewModels:InsuranceDocumentCollectionViewModel}">
                 <views:InsuranceDocumentCollectionView Width="450" />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:AddressCollectionViewModel}">
+                <views:AddressCollectionView Width="450" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:DisabilityDocumentCollectionViewModel}">
+                <views:DisabilityDocumentCollectionView Width="450" />
+            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -341,11 +347,13 @@
                 <TextBox Grid.Row="3"
                          Grid.Column="0"
                          IsReadOnly="True"
-                         VerticalAlignment="Stretch">
+                         VerticalAlignment="Stretch"
+                         Text="{Binding Addresses.StringRepresentation, Mode=OneWay, ValidatesOnDataErrors=True}"
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="GotKeyboardFocus">
                             <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
-                                                   CommandParameter="{x:Null}" />
+                                                   CommandParameter="{Binding Addresses, Mode=OneTime}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                     <TextBox.Triggers>
@@ -448,11 +456,13 @@
                 <TextBox Grid.Row="9"
                          Grid.Column="0"
                          IsReadOnly="True"
-                         VerticalAlignment="Stretch">
+                         VerticalAlignment="Stretch"
+                         Text="{Binding DisabilityDocuments.StringRepresentation, ValidatesOnDataErrors=True, Mode=OneWay}"
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="GotKeyboardFocus">
                             <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"
-                                                   CommandParameter="{Binding Disabilities, Mode=OneTime}" />
+                                                   CommandParameter="{Binding DisabilityDocuments, Mode=OneTime}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                     <TextBox.Triggers>
