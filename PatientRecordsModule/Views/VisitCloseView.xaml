@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
              xmlns:editors="http://wpfcontrols.com/"
+             xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:VisitEditorViewModel}">
@@ -30,7 +31,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Дата/время окончания случая:"/>
-            <DatePicker Grid.Row="0" Grid.Column="1" SelectedDate="{Binding Date}" SelectedDateFormat="Long" FirstDayOfWeek="Monday" HorizontalAlignment="Left"/>
+            <extToolkit:DateTimePicker Grid.Row="0" Grid.Column="1" Margin="1" HorizontalAlignment="Left" Width="165" Value="{Binding Date}" Format="Custom" FormatString="dd MMMM yyyy HH:mm"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Диагноз по МКБ-10:"/>
             <editors:AutoCompleteTextBox Grid.Row="1"
@@ -42,7 +43,8 @@
                                      Provider="{Binding MKBSuggestionProvider}"
                                      SelectedItem="{Binding MKB, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Watermark="Введите любое слово из названия выдавшей организации"
-                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
+                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                                     HorizontalAlignment="Stretch">
             </editors:AutoCompleteTextBox>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Результат:"/>

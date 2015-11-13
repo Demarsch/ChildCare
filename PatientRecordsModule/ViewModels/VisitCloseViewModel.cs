@@ -38,7 +38,6 @@ namespace PatientRecordsModule.ViewModels
         private readonly CommandWrapper saveChangesCommandWrapper;
         private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
 
-        private Visit visit;
         private int visitId = 0;
         #endregion
 
@@ -131,19 +130,13 @@ namespace PatientRecordsModule.ViewModels
             }
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
-            string visitIdString = visit != null ? visit.Id.ToString() : "(new visit)";
+            string visitIdString = visitId < 1 ? visitId.ToString() : "(new visit)";
             logService.InfoFormat("Saving data while closing visit for visit with Id = {0}", visitIdString);
             BusyMediator.Activate("Сохранение изменений...");
             var saveSuccesfull = false;
             try
             {
-                visit.EndDateTime = visit.EndDateTime;
-                visit.MKB = mkb.DS;
-                visit.VisitOutcomeId = SelectedVisitOutcomeId;
-                visit.VisitResultId = SelectedVisitResultId;
-                visit.IsCompleted = true;
-
-                var result = await patientRecordsService.SaveVisitAsync(visit, token);
+                var result = await patientRecordsService.CloseVisitAsync(visitId, Date, MKB.DS, SelectedVisitOutcomeId, SelectedVisitResultId, token);
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -169,7 +162,7 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CancelCommand { get; private set; }
         private void Cancel()
         {
-            visit = null;
+            visitId = -1;
             HostWindow.Close();
         }
         #endregion
@@ -215,7 +208,6 @@ namespace PatientRecordsModule.ViewModels
                 await Task.WhenAll(visitResultsTask, visitOutcomesTask);
                 VisitOutcomes.AddRange(visitOutcomesTask.Result);
                 VisitResults.AddRange(visitResultsTask.Result);
-                this.visit = visit;
                 MKB = patientRecordsService.GetMKB(visit.MKB);
                 Date = visit.BeginDateTime;
                 SelectedVisitOutcomeId = visit.VisitOutcomeId.ToInt();

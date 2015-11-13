@@ -53,7 +53,9 @@ namespace PatientRecordsModule.Services
 
         IEnumerable GetMKBs(string filter);
 
-        Task<int> SaveVisitAsync(Visit visit, CancellationToken token);
+        Task<int> SaveVisitAsync(int visitId, int personId, DateTime beginDateTime, int recordContractId, int financingSourceId, int urgentlyId, int visitTemplateId, int executionPlaceId, int sentLPUId, string note, CancellationToken token);
+
+        Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token);
 
         void DeleteVisitAsync(int visitId, int removedByUserId, CancellationToken token);
 
