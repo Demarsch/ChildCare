@@ -48,7 +48,8 @@ namespace PatientInfoModule.ViewModels
                                     IdentityDocumentCollectionViewModel identityDocumentCollectionViewModel,
                                     InsuranceDocumentCollectionViewModel insuranceDocumentCollectionViewModel,
                                     AddressCollectionViewModel addressCollectionViewModel,
-                                    DisabilityDocumentCollectionViewModel disabilityDocumentCollectionViewModel)
+                                    DisabilityDocumentCollectionViewModel disabilityDocumentCollectionViewModel,
+                                    SocialStatusCollectionViewModel socialStatusCollectionViewModel)
         {
             if (patientService == null)
             {
@@ -78,6 +79,10 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("disabilityDocumentCollectionViewModel");
             }
+            if (socialStatusCollectionViewModel == null)
+            {
+                throw new ArgumentNullException("socialStatusCollectionViewModel");
+            }
             if (cacheService == null)
             {
                 throw new ArgumentNullException("cacheService");
@@ -92,6 +97,7 @@ namespace PatientInfoModule.ViewModels
             InsuranceDocuments = insuranceDocumentCollectionViewModel;
             Addresses = addressCollectionViewModel;
             DisabilityDocuments = disabilityDocumentCollectionViewModel;
+            SocialStatuses = socialStatusCollectionViewModel;
             this.patientService = patientService;
             this.log = log;
             this.eventAggregator = eventAggregator;
@@ -101,7 +107,8 @@ namespace PatientInfoModule.ViewModels
                                                            IdentityDocuments.ChangeTracker,
                                                            InsuranceDocuments.ChangeTracker,
                                                            Addresses.ChangeTracker,
-                                                           DisabilityDocuments.ChangeTracker);
+                                                           DisabilityDocuments.ChangeTracker,
+                                                           SocialStatuses.ChangeTracker);
             currentInstanceChangeTracker.RegisterComparer(() => LastName, StringComparer.CurrentCultureIgnoreCase);
             currentInstanceChangeTracker.RegisterComparer(() => FirstName, StringComparer.CurrentCultureIgnoreCase);
             currentInstanceChangeTracker.RegisterComparer(() => MiddleName, StringComparer.CurrentCultureIgnoreCase);
@@ -125,6 +132,8 @@ namespace PatientInfoModule.ViewModels
         public AddressCollectionViewModel Addresses { get; private set; }
 
         public DisabilityDocumentCollectionViewModel DisabilityDocuments { get; private set; }
+
+        public SocialStatusCollectionViewModel SocialStatuses { get; private set; }
 
         #region Data source
 
@@ -174,6 +183,7 @@ namespace PatientInfoModule.ViewModels
             cacheService.GetItems<IdentityDocumentType>();
             cacheService.GetItems<AddressType>();
             cacheService.GetItems<DisabilityType>();
+            cacheService.GetItems<SocialStatusType>();
         }
 
         private DataSource LoadDataSource()
@@ -259,7 +269,9 @@ namespace PatientInfoModule.ViewModels
 
         private ICollection<PersonAddress> currentAddresses;
 
-        private ICollection<PersonDisability> currentDisabilityDocuments; 
+        private ICollection<PersonDisability> currentDisabilityDocuments;
+
+        private ICollection<PersonSocialStatus> currentSocialStatuses; 
 
         private int patientIdBeingSelected;
 
@@ -555,7 +567,9 @@ namespace PatientInfoModule.ViewModels
                                    CurrentAddresses = currentAddresses ?? new PersonAddress[0],
                                    NewAddresses = Addresses.Model,
                                    CurrentDisabilities = currentDisabilityDocuments ?? new PersonDisability[0],
-                                   NewDisabilities = DisabilityDocuments.Model
+                                   NewDisabilities = DisabilityDocuments.Model,
+                                   CurrentSocialStatuses = currentSocialStatuses ?? new PersonSocialStatus[0],
+                                   NewSocialStatuses = SocialStatuses.Model
                                };
                 saveData.CurrentPerson.BirthDate = BirthDate.Value.Date;
                 saveData.CurrentPerson.Snils = Snils;
@@ -579,6 +593,7 @@ namespace PatientInfoModule.ViewModels
                 InsuranceDocuments.Model = currentInsuranceDocuments = result.InsuranceDocuments;
                 Addresses.Model = currentAddresses = result.Addresses;
                 DisabilityDocuments.Model = currentDisabilityDocuments = result.DisabilityDocuments;
+                SocialStatuses.Model = currentSocialStatuses = result.SocialStatuses;
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -694,7 +709,8 @@ namespace PatientInfoModule.ViewModels
                                                                 CurrentIdentityDocuments = x.PersonIdentityDocuments,
                                                                 CurrentInsuranceDocuments = x.InsuranceDocuments,
                                                                 CurrentAddresses = x.PersonAddresses,
-                                                                CurrentDisabilityDocuments = x.PersonDisabilities
+                                                                CurrentDisabilityDocuments = x.PersonDisabilities,
+                                                                CurrentSocialStatuses = x.PersonSocialStatuses
                                                             })
                                                .FirstOrDefaultAsync(token);
                 if (result == null)
@@ -712,6 +728,7 @@ namespace PatientInfoModule.ViewModels
                 InsuranceDocuments.Model = currentInsuranceDocuments = result.CurrentInsuranceDocuments;
                 Addresses.Model = currentAddresses = result.CurrentAddresses;
                 DisabilityDocuments.Model = currentDisabilityDocuments = result.CurrentDisabilityDocuments;
+                SocialStatuses.Model = currentSocialStatuses = result.CurrentSocialStatuses;
 
                 LastName = currentName == null ? PersonName.UnknownLastName : currentName.LastName;
                 FirstName = currentName == null ? PersonName.UnknownFirstName : currentName.FirstName;
@@ -769,6 +786,7 @@ namespace PatientInfoModule.ViewModels
             InsuranceDocuments.Model = currentInsuranceDocuments = null;
             Addresses.Model = currentAddresses = null;
             DisabilityDocuments.Model = currentDisabilityDocuments = null;
+            SocialStatuses.Model = currentSocialStatuses = null;
             LastName = string.Empty;
             FirstName = string.Empty;
             MiddleName = string.Empty;
@@ -811,7 +829,8 @@ namespace PatientInfoModule.ViewModels
                    & IdentityDocuments.Validate()
                    & InsuranceDocuments.Validate()
                    & Addresses.Validate()
-                   & DisabilityDocuments.Validate();
+                   & DisabilityDocuments.Validate()
+                   & SocialStatuses.Validate();
         }
 
         public void CancelValidation()

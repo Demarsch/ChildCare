@@ -29,6 +29,10 @@
             <DataTemplate DataType="{x:Type viewModels:DisabilityDocumentCollectionViewModel}">
                 <views:DisabilityDocumentCollectionView Width="450" />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:SocialStatusCollectionViewModel}">
+                <views:SocialStatusCollectionView Width="450" />
+            </DataTemplate>
+            
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -421,7 +425,9 @@
                 <TextBox Grid.Row="7"
                          Grid.Column="0"
                          IsReadOnly="True"
-                         VerticalAlignment="Stretch">
+                         VerticalAlignment="Stretch"
+                         Text="{Binding SocialStatuses.StringRepresentation, Mode=OneWay, ValidatesOnDataErrors=True}"
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="GotKeyboardFocus">
                             <i:InvokeCommandAction Command="{Binding ActivateChildContentCommand, Mode=OneTime}"

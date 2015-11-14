@@ -35,7 +35,7 @@ namespace PatientInfoModule.ViewModels
 
         private ISuggestionProvider givenOrgSuggestionProvider;
 
-        [Dependency(SuggestionProviderNames.IdentityDocumentGiveOrg)]
+        [Dependency(SuggestionProviderNames.IdentityDocumentGiveOrganization)]
         public ISuggestionProvider GivenOrgSuggestionProvider
         {
             get { return givenOrgSuggestionProvider; }

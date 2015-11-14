@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
+    <Compile Include="Attributes\NonCachableAttribute.cs" />
     <Compile Include="Expressions\CompositeSearchExpressionProvider.cs" />
     <Compile Include="Expressions\DateBasedSearchExpressionProvider.cs" />
     <Compile Include="Expressions\ParameterReplacer.cs" />

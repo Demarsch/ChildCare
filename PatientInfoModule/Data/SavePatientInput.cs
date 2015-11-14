@@ -49,5 +49,9 @@ namespace PatientInfoModule.Data
         public ICollection<PersonDisability> CurrentDisabilities { get; set; }
 
         public ICollection<PersonDisability> NewDisabilities { get; set; }
+
+        public ICollection<PersonSocialStatus> CurrentSocialStatuses { get; set; }
+
+        public ICollection<PersonSocialStatus> NewSocialStatuses { get; set; }
     }
 }

@@ -124,6 +124,7 @@
     <Compile Include="Misc\SuggestionProviders\IAddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\DisabilityDocumentGivenOrgSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\IdentityDocumentGivenOrgSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\OrganizationSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\InsuranceCompanySuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\PersonSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\RecordTypesSuggestionProvider.cs" />
@@ -151,8 +152,10 @@
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\Info\AddressCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\DisabilityDocumentCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Info\SocialStatusCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\DisabilityDocumentViewModel.cs" />
+    <Compile Include="ViewModels\Info\SocialStatusViewModel.cs" />
     <Compile Include="ViewModels\Info\InfoHeaderViewModel.cs" />
     <Compile Include="ViewModels\Info\InfoContentViewModel.cs" />
     <Compile Include="ViewModels\Contracts\PatientContractsViewModel.cs" />
@@ -187,11 +190,17 @@
     <Compile Include="Views\Info\DisabilityDocumentCollectionView.xaml.cs">
       <DependentUpon>DisabilityDocumentCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Info\SocialStatusCollectionView.xaml.cs">
+      <DependentUpon>SocialStatusCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Info\InsuranceDocumentCollectionView.xaml.cs">
       <DependentUpon>InsuranceDocumentCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Info\IdentityDocumentCollectionView.xaml.cs">
       <DependentUpon>IdentityDocumentCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Info\SocialStatusView.xaml.cs">
+      <DependentUpon>SocialStatusView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Info\InsuranceDocumentView.xaml.cs">
       <DependentUpon>InsuranceDocumentView.xaml</DependentUpon>
@@ -275,6 +284,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Info\SocialStatusCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Info\InsuranceDocumentCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -282,6 +295,10 @@
     <Page Include="Views\Info\IdentityDocumentCollectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Info\SocialStatusView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Info\InsuranceDocumentView.xaml">
       <Generator>MSBuild:Compile</Generator>

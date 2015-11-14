@@ -2,13 +2,15 @@
 {
     internal class SuggestionProviderNames
     {
+        public const string Organization = "Org";
+
         public const string InsuranceCompany = "InsuranceCompany";
 
-        public const string IdentityDocumentGiveOrg = "IdentityDocumentGiveOrg";
+        public const string IdentityDocumentGiveOrganization = "IdentityDocumentGiveOrganization";
 
         public const string Person = "Person";
         
-        public const string DisabilityDocumentGivenOrg = "DisabilityDocumentGivenOrg";
+        public const string DisabilityDocumentGivenOrganization = "DisabilityDocumentGivenOrganization";
 
         public const string OkatoRegion = "OkatoRegion";
     }

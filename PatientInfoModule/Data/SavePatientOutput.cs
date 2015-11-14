@@ -24,5 +24,7 @@ namespace PatientInfoModule.Data
         public ICollection<PersonAddress> Addresses { get; set; }
         
         public ICollection<PersonDisability> DisabilityDocuments { get; set; }
+        
+        public ICollection<PersonSocialStatus> SocialStatuses { get; set; }
     }
 }

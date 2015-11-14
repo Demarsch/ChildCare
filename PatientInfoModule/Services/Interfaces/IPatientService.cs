@@ -41,6 +41,10 @@ namespace PatientInfoModule.Services
 
         IEnumerable<InsuranceCompany> GetInsuranceCompanies(string filter);
 
+        IEnumerable<Org> GetOrganizations(string filter);
+
         Person GetPersonById(int id);
+
+        Org GetOrganization(int orgId);
     }
 }

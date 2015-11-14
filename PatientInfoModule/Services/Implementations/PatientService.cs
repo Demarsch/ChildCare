@@ -87,6 +87,21 @@ namespace PatientInfoModule.Services
                                                                                        || x.AddressF.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
         }
 
+        public IEnumerable<Org> GetOrganizations(string filter)
+        {
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new Org[0];
+            }
+            var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            using (var contex = contextProvider.CreateNewContext())
+            {
+                return contex.Set<Org>().Where(x => words.All(y => x.Name.Contains(y) || x.Details.Contains(y)))
+                                        .ToArray();
+            }
+        }
+
         public IEnumerable<Country> GetCountries()
         {
             return cacheService.GetItems<Country>();
@@ -117,6 +132,7 @@ namespace PatientInfoModule.Services
             }
             using (var context = contextProvider.CreateNewContext())
             {
+                context.Configuration.ProxyCreationEnabled = false;
                 var result = new SavePatientOutput
                              {
                                  Person = data.CurrentPerson,
@@ -131,6 +147,7 @@ namespace PatientInfoModule.Services
                 PrepareInsuranceDocuments(data, context, result);
                 PrepareAddresses(data, context, result);
                 PrepareDisabilityDocuments(data, context, result);
+                PrepareSocialStatuses(data, context, result);
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
@@ -138,6 +155,41 @@ namespace PatientInfoModule.Services
                 await context.SaveChangesAsync(token);
                 return result;
             }
+        }
+
+        private void PrepareSocialStatuses(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            var old = data.CurrentSocialStatuses.ToDictionary(x => x.Id);
+            var @new = data.NewSocialStatuses.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+            var added = data.NewSocialStatuses.Where(x => x.Id == SpecialValues.NewId).ToArray();
+            var removed = old.Where(x => !@new.ContainsKey(x.Key))
+                             .Select(removedDocument => removedDocument.Value)
+                             .ToArray();
+            var existed = @new.Where(x => old.ContainsKey(x.Key))
+                              .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                              .ToArray();
+            foreach (var document in added)
+            {
+                document.Person = data.CurrentPerson;
+                context.Entry(document).State = EntityState.Added;
+                if (document.OrgId == SpecialValues.NewId && document.Org != null)
+                {
+                    context.Entry(document.Org).State = EntityState.Added;
+                }
+            }
+            foreach (var document in removed)
+            {
+                context.Entry(document).State = EntityState.Deleted;
+            }
+            foreach (var document in existed.Where(x => x.IsChanged))
+            {
+                context.Entry(document.New).State = EntityState.Modified;
+                if (document.New.OrgId == SpecialValues.NewId && document.New.Org != null)
+                {
+                    context.Entry(document.New.Org).State = EntityState.Added;
+                }
+            }
+            result.SocialStatuses = added.Concat(existed.Select(x => x.New)).ToArray();
         }
 
         private void PrepareDisabilityDocuments(SavePatientInput data, DbContext context, SavePatientOutput result)
@@ -422,6 +474,15 @@ namespace PatientInfoModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return cacheService.GetItems<Person>().FirstOrDefault(x => x.Id == id);
+        }
+
+        public Org GetOrganization(int orgId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+                return context.Set<Org>().FirstOrDefault(x => x.Id == orgId);
+            }
         }
 
         public IDisposableQueryable<PersonStaff> GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end)

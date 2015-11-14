@@ -81,6 +81,10 @@ namespace Core.Data.Services
                 object result;
                 if (!loadedTypes.TryGetValue(type, out result))
                 {
+                    if (type.GetCustomAttribute<NonCachableAttribute>() != null)
+                    {
+                        throw new InvalidOperationException(string.Format("Type {0} is marked as non-cachable", type.Name));
+                    }
                     result = dataContext.Set<TData>().ToArray();
                     loadedTypes.Add(type, result);
                 }
