@@ -546,9 +546,27 @@ namespace PatientInfoModule.ViewModels
                 //If validation was successfull then BirthDate.Value can't be null
                 var saveData = new SavePatientInput
                                {
-                                   CurrentName = currentName,
-                                   NewName = new PersonName(),
-                                   CurrentPerson = currentPerson ?? new Person(),
+                                   CurrentName = currentName == null ? null : new PersonName
+                                                                              {
+                                                                                  LastName = currentName.LastName,
+                                                                                  FirstName = currentName.FirstName,
+                                                                                  MiddleName = currentName.MiddleName,
+                                                                                  BeginDateTime = currentName.BeginDateTime,
+                                                                                  EndDateTime = currentName.EndDateTime,
+                                                                                  Id = currentName.Id,
+                                                                                  PersonId = currentName.PersonId
+                                                                              },
+                                   NewName = new PersonName
+                                             {
+                                                 LastName = LastName,
+                                                 FirstName = FirstName,
+                                                 MiddleName = MiddleName
+                                             },
+                                   CurrentPerson = new Person
+                                                   {
+                                                       AmbNumberString = currentPerson == null ? string.Empty : currentPerson.AmbNumberString,
+                                                       Id = currentPerson == null ? SpecialValues.NewId : currentPerson.Id
+                                                   },
                                    IsIncorrectName = IsIncorrectName,
                                    IsNewName = IsNewName || currentName == null,
                                    NewNameStartDate = (NewNameStartDate ?? SpecialValues.MinDate).Date,
@@ -577,10 +595,6 @@ namespace PatientInfoModule.ViewModels
                 saveData.CurrentPerson.IsMale = IsMale;
                 saveData.CurrentPerson.Phones = Phones;
                 saveData.CurrentPerson.Email = Email;
-
-                saveData.NewName.LastName = LastName;
-                saveData.NewName.FirstName = FirstName;
-                saveData.NewName.MiddleName = MiddleName;
 
                 var result = await patientService.SavePatientAsync(saveData, token);
                 currentPerson = result.Person;
@@ -776,7 +790,7 @@ namespace PatientInfoModule.ViewModels
         private void ClearData()
         {
             ChangeTracker.IsEnabled = false;
-            currentPerson = new Person { Id = SpecialValues.NewId, AmbNumberString = string.Empty };
+            currentPerson = null;
             currentEducation = null;
             currentHealthGroup = null;
             currentMaritalStatus = null;
