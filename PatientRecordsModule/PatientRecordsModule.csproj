@@ -135,6 +135,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\PatientRecordsService.cs" />
     <Compile Include="Services\Interfaces\IPatientRecordsService.cs" />
+    <Compile Include="ViewModels\RecordTypesProtocolViewModels\DefaultProtocolViewModel.cs" />
     <Compile Include="ViewModels\VisitCloseViewModel.cs" />
     <Compile Include="ViewModels\VisitEditorViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordEditorViewModel.cs" />
@@ -189,6 +190,10 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RecordTypesProtocolViews\DefaultProtocolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\VisitCloseView.xaml">
       <Generator>MSBuild:Compile</Generator>

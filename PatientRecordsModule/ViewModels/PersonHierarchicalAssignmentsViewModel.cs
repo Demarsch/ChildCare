@@ -126,7 +126,7 @@ namespace PatientRecordsModule.ViewModels
             try
             {
                 childAssignmentsQuery = patientRecordsService.GetAssignmentsChildAssignmentsQuery(assignment.Id);
-                var loadChildAssignmentsTask = childAssignmentsQuery.Select(x => new AssignmentDTO()
+                var childAssignments = await childAssignmentsQuery.Select(x => new AssignmentDTO()
                 {
                     Id = x.Id,
                     ActualDateTime = x.AssignDateTime,
@@ -134,8 +134,7 @@ namespace PatientRecordsModule.ViewModels
                     RecordTypeName = x.RecordType.Name,
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
                 }).ToListAsync(token);
-                await Task.WhenAll(loadChildAssignmentsTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
-                NestedItems.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
+                NestedItems.AddRange(childAssignments.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
