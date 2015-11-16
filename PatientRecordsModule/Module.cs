@@ -21,6 +21,8 @@ using PatientRecordsModule.Services;
 using Core.Wpf.Events;
 using System.Windows;
 using WpfControls.Editors;
+using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using PatientRecordsModule.Views.RecordTypesProtocolViews;
 
 namespace PatientRecordsModule
 {
@@ -103,6 +105,8 @@ namespace PatientRecordsModule
             container.RegisterType<PersonHierarchicalRecordsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitEditorViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitCloseViewModel>(new ContainerControlledLifetimeManager());
+            //RecordTypes Protocols
+            container.RegisterType<DefaultProtocolViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
@@ -110,8 +114,12 @@ namespace PatientRecordsModule
             container.RegisterType<object, PersonRecordsView>(viewNameResolver.Resolve<PersonRecordsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordListView>(viewNameResolver.Resolve<PersonRecordListViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordEditorView>(viewNameResolver.Resolve<PersonRecordEditorViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, VisitEditorViewModel>(viewNameResolver.Resolve<VisitEditorViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, VisitCloseViewModel>(viewNameResolver.Resolve<VisitCloseViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, VisitEditorView>(viewNameResolver.Resolve<VisitEditorViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, VisitCloseView>(viewNameResolver.Resolve<VisitCloseViewModel>(), new ContainerControlledLifetimeManager());
+            //RecordTypes Protocols
+            container.RegisterType<object, DefaultProtocolView>(viewNameResolver.Resolve<DefaultProtocolViewModel>(), new ContainerControlledLifetimeManager());
+
+
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonRecordsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecordsView>());
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientRecordsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });

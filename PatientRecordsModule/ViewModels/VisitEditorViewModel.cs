@@ -37,6 +37,8 @@ namespace PatientRecordsModule.ViewModels
         private readonly CommandWrapper saveChangesCommandWrapper;
         private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
 
+        private bool needLoadTemplateData = true;
+
         //private Visit visit;
         private int visitId = 0;
         #endregion
@@ -68,7 +70,7 @@ namespace PatientRecordsModule.ViewModels
             FailureMediator = new FailureMediator();
             reloadVisitTemplateDataFillingCommandWrapper = new CommandWrapper
             {
-                Command = new DelegateCommand(() => SetFieldByVisitTemplateAsync(SelectedVisitTemplateId.ToInt())),
+                Command = new DelegateCommand(() => LoadFieldsByVisitTemplateAsync(SelectedVisitTemplateId.ToInt())),
                 CommandName = "Повторить",
             };
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => EnsureDataSourceLoaded()) };
@@ -96,7 +98,8 @@ namespace PatientRecordsModule.ViewModels
             {
                 if (SetTrackedProperty(ref selectedVisitTemplateId, value))
                 {
-                    SetFieldByVisitTemplateAsync(SelectedVisitTemplateId.ToInt());
+                    if (needLoadTemplateData)
+                        LoadFieldsByVisitTemplateAsync(SelectedVisitTemplateId.ToInt());
                 }
                 OnPropertyChanged(() => ContractEnabled);
                 OnPropertyChanged(() => FinancingSourceEnabled);
@@ -237,7 +240,7 @@ namespace PatientRecordsModule.ViewModels
             var saveSuccesfull = false;
             try
             {
-                var result = await patientRecordsService.SaveVisitAsync(visitId, personId, Date, SelectedContractId.Value, SelectedFinancingSourceId.Value, SelectedUrgentlyId.Value, SelectedVisitTemplateId.Value, SelectedExecutionPlaceId.Value, 
+                var result = await patientRecordsService.SaveVisitAsync(visitId, personId, Date, SelectedContractId.Value, SelectedFinancingSourceId.Value, SelectedUrgentlyId.Value, SelectedVisitTemplateId.Value, SelectedExecutionPlaceId.Value,
                     SelectedLPUId.Value, Note, token);
                 visitId = result;
                 saveSuccesfull = true;
@@ -279,14 +282,19 @@ namespace PatientRecordsModule.ViewModels
 
         public void IntializeCreation(int personId, int? visitTemplateId, int? visitId, DateTime date, string title)
         {
-            ChangeTracker.IsEnabled = true;
             ContractSetByVisitTemplate = false;
             FinancingSourceSetByVisitTemplate = false;
             UrgentlySetByVisitTemplate = false;
             ExecutionPlaceSetByVisitTemplate = false;
             this.PersonId = personId;
+            this.SelectedContractId = null;
+            this.SelectedFinancingSourceId = null;
+            this.SelectedUrgentlyId= null;
+            this.SelectedExecutionPlaceId = null;
+            this.SelectedLPUId = null;
             this.SelectedVisitTemplateId = visitTemplateId;
             this.Date = date;
+            this.Note = string.Empty;
             this.Title = title;
             BusyMediator.Deactivate();
             FailureMediator.Deactivate();
@@ -332,7 +340,8 @@ namespace PatientRecordsModule.ViewModels
                 visitQuery = patientRecordsService.GetVisit(visitId);
                 var visit = await visitQuery.FirstOrDefaultAsync(token);
                 Date = visit.BeginDateTime;
-                SelectedVisitTemplateId = visit.VisitTemplateId;
+                //SelectedVisitTemplateId = visit.VisitTemplateId;
+                await LoadFieldsByVisitTemplateAsync(visit.VisitTemplateId);
                 SelectedLPUId = visit.SentLPUId;
                 Note = visit.Note;
                 ChangeTracker.IsEnabled = true;
@@ -472,14 +481,15 @@ namespace PatientRecordsModule.ViewModels
             return await dataSourcesLoadingTaskSource.Task;
         }
 
-        public async void SetFieldByVisitTemplateAsync(int visitTemplateId)
+        public async Task LoadFieldsByVisitTemplateAsync(int visitTemplateId)
         {
+            needLoadTemplateData = false;
             var dataSourcesLoaded = await EnsureDataSourceLoaded();
             ContractSetByVisitTemplate = false;
             FinancingSourceSetByVisitTemplate = false;
             UrgentlySetByVisitTemplate = false;
             ExecutionPlaceSetByVisitTemplate = false;
-            ChangeTracker.IsEnabled = false;
+            //ChangeTracker.IsEnabled = false;
             if (!dataSourcesLoaded)
             {
                 return;
@@ -508,6 +518,7 @@ namespace PatientRecordsModule.ViewModels
                     x.UrgentlyId,
                     x.ExecutionPlaceId
                 }).FirstOrDefaultAsync(token);
+                SelectedVisitTemplateId = visitTemplateId;
                 ContractSetByVisitTemplate = visitTemplate.ContractId.HasValue;
                 SelectedContractId = visitTemplate.ContractId;
                 FinancingSourceSetByVisitTemplate = visitTemplate.FinancingSourceId.HasValue;
@@ -516,7 +527,7 @@ namespace PatientRecordsModule.ViewModels
                 SelectedUrgentlyId = visitTemplate.UrgentlyId;
                 ExecutionPlaceSetByVisitTemplate = visitTemplate.ExecutionPlaceId.HasValue;
                 SelectedExecutionPlaceId = visitTemplate.ExecutionPlaceId;
-                ChangeTracker.IsEnabled = true;
+                //ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -540,6 +551,7 @@ namespace PatientRecordsModule.ViewModels
                 {
                     visitTemplateQuery.Dispose();
                 }
+                needLoadTemplateData = true;
             }
         }
 

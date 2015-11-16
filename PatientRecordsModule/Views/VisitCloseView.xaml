@@ -39,10 +39,9 @@
                                      Margin="1"
                                      Background="White"
                                      Width="300"
-                                     MinHeight="40"
                                      Provider="{Binding MKBSuggestionProvider}"
                                      SelectedItem="{Binding MKB, Mode=TwoWay, ValidatesOnDataErrors=True}"
-                                     Watermark="Введите любое слово из названия выдавшей организации"
+                                     Watermark="Введите код диагноза или любое слово из его названия"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
                                      HorizontalAlignment="Stretch">
             </editors:AutoCompleteTextBox>
@@ -60,7 +59,7 @@
                       SelectedValuePath="Id" DisplayMemberPath="Name"/>
 
             <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Сохранить" Margin="3" Command="{Binding CreateVisitCommand}"/>
+                <Button Content="Сохранить" Margin="3" Command="{Binding CloseVisitCommand}"/>
                 <Button Content="Отмена" Margin="3" Command="{Binding CancelCommand}"/>
             </StackPanel>
         </Grid>

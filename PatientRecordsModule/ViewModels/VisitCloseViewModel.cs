@@ -27,7 +27,7 @@ using PatientRecordsModule.Misc;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class VisitCloseViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo
+    public class VisitCloseViewModel : TrackableBindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo, IChangeTrackerMediator, IDisposable
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -36,7 +36,6 @@ namespace PatientRecordsModule.ViewModels
         private CancellationTokenSource currentOperationToken;
         private readonly CommandWrapper reloadVisitDataCommandWrapper;
         private readonly CommandWrapper saveChangesCommandWrapper;
-        private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
 
         private int visitId = 0;
         #endregion
@@ -54,14 +53,16 @@ namespace PatientRecordsModule.ViewModels
             }
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
+            ChangeTracker = new ChangeTrackerEx<VisitCloseViewModel>(this);
+            ChangeTracker.PropertyChanged += OnChangesTracked;
             VisitResults = new ObservableCollectionEx<CommonIdName>();
             VisitOutcomes = new ObservableCollectionEx<CommonIdName>();
-            CreateVisitCommand = new DelegateCommand(SaveChangesAsync);
+            CloseVisitCommand = new DelegateCommand(CloseVisitAsync, CanSaveChanges);
             CancelCommand = new DelegateCommand(Cancel);
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             reloadVisitDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitDataAsync(visitId)) };
-            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveChangesAsync()) };
+            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => CloseVisitAsync()) };
         }
         #endregion
 
@@ -80,7 +81,7 @@ namespace PatientRecordsModule.ViewModels
         public DateTime Date
         {
             get { return date; }
-            set { SetProperty(ref date, value); }
+            set { SetTrackedProperty(ref date, value); }
         }
 
         public ObservableCollectionEx<CommonIdName> VisitResults { get; set; }
@@ -89,7 +90,7 @@ namespace PatientRecordsModule.ViewModels
         public int SelectedVisitResultId
         {
             get { return selectedVisitResultId; }
-            set { SetProperty(ref selectedVisitResultId, value); }
+            set { SetTrackedProperty(ref selectedVisitResultId, value); }
         }
 
         public ObservableCollectionEx<CommonIdName> VisitOutcomes { get; set; }
@@ -98,25 +99,26 @@ namespace PatientRecordsModule.ViewModels
         public int SelectedVisitOutcomeId
         {
             get { return selectedVisitOutcomeId; }
-            set { SetProperty(ref selectedVisitOutcomeId, value); }
+            set { SetTrackedProperty(ref selectedVisitOutcomeId, value); }
         }
 
         private MKB mkb;
         public MKB MKB
         {
             get { return mkb; }
-            set { SetProperty(ref mkb, value); }
+            set { SetTrackedProperty(ref mkb, value); }
         }
 
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
 
+        public IChangeTracker ChangeTracker { get; private set; }
         #endregion
 
         #region Commands
-        public ICommand CreateVisitCommand { get; private set; }
-        private async void SaveChangesAsync()
+        public ICommand CloseVisitCommand { get; private set; }
+        private async void CloseVisitAsync()
         {
             FailureMediator.Deactivate();
             if (!IsValid)
@@ -153,6 +155,8 @@ namespace PatientRecordsModule.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
+                    ChangeTracker.AcceptChanges();
+                    ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
                     HostWindow.Close();
                 }
@@ -162,6 +166,8 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CancelCommand { get; private set; }
         private void Cancel()
         {
+            FailureMediator.Deactivate();
+            ChangeTracker.RestoreChanges();
             visitId = -1;
             HostWindow.Close();
         }
@@ -179,6 +185,24 @@ namespace PatientRecordsModule.ViewModels
             LoadVisitDataAsync(this.visitId);
         }
 
+        void IDisposable.Dispose()
+        {
+            ChangeTracker.Dispose();
+        }
+
+        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                (CloseVisitCommand as DelegateCommand).RaiseCanExecuteChanged();
+            }
+        }
+        private bool CanSaveChanges()
+        {
+            return ChangeTracker.HasChanges;
+        }
+
+
         private async void LoadVisitDataAsync(int visitId)
         {
             if (visitId < 1)
@@ -189,6 +213,7 @@ namespace PatientRecordsModule.ViewModels
                 currentOperationToken.Dispose();
             }
             var loadingIsCompleted = false;
+            ChangeTracker.IsEnabled = false;
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
             BusyMediator.Activate("Заполнение данных закрытия случая...");
@@ -212,6 +237,7 @@ namespace PatientRecordsModule.ViewModels
                 Date = visit.BeginDateTime;
                 SelectedVisitOutcomeId = visit.VisitOutcomeId.ToInt();
                 SelectedVisitResultId = visit.VisitResultId.ToInt();
+                ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)

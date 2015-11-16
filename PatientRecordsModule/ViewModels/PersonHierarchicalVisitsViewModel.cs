@@ -149,7 +149,7 @@ namespace PatientRecordsModule.ViewModels
                     FinSourceName = "ист. фин.",
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
                 }).ToListAsync(token);
-                await Task.WhenAll(loadChildAssignmentsTask, loadChildRecordsTask, Task.Delay(AppConfiguration.PendingOperationDelay, token));
+                await Task.WhenAll(loadChildAssignmentsTask, loadChildRecordsTask);
                 NestedItems.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
                 NestedItems.AddRange(loadChildRecordsTask.Result.Select(x => new PersonHierarchicalRecordsViewModel(x, patientRecordsService, eventAggregator, logService)));
                 loadingIsCompleted = true;
