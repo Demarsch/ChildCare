@@ -12,8 +12,6 @@
 
         public const string CoreModule = "CoreModule";
 
-        public const string ReportingModule = "ReportingModule";
-
         public const string AdminModule = "AdminModule";
     }
 }

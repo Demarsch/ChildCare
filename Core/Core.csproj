@@ -136,6 +136,12 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Edit48x48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\EditWord48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ConfigurationSettings256x256.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
