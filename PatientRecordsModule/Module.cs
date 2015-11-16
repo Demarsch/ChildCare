@@ -20,6 +20,7 @@ using PatientRecordsModule.Views;
 using PatientRecordsModule.Services;
 using Core.Wpf.Events;
 using System.Windows;
+using WpfControls.Editors;
 
 namespace PatientRecordsModule
 {
@@ -101,6 +102,7 @@ namespace PatientRecordsModule
             container.RegisterType<PersonHierarchicalVisitsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonHierarchicalRecordsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitEditorViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<VisitCloseViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
@@ -109,6 +111,7 @@ namespace PatientRecordsModule
             container.RegisterType<object, PersonRecordListView>(viewNameResolver.Resolve<PersonRecordListViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordEditorView>(viewNameResolver.Resolve<PersonRecordEditorViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, VisitEditorViewModel>(viewNameResolver.Resolve<VisitEditorViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, VisitCloseViewModel>(viewNameResolver.Resolve<VisitCloseViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonRecordsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecordsView>());
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientRecordsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
@@ -117,6 +120,8 @@ namespace PatientRecordsModule
         private void RegisterServices()
         {
             container.RegisterType<IPatientRecordsService, PatientRecordsService>(new ContainerControlledLifetimeManager());
+
+            container.RegisterType<ISuggestionProvider, MKBSuggestionProvider>(SuggestionProviderNames.MKB, new ContainerControlledLifetimeManager());
         }
         #endregion
 

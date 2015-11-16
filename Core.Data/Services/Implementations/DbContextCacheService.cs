@@ -23,6 +23,8 @@ namespace Core.Data.Services
 
         private readonly Dictionary<Type, object> itemsByName;
 
+        private readonly Dictionary<Type, object> loadedTypes;
+
         private readonly object locker = new object();
 
         public DbContextCacheService(IDbContextProvider contextProvider)
@@ -34,6 +36,7 @@ namespace Core.Data.Services
             dataContext = contextProvider.SharedContext;
             itemsById = new Dictionary<Type, object>();
             itemsByName = new Dictionary<Type, object>();
+            loadedTypes = new Dictionary<Type, object>();
         }
 
         public TData GetItemById<TData>(int id) where TData : class
@@ -44,7 +47,7 @@ namespace Core.Data.Services
             {
                 if (!itemsById.TryGetValue(type, out dictionaryObj))
                 {
-                    dictionaryObj = dataContext.Set<TData>().ToDictionary(GetIdSelectorFunction<TData>());
+                    dictionaryObj = GetItems<TData>().ToDictionary(GetIdSelectorFunction<TData>());
                     itemsById.Add(type, dictionaryObj);
                 }
             }
@@ -61,7 +64,7 @@ namespace Core.Data.Services
             {
                 if (!itemsByName.TryGetValue(type, out dictionaryObj))
                 {
-                    dictionaryObj = dataContext.Set<TData>().ToDictionary(GetNameSelectorFunction<TData>());
+                    dictionaryObj = GetItems<TData>().ToDictionary(GetNameSelectorFunction<TData>());
                     itemsByName.Add(type, dictionaryObj);
                 }
             }
@@ -72,7 +75,21 @@ namespace Core.Data.Services
 
         public IEnumerable<TData> GetItems<TData>() where TData : class
         {
-            return dataContext.Set<TData>().ToArray();
+            lock (loadedTypes)
+            {
+                var type = typeof (TData);
+                object result;
+                if (!loadedTypes.TryGetValue(type, out result))
+                {
+                    if (type.GetCustomAttribute<NonCachableAttribute>() != null)
+                    {
+                        throw new InvalidOperationException(string.Format("Type {0} is marked as non-cachable", type.Name));
+                    }
+                    result = dataContext.Set<TData>().ToArray();
+                    loadedTypes.Add(type, result);
+                }
+                return result as TData[];
+            }
         }
 
         #region Internals

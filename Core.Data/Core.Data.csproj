@@ -110,12 +110,21 @@
     <Compile Include="Misc\IDisposableQueryable.cs" />
     <Compile Include="Misc\OptionValues.cs" />
     <Compile Include="Misc\SpecialValues.cs" />
+    <Compile Include="MKB.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PartialClasses\InsuranceDocument.cs" />
+    <Compile Include="PartialClasses\MKB.cs" />
+    <Compile Include="PartialClasses\Okato.cs" />
+    <Compile Include="PartialClasses\Org.cs" />
+    <Compile Include="PartialClasses\PersonAddress.cs" />
+    <Compile Include="PartialClasses\PersonDisability.cs" />
     <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
     <Compile Include="PartialClasses\PersonName.cs" />
+    <Compile Include="PartialClasses\PersonSocialStatus.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />
     <Compile Include="RecordContract.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>

@@ -24,7 +24,7 @@ using Core.Misc;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class VisitEditorViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo
+    public class VisitEditorViewModel : TrackableBindableBase, INotification, IPopupWindowActionAware, IChangeTrackerMediator, IDataErrorInfo, IDisposable
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -37,7 +37,7 @@ namespace PatientRecordsModule.ViewModels
         private readonly CommandWrapper saveChangesCommandWrapper;
         private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
 
-        private Visit visit;
+        //private Visit visit;
         private int visitId = 0;
         #endregion
 
@@ -54,7 +54,9 @@ namespace PatientRecordsModule.ViewModels
             }
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
-            CreateVisitCommand = new DelegateCommand(SaveChangesAsync);
+            ChangeTracker = new ChangeTrackerEx<VisitEditorViewModel>(this);
+            ChangeTracker.PropertyChanged += OnChangesTracked;
+            CreateVisitCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
             CancelCommand = new DelegateCommand(Cancel);
             VisitTemplates = new ObservableCollectionEx<CommonIdName>();
             Contracts = new ObservableCollectionEx<CommonIdName>();
@@ -81,7 +83,7 @@ namespace PatientRecordsModule.ViewModels
         public DateTime Date
         {
             get { return date; }
-            set { SetProperty(ref date, value); }
+            set { SetTrackedProperty(ref date, value); }
         }
 
         public ObservableCollectionEx<CommonIdName> VisitTemplates { get; set; }
@@ -92,7 +94,7 @@ namespace PatientRecordsModule.ViewModels
             get { return selectedVisitTemplateId; }
             set
             {
-                if (SetProperty(ref selectedVisitTemplateId, value))
+                if (SetTrackedProperty(ref selectedVisitTemplateId, value))
                 {
                     SetFieldByVisitTemplateAsync(SelectedVisitTemplateId.ToInt());
                 }
@@ -111,7 +113,7 @@ namespace PatientRecordsModule.ViewModels
             get { return selectedContractId; }
             set
             {
-                SetProperty(ref selectedContractId, value);
+                SetTrackedProperty(ref selectedContractId, value);
                 OnPropertyChanged(() => ContractEnabled);
             }
         }
@@ -131,7 +133,7 @@ namespace PatientRecordsModule.ViewModels
             get { return selectedFinancingSourceId; }
             set
             {
-                SetProperty(ref selectedFinancingSourceId, value);
+                SetTrackedProperty(ref selectedFinancingSourceId, value);
                 OnPropertyChanged(() => FinancingSourceEnabled);
             }
         }
@@ -151,7 +153,7 @@ namespace PatientRecordsModule.ViewModels
             get { return selectedUrgentlyId; }
             set
             {
-                SetProperty(ref selectedUrgentlyId, value);
+                SetTrackedProperty(ref selectedUrgentlyId, value);
                 OnPropertyChanged(() => UrgentlyEnabled);
             }
         }
@@ -171,7 +173,7 @@ namespace PatientRecordsModule.ViewModels
             get { return selectedExecutionPlaceId; }
             set
             {
-                SetProperty(ref selectedExecutionPlaceId, value);
+                SetTrackedProperty(ref selectedExecutionPlaceId, value);
                 OnPropertyChanged(() => ExecutionPlaceEnabled);
             }
         }
@@ -189,14 +191,14 @@ namespace PatientRecordsModule.ViewModels
         public int? SelectedLPUId
         {
             get { return selectedLPUId; }
-            set { SetProperty(ref selectedLPUId, value); }
+            set { SetTrackedProperty(ref selectedLPUId, value); }
         }
 
         private string note;
         public string Note
         {
             get { return note; }
-            set { SetProperty(ref note, value); }
+            set { SetTrackedProperty(ref note, value); }
         }
 
         private int personId;
@@ -210,6 +212,7 @@ namespace PatientRecordsModule.ViewModels
 
         public FailureMediator FailureMediator { get; private set; }
 
+        public IChangeTracker ChangeTracker { get; private set; }
         #endregion
 
         #region Commands
@@ -228,30 +231,15 @@ namespace PatientRecordsModule.ViewModels
             }
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
-            string visitIdString = visit != null ? visit.Id.ToString() : "(new visit)";
+            string visitIdString = visitId > 0 ? visitId.ToString() : "(new visit)";
             logService.InfoFormat("Saving data for visit with Id = {0} for person with Id = {1}", visitIdString, personId);
             BusyMediator.Activate("Сохранение изменений...");
             var saveSuccesfull = false;
             try
             {
-                if (visit == null)
-                    visit = new Visit()
-                    {
-                        MKB = string.Empty,
-                        OKATO = string.Empty
-                    };
-                visit.PersonId = PersonId;
-                visit.ContractId = SelectedContractId.Value;
-                visit.FinancingSourceId = SelectedFinancingSourceId.Value;
-                visit.UrgentlyId = SelectedUrgentlyId.Value;
-                visit.VisitTemplateId = SelectedVisitTemplateId.Value;
-                visit.ExecutionPlaceId = SelectedExecutionPlaceId.Value;
-                visit.SentLPUId = SelectedLPUId.Value;
-                visit.BeginDateTime = Date;
-                visit.Note = Note;
-
-                var result = await patientRecordsService.SaveVisitAsync(visit, token);
-                visit.Id = result;
+                var result = await patientRecordsService.SaveVisitAsync(visitId, personId, Date, SelectedContractId.Value, SelectedFinancingSourceId.Value, SelectedUrgentlyId.Value, SelectedVisitTemplateId.Value, SelectedExecutionPlaceId.Value, 
+                    SelectedLPUId.Value, Note, token);
+                visitId = result;
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -268,8 +256,11 @@ namespace PatientRecordsModule.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
+                    ChangeTracker.AcceptChanges();
+                    ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
                     HostWindow.Close();
+
                 }
             }
         }
@@ -277,7 +268,9 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CancelCommand { get; private set; }
         private void Cancel()
         {
-            visit = null;
+            FailureMediator.Deactivate();
+            ChangeTracker.RestoreChanges();
+            visitId = -1;
             HostWindow.Close();
         }
         #endregion
@@ -286,6 +279,7 @@ namespace PatientRecordsModule.ViewModels
 
         public void IntializeCreation(int personId, int? visitTemplateId, int? visitId, DateTime date, string title)
         {
+            ChangeTracker.IsEnabled = true;
             ContractSetByVisitTemplate = false;
             FinancingSourceSetByVisitTemplate = false;
             UrgentlySetByVisitTemplate = false;
@@ -302,6 +296,11 @@ namespace PatientRecordsModule.ViewModels
                 LoadVisitDataAsync(this.visitId);
         }
 
+        private bool CanSaveChanges()
+        {
+            return ChangeTracker.HasChanges;
+        }
+
         private async void LoadVisitDataAsync(int visitId)
         {
             var dataSourcesLoaded = await EnsureDataSourceLoaded();
@@ -309,6 +308,7 @@ namespace PatientRecordsModule.ViewModels
             FinancingSourceSetByVisitTemplate = false;
             UrgentlySetByVisitTemplate = false;
             ExecutionPlaceSetByVisitTemplate = false;
+            ChangeTracker.IsEnabled = false;
             if (!dataSourcesLoaded)
             {
                 return;
@@ -331,11 +331,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 visitQuery = patientRecordsService.GetVisit(visitId);
                 var visit = await visitQuery.FirstOrDefaultAsync(token);
-                this.visit = visit;
                 Date = visit.BeginDateTime;
                 SelectedVisitTemplateId = visit.VisitTemplateId;
                 SelectedLPUId = visit.SentLPUId;
                 Note = visit.Note;
+                ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -479,6 +479,7 @@ namespace PatientRecordsModule.ViewModels
             FinancingSourceSetByVisitTemplate = false;
             UrgentlySetByVisitTemplate = false;
             ExecutionPlaceSetByVisitTemplate = false;
+            ChangeTracker.IsEnabled = false;
             if (!dataSourcesLoaded)
             {
                 return;
@@ -515,6 +516,7 @@ namespace PatientRecordsModule.ViewModels
                 SelectedUrgentlyId = visitTemplate.UrgentlyId;
                 ExecutionPlaceSetByVisitTemplate = visitTemplate.ExecutionPlaceId.HasValue;
                 SelectedExecutionPlaceId = visitTemplate.ExecutionPlaceId;
+                ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -538,6 +540,20 @@ namespace PatientRecordsModule.ViewModels
                 {
                     visitTemplateQuery.Dispose();
                 }
+            }
+        }
+
+
+        public void Dispose()
+        {
+            ChangeTracker.Dispose();
+        }
+
+        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                (CreateVisitCommand as DelegateCommand).RaiseCanExecuteChanged();
             }
         }
 

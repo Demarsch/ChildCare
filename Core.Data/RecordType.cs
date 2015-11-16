@@ -17,6 +17,7 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordType()
         {
+            this.Assignments = new HashSet<Assignment>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Records = new HashSet<Record>();
@@ -24,7 +25,6 @@ namespace Core.Data
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
             this.RecordTypes1 = new HashSet<RecordType>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
-            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -43,6 +43,8 @@ namespace Core.Data
         public string Options { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Assignment> Assignments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
@@ -57,7 +59,5 @@ namespace Core.Data
         public virtual RecordType RecordType1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
     }
 }

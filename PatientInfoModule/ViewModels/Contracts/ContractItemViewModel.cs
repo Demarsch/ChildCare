@@ -1,22 +1,41 @@
-﻿using PatientInfoModule.Services;
+﻿using Core.Data.Misc;
+using Core.Misc;
+using Core.Wpf.Misc;
+using PatientInfoModule.Services;
 using Prism.Mvvm;
 using System;
 using System.Drawing;
 using System.Windows;
+using System.Linq;
+using Core.Data;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class ContractItemViewModel : BindableBase
+    public class ContractItemViewModel : TrackableBindableBase, IChangeTrackerMediator, IDisposable
     {
         private readonly IRecordService recordService;
+        private readonly IPatientService personService;
+        public int financingSourceId = SpecialValues.NonExistingId;
+        public DateTime contractDate = SpecialValues.MinDate;
+        public bool isChild = false;
 
-        public ContractItemViewModel(IRecordService recordService)
+        public ContractItemViewModel(IRecordService recordService, IPatientService personService, int personId, int financingSourceId, DateTime contractDate)
         {
             if (recordService == null)
             {
                 throw new ArgumentNullException("recordService");
             }
+            if (personService == null)
+            {
+                throw new ArgumentNullException("personService");
+            }
             this.recordService = recordService;
+            this.personService = personService;
+            this.financingSourceId = financingSourceId;
+            this.contractDate = contractDate;
+            this.isChild = personService.GetPatientQuery(personId).First<Person>().BirthDate.Date.AddYears(18) >= contractDate.Date;
+
+            ChangeTracker = new ChangeTrackerEx<ContractItemViewModel>(this);
         }
 
         private int id;
@@ -51,7 +70,10 @@ namespace PatientInfoModule.ViewModels
         public bool IsPaid
         {
             get { return isPaid; }
-            set { SetProperty(ref isPaid, value); }
+            set
+            {
+                SetTrackedProperty(ref isPaid, value);
+            }
         }
 
         private string recordTypeName;
@@ -66,9 +88,9 @@ namespace PatientInfoModule.ViewModels
         {
             get { return recordCount; }
             set 
-            { 
+            {
                 if (SetProperty(ref recordCount, value))
-                    RecordCost = (recordService.GetRecordTypeCost(recordTypeId) * recordCount);    
+                    RecordCost = (recordService.GetRecordTypeCost(recordTypeId, financingSourceId, contractDate, isChild) * recordCount);    
             }
         }
 
@@ -112,6 +134,13 @@ namespace PatientInfoModule.ViewModels
         {
             get { return sectionAlignment; }
             set { SetProperty(ref sectionAlignment, value); }
+        }
+
+        public IChangeTracker ChangeTracker { get; private set; }
+
+        public void Dispose()
+        {
+            ChangeTracker.Dispose();
         }
     }
 }

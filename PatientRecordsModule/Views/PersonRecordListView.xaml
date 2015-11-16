@@ -10,10 +10,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="250" Width="250">
     <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding NewVisitCreatingInteractionRequest, Mode=OneWay}">
+        <prism:InteractionRequestTrigger SourceObject="{Binding VisitEditorInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction IsModal="True">
                 <popup:PopupWindowAction.WindowContent>
                     <views:VisitEditorView/>
+                </popup:PopupWindowAction.WindowContent>
+            </popup:PopupWindowAction>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding VisitCloseInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction IsModal="True">
+                <popup:PopupWindowAction.WindowContent>
+                    <views:VisitCloseView/>
                 </popup:PopupWindowAction.WindowContent>
             </popup:PopupWindowAction>
         </prism:InteractionRequestTrigger>

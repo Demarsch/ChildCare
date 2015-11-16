@@ -28,13 +28,16 @@ namespace PatientInfoModule.ViewModels
     {
         private readonly IRecordService recordService;
         private readonly IAssignmentService assignmentService;
+        private readonly IPatientService personService;
         private readonly ILog logService;
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; private set; }
         private readonly CommandWrapper saveChangesCommandWrapper;
-        public int orgId = SpecialValues.NonExistingId;
+        public int financingSourceId = SpecialValues.NonExistingId;
+        public DateTime contractDate = SpecialValues.MinDate;
+        public bool isChild = false;
 
-        public AddContractRecordsViewModel(IRecordService recordService, IAssignmentService assignmentService, ILog logService)
+        public AddContractRecordsViewModel(IRecordService recordService, IAssignmentService assignmentService, IPatientService personService, ILog logService)
         {
             if (logService == null)
             {
@@ -48,9 +51,13 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("assignmentService");
             }
-
+            if (personService == null)
+            {
+                throw new ArgumentNullException("personService");
+            }
             this.recordService = recordService;
             this.assignmentService = assignmentService;
+            this.personService = personService;
             this.logService = logService;
             RecordTypesSuggestionProvider = new RecordTypesSuggestionProvider(recordService);
             Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
@@ -61,11 +68,14 @@ namespace PatientInfoModule.ViewModels
             CancelCommand = new DelegateCommand(Cancel);
         }
 
-        public void IntializeCreation(string title, int personId, bool isNewRecordChecked, bool isAssignRecordsChecked)
+        public void IntializeCreation(string title, int personId, int financingSourceId, DateTime contractDate, bool isNewRecordChecked, bool isAssignRecordsChecked)
         {  
             this.Title = title;
             IsAssignRecordsChecked = isAssignRecordsChecked;
             IsNewRecordChecked = isNewRecordChecked;
+            this.financingSourceId = financingSourceId;
+            this.contractDate = contractDate;
+            this.isChild = personService.GetPatientQuery(personId).First<Person>().BirthDate.Date.AddYears(18) >= contractDate.Date;
             Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>(assignmentService.GetPersonAssignments(personId).ToList()
                                             .Select(x => new ContractAssignmentsViewModel()
                                             {
@@ -73,7 +83,7 @@ namespace PatientInfoModule.ViewModels
                                                 RecordTypeId = x.RecordTypeId,
                                                 AssignDateTime = x.AssignDateTime,
                                                 RecordTypeName = x.RecordType.Name,
-                                                RecordTypeCost = recordService.GetRecordTypeCost(x.RecordTypeId)
+                                                RecordTypeCost = recordService.GetRecordTypeCost(x.RecordTypeId, financingSourceId, contractDate, isChild)
                                             }));
         }
 
@@ -120,7 +130,7 @@ namespace PatientInfoModule.ViewModels
             set
             {
                 if (SetProperty(ref recordsCount, value))
-                    AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id) * recordsCount);
+                    AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id, financingSourceId, contractDate, isChild) * recordsCount);
             }
         }
 

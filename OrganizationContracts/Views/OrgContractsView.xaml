@@ -11,6 +11,7 @@
              xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels"
              xmlns:views="clr-namespace:OrganizationContractsModule.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:coremisc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="500"
              d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:OrgContractsViewModel}">
@@ -21,29 +22,17 @@
                 <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
             </Grid>
         </DataTemplate>
-        <converters:Converter x:Key="BooleanToCollapsedConverter" DefaultValue="{x:Static Visibility.Collapsed}">
-            <converters:ConverterItem To="{x:Static Visibility.Visible}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>True</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
-            <converters:ConverterItem To="{x:Static Visibility.Collapsed}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>False</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
+        <converters:Converter x:Key="HidePreview" DefaultValue="{x:Static Visibility.Collapsed}">
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
+                                          To="{x:Static Visibility.Visible}" />
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
+                                          To="{x:Static Visibility.Collapsed}" />  
         </converters:Converter>
-        <converters:Converter x:Key="BooleanToVisibilityConverter" DefaultValue="{x:Static Visibility.Visible}">
-            <converters:ConverterItem To="{x:Static Visibility.Visible}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>False</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
-            <converters:ConverterItem To="{x:Static Visibility.Collapsed}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>True</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
+        <converters:Converter x:Key="ShowPreview" DefaultValue="{x:Static Visibility.Visible}">
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
+                                          To="{x:Static Visibility.Collapsed}" />
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
+                                          To="{x:Static Visibility.Visible}" />
         </converters:Converter>
     </UserControl.Resources>
     
@@ -126,12 +115,12 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" DockPanel.Dock="Top" Visibility="{Binding IsContractSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" DockPanel.Dock="Top" Visibility="{Binding IsContractSelected, Converter={StaticResource ShowPreview}}">
                         <Image Source="pack://application:,,,/Core;Component/Resources/Images/Contract256x256.png" 
                         Height="256" Width="256" Margin="0,200,0,10" HorizontalAlignment="Center" />
                         <TextBlock Text="Договор не выбран" HorizontalAlignment="Center" FontSize="15" FontWeight="Medium"/>
                     </StackPanel>
-                    <Grid Grid.Row="1" Grid.Column="0" Visibility="{Binding IsContractSelected, Converter={StaticResource BooleanToCollapsedConverter}}">
+                    <Grid Grid.Row="1" Grid.Column="0" Visibility="{Binding IsContractSelected, Converter={StaticResource HidePreview}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>

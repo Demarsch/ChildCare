@@ -1,0 +1,131 @@
+﻿<UserControl x:Class="PatientInfoModule.Views.SocialStatusView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+             xmlns:editors="http://wpfcontrols.com/"
+             xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
+             mc:Ignorable="d" 
+             d:DesignHeight="300"
+             d:DesignWidth="450" 
+             d:DataContext="{d:DesignInstance viewModels:SocialStatusViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:Converter x:Key="IsActiveToTextConverter">
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                          To="Актуальный статус" />
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                          To="Неактуальный статус" />
+            </converters:Converter>
+            <converters:Converter x:Key="IsActiveToForegroundConverter">
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                          To="{x:Static Brushes.Green}" />
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                          To="{x:Static Brushes.Red}" />
+            </converters:Converter>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0"
+                   Grid.Column="1"
+                   Text="{Binding IsActive, Converter={StaticResource IsActiveToTextConverter}}"
+                   Foreground="{Binding IsActive, Converter={StaticResource IsActiveToForegroundConverter}}" />
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                ToolTip="Удалить статус"
+                Template="{StaticResource CloseButtonTemplate}"
+                Command="{Binding DeleteCommand, Mode=OneTime}"/>
+        <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   Text="Тип" />
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Margin="3 3 22 3"
+                  HorizontalAlignment="Stretch"
+                  ItemsSource="{Binding SocialStatusTypes}"
+                  SelectedItem="{Binding SelectedSocialStatusType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+        <TextBlock Grid.Row="2"
+                   Grid.Column="0"
+                   Text="Организация"
+                   Visibility="{Binding SelectedSocialStatusType.NeedPlace, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, FallbackValue={x:Static Visibility.Collapsed}}" />
+        <editors:AutoCompleteTextBox Grid.Row="3"
+                                     Grid.Column="0"
+                                     Grid.ColumnSpan="2"
+                                     Margin="3"
+                                     Background="White"
+                                     MinHeight="40"
+                                     DisplayMember="Name"
+                                     Provider="{Binding OrganizationSuggestionProvider}"
+                                     SelectedItem="{Binding SelectedOrganization, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                     Text="{Binding OrganizationText, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                     Watermark="Введите любое слово из названия организации"
+                                     Visibility="{Binding SelectedSocialStatusType.NeedPlace, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, FallbackValue={x:Static Visibility.Collapsed}}"
+                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
+            <editors:AutoCompleteTextBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type data:Org}">
+                    <Border Padding="5">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Name}"
+                                       FontWeight="Bold"
+                                       Margin="0 0 0 3"/>
+                            <TextBlock Text="{Binding Details}"
+                                       Foreground="Gray"
+                                       FontFamily="Segoe UI"
+                                       Margin="0 3 0 0"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </editors:AutoCompleteTextBox.ItemTemplate>
+        </editors:AutoCompleteTextBox>
+        <TextBlock Grid.Row="4"
+                   Grid.Column="0"
+                   Text="Должность"
+                   Visibility="{Binding SelectedSocialStatusType.NeedPlace, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, FallbackValue={x:Static Visibility.Collapsed}}" />
+        <TextBox Grid.Row="5"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"
+                 HorizontalAlignment="Stretch"
+                 Text="{Binding Position, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                 Visibility="{Binding SelectedSocialStatusType.NeedPlace, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, FallbackValue={x:Static Visibility.Collapsed}}"
+                 Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
+        <TextBlock Grid.Row="6"
+                   Grid.Column="0"
+                   Text="Действителен с" />
+        <StackPanel Grid.Row="6"
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Orientation="Horizontal">
+            <DatePicker SelectedDate="{Binding FromDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                        Margin="3 3 22 3"
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+            <CheckBox IsChecked="{Binding HasToDate, UpdateSourceTrigger=PropertyChanged}"
+                      Content="по"
+                      Margin="0 3 0 3"/>
+            <DatePicker SelectedDate="{Binding ToDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                        Margin="3 3 22 3"
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                        IsEnabled="{Binding HasToDate}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

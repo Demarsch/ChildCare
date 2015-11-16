@@ -41,5 +41,17 @@ namespace PatientInfoModule.Data
         public ICollection<InsuranceDocument> CurrentInsuranceDocuments { get; set; }
 
         public ICollection<InsuranceDocument> NewInsuranceDocuments { get; set; }
+
+        public ICollection<PersonAddress> CurrentAddresses { get; set; }
+
+        public ICollection<PersonAddress> NewAddresses { get; set; }
+
+        public ICollection<PersonDisability> CurrentDisabilities { get; set; }
+
+        public ICollection<PersonDisability> NewDisabilities { get; set; }
+
+        public ICollection<PersonSocialStatus> CurrentSocialStatuses { get; set; }
+
+        public ICollection<PersonSocialStatus> NewSocialStatuses { get; set; }
     }
 }

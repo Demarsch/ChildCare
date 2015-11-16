@@ -64,5 +64,7 @@ namespace Core.Data.Misc
         {
             return GetAsyncEnumerator();
         }
+
+        public IQueryable<T> SourceQuery { get { return query; } }
     }
 }

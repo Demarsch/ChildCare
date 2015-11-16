@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using Core.Data;
@@ -38,7 +35,7 @@ namespace PatientInfoModule.ViewModels
 
         private ISuggestionProvider givenOrgSuggestionProvider;
 
-        [Dependency(SuggestionProviderNames.InsuranceCompany)]
+        [Dependency(SuggestionProviderNames.IdentityDocumentGiveOrganization)]
         public ISuggestionProvider GivenOrgSuggestionProvider
         {
             get { return givenOrgSuggestionProvider; }
@@ -217,6 +214,7 @@ namespace PatientInfoModule.ViewModels
                     series = value.Series;
                     number = value.Number;
                     givenOrgText = value.GivenOrg;
+                    givenOrg = value.GivenOrg;
                     fromDate = value.BeginDate;
                     toDate = value.EndDate == SpecialValues.MaxDate ? null : (DateTime?)value.EndDate;
                     id = value.Id;

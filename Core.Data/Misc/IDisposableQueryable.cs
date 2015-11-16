@@ -6,5 +6,6 @@ namespace Core.Data.Misc
 {
     public interface IDisposableQueryable<out T> : IQueryable<T>, IDisposable, IDbAsyncEnumerable<T>
     {
+        IQueryable<T> SourceQuery { get; } 
     }
 }

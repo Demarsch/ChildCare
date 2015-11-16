@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:misc="clr-namespace:PatientInfoModule.Misc"
-             xmlns:wpf="http://wpfcontrols.com/"
+             xmlns:editors="http://wpfcontrols.com/"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              xmlns:views="clr-namespace:PatientInfoModule.Views"
+             xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:coremisc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:prism="http://www.codeplex.com/prism"
              xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
@@ -22,42 +24,10 @@
             <Grid MinWidth="200" MinHeight="100">
                 <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
             </Grid>
-        </DataTemplate>
-        <converters:Converter x:Key="BooleanToCollapsedConverter" DefaultValue="{x:Static Visibility.Collapsed}">
-            <converters:ConverterItem To="{x:Static Visibility.Visible}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>True</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
-            <converters:ConverterItem To="{x:Static Visibility.Collapsed}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>False</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
-        </converters:Converter>
-        <converters:Converter x:Key="BooleanToVisibilityConverter" DefaultValue="{x:Static Visibility.Visible}">
-            <converters:ConverterItem To="{x:Static Visibility.Visible}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>False</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
-            <converters:ConverterItem To="{x:Static Visibility.Collapsed}">
-                <converters:ConverterItem.From>
-                    <system:Boolean>True</system:Boolean>
-                </converters:ConverterItem.From>
-            </converters:ConverterItem>
-        </converters:Converter>
-        
-        <DataTemplate x:Key="PersonAutoCompleteTemplate">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=FullName}" Margin="2" FontWeight="Bold" />
-                <TextBlock Text="{Binding Path=BirthDate, StringFormat=dd-MM-yyyy}" Margin="2"/>
-            </StackPanel>
-        </DataTemplate>        
-
+        </DataTemplate>                
         <DataTemplate x:Key="SectionDataTemplate">
             <DockPanel LastChildFill="True">
-                <Label Content="{Binding SectionName}" HorizontalAlignment="{Binding SectionAlignment}" FontWeight="Medium" Foreground="Green"/>
+                <TextBlock Text="{Binding SectionName}" HorizontalAlignment="{Binding SectionAlignment}" FontWeight="Medium" Foreground="Green"/>
             </DockPanel>
         </DataTemplate>
         <DataTemplate x:Key="ContractItemDataTemplate">
@@ -68,18 +38,30 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsPaid}" Margin="10,0"/>
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}" Margin="20,0,10,0" />
-                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding RecordCount}" TextAlignment="Center" Margin="20,0" />
-                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RecordCost}" TextAlignment="Center" Margin="30,0"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding RecordCount}" TextAlignment="Left" HorizontalAlignment="Left" Margin="20,0,0,0" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RecordCost}" TextAlignment="Left" HorizontalAlignment="Left" Margin="30,0,0,0"/>
                 <!--<TextBox Grid.Row="0" Grid.Column="2" Text="{Binding RecordCount}" TextAlignment="Center" Width="50" BorderThickness="0" Margin="20,0" />
                 <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding RecordCost}" TextAlignment="Center" Width="50" BorderThickness="0" Margin="30,0"/>
                 -->
             </Grid>
         </DataTemplate>
+        <converters:Converter x:Key="HidePreview" DefaultValue="{x:Static Visibility.Visible}">
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
+                                              To="{x:Static Visibility.Visible}" />
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
+                                              To="{x:Static Visibility.Collapsed}" />
+        </converters:Converter>
+        <converters:Converter x:Key="ShowPreview" DefaultValue="{x:Static Visibility.Collapsed}">
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
+                                              To="{x:Static Visibility.Collapsed}" />
+            <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.False}"
+                                              To="{x:Static Visibility.Visible}" />
+        </converters:Converter>
         <misc:ItemTemplateSelector x:Key="itemTemplateSelector"/>
     </UserControl.Resources>
 
@@ -161,21 +143,8 @@
             </DockPanel>
 
             <Border Grid.Column="1" Grid.Row="0" Margin="5,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" DockPanel.Dock="Top" Visibility="{Binding IsContractSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Contract256x256.png" 
-                            Height="256" Width="256" Margin="0,200,0,10" HorizontalAlignment="Center" />
-                        <TextBlock Text="Договор не выбран" HorizontalAlignment="Center" FontSize="15" FontWeight="Medium"/>
-                    </StackPanel>
-                    <Grid Grid.Row="1" Grid.Column="0" Visibility="{Binding IsContractSelected, Converter={StaticResource BooleanToCollapsedConverter}}">
+                <Grid>                     
+                    <Grid Visibility="{Binding IsActive, Converter={StaticResource HidePreview}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -199,9 +168,9 @@
                         Text="{Binding ContractName, Mode=TwoWay}" FontWeight="Bold" Margin="2"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Период действия" Margin="2"/>
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                            <DatePicker SelectedDate="{Binding ContractBeginDateTime, Mode=TwoWay}" Width="115" Margin="2"/>
+                            <DatePicker SelectedDate="{Binding ContractBeginDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="115" Margin="2"/>
                             <TextBlock VerticalAlignment="Center" Text=" - " Width="10"/>
-                            <DatePicker SelectedDate="{Binding ContractEndDateTime, Mode=TwoWay}" Width="115" Margin="2"/>
+                            <DatePicker SelectedDate="{Binding ContractEndDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="115" Margin="2"/>
                         </StackPanel>
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Источник финансирования" Margin="2"/>
                         <ComboBox Grid.Row="2" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch"
@@ -209,32 +178,25 @@
                             DisplayMemberPath="Field" 
                             SelectedValuePath="Value" 
                             SelectedValue="{Binding SelectedFinancingSourceId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                                                    Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
+                            Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Ответственный за договор" Margin="2"/>
                         <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2"
                             ItemsSource="{Binding Registrators}" 
                             DisplayMemberPath="Field" 
                             SelectedValuePath="Value" 
                             SelectedValue="{Binding SelectedRegistratorId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                                                    Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
+                            Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Заказчик" Margin="2"/>
-                        <wpf:AutoCompleteTextBox Grid.Row="4" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" Height="23"
-                                Watermark="Введите Ф.И.О. заказчика для поиска..."
-                                DisplayMember="FullName"
-                                ItemTemplate="{StaticResource PersonAutoCompleteTemplate}"
-                                SelectedItem="{Binding SelectedClient, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                                                 Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"
-                                IconPlacement="Left"
-                                IconVisibility="Visible"
-                                Provider="{Binding PersonSuggestionProvider}"
-                                x:Name="searchClient">
-                            <wpf:AutoCompleteTextBox.LoadingContent>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Загрузка данных..." Margin="2" FontSize="13" />
-                                </StackPanel>
-                            </wpf:AutoCompleteTextBox.LoadingContent>
-                        </wpf:AutoCompleteTextBox>
+                        <editors:AutoCompleteTextBox Grid.Row="4" 
+                                                Grid.Column="1" 
+                                                Margin="2" 
+                                                Background="White" MinHeight="23"
+                                                Provider="{Binding PersonSuggestionProvider}"
+                                                SelectedItem="{Binding SelectedClient, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                                Watermark="Введите Ф.И.О. заказчика для поиска..."
+                                                Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}">
+                        </editors:AutoCompleteTextBox>   
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Потребитель" Margin="2"/>
                         <TextBox Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" Height="23"
@@ -245,7 +207,7 @@
                             DisplayMemberPath="Field" 
                             SelectedValuePath="Value" 
                             SelectedValue="{Binding SelectedPaymentTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                                                    Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
+                            Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="№ транзакции" Margin="2" Visibility="{Binding IsCashless, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
                         <TextBox Grid.Row="7" Grid.Column="1" Width="300" Height="23" HorizontalAlignment="Left" Margin="2" 
                             Text="{Binding TransationNumber, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
@@ -261,14 +223,14 @@
                             <DockPanel LastChildFill="True">
                                 <TextBlock Text="Оплата" DockPanel.Dock="Left" HorizontalAlignment="Center" Margin="10,0,0,0" FontWeight="Medium"></TextBlock>
                                 <TextBlock Text="Сумма, руб." DockPanel.Dock="Right" HorizontalAlignment="Center" Margin="10,0" FontWeight="Medium"></TextBlock>
-                                <TextBlock Text="Кол-во" DockPanel.Dock="Right" HorizontalAlignment="Center" Margin="10,0" FontWeight="Medium"></TextBlock>
+                                <TextBlock Text="Кол-во" DockPanel.Dock="Right" HorizontalAlignment="Center" Margin="10,0,40,0" FontWeight="Medium"></TextBlock>
                                 <TextBlock Text="Наименование услуги" Width="Auto" HorizontalAlignment="Center" FontWeight="Medium"/>
                             </DockPanel>
                         </Border>
 
                         <ListView Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Margin="3,0,3,2" MinHeight="100" BorderThickness="1,0,1,1" BorderBrush="Black"
-                        ItemsSource="{Binding ContractItems, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                        SelectedItem="{Binding SelectedContractItem, Mode=TwoWay}"
+                        ItemsSource="{Binding ContractItems, ValidatesOnDataErrors=True}"
+                        SelectedItem="{Binding SelectedContractItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"  
                         ItemTemplateSelector="{StaticResource itemTemplateSelector}">
                             <ListView.ItemContainerStyle>
@@ -278,6 +240,11 @@
                             </ListView.ItemContainerStyle>
                         </ListView>
                     </Grid>
+                    <StackPanel Orientation="Vertical" Visibility="{Binding IsActive, Converter={StaticResource ShowPreview}}">
+                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Contract256x256.png" 
+                            Height="256" Width="256" Margin="0,200,0,10" HorizontalAlignment="Center" />
+                        <TextBlock Text="Договор не выбран" HorizontalAlignment="Center" FontSize="15" FontWeight="Medium"/>
+                    </StackPanel>
                 </Grid>   
             </Border>            
         </Grid>

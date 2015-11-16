@@ -14,6 +14,7 @@ using Prism.Commands;
 using System.Windows.Input;
 using Core.Data.Misc;
 using Core.Wpf.Misc;
+using Core.Extensions;
 using System.ComponentModel;
 using System.Collections.Generic;
 using Prism.Interactivity.InteractionRequest;
@@ -62,7 +63,7 @@ namespace PatientInfoModule.ViewModels
                     document = new Document();
                 document.FileName = documentService.GetOuterDocumentTypeById(item.DocumentTypeId).First().Name;
                 document.DocumentFromDate = item.DocumentDate;
-                document.Description = item.Comment;
+                document.Description = item.Comment.ToSafeString();
                 document.DisplayName = document.FileName + (document.DocumentFromDate.HasValue ? " от " + document.DocumentFromDate.Value.ToShortDateString() : string.Empty);
                 
                 document.Extension = "png";

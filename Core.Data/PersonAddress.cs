@@ -17,7 +17,7 @@ namespace Core.Data
         public int Id { get; set; }
         public int PersonId { get; set; }
         public int AddressTypeId { get; set; }
-        public string OkatoText { get; set; }
+        public int OkatoId { get; set; }
         public string UserText { get; set; }
         public string House { get; set; }
         public System.DateTime BeginDateTime { get; set; }
@@ -26,6 +26,7 @@ namespace Core.Data
         public string Apartment { get; set; }
     
         public virtual AddressType AddressType { get; set; }
+        public virtual Okato Okato { get; set; }
         public virtual Person Person { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace OrganizationContractsModule.ViewModels
         public FailureMediator FailureMediator { get; private set; }
         private readonly CommandWrapper saveChangesCommandWrapper;
         public int orgId = SpecialValues.NonExistingId;
+        public bool saveSuccesfull = false;
 
         public AddContractOrganizationViewModel(IContractService contractService, ILog logService)
         {
@@ -74,6 +75,7 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand CancelCommand { get; private set; }
         private void Cancel()
         {
+            saveSuccesfull = false;
             HostWindow.Close();
         }
 

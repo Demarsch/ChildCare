@@ -273,13 +273,13 @@ namespace OrganizationContractsModule.ViewModels
             var reliableStaff = await contractService.GetRecordTypeRolesByOptions(OptionValues.ResponsibleForContract).FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
-                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles.", reloadDataSourcesCommandWrapper, null);
+                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
                 return;
             }
             var personStaffs = await contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
             if (!personStaffs.Any())
             {
-                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions.", reloadDataSourcesCommandWrapper, null);
+                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
                 return;
             }
             List<FieldValue> users = new List<FieldValue>();
@@ -562,13 +562,15 @@ namespace OrganizationContractsModule.ViewModels
         {
             var addContractOrganizationViewModel = addContractOrganizationViewModelFactory();
             addContractOrganizationViewModel.IntializeCreation("Добавить организацию");
-            AddContractOrgInteractionRequest.Raise(addContractOrganizationViewModel, 
-                (vm) => 
-                {
-                    Organizations.Add(new FieldValue() { Value = vm.orgId, Field = contractService.GetOrganizationById(vm.orgId).First().Name });
-                    if (SelectedContract.Id == SpecialValues.NewId)
-                        SelectedOrganizationId = vm.orgId;
-                });
+            AddContractOrgInteractionRequest.Raise(addContractOrganizationViewModel, OnAddOrgDialogClosed);
+        }
+
+        private void OnAddOrgDialogClosed(AddContractOrganizationViewModel viewModel)
+        {
+            if (!viewModel.saveSuccesfull) return;
+            Organizations.Add(new FieldValue() { Value = viewModel.orgId, Field = contractService.GetOrganizationById(viewModel.orgId).First().Name });
+            if (SelectedContract.Id == SpecialValues.NewId)
+                SelectedOrganizationId = viewModel.orgId;
         }
 
         private readonly DelegateCommand addContractCommand;

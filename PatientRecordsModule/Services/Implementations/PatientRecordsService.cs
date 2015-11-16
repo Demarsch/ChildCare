@@ -5,6 +5,10 @@ using Core.Data.Misc;
 using Core.Data.Services;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections;
+using Core.Misc;
+using Core.Services;
+using System.Collections.Generic;
 
 namespace PatientRecordsModule.Services
 {
@@ -12,13 +16,20 @@ namespace PatientRecordsModule.Services
     {
         private readonly IDbContextProvider contextProvider;
 
-        public PatientRecordsService(IDbContextProvider contextProvider)
+        private readonly ICacheService cacheService;
+
+        public PatientRecordsService(IDbContextProvider contextProvider, ICacheService cacheService)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
             this.contextProvider = contextProvider;
+            this.cacheService = cacheService;
         }
 
         public IDisposableQueryable<Person> GetPersonQuery(int personId)
@@ -129,7 +140,8 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.Id == visitId && x.RemovedByUserId == null), context);
         }
 
-        public async Task<int> SaveVisitAsync(Visit visit, CancellationToken token)
+        public async Task<int> SaveVisitAsync(int visitId, int personId, DateTime beginDateTime, int recordContractId, int financingSourceId, int urgentlyId, int visitTemplateId, int executionPlaceId, int sentLPUId, string note,
+            CancellationToken token)
         {
             if (token.IsCancellationRequested)
             {
@@ -137,10 +149,51 @@ namespace PatientRecordsModule.Services
             }
             using (var context = contextProvider.CreateNewContext())
             {
-                if (visit.Id > 0)
-                    context.Entry<Visit>(visit).State = System.Data.Entity.EntityState.Modified;
-                else
+                Visit visit = context.Set<Visit>().FirstOrDefault(x => x.Id == visitId);
+                if (visit == null)
+                {
+                    visit = new Visit()
+                    {
+                        MKB = string.Empty,
+                        OKATO = string.Empty,
+                        PersonId = personId,
+                        TotalCost = 0
+                    };
                     context.Entry<Visit>(visit).State = System.Data.Entity.EntityState.Added;
+                }
+                visit.ContractId = recordContractId;
+                visit.FinancingSourceId = financingSourceId;
+                visit.UrgentlyId = urgentlyId;
+                visit.VisitTemplateId = visitTemplateId;
+                visit.ExecutionPlaceId = executionPlaceId;
+                visit.SentLPUId = sentLPUId;
+                visit.BeginDateTime = beginDateTime;
+                visit.Note = note;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return visit.Id;
+            }
+        }
+
+
+
+        public async Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                Visit visit = context.Set<Visit>().FirstOrDefault(x => x.Id == visitId);
+                visit.EndDateTime = endDateTime;
+                visit.MKB = MKB;
+                visit.VisitOutcomeId = VisitOutcomeId;
+                visit.VisitResultId = VisitResultId;
+                visit.IsCompleted = true;
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
@@ -186,6 +239,37 @@ namespace PatientRecordsModule.Services
                 }
                 await context.SaveChangesAsync(token);
             }
+        }
+
+        public IEnumerable GetMKBs(string filter)
+        {
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new MKB[0];
+            }
+            var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            return cacheService.GetItems<MKB>().Where(x => words.All(y => x.DS.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1 || x.NAME_DS.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
+        }
+
+
+        public MKB GetMKB(string code)
+        {
+            var context = contextProvider.CreateNewContext();
+            return cacheService.GetItems<MKB>().FirstOrDefault(x => x.DS == code);
+        }
+
+
+        public IDisposableQueryable<VisitResult> GetActualVisitResults(int executionPlaceId, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<VisitResult>(context.Set<VisitResult>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.ExecutionPlaceId == executionPlaceId), context);
+        }
+
+        public IDisposableQueryable<VisitOutcome> GetActualVisitOutcomes(int executionPlaceId, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<VisitOutcome>(context.Set<VisitOutcome>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.ExecutionPlaceId == executionPlaceId), context);
         }
     }
 }

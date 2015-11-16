@@ -8,7 +8,7 @@
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              mc:Ignorable="d" 
-             Height="Auto" Width="Auto" MinWidth="520"
+             Height="Auto" Width="Auto" MinWidth="540" MaxWidth="700"
              d:DataContext="{d:DesignInstance viewModels:AddContractRecordsViewModel}">
     <UserControl.Resources>
         <DataTemplate x:Key="RecordTypesAutoCompleteTemplate">
@@ -22,12 +22,16 @@
         <StackPanel Orientation="Vertical" >
             <RadioButton Content="Назначенные услуги" IsChecked="{Binding IsAssignRecordsChecked, Mode=TwoWay}" Margin="2"/>
             <ListView ItemsSource="{Binding Assignments}" SelectedItem="{Binding SelectedAssignment, Mode=TwoWay}"
-                                Visibility="{Binding IsAssignRecordsChecked, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                                Margin="2" MaxHeight="200">
+                      Visibility="{Binding IsAssignRecordsChecked, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                      Margin="2" MaxHeight="200" Height="Auto"
+                      ScrollViewer.CanContentScroll="True"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      >
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn x:Name="Checked" Width="30">
+                            <GridViewColumn x:Name="Checked" Width="40">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" />
@@ -81,7 +85,7 @@
             <Button Grid.Row="3" Grid.Column="1" Command="{Binding SelectRecordsCommand}" IsEnabled="{Binding CanSelectRecords}" 
                     HorizontalAlignment="Right" Margin="5">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Completed48x48.png" Stretch="Uniform" Height="24" Width="24"/>
+                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Stretch="Uniform" Height="24" Width="24"/>
                     <TextBlock Text="Выбрать" Margin="5" FontWeight="Bold" FontSize="12"/>
                 </StackPanel>
             </Button>

@@ -12,9 +12,11 @@
     CONSTRAINT [PK_RecordContractItems] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_RecordContractItems_Assignments] FOREIGN KEY ([AssignmentId]) REFERENCES [dbo].[Assignments] ([Id]),
     CONSTRAINT [FK_RecordContractItems_PersonStaffs] FOREIGN KEY ([InUserId]) REFERENCES [dbo].[PersonStaffs] ([Id]),
-    CONSTRAINT [FK_RecordContractItems_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
+    CONSTRAINT [FK_RecordContractItems_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_RecordContractItems_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id])
 );
+
+
 
 
 
