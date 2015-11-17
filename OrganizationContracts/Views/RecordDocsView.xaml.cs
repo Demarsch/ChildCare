@@ -4,19 +4,19 @@ using OrganizationContractsModule.ViewModels;
 namespace OrganizationContractsModule.Views
 {
     /// <summary>
-    /// Interaction logic for OrgContractsHeaderView.xaml
+    /// Interaction logic for RecordDocsView.xaml
     /// </summary>
-    public partial class OrgContractsHeaderView
+    public partial class RecordDocsView
     {
-        public OrgContractsHeaderView()
+        public RecordDocsView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public OrgContractsHeaderViewModel ViewModel
+        public RecordDocumentsCollectionViewModel ViewModel
         {
-            get { return DataContext as OrgContractsHeaderViewModel; }
+            get { return DataContext as RecordDocumentsCollectionViewModel; }
             set { DataContext = value; }
         }
     }

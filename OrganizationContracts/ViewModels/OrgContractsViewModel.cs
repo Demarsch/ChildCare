@@ -21,7 +21,6 @@ using System.Windows;
 using System.Windows.Input;
 using Prism.Events;
 using System.ComponentModel;
-using OrganizationContractsModule.Misc;
 using Prism.Interactivity.InteractionRequest;
 
 namespace OrganizationContractsModule.ViewModels
@@ -31,6 +30,7 @@ namespace OrganizationContractsModule.ViewModels
         private readonly IContractService contractService;
         private readonly ILog log;
         private readonly ICacheService cacheService;
+        private readonly IDocumentService documentService;
         private readonly IEventAggregator eventAggregator;
         private readonly Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
@@ -42,17 +42,24 @@ namespace OrganizationContractsModule.ViewModels
         public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
         public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
         public InteractionRequest<AddContractOrganizationViewModel> AddContractOrgInteractionRequest { get; private set; }
-        
-        public OrgContractsViewModel(IContractService contractService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator, Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
+
+        public RecordDocumentsCollectionViewModel DocsViewer { get; set; }
+
+        public OrgContractsViewModel(IContractService contractService, IDocumentService documentService, ILog log, ICacheService cacheService, 
+            IEventAggregator eventAggregator, Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
         {            
             if (log == null)
             {
                 throw new ArgumentNullException("log");
             }
+            if (documentService == null)
+            {
+                throw new ArgumentNullException("documentService");
+            }
             if (cacheService == null)
             {
                 throw new ArgumentNullException("cacheService");
-            }
+            }            
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -64,9 +71,11 @@ namespace OrganizationContractsModule.ViewModels
             this.contractService = contractService;            
             this.log = log;
             this.cacheService = cacheService;
+            this.documentService = documentService;            
             this.eventAggregator = eventAggregator;
             this.addContractOrganizationViewModelFactory = addContractOrganizationViewModelFactory;
             BusyMediator = new BusyMediator();
+            DocsViewer = new RecordDocumentsCollectionViewModel(documentService, log);
             FailureMediator = new FailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
@@ -365,7 +374,7 @@ namespace OrganizationContractsModule.ViewModels
             {
                 log.ErrorFormatEx(ex, "Failed to load org contracts", "");
                 FailureMediator.Activate("Не удалость загрузить договора с юр. лицами. Попробуйте еще раз или обратитесь в службу поддержки", reloadContractsDataCommandWrapper, ex);
-                loadingIsCompleted = true;
+                loadingIsCompleted = false;
             }
             finally
             {
@@ -392,8 +401,9 @@ namespace OrganizationContractsModule.ViewModels
                 ContractEndDate = contract.EndDateTime;
                 Cost = contract.ContractCost;
                 Info = contract.OrgDetails;
-                SelectedRegistratorId = contract.InUserId;
+                SelectedRegistratorId = contract.InUserId;                
             }
+            DocsViewer.LoadDocs(2);
         }
 
         private void ClearData()

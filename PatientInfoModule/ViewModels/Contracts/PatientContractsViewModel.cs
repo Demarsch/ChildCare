@@ -280,7 +280,7 @@ namespace PatientInfoModule.ViewModels
             {
                 log.ErrorFormatEx(ex, "Failed to load contracts for patient with Id {0}", patientId);
                 FailureMediator.Activate("Не удалость загрузить договоры пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadContractsDataCommandWrapper, ex);
-                loadingIsCompleted = true;
+                loadingIsCompleted = false;
             }
             finally
             {
