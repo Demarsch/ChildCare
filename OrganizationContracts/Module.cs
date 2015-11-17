@@ -104,6 +104,7 @@ namespace PatientRecordsModule
         private void RegisterServices()
         {
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
         }
         #endregion
 

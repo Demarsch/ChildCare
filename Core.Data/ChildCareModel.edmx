@@ -602,6 +602,14 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="InDateTime" Type="datetime" Nullable="false" />
           <Property Name="InUserId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="RecordDocuments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecordId" Type="int" Nullable="false" />
+          <Property Name="DocumentId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Records">
           <Key>
             <PropertyRef Name="Id" />
@@ -1858,6 +1866,30 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RecordDocuments_Documents">
+          <End Role="Documents" Type="Self.Documents" Multiplicity="1" />
+          <End Role="RecordDocuments" Type="Self.RecordDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Documents">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocuments">
+              <PropertyRef Name="DocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordDocuments_Records">
+          <End Role="Records" Type="Self.Records" Multiplicity="1" />
+          <End Role="RecordDocuments" Type="Self.RecordDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Records">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocuments">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Records_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
           <End Role="Records" Type="Self.Records" Multiplicity="*" />
@@ -2340,6 +2372,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="RecordContractItems" EntityType="Self.RecordContractItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContractLimits" EntityType="Self.RecordContractLimits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContracts" EntityType="Self.RecordContracts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecordDocuments" EntityType="Self.RecordDocuments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypeCosts" EntityType="Self.RecordTypeCosts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypeRolePermissions" EntityType="Self.RecordTypeRolePermissions" Schema="dbo" store:Type="Tables" />
@@ -2697,6 +2730,14 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_RecordContracts_PersonStaffs" Association="Self.FK_RecordContracts_PersonStaffs">
             <End Role="PersonStaffs" EntitySet="PersonStaffs" />
             <End Role="RecordContracts" EntitySet="RecordContracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordDocuments_Documents" Association="Self.FK_RecordDocuments_Documents">
+            <End Role="Documents" EntitySet="Documents" />
+            <End Role="RecordDocuments" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordDocuments_Records" Association="Self.FK_RecordDocuments_Records">
+            <End Role="Records" EntitySet="Records" />
+            <End Role="RecordDocuments" EntitySet="RecordDocuments" />
           </AssociationSet>
           <AssociationSet Name="FK_Records_Persons" Association="Self.FK_Records_Persons">
             <End Role="Persons" EntitySet="Persons" />
@@ -3394,6 +3435,15 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
+          <EntitySet Name="RecordDocuments" EntityType="DataLib.RecordDocument" />
+          <AssociationSet Name="FK_RecordDocuments_Documents" Association="DataLib.FK_RecordDocuments_Documents">
+            <End Role="Document" EntitySet="Documents" />
+            <End Role="RecordDocument" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordDocuments_Records" Association="DataLib.FK_RecordDocuments_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="RecordDocument" EntitySet="RecordDocuments" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -3657,6 +3707,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="DocumentFromDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="PersonOuterDocuments" Relationship="DataLib.FK_PersonOuterDocuments_Documents" FromRole="Document" ToRole="PersonOuterDocument" />
           <NavigationProperty Name="Persons" Relationship="DataLib.FK_Persons_Documents" FromRole="Document" ToRole="Person" />
+          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Documents" FromRole="Document" ToRole="RecordDocument" />
         </EntityType>
         <EntityType Name="Education">
           <Key>
@@ -4179,6 +4230,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Record" ToRole="Urgently" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
+          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
         </EntityType>
         <EntityType Name="RecordTypeCost">
           <Key>
@@ -5916,6 +5968,40 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RecordDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="DocumentId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Document" Relationship="DataLib.FK_RecordDocuments_Documents" FromRole="RecordDocument" ToRole="Document" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="RecordDocument" ToRole="Record" />
+        </EntityType>
+        <Association Name="FK_RecordDocuments_Documents">
+          <End Type="DataLib.Document" Role="Document" Multiplicity="1" />
+          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Document">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocument">
+              <PropertyRef Name="DocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordDocuments_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocument">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6839,6 +6925,15 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               <MappingFragment StoreEntitySet="MKB">
                 <ScalarProperty Name="NAME_DS" ColumnName="NAME_DS" />
                 <ScalarProperty Name="DS" ColumnName="DS" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordDocuments">
+            <EntityTypeMapping TypeName="DataLib.RecordDocument">
+              <MappingFragment StoreEntitySet="RecordDocuments">
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

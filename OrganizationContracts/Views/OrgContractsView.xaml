@@ -113,6 +113,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" DockPanel.Dock="Top" Visibility="{Binding IsContractSelected, Converter={StaticResource ShowPreview}}">
@@ -173,6 +174,12 @@
                               SelectedValue="{Binding SelectedRegistratorId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" Margin="2"/>
                     </Grid>
+
+
+                    <views:RecordDocsView Grid.Row="2" DataContext="{Binding DocsViewer}" 
+                                          HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+                    
+                    
                 </Grid>
             </Border>
         </Grid>
