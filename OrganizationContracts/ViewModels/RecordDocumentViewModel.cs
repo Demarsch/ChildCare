@@ -16,17 +16,23 @@ namespace OrganizationContractsModule.ViewModels
 {
     public class RecordDocumentViewModel : BindableBase
     {
-        private readonly DelegateCommand<object> openDocumentCommand;
+        private readonly DelegateCommand openDocumentCommand;
+        private readonly IDocumentService documentService;
 
-        public RecordDocumentViewModel()
+        public RecordDocumentViewModel(IDocumentService documentService)
         {
-            openDocumentCommand = new DelegateCommand<object>(OpenDocument);
+            if (documentService == null)
+            {
+                throw new ArgumentNullException("documentService");
+            }
+            this.documentService = documentService;
+            openDocumentCommand = new DelegateCommand(OpenDocument);
         }
 
         public ICommand OpenDocumentCommand { get { return openDocumentCommand; } }
-        private void OpenDocument(object documentId)
+        private void OpenDocument()
         {
-            return;
+            documentService.RunFile(documentService.GetFileFromBinaryDocumentData(documentId));
         }
 
         #region Properties
@@ -43,7 +49,7 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return documentThumbnail; }
             set { SetProperty(ref documentThumbnail, value); }
-        }
+        }       
 
         private string documentName;
         public string DocumentName

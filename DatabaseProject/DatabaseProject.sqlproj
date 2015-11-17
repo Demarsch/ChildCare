@@ -135,5 +135,6 @@
     <Build Include="dbo\Tables\Urgentlies.sql" />
     <Build Include="dbo\Tables\ReportTemplates.sql" />
     <Build Include="dbo\Tables\MKB.sql" />
+    <Build Include="dbo\Tables\RecordDocuments.sql" />
   </ItemGroup>
 </Project>

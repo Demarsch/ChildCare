@@ -4,10 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="80" d:DesignWidth="400"
              d:DataContext="{d:DesignInstance viewModels:RecordDocumentsCollectionViewModel}">
+    
     <UserControl.Resources>
         <ItemsPanelTemplate x:Key="docsTemplate">
             <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
@@ -23,12 +26,17 @@
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
                         <Border x:Name="border" Background="Transparent" Margin="5">
                             <StackPanel Orientation="Vertical" Margin="2">
-                                <Image Source="{Binding DocumentThumbnail}" Height="64" Stretch="Fill" Width="64">                                    
-                                </Image>
-                                <TextBlock Text="{Binding DocumentName}" TextAlignment="Center" 
+                                <Image Source="{Binding DocumentThumbnail}" Height="64" Stretch="Fill" Width="64"/>
+                                <TextBlock x:Name="docName" Text="{Binding DocumentName}" TextAlignment="Center" 
                                            Foreground="{Binding SelectionForeColor}" Background="Transparent" 
                                            TextWrapping="NoWrap" MaxWidth="64"/>
                              </StackPanel>
+                            <Border.InputBindings>
+                                <MouseBinding Gesture="LeftDoubleClick" 
+                                              Command="{Binding OpenDocumentCommand, diag:PresentationTraceSources.TraceLevel=High}"/>
+                                <KeyBinding Gesture="Delete" 
+                                            Command="{Binding OpenDocumentCommand, diag:PresentationTraceSources.TraceLevel=High}"/>
+                            </Border.InputBindings>
                         </Border>
                         <ControlTemplate.Triggers>
                             <MultiTrigger>
@@ -40,7 +48,7 @@
                                     <BeginStoryboard>
                                         <Storyboard> <!--start color-->
                                             <ColorAnimation Duration="0:0:0.15" Storyboard.TargetName="border" 
-                                                            Storyboard.TargetProperty="Background.Color" To="#b4bff2" />
+                                                            Storyboard.TargetProperty="Background.Color" To="#97bce5" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </MultiTrigger.EnterActions>
@@ -48,7 +56,7 @@
                                     <BeginStoryboard>
                                         <Storyboard FillBehavior="Stop"> <!--end color-->
                                             <ColorAnimation Duration="0:0:0.3" Storyboard.TargetName="border"
-                                                            Storyboard.TargetProperty="Background.Color" To="#6969a5" />
+                                                            Storyboard.TargetProperty="Background.Color" To="#97c6f9" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </MultiTrigger.ExitActions>
@@ -58,7 +66,7 @@
                                     <BeginStoryboard>
                                         <Storyboard> <!--current selection color-->
                                             <ColorAnimation Duration="0:0:0.15" Storyboard.TargetName="border"
-                                                            Storyboard.TargetProperty="Background.Color" To="#425eea" />
+                                                            Storyboard.TargetProperty="Background.Color" To="#769cc5" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
@@ -66,7 +74,7 @@
                                     <BeginStoryboard>
                                         <Storyboard FillBehavior="Stop"> <!--end selection color-->
                                             <ColorAnimation Duration="0:0:0.3" Storyboard.TargetName="border"
-                                                            Storyboard.TargetProperty="Background.Color" To="#2c3f9c" />
+                                                            Storyboard.TargetProperty="Background.Color" To="Transparent" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
@@ -81,17 +89,13 @@
 
     <DockPanel LastChildFill="True">
         <ListBox x:Name="docs" 
-                 Margin="0" Background="{x:Null}" BorderThickness="1" BorderBrush="Black"
-                 ItemsPanel="{DynamicResource docsTemplate}"
+                 Margin="0" Background="{x:Null}" 
+                 BorderThickness="1" BorderBrush="Black"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 Visibility="{Binding HasDocuments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                 ItemsPanel="{DynamicResource docsTemplate}"                 
                  ItemContainerStyle="{DynamicResource ListBoxItemStyle}"
-                 ItemsSource="{Binding RecordDocuments}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding OpenDocumentCommand}"
-                                           CommandParameter="{Binding}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+                 ItemsSource="{Binding RecordDocuments}">            
         </ListBox>
     </DockPanel>
 </UserControl>

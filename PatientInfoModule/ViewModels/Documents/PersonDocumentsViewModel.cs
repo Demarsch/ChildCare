@@ -114,7 +114,7 @@ namespace PatientInfoModule.ViewModels
                                                              DocumentTypeParentName = x.OuterDocumentType.OuterDocumentType1.Name,
                                                              Comment = x.Document.Description,
                                                              DocumentDate = x.Document.DocumentFromDate,
-                                                             ThumbnailImage = documentService.GetThumbnailForFile(x.Document.FileData, x.Document.Extension),
+                                                             ThumbnailImage = documentService.GetThumbnailForFile(x.DocumentId),
                                                              ThumbnailChecked = false
                                                          }));
                 loadingIsCompleted = true;
@@ -200,7 +200,7 @@ namespace PatientInfoModule.ViewModels
                         DocumentTypeParentName = doc.PersonOuterDocuments.First().OuterDocumentType.OuterDocumentType1.Name,
                         Comment = doc.Description,
                         DocumentDate = doc.DocumentFromDate,
-                        ThumbnailImage = documentService.GetThumbnailForFile(doc.FileData, doc.Extension),
+                        ThumbnailImage = documentService.GetThumbnailForFile(doc.Id),
                         ThumbnailChecked = false
                     });
                 }
@@ -268,7 +268,7 @@ namespace PatientInfoModule.ViewModels
                         DocumentTypeParentName = documentService.GetDocumentById(documentId).First().PersonOuterDocuments.First().OuterDocumentType.OuterDocumentType1.Name,
                         Comment = document.Description,
                         DocumentDate = document.DocumentFromDate,
-                        ThumbnailImage = documentService.GetThumbnailForFile(document.FileData, document.Extension),
+                        ThumbnailImage = documentService.GetThumbnailForFile(document.Id),
                         ThumbnailChecked = false
                     });
                 }
@@ -308,8 +308,7 @@ namespace PatientInfoModule.ViewModels
 
         private void OpenDocument()
         {
-            var doc = documentService.GetDocumentById(SelectedDocument.DocumentId).First();
-            documentService.RunFile(documentService.GetFileFromBinaryData(doc.FileData, doc.Extension));
+            documentService.RunFile(documentService.GetFileFromBinaryDocumentData(SelectedDocument.DocumentId));
         }
 
         private ObservableCollectionEx<ThumbnailViewModel> allDocuments;

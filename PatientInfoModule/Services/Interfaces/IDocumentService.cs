@@ -19,8 +19,8 @@ namespace PatientInfoModule.Services
         byte[] GetBinaryDataFromFile(string filePath);
         byte[] GetBinaryDataFromImage(BitmapImage bitmapImage);
         byte[] GetBinaryDataFromImage(BitmapEncoder encoder, ImageSource imageSource);
-        BitmapImage GetThumbnailForFile(byte[] content, string extension);
-        string GetFileFromBinaryData(byte[] content, string extension);
+        BitmapImage GetThumbnailForFile(int documentId);
+        string GetFileFromBinaryDocumentData(int documentId);
         ImageSource GetImageSourceFromBinaryData(byte[] source);
 
         void RunFile(string filePath);

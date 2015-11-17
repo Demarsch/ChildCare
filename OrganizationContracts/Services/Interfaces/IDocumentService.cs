@@ -9,8 +9,10 @@ namespace OrganizationContractsModule.Services
 {
     public interface IDocumentService
     {
+        IDisposableQueryable<Document> GetDocumentById(int documentId);
         IDisposableQueryable<Document> GetRecordDocuments(int recordId);
-
-        BitmapImage GetThumbnailForFile(byte[] content, string extension);
+        BitmapImage GetThumbnailForFile(int documentId);
+        string GetFileFromBinaryDocumentData(int documentId);
+        void RunFile(string filePath);
     }
 }

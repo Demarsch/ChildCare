@@ -12,6 +12,10 @@ using Core.Expressions;
 using System.Drawing;
 using System.Windows.Media;
 using System.Windows.Input;
+using Core.Data.Misc;
+using Core.Data;
+using System.Threading.Tasks;
+using System.Collections;
 
 namespace OrganizationContractsModule.ViewModels
 {
@@ -34,7 +38,6 @@ namespace OrganizationContractsModule.ViewModels
 
             this.documentService = documentService;
             this.logService = logService;
-            RecordDocuments = new ObservableCollectionEx<RecordDocumentViewModel>();
         }
 
         internal async void LoadDocs(int recordId)
@@ -47,29 +50,33 @@ namespace OrganizationContractsModule.ViewModels
             var loadingIsCompleted = false;
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
+            IDisposableQueryable<Document> documentsQuery = null;
+        
             try
             {
-                var result = await documentService.GetRecordDocuments(recordId)
-                                .Select(x => new
-                                {
-                                    Id = x.Id,
-                                    Name = x.FileName,
-                                    DisplayName = x.DisplayName,
-                                    FileData = x.FileData,
-                                    Extension = x.Extension
-                                }).ToArrayAsync(token);
+                documentsQuery = documentService.GetRecordDocuments(recordId);
 
-                RecordDocuments.Clear();
-                RecordDocuments.AddRange(
-                    result.Select(x => new RecordDocumentViewModel()
+                var result = await Task.Factory.StartNew(() =>
+                {
+                    return documentsQuery.Select(x => new
                     {
-                        DocumentId = x.Id,
-                        DocumentName = x.Name,
-                        DocumentThumbnail = documentService.GetThumbnailForFile(x.FileData, x.Extension),
-                        DocumentToolTip = x.DisplayName 
-                    }).ToArray());
-                if (recordDocuments.Any())
-                    recordDocuments.First().IsSelected = true;
+                        Id = x.Id,
+                        Name = x.FileName,
+                        DisplayName = x.DisplayName,
+                        FileData = x.FileData,
+                        Extension = x.Extension
+                    }).ToArray();
+                });
+
+                RecordDocuments = new ObservableCollectionEx<RecordDocumentViewModel>(
+                result.Select(x => new RecordDocumentViewModel(documentService)
+                {
+                    DocumentId = x.Id,
+                    DocumentName = x.Name,
+                    DocumentThumbnail = documentService.GetThumbnailForFile(x.Id),
+                    DocumentToolTip = x.DisplayName
+                }).ToArray());
+
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -87,8 +94,10 @@ namespace OrganizationContractsModule.ViewModels
                 {
 
                 }
+                if (documentsQuery != null)
+                    documentsQuery.Dispose();
             }
-        }
+        }       
 
         public void Dispose()
         {
@@ -97,14 +106,34 @@ namespace OrganizationContractsModule.ViewModels
 
         #region Properties
 
+        private bool hasDocuments;
+        public bool HasDocuments
+        {
+            get { return hasDocuments; }
+            set { SetProperty(ref hasDocuments, value); }
+        }
+
         private ObservableCollectionEx<RecordDocumentViewModel> recordDocuments;
         public ObservableCollectionEx<RecordDocumentViewModel> RecordDocuments
         {
             get { return recordDocuments; }
-            set { SetProperty(ref recordDocuments, value); }
+            set 
+            { 
+                if (SetProperty(ref recordDocuments, value) && value.Any())
+                {
+                    HasDocuments = true;
+                    recordDocuments.First().IsSelected = true;
+                }
+            }
         }
 
-        public ICommand OpenDocumentCommand { get { return RecordDocuments.First(x => x.IsSelected).OpenDocumentCommand; } }
+        public ICommand OpenDocumentCommand 
+        { 
+            get
+            {
+                return recordDocuments.First(x => x.IsSelected).OpenDocumentCommand;
+            } 
+        }
 
         #endregion
     }
