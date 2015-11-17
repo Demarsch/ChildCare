@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Core.Data.Services;
+using Core.Misc;
 using Core.Services;
 using Core.Wpf.Services;
 using Fluent;
@@ -50,6 +51,8 @@ namespace Shell
             Container.RegisterType<IDbContextProvider, DbContextProvider>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ICacheService, DbContextCacheService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IViewNameResolver, ConventionBasedViewNameResolver>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IEnvironment, DbEnvironment>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<ISecurityService, DbSecurityService>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("SHELL"));
         }
 

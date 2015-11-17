@@ -170,6 +170,8 @@
     <Compile Include="InsuranceDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\Implementations\DbEnvironment.cs" />
+    <Compile Include="Services\Implementations\DbSecurityService.cs" />
     <Compile Include="Services\Interfaces\IDbContextProvider.cs" />
     <Compile Include="MaritalStatus.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>

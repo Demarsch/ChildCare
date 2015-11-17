@@ -5,5 +5,7 @@
     public static class DateTimeFormats
     {
         public static readonly string ShortDateFormat = "dd.MM.yyyy";
+
+        public static readonly string ShortDateTimeFormat = "dd.MM.yyyy HH:mm";
     }
 }
