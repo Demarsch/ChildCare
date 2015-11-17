@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Extensions;
 using Core.Misc;
@@ -415,4 +416,11 @@ namespace ScheduleModule.Services
                                   .FirstOrDefault();
             }
         }
+
+        public IDisposableQueryable<Person> GetPatientQuery(int currentPatient)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Person>(context.Set<Person>().Where(x => x.Id == currentPatient), context);
+        }
     }
+}

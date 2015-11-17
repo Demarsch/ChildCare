@@ -24,8 +24,11 @@ namespace Shell
             var shellWindow = (ShellWindow)Shell;
             Application.Current.MainWindow = shellWindow;
             Application.Current.MainWindow.Show();
-            await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
-            base.InitializeModules();
+            var connectionEstablished = await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
+            if (connectionEstablished)
+            {
+                base.InitializeModules();
+            }
         }
 
         protected override RegionAdapterMappings ConfigureRegionAdapterMappings()

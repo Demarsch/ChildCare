@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Misc;
 using ScheduleModule.DTO;
 
@@ -38,5 +39,7 @@ namespace ScheduleModule.Services
         IEnumerable<ScheduledAssignmentDTO> GetActualAssignments(int patientId, DateTime date);
 
         ScheduledAssignmentDTO GetAssignment(int assignmentId, int patientId);
+
+        IDisposableQueryable<Person> GetPatientQuery(int currentPatient);
     }
 }

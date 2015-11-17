@@ -18,7 +18,7 @@ namespace ScheduleModule.ViewModels
             EndTime = endTime;
             RecordTypeId = recordTypeId;
             RoomId = roomId;
-            RequestAssignmentCreationCommand = new DelegateCommand<MouseButtonEventArgs>(RequestAssignmentCreation);
+            RequestAssignmentCreationCommand = new DelegateCommand(RequestAssignmentCreation);
         }
 
         public DateTime StartTime { get; private set; }
@@ -28,16 +28,12 @@ namespace ScheduleModule.ViewModels
         public int RecordTypeId { get; private set; }
 
         public int RoomId { get; private set; }
-        
+
         public ICommand RequestAssignmentCreationCommand { get; private set; }
-        //TODO: make it the other way so that view-model is unaware of mouse buttons
-        private void RequestAssignmentCreation(MouseButtonEventArgs args)
+
+        private void RequestAssignmentCreation()
         {
-            if (args.ChangedButton == MouseButton.Left)
-            {
-                OnAssignmentCreationRequested();
-            }
-            args.Handled = true;
+            OnAssignmentCreationRequested();
         }
 
         public event EventHandler AssignmentCreationRequested;

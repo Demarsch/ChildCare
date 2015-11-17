@@ -62,7 +62,7 @@ namespace Shell
             set { SetProperty(ref isMenuOpen, value); }
         }
 
-        public async Task CheckDatabaseConnectionAsync()
+        public async Task<bool> CheckDatabaseConnectionAsync()
         {
             BusyMediator.Activate("Подключение к базе данных...");
             OnPropertyChanged(() => CanOpenMenu);
@@ -70,11 +70,13 @@ namespace Shell
             {
                 await Task.Run((Action)CheckDatabaseConnection);
                 await Task.Run((Action)CheckCurrentUserIsAccessible);
+                return true;
             }
             catch (Exception ex)
             {
                 log.Error("Failed to validate database connection", ex);
                 FailureMediator.Activate("В процессе подключения к базе данных возникла ошибка. Пожалуйста, обратитесь в службу поддержки", exception: ex);
+                return false;
             }
             finally
             {

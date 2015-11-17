@@ -1,12 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using System.Windows.Navigation;
+using Core.Data;
+using Core.Misc;
 using Core.Services;
+using Core.Wpf.Mvvm;
+using Core.Wpf.Services;
+using log4net;
+using Prism.Commands;
+using Prism.Mvvm;
+using ScheduleModule.DTO;
+using ScheduleModule.Exceptions;
+using ScheduleModule.Misc;
+using ScheduleModule.Services;
 
 namespace ScheduleModule.ViewModels
 {
-    public class ScheduleViewModel : BasicViewModel
+    public class ScheduleViewModel : BindableBase
     {
         private readonly ILog log;
 
@@ -24,7 +38,13 @@ namespace ScheduleModule.ViewModels
 
         private readonly ISecurityService securityService;
 
-        public ScheduleViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel, IScheduleService scheduleService, ILog log, ICacheService cacheService, IEnvironment environment, IDialogService dialogService, ISecurityService securityService)
+        public ScheduleViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
+                                 IScheduleService scheduleService,
+                                 ILog log,
+                                 ICacheService cacheService,
+                                 IEnvironment environment,
+                                 IDialogService dialogService,
+                                 ISecurityService securityService)
         {
             if (scheduleService == null)
             {
@@ -61,34 +81,42 @@ namespace ScheduleModule.ViewModels
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
+            BusyMediator = new BusyMediator();
+            FailureMediator = new FailureMediator();
             filteredRooms = new CollectionViewSource();
             selectedDate = overlayAssignmentCollectionViewModel.CurrentDate = DateTime.Today;
             openTime = overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(8.0);
             closeTime = overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(17.0);
             isInReadOnlyMode = true;
-            ChangeModeCommand = new RelayCommand(ChangeMode, CanChangeMode);
-            CancelAssignmentMovementCommand = new RelayCommand(CancelAssignmentMovement);
-            OpenScheduleEditorCommand = new RelayCommand(OpenScheduleEditor, CanOpenScheduleEditor);
-            ChangeDateCommand = new RelayCommand<int>(ChangeDate);
+            ChangeModeCommand = new DelegateCommand(ChangeMode, CanChangeMode);
+            CancelAssignmentMovementCommand = new DelegateCommand(CancelAssignmentMovement);
+            ChangeDateCommand = new DelegateCommand<int>(ChangeDate);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
             LoadAssignmentsAsync(selectedDate);
         }
 
+        public BusyMediator BusyMediator { get; private set; }
+
+        public FailureMediator FailureMediator { get; private set; }
+
         public OverlayAssignmentCollectionViewModel OverlayAssignmentCollectionViewModel { get; private set; }
 
         private async Task LoadAssignmentsAsync(DateTime date)
         {
             if (!DataSourcesAreLoaded)
+            {
                 return;
+            }
             date = date.Date;
             try
             {
-                BusyStatus = "Загрузка расписания...";
-                FailReason = null;
+                BusyMediator.Activate("Загрузка расписания...");
+                FailureMediator.Deactivate();
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var workingTimes = (await Task<ICollection<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).Where(x => x.RecordTypeId.HasValue).ToLookup(x => x.RoomId);
+                var workingTimes =
+                    (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).Where(x => x.RecordTypeId.HasValue).ToLookup(x => x.RoomId);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
                 if (workingTimes.Count == 0)
                 {
@@ -125,11 +153,12 @@ namespace ScheduleModule.ViewModels
             catch (Exception ex)
             {
                 log.Error(string.Format("Failed to load schedule for {0:dd-MM-yyyy}", date), ex);
-                FailReason = "При попытке загрузить расписание возникла ошибка. Попробуйте обновить расписание или выбрать другую дату. Если ошибка повторится, обратитесь в службу поддержки";
+                FailureMediator.Activate("При попытке загрузить расписание возникла ошибка. Попробуйте обновить расписание или выбрать другую дату. Если ошибка повторится, обратитесь в службу поддержки",
+                                         exception: ex);
             }
             finally
             {
-                BusyStatus = null;
+                BusyMediator.Deactivate();
             }
         }
 
@@ -140,7 +169,9 @@ namespace ScheduleModule.ViewModels
                 log.Info("Loading data source for schedule...");
                 Rooms = new[] { unseletedRoom }.Concat(scheduleService.GetRooms().Select(x => new RoomViewModel(x, scheduleService, cacheService))).ToArray();
                 foreach (var room in Rooms)
+                {
                     room.AssignmentCreationRequested += RoomOnAssignmentCreationRequested;
+                }
                 RecordTypes = new[] { unselectedRecordType }.Concat(scheduleService.GetRecordTypes()).ToArray();
                 DataSourcesAreLoaded = true;
                 log.InfoFormat("Loaded {0} rooms and {1} record types", (rooms as RoomViewModel[]).Length, (RecordTypes as RecordType[]).Length);
@@ -148,7 +179,8 @@ namespace ScheduleModule.ViewModels
             catch (Exception ex)
             {
                 log.Error("Failed to load datasources for schedule from database", ex);
-                FailReason = "При попытке загрузить списки кабинетов и услуг возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки";
+                FailureMediator.Activate("При попытке загрузить списки кабинетов и услуг возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки",
+                                         exception: ex);
             }
         }
 
@@ -157,7 +189,7 @@ namespace ScheduleModule.ViewModels
         public DateTime OpenTime
         {
             get { return openTime; }
-            private set { Set("OpenTime", ref openTime, value); }
+            private set { SetProperty(ref openTime, value); }
         }
 
         private DateTime closeTime;
@@ -165,7 +197,7 @@ namespace ScheduleModule.ViewModels
         public DateTime CloseTime
         {
             get { return closeTime; }
-            private set { Set("CloseTime", ref closeTime, value); }
+            private set { SetProperty(ref closeTime, value); }
         }
 
         private bool dataSourcesAreLoaded;
@@ -173,7 +205,7 @@ namespace ScheduleModule.ViewModels
         public bool DataSourcesAreLoaded
         {
             get { return dataSourcesAreLoaded; }
-            private set { Set("DataSourcesAreLoaded", ref dataSourcesAreLoaded, value); }
+            private set { SetProperty(ref dataSourcesAreLoaded, value); }
         }
 
         private IEnumerable<RoomViewModel> rooms;
@@ -183,11 +215,11 @@ namespace ScheduleModule.ViewModels
             get { return rooms; }
             private set
             {
-                if (Set("Rooms", ref rooms, value))
+                if (SetProperty(ref rooms, value))
                 {
                     filteredRooms.Source = value;
                     filteredRooms.View.Filter = FilterRooms;
-                    RaisePropertyChanged("FilteredRooms");
+                    OnPropertyChanged(() => FilteredRooms);
                 }
             }
         }
@@ -204,29 +236,10 @@ namespace ScheduleModule.ViewModels
         public IEnumerable<RecordType> RecordTypes
         {
             get { return recordTypes; }
-            private set { Set("ScheduleItems", ref recordTypes, value); }
+            private set { SetProperty(ref recordTypes, value); }
         }
 
-        public RelayCommand OpenScheduleEditorCommand { get; private set; }
-
-        private async void OpenScheduleEditor()
-        {
-            using (var scheduleEditor = new ScheduleEditorViewModel(scheduleService, log, cacheService, dialogService))
-            {
-                if (dialogService.ShowDialog(scheduleEditor) == true)
-                {
-                    await LoadAssignmentsAsync(selectedDate);
-                    UpdateRoomFilter();
-                }
-            }
-        }
-
-        private bool CanOpenScheduleEditor()
-        {
-            return securityService.HasPrivilege(Privileges.EditSchedule);
-        }
-
-        public RelayCommand<int> ChangeDateCommand { get; private set; }
+        public DelegateCommand<int> ChangeDateCommand { get; private set; }
 
         private void ChangeDate(int days)
         {
@@ -234,7 +247,7 @@ namespace ScheduleModule.ViewModels
         }
 
         #region Assignments
-        
+
         private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
         {
             var room = sender as RoomViewModel;
@@ -254,11 +267,11 @@ namespace ScheduleModule.ViewModels
             try
             {
                 log.InfoFormat("Trying to move assignment (Id = {0}) from {1:dd.MM HH:mm} (Room Id = {2}) to {3:dd.MM HH:mm} (Room Id = {4}) ",
-                    whatToMove.Id,
-                    whatToMove.StartTime,
-                    whatToMove.RoomId,
-                    whereToMove.StartTime,
-                    whereToMove.RoomId);
+                               whatToMove.Id,
+                               whatToMove.StartTime,
+                               whatToMove.RoomId,
+                               whereToMove.StartTime,
+                               whereToMove.RoomId);
                 scheduleService.MoveAssignment(whatToMove.Id, whereToMove.StartTime, (int)whereToMove.EndTime.Subtract(whereToMove.StartTime).TotalMinutes, whereToMove.RoomId);
                 log.Info("Successfully saved to database");
                 var whereToMoveRoom = rooms.First(x => x.Id == whereToMove.RoomId);
@@ -291,14 +304,15 @@ namespace ScheduleModule.ViewModels
                 dialogService.ShowError("При попытке перенести назначение возникла ошибка. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
             }
         }
+
         //TODO: worth reviewing this code to probably get rid of all type of assignment objects
         private void CreateNewAssignment(RoomViewModel selectedRoom, FreeTimeSlotViewModel freeTimeSlot)
         {
             log.InfoFormat("Trying to create new assignment: room Id  {0}, start time is {1:dd.MM HH:mm}, proposed duration {2}, record type Id {3}",
-                freeTimeSlot.RoomId,
-                freeTimeSlot.StartTime,
-                (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
-                freeTimeSlot.RecordTypeId);
+                           freeTimeSlot.RoomId,
+                           freeTimeSlot.StartTime,
+                           (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
+                           freeTimeSlot.RecordTypeId);
             var financingSource = GetFinancingSource();
             if (financingSource == 0)
             {
@@ -307,17 +321,17 @@ namespace ScheduleModule.ViewModels
                 return;
             }
             var assignment = new Assignment
-            {
-                AssignDateTime = freeTimeSlot.StartTime,
-                Duration = (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
-                AssignUserId = environment.CurrentUser.UserId,
-                Note = string.Empty,
-                FinancingSourceId = financingSource,
-                PersonId = currentPatient.Id,
-                RecordTypeId = freeTimeSlot.RecordTypeId,
-                RoomId = selectedRoom.Id,
-                IsTemporary = true,
-            };
+                             {
+                                 AssignDateTime = freeTimeSlot.StartTime,
+                                 Duration = (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
+                                 AssignUserId = environment.CurrentUser.UserId,
+                                 Note = string.Empty,
+                                 FinancingSourceId = financingSource,
+                                 PersonId = currentPatient,
+                                 RecordTypeId = freeTimeSlot.RecordTypeId,
+                                 RoomId = selectedRoom.Id,
+                                 IsTemporary = true,
+                             };
             try
             {
                 scheduleService.SaveAssignment(assignment);
@@ -332,7 +346,7 @@ namespace ScheduleModule.ViewModels
             {
                 log.Error("Failed to save new assignment", ex);
                 dialogService.ShowError(string.Format("Не удалось создать назначение. Причина - {0}{1}Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", ex.Message,
-                    Environment.NewLine));
+                                                      Environment.NewLine));
                 return;
             }
             if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
@@ -340,20 +354,20 @@ namespace ScheduleModule.ViewModels
                 OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
             }
             var newAssignmentDTO = new ScheduledAssignmentDTO
-            {
-                Id = assignment.Id,
-                IsCompleted = false,
-                PersonShortName = currentPatient.ShortName,
-                RecordTypeId = assignment.RecordTypeId,
-                RoomId = assignment.RoomId,
-                StartTime = assignment.AssignDateTime,
-                Duration = assignment.Duration,
-                IsTemporary = true,
-                AssignUserId = assignment.AssignUserId,
-                AssignLpuId = assignment.AssignLpuId,
-                Note = assignment.Note,
-                FinancingSourceId = assignment.FinancingSourceId
-            };
+                                   {
+                                       Id = assignment.Id,
+                                       IsCompleted = false,
+                                       PersonShortName = currentPatientShortName,
+                                       RecordTypeId = assignment.RecordTypeId,
+                                       RoomId = assignment.RoomId,
+                                       StartTime = assignment.AssignDateTime,
+                                       Duration = assignment.Duration,
+                                       IsTemporary = true,
+                                       AssignUserId = assignment.AssignUserId,
+                                       AssignLpuId = assignment.AssignLpuId,
+                                       Note = assignment.Note,
+                                       FinancingSourceId = assignment.FinancingSourceId
+                                   };
             var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment, securityService);
             newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
             newAssignment.UpdateRequested += RoomOnAssignmentUpdateRequested;
@@ -388,7 +402,7 @@ namespace ScheduleModule.ViewModels
                     {
                         log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
                         dialogService.ShowError(
-                            "Не удалось удалить временное назначение. Попробуйте удалить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически");
+                                                "Не удалось удалить временное назначение. Попробуйте удалить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически");
                     }
                 }
                 else
@@ -453,7 +467,9 @@ namespace ScheduleModule.ViewModels
             {
                 try
                 {
-                    var result = dialogService.AskUser(string.Format("Вы действительно хотите отменить назначение пациента {0} на {1:d MMMM HH:mm}?", assignment.PersonShortName, assignment.StartTime), true);
+                    var result = dialogService.AskUser(
+                                                       string.Format("Вы действительно хотите отменить назначение пациента {0} на {1:d MMMM HH:mm}?", assignment.PersonShortName, assignment.StartTime),
+                                                       true);
                     if (result != true)
                     {
                         return;
@@ -491,7 +507,7 @@ namespace ScheduleModule.ViewModels
             get { return isMovingAssignment; }
             set
             {
-                if (Set("IsMovingAssignment", ref isMovingAssignment, value))
+                if (SetProperty(ref isMovingAssignment, value))
                 {
                     CancelAssignmentMovementCommand.RaiseCanExecuteChanged();
                     movedAssignment.IsBeingMoved = value;
@@ -539,7 +555,7 @@ namespace ScheduleModule.ViewModels
 
         private OccupiedTimeSlotViewModel movedAssignment;
 
-        public RelayCommand CancelAssignmentMovementCommand { get; private set; }
+        public DelegateCommand CancelAssignmentMovementCommand { get; private set; }
 
         private void CancelAssignmentMovement()
         {
@@ -601,7 +617,7 @@ namespace ScheduleModule.ViewModels
         public bool NoRoomIsFound
         {
             get { return noRoomIsFound; }
-            private set { Set("NoRoomIsFound", ref noRoomIsFound, value); }
+            private set { SetProperty(ref noRoomIsFound, value); }
         }
 
         private DateTime selectedDate;
@@ -611,7 +627,7 @@ namespace ScheduleModule.ViewModels
             get { return selectedDate; }
             set
             {
-                if (Set("SelectedDate", ref selectedDate, value))
+                if (SetProperty(ref selectedDate, value))
                 {
                     OverlayAssignmentCollectionViewModel.CurrentDate = value;
                     if (!IsInReadOnlyMode)
@@ -620,12 +636,12 @@ namespace ScheduleModule.ViewModels
                     }
                     LoadAssignmentsAsync(selectedDate)
                         .ContinueWith(x =>
-                        {
-                            if (!IsInReadOnlyMode)
-                            {
-                                UpdateRoomFilter();
-                            }
-                        }, TaskScheduler.FromCurrentSynchronizationContext());
+                                      {
+                                          if (!IsInReadOnlyMode)
+                                          {
+                                              UpdateRoomFilter();
+                                          }
+                                      }, TaskScheduler.FromCurrentSynchronizationContext());
                 }
             }
         }
@@ -637,15 +653,17 @@ namespace ScheduleModule.ViewModels
             get { return isInReadOnlyMode; }
             set
             {
-                Set("IsInReadOnlyMode", ref isInReadOnlyMode, value);
+                SetProperty(ref isInReadOnlyMode, value);
                 if (!isInReadOnlyMode)
+                {
                     return;
+                }
                 SelectedRoom = null;
                 SelectedRecordType = null;
             }
         }
 
-        public RelayCommand ChangeModeCommand { get; private set; }
+        public DelegateCommand ChangeModeCommand { get; private set; }
 
         private void ChangeMode()
         {
@@ -654,7 +672,7 @@ namespace ScheduleModule.ViewModels
 
         private bool CanChangeMode()
         {
-            return currentPatient != null && securityService.HasPrivilege(Privileges.EditAssignments);
+            return currentPatient != null && securityService.HasPrivilege(Privilegies.EditAssignments);
         }
 
         private RoomViewModel selectedRoom;
@@ -664,7 +682,7 @@ namespace ScheduleModule.ViewModels
             get { return selectedRoom; }
             set
             {
-                Set("SelectedRoom", ref selectedRoom, value);
+                SetProperty(ref selectedRoom, value);
                 IsRoomSelected = selectedRoom != null && !ReferenceEquals(selectedRoom, unseletedRoom);
                 UpdateRoomFilter();
             }
@@ -675,7 +693,7 @@ namespace ScheduleModule.ViewModels
         public bool IsRoomSelected
         {
             get { return isRoomSelected; }
-            private set { Set("IsRoomSelected", ref isRoomSelected, value); }
+            private set { SetProperty(ref isRoomSelected, value); }
         }
 
         private RecordType selectedRecordType;
@@ -685,7 +703,7 @@ namespace ScheduleModule.ViewModels
             get { return selectedRecordType; }
             set
             {
-                Set("SelectedRecordType", ref selectedRecordType, value);
+                SetProperty(ref selectedRecordType, value);
                 IsRecordTypeSelected = selectedRecordType != null && !ReferenceEquals(selectedRecordType, unselectedRecordType);
                 UpdateRoomFilter();
             }
@@ -696,17 +714,23 @@ namespace ScheduleModule.ViewModels
         public bool IsRecordTypeSelected
         {
             get { return isRecordTypeSelected; }
-            private set { Set("IsRecordTypeSelected", ref isRecordTypeSelected, value); }
+            private set { SetProperty(ref isRecordTypeSelected, value); }
         }
 
-        private PersonViewModel currentPatient;
+        private string currentPatientShortName;
 
-        public PersonViewModel CurrentPatient
+        private int currentPatient;
+
+        public int CurrentPatient
         {
             get { return currentPatient; }
             set
             {
                 currentPatient = value;
+                using (var query = scheduleService.GetPatientQuery(currentPatient))
+                {
+                    currentPatientShortName = query.Select(x => x.ShortName).FirstOrDefault();
+                }
                 OverlayAssignmentCollectionViewModel.CurrentPatient = value;
                 ChangeModeCommand.RaiseCanExecuteChanged();
             }
@@ -758,7 +782,7 @@ namespace ScheduleModule.ViewModels
         public IEnumerable<TimeTickerViewModel> TimeTickers
         {
             get { return timeTickers; }
-            set { Set("TimeTickers", ref timeTickers, value); }
+            set { SetProperty(ref timeTickers, value); }
         }
 
         private void UpdateTimeTickers()

@@ -83,11 +83,7 @@
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <xctk:TimelinePanel BeginDate="{Binding CurrentDateRoomsOpenTime}"
-                                            EndDate="{Binding CurrentDateRoomsCloseTime}" 
-                                            Orientation="Vertical" 
-                                            OverlapBehavior="Stretch"
-                                            UnitSize="{x:Static misc:UiConfiguration.ScheduleUnitPerTimeInterval}"
-                                            UnitTimeSpan="{x:Static misc:UiConfiguration.ScheduleUnitTimeInterval}"/>
+                                            EndDate="{Binding CurrentDateRoomsCloseTime}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>

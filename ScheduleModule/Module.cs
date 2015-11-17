@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using Microsoft.Practices.Unity;
 using Prism.Modularity;
 using Shell.Shared;
@@ -42,6 +43,7 @@ namespace ScheduleModule
             //regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeaderView));
             //regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeaderView));
             //regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeaderView));
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/ScheduleModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
         private void RegisterServices()

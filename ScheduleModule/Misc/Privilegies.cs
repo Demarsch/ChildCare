@@ -1,6 +1,6 @@
 ﻿namespace ScheduleModule.Misc
 {
-    internal static class Privileges
+    internal static class Privilegies
     {
         public static readonly string EditAssignments = "Редактирование назначений";
 

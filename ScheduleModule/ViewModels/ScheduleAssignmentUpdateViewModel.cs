@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
+using System.Windows.Navigation;
+using System.Windows.Threading;
+using Core.Data;
+using Core.Services;
+using Core.Wpf.Mvvm;
+using Prism.Commands;
+using Prism.Mvvm;
+using Shell.Shared;
 
 namespace ScheduleModule.ViewModels
 {
-    public class ScheduleAssignmentUpdateViewModel : ObservableObject, IDialogViewModel, IDataErrorInfo
+    public class ScheduleAssignmentUpdateViewModel : BindableBase, IDialogViewModel, IDataErrorInfo
     {
         private DispatcherTimer timer;
 
@@ -15,18 +24,18 @@ namespace ScheduleModule.ViewModels
         {
             FinancingSource = cacheService.GetItems<FinancingSource>().OrderBy(x => x.Name).ToArray();
             AssignLpuList = new[] { SelfAssigned }.Concat(cacheService.GetItems<Org>().Where(x => x.IsLpu).OrderBy(x => x.Name)).ToArray();
-            CloseCommand = new RelayCommand<object>(x => Close((bool?)x));
+            CloseCommand = new DelegateCommand<bool?>(Close);
             if (runCountdown)
             {
                 timer = new DispatcherTimer(TimeSpan.FromMinutes(10.0), DispatcherPriority.ApplicationIdle, (sender, args) =>
-                {
-                    timer.Stop();
-                    timer = null;
-                    OnCloseRequested(new ReturnEventArgs<bool>(false));
-                },
-                    Dispatcher.CurrentDispatcher);
+                                                                                                            {
+                                                                                                                timer.Stop();
+                                                                                                                timer = null;
+                                                                                                                OnCloseRequested(new ReturnEventArgs<bool>(false));
+                                                                                                            },
+                                            Dispatcher.CurrentDispatcher);
             }
-            SelectedAssignLpu = AssignLpuList.FirstOrDefault(x => x.Name == Configuration.CurrentLpuName);
+            SelectedAssignLpu = AssignLpuList.FirstOrDefault(x => x.Name == ConfigurationManager.AppSettings[ApplicationSettings.CurrentLpuName]);
         }
 
         private FinancingSource selectedFinancingSource;
@@ -34,7 +43,7 @@ namespace ScheduleModule.ViewModels
         public FinancingSource SelectedFinancingSource
         {
             get { return selectedFinancingSource; }
-            set { Set("SelectedFinancingSource", ref selectedFinancingSource, value); }
+            set { SetProperty(ref selectedFinancingSource, value); }
         }
 
         private Org selectedAssignLpu;
@@ -48,7 +57,7 @@ namespace ScheduleModule.ViewModels
                 {
                     value = SelfAssigned;
                 }
-                Set("SelectedAssignLpu", ref selectedAssignLpu, value);
+                SetProperty(ref selectedAssignLpu, value);
                 IsSelfAssigned = value == SelfAssigned;
             }
         }
@@ -58,7 +67,7 @@ namespace ScheduleModule.ViewModels
         public bool IsSelfAssigned
         {
             get { return isSelfAssigned; }
-            private set { Set("IsSelfAssigned", ref isSelfAssigned, value); }
+            private set { SetProperty(ref isSelfAssigned, value); }
         }
 
         private string note;
@@ -66,27 +75,36 @@ namespace ScheduleModule.ViewModels
         public string Note
         {
             get { return note; }
-            set { Set("Note", ref note, value); }
+            set { SetProperty(ref note, value); }
         }
 
         public IEnumerable<FinancingSource> FinancingSource { get; private set; }
 
         public IEnumerable<Org> AssignLpuList { get; private set; }
 
-        public string Title { get { return "Дополнительные детали назначения"; } }
+        public string Title
+        {
+            get { return "Дополнительные детали назначения"; }
+        }
 
-        public string ConfirmButtonText { get { return "Сохранить"; } }
+        public string ConfirmButtonText
+        {
+            get { return "Сохранить"; }
+        }
 
-        public string CancelButtonText { get { return "Отменить"; } }
+        public string CancelButtonText
+        {
+            get { return "Отменить"; }
+        }
 
-        public RelayCommand<object> CloseCommand { get; private set; }
+        public DelegateCommand<bool?> CloseCommand { get; private set; }
 
         private void Close(bool? validate)
         {
             saveWasRequested = true;
             if (validate == true)
             {
-                RaisePropertyChanged(string.Empty);
+                OnPropertyChanged(string.Empty);
                 if (invalidProperties.Count == 0)
                 {
                     OnCloseRequested(new ReturnEventArgs<bool>(true));

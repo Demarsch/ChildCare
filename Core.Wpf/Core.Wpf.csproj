@@ -70,7 +70,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\MedNumberInputHelperBehavior.cs" />
+    <Compile Include="Behaviors\ScrollSynchronizer.cs" />
     <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="Mvvm\Mediators\FailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />
     <Compile Include="Mvvm\Misc\FieldValue.cs" />
+    <Compile Include="Mvvm\Misc\IDialogViewModel.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionChangeTracker.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,7 +113,13 @@
     <Compile Include="PopupWindowAction\PopupWindowAction.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Services\Implementations\WindowsDialogService.cs" />
+    <Compile Include="Services\Interfaces\IDialogService.cs" />
     <Compile Include="Services\Interfaces\IViewNameResolver.cs" />
+    <Compile Include="Views\DialogWindow.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="PopupWindowAction\DefaultWindows\DefaultConfirmationWindow.xaml">
@@ -125,13 +134,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\Implementations\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\Loading-32x32.GIF" />
   </ItemGroup>
