@@ -80,18 +80,18 @@
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Record48x48.png"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Изменения">
+        <fluent:Button Header="Печать"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" Command="{Binding PrintProtocolCommand}"/>
         <fluent:Button Header="Изменить"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" />
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" Command="{Binding ShowInEditModeCommand}"/>
         <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/SaveChanges-48x48.png" />
         <fluent:Button Header="Закрыть"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/Cancel-48x48.png" />
-        <fluent:Button Header="Печать"
-                       SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" />
     </fluent:RibbonGroupBox>
 
 </fluent:RibbonTabItem>

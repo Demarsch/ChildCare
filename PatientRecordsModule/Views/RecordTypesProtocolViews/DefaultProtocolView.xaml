@@ -4,22 +4,42 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              mc:Ignorable="d">
     <DataTemplate DataType="{x:Type viewModels:DefaultProtocolViewModel}">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
+            <!--Grid for edit protocol-->
+            <Grid Visibility="{Binding IsEditMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
-            <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Discription}"/>
-            <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
-            <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result}"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
+                <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Discription}"/>
+                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
+                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result}"/>
+            </Grid>
+            <!--Grid for view protocol-->
+            <Grid Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
+                <TextBlock Grid.Row="0"  Grid.Column="1" Text="{Binding Discription}"/>
+                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
+                <TextBlock  Grid.Row="1" Grid.Column="1" Text="{Binding Result}"/>
+            </Grid>
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

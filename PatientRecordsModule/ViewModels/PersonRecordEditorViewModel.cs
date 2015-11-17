@@ -2,8 +2,10 @@
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using log4net;
+using PatientRecordsModule.Misc;
 using PatientRecordsModule.Services;
 using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using System;
@@ -11,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -42,7 +45,8 @@ namespace PatientRecordsModule.ViewModels
             this.patientRecordsService = patientRecordsService;
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
-
+            printProtocolCommand = new DelegateCommand(PrintProtocol);
+            showInEditModeCommand = new DelegateCommand(ShowProtocolInEditMode);
             SubscribeToEvents();
         }
         #endregion
@@ -80,8 +84,8 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private TrackableBindableBase protocolEditor;
-        public TrackableBindableBase ProtocolEditor
+        private IRecordTypeProtocol protocolEditor;
+        public IRecordTypeProtocol ProtocolEditor
         {
             get { return protocolEditor; }
             set { SetProperty(ref protocolEditor, value); }
@@ -129,6 +133,34 @@ namespace PatientRecordsModule.ViewModels
             eventAggregator.GetEvent<SelectionEvent<Visit>>().Subscribe(OnVisitSelected);
             eventAggregator.GetEvent<SelectionEvent<Assignment>>().Subscribe(OnAssignmentSelected);
             eventAggregator.GetEvent<SelectionEvent<Record>>().Subscribe(OnRecordSelected);
+        }
+
+        private void PrintProtocol()
+        {
+            if (ProtocolEditor != null)
+                ProtocolEditor.PrintProtocol();
+        }
+
+        private void ShowProtocolInEditMode()
+        {
+            if (ProtocolEditor != null)
+                protocolEditor.CurrentMode = ProtocolMode.Edit;
+        }
+        #endregion
+
+        #region Commands
+        private DelegateCommand printProtocolCommand;
+        public ICommand PrintProtocolCommand
+        {
+            get { return printProtocolCommand; }
+
+        }
+
+        private DelegateCommand showInEditModeCommand;
+        public ICommand ShowInEditModeCommand
+        {
+            get { return showInEditModeCommand; }
+
         }
         #endregion
     }

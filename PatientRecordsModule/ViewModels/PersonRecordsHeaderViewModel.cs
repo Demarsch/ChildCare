@@ -44,6 +44,8 @@ namespace PatientRecordsModule.ViewModels
 
         private readonly PersonRecordListViewModel personRecordListViewModel;
 
+        private readonly PersonRecordEditorViewModel personRecordEditorViewModel;
+
         private readonly CommandWrapper reloadPatientVisitCompletedCommandWrapper;
 
         private int patientId;
@@ -52,7 +54,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Constructors
-        public PersonRecordsHeaderViewModel(PersonRecordListViewModel personRecordListViewModel, IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
+        public PersonRecordsHeaderViewModel(PersonRecordListViewModel personRecordListViewModel, PersonRecordEditorViewModel personRecordEditorViewModel, IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
         {
             if (patientRecordsService == null)
             {
@@ -82,6 +84,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("personRecordListViewModel");
             }
+            if (personRecordEditorViewModel == null)
+            {
+                throw new ArgumentNullException("personRecordEditorViewModel");
+            }
+            this.personRecordEditorViewModel = personRecordEditorViewModel;
             this.personRecordListViewModel = personRecordListViewModel;
             this.patientRecordsService = patientRecordsService;
             this.logService = logSevice;
@@ -371,6 +378,10 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CompleteVisitCommand { get { return personRecordListViewModel.CompleteVisitCommand; } }
 
         public ICommand ReturnToActiveVisitCommand { get { return personRecordListViewModel.ReturnToActiveVisitCommand; } }
+
+        public ICommand PrintProtocolCommand { get { return personRecordEditorViewModel.PrintProtocolCommand; } }
+
+        public ICommand ShowInEditModeCommand { get { return personRecordEditorViewModel.ShowInEditModeCommand; } }
         #endregion
     }
 }
