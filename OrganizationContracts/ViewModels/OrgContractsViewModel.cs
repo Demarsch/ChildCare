@@ -26,7 +26,7 @@ using Prism.Interactivity.InteractionRequest;
 
 namespace OrganizationContractsModule.ViewModels
 {
-    public class OrgContractsViewModel : BindableBase, IConfirmNavigationRequest, INavigationAware, IDataErrorInfo
+    public class OrgContractsViewModel : BindableBase, IConfirmNavigationRequest, IDataErrorInfo
     {
         private readonly IContractService contractService;
         private readonly ILog log;

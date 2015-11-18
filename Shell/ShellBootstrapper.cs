@@ -56,6 +56,7 @@ namespace Shell
             Container.RegisterType<IViewNameResolver, ConventionBasedViewNameResolver>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IEnvironment, DbEnvironment>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ISecurityService, DbSecurityService>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IDialogService, WindowDialogService>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("SHELL"));
         }
 

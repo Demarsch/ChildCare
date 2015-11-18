@@ -9,10 +9,12 @@ namespace Shell
 
         public string Resolve<TViewModel>()
         {
-            var viewModelType = typeof(TViewModel).Name;
+            var viewModelType = typeof(TViewModel).FullName;
             if (viewModelType.EndsWith(Model))
             {
-                return viewModelType.Remove(viewModelType.Length - Model.Length);
+                var result = viewModelType.Remove(viewModelType.Length - Model.Length)
+                                           .Replace("ViewModels", "Views");
+                return result;
             }
             throw new Exception("View-model type name must end with 'Model' word");
         }

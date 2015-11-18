@@ -14,6 +14,7 @@ using Core.Wpf.Services;
 using log4net;
 using Prism.Commands;
 using Prism.Mvvm;
+using Prism.Regions;
 using ScheduleModule.DTO;
 using ScheduleModule.Exceptions;
 using ScheduleModule.Misc;
@@ -21,7 +22,7 @@ using ScheduleModule.Services;
 
 namespace ScheduleModule.ViewModels
 {
-    public class ContentViewModel : BindableBase
+    public class ContentViewModel : BindableBase, INavigationAware
     {
         private readonly ILog log;
 
@@ -91,7 +92,7 @@ namespace ScheduleModule.ViewModels
             isInReadOnlyMode = true;
             ChangeModeCommand = new DelegateCommand(ChangeMode, CanChangeMode);
             CancelAssignmentMovementCommand = new DelegateCommand(CancelAssignmentMovement);
-            ChangeDateCommand = new DelegateCommand<int>(ChangeDate);
+            ChangeDateCommand = new DelegateCommand<int?>(ChangeDate);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
@@ -240,11 +241,11 @@ namespace ScheduleModule.ViewModels
             private set { SetProperty(ref recordTypes, value); }
         }
 
-        public DelegateCommand<int> ChangeDateCommand { get; private set; }
+        public DelegateCommand<int?> ChangeDateCommand { get; private set; }
 
-        private void ChangeDate(int days)
+        private void ChangeDate(int? days)
         {
-            SelectedDate = SelectedDate.AddDays(days);
+            SelectedDate = days.HasValue ? SelectedDate.AddDays(days.Value) : DateTime.Today;
         }
 
         #region Assignments
@@ -801,5 +802,20 @@ namespace ScheduleModule.ViewModels
         }
 
         #endregion
+
+        public void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            //TODO: put the logic for view activation here
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            return true;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            //TODO: put the logic for view deactivation here
+        }
     }
 }

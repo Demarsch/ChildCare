@@ -182,13 +182,13 @@
                                  VerticalContentAlignment="Stretch"
                                  Background="Transparent"
                                  BorderThickness="0 1 0 1">
-                            <!--<ListBox.ItemsPanel>
+                            <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <xctk:TimelinePanel BeginDate="{Binding OpenTime, FallbackValue={x:Static system:DateTime.Today}}"
                                                         EndDate="{Binding CloseTime, FallbackValue={x:Static system:DateTime.Today}}"
                                                         MinHeight="10"/>
                                 </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>-->
+                            </ListBox.ItemsPanel>
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
                                     <Setter Property="xctk:TimelinePanel.Date"

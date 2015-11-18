@@ -13,7 +13,7 @@ namespace ScheduleModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public HeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public HeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, ContentViewModel contentViewModel)
         {
             if (regionManager == null)
             {
@@ -23,9 +23,16 @@ namespace ScheduleModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (contentViewModel == null)
+            {
+                throw new ArgumentNullException("contentViewModel");
+            }
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            ContentViewModel = contentViewModel;
         }
+
+        public ContentViewModel ContentViewModel { get; private set; }
 
         private bool isActive;
 
