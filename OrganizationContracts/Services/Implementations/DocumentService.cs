@@ -31,6 +31,25 @@ namespace OrganizationContractsModule.Services
             this.fileService = fileService;
         }
 
+        public async Task<int> UploadDocument(Document document)
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var saveDocument = document.Id == SpecialValues.NewId ? new Document() : db.Set<Document>().First(x => x.Id == document.Id);
+                saveDocument.FileName = document.FileName;
+                saveDocument.DocumentFromDate = document.DocumentFromDate;
+                saveDocument.Description = document.Description;
+                saveDocument.DisplayName = document.DisplayName;
+                saveDocument.Extension = document.Extension;
+                saveDocument.FileData = document.FileData;
+                saveDocument.FileSize = document.FileSize;
+                saveDocument.UploadDate = document.UploadDate;
+                db.Entry<Document>(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                await db.SaveChangesAsync();
+                return saveDocument.Id;
+            }
+        }
+
         public IDisposableQueryable<Document> GetDocumentById(int documentId)
         {
             var context = contextProvider.CreateNewContext();

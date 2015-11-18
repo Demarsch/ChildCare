@@ -22,6 +22,7 @@ namespace Core.Data
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Records = new HashSet<Record>();
             this.RecordTypeCosts = new HashSet<RecordTypeCost>();
+            this.RecordTypeEditors = new HashSet<RecordTypeEditor>();
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
             this.RecordTypes1 = new HashSet<RecordType>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
@@ -36,7 +37,6 @@ namespace Core.Data
         public int Duration { get; set; }
         public int DisplayOrder { get; set; }
         public Nullable<bool> Assignable { get; set; }
-        public Nullable<int> EditorId { get; set; }
         public int RecordTypeGroupId { get; set; }
         public int MedProfileId { get; set; }
         public bool IsRecord { get; set; }
@@ -52,6 +52,8 @@ namespace Core.Data
         public virtual ICollection<Record> Records { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeCost> RecordTypeCosts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordTypeEditor> RecordTypeEditors { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

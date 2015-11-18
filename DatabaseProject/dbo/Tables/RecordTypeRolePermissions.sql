@@ -8,6 +8,8 @@
     CONSTRAINT [PK_RecordTypeRolePermissions] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_RecordTypeRolePermissions_Permissions] FOREIGN KEY ([PermissionId]) REFERENCES [dbo].[Permissions] ([Id]),
     CONSTRAINT [FK_RecordTypeRolePermissions_RecordTypeRolePermissions] FOREIGN KEY ([RecordTypeMemberRoleId]) REFERENCES [dbo].[RecordTypeRoles] ([Id]),
-    CONSTRAINT [FK_RecordTypeRolePermissions_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id])
+    CONSTRAINT [FK_RecordTypeRolePermissions_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]) ON DELETE CASCADE
 );
+
+
 

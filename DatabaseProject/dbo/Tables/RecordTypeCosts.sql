@@ -16,8 +16,10 @@
     [InUserLogin]       VARCHAR (100) NOT NULL,
     CONSTRAINT [PK_RecordTypeCosts] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_RecordTypeCosts_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
-    CONSTRAINT [FK_RecordTypeCosts_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id])
+    CONSTRAINT [FK_RecordTypeCosts_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]) ON DELETE CASCADE
 );
+
+
 
 
 

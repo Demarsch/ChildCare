@@ -12,18 +12,13 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class ScheduleItem
+    public partial class RecordTypeEditor
     {
         public int Id { get; set; }
-        public int RoomId { get; set; }
-        public Nullable<int> RecordTypeId { get; set; }
-        public int DayOfWeek { get; set; }
-        public System.DateTime BeginDate { get; set; }
-        public System.DateTime EndDate { get; set; }
-        public System.TimeSpan StartTime { get; set; }
-        public System.TimeSpan EndTime { get; set; }
+        public int RecordTypeId { get; set; }
+        public bool HasDocuments { get; set; }
+        public bool HasDICOM { get; set; }
     
-        public virtual Room Room { get; set; }
         public virtual RecordType RecordType { get; set; }
     }
 }

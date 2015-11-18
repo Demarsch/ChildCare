@@ -10,5 +10,9 @@ namespace OrganizationContractsModule.Services
     public interface IRecordService
     {
         IDisposableQueryable<Record> GetRecordById(int id);
+        IDisposableQueryable<RecordType> GetRecordTypeById(int id);
+
+        bool SaveRecordDocument(RecordDocument recordDocument);
+        void DeleteRecordDocument(int documentId);
     }
 }

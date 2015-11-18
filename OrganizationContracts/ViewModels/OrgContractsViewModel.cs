@@ -46,7 +46,7 @@ namespace OrganizationContractsModule.ViewModels
         public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
         public InteractionRequest<AddContractOrganizationViewModel> AddContractOrgInteractionRequest { get; private set; }
 
-        public RecordDocumentsCollectionViewModel DocsViewer { get; set; }
+        public RecordDocumentsCollectionViewModel DocumentsViewer { get; set; }
 
         public OrgContractsViewModel(IContractService contractService, IDocumentService documentService, ILog log, ICacheService cacheService, IFileService fileService, IRecordService recordService,
             IEventAggregator eventAggregator, Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
@@ -88,7 +88,7 @@ namespace OrganizationContractsModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.addContractOrganizationViewModelFactory = addContractOrganizationViewModelFactory;
             BusyMediator = new BusyMediator();
-            DocsViewer = new RecordDocumentsCollectionViewModel(documentService, recordService, fileService, log);
+            DocumentsViewer = new RecordDocumentsCollectionViewModel(documentService, recordService, fileService, log);
             FailureMediator = new FailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
@@ -168,7 +168,10 @@ namespace OrganizationContractsModule.ViewModels
                         changeTracker.IsEnabled = false;
                         LoadContractData();
                         changeTracker.IsEnabled = true;
-                        DocsViewer.LoadDocs(2);
+                        DocumentsViewer.LoadDocuments(2, 2);
+                        AllowDocuments = DocumentsViewer.AllowDocuments;
+                        AllowDICOM = DocumentsViewer.AllowDICOM;
+                        CanAttachDICOM = DocumentsViewer.CanAttachDICOM;
                     }
                     else
                         IsContractSelected = false;
@@ -607,12 +610,31 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand RemoveContractCommand { get { return removeContractCommand; } }
         public ICommand AddOrganizationCommand { get { return addOrganizationCommand; } }
 
-        public ICommand AttachDocumentCommand { get { return DocsViewer.AttachDocumentCommand; } }
-        public ICommand DetachDocumentCommand { get { return DocsViewer.DetachDocumentCommand; } }
-        public ICommand AttachDICOMCommand { get { return DocsViewer.AttachDICOMCommand; } }
-        public ICommand DetachDICOMCommand { get { return DocsViewer.DetachDICOMCommand; } }
-        public bool AllowDocuments { get { return DocsViewer.AllowDocuments; } }
-        public bool AllowDICOM { get { return DocsViewer.AllowDICOM; } }
+        public ICommand AttachDocumentCommand { get { return DocumentsViewer.AttachDocumentCommand; } }
+        public ICommand DetachDocumentCommand { get { return DocumentsViewer.DetachDocumentCommand; } }
+        public ICommand AttachDICOMCommand { get { return DocumentsViewer.AttachDICOMCommand; } }
+        public ICommand DetachDICOMCommand { get { return DocumentsViewer.DetachDICOMCommand; } }
+
+        private bool allowDocuments;
+        public bool AllowDocuments
+        {
+            get { return DocumentsViewer.AllowDocuments; }
+            set { SetProperty(ref allowDocuments, value); }
+        }
+
+        private bool allowDICOM;
+        public bool AllowDICOM
+        {
+            get { return DocumentsViewer.AllowDICOM; }
+            set { SetProperty(ref allowDICOM, value); }
+        }
+
+        private bool canAttachDICOM;
+        public bool CanAttachDICOM
+        {
+            get { return DocumentsViewer.CanAttachDICOM; }
+            set { SetProperty(ref canAttachDICOM, value); }
+        }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {

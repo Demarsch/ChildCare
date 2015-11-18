@@ -118,13 +118,13 @@ namespace Core.Wpf.Services
             string[] ExcelExt = new string[] { "xls", "xlsx" };
             string[] PDFExt = new string[] { "pdf" };
 
-            if (WordExt.Contains(extension))
+            if (WordExt.Contains(extension.ToLower()))
                 return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Word.png"));
-            else if (ExcelExt.Contains(extension))
+            else if (ExcelExt.Contains(extension.ToLower()))
                 return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Excel.png"));
-            else if (PDFExt.Contains(extension))
+            else if (PDFExt.Contains(extension.ToLower()))
                 return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Pdf.png"));
-            else if (ImageExt.Contains(extension))
+            else if (ImageExt.Contains(extension.ToLower()))
             {
                 using (var ms = new MemoryStream(binaryData))
                 {

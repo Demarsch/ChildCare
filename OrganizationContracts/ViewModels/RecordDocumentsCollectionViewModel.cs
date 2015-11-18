@@ -19,6 +19,8 @@ using System.Collections;
 using Prism.Commands;
 using Core.Services;
 using Core.Wpf.Services;
+using Prism.Interactivity.InteractionRequest;
+using System.Collections.Specialized;
 
 namespace OrganizationContractsModule.ViewModels
 {
@@ -29,6 +31,8 @@ namespace OrganizationContractsModule.ViewModels
         private readonly IRecordService recordService;
         private readonly ILog logService;
         private CancellationTokenSource currentLoadingToken;
+        public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
+        private int recordId;
 
         public RecordDocumentsCollectionViewModel(IDocumentService documentService, IRecordService recordService, IFileService fileService, ILog logService)
         {
@@ -54,14 +58,25 @@ namespace OrganizationContractsModule.ViewModels
             this.logService = logService;
 
             attachDocumentCommand = new DelegateCommand(AttachDocument);
-            detachDocumentCommand = new DelegateCommand(DetachDocument);
+            detachDocumentCommand = new DelegateCommand(DetachDocument, CanDetachDocuments);
             attachDICOMCommand = new DelegateCommand(AttachDICOM);
             detachDICOMCommand = new DelegateCommand(DetachDICOM);
+
+            ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
+        }
+
+        void RecordDocuments_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {            
+            HasAttachments = recordDocuments.Any();
+            if (HasAttachments)
+                recordDocuments.First().IsSelected = true;
+            detachDocumentCommand.RaiseCanExecuteChanged();
         }
         
-        internal async void LoadDocs(int recordId)
+        internal async void LoadDocuments(int recordId, int recordTypeId)
         {
-            SetVisibilityControlButtons(recordId);
+            this.recordId = recordId;
+            SetVisibilityControlButtons(recordTypeId);
             if (currentLoadingToken != null)
             {
                 currentLoadingToken.Cancel();
@@ -96,7 +111,9 @@ namespace OrganizationContractsModule.ViewModels
                     DocumentThumbnail = documentService.GetDocumentThumbnail(x.Id),
                     DocumentToolTip = x.DisplayName
                 }).ToArray());
-                    
+
+                RecordDocuments.CollectionChanged += RecordDocuments_CollectionChanged;
+
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -112,32 +129,92 @@ namespace OrganizationContractsModule.ViewModels
             {
                 if (loadingIsCompleted)
                 {
-
+                    detachDocumentCommand.RaiseCanExecuteChanged();
                 }
                 if (documentsQuery != null)
                     documentsQuery.Dispose();
             }
         }
 
-        private void SetVisibilityControlButtons(int recordId)
+        private void SetVisibilityControlButtons(int recordTypeId)
         {
-            var recordType = recordService.GetRecordById(recordId).First().RecordType.EditorId;
-            AllowDICOM = false;
-            AllowDocuments = true;
-        }
+            var editor = recordService.GetRecordTypeById(recordTypeId).First().RecordTypeEditors.FirstOrDefault();
+            if (editor != null)
+            {
+                AllowDICOM = editor.HasDICOM;
+                AllowDocuments = editor.HasDocuments;
+                if (allowDICOM)
+                    CanAttachDICOM = hasAttachments;
+            }            
+        }    
 
-        private void AttachDocument()
+        private async void AttachDocument()
         {
             string[] files = fileService.OpenFileDialog(true);
             if (files.Any())
             {
+                int index = recordDocuments.Count(x => x.DocumentName.StartsWith("Док "));
+                foreach (var file in files)
+                {
+                    Document document = new Document();
+                    document.FileName = "Док " + (++index);
+                    document.DocumentFromDate = (DateTime?)null;
+                    document.Description = string.Empty;
+                    document.DisplayName = file.Substring(file.LastIndexOf("\\") + 1);
+                    document.Extension = file.Substring(file.LastIndexOf('.') + 1);
+                    document.FileData = fileService.GetBinaryDataFromFile(file);
+                    document.FileSize = document.FileData.Length;
+                    document.UploadDate = DateTime.Now;
 
+                    int documentId = await documentService.UploadDocument(document);
+                    if (documentId != SpecialValues.NewId)
+                    {
+                        RecordDocument recordDocument = new RecordDocument();
+                        recordDocument.RecordId = this.recordId;
+                        recordDocument.DocumentId = documentId;
+
+                        if (recordService.SaveRecordDocument(recordDocument))
+                        {
+                            RecordDocuments.Add(new RecordDocumentViewModel(fileService, documentService)
+                            {
+                                DocumentId = documentId,
+                                DocumentName = document.FileName,
+                                DocumentThumbnail = documentService.GetDocumentThumbnail(documentId),
+                                DocumentToolTip = document.DisplayName
+                            });                            
+                        }
+                    }                        
+                }
             }
+        }
+
+        private bool CanDetachDocuments()
+        {
+            if (recordDocuments != null && !recordDocuments.Any(x => x.IsSelected)) 
+                return false;
+            return hasAttachments;
         }
 
         private void DetachDocument()
         {
-            return;
+            ConfirmationInteractionRequest.Raise(new Confirmation()
+            {
+                Title = "Внимание",
+                Content = "Удалить отмеченные документы ?"
+            }, OnDialogClosed);
+        }
+
+        private void OnDialogClosed(Confirmation confirmation)
+        {
+            if (confirmation.Confirmed)
+            {
+                var selectedFile = recordDocuments.FirstOrDefault(x => x.IsSelected);
+                if (selectedFile != null)
+                {
+                    recordService.DeleteRecordDocument(selectedFile.DocumentId);
+                    RecordDocuments.Remove(selectedFile);
+                }
+            }
         }
 
         private void AttachDICOM()
@@ -171,11 +248,18 @@ namespace OrganizationContractsModule.ViewModels
             set { SetProperty(ref allowDICOM, value); }
         }
 
-        private bool hasDocuments;
-        public bool HasDocuments
+        private bool canAttachDICOM;
+        public bool CanAttachDICOM
         {
-            get { return hasDocuments; }
-            set { SetProperty(ref hasDocuments, value); }
+            get { return canAttachDICOM; }
+            set { SetProperty(ref canAttachDICOM, value); }
+        }
+
+        private bool hasAttachments;
+        public bool HasAttachments
+        {
+            get { return hasAttachments; }
+            set { SetProperty(ref hasAttachments, value); }
         }
 
         private ObservableCollectionEx<RecordDocumentViewModel> recordDocuments;
@@ -183,11 +267,12 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return recordDocuments; }
             set 
-            { 
-                if (SetProperty(ref recordDocuments, value) && value.Any())
+            {
+                if (SetProperty(ref recordDocuments, value))
                 {
-                    HasDocuments = true;
-                    recordDocuments.First().IsSelected = true;
+                    HasAttachments = value.Any();
+                    if (value.Any())
+                        recordDocuments.First().IsSelected = true;
                 }
             }
         }

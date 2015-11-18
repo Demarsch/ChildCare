@@ -132,6 +132,9 @@
     <Compile Include="RecordDocument.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RecordTypeEditor.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ReportTemplate.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

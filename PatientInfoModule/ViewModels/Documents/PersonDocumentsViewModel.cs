@@ -255,7 +255,7 @@ namespace PatientInfoModule.ViewModels
             document.UploadDate = DateTime.Now;
 
             int documentId = await documentService.UploadDocument(document);
-            if (documentId != 0)
+            if (documentId != SpecialValues.NewId)
             {
                 PersonOuterDocument personOuterDocument = new PersonOuterDocument();
                 personOuterDocument.PersonId = this.personId;
@@ -304,7 +304,6 @@ namespace PatientInfoModule.ViewModels
                 foreach (var item in allDocuments.Where(x => x.ThumbnailChecked).ToList())
                 {
                     patientService.DeletePersonOuterDocument(item.DocumentId);
-                    documentService.DeleteDocumentById(item.DocumentId);
                     AllDocuments.Remove(item);
                 }
             }            

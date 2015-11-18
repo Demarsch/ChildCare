@@ -35,8 +35,10 @@
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="DICOM" FontWeight="Medium" Visibility="{Binding AllowDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
         <fluent:Button x:Name="btnAttachDICOM" Command="{Binding AttachDICOMCommand}" 
+                       Visibility="{Binding CanAttachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                        Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachFile48x48.png" />
         <fluent:Button x:Name="btnDetachDICOM" Command="{Binding DetachDICOMCommand}"
+                       Visibility="{Binding CanDetachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                        Header="Открепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachFile48x48.png" />
         <!--<fluent:Button x:Name="btnMarkDICOM" Command="{Binding MarkDICOMCommand}" 
                        Header="Отметить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Mark48x48.png" />-->

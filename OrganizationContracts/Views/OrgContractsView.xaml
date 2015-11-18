@@ -176,8 +176,8 @@
                     </Grid>
 
 
-                    <views:RecordDocsView Grid.Row="2" DataContext="{Binding DocsViewer}" 
-                                          HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+                    <views:RecordDocumentsView Grid.Row="2" 
+                           DataContext="{Binding DocumentsViewer}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
                     
                     
                 </Grid>

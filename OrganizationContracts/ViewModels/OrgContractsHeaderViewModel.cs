@@ -58,8 +58,33 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand AttachDICOMCommand { get { return contractsViewModel.AttachDICOMCommand; } }
         public ICommand DetachDICOMCommand { get { return contractsViewModel.DetachDICOMCommand; } }
 
-        public bool AllowDocuments { get { return contractsViewModel.AllowDocuments; } }
-        public bool AllowDICOM { get { return contractsViewModel.AllowDICOM; } }
+        private bool allowDocuments;
+        public bool AllowDocuments 
+        { 
+            get { return contractsViewModel.AllowDocuments; }
+            set { SetProperty(ref allowDocuments, value); }
+        }
+
+        private bool allowDICOM;
+        public bool AllowDICOM
+        {
+            get { return contractsViewModel.AllowDocuments; }
+            set { SetProperty(ref allowDICOM, value); }
+        }
+
+        private bool canAttachDICOM;
+        public bool CanAttachDICOM
+        {
+            get { return contractsViewModel.CanAttachDICOM; }
+            set { SetProperty(ref canAttachDICOM, value); }
+        }
+
+        private bool canDetachDICOM;
+        public bool CanDetachDICOM
+        {
+            get { return !contractsViewModel.CanAttachDICOM; }
+            set { SetProperty(ref canDetachDICOM, value); }
+        }
 
         public void Dispose()
         {
@@ -68,7 +93,11 @@ namespace OrganizationContractsModule.ViewModels
        
         private void ActivateOrganizationContracts()
         {
-            regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<OrgContractsViewModel>());            
+            regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<OrgContractsViewModel>());
+            AllowDocuments = contractsViewModel.AllowDocuments;
+            AllowDICOM = contractsViewModel.AllowDICOM;
+            CanAttachDICOM = contractsViewModel.CanAttachDICOM;
+            CanDetachDICOM = !contractsViewModel.CanAttachDICOM;
         }
 
         private bool isActive;

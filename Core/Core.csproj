@@ -118,7 +118,7 @@
     <Resource Include="Resources\Images\Scanner48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\FileUnknown.png" />
+    <Resource Include="Resources\Images\File_Unknown.png" />
     <Resource Include="Resources\Images\File_Excel.png" />
     <Resource Include="Resources\Images\File_Pdf.png" />
     <Resource Include="Resources\Images\File_Word.png" />

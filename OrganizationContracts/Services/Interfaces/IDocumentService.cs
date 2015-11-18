@@ -13,5 +13,7 @@ namespace OrganizationContractsModule.Services
         IDisposableQueryable<Document> GetDocumentById(int documentId);
         string GetDocumentFile(int documentId);
         BitmapImage GetDocumentThumbnail(int documentId);
+
+        Task<int> UploadDocument(Document document);
     }
 }

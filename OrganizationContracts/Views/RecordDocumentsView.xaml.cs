@@ -6,9 +6,9 @@ namespace OrganizationContractsModule.Views
     /// <summary>
     /// Interaction logic for RecordDocsView.xaml
     /// </summary>
-    public partial class RecordDocsView
+    public partial class RecordDocumentsView
     {
-        public RecordDocsView()
+        public RecordDocumentsView()
         {
             InitializeComponent();
         }
