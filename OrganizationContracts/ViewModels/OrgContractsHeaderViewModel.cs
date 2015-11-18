@@ -53,6 +53,14 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand RemoveContractCommand { get { return contractsViewModel.RemoveContractCommand; } }
         public ICommand AddOrganizationCommand { get { return contractsViewModel.AddOrganizationCommand; } }
 
+        public ICommand AttachDocumentCommand { get { return contractsViewModel.AttachDocumentCommand; } }
+        public ICommand DetachDocumentCommand { get { return contractsViewModel.DetachDocumentCommand; } }
+        public ICommand AttachDICOMCommand { get { return contractsViewModel.AttachDICOMCommand; } }
+        public ICommand DetachDICOMCommand { get { return contractsViewModel.DetachDICOMCommand; } }
+
+        public bool AllowDocuments { get { return contractsViewModel.AllowDocuments; } }
+        public bool AllowDICOM { get { return contractsViewModel.AllowDICOM; } }
+
         public void Dispose()
         {
             

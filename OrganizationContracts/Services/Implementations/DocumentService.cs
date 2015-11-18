@@ -7,22 +7,28 @@ using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Media.Imaging;
-using System.Diagnostics;
 using System.IO;
+using Core.Wpf.Services;
 
 namespace OrganizationContractsModule.Services
 {
     public class DocumentService : IDocumentService
     {
         private readonly IDbContextProvider contextProvider;
+        private readonly IFileService fileService;
 
-        public DocumentService(IDbContextProvider contextProvider)
+        public DocumentService(IDbContextProvider contextProvider, IFileService fileService)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
             }
+            if (fileService == null)
+            {
+                throw new ArgumentNullException("fileService");
+            }
             this.contextProvider = contextProvider;
+            this.fileService = fileService;
         }
 
         public IDisposableQueryable<Document> GetDocumentById(int documentId)
@@ -37,63 +43,16 @@ namespace OrganizationContractsModule.Services
             return new DisposableQueryable<Document>(context.Set<RecordDocument>().Where(x => x.RecordId == recordId).Select(x => x.Document), context);
         }
 
-        public BitmapImage GetThumbnailForFile(int documentId)
+        public string GetDocumentFile(int documentId)
         {
             var document = GetDocumentById(documentId).First();
-            string[] ImageExt = new string[] { "jpeg", "jpg", "png", "tiff", "bmp", "gif" };
-            string[] WordExt = new string[] { "doc", "docx" };
-            string[] ExcelExt = new string[] { "xls", "xlsx" };
-            string[] PDFExt = new string[] { "pdf" };
-
-            if (WordExt.Contains(document.Extension))
-                return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Word.png"));
-            else if (ExcelExt.Contains(document.Extension))
-                return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Excel.png"));
-            else if (PDFExt.Contains(document.Extension))
-                return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Pdf.png"));
-            else if (ImageExt.Contains(document.Extension))
-            {
-                using (var ms = new System.IO.MemoryStream(document.FileData))
-                {
-                    var image = new BitmapImage();
-                    image.BeginInit();
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.StreamSource = ms;
-                    image.EndInit();
-                    return image;
-                }
-            }
-            else
-                return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png"));
-        }        
-
-        public string GetFileFromBinaryDocumentData(int documentId)
-        {
-            var document = GetDocumentById(documentId).First();
-            string fileName = Path.GetTempFileName();
-            using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
-                fs.Write(document.FileData, 0, document.FileData.Length);
-            // physically change file extension
-            File.Move(fileName, Path.ChangeExtension(fileName, document.Extension));
-            // return new path
-            return Path.ChangeExtension(fileName, document.Extension);
-        }               
-
-        public void RunFile(string filePath)
-        {
-            Process prc = new Process();
-            prc.StartInfo.FileName = filePath;
-            prc.EnableRaisingEvents = true;
-            prc.Exited += (sender, e) =>
-            {
-                try
-                {
-                    File.Delete(filePath);
-                }
-                catch { }
-            };
-            prc.Start();
+            return fileService.GetFileFromBinaryData(document.FileData, document.Extension);
         }
 
+        public BitmapImage GetDocumentThumbnail(int documentId)
+        {
+            var document = GetDocumentById(documentId).First();
+            return fileService.GetThumbnailForFile(document.FileData, document.Extension);
+        }
     }
 }

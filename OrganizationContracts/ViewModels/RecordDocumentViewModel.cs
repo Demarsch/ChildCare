@@ -1,4 +1,6 @@
-﻿using log4net;
+﻿using Core.Services;
+using Core.Wpf.Services;
+using log4net;
 using OrganizationContractsModule.Services;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -7,9 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace OrganizationContractsModule.ViewModels
@@ -17,14 +17,20 @@ namespace OrganizationContractsModule.ViewModels
     public class RecordDocumentViewModel : BindableBase
     {
         private readonly DelegateCommand openDocumentCommand;
+        private readonly IFileService fileService;
         private readonly IDocumentService documentService;
 
-        public RecordDocumentViewModel(IDocumentService documentService)
+        public RecordDocumentViewModel(IFileService fileService, IDocumentService documentService)
         {
+            if (fileService == null)
+            {
+                throw new ArgumentNullException("fileService");
+            }
             if (documentService == null)
             {
                 throw new ArgumentNullException("documentService");
             }
+            this.fileService = fileService;
             this.documentService = documentService;
             openDocumentCommand = new DelegateCommand(OpenDocument);
         }
@@ -32,7 +38,7 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand OpenDocumentCommand { get { return openDocumentCommand; } }
         private void OpenDocument()
         {
-            documentService.RunFile(documentService.GetFileFromBinaryDocumentData(documentId));
+            fileService.RunFile(documentService.GetDocumentFile(documentId));
         }
 
         #region Properties

@@ -5,6 +5,7 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels"
+                      xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
@@ -25,4 +26,21 @@
         <fluent:Button x:Name="btnAddOrganization" Command="{Binding AddOrganizationCommand}" 
                        Header="Добавить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />       
     </fluent:RibbonGroupBox>
+
+    <fluent:RibbonGroupBox Header="Документы" FontWeight="Medium" Visibility="{Binding AllowDocuments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+        <fluent:Button x:Name="btnAttachDocument" Command="{Binding AttachDocumentCommand}" 
+                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachDocument48x48.png" />
+        <fluent:Button x:Name="btnDetachDocument" Command="{Binding DetachDocumentCommand}"
+                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachDocument48x48.png" />
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="DICOM" FontWeight="Medium" Visibility="{Binding AllowDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+        <fluent:Button x:Name="btnAttachDICOM" Command="{Binding AttachDICOMCommand}" 
+                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachFile48x48.png" />
+        <fluent:Button x:Name="btnDetachDICOM" Command="{Binding DetachDICOMCommand}"
+                       Header="Открепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachFile48x48.png" />
+        <!--<fluent:Button x:Name="btnMarkDICOM" Command="{Binding MarkDICOMCommand}" 
+                       Header="Отметить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Mark48x48.png" />-->
+    </fluent:RibbonGroupBox>
+    
+
 </fluent:RibbonTabItem>

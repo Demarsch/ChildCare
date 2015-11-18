@@ -22,6 +22,7 @@ using System.Windows.Input;
 using Prism.Events;
 using System.ComponentModel;
 using Prism.Interactivity.InteractionRequest;
+using Core.Wpf.Services;
 
 namespace OrganizationContractsModule.ViewModels
 {
@@ -31,6 +32,8 @@ namespace OrganizationContractsModule.ViewModels
         private readonly ILog log;
         private readonly ICacheService cacheService;
         private readonly IDocumentService documentService;
+        private readonly IFileService fileService;
+        private readonly IRecordService recordService;
         private readonly IEventAggregator eventAggregator;
         private readonly Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
@@ -45,7 +48,7 @@ namespace OrganizationContractsModule.ViewModels
 
         public RecordDocumentsCollectionViewModel DocsViewer { get; set; }
 
-        public OrgContractsViewModel(IContractService contractService, IDocumentService documentService, ILog log, ICacheService cacheService, 
+        public OrgContractsViewModel(IContractService contractService, IDocumentService documentService, ILog log, ICacheService cacheService, IFileService fileService, IRecordService recordService,
             IEventAggregator eventAggregator, Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
         {            
             if (log == null)
@@ -59,7 +62,15 @@ namespace OrganizationContractsModule.ViewModels
             if (cacheService == null)
             {
                 throw new ArgumentNullException("cacheService");
-            }            
+            }
+            if (recordService == null)
+            {
+                throw new ArgumentNullException("recordService");
+            }
+            if (fileService == null)
+            {
+                throw new ArgumentNullException("fileService");
+            } 
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -71,11 +82,13 @@ namespace OrganizationContractsModule.ViewModels
             this.contractService = contractService;            
             this.log = log;
             this.cacheService = cacheService;
-            this.documentService = documentService;            
+            this.documentService = documentService;
+            this.fileService = fileService;
+            this.recordService = recordService; 
             this.eventAggregator = eventAggregator;
             this.addContractOrganizationViewModelFactory = addContractOrganizationViewModelFactory;
             BusyMediator = new BusyMediator();
-            DocsViewer = new RecordDocumentsCollectionViewModel(documentService, log);
+            DocsViewer = new RecordDocumentsCollectionViewModel(documentService, recordService, fileService, log);
             FailureMediator = new FailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
@@ -155,6 +168,7 @@ namespace OrganizationContractsModule.ViewModels
                         changeTracker.IsEnabled = false;
                         LoadContractData();
                         changeTracker.IsEnabled = true;
+                        DocsViewer.LoadDocs(2);
                     }
                     else
                         IsContractSelected = false;
@@ -310,8 +324,6 @@ namespace OrganizationContractsModule.ViewModels
             Organizations = new ObservableCollectionEx<FieldValue>(orgs);
             SelectedOrganizationId = SpecialValues.NonExistingId;
 
-            Contracts = new ObservableCollectionEx<ContractViewModel>();
-
             List<FieldValue> elements = new List<FieldValue>();
             elements.Add(new FieldValue() { Value = -1, Field = "- все -" });
             int begin = DateTime.Now.Year - 10;
@@ -324,7 +336,8 @@ namespace OrganizationContractsModule.ViewModels
         }
 
         private async void LoadContractsAsync()
-        {            
+        {
+            if (selectedFilterFinSourceId == 0 || selectedYear == 0) return;
             if (currentLoadingToken != null)
             {
                 currentLoadingToken.Cancel();
@@ -336,23 +349,25 @@ namespace OrganizationContractsModule.ViewModels
             var token = currentLoadingToken.Token;
             BusyMediator.Activate("Загрузка договоров...");
             log.InfoFormat("Loading org contracts...", "");
+            IOrderedQueryable<RecordContract> contractsQuery = null;
             try
             {
-                var result = await contractService
-                                .GetContractsWithOrgs(new DateTime(selectedYear, 1, 1), new DateTime(selectedYear, 12, 31), selectedFilterFinSourceId)
-                                .OrderBy(x => x.BeginDateTime)
-                                .Select(x => new
-                                {
-                                    Id = x.Id,
-                                    ContractNumber = x.Number,
-                                    Organization = x.Org.Name,
-                                    BeginDate = x.BeginDateTime,
-                                    EndDate = x.EndDateTime
-                                }).ToArrayAsync(token);
+                contractsQuery = contractService.GetContractsWithOrgs(new DateTime(selectedYear, 1, 1), new DateTime(selectedYear, 12, 31), selectedFilterFinSourceId)
+                                                .OrderBy(x => x.BeginDateTime);
+                var result = await Task.Factory.StartNew(() =>
+                {
+                    return contractsQuery.Select(x => new
+                    {
+                        Id = x.Id,
+                        ContractNumber = x.Number,
+                        Organization = x.Org.Name,
+                        BeginDate = x.BeginDateTime,
+                        EndDate = x.EndDateTime
+                    }).ToArray();
+                }, token);          
 
-                Contracts.Clear();
-                Contracts.AddRange(result.Select(x => 
-                    new ContractViewModel()
+                Contracts = new ObservableCollectionEx<ContractViewModel>(
+                    result.Select(x => new ContractViewModel()
                     {
                         Id = x.Id,
                         ContractNumber = x.ContractNumber.ToSafeString(),
@@ -402,8 +417,7 @@ namespace OrganizationContractsModule.ViewModels
                 Cost = contract.ContractCost;
                 Info = contract.OrgDetails;
                 SelectedRegistratorId = contract.InUserId;                
-            }
-            DocsViewer.LoadDocs(2);
+            }            
         }
 
         private void ClearData()
@@ -587,11 +601,18 @@ namespace OrganizationContractsModule.ViewModels
         private readonly DelegateCommand saveContractCommand;
         private readonly DelegateCommand removeContractCommand;
         private readonly DelegateCommand addOrganizationCommand;
-
+        
         public ICommand AddContractCommand { get { return addContractCommand; } }
         public ICommand SaveContractCommand { get { return saveContractCommand; } }
         public ICommand RemoveContractCommand { get { return removeContractCommand; } }
         public ICommand AddOrganizationCommand { get { return addOrganizationCommand; } }
+
+        public ICommand AttachDocumentCommand { get { return DocsViewer.AttachDocumentCommand; } }
+        public ICommand DetachDocumentCommand { get { return DocsViewer.DetachDocumentCommand; } }
+        public ICommand AttachDICOMCommand { get { return DocsViewer.AttachDICOMCommand; } }
+        public ICommand DetachDICOMCommand { get { return DocsViewer.DetachDICOMCommand; } }
+        public bool AllowDocuments { get { return DocsViewer.AllowDocuments; } }
+        public bool AllowDICOM { get { return DocsViewer.AllowDICOM; } }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {

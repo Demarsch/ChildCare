@@ -18,21 +18,36 @@ using Core.Extensions;
 using System.ComponentModel;
 using System.Collections.Generic;
 using Prism.Interactivity.InteractionRequest;
+using Core.Wpf.Services;
 
 namespace PatientInfoModule.ViewModels
 {
     public class ScanDocumentsViewModel : BindableBase
     {
         private ILog log;
-        private IDocumentService documentService; 
+        private IDocumentService documentService;
+        private IFileService fileService; 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; private set; }
         private readonly CommandWrapper saveChangesCommandWrapper;
         public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
 
-        public ScanDocumentsViewModel(IDocumentService documentService, ILog log)
+        public ScanDocumentsViewModel(IDocumentService documentService, IFileService fileService, ILog log)
         {
+            if (documentService == null)
+            {
+                throw new ArgumentNullException("documentService");
+            }
+            if (fileService == null)
+            {
+                throw new ArgumentNullException("fileService");
+            }
+            if (log == null)
+            {
+                throw new ArgumentNullException("log");
+            }
             this.documentService = documentService;
+            this.fileService = fileService;
             this.log = log;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
@@ -67,7 +82,7 @@ namespace PatientInfoModule.ViewModels
                 document.DisplayName = document.FileName + (document.DocumentFromDate.HasValue ? " от " + document.DocumentFromDate.Value.ToShortDateString() : string.Empty);
                 
                 document.Extension = "png";
-                document.FileData = documentService.GetBinaryDataFromImage(item.ThumbnailImage);
+                document.FileData = fileService.GetBinaryDataFromImage(item.ThumbnailImage);
                 document.FileSize = document.FileData.Length;
                 document.UploadDate = DateTime.Now;
 

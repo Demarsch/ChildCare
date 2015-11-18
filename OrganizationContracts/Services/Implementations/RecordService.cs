@@ -6,6 +6,9 @@ using Core.Data.Services;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Windows.Media.Imaging;
+using System.IO;
+using Core.Wpf.Services;
 
 namespace OrganizationContractsModule.Services
 {
@@ -20,6 +23,12 @@ namespace OrganizationContractsModule.Services
                 throw new ArgumentNullException("contextProvider");
             }
             this.contextProvider = contextProvider;
-        }        
+        }
+
+        public IDisposableQueryable<Record> GetRecordById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Record>(context.Set<Record>().Where(x => x.Id == id), context);
+        }       
     }
 }
