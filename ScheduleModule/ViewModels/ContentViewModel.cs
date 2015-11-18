@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Navigation;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Misc;
 using Core.Services;
 using Core.Wpf.Mvvm;
@@ -20,7 +21,7 @@ using ScheduleModule.Services;
 
 namespace ScheduleModule.ViewModels
 {
-    public class ScheduleViewModel : BindableBase
+    public class ContentViewModel : BindableBase
     {
         private readonly ILog log;
 
@@ -38,7 +39,7 @@ namespace ScheduleModule.ViewModels
 
         private readonly ISecurityService securityService;
 
-        public ScheduleViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
+        public ContentViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
                                  IScheduleService scheduleService,
                                  ILog log,
                                  ICacheService cacheService,
@@ -672,7 +673,9 @@ namespace ScheduleModule.ViewModels
 
         private bool CanChangeMode()
         {
-            return currentPatient != null && securityService.HasPrivilege(Privilegies.EditAssignments);
+            return currentPatient != SpecialValues.NewId 
+                && currentPatient != SpecialValues.NonExistingId
+                && securityService.HasPrivilege(Privilegies.EditAssignments);
         }
 
         private RoomViewModel selectedRoom;

@@ -1,5 +1,5 @@
-﻿    using Microsoft.Practices.Unity;
-    using PatientInfoModule.ViewModels;
+﻿using Microsoft.Practices.Unity;
+using PatientInfoModule.ViewModels;
 
 namespace PatientInfoModule.Views
 {
@@ -14,7 +14,7 @@ namespace PatientInfoModule.Views
         }
 
         [Dependency]
-        public InfoContentViewModel ContentViewModel
+        public InfoContentViewModel ViewModel
         {
             get { return DataContext as InfoContentViewModel; }
             set { DataContext = value; }

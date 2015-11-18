@@ -11,7 +11,7 @@
                 x:Name="border" 
                 CornerRadius="2">
             <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseUp"> 
+                <i:EventTrigger EventName="MouseUp">
                     <i:InvokeCommandAction Command="{Binding RequestAssignmentCreationCommand, Mode=OneTime}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>

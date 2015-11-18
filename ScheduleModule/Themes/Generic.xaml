@@ -7,7 +7,6 @@
         <ResourceDictionary Source="../Views/FreeTimeSlotView.xaml" />
         <ResourceDictionary Source="../Views/OccupiedTimeSlotView.xaml" />
         <ResourceDictionary Source="../Views/RoomView.xaml" />
-        <ResourceDictionary Source="../Views/ScheduleView.xaml" />
         <ResourceDictionary Source="../Views/TimeTickerView.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="{x:Type xctk:TimelinePanel}">
@@ -19,5 +18,7 @@
                 Value="Vertical" />
         <Setter Property="OverlapBehavior"
                 Value="Stretch" />
+        <Setter Property="MinWidth"
+                Value="1" />
     </Style>
 </ResourceDictionary>
