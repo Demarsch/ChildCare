@@ -138,9 +138,10 @@ namespace OrganizationContractsModule.ViewModels
 
         private void SetVisibilityControlButtons(int recordTypeId)
         {
-            var editor = recordService.GetRecordTypeById(recordTypeId).First().RecordTypeEditors.FirstOrDefault();
-            if (editor != null)
+            var recordType = recordService.GetRecordTypeById(recordTypeId).FirstOrDefault();
+            if (recordType != null && recordType.RecordTypeEditors.Any())
             {
+                var editor = recordType.RecordTypeEditors.First();
                 AllowDICOM = editor.HasDICOM;
                 AllowDocuments = editor.HasDocuments;
                 if (allowDICOM)

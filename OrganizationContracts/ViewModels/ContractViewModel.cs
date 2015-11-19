@@ -18,7 +18,14 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return id; }
             set { SetProperty(ref id, value); }
-        }        
+        }
+
+        private string contractName;
+        public string ContractName
+        {
+            get { return contractName; }
+            set { SetProperty(ref contractName, value); }
+        }
 
         private string contractNumber;
         public string ContractNumber
@@ -27,25 +34,67 @@ namespace OrganizationContractsModule.ViewModels
             set { SetProperty(ref contractNumber, value); }
         }
 
-        private string organizationName;
-        public string OrganizationName
+        private DateTime contractBeginDate;
+        public DateTime ContractBeginDate
         {
-            get { return organizationName; }
-            set { SetProperty(ref organizationName, value); }
+            get { return contractBeginDate; }
+            set { SetProperty(ref contractBeginDate, value); }
         }
 
-        private DateTime beginDate;
-        public DateTime BeginDate
+        private DateTime contractEndDate;
+        public DateTime ContractEndDate
         {
-            get { return beginDate; }
-            set { SetProperty(ref beginDate, value); }
+            get { return contractEndDate; }
+            set { SetProperty(ref contractEndDate, value); }
+        }
+        
+        private int financingSourceId;
+        public int FinancingSourceId
+        {
+            get { return financingSourceId; }
+            set { SetProperty(ref financingSourceId, value); }
         }
 
-        private DateTime endDate;
-        public DateTime EndDate
+        private int paymentTypeId;
+        public int PaymentTypeId
         {
-            get { return endDate; }
-            set { SetProperty(ref endDate, value); }
+            get { return paymentTypeId; }
+            set { SetProperty(ref paymentTypeId, value); }
+        }
+
+        private int registratorId;
+        public int RegistratorId
+        {
+            get { return registratorId; }
+            set { SetProperty(ref registratorId, value); }
+        }
+
+        private bool isCashless;
+        public bool IsCashless
+        {
+            get { return isCashless; }
+            set { SetProperty(ref isCashless, value); }
+        }
+
+        private double contractCost;
+        public double ContractCost
+        {
+            get { return contractCost; }
+            set { SetProperty(ref contractCost, value); }
+        }            
+
+        private string orgDetails;
+        public string OrgDetails
+        {
+            get { return orgDetails; }
+            set { SetProperty(ref orgDetails, value); }
+        }
+
+        private int orgId;
+        public int OrgId
+        {
+            get { return orgId; }
+            set { SetProperty(ref orgId, value); }
         }
     }
 }

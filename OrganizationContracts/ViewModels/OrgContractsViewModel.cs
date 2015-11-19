@@ -92,8 +92,8 @@ namespace OrganizationContractsModule.ViewModels
             FailureMediator = new FailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
-            reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadContractsAsync) };
-            reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources) };
+            reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadContractsAsync), CommandName = "Повторить" };
+            reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources), CommandName = "Повторить" };
 
             ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
             NotificationInteractionRequest = new InteractionRequest<Notification>();
@@ -168,7 +168,7 @@ namespace OrganizationContractsModule.ViewModels
                         changeTracker.IsEnabled = false;
                         LoadContractData();
                         changeTracker.IsEnabled = true;
-                        DocumentsViewer.LoadDocuments(2, 2);
+                        DocumentsViewer.LoadDocuments(2, 6);
                         AllowDocuments = DocumentsViewer.AllowDocuments;
                         AllowDICOM = DocumentsViewer.AllowDICOM;
                         CanAttachDICOM = DocumentsViewer.CanAttachDICOM;
@@ -179,11 +179,11 @@ namespace OrganizationContractsModule.ViewModels
             }
         }
 
-        private string number;
-        public string Number
+        private string contractName;
+        public string ContractName
         {
-            get { return number; }
-            set { SetProperty(ref number, value); }
+            get { return contractName; }
+            set { SetProperty(ref contractName, value); }
         }
 
         private ObservableCollectionEx<FieldValue> organizations;
@@ -262,25 +262,25 @@ namespace OrganizationContractsModule.ViewModels
             }
         }
 
-        private double cost;
-        public double Cost
+        private double contractCost;
+        public double ContractCost
         {
-            get { return cost; }
+            get { return contractCost; }
             set 
             {
-                changeTracker.Track(cost, value); 
-                SetProperty(ref cost, value); 
+                changeTracker.Track(contractCost, value);
+                SetProperty(ref contractCost, value); 
             }
         }
 
-        private string info;
-        public string Info
+        private string orgDetails;
+        public string OrgDetails
         {
-            get { return info; }
+            get { return orgDetails; }
             set 
             {
-                changeTracker.Track(info, value); 
-                SetProperty(ref info, value); 
+                changeTracker.Track(orgDetails, value);
+                SetProperty(ref orgDetails, value); 
             }
         }
 
@@ -299,13 +299,18 @@ namespace OrganizationContractsModule.ViewModels
             var reliableStaff = await contractService.GetRecordTypeRolesByOptions(OptionValues.ResponsibleForContract).FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
-                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles", reloadDataSourcesCommandWrapper);
                 return;
             }
             var personStaffs = await contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
             if (!personStaffs.Any())
             {
-                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions", reloadDataSourcesCommandWrapper);
+                return;
+            }
+            if (!contractService.GetPaymentTypes().Any())
+            {
+                FailureMediator.Activate("В МИС не найдена информация о методах оплаты. Отсутствуют записи в таблице PaymentTypes", reloadDataSourcesCommandWrapper);
                 return;
             }
             List<FieldValue> users = new List<FieldValue>();
@@ -363,9 +368,16 @@ namespace OrganizationContractsModule.ViewModels
                     {
                         Id = x.Id,
                         ContractNumber = x.Number,
-                        Organization = x.Org.Name,
-                        BeginDate = x.BeginDateTime,
-                        EndDate = x.EndDateTime
+                        ContractName = (x.Number.HasValue ? "№" + x.Number.ToString() + " - " : string.Empty) + x.ContractName,
+                        OrgId = x.OrgId,
+                        OrgDetails = x.OrgDetails,
+                        ContractBeginDate = x.BeginDateTime,
+                        ContractEndDate = x.EndDateTime,
+                        FinancingSourceId = x.FinancingSourceId,
+                        PaymentTypeId = x.PaymentTypeId,
+                        RegistratorId = x.InUserId,
+                        IsCashless = x.PaymentType.Options.Contains(OptionValues.Cashless),
+                        ContractCost = x.ContractCost
                     }).ToArray();
                 }, token);          
 
@@ -374,12 +386,19 @@ namespace OrganizationContractsModule.ViewModels
                     {
                         Id = x.Id,
                         ContractNumber = x.ContractNumber.ToSafeString(),
-                        OrganizationName = x.Organization,
-                        BeginDate = x.BeginDate,
-                        EndDate = x.EndDate
+                        ContractName = x.ContractName,
+                        OrgId = x.OrgId.Value,
+                        OrgDetails = x.OrgDetails,
+                        ContractCost = x.ContractCost,
+                        ContractBeginDate = x.ContractBeginDate,
+                        ContractEndDate = x.ContractEndDate,
+                        FinancingSourceId = x.FinancingSourceId,
+                        PaymentTypeId = x.PaymentTypeId,
+                        RegistratorId = x.RegistratorId,
+                        IsCashless = x.IsCashless
                     }));
                 if (contracts.Any())
-                    SelectedContract = contracts.OrderByDescending(x => x.BeginDate).First();
+                    SelectedContract = contracts.OrderByDescending(x => x.ContractBeginDate).First();
                 else
                     IsContractSelected = false;
                 loadingIsCompleted = true;
@@ -406,33 +425,15 @@ namespace OrganizationContractsModule.ViewModels
         }
 
         private void LoadContractData()
-        {
-            if (SelectedContract.Id == SpecialValues.NewId)
-                ClearData();
-            else
-            {
-                var contract = contractService.GetContractById(selectedContract.Id).First();
-                Number = contract.DisplayName;
-                SelectedFinSourceId = contract.FinancingSourceId;
-                SelectedOrganizationId = contract.OrgId.Value;
-                ContractBeginDate = contract.BeginDateTime;
-                ContractEndDate = contract.EndDateTime;
-                Cost = contract.ContractCost;
-                Info = contract.OrgDetails;
-                SelectedRegistratorId = contract.InUserId;                
-            }            
-        }
-
-        private void ClearData()
-        {
-            Number = "НОВЫЙ ДОГОВОР";
-            SelectedOrganizationId = -1;
-            SelectedFinSourceId = -1;
-            SelectedRegistratorId = -1;
-            ContractBeginDate = DateTime.Now;
-            ContractEndDate = DateTime.Now;
-            Cost = 0;
-            Info = string.Empty;
+        {            
+            ContractName = SelectedContract.ContractName;
+            SelectedFinSourceId = SelectedContract.FinancingSourceId;
+            SelectedOrganizationId = SelectedContract.OrgId;
+            ContractBeginDate = SelectedContract.ContractBeginDate;
+            ContractEndDate = SelectedContract.ContractEndDate;
+            ContractCost = SelectedContract.ContractCost;
+            OrgDetails = SelectedContract.OrgDetails;
+            SelectedRegistratorId = SelectedContract.RegistratorId;                      
         }
 
         private bool CanSaveChanges()
@@ -460,7 +461,15 @@ namespace OrganizationContractsModule.ViewModels
             {
                 Id = 0,
                 ContractNumber = string.Empty,
-                OrganizationName = "НОВЫЙ ДОГОВОР"
+                ContractName = "НОВЫЙ ДОГОВОР",
+                OrgDetails = string.Empty,
+                ContractCost = 0,
+                ContractBeginDate = DateTime.Now,
+                ContractEndDate = DateTime.Now,
+                FinancingSourceId = -1,
+                PaymentTypeId = -1,
+                RegistratorId = -1,
+                OrgId = -1
             });
             SelectedContract = contracts.First(x => x.Id == 0);
             saveContractCommand.RaiseCanExecuteChanged();
@@ -513,8 +522,8 @@ namespace OrganizationContractsModule.ViewModels
             contract.InUserId = selectedRegistratorId;
             contract.InDateTime = DateTime.Now;
             contract.OrgId = selectedOrganizationId;
-            contract.OrgDetails = info;
-            contract.ContractCost = cost;
+            contract.OrgDetails = orgDetails;
+            contract.ContractCost = contractCost;
             contract.Options = string.Empty;
 
             try
@@ -533,12 +542,12 @@ namespace OrganizationContractsModule.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
-                    selectedContract.Id = contract.Id;
-                    selectedContract.ContractNumber = contract.Number.ToSafeString();
-                    selectedContract.OrganizationName = contract.ContractName;
-                    selectedContract.BeginDate = contract.BeginDateTime;
-                    selectedContract.EndDate = contract.EndDateTime;
-                    Number = contract.DisplayName;
+                    SelectedContract.Id = contract.Id;
+                    SelectedContract.ContractNumber = contract.Number.ToSafeString();
+                    SelectedContract.ContractName = contract.DisplayName;
+                    SelectedContract.ContractBeginDate = contract.BeginDateTime;
+                    SelectedContract.ContractEndDate = contract.EndDateTime;
+                    ContractName = contract.DisplayName;
                     changeTracker.UntrackAll();
                     saveContractCommand.RaiseCanExecuteChanged();
                     removeContractCommand.RaiseCanExecuteChanged();
