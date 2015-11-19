@@ -12,12 +12,14 @@
     [SoftInventory]     FLOAT (53)    CONSTRAINT [DF_RecordTypeCosts_Salary1] DEFAULT ((0)) NOT NULL,
     [Profitability]     FLOAT (53)    CONSTRAINT [DF_RecordTypeCosts_Profitability] DEFAULT ((1)) NOT NULL,
     [FullPrice]         FLOAT (53)    CONSTRAINT [DF_RecordTypeCosts_FullPrice] DEFAULT ((0)) NOT NULL,
-    [InDateTime]        DATETIME      NOT NULL,
-    [InUserLogin]       VARCHAR (100) NOT NULL,
+    [InDateTime]        DATETIME      CONSTRAINT [DF_RecordTypeCosts_InDateTime] DEFAULT (getdate()) NOT NULL,
+    [InUserLogin]       VARCHAR (100) CONSTRAINT [DF_RecordTypeCosts_InUserLogin] DEFAULT (suser_sname()) NOT NULL,
     CONSTRAINT [PK_RecordTypeCosts] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_RecordTypeCosts_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
     CONSTRAINT [FK_RecordTypeCosts_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]) ON DELETE CASCADE
 );
+
+
 
 
 

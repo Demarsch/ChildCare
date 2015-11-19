@@ -253,12 +253,12 @@ namespace PatientInfoModule.ViewModels
                                     ContractNumber = x.Number,
                                     ContractName = (x.Number.HasValue ? "№" + x.Number.ToString() + " - " : string.Empty) + x.ContractName,
                                     Client = x.Person,
-                                    ContractCost = x.RecordContractItems.Any(a => a.IsPaid) ? x.RecordContractItems.Where(a => a.IsPaid).Sum(a => a.Cost) : 0.0,
                                     Consumer = x.Person1,
                                     ContractBeginDate = x.BeginDateTime,
                                     ContractEndDate = x.EndDateTime,
                                     FinancingSourceId = x.FinancingSourceId,
                                     PaymentTypeId = x.PaymentTypeId,
+                                    ContractCost = x.RecordContractItems.Any(a => a.IsPaid) ? x.RecordContractItems.Where(a => a.IsPaid).Sum(a => a.Cost) : 0.0,
                                     RegistratorId = x.InUserId,
                                     IsCashless = x.PaymentType.Options.Contains(OptionValues.Cashless)
                                 })
@@ -368,7 +368,8 @@ namespace PatientInfoModule.ViewModels
             var item = new ContractItemViewModel(recordService, personService, this.patientId, selectedFinancingSourceId, contractBeginDateTime)
             {
                 IsSection = true,
-                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : ("ИТОГО: " + contractItems.Where(x => x.IsPaid).Sum(x => x.RecordCost) + " руб."),
+                SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() : 
+                                                ("ИТОГО: " + (contractItems.Any(x => x.IsPaid) ? contractItems.Where(x => x.IsPaid).Sum(x => x.RecordCost) : 0) + " руб."),
                 Appendix = appendix,
                 SectionAlignment = alignment,
                 SectionBackColor = backColor
@@ -382,7 +383,8 @@ namespace PatientInfoModule.ViewModels
         private void UpdateTotalSumRow()
         {
             if (contractItems.Any(x => x.IsSection && x.Appendix == -1))
-                contractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = "ИТОГО: " + contractItems.Where(x => x.IsPaid).Sum(x => x.RecordCost) + " руб.";
+                contractItems.First(x => x.IsSection && x.Appendix == -1).SectionName = 
+                                                "ИТОГО: " + (contractItems.Any(x => x.IsPaid) ? contractItems.Where(x => x.IsPaid).Sum(x => x.RecordCost) : 0) + " руб.";
             else
                 AddSectionRow(-1, Color.LightGreen, HorizontalAlignment.Right);
             if (selectedContract != null && selectedContract.Id != SpecialValues.NewId)
@@ -975,10 +977,10 @@ namespace PatientInfoModule.ViewModels
                     OnPropertyChanged(string.Empty);
                     LoadContractItems();
                     SelectedContract.ContractNumber = contract.Number.ToSafeString();
+                    SelectedContract.ContractName = contract.DisplayName;
                     SelectedContract.Client = contract.Person;
                     SelectedContract.ContractBeginDate = contract.BeginDateTime;
                     SelectedContract.ContractEndDate = contract.EndDateTime;
-                    ContractName = contract.DisplayName;
                     UpdateTotalSumRow();
                     contractItemsTracker.AcceptChanges();
                     contractItemsTracker.IsEnabled = true;
@@ -1001,7 +1003,7 @@ namespace PatientInfoModule.ViewModels
                 ContractBeginDate = DateTime.Now,
                 ContractEndDate = DateTime.Now,
                 FinancingSourceId = -1,
-                PaymentTypeId = -1,
+                PaymentTypeId = recordService.GetPaymentTypes().First(x => x.Options.Contains(OptionValues.Cash)).Id,
                 RegistratorId = -1,
                 Client = patient
             });
@@ -1009,7 +1011,7 @@ namespace PatientInfoModule.ViewModels
             UpdateChangeCommandsState();
         }
 
-        #region Inplementation IDataErrorInfo
+        #region Implementation IDataErrorInfo
 
         private bool saveWasRequested;
 

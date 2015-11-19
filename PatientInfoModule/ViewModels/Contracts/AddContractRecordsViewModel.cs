@@ -126,7 +126,7 @@ namespace PatientInfoModule.ViewModels
                     if (selectedRecord != null && isNewRecordChecked)
                         AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id, selectedFinancingSourceId, contractDate, isChild) * recordsCount);
                     Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>(assignmentService.GetPersonAssignments(personId)
-                                            .Where(x => x.FinancingSourceId == selectedFinancingSourceId).ToList()
+                                            .Where(x => x.FinancingSourceId == selectedFinancingSourceId && !x.RecordContractItems.Any()).ToList()
                                             .Select(x => new ContractAssignmentsViewModel()
                                             {
                                                 Id = x.Id,
@@ -135,7 +135,6 @@ namespace PatientInfoModule.ViewModels
                                                 RecordTypeName = x.RecordType.Name,
                                                 RecordTypeCost = recordService.GetRecordTypeCost(x.RecordTypeId, selectedFinancingSourceId, contractDate, isChild)
                                             }));
-
                 }
             }
         }
@@ -154,7 +153,7 @@ namespace PatientInfoModule.ViewModels
             set
             {
                 SetProperty(ref recordsCount, value);
-                AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id, selectedFinancingSourceId, contractDate, isChild) * recordsCount);
+                AssignRecordTypeCost = (selectedRecord != null ? (recordService.GetRecordTypeCost(selectedRecord.Id, selectedFinancingSourceId, contractDate, isChild) * recordsCount) : 0.0);
             }
         }
 
@@ -171,10 +170,11 @@ namespace PatientInfoModule.ViewModels
             get { return selectedRecord; }
             set
             {
-                if (SetProperty(ref selectedRecord, value))
-                    RecordsCount = 1;
+                SetProperty(ref selectedRecord, value);                
                 if (selectedFinancingSourceId == -1)
                     FailureMediator.Activate("Укажите источник финансирования.", null, null, true);
+                else
+                    RecordsCount = 1;
             }
         }
 
@@ -211,8 +211,8 @@ namespace PatientInfoModule.ViewModels
             }
             isOk = true;
             HostWindow.Close();
-        }
-        
+        }              
+
         #region IPopupWindowActionAware implementation
         public System.Windows.Window HostWindow { get; set; }
 

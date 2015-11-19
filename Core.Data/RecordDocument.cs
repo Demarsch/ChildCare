@@ -15,9 +15,11 @@ namespace Core.Data
     public partial class RecordDocument
     {
         public int Id { get; set; }
-        public int RecordId { get; set; }
+        public Nullable<int> AssignmentId { get; set; }
+        public Nullable<int> RecordId { get; set; }
         public int DocumentId { get; set; }
     
+        public virtual Assignment Assignment { get; set; }
         public virtual Document Document { get; set; }
         public virtual Record Record { get; set; }
     }

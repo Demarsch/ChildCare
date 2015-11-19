@@ -92,10 +92,10 @@ namespace Core.Data
         public virtual DbSet<Visit> Visits { get; set; }
         public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
         public virtual DbSet<MKB> MKBs { get; set; }
-        public virtual DbSet<RecordDocument> RecordDocuments { get; set; }
-        public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<RecordDocument> RecordDocuments { get; set; }
+        public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
     }
 }

@@ -32,7 +32,8 @@ namespace OrganizationContractsModule.ViewModels
         private readonly ILog logService;
         private CancellationTokenSource currentLoadingToken;
         public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
-        private int recordId;
+        private int? recordId;
+        private int? assignmentId;
 
         public RecordDocumentsCollectionViewModel(IDocumentService documentService, IRecordService recordService, IFileService fileService, ILog logService)
         {
@@ -73,10 +74,12 @@ namespace OrganizationContractsModule.ViewModels
             detachDocumentCommand.RaiseCanExecuteChanged();
         }
         
-        internal async void LoadDocuments(int recordId, int recordTypeId)
+        internal async void LoadDocuments(int? assignmentId, int? recordId)
         {
+            if (!assignmentId.HasValue && !recordId.HasValue) return;
+            this.assignmentId = assignmentId;
             this.recordId = recordId;
-            SetVisibilityControlButtons(recordTypeId);
+
             if (currentLoadingToken != null)
             {
                 currentLoadingToken.Cancel();
@@ -85,21 +88,21 @@ namespace OrganizationContractsModule.ViewModels
             var loadingIsCompleted = false;
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
-            IDisposableQueryable<Document> documentsQuery = null;
+            IDisposableQueryable<RecordDocument> recordDocumentsQuery = null;
             
             try
             {
-                documentsQuery = documentService.GetRecordDocuments(recordId);
+                recordDocumentsQuery = documentService.GetRecordDocuments(this.recordId, this.assignmentId);
 
                 var result = await Task.Factory.StartNew(() =>
                 {
-                    return documentsQuery.Select(x => new
+                    return recordDocumentsQuery.Select(x => new
                     {
-                        Id = x.Id,
-                        Name = x.FileName,
-                        DisplayName = x.DisplayName,
-                        FileData = x.FileData,
-                        Extension = x.Extension
+                        Id = x.DocumentId,
+                        Name = x.Document.FileName,
+                        DisplayName = x.Document.DisplayName,
+                        FileData = x.Document.FileData,
+                        Extension = x.Document.Extension
                     }).ToArray();
                 }, token);
                                
@@ -129,11 +132,23 @@ namespace OrganizationContractsModule.ViewModels
             {
                 if (loadingIsCompleted)
                 {
+                    int recordTypeId = (this.assignmentId.HasValue ? recordService.GetAssignmentById(this.assignmentId.Value).First().RecordTypeId :
+                                                             recordService.GetRecordById(this.recordId.Value).First().RecordTypeId);
+                    SetVisibilityControlButtons(recordTypeId);
+            
                     detachDocumentCommand.RaiseCanExecuteChanged();
                 }
-                if (documentsQuery != null)
-                    documentsQuery.Dispose();
+                if (recordDocumentsQuery != null)
+                    recordDocumentsQuery.Dispose();
             }
+        }
+
+        internal async void SetRecordToDocuments(int toRecordId)
+        {
+            if (!this.assignmentId.HasValue && !this.recordId.HasValue) return;
+            var recordDocumentsQuery = documentService.GetRecordDocuments(this.recordId, this.assignmentId);
+            await recordDocumentsQuery.ForEachAsync(x => { x.AssignmentId = (int?)null; x.RecordId = toRecordId; });
+            bool isOK = await documentService.SetRecordToDocuments(recordDocumentsQuery);
         }
 
         private void SetVisibilityControlButtons(int recordTypeId)

@@ -19,6 +19,7 @@ namespace Core.Data
         {
             this.Assignments1 = new HashSet<Assignment>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
+            this.RecordDocuments = new HashSet<RecordDocument>();
         }
     
         public int Id { get; set; }
@@ -57,5 +58,7 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
         public virtual RecordType RecordType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
     }
 }

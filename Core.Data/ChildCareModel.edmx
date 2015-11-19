@@ -607,7 +607,8 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RecordId" Type="int" Nullable="false" />
+          <Property Name="AssignmentId" Type="int" />
+          <Property Name="RecordId" Type="int" />
           <Property Name="DocumentId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Records">
@@ -1537,7 +1538,9 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PersonOuterDocuments_Documents">
-          <End Role="Documents" Type="Self.Documents" Multiplicity="1" />
+          <End Role="Documents" Type="Self.Documents" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="PersonOuterDocuments" Type="Self.PersonOuterDocuments" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Documents">
@@ -1874,8 +1877,22 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RecordDocuments_Assignments">
+          <End Role="Assignments" Type="Self.Assignments" Multiplicity="0..1" />
+          <End Role="RecordDocuments" Type="Self.RecordDocuments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assignments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocuments">
+              <PropertyRef Name="AssignmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RecordDocuments_Documents">
-          <End Role="Documents" Type="Self.Documents" Multiplicity="1" />
+          <End Role="Documents" Type="Self.Documents" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="RecordDocuments" Type="Self.RecordDocuments" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Documents">
@@ -1887,7 +1904,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RecordDocuments_Records">
-          <End Role="Records" Type="Self.Records" Multiplicity="1" />
+          <End Role="Records" Type="Self.Records" Multiplicity="0..1" />
           <End Role="RecordDocuments" Type="Self.RecordDocuments" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Records">
@@ -2758,6 +2775,10 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="PersonStaffs" EntitySet="PersonStaffs" />
             <End Role="RecordContracts" EntitySet="RecordContracts" />
           </AssociationSet>
+          <AssociationSet Name="FK_RecordDocuments_Assignments" Association="Self.FK_RecordDocuments_Assignments">
+            <End Role="Assignments" EntitySet="Assignments" />
+            <End Role="RecordDocuments" EntitySet="RecordDocuments" />
+          </AssociationSet>
           <AssociationSet Name="FK_RecordDocuments_Documents" Association="Self.FK_RecordDocuments_Documents">
             <End Role="Documents" EntitySet="Documents" />
             <End Role="RecordDocuments" EntitySet="RecordDocuments" />
@@ -3419,26 +3440,12 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
-          <EntitySet Name="RecordDocuments" EntityType="DataLib.RecordDocument" />
-          <AssociationSet Name="FK_RecordDocuments_Documents" Association="DataLib.FK_RecordDocuments_Documents">
-            <End Role="Document" EntitySet="Documents" />
-            <End Role="RecordDocument" EntitySet="RecordDocuments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordDocuments_Records" Association="DataLib.FK_RecordDocuments_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="RecordDocument" EntitySet="RecordDocuments" />
-          </AssociationSet>
-          <EntitySet Name="RecordTypeCosts" EntityType="DataLib.RecordTypeCost" />
           <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />
           <EntitySet Name="RecordTypeRolePermissions" EntityType="DataLib.RecordTypeRolePermission" />
           <EntitySet Name="RecordTypes" EntityType="DataLib.RecordType" />
           <AssociationSet Name="FK_Assignments_RecordTypes" Association="DataLib.FK_Assignments_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="DataLib.FK_RecordTypeCosts_FinancingSources">
-            <End Role="FinancingSource" EntitySet="FinancingSources" />
-            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
             <End Role="Permission" EntitySet="Permissions" />
@@ -3455,10 +3462,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_Records_RecordTypes" Association="DataLib.FK_Records_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="Record" EntitySet="Records" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="DataLib.FK_RecordTypeCosts_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypeEditors_RecordTypes" Association="DataLib.FK_RecordTypeEditors_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
@@ -3479,6 +3482,28 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="ScheduleItem" EntitySet="ScheduleItems" />
+          </AssociationSet>
+          <EntitySet Name="RecordDocuments" EntityType="DataLib.RecordDocument" />
+          <EntitySet Name="RecordTypeCosts" EntityType="DataLib.RecordTypeCost" />
+          <AssociationSet Name="FK_RecordDocuments_Assignments" Association="DataLib.FK_RecordDocuments_Assignments">
+            <End Role="Assignment" EntitySet="Assignments" />
+            <End Role="RecordDocument" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordDocuments_Documents" Association="DataLib.FK_RecordDocuments_Documents">
+            <End Role="Document" EntitySet="Documents" />
+            <End Role="RecordDocument" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="DataLib.FK_RecordTypeCosts_FinancingSources">
+            <End Role="FinancingSource" EntitySet="FinancingSources" />
+            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordDocuments_Records" Association="DataLib.FK_RecordDocuments_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="RecordDocument" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="DataLib.FK_RecordTypeCosts_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
@@ -3528,6 +3553,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Assignments_Visits" FromRole="Assignment" ToRole="Visit" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="Assignment" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="Assignment" ToRole="RecordType" />
+          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Assignments" FromRole="Assignment" ToRole="RecordDocument" />
         </EntityType>
         <EntityType Name="Branch">
           <Key>
@@ -4265,8 +4291,8 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Record" ToRole="Urgently" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
-          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
+          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
         </EntityType>
         <EntityType Name="RecordTypeRole">
           <Key>
@@ -5808,62 +5834,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="RecordDocument">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordId" Type="Int32" Nullable="false" />
-          <Property Name="DocumentId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Document" Relationship="DataLib.FK_RecordDocuments_Documents" FromRole="RecordDocument" ToRole="Document" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="RecordDocument" ToRole="Record" />
-        </EntityType>
-        <Association Name="FK_RecordDocuments_Documents">
-          <End Type="DataLib.Document" Role="Document" Multiplicity="1" />
-          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Document">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordDocument">
-              <PropertyRef Name="DocumentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordDocuments_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
-          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordDocument">
-              <PropertyRef Name="RecordId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="RecordTypeCost">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
-          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="IsChild" Type="Boolean" />
-          <Property Name="IsIncome" Type="Boolean" Nullable="false" />
-          <Property Name="AccountMaterials" Type="Double" Nullable="false" />
-          <Property Name="Amortisation" Type="Double" Nullable="false" />
-          <Property Name="Salary" Type="Double" Nullable="false" />
-          <Property Name="SoftInventory" Type="Double" Nullable="false" />
-          <Property Name="Profitability" Type="Double" Nullable="false" />
-          <Property Name="FullPrice" Type="Double" Nullable="false" />
-          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="InUserLogin" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="RecordTypeCost" ToRole="FinancingSource" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordTypeCost" ToRole="RecordType" />
-        </EntityType>
         <EntityType Name="RecordTypeEditor">
           <Key>
             <PropertyRef Name="Id" />
@@ -5909,12 +5879,12 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordType" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordType" ToRole="RecordContractLimit" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordTypes" FromRole="RecordType" ToRole="Record" />
-          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
           <NavigationProperty Name="RecordTypeEditors" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordType" ToRole="RecordTypeEditor" />
           <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordType" ToRole="RecordTypeRolePermission" />
           <NavigationProperty Name="RecordTypes1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType" ToRole="RecordType1" />
           <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType1" ToRole="RecordType" />
           <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="RecordType" ToRole="ScheduleItem" />
+          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
         </EntityType>
         <Association Name="FK_Assignments_RecordTypes">
           <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
@@ -5925,18 +5895,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="Assignment">
               <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeCosts_FinancingSources">
-          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
-          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="FinancingSource">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeCost">
-              <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5984,20 +5942,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Record">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeCosts_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeCost">
               <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -6062,6 +6006,104 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="ScheduleItem">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RecordDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssignmentId" Type="Int32" />
+          <Property Name="RecordId" Type="Int32" />
+          <Property Name="DocumentId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Assignment" Relationship="DataLib.FK_RecordDocuments_Assignments" FromRole="RecordDocument" ToRole="Assignment" />
+          <NavigationProperty Name="Document" Relationship="DataLib.FK_RecordDocuments_Documents" FromRole="RecordDocument" ToRole="Document" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="RecordDocument" ToRole="Record" />
+        </EntityType>
+        <EntityType Name="RecordTypeCost">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsChild" Type="Boolean" />
+          <Property Name="IsIncome" Type="Boolean" Nullable="false" />
+          <Property Name="AccountMaterials" Type="Double" Nullable="false" />
+          <Property Name="Amortisation" Type="Double" Nullable="false" />
+          <Property Name="Salary" Type="Double" Nullable="false" />
+          <Property Name="SoftInventory" Type="Double" Nullable="false" />
+          <Property Name="Profitability" Type="Double" Nullable="false" />
+          <Property Name="FullPrice" Type="Double" Nullable="false" />
+          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InUserLogin" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="RecordTypeCost" ToRole="FinancingSource" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordTypeCost" ToRole="RecordType" />
+        </EntityType>
+        <Association Name="FK_RecordDocuments_Assignments">
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="0..1" />
+          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Assignment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocument">
+              <PropertyRef Name="AssignmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordDocuments_Documents">
+          <End Type="DataLib.Document" Role="Document" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Document">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocument">
+              <PropertyRef Name="DocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordTypeCosts_FinancingSources">
+          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
+          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinancingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeCost">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordDocuments_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
+          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocument">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordTypeCosts_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeCost">
               <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -6939,36 +6981,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="RecordDocuments">
-            <EntityTypeMapping TypeName="DataLib.RecordDocument">
-              <MappingFragment StoreEntitySet="RecordDocuments">
-                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
-                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypeCosts">
-            <EntityTypeMapping TypeName="DataLib.RecordTypeCost">
-              <MappingFragment StoreEntitySet="RecordTypeCosts">
-                <ScalarProperty Name="InUserLogin" ColumnName="InUserLogin" />
-                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
-                <ScalarProperty Name="FullPrice" ColumnName="FullPrice" />
-                <ScalarProperty Name="Profitability" ColumnName="Profitability" />
-                <ScalarProperty Name="SoftInventory" ColumnName="SoftInventory" />
-                <ScalarProperty Name="Salary" ColumnName="Salary" />
-                <ScalarProperty Name="Amortisation" ColumnName="Amortisation" />
-                <ScalarProperty Name="AccountMaterials" ColumnName="AccountMaterials" />
-                <ScalarProperty Name="IsIncome" ColumnName="IsIncome" />
-                <ScalarProperty Name="IsChild" ColumnName="IsChild" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
-                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordTypeEditors">
             <EntityTypeMapping TypeName="DataLib.RecordTypeEditor">
               <MappingFragment StoreEntitySet="RecordTypeEditors">
@@ -7006,6 +7018,37 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordDocuments">
+            <EntityTypeMapping TypeName="DataLib.RecordDocument">
+              <MappingFragment StoreEntitySet="RecordDocuments">
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordTypeCosts">
+            <EntityTypeMapping TypeName="DataLib.RecordTypeCost">
+              <MappingFragment StoreEntitySet="RecordTypeCosts">
+                <ScalarProperty Name="InUserLogin" ColumnName="InUserLogin" />
+                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
+                <ScalarProperty Name="FullPrice" ColumnName="FullPrice" />
+                <ScalarProperty Name="Profitability" ColumnName="Profitability" />
+                <ScalarProperty Name="SoftInventory" ColumnName="SoftInventory" />
+                <ScalarProperty Name="Salary" ColumnName="Salary" />
+                <ScalarProperty Name="Amortisation" ColumnName="Amortisation" />
+                <ScalarProperty Name="AccountMaterials" ColumnName="AccountMaterials" />
+                <ScalarProperty Name="IsIncome" ColumnName="IsIncome" />
+                <ScalarProperty Name="IsChild" ColumnName="IsChild" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

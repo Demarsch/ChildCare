@@ -9,6 +9,7 @@ namespace OrganizationContractsModule.Services
 {
     public interface IRecordService
     {
+        IDisposableQueryable<Assignment> GetAssignmentById(int id);
         IDisposableQueryable<Record> GetRecordById(int id);
         IDisposableQueryable<RecordType> GetRecordTypeById(int id);
 

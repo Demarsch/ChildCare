@@ -51,8 +51,8 @@ namespace Core.Data
         public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
         public virtual Visit Visit { get; set; }
+        public virtual RecordType RecordType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
-        public virtual RecordType RecordType { get; set; }
     }
 }
