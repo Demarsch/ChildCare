@@ -39,8 +39,6 @@ namespace PatientRecordsModule.ViewModels
 
         private bool needLoadTemplateData = true;
 
-        //private Visit visit;
-        private int visitId = 0;
         #endregion
 
         #region Constructors
@@ -80,6 +78,14 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Properties
+
+
+        private int visitId = 0;
+        public int VisitId
+        {
+            get { return visitId; }
+            private set { SetTrackedProperty(ref visitId, value); }
+        }
 
         private DateTime date = DateTime.Now;
         public DateTime Date
@@ -289,7 +295,7 @@ namespace PatientRecordsModule.ViewModels
             this.PersonId = personId;
             this.SelectedContractId = null;
             this.SelectedFinancingSourceId = null;
-            this.SelectedUrgentlyId= null;
+            this.SelectedUrgentlyId = null;
             this.SelectedExecutionPlaceId = null;
             this.SelectedLPUId = null;
             this.SelectedVisitTemplateId = visitTemplateId;

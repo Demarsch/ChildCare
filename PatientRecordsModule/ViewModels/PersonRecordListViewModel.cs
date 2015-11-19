@@ -23,6 +23,7 @@ using Prism.Commands;
 using Prism.Events;
 using Core.Wpf.Events;
 using Prism.Interactivity.InteractionRequest;
+using System.Data.Entity;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -35,8 +36,9 @@ namespace PatientRecordsModule.ViewModels
         private readonly ILog logService;
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
         private readonly CommandWrapper deleteVisitCommandWrapper;
+        private readonly CommandWrapper addNewVisitInListVisitCommandWrapper;
         private readonly CommandWrapper completeVisitCommandWrapper;
-        private readonly ChangeTracker changeTracker;
+        //private readonly ChangeTrackerEx<PersonRecordListViewModel> changeTracker;
         private readonly DelegateCommand<int?> createNewVisitCommand;
         private readonly DelegateCommand<int?> editVisitCommand;
         private readonly DelegateCommand<int?> deleteVisitCommand;
@@ -79,7 +81,7 @@ namespace PatientRecordsModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
-            changeTracker = new ChangeTracker();
+            //changeTracker = new ChangeTrackerEx<PersonRecordListViewModel>(this);
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             reloadPatientVisitsCommandWrapper = new CommandWrapper
@@ -89,6 +91,7 @@ namespace PatientRecordsModule.ViewModels
             };
             deleteVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => DeleteVisitAsync(visitId)) };
             completeVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => CompleteVisitAsync(visitId)) };
+            addNewVisitInListVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => AddNewVisitToList(visitId)) };
             createNewVisitCommand = new DelegateCommand<int?>(CreateNewVisit);
             editVisitCommand = new DelegateCommand<int?>(EditVisit);
             deleteVisitCommand = new DelegateCommand<int?>(DeleteVisitAsync);
@@ -144,7 +147,7 @@ namespace PatientRecordsModule.ViewModels
         {
             var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { AddNewVisitToList(vm.VisitId); });
         }
 
         public ICommand EditVisitCommand { get { return editVisitCommand; } }
@@ -152,7 +155,7 @@ namespace PatientRecordsModule.ViewModels
         {
             var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, null, visitId, DateTime.Now, "Редактировать случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { /*UpdateVisit(vm.VisitId);*/ });
         }
 
         public ICommand CompleteVisitCommand { get { return completeVisitCommand; } }
@@ -160,11 +163,11 @@ namespace PatientRecordsModule.ViewModels
         {
             var visitCloseViewModel = visitCloseViewModelFactory();
             visitCloseViewModel.IntializeCreation(visitId.Value, "Завершить случай");
-            VisitCloseInteractionRequest.Raise(visitCloseViewModel, (vm) => { });
+            VisitCloseInteractionRequest.Raise(visitCloseViewModel, (vm) => {/* UpdateVisit(vm.VisitId);*/ });
         }
 
         public ICommand ReturnToActiveVisitCommand { get { return returnToActiveVisitCommand; } }
-        private void ReturnToActiveVisit(int? visitId)
+        private async void ReturnToActiveVisit(int? visitId)
         {
             FailureMediator.Deactivate();
             this.visitId = visitId;
@@ -183,6 +186,7 @@ namespace PatientRecordsModule.ViewModels
                 patientRecordsService.ReturnToActiveVisitAsync(visitId.Value, token);
                 saveSuccesfull = true;
                 this.visitId = 0;
+                //UpdateVisit(visitId);
             }
             catch (OperationCanceledException)
             {
@@ -223,6 +227,7 @@ namespace PatientRecordsModule.ViewModels
                 patientRecordsService.DeleteVisitAsync(visitId.Value, 1, token);
                 saveSuccesfull = true;
                 this.visitId = 0;
+                //DeleteVisitFromList(visitId);
             }
             catch (OperationCanceledException)
             {
@@ -245,6 +250,56 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Methods
+
+        private async void AddNewVisitToList(int? visitId)
+        {
+            FailureMediator.Deactivate();
+            this.visitId = visitId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Additing new visit in records list with Id = {0} for person with Id = {1}", visitId, personId);
+            BusyMediator.Activate("Добавление нового случая в список пациенту...");
+            var saveSuccesfull = false;
+            var visitQuery = patientRecordsService.GetVisit(visitId.Value);
+            try
+            {
+                var visitDTO = await visitQuery.Select(x => new VisitDTO()
+                {
+                    Id = x.Id,
+                    BeginDateTime = x.BeginDateTime,
+                    EndDateTime = x.EndDateTime,
+                    ActualDateTime = x.BeginDateTime,
+                    FinSource = x.FinancingSource.ShortName,
+                    Name = x.VisitTemplate.ShortName,
+                    IsCompleted = x.IsCompleted
+                }).FirstOrDefaultAsync(token);
+                saveSuccesfull = true;
+                this.visitId = 0;
+                RootItems.Add(new PersonHierarchicalVisitsViewModel(visitDTO, patientRecordsService, eventAggregator, logService));
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to add new visit in records list with Id = {0} for person with Id = {1}", visitId, personId);
+                FailureMediator.Activate("Не удалось добавить новый случай в список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", deleteVisitCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
+        }
 
         public void Dispose()
         {
@@ -295,7 +350,7 @@ namespace PatientRecordsModule.ViewModels
                 await task;
                 RootItems.AddRange(task.Result);
                 AmbNumber = patientQuery.FirstOrDefault().AmbNumberString;
-                changeTracker.IsEnabled = true;
+                //changeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)

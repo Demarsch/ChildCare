@@ -89,6 +89,7 @@ namespace PatientRecordsModule.ViewModels
                 throw new ArgumentNullException("personRecordEditorViewModel");
             }
             this.personRecordEditorViewModel = personRecordEditorViewModel;
+            this.personRecordEditorViewModel.PropertyChanged += personRecordEditorViewModel_PropertyChanged;
             this.personRecordListViewModel = personRecordListViewModel;
             this.patientRecordsService = patientRecordsService;
             this.logService = logSevice;
@@ -142,6 +143,9 @@ namespace PatientRecordsModule.ViewModels
             VisitId = visitId;
             AssignmentId = assignmentId;
             RecordId = recordId;
+
+            OnPropertyChanged(() => IsViewModeActive);
+            OnPropertyChanged(() => IsEditModeActive);
         }
 
         private void OnPatientSelected(int patientId)
@@ -261,6 +265,14 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        void personRecordEditorViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsViewModeInCurrentProtocolEditor")
+                OnPropertyChanged(() => IsViewModeActive);
+            if (e.PropertyName == "IsEditModeInCurrentProtocolEditor")
+                OnPropertyChanged(() => IsEditModeActive);
+        }
+
         #endregion
 
         #region Properties
@@ -349,6 +361,16 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        public bool IsViewModeActive
+        {
+            get { return (AssignmentId > 0 || RecordId > 0) && personRecordEditorViewModel.IsViewModeInCurrentProtocolEditor; }
+        }
+
+        public bool IsEditModeActive
+        {
+            get { return (AssignmentId > 0 || RecordId > 0) && personRecordEditorViewModel.IsEditModeInCurrentProtocolEditor; }
+        }
+
         public bool IsRecordSelected
         {
             get { return RecordId > 0; }
@@ -381,7 +403,11 @@ namespace PatientRecordsModule.ViewModels
 
         public ICommand PrintProtocolCommand { get { return personRecordEditorViewModel.PrintProtocolCommand; } }
 
+        public ICommand SaveProtocolCommand { get { return personRecordEditorViewModel.SaveProtocolCommand; } }
+
         public ICommand ShowInEditModeCommand { get { return personRecordEditorViewModel.ShowInEditModeCommand; } }
+
+        public ICommand ShowInViewModeCommand { get { return personRecordEditorViewModel.ShowInViewModeCommand; } }
         #endregion
     }
 }

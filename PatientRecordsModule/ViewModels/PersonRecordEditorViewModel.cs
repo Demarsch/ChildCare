@@ -45,8 +45,11 @@ namespace PatientRecordsModule.ViewModels
             this.patientRecordsService = patientRecordsService;
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
+
             printProtocolCommand = new DelegateCommand(PrintProtocol);
+            saveProtocolCommand = new DelegateCommand(SaveProtocol);
             showInEditModeCommand = new DelegateCommand(ShowProtocolInEditMode);
+            showInViewModeCommand = new DelegateCommand(ShowProtocolInViewMode);
             SubscribeToEvents();
         }
         #endregion
@@ -88,7 +91,31 @@ namespace PatientRecordsModule.ViewModels
         public IRecordTypeProtocol ProtocolEditor
         {
             get { return protocolEditor; }
-            set { SetProperty(ref protocolEditor, value); }
+            set
+            {
+                if (ProtocolEditor != null)
+                    ProtocolEditor.PropertyChanged -= ProtocolEditor_PropertyChanged;
+                SetProperty(ref protocolEditor, value);
+                ProtocolEditor.PropertyChanged += ProtocolEditor_PropertyChanged;
+                OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
+                OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+            }
+        }
+
+        public bool IsViewModeInCurrentProtocolEditor
+        {
+            get
+            {
+                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View);
+            }
+        }
+
+        public bool IsEditModeInCurrentProtocolEditor
+        {
+            get
+            {
+                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.Edit);
+            }
         }
 
         #endregion
@@ -141,11 +168,33 @@ namespace PatientRecordsModule.ViewModels
                 ProtocolEditor.PrintProtocol();
         }
 
+        private void SaveProtocol()
+        {
+            if (ProtocolEditor != null)
+                ProtocolEditor.SaveProtocol();
+        }
+
         private void ShowProtocolInEditMode()
         {
             if (ProtocolEditor != null)
                 protocolEditor.CurrentMode = ProtocolMode.Edit;
         }
+
+        private void ShowProtocolInViewMode()
+        {
+            if (ProtocolEditor != null)
+                protocolEditor.CurrentMode = ProtocolMode.View;
+        }
+
+        void ProtocolEditor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "CurrentMode")
+            {
+                OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
+                OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -156,10 +205,24 @@ namespace PatientRecordsModule.ViewModels
 
         }
 
+        private DelegateCommand saveProtocolCommand;
+        public ICommand SaveProtocolCommand
+        {
+            get { return saveProtocolCommand; }
+
+        }
+
         private DelegateCommand showInEditModeCommand;
         public ICommand ShowInEditModeCommand
         {
             get { return showInEditModeCommand; }
+
+        }
+
+        private DelegateCommand showInViewModeCommand;
+        public ICommand ShowInViewModeCommand
+        {
+            get { return showInViewModeCommand; }
 
         }
         #endregion
