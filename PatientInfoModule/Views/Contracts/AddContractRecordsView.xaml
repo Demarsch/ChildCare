@@ -20,6 +20,11 @@
     
     <Grid>
         <StackPanel Orientation="Vertical" >
+            <Label Content="Источник финансирования"/>
+            <ComboBox ItemsSource="{Binding FinancingSources}" Margin="2"
+                          SelectedValue="{Binding SelectedFinancingSourceId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                          Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                          HorizontalAlignment="Stretch" />
             <RadioButton Content="Назначенные услуги" IsChecked="{Binding IsAssignRecordsChecked, Mode=TwoWay}" Margin="2"/>
             <ListView ItemsSource="{Binding Assignments}" SelectedItem="{Binding SelectedAssignment, Mode=TwoWay}"
                       Visibility="{Binding IsAssignRecordsChecked, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
@@ -90,5 +95,6 @@
                 </StackPanel>
             </Button>
         </StackPanel>
+        <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

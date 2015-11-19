@@ -148,10 +148,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\AttachDocument48x48.png" />
-    <Resource Include="Resources\Images\AttachFile48x48.png" />
     <Resource Include="Resources\Images\DetachDocument48x48.png" />
-    <Resource Include="Resources\Images\DetachFile48x48.png" />
     <Resource Include="Resources\Images\Mark48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AttachFile48x48.png" />
+    <Resource Include="Resources\Images\DetachFile48x48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

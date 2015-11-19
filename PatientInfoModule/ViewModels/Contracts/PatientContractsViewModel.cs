@@ -25,6 +25,7 @@ using Prism.Interactivity.InteractionRequest;
 using WpfControls.Editors;
 using Microsoft.Practices.Unity;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -94,8 +95,8 @@ namespace PatientInfoModule.ViewModels
             ChangeTracker = new ChangeTrackerEx<PatientContractsViewModel>(this);
             ChangeTracker.PropertyChanged += OnChangesTracked;
             
-            reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadContractsAsync(patientId)) };
-            reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources) };
+            reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadContractsAsync(patientId)), CommandName = "Повторить" };
+            reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources), CommandName = "Повторить" };
             ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
             NotificationInteractionRequest = new InteractionRequest<Notification>();
             AddContractRecordsInteractionRequest = new InteractionRequest<AddContractRecordsViewModel>();
@@ -177,13 +178,18 @@ namespace PatientInfoModule.ViewModels
             var reliableStaff = await recordService.GetRecordTypeRolesByOptions(OptionValues.ResponsibleForContract).FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
             {
-                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблицах RecordTypes, RecordTypeRoles"));
+                FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles", reloadDataSourcesCommandWrapper);
                 return;
             }
             var personStaffs = await personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
             if (!personStaffs.Any())
             {
-                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги.", reloadDataSourcesCommandWrapper, new Exception("Отсутствует запись в таблице RecordTypeRolePermissions"));
+                FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions", reloadDataSourcesCommandWrapper);
+                return;
+            }
+            if (!recordService.GetPaymentTypes().Any())
+            {
+                FailureMediator.Activate("В МИС не найдена информация о методах оплаты. Отсутствуют записи в таблице PaymentTypes", reloadDataSourcesCommandWrapper);
                 return;
             }
             List<FieldValue> elements = new List<FieldValue>();
@@ -209,12 +215,7 @@ namespace PatientInfoModule.ViewModels
             
             SelectedRegistratorId = SpecialValues.NonExistingId;
             SelectedPaymentTypeId = SpecialValues.NonExistingId;
-            SelectedFinancingSourceId = SpecialValues.NonExistingId;
-            ContractBeginDateTime = DateTime.Now;
-            ContractEndDateTime = DateTime.Now;
-            ContractName = "НОВЫЙ ДОГОВОР";
-            ContractsCount = 0;
-            ContractsSum = "0 руб.";
+            SelectedFinancingSourceId = SpecialValues.NonExistingId;            
 
             SelectedFilterRegistratorId = SpecialValues.NonExistingId;
         }
@@ -240,31 +241,50 @@ namespace PatientInfoModule.ViewModels
             var token = currentLoadingToken.Token;
             BusyMediator.Activate("Загрузка договоров пациента...");
             log.InfoFormat("Loading contracts for patient with Id {0}...", patientId);
+            IDisposableQueryable<RecordContract> contractsQuery = null;
             try
             {
-                var result = await contractService
-                                .GetContracts(patientId, null, null, selectedFilterRegistratorId)
-                                .OrderByDescending(x => x.BeginDateTime)
-                                .Select(x => new
+                contractsQuery = contractService.GetContracts(patientId, null, null, selectedFilterRegistratorId);
+                var result = await Task.Factory.StartNew(() =>
+                            {
+                                return contractsQuery.Select(x => new
                                 {
                                     Id = x.Id,
                                     ContractNumber = x.Number,
-                                    Client = x.Person.ShortName,
+                                    ContractName = (x.Number.HasValue ? "№" + x.Number.ToString() + " - " : string.Empty) + x.ContractName,
+                                    Client = x.Person,
+                                    Consumer = x.Person1,
                                     ContractCost = x.RecordContractItems.Where(a => a.IsPaid).Sum(a => a.Cost),
-                                    ContractBeginDate = x.BeginDateTime
-                                }).ToArrayAsync(token);
-               
-                ContractsCount = result.Count();
-                ContractsSum = result.Sum(x => x.ContractCost) + " руб.";
-                Contracts.Clear();
-                Contracts.AddRange(result.Select(x => new ContractViewModel()
-                    {
-                        Id = x.Id,
-                        ContractNumber = x.ContractNumber.ToSafeString(),
-                        Client = x.Client,
-                        ContractCost = x.ContractCost,
-                        ContractBeginDate = x.ContractBeginDate.ToShortDateString()
-                    }));
+                                    ContractBeginDate = x.BeginDateTime,
+                                    ContractEndDate = x.EndDateTime,
+                                    FinancingSourceId = x.FinancingSourceId,
+                                    PaymentTypeId = x.PaymentTypeId,
+                                    RegistratorId = x.InUserId,
+                                    IsCashless = x.PaymentType.Options.Contains(OptionValues.Cashless)
+                                })
+                                .OrderByDescending(x => x.ContractBeginDate)
+                                .ToArray();
+                            }, token);
+                
+                Contracts = new ObservableCollectionEx<ContractViewModel>(
+                        result.Select(x => new ContractViewModel()
+                        {                
+                            Id = x.Id,
+                            ContractNumber = x.ContractNumber.ToSafeString(),
+                            ContractName = x.ContractName,
+                            Client = x.Client,
+                            Consumer = x.Consumer.ToString(),
+                            ContractCost = x.ContractCost,
+                            ContractBeginDate = x.ContractBeginDate,
+                            ContractEndDate = x.ContractEndDate,
+                            FinancingSourceId = x.FinancingSourceId,
+                            PaymentTypeId = x.PaymentTypeId,
+                            RegistratorId = x.RegistratorId,
+                            IsCashless = x.IsCashless
+                        }));
+                ContractsCount = Contracts.Count();
+                ContractsSum = Contracts.Sum(x => x.ContractCost) + " руб.";
+
                 if (contracts.Any())
                     SelectedContract = contracts.OrderByDescending(x => x.ContractBeginDate).First();
                 else
@@ -295,40 +315,21 @@ namespace PatientInfoModule.ViewModels
         private void LoadContractData()
         {
             contractItemsTracker.IsEnabled = false;
-            if (SelectedContract.Id == SpecialValues.NewId)
-                ClearData();
-            else
-            {
-                needClear = false;
-                var contract = contractService.GetContractById(selectedContract.Id).First();
-                ContractBeginDateTime = contract.BeginDateTime;
-                ContractEndDateTime = contract.EndDateTime;
-                ContractName = contract.DisplayName;
-                SelectedFinancingSourceId = contract.FinancingSourceId;
-                SelectedRegistratorId = contract.InUserId;
-                SelectedPaymentTypeId = contract.PaymentTypeId;
-                SelectedClient = contract.Person;
-                Consumer = contract.Person1.FullName;
-                IsCashless = false;
-                LoadContractItems();
-                ContractItems.BeforeCollectionChanged += OnBeforeContractItemsChanged;
-                contractItemsTracker.IsEnabled = true;
-            }            
-        }
+            Consumer = SelectedContract.Consumer;
+            ContractBeginDateTime = SelectedContract.ContractBeginDate;
+            ContractEndDateTime = SelectedContract.ContractEndDate;
+            ContractName = SelectedContract.ContractName;
 
-        bool needClear = false;
-        private void ClearData()
-        {            
-            ContractName = "НОВЫЙ ДОГОВОР";
-            SelectedRegistratorId = -1;
-            SelectedFinancingSourceId = -1;
-            SelectedPaymentTypeId = -1;
-            IsCashless = false;
-            needClear = true;
-            SelectedClient = null;
-            Consumer = string.Empty;
-            ContractItems.Clear();            
-        }
+            SelectedFinancingSourceId = SelectedContract.FinancingSourceId;
+            SelectedRegistratorId = SelectedContract.RegistratorId;
+            SelectedPaymentTypeId = SelectedContract.PaymentTypeId;
+            SelectedClient = SelectedContract.Client;
+            IsCashless = SelectedContract.IsCashless;
+                                   
+            LoadContractItems();
+            ContractItems.BeforeCollectionChanged += OnBeforeContractItemsChanged;
+            contractItemsTracker.IsEnabled = true;            
+        }     
 
         private void LoadContractItems()
         {
@@ -538,7 +539,7 @@ namespace PatientInfoModule.ViewModels
             get { return selectedClient; }
             set 
             {
-                if (value != null || needClear)
+                if (value != null)
                     SetTrackedProperty(ref selectedClient, value); 
             }
         }
@@ -974,9 +975,9 @@ namespace PatientInfoModule.ViewModels
                     OnPropertyChanged(string.Empty);
                     LoadContractItems();
                     SelectedContract.ContractNumber = contract.Number.ToSafeString();
-                    SelectedContract.Client = contract.ContractName;
-                    SelectedContract.ContractBeginDate = contract.BeginDateTime.ToShortDateString();
-                    SelectedContract.ContractEndDate = contract.EndDateTime.ToShortDateString();
+                    SelectedContract.Client = contract.Person;
+                    SelectedContract.ContractBeginDate = contract.BeginDateTime;
+                    SelectedContract.ContractEndDate = contract.EndDateTime;
                     ContractName = contract.DisplayName;
                     UpdateTotalSumRow();
                     contractItemsTracker.AcceptChanges();
@@ -989,21 +990,22 @@ namespace PatientInfoModule.ViewModels
         private void AddContract()
         {
             if (patientId == SpecialValues.NonExistingId || Contracts == null || Contracts.Any(x => x.Id == 0)) return;
+            var patient = personService.GetPatientQuery(this.patientId).First();
             Contracts.Add(new ContractViewModel()
             {
                 Id = 0,
                 ContractNumber = string.Empty,
                 ContractName = "НОВЫЙ ДОГОВОР",
-                Client = "НОВЫЙ ДОГОВОР",
+                Consumer = patient.ToString(),
                 ContractCost = 0,
-                ContractBeginDate = DateTime.Now.ToShortDateString(),
-                ContractEndDate = DateTime.Now.ToShortDateString()
+                ContractBeginDate = DateTime.Now,
+                ContractEndDate = DateTime.Now,
+                FinancingSourceId = -1,
+                PaymentTypeId = -1,
+                RegistratorId = -1,
+                Client = patient
             });            
             SelectedContract = contracts.First(x => x.Id == 0);
-            SelectedPaymentTypeId = recordService.GetPaymentTypes().First(x => x.Options.Contains(OptionValues.Cash)).Id;
-            Consumer = personService.GetPatientQuery(this.patientId).First().FullName;
-            ContractBeginDateTime = DateTime.Now.Date;
-            ContractEndDateTime = DateTime.Now.Date;
             UpdateChangeCommandsState();
         }
 
