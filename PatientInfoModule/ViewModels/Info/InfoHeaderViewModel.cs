@@ -6,6 +6,7 @@ using Core.Data.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Services;
 using log4net;
+using PatientInfoModule.Misc;
 using Prism;
 using Prism.Events;
 using Prism.Mvvm;
@@ -16,33 +17,19 @@ namespace PatientInfoModule.ViewModels
 {
     public class InfoHeaderViewModel : BindableBase, IDisposable, IActiveAware
     {
-        private readonly IDbContextProvider contextProvider;
-
-        private readonly ILog log;
-
         private readonly IEventAggregator eventAggregator;
-        
+
         private readonly IRegionManager regionManager;
 
         private readonly IViewNameResolver viewNameResolver;
 
         private readonly InfoContentViewModel contentViewModel;
 
-        public InfoHeaderViewModel(IDbContextProvider contextProvider, 
-            ILog log, 
-            IEventAggregator eventAggregator, 
-            IRegionManager regionManager, 
-            IViewNameResolver viewNameResolver, 
-            InfoContentViewModel contentViewModel)
+        public InfoHeaderViewModel(IEventAggregator eventAggregator,
+                                   IRegionManager regionManager,
+                                   IViewNameResolver viewNameResolver,
+                                   InfoContentViewModel contentViewModel)
         {
-            if (contextProvider == null)
-            {
-                throw new ArgumentNullException("contextProvider");
-            }
-            if (log == null)
-            {
-                throw new ArgumentNullException("log");
-            }
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -59,8 +46,6 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("contentViewModel");
             }
-            this.contextProvider = contextProvider;
-            this.log = log;
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
@@ -106,7 +91,7 @@ namespace PatientInfoModule.ViewModels
             }
             else
             {
-                var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
+                var navigationParameters = new NavigationParameters { { ParameterNames.PatientId, patientId } };
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<InfoContentViewModel>(), navigationParameters);
             }
         }
@@ -133,10 +118,19 @@ namespace PatientInfoModule.ViewModels
 
         public event EventHandler IsActiveChanged = delegate { };
 
-        public ICommand CreateNewPatientCommand { get { return contentViewModel.CreateNewPatientCommand; } }
+        public ICommand CreateNewPatientCommand
+        {
+            get { return contentViewModel.CreateNewPatientCommand; }
+        }
 
-        public ICommand SaveChangesCommand { get { return contentViewModel.SaveChangesCommand; } }
+        public ICommand SaveChangesCommand
+        {
+            get { return contentViewModel.SaveChangesCommand; }
+        }
 
-        public ICommand CancelChangesCommand { get { return contentViewModel.CancelChangesCommand; } }
+        public ICommand CancelChangesCommand
+        {
+            get { return contentViewModel.CancelChangesCommand; }
+        }
     }
 }

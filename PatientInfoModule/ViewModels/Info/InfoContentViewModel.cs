@@ -271,7 +271,7 @@ namespace PatientInfoModule.ViewModels
 
         private ICollection<PersonDisability> currentDisabilityDocuments;
 
-        private ICollection<PersonSocialStatus> currentSocialStatuses; 
+        private ICollection<PersonSocialStatus> currentSocialStatuses;
 
         private int patientIdBeingSelected;
 
@@ -565,7 +565,13 @@ namespace PatientInfoModule.ViewModels
                                    CurrentPerson = new Person
                                                    {
                                                        AmbNumberString = currentPerson == null ? string.Empty : currentPerson.AmbNumberString,
-                                                       Id = currentPerson == null ? SpecialValues.NewId : currentPerson.Id
+                                                       Id = currentPerson == null ? SpecialValues.NewId : currentPerson.Id,
+                                                       BirthDate = BirthDate.Value.Date,
+                                                       Snils = Snils,
+                                                       MedNumber = MedNumber,
+                                                       IsMale = IsMale,
+                                                       Phones = Phones,
+                                                       Email = Email
                                                    },
                                    IsIncorrectName = IsIncorrectName,
                                    IsNewName = IsNewName || currentName == null,
@@ -589,12 +595,7 @@ namespace PatientInfoModule.ViewModels
                                    CurrentSocialStatuses = currentSocialStatuses ?? new PersonSocialStatus[0],
                                    NewSocialStatuses = SocialStatuses.Model
                                };
-                saveData.CurrentPerson.BirthDate = BirthDate.Value.Date;
-                saveData.CurrentPerson.Snils = Snils;
-                saveData.CurrentPerson.MedNumber = MedNumber;
-                saveData.CurrentPerson.IsMale = IsMale;
-                saveData.CurrentPerson.Phones = Phones;
-                saveData.CurrentPerson.Email = Email;
+
 
                 var result = await patientService.SavePatientAsync(saveData, token);
                 currentPerson = result.Person;

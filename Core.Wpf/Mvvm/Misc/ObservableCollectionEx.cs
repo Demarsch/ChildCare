@@ -95,16 +95,16 @@ namespace Core.Wpf.Mvvm
             base.MoveItem(oldIndex, newIndex);
         }
 
-        public void Replace(IEnumerable<TItem> items)
+        public void Replace(IEnumerable<TItem> newItems)
         {
-            items = items ?? new TItem[0];
+            newItems = newItems == null ? new TItem[0] : newItems.ToArray();
             var wasChanged = Items.Count > 0;
             if (wasChanged)
             {
-                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, items as IList, Items as IList));
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, (IList)newItems, (IList)Items));
             }
             Items.Clear();
-            foreach (var item in items)
+            foreach (var item in newItems)
             {
                 Items.Add(item);
                 wasChanged = true;
@@ -131,7 +131,7 @@ namespace Core.Wpf.Mvvm
                 if (predicate(Items[index]))
                 {
                     removedItems.Add(Items[index]);
-                    removedIndices.Insert(0, index);
+                    removedIndices.Add(index);
                 }
             }
             if (removedIndices.Count == 0)

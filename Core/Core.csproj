@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.4\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -51,12 +51,14 @@
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
     <Compile Include="Attributes\NonCachableAttribute.cs" />
+    <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="Expressions\CompositeSearchExpressionProvider.cs" />
     <Compile Include="Expressions\DateBasedSearchExpressionProvider.cs" />
     <Compile Include="Expressions\ParameterReplacer.cs" />
     <Compile Include="Expressions\SearchExpression.cs" />
     <Compile Include="Expressions\SearchExpressionProvider.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ChangeTrackerExtensions.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
@@ -70,12 +72,17 @@
     <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
+    <Compile Include="Misc\IEnvironment.cs" />
+    <Compile Include="Misc\TimeIntervals\ITimeInterval.cs" />
+    <Compile Include="Misc\TimeIntervals\TimeInterval.cs" />
+    <Compile Include="Misc\TimeIntervals\TimeIntervalCollection.cs" />
     <Compile Include="Misc\Validation\IActiveDataErrorInfo.cs" />
     <Compile Include="Misc\Validation\ValidationMediator.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
     <Compile Include="Expressions\ISearchExpressionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Interfaces\ISecurityService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

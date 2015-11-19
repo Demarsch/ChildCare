@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fluent, Version=3.5.1.198, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fluent.Ribbon.3.5.1.198\lib\net45\Fluent.dll</HintPath>
+    <Reference Include="Fluent, Version=3.6.0.221, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fluent.Ribbon.3.6.0.221\lib\net45\Fluent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -55,7 +55,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fluent.Ribbon.3.5.1.198\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\Fluent.Ribbon.3.6.0.221\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
@@ -71,7 +71,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\MedNumberInputHelperBehavior.cs" />
+    <Compile Include="Behaviors\ScrollSynchronizer.cs" />
     <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="Mvvm\Mediators\FailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />
     <Compile Include="Mvvm\Misc\FieldValue.cs" />
+    <Compile Include="Mvvm\Misc\IDialogViewModel.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionChangeTracker.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -113,7 +116,13 @@
     </Compile>
     <Compile Include="Services\Implementations\FileService.cs" />
     <Compile Include="Services\Interfaces\IFileService.cs" />
+    <Compile Include="Services\Implementations\WindowsDialogService.cs" />
+    <Compile Include="Services\Interfaces\IDialogService.cs" />
     <Compile Include="Services\Interfaces\IViewNameResolver.cs" />
+    <Compile Include="Views\DialogWindow.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="PopupWindowAction\DefaultWindows\DefaultConfirmationWindow.xaml">
@@ -125,6 +134,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DialogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

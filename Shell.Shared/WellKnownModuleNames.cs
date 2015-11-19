@@ -10,8 +10,8 @@
 
         public const string OrganizationContractsModule = "OrganizationContracts";
 
-        public const string CoreModule = "CoreModule";
-
         public const string AdminModule = "AdminModule";
+
+        public const string ScheduleModule = "ScheduleModule";
     }
 }
