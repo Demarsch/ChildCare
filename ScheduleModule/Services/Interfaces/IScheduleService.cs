@@ -41,5 +41,7 @@ namespace ScheduleModule.Services
         ScheduledAssignmentDTO GetAssignment(int assignmentId, int patientId);
 
         IDisposableQueryable<Person> GetPatientQuery(int currentPatient);
+
+        IEnumerable<Org> GetLpus();
     }
 }

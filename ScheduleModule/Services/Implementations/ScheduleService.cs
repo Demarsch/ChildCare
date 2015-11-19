@@ -47,7 +47,10 @@ namespace ScheduleModule.Services
 
         public IEnumerable<RecordType> GetRecordTypes()
         {
-            return cacheService.GetItems<RecordType>();
+            return cacheService.GetItems<RecordType>()
+                               .Where(x => x.Assignable == true)
+                               .OrderBy(x => x.Name)
+                               .ToArray();
         }
 
         public ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date)
@@ -421,6 +424,17 @@ namespace ScheduleModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Person>(context.Set<Person>().Where(x => x.Id == currentPatient), context);
+        }
+
+        public IEnumerable<Org> GetLpus()
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                return context.Set<Org>()
+                              .Where(x => x.IsLpu)
+                              .OrderBy(x => x.Name)
+                              .ToArray();
+            }
         }
     }
 }

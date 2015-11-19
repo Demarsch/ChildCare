@@ -5,8 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
-             xmlns:markupExtensions="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -20,123 +18,18 @@
                          TargetType="{x:Type ListBoxItem}">
             <ContentPresenter />
         </ControlTemplate>
-        <xctk:InverseBoolConverter x:Key="InverseBoolConverter" />
-        <converters:Converter x:Key="NullToVisibilityConverter"
-                              DefaultValue="{x:Static Visibility.Visible}">
-            <converters:ConverterItem From="{x:Null}"
-                                      To="{x:Static Visibility.Collapsed}" />
-        </converters:Converter>
-        <converters:Converter x:Key="BooleanToInversedVisibilityConverter"
-                              DefaultValue="{x:Static Visibility.Visible}">
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
-                                      To="{x:Static Visibility.Collapsed}" />
-        </converters:Converter>
-        <converters:Converter x:Key="ModeToButtonTextConverter"
-                              DefaultValue="Перейти в режим просмотра">
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
-                                      To="Перейти в режим назначений" />
-        </converters:Converter>
-        <converters:Converter x:Key="ModeToDateSelectorTextConverter"
-                              DefaultValue="Выберите день назначения">
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
-                                      To="Расписание работы кабинетов на" />
-        </converters:Converter>
     </UserControl.Resources>
     <Grid>
         <DockPanel LastChildFill="True">
             <!--Schedule filters-->
-            <DockPanel DockPanel.Dock="Top"
-                       LastChildFill="False">
-                <Button DockPanel.Dock="Left"
-                        MinWidth="190"
-                        Margin="5"
-                        Padding="5"
-                        Background="White"
-                        Content="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToButtonTextConverter}}"
-                        Command="{Binding ChangeModeCommand}"
-                        Visibility="{Binding IsMovingAssignment, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
-                <TextBlock DockPanel.Dock="Left"
-                           Text="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToDateSelectorTextConverter}}"
-                           MinWidth="190"
-                           Margin="5"
-                           VerticalAlignment="Center"
-                           TextAlignment="Right" />
-                <Button Margin="5 5 3 5"
-                        Padding="5"
-                        VerticalAlignment="Center"
-                        Content="&lt;&lt;"
-                        DockPanel.Dock="Left"
-                        Command="{Binding ChangeDateCommand, Mode=OneTime}"
-                        CommandParameter="{markupExtensions:Int32 -7}" />
-                <Button Margin="3 5 3 5"
-                        Padding="5"
-                        VerticalAlignment="Center"
-                        Content="&lt;"
-                        DockPanel.Dock="Left"
-                        Command="{Binding ChangeDateCommand, Mode=OneTime}"
-                        CommandParameter="{markupExtensions:Int32 -1}" />
-                <DatePicker DockPanel.Dock="Left"
-                            SelectedDateFormat="Long"
-                            Width="130"
-                            SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"
-                            HorizontalAlignment="Left"
-                            Margin="3 5 3 5"
-                            IsEnabled="{Binding DataSourcesAreLoaded}"
-                            VerticalAlignment="Center" />
-                <Button Margin="3 5 3 5"
-                        Padding="5"
-                        VerticalAlignment="Center"
-                        Content="&gt;"
-                        DockPanel.Dock="Left"
-                        Command="{Binding ChangeDateCommand, Mode=OneTime}"
-                        CommandParameter="{markupExtensions:Int32 1}" />
-                <Button Margin="3 5 5 5"
-                        Padding="5"
-                        VerticalAlignment="Center"
-                        Content="&gt;&gt;"
-                        DockPanel.Dock="Left"
-                        Command="{Binding ChangeDateCommand, Mode=OneTime}"
-                        CommandParameter="{markupExtensions:Int32 7}" />
-                <StackPanel Orientation="Horizontal"
-                            Visibility="{Binding IsInReadOnlyMode, Converter={StaticResource BooleanToInversedVisibilityConverter}}">
-                    <Grid Width="180"
-                          VerticalAlignment="Center">
-                        <ComboBox HorizontalAlignment="Stretch"
-                                  ItemsSource="{Binding RecordTypes}"
-                                  SelectedItem="{Binding SelectedRecordType}"
-                                  DisplayMemberPath="Name"
-                                  Margin="5"
-                                  IsEnabled="{Binding IsMovingAssignment, Converter={StaticResource InverseBoolConverter}}" />
-                        <TextBlock Text="Выберите услугу"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   IsHitTestVisible="False"
-                                   Margin="11 0 0 0"
-                                   Visibility="{Binding SelectedRecordType, Converter={StaticResource NullToVisibilityConverter}}" />
-                    </Grid>
-                    <Grid Width="180"
-                          VerticalAlignment="Center">
-                        <ComboBox HorizontalAlignment="Stretch"
-                                  ItemsSource="{Binding Rooms}"
-                                  SelectedItem="{Binding SelectedRoom}"
-                                  DisplayMemberPath="NumberAndName"
-                                  Margin="5" />
-                        <TextBlock Text="Выберите кабинет"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   IsHitTestVisible="False"
-                                   Margin="11 0 0 0"
-                                   Visibility="{Binding SelectedRoom, Converter={StaticResource NullToVisibilityConverter}}" />
-                    </Grid>
                     <Button Content="Отменить перенос"
-                            MinWidth="150"
+                            Width="150"
                             Margin="5"
                             Padding="5"
                             Background="White"
                             Visibility="{Binding IsMovingAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                            Command="{Binding CancelAssignmentMovementCommand, Mode=OneTime}" />
-                </StackPanel>
-            </DockPanel>
+                            Command="{Binding CancelAssignmentMovementCommand, Mode=OneTime}" 
+                            DockPanel.Dock="Top" />
             <Grid HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>

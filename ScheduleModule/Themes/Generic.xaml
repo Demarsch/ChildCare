@@ -8,6 +8,7 @@
         <ResourceDictionary Source="../Views/OccupiedTimeSlotView.xaml" />
         <ResourceDictionary Source="../Views/RoomView.xaml" />
         <ResourceDictionary Source="../Views/TimeTickerView.xaml" />
+        <ResourceDictionary Source="../Views/ScheduleAssignmentUpdateView.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="{x:Type xctk:TimelinePanel}">
         <Setter Property="UnitSize"

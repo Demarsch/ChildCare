@@ -6,6 +6,7 @@ using Core.Data.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Services;
 using log4net;
+using PatientInfoModule.Misc;
 using Prism;
 using Prism.Events;
 using Prism.Mvvm;
@@ -90,7 +91,7 @@ namespace PatientInfoModule.ViewModels
             }
             else
             {
-                var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
+                var navigationParameters = new NavigationParameters { { ParameterNames.PatientId, patientId } };
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<InfoContentViewModel>(), navigationParameters);
             }
         }

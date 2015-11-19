@@ -10,6 +10,7 @@ using Core.Services;
 using Core.Wpf.Mvvm;
 using Prism.Commands;
 using Prism.Mvvm;
+using ScheduleModule.Services;
 using Shell.Shared;
 
 namespace ScheduleModule.ViewModels
@@ -20,10 +21,10 @@ namespace ScheduleModule.ViewModels
 
         private static readonly Org SelfAssigned = new Org { Name = "Самообращение" };
 
-        public ScheduleAssignmentUpdateViewModel(ICacheService cacheService, bool runCountdown)
+        public ScheduleAssignmentUpdateViewModel(IScheduleService scheduleService, ICacheService cacheService, bool runCountdown)
         {
-            FinancingSource = cacheService.GetItems<FinancingSource>().OrderBy(x => x.Name).ToArray();
-            AssignLpuList = new[] { SelfAssigned }.Concat(cacheService.GetItems<Org>().Where(x => x.IsLpu).OrderBy(x => x.Name)).ToArray();
+            FinancingSources = cacheService.GetItems<FinancingSource>().OrderBy(x => x.Name).ToArray();
+            AssignLpuList = new[] { SelfAssigned }.Concat(scheduleService.GetLpus()).ToArray();
             CloseCommand = new DelegateCommand<bool?>(Close);
             if (runCountdown)
             {
@@ -78,7 +79,7 @@ namespace ScheduleModule.ViewModels
             set { SetProperty(ref note, value); }
         }
 
-        public IEnumerable<FinancingSource> FinancingSource { get; private set; }
+        public IEnumerable<FinancingSource> FinancingSources { get; private set; }
 
         public IEnumerable<Org> AssignLpuList { get; private set; }
 
