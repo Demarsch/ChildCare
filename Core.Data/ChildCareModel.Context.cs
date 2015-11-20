@@ -97,5 +97,6 @@ namespace Core.Data
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RecordDocument> RecordDocuments { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
+        public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
     }
 }

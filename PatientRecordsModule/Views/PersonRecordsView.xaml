@@ -12,6 +12,6 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <views:PersonRecordListView Grid.Column="0" Grid.Row="0" x:Name="personRecordList"/>
-        <views:PersonRecordEditorView Grid.Column="1" Grid.Row="0" x:Name="personRecordEditor"/>
+        <views:PersonRecordEditorView Grid.Column="1" Grid.Row="0" x:Name="personRecordEditor" VerticalAlignment="Top"/>
     </Grid>
 </UserControl>

@@ -3,9 +3,59 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             mc:Ignorable="d">
     <Grid>
-        <ContentControl Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
+            </ListBox>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Период оказания"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectedValuePath="Id" DisplayMemberPath="Name" HorizontalAlignment="Stretch" ItemsSource="{Binding RecordPeriods}" SelectedValue="{Binding SelectedPeriodId}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Форма оказания"/>
+            <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" SelectedValuePath="Id" DisplayMemberPath="Name" HorizontalAlignment="Stretch" ItemsSource="{Binding Urgentlies}" SelectedValue="{Binding SelectedUrgentlyId}"/>
+
+            <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="3" Text="Время начала услуги" TextWrapping="Wrap" Width="80" TextAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+            <toolkit:DateTimePicker Grid.Row="1" Grid.Column="4"  Value="{Binding BeginDateTime}" Width="175" HorizontalAlignment="Left" Watermark="Дата/время начала" Height="23"/>
+            <Button Grid.Row="2" Grid.Column="4" Content="Текущее время" BorderThickness="0" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{Binding SetCurrentDateTimeBeginCommand}"/>
+        </Grid>
+        <ContentControl Grid.Row="1" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <Grid Grid.Row="2" Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Время окончания услуги"/>
+            <toolkit:DateTimePicker Grid.Row="0" Grid.Column="1"  Value="{Binding BeginDateTime}" Width="175" HorizontalAlignment="Left" Watermark="Дата/время окончания" Height="23"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="Текущее время" BorderThickness="0" Background="Transparent" HorizontalAlignment="Left" Command="{Binding SetCurrentDateTimeEndCommand}"/>
+
+            <CheckBox Grid.Row="1" Grid.Column="0" FontWeight="Bold" Grid.ColumnSpan="3" Content="Услуга выполнена, протокол заполнен" Foreground="{Binding IsCompleted, Converter={x:Static converters:CompletedToColorConverter.Instance}}"/>
+        </Grid>
     </Grid>
 </UserControl>

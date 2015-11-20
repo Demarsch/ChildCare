@@ -77,6 +77,7 @@
     <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
+    <Compile Include="Converters\CompletedToColorConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\Converter.cs" />

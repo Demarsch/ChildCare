@@ -607,9 +607,20 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="AssignmentId" Type="int" />
           <Property Name="RecordId" Type="int" />
           <Property Name="DocumentId" Type="int" Nullable="false" />
+          <Property Name="AssignmentId" Type="int" />
+        </EntityType>
+        <EntityType Name="RecordPeriods">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ExecutionPlaceId" Type="int" Nullable="false" />
+          <Property Name="Reserved" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Records">
           <Key>
@@ -1877,18 +1888,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordDocuments_Assignments">
-          <End Role="Assignments" Type="Self.Assignments" Multiplicity="0..1" />
-          <End Role="RecordDocuments" Type="Self.RecordDocuments" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Assignments">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordDocuments">
-              <PropertyRef Name="AssignmentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RecordDocuments_Documents">
           <End Role="Documents" Type="Self.Documents" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -1912,6 +1911,18 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="RecordDocuments">
               <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordPeriods_ExecutionPlaces">
+          <End Role="ExecutionPlaces" Type="Self.ExecutionPlaces" Multiplicity="1" />
+          <End Role="RecordPeriods" Type="Self.RecordPeriods" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlaces">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordPeriods">
+              <PropertyRef Name="ExecutionPlaceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2416,6 +2427,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="RecordContractLimits" EntityType="Self.RecordContractLimits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContracts" EntityType="Self.RecordContracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordDocuments" EntityType="Self.RecordDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecordPeriods" EntityType="Self.RecordPeriods" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypeCosts" EntityType="Self.RecordTypeCosts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypeEditors" EntityType="Self.RecordTypeEditors" Schema="dbo" store:Type="Tables" />
@@ -2775,10 +2787,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="PersonStaffs" EntitySet="PersonStaffs" />
             <End Role="RecordContracts" EntitySet="RecordContracts" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordDocuments_Assignments" Association="Self.FK_RecordDocuments_Assignments">
-            <End Role="Assignments" EntitySet="Assignments" />
-            <End Role="RecordDocuments" EntitySet="RecordDocuments" />
-          </AssociationSet>
           <AssociationSet Name="FK_RecordDocuments_Documents" Association="Self.FK_RecordDocuments_Documents">
             <End Role="Documents" EntitySet="Documents" />
             <End Role="RecordDocuments" EntitySet="RecordDocuments" />
@@ -2786,6 +2794,10 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_RecordDocuments_Records" Association="Self.FK_RecordDocuments_Records">
             <End Role="Records" EntitySet="Records" />
             <End Role="RecordDocuments" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordPeriods_ExecutionPlaces" Association="Self.FK_RecordPeriods_ExecutionPlaces">
+            <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
+            <End Role="RecordPeriods" EntitySet="RecordPeriods" />
           </AssociationSet>
           <AssociationSet Name="FK_Records_Persons" Association="Self.FK_Records_Persons">
             <End Role="Persons" EntitySet="Persons" />
@@ -3505,6 +3517,11 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
+          <EntitySet Name="RecordPeriods" EntityType="DataLib.RecordPeriod" />
+          <AssociationSet Name="FK_RecordPeriods_ExecutionPlaces" Association="DataLib.FK_RecordPeriods_ExecutionPlaces">
+            <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
+            <End Role="RecordPeriod" EntitySet="RecordPeriods" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -3792,6 +3809,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="VisitResults" Relationship="DataLib.FK_VisitResults_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitResult" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="Visit" />
           <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="VisitTemplate" />
+          <NavigationProperty Name="RecordPeriods" Relationship="DataLib.FK_RecordPeriods_ExecutionPlaces" FromRole="ExecutionPlace" ToRole="RecordPeriod" />
         </EntityType>
         <EntityType Name="FinancingSource">
           <Key>
@@ -6108,6 +6126,30 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RecordPeriod">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ExecutionPlaceId" Type="Int32" Nullable="false" />
+          <Property Name="Reserved" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_RecordPeriods_ExecutionPlaces" FromRole="RecordPeriod" ToRole="ExecutionPlace" />
+        </EntityType>
+        <Association Name="FK_RecordPeriods_ExecutionPlaces">
+          <End Type="DataLib.ExecutionPlace" Role="ExecutionPlace" Multiplicity="1" />
+          <End Type="DataLib.RecordPeriod" Role="RecordPeriod" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ExecutionPlace">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordPeriod">
+              <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7049,6 +7091,18 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
                 <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
                 <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordPeriods">
+            <EntityTypeMapping TypeName="DataLib.RecordPeriod">
+              <MappingFragment StoreEntitySet="RecordPeriods">
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="Reserved" ColumnName="Reserved" />
+                <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

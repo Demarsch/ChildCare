@@ -77,7 +77,13 @@
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Assignment48x48.png"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Услуги">
-        <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Record48x48.png"/>
+        <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png"/>
+        <StackPanel Orientation="Horizontal">
+            <fluent:Button Header="Завершить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordCompleted48x48.png" 
+                           Command="{Binding CompleteRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeCompleted, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <fluent:Button Header="Продолжить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordInProgress48x48.png"
+                           Command="{Binding InProgressRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeInProgress, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+        </StackPanel>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Изменения">
         <fluent:Button Header="Печать"
