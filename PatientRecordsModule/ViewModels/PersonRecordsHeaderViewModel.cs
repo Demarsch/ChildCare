@@ -48,6 +48,8 @@ namespace PatientRecordsModule.ViewModels
 
         private readonly CommandWrapper reloadPatientVisitCompletedCommandWrapper;
 
+        private readonly CommandWrapper reloadPatientRecordCompletedCommandWrapper;
+
         private int patientId;
 
         private CancellationTokenSource currentLoadingToken;
@@ -98,6 +100,7 @@ namespace PatientRecordsModule.ViewModels
             this.viewNameResolver = viewNameResolver;
             this.container = container;
             reloadPatientVisitCompletedCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitCompletedAsync(VisitId)) };
+            reloadPatientRecordCompletedCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadRecordCompletedAsync(VisitId)) };
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
             patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
@@ -225,7 +228,7 @@ namespace PatientRecordsModule.ViewModels
                 visit = patientRecordsService.GetVisit(visitId);
                 var loadVisitTemplatesTask = visit.Select(x => x.IsCompleted).FirstOrDefaultAsync(token);
                 var isCompletedResult = await loadVisitTemplatesTask;
-                IsCompleted = isCompletedResult;
+                IsVisitCompleted = isCompletedResult;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -235,7 +238,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load IsComleted property for visit with Id ={0}", visitId);
-                FailureMediator.Activate("Не удалость загрузить шаблоны. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitCompletedCommandWrapper, ex);
+                FailureMediator.Activate("Не удалость состояние случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitCompletedCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally
@@ -248,6 +251,47 @@ namespace PatientRecordsModule.ViewModels
                 if (visit != null)
                 {
                     visit.Dispose();
+                }
+            }
+        }
+
+        private async void LoadRecordCompletedAsync(int recordId)
+        {
+            FailureMediator.Deactivate();
+            var loadingIsCompleted = false;
+            currentLoadingToken = new CancellationTokenSource();
+            var token = currentLoadingToken.Token;
+            BusyMediator.Activate(string.Empty);
+            logService.InfoFormat("Loading IsComleted property for record with Id ={0}", recordId);
+            IDisposableQueryable<Record> record = null;
+            try
+            {
+                record = patientRecordsService.GetRecord(recordId);
+                var loadVisitTemplatesTask = record.Select(x => x.IsCompleted).FirstOrDefaultAsync(token);
+                var isCompletedResult = await loadVisitTemplatesTask;
+                IsRecordCompleted = isCompletedResult;
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load IsComleted property for record with Id ={0}", recordId);
+                FailureMediator.Activate("Не удалость состояние записи. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientRecordCompletedCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (record != null)
+                {
+                    record.Dispose();
                 }
             }
         }
@@ -312,13 +356,13 @@ namespace PatientRecordsModule.ViewModels
             get { return VisitId > 0; }
         }
 
-        private bool? isCompleted;
-        public bool? IsCompleted
+        private bool? isVisitCompleted;
+        public bool? IsVisitCompleted
         {
-            get { return isCompleted; }
+            get { return isVisitCompleted; }
             set
             {
-                SetProperty(ref isCompleted, value);
+                SetProperty(ref isVisitCompleted, value);
                 OnPropertyChanged(() => IsVisitCanBeClosed);
                 OnPropertyChanged(() => IsVisitCanBeOpened);
             }
@@ -326,12 +370,12 @@ namespace PatientRecordsModule.ViewModels
 
         public bool IsVisitCanBeClosed
         {
-            get { return IsVisitSelected && (IsCompleted == null || IsCompleted == false); }
+            get { return IsVisitSelected && (IsVisitCompleted == null || IsVisitCompleted == false); }
         }
 
         public bool IsVisitCanBeOpened
         {
-            get { return IsVisitSelected && IsCompleted == true; }
+            get { return IsVisitSelected && IsVisitCompleted == true; }
         }
 
         private int assignmentId;
@@ -358,6 +402,29 @@ namespace PatientRecordsModule.ViewModels
             {
                 SetProperty(ref recordId, value);
                 OnPropertyChanged(() => IsRecordSelected);
+                LoadRecordCompletedAsync(recordId);
+            }
+        }
+
+        public bool IsRecordCanBeCompleted
+        {
+            get { return IsRecordSelected && (IsRecordCompleted == null || IsRecordCompleted == false); }
+        }
+
+        public bool IsRecordCanBeInProgress
+        {
+            get { return IsRecordSelected && IsRecordCompleted == true; }
+        }
+
+        private bool? isRecordCompleted;
+        public bool? IsRecordCompleted
+        {
+            get { return isRecordCompleted; }
+            set
+            {
+                SetProperty(ref isRecordCompleted, value);
+                OnPropertyChanged(() => IsRecordCanBeCompleted);
+                OnPropertyChanged(() => IsRecordCanBeInProgress);
             }
         }
 

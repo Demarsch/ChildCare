@@ -61,8 +61,8 @@ namespace PatientRecordsModule.ViewModels
             get { return visitId; }
             set
             {
-                if (SetProperty(ref visitId, value))
-                    ProtocolEditor = new DefaultProtocolViewModel();
+                SetProperty(ref visitId, value);
+                ProtocolEditor = new DefaultProtocolViewModel();
             }
         }
 
@@ -73,6 +73,7 @@ namespace PatientRecordsModule.ViewModels
             set
             {
                 SetProperty(ref assignmentId, value);
+                ProtocolEditor = new DefaultProtocolViewModel();
             }
         }
 
@@ -83,7 +84,7 @@ namespace PatientRecordsModule.ViewModels
             set
             {
                 SetProperty(ref recordId, value);
-
+                ProtocolEditor = new DefaultProtocolViewModel();
             }
         }
 

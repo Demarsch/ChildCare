@@ -49,6 +49,8 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Visit> GetVisit(int visitId);
 
+        IDisposableQueryable<Record> GetRecord(int recordId);
+
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
 
         IEnumerable GetMKBs(string filter);

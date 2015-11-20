@@ -140,6 +140,12 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.Id == visitId && x.RemovedByUserId == null), context);
         }
 
+        public IDisposableQueryable<Record> GetRecord(int recordId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.Id == recordId && x.RemovedByUserId == null), context);
+        }
+
         public async Task<int> SaveVisitAsync(int visitId, int personId, DateTime beginDateTime, int recordContractId, int financingSourceId, int urgentlyId, int visitTemplateId, int executionPlaceId, int sentLPUId, string note,
             CancellationToken token)
         {

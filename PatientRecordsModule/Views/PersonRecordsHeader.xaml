@@ -59,10 +59,10 @@
             </fluent:SplitButton.ItemTemplate>
         </fluent:SplitButton>
         <StackPanel>
-            <fluent:Button Header="Завершить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitCompleted48x48.png" 
-                           Command="{Binding CompleteVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitCanBeClosed}"/>
-            <fluent:Button Header="Продолжить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitInProgress48x48.png" 
-                           Command="{Binding ReturnToActiveVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitCanBeOpened}"/>
+            <fluent:Button Header="Завершить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitCompleted48x48.png" 
+                           Command="{Binding CompleteVisitCommand}" CommandParameter="{Binding VisitId}" Visibility="{Binding IsVisitCanBeClosed, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <fluent:Button Header="Продолжить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitInProgress48x48.png" 
+                           Command="{Binding ReturnToActiveVisitCommand}" CommandParameter="{Binding VisitId}" Visibility="{Binding IsVisitCanBeOpened, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
         </StackPanel>
         <StackPanel>
             <fluent:Button Header="Изменить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitEdit48x48.png" 
