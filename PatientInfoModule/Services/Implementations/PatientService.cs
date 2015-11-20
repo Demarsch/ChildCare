@@ -511,9 +511,12 @@ namespace PatientInfoModule.Services
         public void DeletePersonOuterDocument(int documentId)
         {
             var context = contextProvider.CreateNewContext();
-            var document = context.Set<PersonOuterDocument>().First(x => x.DocumentId == documentId);
-            context.Entry(document).State = EntityState.Deleted;
-            context.SaveChanges();
+            var personOuterDocument = context.Set<PersonOuterDocument>().FirstOrDefault(x => x.DocumentId == documentId);
+            if (personOuterDocument != null)
+            {
+                context.Entry(personOuterDocument).State = EntityState.Deleted;
+                context.SaveChanges();
+            }
         }
 
         public bool SavePersonDocument(PersonOuterDocument document)

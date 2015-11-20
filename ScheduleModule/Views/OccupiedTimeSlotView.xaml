@@ -1,0 +1,81 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:registry="clr-namespace:ScheduleModule.ViewModels"
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
+    <DataTemplate DataType="{x:Type registry:OccupiedTimeSlotViewModel}">
+        <DataTemplate.Resources>
+            <converters:Converter x:Key="StateToBackgroundConverter">
+                <converters:ConverterItem From="{x:Static registry:OccupiedTimeSlotViewModelState.Completed}">
+                  <converters:ConverterItem.To>
+                        <SolidColorBrush Color="LightGreen" />
+                    </converters:ConverterItem.To>
+                </converters:ConverterItem>
+                <converters:ConverterItem From="{x:Static registry:OccupiedTimeSlotViewModelState.Uncompleted}">
+                    <converters:ConverterItem.To>
+                        <SolidColorBrush Color="Khaki" />
+                    </converters:ConverterItem.To>
+                </converters:ConverterItem>
+                <converters:ConverterItem From="{x:Static registry:OccupiedTimeSlotViewModelState.Temporary}">
+                    <converters:ConverterItem.To>
+                        <SolidColorBrush Color="Gainsboro" />
+                    </converters:ConverterItem.To>
+                </converters:ConverterItem>
+                <converters:ConverterItem From="{x:Static registry:OccupiedTimeSlotViewModelState.IsBeingMoved}">
+                    <converters:ConverterItem.To>
+                        <SolidColorBrush Color="LightSteelBlue" />
+                    </converters:ConverterItem.To>
+                </converters:ConverterItem>
+            </converters:Converter>
+            <converters:Converter x:Key="ModeToContextMenuConverter"
+                                     DefaultValue="{x:Null}">
+                <converters:ConverterItem>
+                    <converters:ConverterItem.From>
+                        <system:Boolean>False</system:Boolean>
+                    </converters:ConverterItem.From>
+                    <converters:ConverterItem.To>
+                        <ContextMenu>
+                            <MenuItem Header="{Binding CancelOrDeleteActionName}" 
+                                      Command="{Binding CancelOrDeleteCommand}" />
+                            <MenuItem Header="Обновить информацию" 
+                                      Command="{Binding UpdateCommand}" />
+                            <MenuItem Header="Перенести назначение"
+                                      Command="{Binding MoveCommand}" />
+                        </ContextMenu>
+                    </converters:ConverterItem.To>
+                </converters:ConverterItem>
+            </converters:Converter>
+        </DataTemplate.Resources>
+        <Border BorderBrush="Gray"
+                BorderThickness="0 0.5 0 0.5"
+                Background="{Binding State, Converter={StaticResource StateToBackgroundConverter}}"
+                ContextMenu="{Binding IsInReadOnlyMode, Converter={StaticResource ModeToContextMenuConverter}}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="2 2 0 0" 
+                           FontSize="9" 
+                           Text="{Binding StartTime, StringFormat='HH:mm', Mode=OneTime}" />
+                <TextBlock Grid.Row="1" 
+                           Panel.ZIndex="1"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="2 2 0 0"
+                           FontWeight="SemiBold" 
+                           Text="{Binding PersonShortName, Mode=OneTime}" />
+                <TextBlock Grid.Row="2" 
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom" 
+                           Margin="0 0 2 2" 
+                           FontSize="9" 
+                           Text="{Binding EndTime, StringFormat='HH:mm', Mode=OneTime}" />
+            </Grid>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

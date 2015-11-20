@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Fluent;
-using Microsoft.Practices.Unity;
-using OrganizationContractsModule.Misc;
+﻿using Microsoft.Practices.Unity;
 using OrganizationContractsModule.ViewModels;
 
 namespace OrganizationContractsModule.Views

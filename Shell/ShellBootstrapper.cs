@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Core.Data.Services;
+using Core.Misc;
 using Core.Services;
 using Core.Wpf.Services;
 using Fluent;
@@ -23,8 +24,11 @@ namespace Shell
             var shellWindow = (ShellWindow)Shell;
             Application.Current.MainWindow = shellWindow;
             Application.Current.MainWindow.Show();
-            await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
-            base.InitializeModules();
+            var connectionEstablished = await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
+            if (connectionEstablished)
+            {
+                base.InitializeModules();
+            }
         }
 
         protected override RegionAdapterMappings ConfigureRegionAdapterMappings()
@@ -50,6 +54,9 @@ namespace Shell
             Container.RegisterType<IDbContextProvider, DbContextProvider>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ICacheService, DbContextCacheService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IViewNameResolver, ConventionBasedViewNameResolver>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IEnvironment, DbEnvironment>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<ISecurityService, DbSecurityService>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IDialogService, WindowDialogService>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("SHELL"));
         }
 

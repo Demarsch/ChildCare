@@ -1,0 +1,183 @@
+﻿<UserControl x:Class="ScheduleModule.Views.ContentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance viewModels:ContentViewModel }">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="ListBoxItem"
+                         TargetType="{x:Type ListBoxItem}">
+            <ContentPresenter />
+        </ControlTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <!--Schedule filters-->
+                    <Button Content="Отменить перенос"
+                            Width="150"
+                            Margin="5"
+                            Padding="5"
+                            Background="White"
+                            Visibility="{Binding IsMovingAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                            Command="{Binding CancelAssignmentMovementCommand, Mode=OneTime}" 
+                            DockPanel.Dock="Top" />
+            <Grid HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <CheckBox Grid.Row="0"
+                          Grid.Column="0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Top"
+                          Width="195"
+                          Margin="5 0 0 0"
+                          Visibility="{Binding OverlayAssignmentCollectionViewModel.CanShowCurrentPatientAssignments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                          IsChecked="{Binding OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments, UpdateSourceTrigger=PropertyChanged}"
+                          HorizontalContentAlignment="Stretch">
+                    <TextBlock Text="Отображать назначения выбранного пациента"
+                               TextWrapping="Wrap" />
+                </CheckBox>
+                <TextBlock Grid.Row="0"
+                           Grid.Column="0"
+                           VerticalAlignment="Bottom"
+                           Text="Нет назначений"
+                           Foreground="DimGray"
+                           FontStyle="Italic"
+                           Margin="25 0 0 0"
+                           FontWeight="SemiBold"
+                           Visibility="{Binding OverlayAssignmentCollectionViewModel.ShowThatCurrentPatientHasNoAssignments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
+                <!--Time tickers-->
+                <ScrollViewer Grid.Row="1"
+                              Grid.Column="0"
+                              HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Hidden"
+                              behaviors:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll">
+                    <Grid>
+                        <ListBox IsHitTestVisible="False"
+                                 ItemsSource="{Binding TimeTickers}"
+                                 Width="200"
+                                 HorizontalContentAlignment="Stretch"
+                                 VerticalContentAlignment="Stretch"
+                                 Background="Transparent"
+                                 BorderThickness="0 1 0 1">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <xctk:TimelinePanel BeginDate="{Binding OpenTime, FallbackValue={x:Static system:DateTime.Today}}"
+                                                        EndDate="{Binding CloseTime, FallbackValue={x:Static system:DateTime.Today}}"
+                                                        MinHeight="10"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="xctk:TimelinePanel.Date"
+                                            Value="{Binding StartTime, Mode=OneTime}" />
+                                    <Setter Property="xctk:TimelinePanel.DateEnd"
+                                            Value="{Binding EndTime, Mode=OneTime}" />
+                                    <Setter Property="Template"
+                                            Value="{StaticResource ListBoxItem}" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                        <ContentControl Content="{Binding OverlayAssignmentCollectionViewModel, Mode=OneTime}"
+                                        IsHitTestVisible="False" />
+                    </Grid>
+                </ScrollViewer>
+                <!--Room headers-->
+                <ScrollViewer Grid.Row="0"
+                              Grid.Column="1"
+                              VerticalScrollBarVisibility="Disabled"
+                              HorizontalScrollBarVisibility="Hidden"
+                              behaviors:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll">
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding FilteredRooms}"
+                                      IsEnabled="False"
+                                      VerticalContentAlignment="Stretch">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type viewModels:RoomViewModel}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Background="LightSkyBlue"
+                                                BorderBrush="Black"
+                                                BorderThickness="0.5"
+                                                HorizontalAlignment="Stretch">
+                                            <StackPanel Orientation="Vertical"
+                                                        HorizontalAlignment="Stretch"
+                                                        VerticalAlignment="Stretch">
+                                                <TextBlock HorizontalAlignment="Center"
+                                                           Margin="3"
+                                                           Text="{Binding Number, StringFormat='#{0}', Mode=OneTime}" />
+                                                <TextBlock HorizontalAlignment="Center"
+                                                           Margin="3"
+                                                           Text="{Binding Name, Mode=OneTime}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <ScrollBar Orientation="Vertical"
+                                   Visibility="Hidden" />
+                    </StackPanel>
+                </ScrollViewer>
+                <!--Assignments-->
+                <Grid Grid.Row="1"
+                      Grid.Column="1">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  behaviors:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll"
+                                  behaviors:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll">
+                        <ItemsControl ItemsSource="{Binding FilteredRooms}">
+                            <i:Interaction.Behaviors>
+                                <behaviors:IgnoreMouseWheelBehavior />
+                            </i:Interaction.Behaviors>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <TextBlock Visibility="{Binding NoRoomIsFound, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                               FontWeight="Bold"
+                               FontSize="16"
+                               IsHitTestVisible="False"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               TextAlignment="Center">
+                        <Run Text="Под указанные критерии не подходит ни один кабинет." />
+                        <LineBreak />
+                        <Run Text="Попробуйте снять часть фильтров" />
+                    </TextBlock>
+                </Grid>
+            </Grid>
+        </DockPanel>
+        <ContentControl Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding FailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+    </Grid>
+</UserControl>

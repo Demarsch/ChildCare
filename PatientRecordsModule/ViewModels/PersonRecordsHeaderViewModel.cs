@@ -44,6 +44,8 @@ namespace PatientRecordsModule.ViewModels
 
         private readonly PersonRecordListViewModel personRecordListViewModel;
 
+        private readonly PersonRecordEditorViewModel personRecordEditorViewModel;
+
         private readonly CommandWrapper reloadPatientVisitCompletedCommandWrapper;
 
         private int patientId;
@@ -52,7 +54,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Constructors
-        public PersonRecordsHeaderViewModel(PersonRecordListViewModel personRecordListViewModel, IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
+        public PersonRecordsHeaderViewModel(PersonRecordListViewModel personRecordListViewModel, PersonRecordEditorViewModel personRecordEditorViewModel, IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
         {
             if (patientRecordsService == null)
             {
@@ -82,6 +84,12 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("personRecordListViewModel");
             }
+            if (personRecordEditorViewModel == null)
+            {
+                throw new ArgumentNullException("personRecordEditorViewModel");
+            }
+            this.personRecordEditorViewModel = personRecordEditorViewModel;
+            this.personRecordEditorViewModel.PropertyChanged += personRecordEditorViewModel_PropertyChanged;
             this.personRecordListViewModel = personRecordListViewModel;
             this.patientRecordsService = patientRecordsService;
             this.logService = logSevice;
@@ -135,6 +143,9 @@ namespace PatientRecordsModule.ViewModels
             VisitId = visitId;
             AssignmentId = assignmentId;
             RecordId = recordId;
+
+            OnPropertyChanged(() => IsViewModeActive);
+            OnPropertyChanged(() => IsEditModeActive);
         }
 
         private void OnPatientSelected(int patientId)
@@ -254,6 +265,14 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        void personRecordEditorViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsViewModeInCurrentProtocolEditor")
+                OnPropertyChanged(() => IsViewModeActive);
+            if (e.PropertyName == "IsEditModeInCurrentProtocolEditor")
+                OnPropertyChanged(() => IsEditModeActive);
+        }
+
         #endregion
 
         #region Properties
@@ -342,6 +361,16 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        public bool IsViewModeActive
+        {
+            get { return (AssignmentId > 0 || RecordId > 0) && personRecordEditorViewModel.IsViewModeInCurrentProtocolEditor; }
+        }
+
+        public bool IsEditModeActive
+        {
+            get { return (AssignmentId > 0 || RecordId > 0) && personRecordEditorViewModel.IsEditModeInCurrentProtocolEditor; }
+        }
+
         public bool IsRecordSelected
         {
             get { return RecordId > 0; }
@@ -371,6 +400,14 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CompleteVisitCommand { get { return personRecordListViewModel.CompleteVisitCommand; } }
 
         public ICommand ReturnToActiveVisitCommand { get { return personRecordListViewModel.ReturnToActiveVisitCommand; } }
+
+        public ICommand PrintProtocolCommand { get { return personRecordEditorViewModel.PrintProtocolCommand; } }
+
+        public ICommand SaveProtocolCommand { get { return personRecordEditorViewModel.SaveProtocolCommand; } }
+
+        public ICommand ShowInEditModeCommand { get { return personRecordEditorViewModel.ShowInEditModeCommand; } }
+
+        public ICommand ShowInViewModeCommand { get { return personRecordEditorViewModel.ShowInViewModeCommand; } }
         #endregion
     }
 }

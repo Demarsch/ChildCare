@@ -8,7 +8,7 @@ namespace Core.Data
         {
             get
             {
-                return (this.Number.HasValue ? "Договор №" + this.Number.ToSafeString() + " - " : string.Empty) + this.ContractName;
+                return (this.Number.HasValue ? "№" + this.Number.ToSafeString() + " - " : string.Empty) + this.ContractName;
             }
         }
     }

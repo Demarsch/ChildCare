@@ -2,8 +2,10 @@
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using log4net;
+using PatientRecordsModule.Misc;
 using PatientRecordsModule.Services;
 using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using System;
@@ -11,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -43,6 +46,10 @@ namespace PatientRecordsModule.ViewModels
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
 
+            printProtocolCommand = new DelegateCommand(PrintProtocol);
+            saveProtocolCommand = new DelegateCommand(SaveProtocol);
+            showInEditModeCommand = new DelegateCommand(ShowProtocolInEditMode);
+            showInViewModeCommand = new DelegateCommand(ShowProtocolInViewMode);
             SubscribeToEvents();
         }
         #endregion
@@ -80,11 +87,35 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private TrackableBindableBase protocolEditor;
-        public TrackableBindableBase ProtocolEditor
+        private IRecordTypeProtocol protocolEditor;
+        public IRecordTypeProtocol ProtocolEditor
         {
             get { return protocolEditor; }
-            set { SetProperty(ref protocolEditor, value); }
+            set
+            {
+                if (ProtocolEditor != null)
+                    ProtocolEditor.PropertyChanged -= ProtocolEditor_PropertyChanged;
+                SetProperty(ref protocolEditor, value);
+                ProtocolEditor.PropertyChanged += ProtocolEditor_PropertyChanged;
+                OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
+                OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+            }
+        }
+
+        public bool IsViewModeInCurrentProtocolEditor
+        {
+            get
+            {
+                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View);
+            }
+        }
+
+        public bool IsEditModeInCurrentProtocolEditor
+        {
+            get
+            {
+                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.Edit);
+            }
         }
 
         #endregion
@@ -129,6 +160,70 @@ namespace PatientRecordsModule.ViewModels
             eventAggregator.GetEvent<SelectionEvent<Visit>>().Subscribe(OnVisitSelected);
             eventAggregator.GetEvent<SelectionEvent<Assignment>>().Subscribe(OnAssignmentSelected);
             eventAggregator.GetEvent<SelectionEvent<Record>>().Subscribe(OnRecordSelected);
+        }
+
+        private void PrintProtocol()
+        {
+            if (ProtocolEditor != null)
+                ProtocolEditor.PrintProtocol();
+        }
+
+        private void SaveProtocol()
+        {
+            if (ProtocolEditor != null)
+                ProtocolEditor.SaveProtocol();
+        }
+
+        private void ShowProtocolInEditMode()
+        {
+            if (ProtocolEditor != null)
+                protocolEditor.CurrentMode = ProtocolMode.Edit;
+        }
+
+        private void ShowProtocolInViewMode()
+        {
+            if (ProtocolEditor != null)
+                protocolEditor.CurrentMode = ProtocolMode.View;
+        }
+
+        void ProtocolEditor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "CurrentMode")
+            {
+                OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
+                OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+            }
+        }
+
+        #endregion
+
+        #region Commands
+        private DelegateCommand printProtocolCommand;
+        public ICommand PrintProtocolCommand
+        {
+            get { return printProtocolCommand; }
+
+        }
+
+        private DelegateCommand saveProtocolCommand;
+        public ICommand SaveProtocolCommand
+        {
+            get { return saveProtocolCommand; }
+
+        }
+
+        private DelegateCommand showInEditModeCommand;
+        public ICommand ShowInEditModeCommand
+        {
+            get { return showInEditModeCommand; }
+
+        }
+
+        private DelegateCommand showInViewModeCommand;
+        public ICommand ShowInViewModeCommand
+        {
+            get { return showInViewModeCommand; }
+
         }
         #endregion
     }

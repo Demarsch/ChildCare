@@ -5,6 +5,7 @@ using Core.Data.Services;
 using Core.Misc;
 using Core.Wpf.Events;
 using Core.Wpf.Mvvm;
+using log4net;
 using Prism.Events;
 using Prism.Mvvm;
 
@@ -16,7 +17,11 @@ namespace Shell
 
         private readonly IEventAggregator eventAggregator;
 
-        public ShellWindowViewModel(IDbContextProvider contextProvider, IEventAggregator eventAggregator)
+        private readonly IEnvironment environment;
+
+        private readonly ILog log;
+
+        public ShellWindowViewModel(IDbContextProvider contextProvider, IEventAggregator eventAggregator, IEnvironment environment, ILog log)
         {
             if (contextProvider == null)
             {
@@ -26,8 +31,18 @@ namespace Shell
             {
                 throw new ArgumentNullException("eventAggregator");
             }
+            if (environment == null)
+            {
+                throw new ArgumentNullException("environment");
+            }
+            if (log == null)
+            {
+                throw new ArgumentNullException("log");
+            }
             this.contextProvider = contextProvider;
             this.eventAggregator = eventAggregator;
+            this.environment = environment;
+            this.log = log;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             SubscribeToEvents();
@@ -47,25 +62,46 @@ namespace Shell
             set { SetProperty(ref isMenuOpen, value); }
         }
 
-        public async Task CheckDatabaseConnectionAsync()
+        public async Task<bool> CheckDatabaseConnectionAsync()
         {
             BusyMediator.Activate("Подключение к базе данных...");
             OnPropertyChanged(() => CanOpenMenu);
-            var success = await Task.Run(() => CheckDatabaseConnection());
-            BusyMediator.Deactivate();
-            if (!success)
+            try
             {
-                FailureMediator.Activate("Не удалось подключиться к базе данных. Пожалуйста, обратитесь в службу поддержки");
+                await Task.Run((Action)CheckDatabaseConnection);
+                await Task.Run((Action)CheckCurrentUserIsAccessible);
+                return true;
             }
-            OnPropertyChanged(() => CanOpenMenu);
+            catch (Exception ex)
+            {
+                log.Error("Failed to validate database connection", ex);
+                FailureMediator.Activate("В процессе подключения к базе данных возникла ошибка. Пожалуйста, обратитесь в службу поддержки", exception: ex);
+                return false;
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                OnPropertyChanged(() => CanOpenMenu);
+            }
         }
 
-        private bool CheckDatabaseConnection()
+        private void CheckDatabaseConnection()
         {
             using (var context = contextProvider.CreateNewContext())
             {
-                return context.Database.Exists();
+                if (context.Database.Exists())
+                {
+                    return;
+                }
+                throw new ApplicationException("База данных не существует");
             }
+        }
+
+        private void CheckCurrentUserIsAccessible()
+        {
+            var serverDate = environment.CurrentDate.ToString(DateTimeFormats.ShortDateTimeFormat);
+            var currentUserShortName = environment.CurrentUser.PersonShortName;
+            log.InfoFormat("Application is run under user '{0}', current server time is {1}", currentUserShortName, serverDate);
         }
 
         private void SubscribeToEvents()

@@ -94,7 +94,7 @@
                 <RowDefinition Height="*" />                
             </Grid.RowDefinitions>
                
-            <DockPanel Grid.Column="0" Grid.Row="0" DockPanel.Dock="Left" LastChildFill="True" MaxWidth="350">
+            <DockPanel Grid.Column="0" Grid.Row="0" DockPanel.Dock="Left" LastChildFill="True" MaxWidth="360">
                 <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
                     <TextBlock Text="Ответственный" FontWeight="Bold" Margin="5"/>
                     <ComboBox ItemsSource="{Binding FilterRegistrators}" 
@@ -132,10 +132,9 @@
                                 </Style>
                             </GridView.ColumnHeaderContainerStyle>
                             <GridView.Columns>
-                                <GridViewColumn x:Name="ContractDate" Header="Дата" DisplayMemberBinding="{Binding Path=ContractBeginDate}"></GridViewColumn>
-                                <GridViewColumn x:Name="ContractNumber" Header="№ дог." DisplayMemberBinding="{Binding Path=ContractNumber}"></GridViewColumn>
-                                <GridViewColumn x:Name="Client" Width="150" Header="заказчик" DisplayMemberBinding="{Binding Path=Client}"></GridViewColumn>
-                                <GridViewColumn x:Name="Cost" Header="сумма" DisplayMemberBinding="{Binding Path=ContractCost}"></GridViewColumn>
+                                <GridViewColumn x:Name="ContractDate" Width="70" Header="Дата" DisplayMemberBinding="{Binding Path=ContractBeginDate, StringFormat=dd.MM.yyyy}"></GridViewColumn>
+                                <GridViewColumn x:Name="ContractName" Width="200" Header="Договор" DisplayMemberBinding="{Binding Path=ContractName}"></GridViewColumn>
+                                <GridViewColumn x:Name="Cost" Width="70" Header="Сумма" DisplayMemberBinding="{Binding Path=ContractCost}"></GridViewColumn>
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>

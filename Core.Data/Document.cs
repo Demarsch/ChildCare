@@ -19,6 +19,7 @@ namespace Core.Data
         {
             this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
             this.Persons = new HashSet<Person>();
+            this.RecordDocuments = new HashSet<RecordDocument>();
         }
     
         public int Id { get; set; }
@@ -35,5 +36,7 @@ namespace Core.Data
         public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Person> Persons { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
     }
 }

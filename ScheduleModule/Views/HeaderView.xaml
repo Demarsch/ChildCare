@@ -1,0 +1,88 @@
+﻿<fluent:RibbonTabItem x:Class="ScheduleModule.Views.HeaderView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:fluent="urn:fluent-ribbon"
+                      xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels"
+                      xmlns:markupExtensions="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
+                      xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                      xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
+                      mc:Ignorable="d"
+                      d:DesignHeight="300"
+                      d:DesignWidth="300"
+                      d:DataContext="{d:DesignInstance viewModels:HeaderViewModel}"
+                      Header="Расписание">
+    <fluent:RibbonTabItem.Resources>
+        <converters:Converter x:Key="ModeToTextConverter">
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                      To="Назначение" />
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                      To="Просмотр" />
+        </converters:Converter>
+        <converters:Converter x:Key="ModeToIconConverter">
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                      To="pack://application:,,,/ScheduleModule;Component/Resources/Images/EditSchedule48x48.png" />
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                      To="pack://application:,,,/ScheduleModule;Component/Resources/Images/ViewSchedule48x48.png" />
+        </converters:Converter>
+
+    </fluent:RibbonTabItem.Resources>
+    <fluent:RibbonGroupBox Header="Дата">
+        <fluent:Button Size="Large"
+                       LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousWeek48x48.png"
+                       ToolTip="Предыдущая неделя"
+                       Header="&lt;&lt;"
+                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       CommandParameter="{markupExtensions:Int32 -7}">
+        </fluent:Button>
+        <fluent:Button Size="Large"
+                       LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousDay48x48.png"
+                       ToolTip="Предыдущий день"
+                       Header="&lt;"
+                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       CommandParameter="{markupExtensions:Int32 -1}" />
+        <StackPanel Orientation="Vertical">
+            <DatePicker VerticalAlignment="Center"
+                        SelectedDate="{Binding ContentViewModel.SelectedDate, UpdateSourceTrigger=PropertyChanged}" />
+            <fluent:Button Size="Middle"
+                           Icon="pack://application:,,,/ScheduleModule;Component/Resources/Images/Today48x48.png"
+                           Header="Сегодня"
+                           HorizontalAlignment="Center"
+                           Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                           CommandParameter="{x:Null}" />
+        </StackPanel>
+        <fluent:Button Size="Large"
+                       LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/NextDay48x48.png"
+                       ToolTip="Следующий день"
+                       Header="&gt;"
+                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       CommandParameter="{markupExtensions:Int32 1}" />
+        <fluent:Button Size="Large"
+                       LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/NextWeek48x48.png"
+                       ToolTip="Следующая неделя"
+                       Header="&gt;&gt;"
+                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       CommandParameter="{markupExtensions:Int32 7}" />
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Режим">
+        <fluent:Button SizeDefinition="Large"
+                       Header="{Binding ContentViewModel.IsInAssignmentMode, Converter={StaticResource ModeToTextConverter}}" 
+                       LargeIcon="{Binding ContentViewModel.IsInAssignmentMode, Converter={StaticResource ModeToIconConverter}}"
+                       Command="{Binding ContentViewModel.ChangeModeCommand}"/>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Фильтры">
+        <fluent:ComboBox Header="Тип услуг"
+                         IsEditable="False"
+                         InputWidth="300"
+                         ItemsSource="{Binding ContentViewModel.RecordTypes}"
+                         SelectedItem="{Binding ContentViewModel.SelectedRecordType}"
+                         DisplayMemberPath="Name"/>
+        <fluent:ComboBox Header="Кабинет"
+                         IsEditable="False"
+                         InputWidth="300"
+                         ItemsSource="{Binding ContentViewModel.Rooms}"
+                         SelectedItem="{Binding ContentViewModel.SelectedRoom}"
+                         DisplayMemberPath="NumberAndName"/>
+    </fluent:RibbonGroupBox>
+</fluent:RibbonTabItem>

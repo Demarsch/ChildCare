@@ -32,10 +32,9 @@ namespace PatientInfoModule.ViewModels
         private readonly ILog logService;
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; private set; }
-        private readonly CommandWrapper saveChangesCommandWrapper;
-        public int financingSourceId = SpecialValues.NonExistingId;
-        public DateTime contractDate = SpecialValues.MinDate;
-        public bool isChild = false;
+        private DateTime contractDate = SpecialValues.MinDate;
+        private bool isChild = false;
+        private int personId;
 
         public AddContractRecordsViewModel(IRecordService recordService, IAssignmentService assignmentService, IPatientService personService, ILog logService)
         {
@@ -68,23 +67,16 @@ namespace PatientInfoModule.ViewModels
             CancelCommand = new DelegateCommand(Cancel);
         }
 
-        public void IntializeCreation(string title, int personId, int financingSourceId, DateTime contractDate, bool isNewRecordChecked, bool isAssignRecordsChecked)
+        public void IntializeCreation(string title, int personId, int financingSourceId, DateTime contractDate, bool isNewRecordChecked = false, bool isAssignRecordsChecked = false)
         {  
             this.Title = title;
-            IsAssignRecordsChecked = isAssignRecordsChecked;
-            IsNewRecordChecked = isNewRecordChecked;
-            this.financingSourceId = financingSourceId;
+            this.personId = personId;
             this.contractDate = contractDate;
             this.isChild = personService.GetPatientQuery(personId).First<Person>().BirthDate.Date.AddYears(18) >= contractDate.Date;
-            Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>(assignmentService.GetPersonAssignments(personId).ToList()
-                                            .Select(x => new ContractAssignmentsViewModel()
-                                            {
-                                                Id = x.Id,
-                                                RecordTypeId = x.RecordTypeId,
-                                                AssignDateTime = x.AssignDateTime,
-                                                RecordTypeName = x.RecordType.Name,
-                                                RecordTypeCost = recordService.GetRecordTypeCost(x.RecordTypeId, financingSourceId, contractDate, isChild)
-                                            }));
+            IsAssignRecordsChecked = isAssignRecordsChecked;
+            IsNewRecordChecked = isNewRecordChecked;
+            FinancingSources = recordService.GetActiveFinancingSources();
+            SelectedFinancingSourceId = financingSourceId;   
         }
 
         private bool canSelectRecords;
@@ -116,6 +108,37 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
+        private IEnumerable<FinancingSource> financingSources;
+        public IEnumerable<FinancingSource> FinancingSources
+        {
+            get { return financingSources; }
+            set { SetProperty(ref financingSources, value); }
+        }
+
+        private int selectedFinancingSourceId;
+        public int SelectedFinancingSourceId
+        {
+            get { return selectedFinancingSourceId; }
+            set 
+            {
+                if (SetProperty(ref selectedFinancingSourceId, value) && value != SpecialValues.NonExistingId)
+                {
+                    if (selectedRecord != null && isNewRecordChecked)
+                        AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id, selectedFinancingSourceId, contractDate, isChild) * recordsCount);
+                    Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>(assignmentService.GetPersonAssignments(personId)
+                                            .Where(x => x.FinancingSourceId == selectedFinancingSourceId && !x.RecordContractItems.Any()).ToList()
+                                            .Select(x => new ContractAssignmentsViewModel()
+                                            {
+                                                Id = x.Id,
+                                                RecordTypeId = x.RecordTypeId,
+                                                AssignDateTime = x.AssignDateTime,
+                                                RecordTypeName = x.RecordType.Name,
+                                                RecordTypeCost = recordService.GetRecordTypeCost(x.RecordTypeId, selectedFinancingSourceId, contractDate, isChild)
+                                            }));
+                }
+            }
+        }
+
         private double assignRecordTypeCost;
         public double AssignRecordTypeCost
         {
@@ -129,8 +152,8 @@ namespace PatientInfoModule.ViewModels
             get { return recordsCount; }
             set
             {
-                if (SetProperty(ref recordsCount, value))
-                    AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id, financingSourceId, contractDate, isChild) * recordsCount);
+                SetProperty(ref recordsCount, value);
+                AssignRecordTypeCost = (selectedRecord != null ? (recordService.GetRecordTypeCost(selectedRecord.Id, selectedFinancingSourceId, contractDate, isChild) * recordsCount) : 0.0);
             }
         }
 
@@ -147,7 +170,10 @@ namespace PatientInfoModule.ViewModels
             get { return selectedRecord; }
             set
             {
-                if (SetProperty(ref selectedRecord, value))
+                SetProperty(ref selectedRecord, value);                
+                if (selectedFinancingSourceId == -1)
+                    FailureMediator.Activate("Укажите источник финансирования.", null, null, true);
+                else
                     RecordsCount = 1;
             }
         }
@@ -185,8 +211,8 @@ namespace PatientInfoModule.ViewModels
             }
             isOk = true;
             HostWindow.Close();
-        }
-        
+        }              
+
         #region IPopupWindowActionAware implementation
         public System.Windows.Window HostWindow { get; set; }
 
@@ -224,7 +250,12 @@ namespace PatientInfoModule.ViewModels
                     return string.Empty;
                 }
                 var result = string.Empty;
-                
+                switch (columnName)
+                {
+                    case "SelectedFinancingSourceId":
+                        result = SelectedFinancingSourceId == SpecialValues.NonExistingId ? "Укажите источник финансирования" : string.Empty;
+                        break;
+                }
                 if (string.IsNullOrEmpty(result))
                 {
                     invalidProperties.Remove(columnName);

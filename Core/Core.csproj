@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Threading" />
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -50,12 +51,14 @@
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
     <Compile Include="Attributes\NonCachableAttribute.cs" />
+    <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="Expressions\CompositeSearchExpressionProvider.cs" />
     <Compile Include="Expressions\DateBasedSearchExpressionProvider.cs" />
     <Compile Include="Expressions\ParameterReplacer.cs" />
     <Compile Include="Expressions\SearchExpression.cs" />
     <Compile Include="Expressions\SearchExpressionProvider.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ChangeTrackerExtensions.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
@@ -69,12 +72,17 @@
     <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
+    <Compile Include="Misc\IEnvironment.cs" />
+    <Compile Include="Misc\TimeIntervals\ITimeInterval.cs" />
+    <Compile Include="Misc\TimeIntervals\TimeInterval.cs" />
+    <Compile Include="Misc\TimeIntervals\TimeIntervalCollection.cs" />
     <Compile Include="Misc\Validation\IActiveDataErrorInfo.cs" />
     <Compile Include="Misc\Validation\ValidationMediator.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Interfaces\ICacheService.cs" />
     <Compile Include="Expressions\ISearchExpressionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Interfaces\ISecurityService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -117,7 +125,7 @@
     <Resource Include="Resources\Images\Scanner48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\FileUnknown.png" />
+    <Resource Include="Resources\Images\File_Unknown.png" />
     <Resource Include="Resources\Images\File_Excel.png" />
     <Resource Include="Resources\Images\File_Pdf.png" />
     <Resource Include="Resources\Images\File_Word.png" />
@@ -141,6 +149,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\ConfigurationSettings256x256.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\Implementations\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AttachDocument48x48.png" />
+    <Resource Include="Resources\Images\DetachDocument48x48.png" />
+    <Resource Include="Resources\Images\Mark48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AttachFile48x48.png" />
+    <Resource Include="Resources\Images\DetachFile48x48.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\DocumentImport48x48.png" />

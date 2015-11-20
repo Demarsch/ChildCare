@@ -8,7 +8,6 @@
     [Duration]          INT            CONSTRAINT [DF_RecordTypes_Duration] DEFAULT ((0)) NOT NULL,
     [DisplayOrder]      INT            CONSTRAINT [DF_RecordTypes_DisplayOrder] DEFAULT ((0)) NOT NULL,
     [Assignable]        BIT            NULL,
-    [EditorId]          INT            NULL,
     [RecordTypeGroupId] INT            NOT NULL,
     [MedProfileId]      INT            NOT NULL,
     [IsRecord]          BIT            CONSTRAINT [DF_RecordTypes_IsRecord] DEFAULT ((0)) NOT NULL,
@@ -16,6 +15,8 @@
     CONSTRAINT [PK_RecordTypes] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_RecordTypes_RecordTypes] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[RecordTypes] ([Id])
 );
+
+
 
 
 

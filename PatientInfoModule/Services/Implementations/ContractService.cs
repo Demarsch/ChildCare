@@ -21,7 +21,7 @@ namespace PatientInfoModule.Services
         }
 
         public int SaveContractData(RecordContract contract)
-        {            
+        {
             using (var db = contextProvider.CreateNewContext())
             {
                 var saveContract = contract.Id == SpecialValues.NewId ? new RecordContract() : db.Set<RecordContract>().First(x => x.Id == contract.Id);
@@ -61,18 +61,18 @@ namespace PatientInfoModule.Services
                 db.SaveChanges();
                 return saveContract.Id;
             }
-            
-        }      
+
+        }
 
         public void DeleteContract(int contractId)
         {
             using (var db = contextProvider.CreateNewContext())
             {
-                var contract = db.Set<RecordContract>().First(x => x.Id == contractId);                
-                db.Entry(contract).State = EntityState.Deleted;                
+                var contract = db.Set<RecordContract>().First(x => x.Id == contractId);
+                db.Entry(contract).State = EntityState.Deleted;
                 db.SaveChanges();
             }
-        }       
+        }
 
         public void DeleteContractItemById(int id)
         {
@@ -104,13 +104,15 @@ namespace PatientInfoModule.Services
         public double GetContractCost(int[] contractIds)
         {
             var context = contextProvider.CreateNewContext();
-            return context.Set<RecordContract>().Where(x => contractIds.Contains(x.Id)).SelectMany(x => x.RecordContractItems).Where(x => x.IsPaid).Sum(x => x.Cost);
+            var paidRecordContractItems = context.Set<RecordContract>().Where(x => contractIds.Contains(x.Id)).SelectMany(x => x.RecordContractItems).Where(x => x.IsPaid);
+            return paidRecordContractItems.Any() ? paidRecordContractItems.Sum(x => x.Cost) : 0.0;
         }
 
         public double GetContractCost(int contractId)
         {
             var context = contextProvider.CreateNewContext();
-            return context.Set<RecordContract>().Where(x => x.Id == contractId).SelectMany(x => x.RecordContractItems).Where(x => x.IsPaid).Sum(x => x.Cost);
+            var paidRecordContractItems = context.Set<RecordContract>().Where(x => x.Id == contractId).SelectMany(x => x.RecordContractItems).Where(x => x.IsPaid);
+            return paidRecordContractItems.Any() ? paidRecordContractItems.Sum(x => x.Cost) : 0.0;
         }
 
         public IDisposableQueryable<RecordContract> GetContractById(int id)

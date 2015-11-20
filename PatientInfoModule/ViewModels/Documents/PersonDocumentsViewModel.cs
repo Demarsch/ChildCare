@@ -19,6 +19,7 @@ using Prism.Interactivity.InteractionRequest;
 using PatientInfoModule.Views;
 using Core.Data;
 using System.Collections.Generic;
+using Core.Wpf.Services;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -28,6 +29,7 @@ namespace PatientInfoModule.ViewModels
         private readonly IDocumentService documentService;
         private readonly ILog log;
         private readonly ICacheService cacheService;
+        private readonly IFileService fileService;
         private readonly IEventAggregator eventAggregator;
         private readonly CommandWrapper reloadDocumentsCommandWrapper;
         private CancellationTokenSource currentLoadingToken;
@@ -39,7 +41,8 @@ namespace PatientInfoModule.ViewModels
         private readonly Func<SelectPersonDocumentTypeViewModel> selectPersonDocumentTypeViewModelFactory;
         private int personId;
 
-        public PersonDocumentsViewModel(IPatientService patientService, IDocumentService documentService, ILog log, ICacheService cacheService, IEventAggregator eventAggregator, Func<SelectPersonDocumentTypeViewModel> selectPersonDocumentTypeViewModelFactory)
+        public PersonDocumentsViewModel(IPatientService patientService, IDocumentService documentService, ILog log, ICacheService cacheService, IFileService fileService,
+                                        IEventAggregator eventAggregator, Func<SelectPersonDocumentTypeViewModel> selectPersonDocumentTypeViewModelFactory)
         {
             if (patientService == null)
             {
@@ -57,6 +60,10 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("cacheService");
             }
+            if (fileService == null)
+            {
+                throw new ArgumentNullException("fileService");
+            }
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -65,6 +72,7 @@ namespace PatientInfoModule.ViewModels
             this.documentService = documentService;
             this.log = log;
             this.cacheService = cacheService;
+            this.fileService = fileService;
             this.eventAggregator = eventAggregator;
             this.selectPersonDocumentTypeViewModelFactory = selectPersonDocumentTypeViewModelFactory;
             personId = SpecialValues.NonExistingId;
@@ -114,7 +122,7 @@ namespace PatientInfoModule.ViewModels
                                                              DocumentTypeParentName = x.OuterDocumentType.OuterDocumentType1.Name,
                                                              Comment = x.Document.Description,
                                                              DocumentDate = x.Document.DocumentFromDate,
-                                                             ThumbnailImage = documentService.GetThumbnailForFile(x.Document.FileData, x.Document.Extension),
+                                                             ThumbnailImage = fileService.GetThumbnailForFile(x.Document.FileData, x.Document.Extension),
                                                              ThumbnailChecked = false
                                                          }));
                 loadingIsCompleted = true;
@@ -178,7 +186,7 @@ namespace PatientInfoModule.ViewModels
                 });
                 return;
             };
-            var scanDocumentViewModel = new ScanDocumentsViewModel(this.documentService, this.log);
+            var scanDocumentViewModel = new ScanDocumentsViewModel(this.documentService, fileService, this.log);
             (new ScanDocumentsView() { DataContext = scanDocumentViewModel }).ShowDialog();
             
             foreach (var item in scanDocumentViewModel.PreviewImages.Where(x => x.ThumbnailSaved))
@@ -200,7 +208,7 @@ namespace PatientInfoModule.ViewModels
                         DocumentTypeParentName = doc.PersonOuterDocuments.First().OuterDocumentType.OuterDocumentType1.Name,
                         Comment = doc.Description,
                         DocumentDate = doc.DocumentFromDate,
-                        ThumbnailImage = documentService.GetThumbnailForFile(doc.FileData, doc.Extension),
+                        ThumbnailImage = fileService.GetThumbnailForFile(doc.FileData, doc.Extension),
                         ThumbnailChecked = false
                     });
                 }
@@ -208,7 +216,7 @@ namespace PatientInfoModule.ViewModels
             
         }
 
-        private List<string> files = new List<string>();
+        private string[] files;
 
         private void AddDocument()
         {
@@ -221,12 +229,8 @@ namespace PatientInfoModule.ViewModels
                 });
                 return;
             };
-            files.Clear();
-            System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
-            dialog.Filter = "All files (*.*)|*.*|Office Files|*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx|Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|Text files (*.txt)|*.txt";
-            dialog.Multiselect = false;
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                files.AddRange(dialog.FileNames);
+            files = new string[0];
+            files = fileService.OpenFileDialog();
             if (files.Any())
             {
                 var selectPersonDocumentTypeViewModel = selectPersonDocumentTypeViewModelFactory();
@@ -246,12 +250,12 @@ namespace PatientInfoModule.ViewModels
             document.DisplayName = document.FileName + (document.DocumentFromDate.HasValue ? " от " + document.DocumentFromDate.Value.ToShortDateString() : string.Empty);
 
             document.Extension = files[0].Substring(files[0].LastIndexOf('.') + 1);
-            document.FileData = documentService.GetBinaryDataFromFile(files[0]);
+            document.FileData = fileService.GetBinaryDataFromFile(files[0]);
             document.FileSize = document.FileData.Length;
             document.UploadDate = DateTime.Now;
 
             int documentId = await documentService.UploadDocument(document);
-            if (documentId != 0)
+            if (documentId != SpecialValues.NewId)
             {
                 PersonOuterDocument personOuterDocument = new PersonOuterDocument();
                 personOuterDocument.PersonId = this.personId;
@@ -268,7 +272,7 @@ namespace PatientInfoModule.ViewModels
                         DocumentTypeParentName = documentService.GetDocumentById(documentId).First().PersonOuterDocuments.First().OuterDocumentType.OuterDocumentType1.Name,
                         Comment = document.Description,
                         DocumentDate = document.DocumentFromDate,
-                        ThumbnailImage = documentService.GetThumbnailForFile(document.FileData, document.Extension),
+                        ThumbnailImage = fileService.GetThumbnailForFile(document.FileData, document.Extension),
                         ThumbnailChecked = false
                     });
                 }
@@ -300,7 +304,6 @@ namespace PatientInfoModule.ViewModels
                 foreach (var item in allDocuments.Where(x => x.ThumbnailChecked).ToList())
                 {
                     patientService.DeletePersonOuterDocument(item.DocumentId);
-                    documentService.DeleteDocumentById(item.DocumentId);
                     AllDocuments.Remove(item);
                 }
             }            
@@ -308,8 +311,7 @@ namespace PatientInfoModule.ViewModels
 
         private void OpenDocument()
         {
-            var doc = documentService.GetDocumentById(SelectedDocument.DocumentId).First();
-            documentService.RunFile(documentService.GetFileFromBinaryData(doc.FileData, doc.Extension));
+            fileService.RunFile(documentService.GetDocumentFile(SelectedDocument.DocumentId));
         }
 
         private ObservableCollectionEx<ThumbnailViewModel> allDocuments;

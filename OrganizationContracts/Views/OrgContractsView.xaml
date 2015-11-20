@@ -98,7 +98,7 @@
                             </GridView.ColumnHeaderContainerStyle>
                             <GridView.Columns>
                                 <GridViewColumn x:Name="ContractNumber" Header="№ дог." DisplayMemberBinding="{Binding Path=ContractNumber}"></GridViewColumn>
-                                <GridViewColumn x:Name="OrganizationName" Width="300" Header="Организация" DisplayMemberBinding="{Binding Path=OrganizationName}"></GridViewColumn>
+                                <GridViewColumn x:Name="OrganizationName" Width="300" Header="Организация" DisplayMemberBinding="{Binding Path=ContractName}"></GridViewColumn>
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>
@@ -113,6 +113,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" DockPanel.Dock="Top" Visibility="{Binding IsContractSelected, Converter={StaticResource ShowPreview}}">
@@ -137,7 +138,7 @@
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="0" Grid.Column="0" Content="" />
-                        <Label Grid.Row="0" Grid.Column="1" Content="{Binding Number}" Margin="2" MinHeight="25" FontWeight="Medium"/>
+                        <Label Grid.Row="0" Grid.Column="1" Content="{Binding ContractName}" Margin="2" MinHeight="25" FontWeight="Medium"/>
                         <Label Grid.Row="1" Grid.Column="0" Content="Ист. финансирования" />
                         <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding FinSources}" 
                               DisplayMemberPath="Field" 
@@ -162,9 +163,9 @@
                         <xctk:IntegerUpDown Grid.Row="5" Grid.Column="1"
                                     Minimum="0" Increment="1" 
                                     ParsingNumberStyle="Integer" TextAlignment="Left"
-                                    Value="{Binding Cost}" Margin="2" />
+                                    Value="{Binding ContractCost}" Margin="2" />
                         <Label Grid.Row="6" Grid.Column="0" Content="Доп. информация" />
-                        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Info, UpdateSourceTrigger=PropertyChanged}" MinHeight="23"
+                        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding OrgDetails, UpdateSourceTrigger=PropertyChanged}" MinHeight="23"
                              TextWrapping="Wrap" AcceptsReturn="True" Margin="2" Height="Auto"/>
                         <Label Grid.Row="7" Grid.Column="0" Content="Ответственный" />
                         <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding Registrators}" 
@@ -173,6 +174,12 @@
                               SelectedValue="{Binding SelectedRegistratorId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" Margin="2"/>
                     </Grid>
+
+
+                    <views:RecordDocumentsView Grid.Row="2" 
+                           DataContext="{Binding DocumentsViewer}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+                    
+                    
                 </Grid>
             </Border>
         </Grid>
