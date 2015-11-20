@@ -277,5 +277,18 @@ namespace PatientRecordsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<VisitOutcome>(context.Set<VisitOutcome>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.ExecutionPlaceId == executionPlaceId), context);
         }
+
+
+        public IDisposableQueryable<RecordMember> GetRecordMembers(int recordId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordMember>(context.Set<RecordMember>().AsNoTracking().Where(x => x.RecordId == recordId && x.IsActive), context);
+        }
+
+        public IDisposableQueryable<RecordTypeRolePermission> GetRecordTypeMembers(int recordTypeId, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordTypeRolePermission>(context.Set<RecordTypeRolePermission>().AsNoTracking().Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
     }
 }

@@ -55,6 +55,10 @@ namespace PatientRecordsModule.Services
 
         IEnumerable GetMKBs(string filter);
 
+        IDisposableQueryable<RecordMember> GetRecordMembers(int recordId);
+
+        IDisposableQueryable<RecordTypeRolePermission> GetRecordTypeMembers(int recordTypeId, DateTime onDate);
+
         Task<int> SaveVisitAsync(int visitId, int personId, DateTime beginDateTime, int recordContractId, int financingSourceId, int urgentlyId, int visitTemplateId, int executionPlaceId, int sentLPUId, string note, CancellationToken token);
 
         Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token);

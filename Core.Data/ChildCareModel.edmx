@@ -611,6 +611,15 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="RecordId" Type="int" />
           <Property Name="DocumentId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="RecordMembers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecordId" Type="int" Nullable="false" />
+          <Property Name="PersonStaffId" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="RecordPeriods">
           <Key>
             <PropertyRef Name="Id" />
@@ -684,6 +693,8 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="PermissionId" Type="int" Nullable="false" />
           <Property Name="IsSign" Type="bit" Nullable="false" />
           <Property Name="IsRequired" Type="bit" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="RecordTypeRoles">
           <Key>
@@ -1926,6 +1937,30 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RecordMembers_PersonStaffs">
+          <End Role="PersonStaffs" Type="Self.PersonStaffs" Multiplicity="1" />
+          <End Role="RecordMembers" Type="Self.RecordMembers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonStaffs">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMembers">
+              <PropertyRef Name="PersonStaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordMembers_Records">
+          <End Role="Records" Type="Self.Records" Multiplicity="1" />
+          <End Role="RecordMembers" Type="Self.RecordMembers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Records">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMembers">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RecordPeriods_ExecutionPlaces">
           <End Role="ExecutionPlaces" Type="Self.ExecutionPlaces" Multiplicity="1" />
           <End Role="RecordPeriods" Type="Self.RecordPeriods" Multiplicity="*" />
@@ -2451,6 +2486,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="RecordContractLimits" EntityType="Self.RecordContractLimits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContracts" EntityType="Self.RecordContracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordDocuments" EntityType="Self.RecordDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecordMembers" EntityType="Self.RecordMembers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordPeriods" EntityType="Self.RecordPeriods" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypeCosts" EntityType="Self.RecordTypeCosts" Schema="dbo" store:Type="Tables" />
@@ -2822,6 +2858,14 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_RecordDocuments_Records" Association="Self.FK_RecordDocuments_Records">
             <End Role="Records" EntitySet="Records" />
             <End Role="RecordDocuments" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordMembers_PersonStaffs" Association="Self.FK_RecordMembers_PersonStaffs">
+            <End Role="PersonStaffs" EntitySet="PersonStaffs" />
+            <End Role="RecordMembers" EntitySet="RecordMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordMembers_Records" Association="Self.FK_RecordMembers_Records">
+            <End Role="Records" EntitySet="Records" />
+            <End Role="RecordMembers" EntitySet="RecordMembers" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordPeriods_ExecutionPlaces" Association="Self.FK_RecordPeriods_ExecutionPlaces">
             <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
@@ -3485,15 +3529,10 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
           <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />
-          <EntitySet Name="RecordTypeRolePermissions" EntityType="DataLib.RecordTypeRolePermission" />
           <EntitySet Name="RecordTypes" EntityType="DataLib.RecordType" />
           <AssociationSet Name="FK_Assignments_RecordTypes" Association="DataLib.FK_Assignments_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordContractItems_RecordTypes" Association="DataLib.FK_RecordContractItems_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
@@ -3510,14 +3549,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_RecordTypeEditors_RecordTypes" Association="DataLib.FK_RecordTypeEditors_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordTypeEditor" EntitySet="RecordTypeEditors" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
-            <End Role="RecordTypeRole" EntitySet="RecordTypeRoles" />
-            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypes" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypes_RecordTypes" Association="DataLib.FK_RecordTypes_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
@@ -3557,6 +3588,28 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_Records_RecordPeriods" Association="DataLib.FK_Records_RecordPeriods">
             <End Role="RecordPeriod" EntitySet="RecordPeriods" />
             <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <EntitySet Name="RecordMembers" EntityType="DataLib.RecordMember" />
+          <AssociationSet Name="FK_RecordMembers_PersonStaffs" Association="DataLib.FK_RecordMembers_PersonStaffs">
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+            <End Role="RecordMember" EntitySet="RecordMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordMembers_Records" Association="DataLib.FK_RecordMembers_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="RecordMember" EntitySet="RecordMembers" />
+          </AssociationSet>
+          <EntitySet Name="RecordTypeRolePermissions" EntityType="DataLib.RecordTypeRolePermission" />
+          <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
+            <End Role="RecordTypeRole" EntitySet="RecordTypeRoles" />
+            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypes" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
@@ -4231,6 +4284,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="Staff" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="PersonStaff" ToRole="Staff" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContract" />
+          <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_PersonStaffs" FromRole="PersonStaff" ToRole="RecordMember" />
         </EntityType>
         <EntityType Name="PersonTalon">
           <Key>
@@ -4348,6 +4402,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
           <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
           <NavigationProperty Name="RecordPeriod" Relationship="DataLib.FK_Records_RecordPeriods" FromRole="Record" ToRole="RecordPeriod" />
+          <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_Records" FromRole="Record" ToRole="RecordMember" />
         </EntityType>
         <EntityType Name="RecordTypeRole">
           <Key>
@@ -5899,20 +5954,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="HasDICOM" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordTypeEditor" ToRole="RecordType" />
         </EntityType>
-        <EntityType Name="RecordTypeRolePermission">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="RecordTypeMemberRoleId" Type="Int32" Nullable="false" />
-          <Property Name="PermissionId" Type="Int32" Nullable="false" />
-          <Property Name="IsSign" Type="Boolean" Nullable="false" />
-          <Property Name="IsRequired" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Permission" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="RecordTypeRolePermission" ToRole="Permission" />
-          <NavigationProperty Name="RecordTypeRole" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordTypeRole" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordTypeRolePermission" ToRole="RecordType" />
-        </EntityType>
         <EntityType Name="RecordType">
           <Key>
             <PropertyRef Name="Id" />
@@ -5935,11 +5976,11 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordType" ToRole="RecordContractLimit" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordTypes" FromRole="RecordType" ToRole="Record" />
           <NavigationProperty Name="RecordTypeEditors" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordType" ToRole="RecordTypeEditor" />
-          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordType" ToRole="RecordTypeRolePermission" />
           <NavigationProperty Name="RecordTypes1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType" ToRole="RecordType1" />
           <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType1" ToRole="RecordType" />
           <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="RecordType" ToRole="ScheduleItem" />
           <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
+          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordType" ToRole="RecordTypeRolePermission" />
         </EntityType>
         <Association Name="FK_Assignments_RecordTypes">
           <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
@@ -5950,18 +5991,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="Assignment">
               <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_Permissions">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermission">
-              <PropertyRef Name="PermissionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6011,32 +6040,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="RecordTypeEditor">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
-          <End Type="DataLib.RecordTypeRole" Role="RecordTypeRole" Multiplicity="1" />
-          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordTypeRole">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermission">
-              <PropertyRef Name="RecordTypeMemberRoleId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermission">
               <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -6197,6 +6200,95 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="Record">
               <PropertyRef Name="RecordPeriodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RecordMember">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="PersonStaffId" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordMembers_PersonStaffs" FromRole="RecordMember" ToRole="PersonStaff" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordMembers_Records" FromRole="RecordMember" ToRole="Record" />
+        </EntityType>
+        <Association Name="FK_RecordMembers_PersonStaffs">
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="1" />
+          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonStaff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMember">
+              <PropertyRef Name="PersonStaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordMembers_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMember">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RecordTypeRolePermission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="RecordTypeMemberRoleId" Type="Int32" Nullable="false" />
+          <Property Name="PermissionId" Type="Int32" Nullable="false" />
+          <Property Name="IsSign" Type="Boolean" Nullable="false" />
+          <Property Name="IsRequired" Type="Boolean" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Permission" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="RecordTypeRolePermission" ToRole="Permission" />
+          <NavigationProperty Name="RecordTypeRole" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordTypeRole" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordTypeRolePermission" ToRole="RecordType" />
+        </EntityType>
+        <Association Name="FK_RecordTypeRolePermissions_Permissions">
+          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
+          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeRolePermission">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
+          <End Type="DataLib.RecordTypeRole" Role="RecordTypeRole" Multiplicity="1" />
+          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordTypeRole">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeRolePermission">
+              <PropertyRef Name="RecordTypeMemberRoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordTypeRolePermissions_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeRolePermission">
+              <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7083,18 +7175,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypeRolePermissions">
-            <EntityTypeMapping TypeName="DataLib.RecordTypeRolePermission">
-              <MappingFragment StoreEntitySet="RecordTypeRolePermissions">
-                <ScalarProperty Name="IsRequired" ColumnName="IsRequired" />
-                <ScalarProperty Name="IsSign" ColumnName="IsSign" />
-                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
-                <ScalarProperty Name="RecordTypeMemberRoleId" ColumnName="RecordTypeMemberRoleId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordTypes">
             <EntityTypeMapping TypeName="DataLib.RecordType">
               <MappingFragment StoreEntitySet="RecordTypes">
@@ -7153,6 +7233,30 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
                 <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordMembers">
+            <EntityTypeMapping TypeName="DataLib.RecordMember">
+              <MappingFragment StoreEntitySet="RecordMembers">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="PersonStaffId" ColumnName="PersonStaffId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordTypeRolePermissions">
+            <EntityTypeMapping TypeName="DataLib.RecordTypeRolePermission">
+              <MappingFragment StoreEntitySet="RecordTypeRolePermissions">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="IsRequired" ColumnName="IsRequired" />
+                <ScalarProperty Name="IsSign" ColumnName="IsSign" />
+                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
+                <ScalarProperty Name="RecordTypeMemberRoleId" ColumnName="RecordTypeMemberRoleId" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

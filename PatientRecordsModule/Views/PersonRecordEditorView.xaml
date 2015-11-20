@@ -26,9 +26,31 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
-            </ListBox>
-
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
+                <ListBox  ItemsSource="{Binding Brigade}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
+                                <TextBlock Text="{Binding RoleName}"/>
+                                <TextBlock Text="{Binding StaffName}"/>
+                                <TextBlock Text="{Binding PersonName}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <ContentControl Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+                <ContentControl Content="{Binding FailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+            </Grid>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Период оказания"/>
             <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectedValuePath="Id" DisplayMemberPath="Name" HorizontalAlignment="Stretch" ItemsSource="{Binding RecordPeriods}" SelectedValue="{Binding SelectedPeriodId}"/>
 
@@ -54,8 +76,6 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Время окончания услуги"/>
             <toolkit:DateTimePicker Grid.Row="0" Grid.Column="1"  Value="{Binding BeginDateTime}" Width="175" HorizontalAlignment="Left" Watermark="Дата/время окончания" Height="23"/>
             <Button Grid.Row="0" Grid.Column="2" Content="Текущее время" BorderThickness="0" Background="Transparent" HorizontalAlignment="Left" Command="{Binding SetCurrentDateTimeEndCommand}"/>
-
-            <CheckBox Grid.Row="1" Grid.Column="0" FontWeight="Bold" Grid.ColumnSpan="3" Content="Услуга выполнена, протокол заполнен" Foreground="{Binding IsCompleted, Converter={x:Static converters:CompletedToColorConverter.Instance}}"/>
         </Grid>
     </Grid>
 </UserControl>

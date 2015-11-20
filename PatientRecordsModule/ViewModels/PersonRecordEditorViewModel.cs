@@ -1,7 +1,10 @@
 ﻿using Core.Data;
+using Core.Data.Misc;
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
+using Core.Wpf.Mvvm;
 using log4net;
+using PatientRecordsModule.DTO;
 using PatientRecordsModule.Misc;
 using PatientRecordsModule.Services;
 using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
@@ -12,8 +15,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Data.Entity;
+using Core.Extensions;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -25,6 +31,9 @@ namespace PatientRecordsModule.ViewModels
         private readonly ILog logService;
 
         private readonly IEventAggregator eventAggregator;
+
+        private readonly CommandWrapper reloadRecordBrigadeCommandWrapper;
+        private CancellationTokenSource currentOperationToken;
         #endregion
 
         #region Constructors
@@ -46,6 +55,12 @@ namespace PatientRecordsModule.ViewModels
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
 
+            reloadRecordBrigadeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadBrigadeAsync(RecordId)) };
+
+            BusyMediator = new BusyMediator();
+            FailureMediator = new FailureMediator();
+            Brigade = new ObservableCollectionEx<BrigadeDTO>();
+
             printProtocolCommand = new DelegateCommand(PrintProtocol);
             saveProtocolCommand = new DelegateCommand(SaveProtocol);
             showInEditModeCommand = new DelegateCommand(ShowProtocolInEditMode);
@@ -55,6 +70,9 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Properties
+
+        public ObservableCollectionEx<BrigadeDTO> Brigade { get; set; }
+
         private int visitId;
         public int VisitId
         {
@@ -97,7 +115,10 @@ namespace PatientRecordsModule.ViewModels
                 if (ProtocolEditor != null)
                     ProtocolEditor.PropertyChanged -= ProtocolEditor_PropertyChanged;
                 SetProperty(ref protocolEditor, value);
+
                 ProtocolEditor.PropertyChanged += ProtocolEditor_PropertyChanged;
+                if (RecordId > 0)
+                    LoadBrigadeAsync(RecordId);
                 OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
                 OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
             }
@@ -119,9 +140,82 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        public BusyMediator BusyMediator { get; set; }
+
+        public FailureMediator FailureMediator { get; private set; }
+
         #endregion
 
         #region Methods
+
+        private async void LoadBrigadeAsync(int recordId)
+        {
+            FailureMediator.Deactivate();
+            if (recordId < 1) return;
+            var loadingIsCompleted = false;
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            BusyMediator.Activate(string.Empty);
+            logService.InfoFormat("Loading brigade for record with Id ={0}", recordId);
+            IDisposableQueryable<Record> record = null;
+            IDisposableQueryable<RecordMember> recordMembers = null;
+            IDisposableQueryable<RecordTypeRolePermission> recordTypeRolePermission = null;
+            try
+            {
+                record = patientRecordsService.GetRecord(recordId);
+                var recordTypeResult = await record.Select(x => new { x.RecordTypeId, x.ActualDateTime }).FirstOrDefaultAsync(token);
+                recordMembers = patientRecordsService.GetRecordMembers(recordId);
+                recordTypeRolePermission = patientRecordsService.GetRecordTypeMembers(recordTypeResult.RecordTypeId, recordTypeResult.ActualDateTime);
+                var recordMembersTask = recordMembers.Select(x => new
+                {
+                    PersonName = x.PersonStaff.Person.ShortName,
+                    PersonId = x.PersonStaff.PersonId,
+                    StaffName = x.PersonStaff.Staff.ShortName,
+                    x.PersonStaffId
+                }).ToListAsync(token);
+                var recordTypeMembersTask = recordTypeRolePermission.Select(x => new
+                {
+                    RoleName = x.RecordTypeRole.Name,
+                    RoleId = x.RecordTypeMemberRoleId,
+                    x.IsRequired,
+                    PermissionName = x.Permission.Name,
+                    PermissionId = x.PermissionId
+                }).ToListAsync(token);
+                await Task.WhenAll(recordMembersTask, recordTypeMembersTask);
+                Brigade.AddRange(recordTypeMembersTask.Result.Select(x => new BrigadeDTO()
+                {
+                    IsRequired = x.IsRequired,
+                    RoleName = x.RoleName,
+                    RoleId = x.RoleId,
+                    PermissionId = x.PermissionId
+                }
+                ));
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load brigade for record with Id ={0}", recordId);
+                FailureMediator.Activate("Не удалось загрузить данные о бригаде. Попробуйте еще раз или обратитесь в службу поддержки", reloadRecordBrigadeCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (record != null)
+                {
+                    record.Dispose();
+                }
+            }
+        }
+
         public void Dispose()
         {
             UnsubscriveFromEvents();

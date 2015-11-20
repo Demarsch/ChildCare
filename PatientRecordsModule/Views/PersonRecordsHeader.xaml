@@ -71,7 +71,6 @@
                            Command="{Binding RemoveVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
         </StackPanel>
         <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
-        <!--<ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" />-->
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Назначения">
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Assignment48x48.png"/>

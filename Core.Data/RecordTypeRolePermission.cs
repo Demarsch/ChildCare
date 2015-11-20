@@ -20,6 +20,8 @@ namespace Core.Data
         public int PermissionId { get; set; }
         public bool IsSign { get; set; }
         public bool IsRequired { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     
         public virtual Permission Permission { get; set; }
         public virtual RecordTypeRole RecordTypeRole { get; set; }
