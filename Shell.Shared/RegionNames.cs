@@ -7,5 +7,7 @@
         public static readonly string MainMenu = "MainMenu";
 
         public static readonly string ModuleContent = "ModuleContent";
+
+        public static readonly string Overlay = "Overlay";
     }
 }

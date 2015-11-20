@@ -14,6 +14,12 @@ namespace Core.Data
     
     public partial class RecordPeriod
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public RecordPeriod()
+        {
+            this.Records = new HashSet<Record>();
+        }
+    
         public int Id { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
@@ -22,5 +28,7 @@ namespace Core.Data
         public bool Active { get; set; }
     
         public virtual ExecutionPlace ExecutionPlace { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Record> Records { get; set; }
     }
 }

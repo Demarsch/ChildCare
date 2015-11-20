@@ -5,6 +5,7 @@ using Core.Reports.DTO;
 using Core.Data.Services;
 using Core.Data;
 using Core.Data.Misc;
+using System.Threading.Tasks;
 
 namespace Core.Reports.Services
 {
@@ -25,31 +26,49 @@ namespace Core.Reports.Services
             }
         }
 
-        public void SaveTemplate(int id, string name, ReportTemplateDTO template, string description)
+        public void SaveTemplate(string reportName, object template, bool IsDocX)
         {
-            //todo: implement not only string template saving/using ?
             using (var context = contextProvider.CreateNewContext())
             {
-                var t = context.Set<ReportTemplate>().Find(id);
+                var t = context.Set<ReportTemplate>().First(x => x.Name == reportName);
+                t.Template = template as string;
+                t.IsDocXTemplate = IsDocX;
+                context.SaveChanges();
+            }
+        }
+
+        public ICollection<ReportTemplateDTOInfo> GetAllInfoes()
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                return context.Set<ReportTemplate>().OrderBy(x => x.Name).Select(x => new ReportTemplateDTOInfo
+                {
+                    Description = x.Description,
+                    Id = x.Id,
+                    IsDocXTemplate = x.IsDocXTemplate,
+                    Name = x.Name,
+                    Title = x.ReportTitle,
+                }).ToList();
+            }
+        }
+
+        public int SaveTemplateInfo(ReportTemplateDTOInfo templateInfo)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var t = context.Set<ReportTemplate>().Find(templateInfo.Id);
                 if (t == null)
                 {
                     t = new ReportTemplate();
                     context.Set<ReportTemplate>().Add(t);
                 }
-                t.Description = description;
-                t.IsDocXTemplate = template.IsDocXTemplate;
-                t.Name = name;
-                t.ReportTitle = template.Title;
-                t.Template = template.Template as string;
+                t.Description = templateInfo.Description;
+                t.IsDocXTemplate = templateInfo.IsDocXTemplate;
+                t.Name = templateInfo.Name;
+                t.ReportTitle = templateInfo.Title;
                 context.SaveChanges();
+                return t.Id;
             }
-        }
-
-        public IDisposableQueryable<ReportTemplate> GetAll()
-        {
-            var context = contextProvider.CreateNewContext();
-            context.Configuration.ProxyCreationEnabled = false;
-            return new DisposableQueryable<ReportTemplate>(context.Set<ReportTemplate>().AsNoTracking(), context);
         }
     }
 }

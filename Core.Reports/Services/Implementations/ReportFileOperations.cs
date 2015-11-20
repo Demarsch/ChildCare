@@ -60,5 +60,10 @@ namespace Core.Reports.Services
             };
             Process.Start(info);
         }
+
+        public string FileNameInvalidChars(string fileName)
+        {
+            return Path.GetInvalidFileNameChars().Where(x => fileName.Contains(x)).ToArray().Aggregate(string.Empty, (x, y) => string.Format("{0} {1}", x, y));
+        }
     }
 }

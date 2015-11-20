@@ -30,13 +30,17 @@ using Core.Reports.Services;
 
 namespace AdminModule.ViewModels
 {
-    public class ReportTemplatesManagerViewModel : BindableBase, IConfirmNavigationRequest
+    public class ReportTemplatesManagerViewModel : BindableBase, IConfirmNavigationRequest, IDataErrorInfo
     {
         ILog log;
+        IReportTemplateService templateService;
+        Func<ReportTemplateEditorViewModel> templateEditorCreator;
 
-        public ReportTemplatesManagerViewModel(ILog loging)
+        public ReportTemplatesManagerViewModel(ILog log, IReportTemplateService templateService, Func<ReportTemplateEditorViewModel> templateEditorCreator)
         {
-            log = loging;
+            this.log = log;
+            this.templateService = templateService;
+            this.templateEditorCreator = templateEditorCreator;
         }
 
         #region NavigationReguest
@@ -61,5 +65,45 @@ namespace AdminModule.ViewModels
 
         #endregion
 
+        private ObservableCollectionEx<ReportTemplateEditorViewModel> items;
+        public ObservableCollectionEx<ReportTemplateEditorViewModel> Items
+        { 
+            get
+            {
+                if (items != null)
+                    return items;
+
+                items = new ObservableCollectionEx<ReportTemplateEditorViewModel>();
+                Initialize();
+                return items;
+            }
+        }
+
+        public void ReloadTemplates()
+        {
+            Initialize();
+        }
+
+        public async void Initialize()
+        {
+            var t = await Task.Run(() => templateService.GetAllInfoes().ToArray());
+            while (Items.Count < t.Count() + 1)
+                Items.Add(templateEditorCreator());
+            while (Items.Count > t.Count() + 1)
+                Items.RemoveAt(Items.Count - 1);
+            Items[0].Initialize(null, ReloadTemplates);
+            for (int i = 0; i < t.Count(); i++)
+                Items[i + 1].Initialize(t[i], ReloadTemplates);
+        }
+
+        public string Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public string this[string columnName]
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

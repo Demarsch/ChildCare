@@ -166,10 +166,19 @@
     <Resource Include="Resources\Images\RecordAdd48x48.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\DocumentImport48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Resources\Images\RecordCompleted48x48.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\SaveWord48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Resources\Images\RecordInProgress48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Word48x48.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\RecordRemove48x48.png" />
