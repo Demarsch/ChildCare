@@ -111,10 +111,10 @@ namespace PatientInfoModule.ViewModels
             removeContractCommand = new DelegateCommand(RemoveContract, CanRemoveContract);
             printContractCommand = new DelegateCommand(PrintContract);
             printAppendixCommand = new DelegateCommand(PrintAppendix);
-            addRecordCommand = new DelegateCommand(AddRecord);
-            removeRecordCommand = new DelegateCommand(RemoveRecord);
-            addAppendixCommand = new DelegateCommand(AddAppendix);
-            removeAppendixCommand = new DelegateCommand(RemoveAppendix);
+            addRecordCommand = new DelegateCommand(AddRecord, CanRemoveContract);
+            removeRecordCommand = new DelegateCommand(RemoveRecord, CanRemoveContract);
+            addAppendixCommand = new DelegateCommand(AddAppendix, CanRemoveContract);
+            removeAppendixCommand = new DelegateCommand(RemoveAppendix, CanRemoveContract);
 
             saveChangesCommandWrapper = new CommandWrapper { Command = saveContractCommand };
             IsActive = false;
@@ -169,6 +169,10 @@ namespace PatientInfoModule.ViewModels
             saveContractCommand.RaiseCanExecuteChanged();
             removeContractCommand.RaiseCanExecuteChanged();
             addContractCommand.RaiseCanExecuteChanged();
+            addRecordCommand.RaiseCanExecuteChanged();
+            removeRecordCommand.RaiseCanExecuteChanged();
+            addAppendixCommand.RaiseCanExecuteChanged();
+            removeAppendixCommand.RaiseCanExecuteChanged();
         }
 
         public async void LoadDataSources()
@@ -223,9 +227,6 @@ namespace PatientInfoModule.ViewModels
         private async void LoadContractsAsync(int patientId)
         {
             this.patientId = patientId;
-            saveContractCommand.RaiseCanExecuteChanged();
-            removeContractCommand.RaiseCanExecuteChanged();
-            addContractCommand.RaiseCanExecuteChanged();
             if (patientId == SpecialValues.NewId || patientId == SpecialValues.NonExistingId)
             {
                 return;

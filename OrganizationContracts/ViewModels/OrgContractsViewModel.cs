@@ -603,7 +603,7 @@ namespace OrganizationContractsModule.ViewModels
 
         private void OnAddOrgDialogClosed(AddContractOrganizationViewModel viewModel)
         {
-            if (!viewModel.saveSuccesfull) return;
+            if (!viewModel.SaveSuccesfull) return;
             Organizations.Add(new FieldValue() { Value = viewModel.orgId, Field = contractService.GetOrganizationById(viewModel.orgId).First().Name });
             if (SelectedContract.Id == SpecialValues.NewId)
                 SelectedOrganizationId = viewModel.orgId;

@@ -31,7 +31,7 @@ namespace OrganizationContractsModule.ViewModels
         public FailureMediator FailureMediator { get; private set; }
         private readonly CommandWrapper saveChangesCommandWrapper;
         public int orgId = SpecialValues.NonExistingId;
-        public bool saveSuccesfull = false;
+        public bool SaveSuccesfull { get; private set; }
 
         public AddContractOrganizationViewModel(IContractService contractService, ILog logService)
         {
@@ -48,9 +48,10 @@ namespace OrganizationContractsModule.ViewModels
             
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveChangesAsync()) };
+            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveChangesAsync()), CommandName = "Повторить" };
             CreateOrgCommand = new DelegateCommand(SaveChangesAsync);
             CancelCommand = new DelegateCommand(Cancel);
+            SaveSuccesfull = false;
         }
 
         public void IntializeCreation(string title)
@@ -75,7 +76,7 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand CancelCommand { get; private set; }
         private void Cancel()
         {
-            saveSuccesfull = false;
+            SaveSuccesfull = false;
             HostWindow.Close();
         }
 
@@ -89,17 +90,16 @@ namespace OrganizationContractsModule.ViewModels
             }
             logService.InfoFormat("Saving data for new Org");
             BusyMediator.Activate("Сохранение изменений...");
-            var saveSuccesfull = false;
             try
             {
                 Org org = new Org();
                 org.Name = Name;
-                org.Details = Details;
+                org.Details = Details.ToSafeString();
                 org.IsLpu = false;
                 org.UseInContract = true;
                 var result = await contractService.SaveOrgAsync(org);
                 orgId = result;
-                saveSuccesfull = true;
+                SaveSuccesfull = true;
             }
             catch (OperationCanceledException)
             {
@@ -113,7 +113,7 @@ namespace OrganizationContractsModule.ViewModels
             finally
             {
                 BusyMediator.Deactivate();
-                if (saveSuccesfull)
+                if (SaveSuccesfull)
                     HostWindow.Close();
             }
         }
