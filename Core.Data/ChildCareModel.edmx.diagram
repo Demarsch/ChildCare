@@ -200,6 +200,9 @@
         <AssociationConnector Association="DataLib.FK_RecordTypeCosts_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Records" />
         <AssociationConnector Association="DataLib.FK_RecordTypeCosts_RecordTypes" />
+        <EntityTypeShape EntityType="DataLib.RecordPeriod" Width="1.5" PointX="15.75" PointY="66.75" />
+        <AssociationConnector Association="DataLib.FK_RecordPeriods_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_Records_RecordPeriods" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

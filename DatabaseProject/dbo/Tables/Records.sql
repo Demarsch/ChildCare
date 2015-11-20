@@ -19,6 +19,7 @@
     [RemovedByUserId] INT          NULL,
     CONSTRAINT [PK_Records] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Records_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
+    CONSTRAINT [FK_Records_RecordPeriods] FOREIGN KEY ([RecordPeriodId]) REFERENCES [dbo].[RecordPeriods] ([Id]),
     CONSTRAINT [FK_Records_Records] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Records] ([Id]),
     CONSTRAINT [FK_Records_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]),
     CONSTRAINT [FK_Records_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [dbo].[Rooms] ([Id]),
@@ -26,6 +27,8 @@
     CONSTRAINT [FK_Records_Users] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Records_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 

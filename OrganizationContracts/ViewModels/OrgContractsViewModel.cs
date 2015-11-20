@@ -168,7 +168,7 @@ namespace OrganizationContractsModule.ViewModels
                         changeTracker.IsEnabled = false;
                         LoadContractData();
                         changeTracker.IsEnabled = true;
-                        DocumentsViewer.LoadDocuments(1, null);
+                        DocumentsViewer.LoadDocuments(null, null);
                         AllowDocuments = DocumentsViewer.AllowDocuments;
                         AllowDICOM = DocumentsViewer.AllowDICOM;
                         CanAttachDICOM = DocumentsViewer.CanAttachDICOM;

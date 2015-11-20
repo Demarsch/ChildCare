@@ -137,5 +137,6 @@
     <Build Include="dbo\Tables\MKB.sql" />
     <Build Include="dbo\Tables\RecordDocuments.sql" />
     <Build Include="dbo\Tables\RecordTypeEditors.sql" />
+    <Build Include="dbo\Tables\RecordPeriods.sql" />
   </ItemGroup>
 </Project>
