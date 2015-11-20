@@ -79,6 +79,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\ReportTemplateDTOInfo.cs" />
     <Compile Include="DTO\ReportTemplateDTO.cs" />
     <Compile Include="CoreReports.cs" />
     <Compile Include="ReportGenerators\Implementations\ReportGeneratorHelper.cs" />

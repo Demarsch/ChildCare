@@ -10,9 +10,9 @@ namespace Core.Reports.Services
     public interface IReportTemplateService
     {
         ReportTemplateDTO GetTemplate(string reportName);
+        void SaveTemplate(string reportName, object template, bool IsDoc);
 
-        void SaveTemplate(int id, string name, ReportTemplateDTO template, string description);
-
-        IDisposableQueryable<ReportTemplate> GetAll();
+        ICollection<ReportTemplateDTOInfo> GetAllInfoes();
+        int SaveTemplateInfo(ReportTemplateDTOInfo templateInfo);
     }
 }

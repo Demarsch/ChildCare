@@ -162,6 +162,15 @@
     <Resource Include="Resources\Images\AttachFile48x48.png" />
     <Resource Include="Resources\Images\DetachFile48x48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\DocumentImport48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\SaveWord48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Word48x48.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

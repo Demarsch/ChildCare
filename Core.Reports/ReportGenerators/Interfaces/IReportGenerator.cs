@@ -13,9 +13,9 @@ namespace Core.Reports
 
         string Save();
 
-        void Show();
+        string Show();
 
-        void Print();
+        string Print();
 
         void LoadTemplateFromFile(string fileName);
     }

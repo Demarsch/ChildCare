@@ -1,13 +1,93 @@
 ﻿<UserControl x:Class="AdminModule.Views.ReportTemplatesManagerView"
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:AdminModule.ViewModels"
+             xmlns:converters="clr-namespace:AdminModule.Converters"
+             xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:xctkp="clr-namespace:Xceed.Wpf.Toolkit.Primitives;assembly=Xceed.Wpf.Toolkit"
              mc:Ignorable="d"
              d:DesignHeight="500"
              d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:ReportTemplatesManagerViewModel}">
-    <Grid>
-        
-    </Grid>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:BoolToWindowStateConverter x:Key="BoolToState"/>
+    </UserControl.Resources>
+
+    <StackPanel Margin="10">
+        <TextBlock FontWeight="Bold" FontSize="16">Шаблоны отчетов</TextBlock>
+        <ScrollViewer Margin="10" HorizontalContentAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Items, Mode=OneWay}" HorizontalContentAlignment="Stretch">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid Height="Auto">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="1" Grid.RowSpan="4" Margin="10">
+                                    <Button Command="{Binding OpenCommand}" Visibility="{Binding TemplateIsDocX, Converter={StaticResource BoolToVis}}" BorderThickness="0">
+                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Word48x48.png"></Image>
+                                    </Button>
+                                    <Button Command="{Binding FileCommand}" Visibility="{Binding EmptyTemplate, Converter={StaticResource BoolToVis}}" BorderThickness="0">
+                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/DocumentImport48x48.png"></Image>
+                                    </Button>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" Margin="10" Visibility="{Binding OpenedInEditor, Converter={StaticResource BoolToVis}}">
+                                    <Button Command="{Binding LoadCommand}" BorderThickness="0">
+                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/SaveWord48x48.png"></Image>
+                                    </Button>
+                                </StackPanel>
+
+                                <TextBlock Grid.ColumnSpan="3" Text="{Binding TemplateItemName}" VerticalAlignment="Center" FontWeight="Bold" FontSize="14"></TextBlock>
+
+                                <TextBlock Grid.Row="1" Grid.Column="2">Идентификатор</TextBlock>
+                                <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding TemplateName, Mode=TwoWay}" Margin="0"></TextBox>
+
+                                <TextBlock Grid.Row="2" Grid.Column="2">Заголовок</TextBlock>
+                                <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding TemplateTitle, Mode=TwoWay}" Margin="0"></TextBox>
+
+                                <TextBlock Grid.Row="3" Grid.Column="2">Описание</TextBlock>
+                                <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding TemplateDescription, Mode=TwoWay}" Margin="0"></TextBox>
+
+                                <StackPanel Grid.Row="1" Grid.Column="4" Grid.RowSpan="4" Margin="10">
+                                    <Button Command="{Binding SaveCommand}" BorderThickness="0">
+                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Save48x48.png"></Image>
+                                    </Button>
+                                </StackPanel>
+
+                                <Separator Grid.Row="4" Grid.ColumnSpan="4" Margin="5"></Separator>
+
+                            </Grid>
+                            
+                            <xctkp:WindowContainer>
+                                <xctk:ChildWindow IsModal="True" WindowStartupLocation="Center" Caption="Внимание" WindowState="{Binding MessageState, Mode=TwoWay, Converter={StaticResource BoolToState}}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding MessageText, Mode=OneWay}" TextWrapping="Wrap" MaxWidth="300" Margin="5"></TextBlock>
+                                        <Button IsCancel="True" IsDefault="True" Command="{Binding CloseMessageCommand}" HorizontalAlignment="Center" BorderThickness="0">
+                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Width="32" Height="32"></Image>
+                                        </Button>
+                                    </StackPanel>
+                                </xctk:ChildWindow>
+                            </xctkp:WindowContainer>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>            
+        </ScrollViewer>
+    </StackPanel>
 </UserControl>
