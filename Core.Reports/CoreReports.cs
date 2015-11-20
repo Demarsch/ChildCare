@@ -9,14 +9,8 @@ namespace Core.Reports
 {
     public static class CoreReports
     {
-        static IUnityContainer container;
-
-        public static void Initialize(IUnityContainer unityContainer)
+        public static void Initialize(IUnityContainer container)
         {
-            if (container != null)
-                return;
-            container = unityContainer.CreateChildContainer();
-                                    
             //services
             container.RegisterInstance(LogManager.GetLogger("REPORTING"));
             container.RegisterType<IReportTemplateService, ReportTemplateService>(new ContainerControlledLifetimeManager());

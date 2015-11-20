@@ -22,7 +22,7 @@ namespace Core.Reports
             {
                 var t = templateService.GetTemplate(templateName);
                 if (!t.IsDocXTemplate)
-                    throw new ArgumentException(string.Format("Шаблона отчета {0} не отмечен как DocX", templateName));
+                    throw new ArgumentException(string.Format("Шаблон отчета {0} не отмечен как DocX", templateName));
                 var r = docXgeneratorCreator();
                 r.Template = t.Template;
                 r.Title = t.Title;
@@ -32,6 +32,22 @@ namespace Core.Reports
             {
                 throw new InvalidOperationException("Не удалось загрузить шаблон отчета " + templateName, ex);
             }            
+        }
+
+
+        public IReportGenerator CreateDocXFromFile(string fileName)
+        {
+            try
+            {
+                var r = docXgeneratorCreator();
+                r.LoadTemplateFromFile(fileName);
+                r.Title = "Отчет";
+                return r;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Не удалось загрузить шаблон отчета из файла " + fileName, ex);
+            }        
         }
     }
 }

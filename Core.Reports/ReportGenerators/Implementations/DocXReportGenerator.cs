@@ -95,11 +95,13 @@ namespace Core.Reports
             return filename;
         }
 
-        public void Show()
+        public string Show()
         {
             try
             {
-                fileOperations.StartDocument(Save());
+                var filename = Save();
+                fileOperations.StartDocument(filename);
+                return filename;
             }
             catch (Exception ex)
             {
@@ -107,11 +109,13 @@ namespace Core.Reports
             }
         }
 
-        public void Print()
+        public string Print()
         {
             try
             {
-                fileOperations.StartDocument(Save(), "Print");
+                var filename = Save();
+                fileOperations.StartDocument(filename, "Print");
+                return filename;
             }
             catch (Exception ex)
             {

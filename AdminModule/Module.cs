@@ -9,6 +9,7 @@ using Prism.Regions;
 using AdminModule.Views;
 using AdminModule.ViewModels;
 using Core.Wpf.Services;
+using Core.Reports;
 
 namespace AdminModule
 {
@@ -28,12 +29,15 @@ namespace AdminModule
 
         public void Initialize()
         {
+            CoreReports.Initialize(container);
+
             container.RegisterInstance(LogManager.GetLogger("ADMINING"));
 
             container.RegisterType<AdminEmptyViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<object, AdminEmptyView>(viewNameResolver.Resolve<AdminEmptyViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<AdminEmptyView>());
 
+            container.RegisterType<ReportTemplateEditorViewModel>(new TransientLifetimeManager());
             container.RegisterType<ReportTemplatesManagerViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<object, ReportTemplatesManagerView>(viewNameResolver.Resolve<ReportTemplatesManagerViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<ReportTemplatesManagerView>());

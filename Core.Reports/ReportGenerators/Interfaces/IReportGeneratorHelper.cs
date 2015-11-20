@@ -7,5 +7,6 @@ namespace Core.Reports
     public interface IReportGeneratorHelper
     {
         IReportGenerator CreateDocX(string templateName);
+        IReportGenerator CreateDocXFromFile(string fileName);
     }
 }
