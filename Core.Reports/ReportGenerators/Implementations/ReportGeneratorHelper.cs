@@ -15,7 +15,7 @@ namespace Core.Reports
             this.templateService = templateService;
             this.docXgeneratorCreator = docXgeneratorCreator;
         }
-        
+
         public IReportGenerator CreateDocX(string templateName)
         {
             try

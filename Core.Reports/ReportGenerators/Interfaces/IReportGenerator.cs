@@ -6,7 +6,7 @@ namespace Core.Reports
 {
     public interface IReportGenerator : IDisposable
     {
-        object Template { get; set; }
+        string Template { get; set; }
         ReportData Data { get; set; }
         string Title { get; set; }
         bool Editable { get; set; }

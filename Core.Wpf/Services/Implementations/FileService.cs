@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Linq;
+using Core.Wpf.Misc;
 
 namespace Core.Wpf.Services
 {
@@ -17,37 +16,69 @@ namespace Core.Wpf.Services
            
         }
 
-        public string[] OpenFileDialog(bool multiSelect = false)
+        public string[] OpenFileDialog(bool multiSelect = false, string filter = null)
         {
             string[] files = new string[0];
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "All files (*.*)|*.*|Office Files|*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx|Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|Text files (*.txt)|*.txt";
-            dialog.Multiselect = false;
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            OpenFileDialog dialog = new OpenFileDialog()
+            { 
+                Filter = filter ?? FileServiceFilters.Default,
+                Multiselect = false
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
                 files = dialog.FileNames;
             return files;
         }
         
         public void RunFile(string filePath)
         {
-            Process prc = new Process();
-            prc.StartInfo.FileName = filePath;
-            prc.EnableRaisingEvents = true;
-            prc.Exited += (sender, e) =>
+            Process.Start(filePath);
+        }
+
+        public void RunFile(string filePath, string fileServiceAction)
+        {
+            ProcessStartInfo info = new ProcessStartInfo(filePath)
             {
-                try
-                {
-                    File.Delete(filePath);
-                }
-                catch { }
+                Verb = fileServiceAction,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
             };
-            prc.Start();
+            Process.Start(info);
+        }
+
+        public string PrepareTempFileName(string folderPrefix, string fileTitle, string fileExtention)
+        {
+            string PathName = Path.GetTempPath();
+
+            if (folderPrefix.Trim().Length > 0)
+                PathName += folderPrefix;
+            else
+                PathName += "Temp";
+            int i = 1;
+            while (Directory.Exists(PathName + i)) i++;
+            PathName += i.ToString();
+
+            string name = fileTitle;
+            Path.GetInvalidFileNameChars().Where(x => name.Contains(x)).ToList().ForEach(x => name = name.Replace(x.ToString(), string.Empty));
+            name = name.Trim();
+            if (name.Length > 128)
+                name = name.Substring(0, 128).Trim();
+            else if (name.Length == 0)
+                name = "Документ";
+
+            Directory.CreateDirectory(PathName);
+            PathName = Path.Combine(PathName, name);
+            return Path.ChangeExtension(PathName, fileExtention);
         }
 
         public void DeleteFile(string filePath)
         {
             if (File.Exists(filePath))
                 File.Delete(filePath);
+        }
+
+        public string FileNameInvalidChars(string fileName)
+        {
+            return Path.GetInvalidFileNameChars().Where(x => fileName.Contains(x)).ToArray().Aggregate(string.Empty, (x, y) => string.Format("{0} {1}", x, y));
         }
 
         public ImageSource GetImageSourceFromBinaryData(byte[] source)
@@ -73,15 +104,15 @@ namespace Core.Wpf.Services
         {
             byte[] bytes = null;
             var bitmapSource = imageSource as BitmapSource;
-            if (bitmapSource != null)
-            {
-                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+            if (bitmapSource == null)
+                return bytes;
 
-                using (var stream = new MemoryStream())
-                {
-                    encoder.Save(stream);
-                    bytes = stream.ToArray();
-                }
+            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+
+            using (var stream = new MemoryStream())
+            {
+                encoder.Save(stream);
+                bytes = stream.ToArray();
             }
             return bytes;
         }
@@ -98,7 +129,6 @@ namespace Core.Wpf.Services
             }
             //return File.ReadAllBytes(filePath);
         }
-
 
         public string GetFileFromBinaryData(byte[] binaryData, string extension)
         {
@@ -139,5 +169,11 @@ namespace Core.Wpf.Services
             else
                 return new BitmapImage(new Uri("pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png"));
         }
+
+        public Stream CreateStreamForFile(string fileName, bool readMode = true)
+        {
+            return new FileStream(fileName, readMode ? FileMode.Open : FileMode.Create, readMode ? FileAccess.Read : FileAccess.ReadWrite);
+        }
+
     }
 }

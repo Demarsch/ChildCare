@@ -4,12 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:AdminModule.ViewModels"
-             xmlns:converters="clr-namespace:AdminModule.Converters"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
              xmlns:xctkp="clr-namespace:Xceed.Wpf.Toolkit.Primitives;assembly=Xceed.Wpf.Toolkit"
              mc:Ignorable="d"
              d:DesignHeight="500"
-             d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:ReportTemplatesManagerViewModel}">
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance viewModels:ReportTemplatesManagerViewModel}">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:BoolToWindowStateConverter x:Key="BoolToState"/>
@@ -78,7 +79,7 @@
                                 <xctk:ChildWindow IsModal="True" WindowStartupLocation="Center" Caption="Внимание" WindowState="{Binding MessageState, Mode=TwoWay, Converter={StaticResource BoolToState}}">
                                     <StackPanel>
                                         <TextBlock Text="{Binding MessageText, Mode=OneWay}" TextWrapping="Wrap" MaxWidth="300" Margin="5"></TextBlock>
-                                        <Button IsCancel="True" IsDefault="True" Command="{Binding CloseMessageCommand}" HorizontalAlignment="Center" BorderThickness="0">
+                                        <Button IsCancel="True" IsDefault="True" Command="{Binding CloseMessageCommand}" HorizontalAlignment="Right" BorderThickness="0">
                                             <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Width="32" Height="32"></Image>
                                         </Button>
                                     </StackPanel>

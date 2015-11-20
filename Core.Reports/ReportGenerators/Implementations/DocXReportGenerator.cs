@@ -1,12 +1,12 @@
-﻿using Core.Data.Services;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Core.Reports.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Core.Wpf.Services;
+using Core.Wpf.Misc;
 
 namespace Core.Reports
 {
@@ -14,17 +14,17 @@ namespace Core.Reports
     {
         const string tempfolderprefix = "DocXReport";
         const string reportfileextention = "docx";
-        private IReportFileOperations fileOperations;
+        private IFileService fileService;
 
         #region IReportGenerator implementation
 
-        public object Template { get; set; }
+        public string Template { get; set; }
         public string Title { get; set; }
         public bool Editable { get; set; }
-        
-        public DocXReportGenerator(IReportFileOperations fileOperations)
+
+        public DocXReportGenerator(IFileService fileService)
         {
-            this.fileOperations = fileOperations;
+            this.fileService = fileService;
             Data = new ReportData();
         }
 
@@ -46,51 +46,46 @@ namespace Core.Reports
                 throw new NullReferenceException("Не указан шаблон для отчета");
             }
 
-            string filename = fileOperations.CreateFileName(fileOperations.CreateTempFolder(tempfolderprefix), Title, reportfileextention);
-
-            string content;
+            string content = string.Empty;
             try
             {
-                content = FillTemplate(Template.ToString(), Data);
+                content = FillTemplate(Template, Data);
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("Ошибка при заполнении шаблона отчета данными", ex);
             }
 
+            string filename = string.Empty;
             try
             {
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filename, true))
+                filename = fileService.PrepareTempFileName(tempfolderprefix, Title, reportfileextention);
+
+                using (Stream doc = fileService.CreateStreamForFile(filename, false))
                 {
-                    using (StreamWriter sw = new StreamWriter(wordDoc.MainDocumentPart.GetStream(FileMode.Create)))
+                    using (WordprocessingDocument package = WordprocessingDocument.Create(doc, WordprocessingDocumentType.Document))
                     {
-                        sw.Write(content);
+                        MainDocumentPart mainPart = package.AddMainDocumentPart(); 
+                        using (Stream st = mainPart.GetStream())
+                        {
+                            var buf = (new System.Text.UTF8Encoding()).GetBytes(content);
+                            st.Write(buf, 0, buf.Length);
+                        }
+
+                        if (!Editable)
+                        {
+                            if (mainPart.DocumentSettingsPart == null) mainPart.AddNewPart<DocumentSettingsPart>();
+                            if (mainPart.DocumentSettingsPart.Settings == null) mainPart.DocumentSettingsPart.Settings = new Settings();
+                            mainPart.DocumentSettingsPart.Settings.RemoveAllChildren<DocumentProtection>();
+                            mainPart.DocumentSettingsPart.Settings.AppendChild(new DocumentProtection() { Edit = DocumentProtectionValues.ReadOnly, Enforcement = new OnOffValue(true) });
+                            mainPart.DocumentSettingsPart.Settings.Save();
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("Ошибка при создании файла отчета", ex);
-            }
-
-            if (Editable)
-                return filename;
-
-            try
-            {
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(filename, true))
-                {
-                    if (wordDoc.MainDocumentPart.DocumentSettingsPart == null) wordDoc.MainDocumentPart.AddNewPart<DocumentSettingsPart>();
-                    if (wordDoc.MainDocumentPart.DocumentSettingsPart.Settings == null) wordDoc.MainDocumentPart.DocumentSettingsPart.Settings = new Settings();
-                    wordDoc.MainDocumentPart.DocumentSettingsPart.Settings.RemoveAllChildren<DocumentProtection>();
-                    wordDoc.MainDocumentPart.DocumentSettingsPart.Settings.AppendChild(new DocumentProtection() { Edit = DocumentProtectionValues.ReadOnly, Enforcement = new OnOffValue(true) });
-                    wordDoc.MainDocumentPart.DocumentSettingsPart.Settings.Save();
-                    wordDoc.MainDocumentPart.Document.Save();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Ошибка при установке ограничения доступа в отчете", ex);
             }
 
             return filename;
@@ -101,7 +96,7 @@ namespace Core.Reports
             try
             {
                 var filename = Save();
-                fileOperations.StartDocument(filename);
+                fileService.RunFile(filename);
                 return filename;
             }
             catch (Exception ex)
@@ -115,7 +110,7 @@ namespace Core.Reports
             try
             {
                 var filename = Save();
-                fileOperations.StartDocument(filename, "Print");
+                fileService.RunFile(filename, FileServiceActions.Print);
                 return filename;
             }
             catch (Exception ex)
@@ -128,11 +123,17 @@ namespace Core.Reports
         {
             try
             {
-                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(fileName, true))
-                {   
-                    using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
+                using (Stream st = fileService.CreateStreamForFile(fileName))
+                {
+                    using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(st, false))
                     {
-                        Template = sr.ReadToEnd();
+                        using (Stream stm = wordDoc.MainDocumentPart.GetStream())
+                        {
+                            using (StreamReader sr = new StreamReader(stm))
+                            {
+                                Template = sr.ReadToEnd();
+                            }
+                        }
                     }
                 }
             }

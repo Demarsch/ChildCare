@@ -6,7 +6,7 @@ namespace Core.Reports.DTO
 {
     public class ReportTemplateDTO
     {
-        public object Template;
+        public string Template;
         public string Title;
         public bool IsDocXTemplate;
     }

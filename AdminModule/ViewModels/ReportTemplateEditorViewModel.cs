@@ -30,22 +30,21 @@ using Shell.Shared;
 using Core.Reports.Services;
 using Core.Reports.DTO;
 using Core.Reports;
-using Prism.Interactivity.InteractionRequest;
-using Xceed.Wpf.Toolkit;
+
 namespace AdminModule.ViewModels
 {
     public class ReportTemplateEditorViewModel : BindableBase
     {
         ILog log;
         IReportTemplateService templateService;
-        IReportFileOperations fileOperations;
+        IFileService fileService;
         IReportGeneratorHelper reportHelper;
 
-        public ReportTemplateEditorViewModel(ILog log, IReportTemplateService templateService, IReportFileOperations fileOperations, IReportGeneratorHelper reportHelper)
+        public ReportTemplateEditorViewModel(ILog log, IReportTemplateService templateService, IFileService fileService, IReportGeneratorHelper reportHelper)
         {
             this.log = log;
             this.templateService = templateService;
-            this.fileOperations = fileOperations;
+            this.fileService = fileService;
             this.reportHelper = reportHelper;
         }
 
@@ -101,20 +100,30 @@ namespace AdminModule.ViewModels
         {
             if (TemplateName.Length == 0)
             {
-                ShowMessage("Не указан идентификатор шаблона");
+                MessageText = "Не указан идентификатор шаблона";
+                MessageState = true;
+                return;
+            }
+
+            if (templateService.CheckNameInUse(TemplateName, TemplateId))
+            {
+                MessageText = string.Format("Другой отчет с идентификатором {0} уже существует", TemplateName);
+                MessageState = true;
                 return;
             }
 
             if (TemplateTitle.Length == 0)
             {
-                ShowMessage("Не указан заголовок шаблона");
+                MessageText = "Не указан заголовок шаблона";
+                MessageState = true;
                 return;
             }
 
-            var inv = fileOperations.FileNameInvalidChars(TemplateTitle);
+            var inv = fileService.FileNameInvalidChars(TemplateTitle);
             if (inv.Length > 0)
             {
-                ShowMessage(string.Format("Заголовок содержит недопустимые символы ( {0} )", inv));
+                MessageText = string.Format("Заголовок содержит недопустимые символы ( {0} )", inv);
+                MessageState = true;
                 return;
             }
 
@@ -155,15 +164,23 @@ namespace AdminModule.ViewModels
         public void OpenCommandAction()
         {
             // from base for editing
-            if (TemplateIsDocX)
-            {
-                using (var rep = reportHelper.CreateDocX(TemplateItemName))
+            try
+            { 
+                if (TemplateIsDocX)
                 {
-                    rep.Title = "Шаблон";
-                    rep.Editable = true;
-                    reportFileName = rep.Show();
-                    OpenedInEditor = true;
+                    using (var rep = reportHelper.CreateDocX(TemplateItemName))
+                    {
+                        rep.Title = "Шаблон";
+                        rep.Editable = true;
+                        reportFileName = rep.Show();
+                        OpenedInEditor = true;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageText = ex.Message;
+                MessageState = true;
             }
         }
 
@@ -174,15 +191,27 @@ namespace AdminModule.ViewModels
             // from file
             if (EmptyTemplate)
             {
-                
+                var res = fileService.OpenFileDialog(false, FileServiceFilters.DocX);
+                if (!res.Any())
+                    return;
 
-
-
-                using (var rep = reportHelper.CreateDocXFromFile(reportFileName))
+                try
                 {
-                    templateService.SaveTemplate(TemplateItemName, rep.Template, true);
-                    OpenedInEditor = false;
-                    TemplateIsDocX = true;
+                    if (res[0].EndsWith(FileServiceFilters.DocXExtention, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        using (var rep = reportHelper.CreateDocXFromFile(res[0]))
+                        {
+                            templateService.SaveTemplate(TemplateItemName, rep.Template, true);
+                            OpenedInEditor = false;
+                            TemplateIsDocX = true;
+                            EmptyTemplate = false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageText = ex.Message;
+                    MessageState = true;
                 }
             }
         }
@@ -195,29 +224,32 @@ namespace AdminModule.ViewModels
             if (!OpenedInEditor)
                 return;
 
-            if (TemplateIsDocX)
+            try
             {
-                using (var rep = reportHelper.CreateDocXFromFile(reportFileName))
+                if (TemplateIsDocX)
                 {
-                    templateService.SaveTemplate(TemplateItemName, rep.Template, true);
-                    OpenedInEditor = false;
+                    using (var rep = reportHelper.CreateDocXFromFile(reportFileName))
+                    {
+                        templateService.SaveTemplate(TemplateItemName, rep.Template, true);
+                        OpenedInEditor = false;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageText = ex.Message;
+                MessageState = true;
             }
         }
         
         private bool messageState;
         public bool MessageState { get { return messageState; } set { SetProperty(ref messageState, value); } }
 
-        private DelegateCommand closeMessageCommand;
-        public DelegateCommand CloseMessageCommand { get { return closeMessageCommand ?? (closeMessageCommand = new DelegateCommand(() => MessageState = false)); } }
-        
         private string messageText;
         public string MessageText { get { return messageText; } set { SetProperty(ref messageText, value); } }
 
-        private void ShowMessage(string message)
-        {
-            MessageText = message;
-            MessageState = true;
-        }
+        private DelegateCommand closeMessageCommand;
+        public DelegateCommand CloseMessageCommand { get { return closeMessageCommand ?? (closeMessageCommand = new DelegateCommand(() => MessageState = false)); } }
+        
     }
 }

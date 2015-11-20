@@ -1,36 +1,16 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows.Data;
 using log4net;
 using Prism.Mvvm;
-using Prism.Commands;
-using Prism.Interactivity;
-using Prism.Events;
-using Prism.Common;
 using Prism.Regions;
-using Core.Data;
-using Core.Data.Misc;
-using Core.Data.Services;
-using Core.Extensions;
-using Core.Misc;
-using Core.Services;
-using Core.Wpf.Events;
-using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
-using Core.Wpf.Services;
-using Shell.Shared;
 using Core.Reports.Services;
 
 namespace AdminModule.ViewModels
 {
-    public class ReportTemplatesManagerViewModel : BindableBase, IConfirmNavigationRequest, IDataErrorInfo
+    public class ReportTemplatesManagerViewModel : BindableBase, IConfirmNavigationRequest
     {
         ILog log;
         IReportTemplateService templateService;
@@ -61,6 +41,7 @@ namespace AdminModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
+            ReloadTemplates();
         }
 
         #endregion
@@ -94,16 +75,6 @@ namespace AdminModule.ViewModels
             Items[0].Initialize(null, ReloadTemplates);
             for (int i = 0; i < t.Count(); i++)
                 Items[i + 1].Initialize(t[i], ReloadTemplates);
-        }
-
-        public string Error
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public string this[string columnName]
-        {
-            get { throw new NotImplementedException(); }
         }
     }
 }

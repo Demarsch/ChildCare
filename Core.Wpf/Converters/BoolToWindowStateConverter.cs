@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
+using Xceed.Wpf.Toolkit;
 
-namespace AdminModule.Converters
+namespace Core.Wpf.Converters
 {
     public class BoolToWindowStateConverter : IValueConverter
     {
@@ -12,13 +12,13 @@ namespace AdminModule.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var boolValue = (bool?)value;
-            return boolValue == true ? Xceed.Wpf.Toolkit.WindowState.Open : Xceed.Wpf.Toolkit.WindowState.Closed;
+            return boolValue == true ? WindowState.Open : WindowState.Closed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var visibilityValue = (Xceed.Wpf.Toolkit.WindowState)value;
-            return visibilityValue == Xceed.Wpf.Toolkit.WindowState.Open;
+            var visibilityValue = (WindowState)value;
+            return visibilityValue == WindowState.Open;
         }
     }
 }

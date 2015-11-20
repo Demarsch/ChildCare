@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -16,8 +17,17 @@ namespace Core.Wpf.Services
         ImageSource GetImageSourceFromBinaryData(byte[] source);
 
         void RunFile(string filePath);
+        void RunFile(string filePath, string fileServiceAction);
+
         void DeleteFile(string filePath);
 
-        string[] OpenFileDialog(bool multiSelect = false);
+        string PrepareTempFileName(string folderPrefix, string fileTitle, string fileExtention);
+
+        string FileNameInvalidChars(string fileName);
+
+        string[] OpenFileDialog(bool multiSelect = false, string filter = null);
+
+        Stream CreateStreamForFile(string fileName, bool readMode = true);
+
     }
 }

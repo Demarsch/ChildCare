@@ -91,15 +91,17 @@
     <Compile Include="ReportData\ReportDataTable.cs" />
     <Compile Include="ReportGenerators\Implementations\DocXReportGenerator.cs" />
     <Compile Include="ReportGenerators\Interfaces\IReportGenerator.cs" />
-    <Compile Include="Services\Implementations\ReportFileOperations.cs" />
     <Compile Include="Services\Implementations\ReportTemplateService.cs" />
-    <Compile Include="Services\Interfaces\IReportFileOperations.cs" />
     <Compile Include="Services\Interfaces\IReportTemplateService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core.Data\Core.Data.csproj">
       <Project>{304f5aeb-4189-4c9f-96da-c32e57e5e1be}</Project>
       <Name>Core.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core.Wpf\Core.Wpf.csproj">
+      <Project>{62515044-f9c0-4d93-8b55-1407ccf8d3f2}</Project>
+      <Name>Core.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>

@@ -4,8 +4,6 @@ using System.Linq;
 using Core.Reports.DTO;
 using Core.Data.Services;
 using Core.Data;
-using Core.Data.Misc;
-using System.Threading.Tasks;
 
 namespace Core.Reports.Services
 {
@@ -26,12 +24,12 @@ namespace Core.Reports.Services
             }
         }
 
-        public void SaveTemplate(string reportName, object template, bool IsDocX)
+        public void SaveTemplate(string reportName, string template, bool IsDocX)
         {
             using (var context = contextProvider.CreateNewContext())
             {
                 var t = context.Set<ReportTemplate>().First(x => x.Name == reportName);
-                t.Template = template as string;
+                t.Template = template;
                 t.IsDocXTemplate = IsDocX;
                 context.SaveChanges();
             }
@@ -68,6 +66,14 @@ namespace Core.Reports.Services
                 t.ReportTitle = templateInfo.Title;
                 context.SaveChanges();
                 return t.Id;
+            }
+        }
+
+        public bool CheckNameInUse(string reportName, int exceptReportId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                return context.Set<ReportTemplate>().Any(x => x.Name == reportName && x.Id != exceptReportId);
             }
         }
     }
