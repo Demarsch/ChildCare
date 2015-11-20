@@ -132,9 +132,10 @@ namespace OrganizationContractsModule.ViewModels
             {
                 if (loadingIsCompleted)
                 {
-                    int recordTypeId = (this.assignmentId.HasValue ? recordService.GetAssignmentById(this.assignmentId.Value).First().RecordTypeId :
-                                                             recordService.GetRecordById(this.recordId.Value).First().RecordTypeId);
-                    SetVisibilityControlButtons(recordTypeId);
+                    var recordType = (this.recordId.HasValue ? recordService.GetRecordById(this.recordId.Value).Select(x => x.RecordType).FirstOrDefault() :
+                                                               recordService.GetAssignmentById(this.assignmentId.Value).Select(x => x.RecordType).FirstOrDefault());
+                    if (recordType != null)
+                        SetVisibilityControlButtons(recordType.Id);
             
                     detachDocumentCommand.RaiseCanExecuteChanged();
                 }
