@@ -6,9 +6,7 @@ namespace Core.Wpf.Services
     {
         bool? ShowDialog(IDialogViewModel dialogViewModel);
 
-        void ShowError(string errorMessage);
-
-        void ShowMessage(string message);
+        void ShowError(string error);
 
         bool? AskUser(string question, bool isWarning = false);
 

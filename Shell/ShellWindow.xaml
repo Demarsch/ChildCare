@@ -7,6 +7,8 @@
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:shell="clr-namespace:Shell"
+                     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                     xmlns:views="clr-namespace:Core.Wpf.Views;assembly=Core.Wpf"
                      mc:Ignorable="d"
                      Title="Добро пожаловать"
                      Height="350"
@@ -33,7 +35,6 @@
                 <ContentControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch" />
-
                 <ContentControl Content="{Binding BusyMediator}"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch" />
@@ -42,5 +43,10 @@
                             VerticalAlignment="Stretch" />
             </Grid>
         </DockPanel>
+        <xctk:WindowContainer ModalBackgroundBrush="#33333333">
+            <views:ChildDialogWindow x:Name="childDialogWindow"
+                                     WindowStartupLocation="Center"
+                                     WindowStyle="ToolWindow"/>
+        </xctk:WindowContainer>
     </Grid>
 </fluent:RibbonWindow>

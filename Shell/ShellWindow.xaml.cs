@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.Unity;
+﻿using Core.Wpf.Views;
+using Microsoft.Practices.Unity;
 
 namespace Shell
 {

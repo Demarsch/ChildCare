@@ -95,8 +95,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\DataContextPropagationBehavior.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\MedNumberInputHelperBehavior.cs" />
+    <Compile Include="Behaviors\MouseWheelHorizontalScroll.cs" />
     <Compile Include="Behaviors\ScrollSynchronizer.cs" />
     <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
@@ -143,10 +145,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Services\Implementations\FileService.cs" />
+    <Compile Include="Services\Implementations\WindowsDialogServiceAsync.cs" />
+    <Compile Include="Services\Interfaces\IDialogServiceAsync.cs" />
     <Compile Include="Services\Interfaces\IFileService.cs" />
     <Compile Include="Services\Implementations\WindowsDialogService.cs" />
     <Compile Include="Services\Interfaces\IDialogService.cs" />
     <Compile Include="Services\Interfaces\IViewNameResolver.cs" />
+    <Compile Include="Views\ChildDialogWindow.xaml.cs">
+      <DependentUpon>ChildDialogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DialogWindow.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>DialogWindow.xaml</DependentUpon>
@@ -164,6 +171,10 @@
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ChildDialogWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DialogWindow.xaml">
       <SubType>Designer</SubType>

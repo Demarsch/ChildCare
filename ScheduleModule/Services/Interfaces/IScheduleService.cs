@@ -32,8 +32,6 @@ namespace ScheduleModule.Services
 
         void MoveAssignment(int assignmentId, DateTime newTime, int newDuration, int newRoomId);
 
-        void SaveSchedule(ICollection<ScheduleItem> newScheduleItems);
-
         IEnumerable<ScheduledAssignmentDTO> GetAssignments(int patientId);
 
         IEnumerable<ScheduledAssignmentDTO> GetActualAssignments(int patientId, DateTime date);

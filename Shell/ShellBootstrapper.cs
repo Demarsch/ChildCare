@@ -22,6 +22,7 @@ namespace Shell
         protected override async void InitializeShell()
         {
             var shellWindow = (ShellWindow)Shell;
+            Container.RegisterInstance(Container.Resolve<ShellWindow>().childDialogWindow);
             Application.Current.MainWindow = shellWindow;
             Application.Current.MainWindow.Show();
             var connectionEstablished = await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
@@ -42,6 +43,12 @@ namespace Shell
         {
             base.ConfigureContainer();
             RegisterServices();
+            RegisterViews();
+        }
+
+        private void RegisterViews()
+        {
+            Container.RegisterType<ShellWindow>(new ContainerControlledLifetimeManager());
         }
 
         protected override void InitializeModules()
@@ -57,6 +64,7 @@ namespace Shell
             Container.RegisterType<IEnvironment, DbEnvironment>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ISecurityService, DbSecurityService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IDialogService, WindowDialogService>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IDialogServiceAsync, WindowsDialogServiceAsync>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("SHELL"));
         }
 

@@ -23,11 +23,11 @@
     <fluent:RibbonGroupBox Header="Изменения">
         <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/SaveChanges-48x48.png"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png"
                        Command="{Binding SaveChangesCommand}"/>
         <fluent:Button Header="Отменить"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/Cancel-48x48.png" 
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" 
                        Command="{Binding CancelChangesCommand}"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Родственники"

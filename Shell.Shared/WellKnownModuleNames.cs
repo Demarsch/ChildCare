@@ -13,5 +13,7 @@
         public const string AdminModule = "AdminModule";
 
         public const string ScheduleModule = "ScheduleModule";
+
+        public const string ScheduleEditor = "ScheduleEditor";
     }
 }

@@ -320,31 +320,6 @@ namespace ScheduleModule.Services
             }
         }
 
-        public void SaveSchedule(ICollection<ScheduleItem> newScheduleItems)
-        {
-            using (var dataContext = contextProvider.CreateNewContext())
-            {
-                var itemsToDelete = new List<int>();
-                var itemsByRoomAndDayOfWeek = newScheduleItems.ToLookup(x => new { x.RoomId, x.DayOfWeek, x.BeginDate, x.EndDate });
-                foreach (var itemGroup in itemsByRoomAndDayOfWeek)
-                {
-                    var @group = itemGroup;
-                    itemsToDelete.AddRange(dataContext.Set<ScheduleItem>()
-                                                      .Where(
-                                                             x =>
-                                                             x.RoomId == @group.Key.RoomId && x.DayOfWeek == @group.Key.DayOfWeek && x.BeginDate == @group.Key.BeginDate &&
-                                                             (x.EndDate == @group.Key.EndDate || x.EndDate == x.BeginDate))
-                                                      .Select(x => x.Id));
-                }
-                dataContext.Set<ScheduleItem>().AddRange(newScheduleItems);
-                foreach (var itemToDelete in itemsToDelete)
-                {
-                    dataContext.Entry(new ScheduleItem { Id = itemToDelete }).State = EntityState.Deleted;
-                }
-                dataContext.SaveChanges();
-            }
-        }
-
         public IEnumerable<ScheduledAssignmentDTO> GetAssignments(int patientId)
         {
             using (var dataContext = contextProvider.CreateNewContext())

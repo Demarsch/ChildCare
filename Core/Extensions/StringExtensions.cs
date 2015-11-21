@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Core.Extensions
 {
@@ -73,6 +74,17 @@ namespace Core.Extensions
             {
                 return 0.0;
             }
+        }
+
+        public static string FirstLetterToUpper(this string source)
+        {
+            if (string.IsNullOrWhiteSpace(source) || !char.IsLetter(source[0]) || char.IsUpper(source[0]))
+            {
+                return source;
+            }
+            var result = new StringBuilder(source);
+            result[0] = char.ToUpper(result[0]);
+            return result.ToString();
         }
     }
 }
