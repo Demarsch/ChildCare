@@ -30,10 +30,7 @@ namespace OrganizationContractsModule.ViewModels
     {
         private readonly IContractService contractService;
         private readonly ILog log;
-        private readonly ICacheService cacheService;
-        private readonly IDocumentService documentService;
-        private readonly IFileService fileService;
-        private readonly IRecordService recordService;
+        private readonly ICacheService cacheService;     
         private readonly IEventAggregator eventAggregator;
         private readonly Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
@@ -45,32 +42,19 @@ namespace OrganizationContractsModule.ViewModels
         public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
         public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
         public InteractionRequest<AddContractOrganizationViewModel> AddContractOrgInteractionRequest { get; private set; }
-
-        public RecordDocumentsCollectionViewModel DocumentsViewer { get; set; }
-
-        public OrgContractsViewModel(IContractService contractService, IDocumentService documentService, ILog log, ICacheService cacheService, IFileService fileService, IRecordService recordService,
+               
+        public OrgContractsViewModel(IContractService contractService, ILog log, ICacheService cacheService,
             IEventAggregator eventAggregator, Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
         {            
             if (log == null)
             {
                 throw new ArgumentNullException("log");
-            }
-            if (documentService == null)
-            {
-                throw new ArgumentNullException("documentService");
-            }
+            }            
             if (cacheService == null)
             {
                 throw new ArgumentNullException("cacheService");
-            }
-            if (recordService == null)
-            {
-                throw new ArgumentNullException("recordService");
-            }
-            if (fileService == null)
-            {
-                throw new ArgumentNullException("fileService");
-            } 
+            }           
+           
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -82,13 +66,9 @@ namespace OrganizationContractsModule.ViewModels
             this.contractService = contractService;            
             this.log = log;
             this.cacheService = cacheService;
-            this.documentService = documentService;
-            this.fileService = fileService;
-            this.recordService = recordService; 
             this.eventAggregator = eventAggregator;
             this.addContractOrganizationViewModelFactory = addContractOrganizationViewModelFactory;
             BusyMediator = new BusyMediator();
-            DocumentsViewer = new RecordDocumentsCollectionViewModel(documentService, recordService, fileService, log);
             FailureMediator = new FailureMediator();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
@@ -167,11 +147,7 @@ namespace OrganizationContractsModule.ViewModels
                         IsContractSelected = true;
                         changeTracker.IsEnabled = false;
                         LoadContractData();
-                        changeTracker.IsEnabled = true;
-                        DocumentsViewer.LoadDocuments(null, null);
-                        AllowDocuments = DocumentsViewer.AllowDocuments;
-                        AllowDICOM = DocumentsViewer.AllowDICOM;
-                        CanAttachDICOM = DocumentsViewer.CanAttachDICOM;
+                        changeTracker.IsEnabled = true;                       
                     }
                     else
                         IsContractSelected = false;
@@ -618,33 +594,7 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand SaveContractCommand { get { return saveContractCommand; } }
         public ICommand RemoveContractCommand { get { return removeContractCommand; } }
         public ICommand AddOrganizationCommand { get { return addOrganizationCommand; } }
-
-        public ICommand AttachDocumentCommand { get { return DocumentsViewer.AttachDocumentCommand; } }
-        public ICommand DetachDocumentCommand { get { return DocumentsViewer.DetachDocumentCommand; } }
-        public ICommand AttachDICOMCommand { get { return DocumentsViewer.AttachDICOMCommand; } }
-        public ICommand DetachDICOMCommand { get { return DocumentsViewer.DetachDICOMCommand; } }
-
-        private bool allowDocuments;
-        public bool AllowDocuments
-        {
-            get { return DocumentsViewer.AllowDocuments; }
-            set { SetProperty(ref allowDocuments, value); }
-        }
-
-        private bool allowDICOM;
-        public bool AllowDICOM
-        {
-            get { return DocumentsViewer.AllowDICOM; }
-            set { SetProperty(ref allowDICOM, value); }
-        }
-
-        private bool canAttachDICOM;
-        public bool CanAttachDICOM
-        {
-            get { return DocumentsViewer.CanAttachDICOM; }
-            set { SetProperty(ref canAttachDICOM, value); }
-        }
-
+                
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)

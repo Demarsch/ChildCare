@@ -102,8 +102,8 @@ namespace PatientRecordsModule.ViewModels
             get { return isSelected; }
             set
             {
-                SetProperty(ref isSelected, value);
-                eventAggregator.GetEvent<SelectionEvent<Record>>().Publish(this.Id);
+                if (SetProperty(ref isSelected, value) && value)
+                    eventAggregator.GetEvent<SelectionEvent<Record>>().Publish(this.Id);
             }
         }
 

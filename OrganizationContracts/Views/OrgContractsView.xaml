@@ -173,13 +173,7 @@
                               SelectedValuePath="Value"
                               SelectedValue="{Binding SelectedRegistratorId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" Margin="2"/>
-                    </Grid>
-
-
-                    <views:RecordDocumentsView Grid.Row="2" 
-                           DataContext="{Binding DocumentsViewer}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-                    
-                    
+                    </Grid>                    
                 </Grid>
             </Border>
         </Grid>

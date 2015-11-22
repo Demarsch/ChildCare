@@ -1,7 +1,7 @@
 ﻿using Core.Services;
 using Core.Wpf.Services;
 using log4net;
-using OrganizationContractsModule.Services;
+using PatientRecordsModule.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace OrganizationContractsModule.ViewModels
+namespace PatientRecordsModule.ViewModels
 {
     public class RecordDocumentViewModel : BindableBase
     {
@@ -69,6 +69,13 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return documentToolTip; }
             set { SetProperty(ref documentToolTip, value); }
+        }
+
+        private string extension;
+        public string Extension
+        {
+            get { return extension; }
+            set { SetProperty(ref extension, value); }
         }
 
         private bool isSelected;

@@ -23,7 +23,8 @@ namespace OrganizationContractsModule.ViewModels
         private readonly IViewNameResolver viewNameResolver;
         private readonly OrgContractsViewModel contractsViewModel;
 
-        public OrgContractsHeaderViewModel(ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, OrgContractsViewModel contractsViewModel)
+        public OrgContractsHeaderViewModel(ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver,
+                                            OrgContractsViewModel contractsViewModel)
         {            
             if (log == null)
             {
@@ -45,6 +46,7 @@ namespace OrganizationContractsModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+
             this.contractsViewModel = contractsViewModel;
         }
 
@@ -53,51 +55,14 @@ namespace OrganizationContractsModule.ViewModels
         public ICommand RemoveContractCommand { get { return contractsViewModel.RemoveContractCommand; } }
         public ICommand AddOrganizationCommand { get { return contractsViewModel.AddOrganizationCommand; } }
 
-        public ICommand AttachDocumentCommand { get { return contractsViewModel.AttachDocumentCommand; } }
-        public ICommand DetachDocumentCommand { get { return contractsViewModel.DetachDocumentCommand; } }
-        public ICommand AttachDICOMCommand { get { return contractsViewModel.AttachDICOMCommand; } }
-        public ICommand DetachDICOMCommand { get { return contractsViewModel.DetachDICOMCommand; } }
-
-        private bool allowDocuments;
-        public bool AllowDocuments 
-        { 
-            get { return contractsViewModel.AllowDocuments; }
-            set { SetProperty(ref allowDocuments, value); }
-        }
-
-        private bool allowDICOM;
-        public bool AllowDICOM
-        {
-            get { return contractsViewModel.AllowDocuments; }
-            set { SetProperty(ref allowDICOM, value); }
-        }
-
-        private bool canAttachDICOM;
-        public bool CanAttachDICOM
-        {
-            get { return contractsViewModel.CanAttachDICOM; }
-            set { SetProperty(ref canAttachDICOM, value); }
-        }
-
-        private bool canDetachDICOM;
-        public bool CanDetachDICOM
-        {
-            get { return !contractsViewModel.CanAttachDICOM; }
-            set { SetProperty(ref canDetachDICOM, value); }
-        }
-
         public void Dispose()
         {
             
         }
-       
+
         private void ActivateOrganizationContracts()
         {
             regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<OrgContractsViewModel>());
-            AllowDocuments = contractsViewModel.AllowDocuments;
-            AllowDICOM = contractsViewModel.AllowDICOM;
-            CanAttachDICOM = contractsViewModel.CanAttachDICOM;
-            CanDetachDICOM = !contractsViewModel.CanAttachDICOM;
         }
 
         private bool isActive;

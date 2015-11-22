@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using Core.Wpf.Services;
 
-namespace OrganizationContractsModule.Services
+namespace PatientRecordsModule.Services
 {
     public class RecordService : IRecordService
     {
@@ -43,35 +43,50 @@ namespace OrganizationContractsModule.Services
             return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Id == id), context);
         }
 
-        public bool SaveRecordDocument(RecordDocument recordDocument)
+        public bool SaveRecordDocument(RecordDocument recordDocument, out string exception)
         {
-            using (var db = contextProvider.CreateNewContext())
+            using (var context = contextProvider.CreateNewContext())
             {
-                var saveDocument = recordDocument.Id == SpecialValues.NewId ? new RecordDocument() : db.Set<RecordDocument>().First(x => x.Id == recordDocument.Id);
+                var saveDocument = recordDocument.Id == SpecialValues.NewId ? new RecordDocument() : context.Set<RecordDocument>().First(x => x.Id == recordDocument.Id);
+                saveDocument.AssignmentId = recordDocument.AssignmentId;
                 saveDocument.RecordId = recordDocument.RecordId;
                 saveDocument.DocumentId = recordDocument.DocumentId;
-                db.Entry(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                context.Entry(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                 try
                 {
-                    db.SaveChanges();
+                    context.SaveChanges();
+                    exception = string.Empty;
                     return true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    exception = ex.Message;
                     return false;
                 }
             }
         }
-        
-        public void DeleteRecordDocument(int documentId)
+
+        public bool DeleteRecordDocument(int documentId, out string exception)
         {            
             var context = contextProvider.CreateNewContext();
             var recordDocument = context.Set<RecordDocument>().FirstOrDefault(x => x.DocumentId == documentId);
             if (recordDocument != null)
             {
                 context.Entry(recordDocument).State = EntityState.Deleted;
-                context.SaveChanges();
+                try
+                {
+                    context.SaveChanges();
+                    exception = string.Empty;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    exception = ex.Message;
+                    return false;
+                }
             }
+            exception = "Ошибка удаления.";
+            return false;
         }
     }
 }

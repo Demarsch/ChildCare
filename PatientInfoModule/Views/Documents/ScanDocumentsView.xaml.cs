@@ -28,7 +28,6 @@ namespace PatientInfoModule.Views
         public ScanDocumentsView()
         {
             InitializeComponent();
-            //Assembly.Load("log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a");
             Loaded += delegate
             {
                 var context = (this.DataContext as ScanDocumentsViewModel);

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace OrganizationContractsModule.Services
+namespace PatientRecordsModule.Services
 {
     public interface IRecordService
     {
@@ -13,7 +13,7 @@ namespace OrganizationContractsModule.Services
         IDisposableQueryable<Record> GetRecordById(int id);
         IDisposableQueryable<RecordType> GetRecordTypeById(int id);
 
-        bool SaveRecordDocument(RecordDocument recordDocument);
-        void DeleteRecordDocument(int documentId);
+        bool SaveRecordDocument(RecordDocument recordDocument, out string message);
+        bool DeleteRecordDocument(int documentId, out string message);
     }
 }

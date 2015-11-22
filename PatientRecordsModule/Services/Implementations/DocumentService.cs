@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using Core.Wpf.Services;
 
-namespace OrganizationContractsModule.Services
+namespace PatientRecordsModule.Services
 {
     public class DocumentService : IDocumentService
     {
@@ -56,11 +56,13 @@ namespace OrganizationContractsModule.Services
             return new DisposableQueryable<Document>(context.Set<Document>().Where(x => x.Id == documentId), context);
         }
 
-        public IDisposableQueryable<RecordDocument> GetRecordDocuments(int? recordId, int? assignmentId)
+        public IDisposableQueryable<RecordDocument> GetRecordDocuments(int recordId, int assignmentId)
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<RecordDocument>(context.Set<RecordDocument>()
-                   .Where(x => recordId.HasValue ? (x.RecordId == recordId && !x.AssignmentId.HasValue) : (assignmentId.HasValue ? (x.AssignmentId == assignmentId && !x.RecordId.HasValue) : false)), context);
+                   .Where(x => (recordId != 0 && recordId != -1) ? 
+                              (x.RecordId == recordId && !x.AssignmentId.HasValue) :
+                              ((assignmentId != 0 && assignmentId != -1) ? (x.AssignmentId == assignmentId && !x.RecordId.HasValue) : false)), context);
         }
 
         public IDisposableQueryable<Document> GetDocumentsByRecordId(int recordId)

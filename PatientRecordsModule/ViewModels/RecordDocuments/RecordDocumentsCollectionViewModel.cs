@@ -1,6 +1,6 @@
 ﻿using Core.Wpf.Mvvm;
 using log4net;
-using OrganizationContractsModule.Services;
+using PatientRecordsModule.Services;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -21,8 +21,10 @@ using Core.Services;
 using Core.Wpf.Services;
 using Prism.Interactivity.InteractionRequest;
 using System.Collections.Specialized;
+using System.Windows;
+using Core.Wpf.Misc;
 
-namespace OrganizationContractsModule.ViewModels
+namespace PatientRecordsModule.ViewModels
 {
     public class RecordDocumentsCollectionViewModel : BindableBase, IDisposable
     {
@@ -32,8 +34,9 @@ namespace OrganizationContractsModule.ViewModels
         private readonly ILog logService;
         private CancellationTokenSource currentLoadingToken;
         public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
-        private int? recordId;
-        private int? assignmentId;
+        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
+        private int recordId;
+        private int assignmentId;
 
         public RecordDocumentsCollectionViewModel(IDocumentService documentService, IRecordService recordService, IFileService fileService, ILog logService)
         {
@@ -64,22 +67,37 @@ namespace OrganizationContractsModule.ViewModels
             detachDICOMCommand = new DelegateCommand(DetachDICOM);
 
             ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
+            NotificationInteractionRequest = new InteractionRequest<Notification>();
+
+            RecordDocuments = new ObservableCollectionEx<RecordDocumentViewModel>();
+            RecordDocuments.CollectionChanged += RecordDocuments_CollectionChanged;
         }
 
         void RecordDocuments_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {            
-            HasAttachments = recordDocuments.Any();
-            if (HasAttachments)
+        {                        
+            HasDocumentsAttachments = recordDocuments.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
+            HasDICOMAttachments = recordDocuments.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
+            if (hasDocumentsAttachments || hasDocumentsAttachments)
                 recordDocuments.First().IsSelected = true;
             detachDocumentCommand.RaiseCanExecuteChanged();
         }
-        
-        internal async void LoadDocuments(int? assignmentId, int? recordId)
+
+        /// <summary>
+        /// Load record attachments
+        /// </summary>
+        /// <param name="assignmentId">0 - if there is no </param>
+        /// <param name="recordId">0 - if there is no </param>
+        internal async Task LoadDocuments(int assignmentId, int recordId)
         {
-            if (!assignmentId.HasValue && !recordId.HasValue) return;
+            RecordDocuments.Clear();
+            if (SpecialValues.IsNewOrNonExisting(assignmentId) && SpecialValues.IsNewOrNonExisting(recordId))
+            {                
+                SetVisibilityControlButtons(SpecialValues.NonExistingId);
+                return;
+            }
             this.assignmentId = assignmentId;
             this.recordId = recordId;
-
+            
             if (currentLoadingToken != null)
             {
                 currentLoadingToken.Cancel();
@@ -95,29 +113,29 @@ namespace OrganizationContractsModule.ViewModels
                 recordDocumentsQuery = documentService.GetRecordDocuments(this.recordId, this.assignmentId);
 
                 var result = await Task.Factory.StartNew(() =>
-                {
-                    return recordDocumentsQuery.Select(x => new
                     {
-                        Id = x.DocumentId,
-                        Name = x.Document.FileName,
-                        DisplayName = x.Document.DisplayName,
-                        FileData = x.Document.FileData,
-                        Extension = x.Document.Extension
-                    }).ToArray();
-                }, token);
-                               
-                RecordDocuments = new ObservableCollectionEx<RecordDocumentViewModel>(
-                result.Select(x => new RecordDocumentViewModel(fileService, documentService)
-                {
-                    DocumentId = x.Id,
-                    DocumentName = x.Name,
-                    DocumentThumbnail = documentService.GetDocumentThumbnail(x.Id),
-                    DocumentToolTip = x.DisplayName
-                }).ToArray());
-
-                RecordDocuments.CollectionChanged += RecordDocuments_CollectionChanged;
+                        return recordDocumentsQuery.Select(x => new
+                        {
+                            Id = x.DocumentId,
+                            Name = x.Document.FileName,
+                            DisplayName = x.Document.DisplayName,
+                            FileData = x.Document.FileData,
+                            Extension = x.Document.Extension
+                        }).ToArray();
+                    }, token);
+                
+                RecordDocuments.AddRange(
+                    result.Select(x => new RecordDocumentViewModel(fileService, documentService)
+                    {
+                        DocumentId = x.Id,
+                        DocumentName = x.Name,
+                        DocumentThumbnail = documentService.GetDocumentThumbnail(x.Id),
+                        DocumentToolTip = x.DisplayName,
+                        Extension = x.Extension
+                    }).ToArray());
 
                 loadingIsCompleted = true;
+                await Task.Run(() => { Application.Current.Dispatcher.Invoke(() => detachDocumentCommand.RaiseCanExecuteChanged()); });
             }
             catch (OperationCanceledException)
             {
@@ -132,28 +150,28 @@ namespace OrganizationContractsModule.ViewModels
             {
                 if (loadingIsCompleted)
                 {
-                    var recordType = (this.recordId.HasValue ? recordService.GetRecordById(this.recordId.Value).Select(x => x.RecordType).FirstOrDefault() :
-                                                               recordService.GetAssignmentById(this.assignmentId.Value).Select(x => x.RecordType).FirstOrDefault());
+                    var recordType = (!SpecialValues.IsNewOrNonExisting(this.recordId) ?
+                                                    recordService.GetRecordById(this.recordId).Select(x => x.RecordType).FirstOrDefault() :
+                                                    recordService.GetAssignmentById(this.assignmentId).Select(x => x.RecordType).FirstOrDefault());
                     if (recordType != null)
-                        SetVisibilityControlButtons(recordType.Id);
-            
-                    detachDocumentCommand.RaiseCanExecuteChanged();
+                        SetVisibilityControlButtons(recordType.Id); 
                 }
                 if (recordDocumentsQuery != null)
                     recordDocumentsQuery.Dispose();
-            }
+            }            
         }
 
         internal async void SetRecordToDocuments(int toRecordId)
         {
-            if (!this.assignmentId.HasValue && !this.recordId.HasValue) return;
+            if (SpecialValues.IsNewOrNonExisting(assignmentId) && SpecialValues.IsNewOrNonExisting(recordId)) return;
             var recordDocumentsQuery = documentService.GetRecordDocuments(this.recordId, this.assignmentId);
             await recordDocumentsQuery.ForEachAsync(x => { x.AssignmentId = (int?)null; x.RecordId = toRecordId; });
             bool isOK = await documentService.SetRecordToDocuments(recordDocumentsQuery);
         }
 
         private void SetVisibilityControlButtons(int recordTypeId)
-        {
+        {            
+            AllowDICOM = AllowDocuments = CanAttachDICOM = CanDetachDICOM = false;       
             var recordType = recordService.GetRecordTypeById(recordTypeId).FirstOrDefault();
             if (recordType != null && recordType.RecordTypeEditors.Any())
             {
@@ -161,8 +179,11 @@ namespace OrganizationContractsModule.ViewModels
                 AllowDICOM = editor.HasDICOM;
                 AllowDocuments = editor.HasDocuments;
                 if (allowDICOM)
-                    CanAttachDICOM = hasAttachments;
-            }            
+                {
+                    CanAttachDICOM = !hasDICOMAttachments;
+                    CanDetachDICOM = hasDICOMAttachments;
+                }
+            }        
         }    
 
         private async void AttachDocument()
@@ -187,19 +208,24 @@ namespace OrganizationContractsModule.ViewModels
                     if (documentId != SpecialValues.NewId)
                     {
                         RecordDocument recordDocument = new RecordDocument();
-                        recordDocument.RecordId = this.recordId;
+                        recordDocument.AssignmentId = SpecialValues.IsNewOrNonExisting(this.assignmentId) ? (int?)null : this.assignmentId;
+                        recordDocument.RecordId = SpecialValues.IsNewOrNonExisting(this.recordId) ? (int?)null : this.recordId;
                         recordDocument.DocumentId = documentId;
 
-                        if (recordService.SaveRecordDocument(recordDocument))
+                        string exception = string.Empty;
+                        if (recordService.SaveRecordDocument(recordDocument, out exception))
                         {
                             RecordDocuments.Add(new RecordDocumentViewModel(fileService, documentService)
                             {
                                 DocumentId = documentId,
                                 DocumentName = document.FileName,
                                 DocumentThumbnail = documentService.GetDocumentThumbnail(documentId),
-                                DocumentToolTip = document.DisplayName
+                                DocumentToolTip = document.DisplayName,
+                                Extension = document.Extension
                             });                            
                         }
+                        else
+                            NotificationInteractionRequest.Raise(new Notification() { Title = "Внимание", Content = exception });
                     }                        
                 }
             }
@@ -207,9 +233,9 @@ namespace OrganizationContractsModule.ViewModels
 
         private bool CanDetachDocuments()
         {
-            if (recordDocuments != null && !recordDocuments.Any(x => x.IsSelected)) 
+            if (recordDocuments != null && !recordDocuments.Any(x => x.IsSelected && !x.Extension.Equals(FileServiceFilters.DICOMExtention))) 
                 return false;
-            return hasAttachments;
+            return hasDocumentsAttachments;
         }
 
         private void DetachDocument()
@@ -228,8 +254,11 @@ namespace OrganizationContractsModule.ViewModels
                 var selectedFile = recordDocuments.FirstOrDefault(x => x.IsSelected);
                 if (selectedFile != null)
                 {
-                    recordService.DeleteRecordDocument(selectedFile.DocumentId);
-                    RecordDocuments.Remove(selectedFile);
+                    string exception = string.Empty;
+                    if (recordService.DeleteRecordDocument(selectedFile.DocumentId, out exception))
+                        RecordDocuments.Remove(selectedFile);
+                    else
+                        NotificationInteractionRequest.Raise(new Notification() { Title = "Внимание", Content = exception });
                 }
             }
         }
@@ -265,18 +294,49 @@ namespace OrganizationContractsModule.ViewModels
             set { SetProperty(ref allowDICOM, value); }
         }
 
+        private bool canDetachDICOM;
+        public bool CanDetachDICOM
+        {
+            get { return canDetachDICOM; }
+            set { SetProperty(ref canDetachDICOM, value); }
+        }
+
         private bool canAttachDICOM;
         public bool CanAttachDICOM
         {
             get { return canAttachDICOM; }
             set { SetProperty(ref canAttachDICOM, value); }
         }
-
-        private bool hasAttachments;
-        public bool HasAttachments
+        
+        private bool hasDocumentsAttachments;
+        public bool HasDocumentsAttachments
         {
-            get { return hasAttachments; }
-            set { SetProperty(ref hasAttachments, value); }
+            get { return hasDocumentsAttachments; }
+            set 
+            { 
+                SetProperty(ref hasDocumentsAttachments, value);
+                HasAnyAttachments = value || HasDICOMAttachments;
+                OnPropertyChanged(() => HasAnyAttachments);
+            }
+        }
+
+        private bool hasDICOMAttachments;
+        public bool HasDICOMAttachments
+        {
+            get { return hasDICOMAttachments; }
+            set 
+            {
+                SetProperty(ref hasDICOMAttachments, value);
+                HasAnyAttachments = value || HasDocumentsAttachments;
+                OnPropertyChanged(() => HasAnyAttachments);
+            }
+        }
+
+        private bool hasAnyAttachments;
+        public bool HasAnyAttachments
+        {
+            get { return hasAnyAttachments; }
+            set { SetProperty(ref hasAnyAttachments, value); }
         }
 
         private ObservableCollectionEx<RecordDocumentViewModel> recordDocuments;
@@ -287,7 +347,8 @@ namespace OrganizationContractsModule.ViewModels
             {
                 if (SetProperty(ref recordDocuments, value))
                 {
-                    HasAttachments = value.Any();
+                    HasDocumentsAttachments = value.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
+                    HasDICOMAttachments = value.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
                     if (value.Any())
                         recordDocuments.First().IsSelected = true;
                 }

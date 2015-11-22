@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="OrganizationContractsModule.Views.RecordDocumentsView"
+﻿<UserControl x:Class="PatientRecordsModule.Views.RecordDocumentsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels"
+             xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              xmlns:prism="http://www.codeplex.com/prism"
              xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
@@ -14,7 +14,7 @@
              d:DataContext="{d:DesignInstance viewModels:RecordDocumentsCollectionViewModel}">
     
     <UserControl.Resources>
-        <DataTemplate x:Key="ConfirmationWindowTemplate">
+        <DataTemplate x:Key="DialogWindowTemplate">
             <Grid MinWidth="200" MinHeight="100">
                 <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
             </Grid>
@@ -96,19 +96,23 @@
     <i:Interaction.Triggers>
         <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction IsModal="True"
-                                     ContentTemplate="{StaticResource ConfirmationWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>        
+                                     ContentTemplate="{StaticResource DialogWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction IsModal="True"
+                                     ContentTemplate="{StaticResource DialogWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
     </i:Interaction.Triggers>
     
-    <DockPanel LastChildFill="True">
+    <DockPanel LastChildFill="True">        
         <ListBox x:Name="docs" 
                  Margin="0" Background="{x:Null}" 
                  BorderThickness="1" BorderBrush="Black"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                 Visibility="{Binding HasAttachments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                 Visibility="{Binding HasAnyAttachments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                  ItemsPanel="{DynamicResource docsTemplate}"                 
                  ItemContainerStyle="{DynamicResource ListBoxItemStyle}"
                  ItemsSource="{Binding RecordDocuments}">            
-        </ListBox>
+        </ListBox>        
     </DockPanel>
 </UserControl>

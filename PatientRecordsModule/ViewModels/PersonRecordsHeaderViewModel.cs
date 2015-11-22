@@ -56,7 +56,9 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Constructors
-        public PersonRecordsHeaderViewModel(PersonRecordListViewModel personRecordListViewModel, PersonRecordEditorViewModel personRecordEditorViewModel, IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
+        public PersonRecordsHeaderViewModel(PersonRecordListViewModel personRecordListViewModel, PersonRecordEditorViewModel personRecordEditorViewModel, 
+            IPatientRecordsService patientRecordsService, ILog logSevice, 
+            IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
         {
             if (patientRecordsService == null)
             {
@@ -315,6 +317,15 @@ namespace PatientRecordsModule.ViewModels
                 OnPropertyChanged(() => IsViewModeActive);
             if (e.PropertyName == "IsEditModeInCurrentProtocolEditor")
                 OnPropertyChanged(() => IsEditModeActive);
+
+            if (e.PropertyName == "AllowDocuments")
+                OnPropertyChanged(() => AllowDocuments);
+            if (e.PropertyName == "AllowDICOM")
+                OnPropertyChanged(() => AllowDICOM);
+            if (e.PropertyName == "CanAttachDICOM")
+                OnPropertyChanged(() => CanAttachDICOM);
+            if (e.PropertyName == "CanDetachDICOM")
+                OnPropertyChanged(() => CanDetachDICOM);
         }
 
         #endregion
@@ -450,6 +461,34 @@ namespace PatientRecordsModule.ViewModels
             set { SetProperty(ref visitTemplates, value); }
         }
 
+        private bool allowDocuments;
+        public bool AllowDocuments
+        {
+            get { return personRecordEditorViewModel.AllowDocuments; }
+            set { SetProperty(ref allowDocuments, value); }
+        }
+
+        private bool allowDICOM;
+        public bool AllowDICOM
+        {
+            get { return personRecordEditorViewModel.AllowDICOM; }
+            set { SetProperty(ref allowDICOM, value); }
+        }
+
+        private bool canAttachDICOM;
+        public bool CanAttachDICOM
+        {
+            get { return personRecordEditorViewModel.CanAttachDICOM; }
+            set { SetProperty(ref canAttachDICOM, value); }
+        }
+
+        private bool canDetachDICOM;
+        public bool CanDetachDICOM
+        {
+            get { return personRecordEditorViewModel.CanDetachDICOM; }
+            set { SetProperty(ref canDetachDICOM, value); }
+        }
+
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; set; }
@@ -475,6 +514,12 @@ namespace PatientRecordsModule.ViewModels
         public ICommand ShowInEditModeCommand { get { return personRecordEditorViewModel.ShowInEditModeCommand; } }
 
         public ICommand ShowInViewModeCommand { get { return personRecordEditorViewModel.ShowInViewModeCommand; } }
+
+        public ICommand AttachDocumentCommand { get { return personRecordEditorViewModel.AttachDocumentCommand; } }
+        public ICommand DetachDocumentCommand { get { return personRecordEditorViewModel.DetachDocumentCommand; } }
+        public ICommand AttachDICOMCommand { get { return personRecordEditorViewModel.AttachDICOMCommand; } }
+        public ICommand DetachDICOMCommand { get { return personRecordEditorViewModel.DetachDICOMCommand; } }
+               
         #endregion
     }
 }

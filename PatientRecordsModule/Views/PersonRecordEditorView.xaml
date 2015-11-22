@@ -5,11 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
+             xmlns:views="clr-namespace:PatientRecordsModule.Views"
              mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
@@ -62,7 +65,10 @@
             <Button Grid.Row="2" Grid.Column="4" Content="Текущее время" BorderThickness="0" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{Binding SetCurrentDateTimeBeginCommand}"/>
         </Grid>
         <ContentControl Grid.Row="1" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-        <Grid Grid.Row="2" Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+
+        <views:RecordDocumentsView Grid.Row="2" DataContext="{Binding DocumentsViewer}" HorizontalAlignment="Stretch"/>
+
+        <Grid Grid.Row="3" Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>

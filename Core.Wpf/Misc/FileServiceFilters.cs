@@ -12,5 +12,6 @@ namespace Core.Wpf.Misc
         
         public const string DocX = "Документ Microsoft Word (*.docx)|*.docx";
         public const string DocXExtention = "docx";
+        public const string DICOMExtention = "DICOM";
     }
 }

@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Data.Entity;
 using Core.Extensions;
+using Core.Wpf.Services;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -27,22 +28,23 @@ namespace PatientRecordsModule.ViewModels
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
-
         private readonly ILog logService;
 
         private readonly IEventAggregator eventAggregator;
 
         private readonly CommandWrapper reloadRecordBrigadeCommandWrapper;
         private CancellationTokenSource currentOperationToken;
+       
         #endregion
 
         #region Constructors
-        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, ILog logSevice, IEventAggregator eventAggregator)
+        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService,
+                                           ILog logSevice, IEventAggregator eventAggregator, RecordDocumentsCollectionViewModel documentsViewer)
         {
             if (patientRecordsService == null)
             {
                 throw new ArgumentNullException("patientRecordsService");
-            }
+            }           
             if (logSevice == null)
             {
                 throw new ArgumentNullException("log");
@@ -55,22 +57,26 @@ namespace PatientRecordsModule.ViewModels
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
 
+            this.documentsViewer = documentsViewer;
+            this.documentsViewer.PropertyChanged += documentsViewer_PropertyChanged;
+
             reloadRecordBrigadeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadBrigadeAsync(RecordId)) };
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             Brigade = new ObservableCollectionEx<BrigadeDTO>();
-
+            
             printProtocolCommand = new DelegateCommand(PrintProtocol);
             saveProtocolCommand = new DelegateCommand(SaveProtocol);
             showInEditModeCommand = new DelegateCommand(ShowProtocolInEditMode);
             showInViewModeCommand = new DelegateCommand(ShowProtocolInViewMode);
             SubscribeToEvents();
         }
+
         #endregion
 
         #region Properties
-
+        
         public ObservableCollectionEx<BrigadeDTO> Brigade { get; set; }
 
         private int visitId;
@@ -90,8 +96,10 @@ namespace PatientRecordsModule.ViewModels
             get { return assignmentId; }
             set
             {
-                SetProperty(ref assignmentId, value);
-                ProtocolEditor = new DefaultProtocolViewModel();
+                if (SetProperty(ref assignmentId, value))
+                {
+                    ProtocolEditor = new DefaultProtocolViewModel();
+                }
             }
         }
 
@@ -101,10 +109,12 @@ namespace PatientRecordsModule.ViewModels
             get { return recordId; }
             set
             {
-                SetProperty(ref recordId, value);
-                ProtocolEditor = new DefaultProtocolViewModel();
+                if (SetProperty(ref recordId, value))
+                {
+                    ProtocolEditor = new DefaultProtocolViewModel();            
+                }
             }
-        }
+        }               
 
         private IRecordTypeProtocol protocolEditor;
         public IRecordTypeProtocol ProtocolEditor
@@ -120,7 +130,7 @@ namespace PatientRecordsModule.ViewModels
                 if (RecordId > 0)
                     LoadBrigadeAsync(RecordId);
                 OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
-                OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+                OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);   
             }
         }
 
@@ -143,6 +153,44 @@ namespace PatientRecordsModule.ViewModels
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
+
+        #region Properties RecordDocuments
+
+        private RecordDocumentsCollectionViewModel documentsViewer;
+        public RecordDocumentsCollectionViewModel DocumentsViewer
+        {
+            get { return documentsViewer; }
+            set { SetProperty(ref documentsViewer, value); }
+        }
+
+        private bool allowDocuments;
+        public bool AllowDocuments
+        {
+            get { return DocumentsViewer.AllowDocuments; }
+            set { SetProperty(ref allowDocuments, value); }
+        }
+
+        private bool allowDICOM;
+        public bool AllowDICOM
+        {
+            get { return DocumentsViewer.AllowDICOM; }
+            set { SetProperty(ref allowDICOM, value); }
+        }
+
+        private bool canAttachDICOM;
+        public bool CanAttachDICOM
+        {
+            get { return DocumentsViewer.CanAttachDICOM; }
+            set { SetProperty(ref canAttachDICOM, value); }
+        }
+
+        private bool canDetachDICOM;
+        public bool CanDetachDICOM
+        {
+            get { return DocumentsViewer.CanDetachDICOM; }
+            set { SetProperty(ref canDetachDICOM, value); }
+        }
+        #endregion
 
         #endregion
 
@@ -215,7 +263,7 @@ namespace PatientRecordsModule.ViewModels
                 }
             }
         }
-
+                
         public void Dispose()
         {
             UnsubscriveFromEvents();
@@ -243,11 +291,14 @@ namespace PatientRecordsModule.ViewModels
             SetRVAIds(visitId, 0, 0);
         }
 
-        private void SetRVAIds(int visitId, int assignmentId, int recordId)
+        private async void SetRVAIds(int visitId, int assignmentId, int recordId)
         {
             VisitId = visitId;
             AssignmentId = assignmentId;
             RecordId = recordId;
+
+            await DocumentsViewer.LoadDocuments(assignmentId, recordId);
+                        
         }
 
         private void UnsubscriveFromEvents()
@@ -290,9 +341,12 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+
+
         #endregion
 
         #region Commands
+
         private DelegateCommand printProtocolCommand;
         public ICommand PrintProtocolCommand
         {
@@ -320,6 +374,32 @@ namespace PatientRecordsModule.ViewModels
             get { return showInViewModeCommand; }
 
         }
+
+        #region RecordDocuments Commands
+
+        public ICommand AttachDocumentCommand { get { return DocumentsViewer.AttachDocumentCommand; } }
+        public ICommand DetachDocumentCommand { get { return DocumentsViewer.DetachDocumentCommand; } }
+        public ICommand AttachDICOMCommand { get { return DocumentsViewer.AttachDICOMCommand; } }
+        public ICommand DetachDICOMCommand { get { return DocumentsViewer.DetachDICOMCommand; } }               
+
+        #endregion
+
+        #endregion
+
+        #region Events
+
+        void documentsViewer_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "AllowDocuments")
+                OnPropertyChanged(() => AllowDocuments);
+            if (e.PropertyName == "AllowDICOM")
+                OnPropertyChanged(() => AllowDICOM);
+            if (e.PropertyName == "CanAttachDICOM")
+                OnPropertyChanged(() => CanAttachDICOM);
+            if (e.PropertyName == "CanDetachDICOM")
+                OnPropertyChanged(() => CanDetachDICOM);
+        }
+
         #endregion
     }
 }

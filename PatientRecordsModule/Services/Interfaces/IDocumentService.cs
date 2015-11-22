@@ -5,12 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace OrganizationContractsModule.Services
+namespace PatientRecordsModule.Services
 {
     public interface IDocumentService
     {
         IDisposableQueryable<Document> GetDocumentsByRecordId(int recordId);
-        IDisposableQueryable<RecordDocument> GetRecordDocuments(int? recordId, int? assignmentId);
+        IDisposableQueryable<RecordDocument> GetRecordDocuments(int recordId, int assignmentId);
         IDisposableQueryable<Document> GetDocumentById(int documentId);
         string GetDocumentFile(int documentId);
         BitmapImage GetDocumentThumbnail(int documentId);

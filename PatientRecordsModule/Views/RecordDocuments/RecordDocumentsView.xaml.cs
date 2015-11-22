@@ -1,7 +1,7 @@
 ﻿using Microsoft.Practices.Unity;
-using OrganizationContractsModule.ViewModels;
+using PatientRecordsModule.ViewModels;
 
-namespace OrganizationContractsModule.Views
+namespace PatientRecordsModule.Views
 {
     /// <summary>
     /// Interaction logic for RecordDocsView.xaml
