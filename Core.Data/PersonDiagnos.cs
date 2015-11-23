@@ -12,21 +12,23 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class MKB
+    public partial class PersonDiagnos
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public MKB()
+        public PersonDiagnos()
         {
-            this.MKB1 = new HashSet<MKB>();
+            this.Diagnoses = new HashSet<Diagnosis>();
         }
     
         public int Id { get; set; }
-        public Nullable<int> ParentId { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
+        public int PersonId { get; set; }
+        public int RecordId { get; set; }
+        public int DiagnosTypeId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MKB> MKB1 { get; set; }
-        public virtual MKB MKB2 { get; set; }
+        public virtual ICollection<Diagnosis> Diagnoses { get; set; }
+        public virtual DiagnosType DiagnosType { get; set; }
+        public virtual Person Person { get; set; }
+        public virtual Record Record { get; set; }
     }
 }

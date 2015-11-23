@@ -158,6 +158,16 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Complications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="DisplayName" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Options" Type="varchar" MaxLength="500" Nullable="false" />
+        </EntityType>
         <EntityType Name="Countries">
           <Key>
             <PropertyRef Name="Id" />
@@ -191,6 +201,45 @@
           <Property Name="ShortName" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Diagnoses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonDiagnosId" Type="int" Nullable="false" />
+          <Property Name="DiagnosLevelId" Type="int" Nullable="false" />
+          <Property Name="DiagnosText" Type="varchar" MaxLength="7000" Nullable="false" />
+          <Property Name="MKB" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ComplicationId" Type="int" />
+          <Property Name="IsMainDiagnos" Type="bit" Nullable="false" />
+          <Property Name="Options" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="InDateTime" Type="datetime" Nullable="false" />
+          <Property Name="InPersonId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DiagnosLevels">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Priority" Type="int" Nullable="false" />
+          <Property Name="IsActual" Type="bit" Nullable="false" />
+          <Property Name="HasMKB" Type="bit" Nullable="false" />
+          <Property Name="IsComplication" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DiagnosTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Priority" Type="int" Nullable="false" />
+          <Property Name="IsActual" Type="bit" Nullable="false" />
+          <Property Name="AllowCopy" Type="bit" Nullable="false" />
+          <Property Name="HasComplications" Type="bit" Nullable="false" />
+          <Property Name="NeedMKB" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="DisabilityTypes">
           <Key>
@@ -317,15 +366,14 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="MKB">
           <Key>
-            <PropertyRef Name="DS" />
-            <PropertyRef Name="NAME_DS" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="DS" Type="nvarchar" MaxLength="7" Nullable="false" />
-          <Property Name="NAME_DS" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
+          <Property Name="Code" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="Okatos">
           <Key>
@@ -399,6 +447,15 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="Building" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Apartment" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PersonDiagnoses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="RecordId" Type="int" Nullable="false" />
+          <Property Name="DiagnosTypeId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PersonDisabilities">
           <Key>
@@ -610,15 +667,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <Property Name="AssignmentId" Type="int" />
           <Property Name="RecordId" Type="int" />
           <Property Name="DocumentId" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="RecordMembers">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RecordId" Type="int" Nullable="false" />
-          <Property Name="PersonStaffId" Type="int" Nullable="false" />
-          <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="RecordPeriods">
           <Key>
@@ -1271,6 +1319,18 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Complications_Complications">
+          <End Role="Complications" Type="Self.Complications" Multiplicity="0..1" />
+          <End Role="Complications1" Type="Self.Complications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complications">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Complications1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Decisions_Decisions">
           <End Role="Decisions" Type="Self.Decisions" Multiplicity="0..1" />
           <End Role="Decisions1" Type="Self.Decisions" Multiplicity="*" />
@@ -1280,6 +1340,56 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="Decisions1">
               <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_Complications">
+          <End Role="Complications" Type="Self.Complications" Multiplicity="0..1" />
+          <End Role="Diagnoses" Type="Self.Diagnoses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complications">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnoses">
+              <PropertyRef Name="ComplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_DiagnosLevels">
+          <End Role="DiagnosLevels" Type="Self.DiagnosLevels" Multiplicity="1" />
+          <End Role="Diagnoses" Type="Self.Diagnoses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DiagnosLevels">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnoses">
+              <PropertyRef Name="DiagnosLevelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_PersonDiagnoses">
+          <End Role="PersonDiagnoses" Type="Self.PersonDiagnoses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Diagnoses" Type="Self.Diagnoses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonDiagnoses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnoses">
+              <PropertyRef Name="PersonDiagnosId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="Diagnoses" Type="Self.Diagnoses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnoses">
+              <PropertyRef Name="InPersonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1328,6 +1438,18 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="MedicalHelpTypes">
               <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKB_MKB">
+          <End Role="MKB" Type="Self.MKB" Multiplicity="0..1" />
+          <End Role="MKB1" Type="Self.MKB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKB">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKB1">
+              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1400,6 +1522,42 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Principal>
             <Dependent Role="PersonAddresses">
               <PropertyRef Name="OkatoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDiagnoses_DiagnosTypes">
+          <End Role="DiagnosTypes" Type="Self.DiagnosTypes" Multiplicity="1" />
+          <End Role="PersonDiagnoses" Type="Self.PersonDiagnoses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DiagnosTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDiagnoses">
+              <PropertyRef Name="DiagnosTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDiagnoses_Persons">
+          <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
+          <End Role="PersonDiagnoses" Type="Self.PersonDiagnoses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Persons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDiagnoses">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDiagnoses_Records">
+          <End Role="Records" Type="Self.Records" Multiplicity="1" />
+          <End Role="PersonDiagnoses" Type="Self.PersonDiagnoses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Records">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDiagnoses">
+              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1937,30 +2095,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordMembers_PersonStaffs">
-          <End Role="PersonStaffs" Type="Self.PersonStaffs" Multiplicity="1" />
-          <End Role="RecordMembers" Type="Self.RecordMembers" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PersonStaffs">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordMembers">
-              <PropertyRef Name="PersonStaffId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordMembers_Records">
-          <End Role="Records" Type="Self.Records" Multiplicity="1" />
-          <End Role="RecordMembers" Type="Self.RecordMembers" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Records">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordMembers">
-              <PropertyRef Name="RecordId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RecordPeriods_ExecutionPlaces">
           <End Role="ExecutionPlaces" Type="Self.ExecutionPlaces" Multiplicity="1" />
           <End Role="RecordPeriods" Type="Self.RecordPeriods" Multiplicity="*" />
@@ -2447,9 +2581,13 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="CommissionQuestions" EntityType="Self.CommissionQuestions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionSources" EntityType="Self.CommissionSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionTypes" EntityType="Self.CommissionTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Complications" EntityType="Self.Complications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Countries" EntityType="Self.Countries" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Decisions" EntityType="Self.Decisions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Diagnoses" EntityType="Self.Diagnoses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DiagnosLevels" EntityType="Self.DiagnosLevels" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DiagnosTypes" EntityType="Self.DiagnosTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DisabilityTypes" EntityType="Self.DisabilityTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Documents" EntityType="Self.Documents" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Educations" EntityType="Self.Educations" Schema="dbo" store:Type="Tables" />
@@ -2462,6 +2600,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="InsuranceDocumentTypes" EntityType="Self.InsuranceDocumentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MaritalStatuses" EntityType="Self.MaritalStatuses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MedicalHelpTypes" EntityType="Self.MedicalHelpTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MKB" EntityType="Self.MKB" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Okatos" EntityType="Self.Okatos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orgs" EntityType="Self.Orgs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OuterDocumentTypes" EntityType="Self.OuterDocumentTypes" Schema="dbo" store:Type="Tables" />
@@ -2469,6 +2608,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="PermissionLinks" EntityType="Self.PermissionLinks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonAddresses" EntityType="Self.PersonAddresses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonDiagnoses" EntityType="Self.PersonDiagnoses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonDisabilities" EntityType="Self.PersonDisabilities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonEducations" EntityType="Self.PersonEducations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonHealthGroups" EntityType="Self.PersonHealthGroups" Schema="dbo" store:Type="Tables" />
@@ -2486,7 +2626,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="RecordContractLimits" EntityType="Self.RecordContractLimits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContracts" EntityType="Self.RecordContracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordDocuments" EntityType="Self.RecordDocuments" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="RecordMembers" EntityType="Self.RecordMembers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordPeriods" EntityType="Self.RecordPeriods" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypeCosts" EntityType="Self.RecordTypeCosts" Schema="dbo" store:Type="Tables" />
@@ -2509,12 +2648,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="VisitResults" EntityType="Self.VisitResults" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Visits" EntityType="Self.Visits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitTemplates" EntityType="Self.VisitTemplates" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="MKB" EntityType="Self.MKB" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [MKB].[DS] AS [DS], 
-    [MKB].[NAME_DS] AS [NAME_DS]
-    FROM [dbo].[MKB] AS [MKB]</DefiningQuery>
-          </EntitySet>
           <AssociationSet Name="FK_Addresses_Persons" Association="Self.FK_Addresses_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
@@ -2639,9 +2772,29 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             <End Role="CommissionTypes" EntitySet="CommissionTypes" />
             <End Role="CommissionSources" EntitySet="CommissionSources" />
           </AssociationSet>
+          <AssociationSet Name="FK_Complications_Complications" Association="Self.FK_Complications_Complications">
+            <End Role="Complications" EntitySet="Complications" />
+            <End Role="Complications1" EntitySet="Complications" />
+          </AssociationSet>
           <AssociationSet Name="FK_Decisions_Decisions" Association="Self.FK_Decisions_Decisions">
             <End Role="Decisions" EntitySet="Decisions" />
             <End Role="Decisions1" EntitySet="Decisions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_Complications" Association="Self.FK_Diagnoses_Complications">
+            <End Role="Complications" EntitySet="Complications" />
+            <End Role="Diagnoses" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_DiagnosLevels" Association="Self.FK_Diagnoses_DiagnosLevels">
+            <End Role="DiagnosLevels" EntitySet="DiagnosLevels" />
+            <End Role="Diagnoses" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_PersonDiagnoses" Association="Self.FK_Diagnoses_PersonDiagnoses">
+            <End Role="PersonDiagnoses" EntitySet="PersonDiagnoses" />
+            <End Role="Diagnoses" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_Persons" Association="Self.FK_Diagnoses_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="Diagnoses" EntitySet="Diagnoses" />
           </AssociationSet>
           <AssociationSet Name="FK_InsuranceDocuments_InsuranceCompanies" Association="Self.FK_InsuranceDocuments_InsuranceCompanies">
             <End Role="InsuranceCompanies" EntitySet="InsuranceCompanies" />
@@ -2658,6 +2811,10 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_MedicalHelpTypes_RecordContracts" Association="Self.FK_MedicalHelpTypes_RecordContracts">
             <End Role="RecordContracts" EntitySet="RecordContracts" />
             <End Role="MedicalHelpTypes" EntitySet="MedicalHelpTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKB_MKB" Association="Self.FK_MKB_MKB">
+            <End Role="MKB" EntitySet="MKB" />
+            <End Role="MKB1" EntitySet="MKB" />
           </AssociationSet>
           <AssociationSet Name="FK_OuterDocumentTypes_OuterDocumentTypes" Association="Self.FK_OuterDocumentTypes_OuterDocumentTypes">
             <End Role="OuterDocumentTypes" EntitySet="OuterDocumentTypes" />
@@ -2682,6 +2839,18 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_PersonAddresses_Okatos" Association="Self.FK_PersonAddresses_Okatos">
             <End Role="Okatos" EntitySet="Okatos" />
             <End Role="PersonAddresses" EntitySet="PersonAddresses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDiagnoses_DiagnosTypes" Association="Self.FK_PersonDiagnoses_DiagnosTypes">
+            <End Role="DiagnosTypes" EntitySet="DiagnosTypes" />
+            <End Role="PersonDiagnoses" EntitySet="PersonDiagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDiagnoses_Persons" Association="Self.FK_PersonDiagnoses_Persons">
+            <End Role="Persons" EntitySet="Persons" />
+            <End Role="PersonDiagnoses" EntitySet="PersonDiagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDiagnoses_Records" Association="Self.FK_PersonDiagnoses_Records">
+            <End Role="Records" EntitySet="Records" />
+            <End Role="PersonDiagnoses" EntitySet="PersonDiagnoses" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonDisabilities_DisabilityTypes" Association="Self.FK_PersonDisabilities_DisabilityTypes">
             <End Role="DisabilityTypes" EntitySet="DisabilityTypes" />
@@ -2858,14 +3027,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_RecordDocuments_Records" Association="Self.FK_RecordDocuments_Records">
             <End Role="Records" EntitySet="Records" />
             <End Role="RecordDocuments" EntitySet="RecordDocuments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordMembers_PersonStaffs" Association="Self.FK_RecordMembers_PersonStaffs">
-            <End Role="PersonStaffs" EntitySet="PersonStaffs" />
-            <End Role="RecordMembers" EntitySet="RecordMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordMembers_Records" Association="Self.FK_RecordMembers_Records">
-            <End Role="Records" EntitySet="Records" />
-            <End Role="RecordMembers" EntitySet="RecordMembers" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordPeriods_ExecutionPlaces" Association="Self.FK_RecordPeriods_ExecutionPlaces">
             <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
@@ -3095,7 +3256,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <EntitySet Name="VisitResults" EntityType="DataLib.VisitResult" />
           <EntitySet Name="Visits" EntityType="DataLib.Visit" />
           <EntitySet Name="VisitTemplates" EntityType="DataLib.VisitTemplate" />
-          <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
           <AssociationSet Name="FK_PersonAddresses_AddressTypes" Association="DataLib.FK_PersonAddresses_AddressTypes">
             <End Role="AddressType" EntitySet="AddressTypes" />
             <End Role="PersonAddress" EntitySet="PersonAddresses" />
@@ -3610,6 +3770,48 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypes" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
+          </AssociationSet>
+          <EntitySet Name="Complications" EntityType="DataLib.Complication" />
+          <EntitySet Name="Diagnoses" EntityType="DataLib.Diagnosis" />
+          <EntitySet Name="DiagnosLevels" EntityType="DataLib.DiagnosLevel" />
+          <EntitySet Name="DiagnosTypes" EntityType="DataLib.DiagnosType" />
+          <EntitySet Name="PersonDiagnoses" EntityType="DataLib.PersonDiagnos" />
+          <AssociationSet Name="FK_Complications_Complications" Association="DataLib.FK_Complications_Complications">
+            <End Role="Complication" EntitySet="Complications" />
+            <End Role="Complication1" EntitySet="Complications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_Complications" Association="DataLib.FK_Diagnoses_Complications">
+            <End Role="Complication" EntitySet="Complications" />
+            <End Role="Diagnosis" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_DiagnosLevels" Association="DataLib.FK_Diagnoses_DiagnosLevels">
+            <End Role="DiagnosLevel" EntitySet="DiagnosLevels" />
+            <End Role="Diagnosis" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_PersonDiagnoses" Association="DataLib.FK_Diagnoses_PersonDiagnoses">
+            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
+            <End Role="Diagnosis" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Diagnoses_Persons" Association="DataLib.FK_Diagnoses_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="Diagnosis" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDiagnoses_DiagnosTypes" Association="DataLib.FK_PersonDiagnoses_DiagnosTypes">
+            <End Role="DiagnosType" EntitySet="DiagnosTypes" />
+            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDiagnoses_Persons" Association="DataLib.FK_PersonDiagnoses_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonDiagnoses_Records" Association="DataLib.FK_PersonDiagnoses_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
+          </AssociationSet>
+          <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
+          <AssociationSet Name="FK_MKB_MKB" Association="DataLib.FK_MKB_MKB">
+            <End Role="MKB" EntitySet="MKBs" />
+            <End Role="MKB1" EntitySet="MKBs" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="AddressType">
@@ -4252,6 +4454,8 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
+          <NavigationProperty Name="Diagnoses" Relationship="DataLib.FK_Diagnoses_Persons" FromRole="Person" ToRole="Diagnosis" />
+          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_Persons" FromRole="Person" ToRole="PersonDiagnos" />
         </EntityType>
         <EntityType Name="PersonSocialStatus">
           <Key>
@@ -4403,6 +4607,7 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
           <NavigationProperty Name="RecordPeriod" Relationship="DataLib.FK_Records_RecordPeriods" FromRole="Record" ToRole="RecordPeriod" />
           <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_Records" FromRole="Record" ToRole="RecordMember" />
+          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_Records" FromRole="Record" ToRole="PersonDiagnos" />
         </EntityType>
         <EntityType Name="RecordTypeRole">
           <Key>
@@ -4635,14 +4840,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_VisitTemplates_RecordContracts" FromRole="VisitTemplate" ToRole="RecordContract" />
           <NavigationProperty Name="Urgently" Relationship="DataLib.FK_VisitTemplates_ExecutionPlaces1" FromRole="VisitTemplate" ToRole="Urgently" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_VisitTemplates" FromRole="VisitTemplate" ToRole="Visit" />
-        </EntityType>
-        <EntityType Name="MKB">
-          <Key>
-            <PropertyRef Name="DS" />
-            <PropertyRef Name="NAME_DS" />
-          </Key>
-          <Property Name="DS" Type="String" Nullable="false" MaxLength="7" FixedLength="false" Unicode="true" />
-          <Property Name="NAME_DS" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_PersonAddresses_AddressTypes">
           <End Type="DataLib.AddressType" Role="AddressType" Multiplicity="1" />
@@ -6292,6 +6489,198 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Complication">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Complications1" Relationship="DataLib.FK_Complications_Complications" FromRole="Complication" ToRole="Complication1" />
+          <NavigationProperty Name="Complication1" Relationship="DataLib.FK_Complications_Complications" FromRole="Complication1" ToRole="Complication" />
+          <NavigationProperty Name="Diagnoses" Relationship="DataLib.FK_Diagnoses_Complications" FromRole="Complication" ToRole="Diagnosis" />
+        </EntityType>
+        <EntityType Name="Diagnosis">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonDiagnosId" Type="Int32" Nullable="false" />
+          <Property Name="DiagnosLevelId" Type="Int32" Nullable="false" />
+          <Property Name="DiagnosText" Type="String" Nullable="false" MaxLength="7000" FixedLength="false" Unicode="false" />
+          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ComplicationId" Type="Int32" />
+          <Property Name="IsMainDiagnos" Type="Boolean" Nullable="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InPersonId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Complication" Relationship="DataLib.FK_Diagnoses_Complications" FromRole="Diagnosis" ToRole="Complication" />
+          <NavigationProperty Name="DiagnosLevel" Relationship="DataLib.FK_Diagnoses_DiagnosLevels" FromRole="Diagnosis" ToRole="DiagnosLevel" />
+          <NavigationProperty Name="PersonDiagnos" Relationship="DataLib.FK_Diagnoses_PersonDiagnoses" FromRole="Diagnosis" ToRole="PersonDiagnos" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Diagnoses_Persons" FromRole="Diagnosis" ToRole="Person" />
+        </EntityType>
+        <EntityType Name="DiagnosLevel">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <Property Name="IsActual" Type="Boolean" Nullable="false" />
+          <Property Name="HasMKB" Type="Boolean" Nullable="false" />
+          <Property Name="IsComplication" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Diagnoses" Relationship="DataLib.FK_Diagnoses_DiagnosLevels" FromRole="DiagnosLevel" ToRole="Diagnosis" />
+        </EntityType>
+        <EntityType Name="DiagnosType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <Property Name="IsActual" Type="Boolean" Nullable="false" />
+          <Property Name="AllowCopy" Type="Boolean" Nullable="false" />
+          <Property Name="HasComplications" Type="Boolean" Nullable="false" />
+          <Property Name="NeedMKB" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_DiagnosTypes" FromRole="DiagnosType" ToRole="PersonDiagnos" />
+        </EntityType>
+        <EntityType Name="PersonDiagnos">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="DiagnosTypeId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Diagnoses" Relationship="DataLib.FK_Diagnoses_PersonDiagnoses" FromRole="PersonDiagnos" ToRole="Diagnosis" />
+          <NavigationProperty Name="DiagnosType" Relationship="DataLib.FK_PersonDiagnoses_DiagnosTypes" FromRole="PersonDiagnos" ToRole="DiagnosType" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonDiagnoses_Persons" FromRole="PersonDiagnos" ToRole="Person" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_PersonDiagnoses_Records" FromRole="PersonDiagnos" ToRole="Record" />
+        </EntityType>
+        <Association Name="FK_Complications_Complications">
+          <End Type="DataLib.Complication" Role="Complication" Multiplicity="0..1" />
+          <End Type="DataLib.Complication" Role="Complication1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complication">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Complication1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_Complications">
+          <End Type="DataLib.Complication" Role="Complication" Multiplicity="0..1" />
+          <End Type="DataLib.Diagnosis" Role="Diagnosis" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Complication">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnosis">
+              <PropertyRef Name="ComplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_DiagnosLevels">
+          <End Type="DataLib.DiagnosLevel" Role="DiagnosLevel" Multiplicity="1" />
+          <End Type="DataLib.Diagnosis" Role="Diagnosis" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DiagnosLevel">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnosis">
+              <PropertyRef Name="DiagnosLevelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_PersonDiagnoses">
+          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.Diagnosis" Role="Diagnosis" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonDiagnos">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnosis">
+              <PropertyRef Name="PersonDiagnosId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Diagnoses_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.Diagnosis" Role="Diagnosis" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Diagnosis">
+              <PropertyRef Name="InPersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDiagnoses_DiagnosTypes">
+          <End Type="DataLib.DiagnosType" Role="DiagnosType" Multiplicity="1" />
+          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DiagnosType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDiagnos">
+              <PropertyRef Name="DiagnosTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDiagnoses_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDiagnos">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonDiagnoses_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDiagnos">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MKB">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="MKB1" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB" ToRole="MKB1" />
+          <NavigationProperty Name="MKB2" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB1" ToRole="MKB" />
+        </EntityType>
+        <Association Name="FK_MKB_MKB">
+          <End Type="DataLib.MKB" Role="MKB" Multiplicity="0..1" />
+          <End Type="DataLib.MKB" Role="MKB1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKB">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKB1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7157,14 +7546,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="MKBs">
-            <EntityTypeMapping TypeName="DataLib.MKB">
-              <MappingFragment StoreEntitySet="MKB">
-                <ScalarProperty Name="NAME_DS" ColumnName="NAME_DS" />
-                <ScalarProperty Name="DS" ColumnName="DS" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordTypeEditors">
             <EntityTypeMapping TypeName="DataLib.RecordTypeEditor">
               <MappingFragment StoreEntitySet="RecordTypeEditors">
@@ -7237,16 +7618,6 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="RecordMembers">
-            <EntityTypeMapping TypeName="DataLib.RecordMember">
-              <MappingFragment StoreEntitySet="RecordMembers">
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="PersonStaffId" ColumnName="PersonStaffId" />
-                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordTypeRolePermissions">
             <EntityTypeMapping TypeName="DataLib.RecordTypeRolePermission">
               <MappingFragment StoreEntitySet="RecordTypeRolePermissions">
@@ -7257,6 +7628,79 @@ warning 6002: The table/view 'ChildCare.dbo.MKB' does not have a primary key def
                 <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
                 <ScalarProperty Name="RecordTypeMemberRoleId" ColumnName="RecordTypeMemberRoleId" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Complications">
+            <EntityTypeMapping TypeName="DataLib.Complication">
+              <MappingFragment StoreEntitySet="Complications">
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Diagnoses">
+            <EntityTypeMapping TypeName="DataLib.Diagnosis">
+              <MappingFragment StoreEntitySet="Diagnoses">
+                <ScalarProperty Name="InPersonId" ColumnName="InPersonId" />
+                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="IsMainDiagnos" ColumnName="IsMainDiagnos" />
+                <ScalarProperty Name="ComplicationId" ColumnName="ComplicationId" />
+                <ScalarProperty Name="MKB" ColumnName="MKB" />
+                <ScalarProperty Name="DiagnosText" ColumnName="DiagnosText" />
+                <ScalarProperty Name="DiagnosLevelId" ColumnName="DiagnosLevelId" />
+                <ScalarProperty Name="PersonDiagnosId" ColumnName="PersonDiagnosId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DiagnosLevels">
+            <EntityTypeMapping TypeName="DataLib.DiagnosLevel">
+              <MappingFragment StoreEntitySet="DiagnosLevels">
+                <ScalarProperty Name="IsComplication" ColumnName="IsComplication" />
+                <ScalarProperty Name="HasMKB" ColumnName="HasMKB" />
+                <ScalarProperty Name="IsActual" ColumnName="IsActual" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DiagnosTypes">
+            <EntityTypeMapping TypeName="DataLib.DiagnosType">
+              <MappingFragment StoreEntitySet="DiagnosTypes">
+                <ScalarProperty Name="NeedMKB" ColumnName="NeedMKB" />
+                <ScalarProperty Name="HasComplications" ColumnName="HasComplications" />
+                <ScalarProperty Name="AllowCopy" ColumnName="AllowCopy" />
+                <ScalarProperty Name="IsActual" ColumnName="IsActual" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonDiagnoses">
+            <EntityTypeMapping TypeName="DataLib.PersonDiagnos">
+              <MappingFragment StoreEntitySet="PersonDiagnoses">
+                <ScalarProperty Name="DiagnosTypeId" ColumnName="DiagnosTypeId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MKBs">
+            <EntityTypeMapping TypeName="DataLib.MKB">
+              <MappingFragment StoreEntitySet="MKB">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

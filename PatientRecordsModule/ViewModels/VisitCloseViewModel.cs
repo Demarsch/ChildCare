@@ -138,7 +138,7 @@ namespace PatientRecordsModule.ViewModels
             var saveSuccesfull = false;
             try
             {
-                var result = await patientRecordsService.CloseVisitAsync(visitId, Date, MKB.DS, SelectedVisitOutcomeId, SelectedVisitResultId, token);
+                var result = await patientRecordsService.CloseVisitAsync(visitId, Date, MKB.Code, SelectedVisitOutcomeId, SelectedVisitResultId, token);
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)

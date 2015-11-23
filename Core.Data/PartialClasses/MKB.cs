@@ -10,7 +10,7 @@ namespace Core.Data
     {
         public override string ToString()
         {
-            return this.DS + " " + this.NAME_DS;
+            return this.Code + " " + this.Name;
         }
     }
 }

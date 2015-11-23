@@ -255,16 +255,14 @@ namespace PatientRecordsModule.Services
                 return new MKB[0];
             }
             var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            return cacheService.GetItems<MKB>().Where(x => words.All(y => x.DS.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1 || x.NAME_DS.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
+            return cacheService.GetItems<MKB>().Where(x => words.All(y => x.Code.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1 || x.Name.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
         }
-
 
         public MKB GetMKB(string code)
         {
             var context = contextProvider.CreateNewContext();
-            return cacheService.GetItems<MKB>().FirstOrDefault(x => x.DS == code);
+            return cacheService.GetItems<MKB>().FirstOrDefault(x => x.Code == code);
         }
-
 
         public IDisposableQueryable<VisitResult> GetActualVisitResults(int executionPlaceId, DateTime onDate)
         {

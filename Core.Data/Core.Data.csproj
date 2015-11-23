@@ -100,6 +100,18 @@
     <Compile Include="CommissionType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Complication.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Diagnosis.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DiagnosLevel.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DiagnosType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="FinancingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -126,6 +138,9 @@
     <Compile Include="PartialClasses\PersonName.cs" />
     <Compile Include="PartialClasses\PersonSocialStatus.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />
+    <Compile Include="PersonDiagnos.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RecordContract.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

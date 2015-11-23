@@ -71,7 +71,6 @@
         <EntityTypeShape EntityType="DataLib.VisitResult" Width="1.5" PointX="15.75" PointY="77.5" />
         <EntityTypeShape EntityType="DataLib.Visit" Width="1.5" PointX="18" PointY="73.625" />
         <EntityTypeShape EntityType="DataLib.VisitTemplate" Width="1.5" PointX="15.75" PointY="47.125" />
-        <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="2.75" PointY="3.75" />
         <AssociationConnector Association="DataLib.FK_PersonAddresses_AddressTypes" />
         <AssociationConnector Association="DataLib.FK_Assignments_Assignments" />
         <AssociationConnector Association="DataLib.FK_Assignments_FinancingSources" />
@@ -206,6 +205,21 @@
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
+        <EntityTypeShape EntityType="DataLib.Complication" Width="1.5" PointX="25.875" PointY="56.75" />
+        <EntityTypeShape EntityType="DataLib.Diagnosis" Width="1.5" PointX="28.125" PointY="54.5" />
+        <EntityTypeShape EntityType="DataLib.DiagnosLevel" Width="1.5" PointX="25.875" PointY="53.375" />
+        <EntityTypeShape EntityType="DataLib.DiagnosType" Width="1.5" PointX="23.625" PointY="66.875" />
+        <EntityTypeShape EntityType="DataLib.PersonDiagnos" Width="1.5" PointX="25.875" PointY="62.875" />
+        <AssociationConnector Association="DataLib.FK_Complications_Complications" />
+        <AssociationConnector Association="DataLib.FK_Diagnoses_Complications" />
+        <AssociationConnector Association="DataLib.FK_Diagnoses_DiagnosLevels" />
+        <AssociationConnector Association="DataLib.FK_Diagnoses_PersonDiagnoses" />
+        <AssociationConnector Association="DataLib.FK_Diagnoses_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonDiagnoses_DiagnosTypes" />
+        <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Persons" />
+        <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Records" />
+        <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="0.75" PointY="4.75" />
+        <AssociationConnector Association="DataLib.FK_MKB_MKB" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

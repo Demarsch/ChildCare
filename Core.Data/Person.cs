@@ -39,6 +39,8 @@ namespace Core.Data
             this.Records = new HashSet<Record>();
             this.Users = new HashSet<User>();
             this.Visits = new HashSet<Visit>();
+            this.Diagnoses = new HashSet<Diagnosis>();
+            this.PersonDiagnoses = new HashSet<PersonDiagnos>();
         }
     
         public int Id { get; set; }
@@ -104,5 +106,9 @@ namespace Core.Data
         public virtual ICollection<User> Users { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Diagnosis> Diagnoses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }
     }
 }

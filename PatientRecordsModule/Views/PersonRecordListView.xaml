@@ -8,7 +8,7 @@
              xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
              xmlns:views="clr-namespace:PatientRecordsModule.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="250" Width="250">
+             d:DesignHeight="500" d:DesignWidth="250" Width="250">
     <i:Interaction.Triggers>
         <prism:InteractionRequestTrigger SourceObject="{Binding VisitEditorInteractionRequest, Mode=OneWay}">
             <popup:PopupWindowAction IsModal="True">
@@ -26,43 +26,39 @@
         </prism:InteractionRequestTrigger>
     </i:Interaction.Triggers>
     <Grid>
-        <Grid.ColumnDefinitions >
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition  Height="auto"/>
-            <RowDefinition  Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>            
+        </Grid.ColumnDefinitions>
 
-        <ToggleButton Grid.Column="0" Grid.Row="0" Background="White" HorizontalAlignment="Stretch">
-            <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
-                <Image  HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Core;component/Resources/Images/AmbCard48x48.png" />
-                <TextBlock VerticalAlignment="Center" Text="{Binding AmbNumber}"/>
+        <ToggleButton Grid.Row="0" Background="White" Margin="1" BorderBrush="Black" Height="50">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Core;component/Resources/Images/AmbCard48x48.png" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding AmbNumber}" Margin="5" FontSize="20" FontWeight="Bold"/>
             </StackPanel>
         </ToggleButton>
-        <Border Grid.Column="0" Grid.Row="1" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Stretch">
-            <TreeView x:Name="itemsTree" ItemsSource="{Binding RootItems, Mode=TwoWay}" HorizontalContentAlignment="Stretch" PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown" MouseDown="PermissionTree_MouseDown">
-                <TreeView.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}">
-                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="FontWeight" Value="Normal" />
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="FontWeight" Value="Bold" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TreeView.ItemContainerStyle>
-            </TreeView>
-        </Border>
-        <ContentControl Content="{Binding BusyMediator}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
-        <ContentControl Content="{Binding CriticalFailureMediator}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
+
+        <TreeView x:Name="itemsTree" Grid.Row="1" Margin="1,0,1,1" BorderBrush="Black"
+                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                    ItemsSource="{Binding RootItems, Mode=TwoWay}" 
+                    PreviewMouseRightButtonDown="OnPreviewMouseRightButtonDown" 
+                    MouseDown="PermissionTree_MouseDown">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="FontWeight" Value="Normal" />
+                    
+                </Style>
+            </TreeView.ItemContainerStyle>
+        </TreeView>    
+      
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding CriticalFailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

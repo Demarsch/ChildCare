@@ -6,12 +6,8 @@
              xmlns:views="clr-namespace:PatientRecordsModule.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <views:PersonRecordListView Grid.Column="0" Grid.Row="0" x:Name="personRecordList"/>
-        <views:PersonRecordEditorView Grid.Column="1" Grid.Row="0" x:Name="personRecordEditor" VerticalAlignment="Top"/>
-    </Grid>
+    <DockPanel LastChildFill="True">
+        <views:PersonRecordListView x:Name="personRecordList" DockPanel.Dock="Left"/>
+        <views:PersonRecordEditorView x:Name="personRecordEditor" Margin="1"/>
+    </DockPanel>
 </UserControl>
