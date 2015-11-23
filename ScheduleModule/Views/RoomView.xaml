@@ -31,7 +31,8 @@
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <xctk:TimelinePanel BeginDate="{Binding OpenTime}"
-                                            EndDate="{Binding CloseTime}" />
+                                            EndDate="{Binding CloseTime}"
+                                            OverlapBehavior="None" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
@@ -43,8 +44,9 @@
                     </Style>
                 </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type viewModels:ScheduleItemViewModel}">
-                        <Rectangle Fill="White" />
+                    <DataTemplate DataType="{x:Type viewModels:WorkingTimeViewModel}">
+                        <Rectangle Fill="White"
+                                   Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

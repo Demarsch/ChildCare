@@ -4,13 +4,13 @@ using Core.Misc;
 
 namespace ScheduleModule.ViewModels
 {
-    public class ScheduleItemViewModel : ITimeInterval
+    public class WorkingTimeViewModel : ITimeInterval
     {
         private readonly ScheduleItem scheduleItem;
 
         private DateTime date;
 
-        public ScheduleItemViewModel(ScheduleItem scheduleItem, DateTime date)
+        public WorkingTimeViewModel(ScheduleItem scheduleItem, DateTime date)
         {
             if (scheduleItem == null)
                 throw new ArgumentNullException("scheduleItem");

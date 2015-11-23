@@ -13,8 +13,10 @@ using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
 using log4net;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using ScheduleEditorModule.Services;
+using Shared.Schedule.Events;
 
 namespace ScheduleEditorModule.ViewModels
 {
@@ -28,9 +30,11 @@ namespace ScheduleEditorModule.ViewModels
 
         private readonly IDialogService dialogService;
 
+        private readonly IEventAggregator eventAggregator;
+
         private readonly HashSet<ScheduleItem> unsavedItems;
 
-        public ContentViewModel(IScheduleEditorService scheduleEditorService, ILog log, ICacheService cacheService, IDialogService dialogService)
+        public ContentViewModel(IScheduleEditorService scheduleEditorService, ILog log, ICacheService cacheService, IDialogService dialogService, IEventAggregator eventAggregator)
         {
             if (scheduleEditorService == null)
             {
@@ -48,7 +52,12 @@ namespace ScheduleEditorModule.ViewModels
             {
                 throw new ArgumentNullException("dialogService");
             }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
             this.dialogService = dialogService;
+            this.eventAggregator = eventAggregator;
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleEditorService = scheduleEditorService;
@@ -464,7 +473,7 @@ namespace ScheduleEditorModule.ViewModels
                 var selectedWeekBegining = selectedDate.GetWeekBegininng();
                 log.InfoFormat("Loading schedule editor for {0:dd.MM.yyyy}-{1:dd.MM.yyyy}", selectedWeekBegining, selectedDate.GetWeekEnding());
                 await Task.Delay(TimeSpan.FromSeconds(0.5));
-                var scheduleItems = (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(() => scheduleEditorService.GetRoomsWeeklyWorkingTime(selectedDate))).ToLookup(x => x.RoomId);
+                var scheduleItems = (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(() => scheduleEditorService.GetRoomsWorkingTimeForWeek(selectedDate))).ToLookup(x => x.RoomId);
                 foreach (var room in Rooms)
                 {
                     var currentRoomItems = scheduleItems[room.Id].ToLookup(x => x.DayOfWeek);
@@ -522,6 +531,7 @@ namespace ScheduleEditorModule.ViewModels
             {
                 await scheduleEditorService.SaveScheduleAsync(unsavedItems);
                 ClearUnsavedItems();
+                eventAggregator.GetEvent<ScheduleChangedEvent>().Publish(null);
                 log.Info("Schedule changes successfully saved");
             }
             catch (Exception ex)

@@ -64,6 +64,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleModule", "ScheduleM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleEditorModule", "ScheduleEditorModule\ScheduleEditorModule.csproj", "{0DFAF0A6-EF8A-42A7-912D-34702EC01229}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{69DE00B8-4E4A-461C-9802-BCD53FDA8109}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Schedule", "Shared\Shared.Schedule\Shared.Schedule.csproj", "{95DCE91E-6880-4977-9861-2F65D8D61264}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +148,10 @@ Global
 		{0DFAF0A6-EF8A-42A7-912D-34702EC01229}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DFAF0A6-EF8A-42A7-912D-34702EC01229}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DFAF0A6-EF8A-42A7-912D-34702EC01229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95DCE91E-6880-4977-9861-2F65D8D61264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95DCE91E-6880-4977-9861-2F65D8D61264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95DCE91E-6880-4977-9861-2F65D8D61264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95DCE91E-6880-4977-9861-2F65D8D61264}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,5 +178,6 @@ Global
 		{59668B9B-3EBE-4524-92EF-043FA2C9C898} = {49649D2D-32C3-4130-978A-ED328F498DCE}
 		{155C16D2-D4E1-490E-97D1-9312D216AF47} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
 		{0DFAF0A6-EF8A-42A7-912D-34702EC01229} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
+		{95DCE91E-6880-4977-9861-2F65D8D61264} = {69DE00B8-4E4A-461C-9802-BCD53FDA8109}
 	EndGlobalSection
 EndGlobal

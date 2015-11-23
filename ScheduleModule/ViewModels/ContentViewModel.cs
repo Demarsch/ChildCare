@@ -13,16 +13,18 @@ using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
 using log4net;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
 using ScheduleModule.DTO;
 using ScheduleModule.Exceptions;
 using ScheduleModule.Misc;
 using ScheduleModule.Services;
+using Shared.Schedule.Events;
 
 namespace ScheduleModule.ViewModels
 {
-    public class ContentViewModel : BindableBase, INavigationAware
+    public class ContentViewModel : BindableBase, INavigationAware, IDisposable
     {
         private readonly ILog log;
 
@@ -40,13 +42,16 @@ namespace ScheduleModule.ViewModels
 
         private readonly ISecurityService securityService;
 
+        private readonly IEventAggregator eventAggregator;
+
         public ContentViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
-                                 IScheduleService scheduleService,
-                                 ILog log,
-                                 ICacheService cacheService,
-                                 IEnvironment environment,
-                                 IDialogService dialogService,
-                                 ISecurityService securityService)
+                                IScheduleService scheduleService,
+                                ILog log,
+                                ICacheService cacheService,
+                                IEnvironment environment,
+                                IDialogService dialogService,
+                                ISecurityService securityService,
+                                IEventAggregator eventAggregator)
         {
             if (scheduleService == null)
             {
@@ -72,12 +77,17 @@ namespace ScheduleModule.ViewModels
             {
                 throw new ArgumentNullException("securityService");
             }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
             if (overlayAssignmentCollectionViewModel == null)
             {
                 throw new ArgumentNullException("overlayAssignmentCollectionViewModel");
             }
             OverlayAssignmentCollectionViewModel = overlayAssignmentCollectionViewModel;
             this.securityService = securityService;
+            this.eventAggregator = eventAggregator;
             this.dialogService = dialogService;
             this.environment = environment;
             this.cacheService = cacheService;
@@ -95,6 +105,22 @@ namespace ScheduleModule.ViewModels
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
+            SubscribeToEvents();
+            LoadAssignmentsAsync(selectedDate);
+        }
+
+        private void SubscribeToEvents()
+        {
+            eventAggregator.GetEvent<ScheduleChangedEvent>().Subscribe(OnScheduleChanged);
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            eventAggregator.GetEvent<ScheduleChangedEvent>().Unsubscribe(OnScheduleChanged);
+        }
+
+        private void OnScheduleChanged(object obj)
+        {
             LoadAssignmentsAsync(selectedDate);
         }
 
@@ -117,11 +143,12 @@ namespace ScheduleModule.ViewModels
                 FailureMediator.Deactivate();
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
                 var workingTimes =
-                    (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTime((DateTime)x), date)).Where(x => x.RecordTypeId.HasValue).ToLookup(x => x.RoomId);
+                    (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTimeForDay((DateTime)x), date)).Where(x => x.RecordTypeId.HasValue)
+                                                                                                                                               .ToLookup(x => x.RoomId);
                 var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
                 if (workingTimes.Count == 0)
                 {
-                    //TODO: store these settings in DB. This are just default values used for displaying purposes
+                    //TODO: store these settings in DB. These are just default values used for displaying purposes
                     OpenTime = OverlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = date.AddHours(8.0);
                     CloseTime = OverlayAssignmentCollectionViewModel.CurrentDateRoomsCloseTime = date.AddHours(17.0);
                 }
@@ -148,13 +175,14 @@ namespace ScheduleModule.ViewModels
                         occupiedTimeSlot.UpdateRequested += RoomOnAssignmentUpdateRequested;
                         occupiedTimeSlot.MoveRequested += RoomOnAssignmentMoveRequested;
                     }
-                    room.WorkingTimes = workingTimes[room.Id].Select(x => new ScheduleItemViewModel(x, date)).ToArray();
+                    room.WorkingTimes = workingTimes[room.Id].Select(x => new WorkingTimeViewModel(x, date)).ToArray();
                 }
             }
             catch (Exception ex)
             {
                 log.Error(string.Format("Failed to load schedule for {0:dd-MM-yyyy}", date), ex);
-                FailureMediator.Activate("При попытке загрузить расписание возникла ошибка. Попробуйте обновить расписание или выбрать другую дату. Если ошибка повторится, обратитесь в службу поддержки",
+                FailureMediator.Activate(
+                                         "При попытке загрузить расписание возникла ошибка. Попробуйте обновить расписание или выбрать другую дату. Если ошибка повторится, обратитесь в службу поддержки",
                                          exception: ex);
             }
             finally
@@ -664,7 +692,6 @@ namespace ScheduleModule.ViewModels
                         BuildScheduleGrid();
                     }
                 }
-                
             }
         }
 
@@ -678,7 +705,7 @@ namespace ScheduleModule.ViewModels
         private bool CanChangeMode()
         {
             return !currentPatientId.IsNewOrNonExisting()
-                && securityService.HasPrivilege(Privilegies.EditAssignments);
+                   && securityService.HasPrivilege(Privilegies.EditAssignments);
         }
 
         private RoomViewModel selectedRoom;
@@ -825,6 +852,11 @@ namespace ScheduleModule.ViewModels
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
             //TODO: put the logic for view deactivation here
+        }
+
+        public void Dispose()
+        {
+            UnsubscribeFromEvents();
         }
     }
 }

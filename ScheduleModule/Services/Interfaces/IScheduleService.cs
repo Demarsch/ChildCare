@@ -5,20 +5,17 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Misc;
 using ScheduleModule.DTO;
+using Shared.Schedule.Services;
 
 namespace ScheduleModule.Services
 {
-    public interface IScheduleService
+    public interface IScheduleService : IScheduleServiceBase
     {
         IEnumerable<Room> GetRooms();
 
         IEnumerable<RecordType> GetRecordTypes();
 
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
-
-        IEnumerable<ScheduleItem> GetRoomsWorkingTime(DateTime date);
-
-        IEnumerable<ScheduleItem> GetRoomsWeeklyWorkingTime(DateTime date);
         
         IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
 

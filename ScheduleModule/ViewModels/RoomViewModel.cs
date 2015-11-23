@@ -40,7 +40,7 @@ namespace ScheduleModule.ViewModels
             //TODO: probably worth using fallback value on binding side
             openTime = DateTime.Today.AddHours(8.0);
             closeTime = DateTime.Today.AddHours(17.0);
-            workingTimes = new ScheduleItemViewModel[0];
+            workingTimes = new WorkingTimeViewModel[0];
             TimeSlots = new ObservableCollectionEx<ITimeInterval>();
         }
 
@@ -78,9 +78,9 @@ namespace ScheduleModule.ViewModels
             }
         }
 
-        private IEnumerable<ScheduleItemViewModel> workingTimes;
+        private IEnumerable<WorkingTimeViewModel> workingTimes;
 
-        public IEnumerable<ScheduleItemViewModel> WorkingTimes
+        public IEnumerable<WorkingTimeViewModel> WorkingTimes
         {
             get { return workingTimes; }
             set { SetProperty(ref workingTimes, value); }

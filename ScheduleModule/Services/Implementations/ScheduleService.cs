@@ -10,10 +10,11 @@ using Core.Misc;
 using Core.Services;
 using ScheduleModule.DTO;
 using ScheduleModule.Exceptions;
+using Shared.Schedule.Services;
 
 namespace ScheduleModule.Services
 {
-    public class ScheduleService : IScheduleService
+    public class ScheduleService : ScheduleServiceBase, IScheduleService
     {
         private readonly IDbContextProvider contextProvider;
 
@@ -22,6 +23,7 @@ namespace ScheduleModule.Services
         private readonly ICacheService cacheService;
 
         public ScheduleService(IDbContextProvider contextProvider, IEnvironment environment, ICacheService cacheService)
+            : base(contextProvider)
         {
             if (contextProvider == null)
             {
@@ -77,37 +79,6 @@ namespace ScheduleModule.Services
                                                })
                                   .ToLookup(x => x.RoomId);
             }
-        }
-
-        public IEnumerable<ScheduleItem> GetRoomsWorkingTime(DateTime date)
-        {
-            return GetRoomsWorkingTimeImpl(date, date);
-        }
-
-        private IEnumerable<ScheduleItem> GetRoomsWorkingTimeImpl(DateTime from, DateTime to)
-        {
-            from = from.Date;
-            to = to.Date;
-            using (var dataContext = contextProvider.CreateNewContext())
-            {
-                var currentDate = from;
-                var result = new List<ScheduleItem>();
-                while (currentDate <= to)
-                {
-                    var dayOfWeek = currentDate.GetDayOfWeek();
-                    var currentResult = dataContext.Set<ScheduleItem>()
-                                                   .Where(x => x.BeginDate <= currentDate && x.EndDate >= currentDate && x.DayOfWeek == dayOfWeek);
-                    result.AddRange(currentResult.GroupBy(x => x.RoomId)
-                                                 .SelectMany(x => x.GroupBy(y => new { y.BeginDate, y.EndDate }).OrderByDescending(y => y.Key.BeginDate).ThenBy(y => y.Key.EndDate).FirstOrDefault()));
-                    currentDate = currentDate.AddDays(1.0);
-                }
-                return result;
-            }
-        }
-
-        public IEnumerable<ScheduleItem> GetRoomsWeeklyWorkingTime(DateTime date)
-        {
-            return GetRoomsWorkingTimeImpl(date.GetWeekBegininng(), date.GetWeekEnding());
         }
 
         public IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime,

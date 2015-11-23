@@ -5,45 +5,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Services;
-using Core.Extensions;
+using Shared.Schedule.Services;
 
 namespace ScheduleEditorModule.Services
 {
-    public class ScheduleEditorService : IScheduleEditorService
+    public class ScheduleEditorService : ScheduleServiceBase, IScheduleEditorService
     {
         private readonly IDbContextProvider contextProvider;
 
         public ScheduleEditorService(IDbContextProvider contextProvider)
+            : base(contextProvider)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
             }
             this.contextProvider = contextProvider;
-        }
-
-        public IEnumerable<ScheduleItem> GetRoomsWeeklyWorkingTime(DateTime date)
-        {
-            var @from = date.GetWeekBegininng();
-            var to = date.GetWeekEnding();
-            @from = @from.Date;
-            to = to.Date;
-            using (var context = contextProvider.CreateNewContext())
-            {
-                context.Configuration.ProxyCreationEnabled = false;
-                var currentDate = @from;
-                var result = new List<ScheduleItem>();
-                while (currentDate <= to)
-                {
-                    var dayOfWeek = currentDate.GetDayOfWeek();
-                    var currentResult = context.Set<ScheduleItem>()
-                                                   .Where(x => x.BeginDate <= currentDate && x.EndDate >= currentDate && x.DayOfWeek == dayOfWeek);
-                    result.AddRange(currentResult.GroupBy(x => x.RoomId)
-                                                 .SelectMany(x => x.GroupBy(y => new { y.BeginDate, y.EndDate }).OrderByDescending(y => y.Key.BeginDate).ThenBy(y => y.Key.EndDate).FirstOrDefault()));
-                    currentDate = currentDate.AddDays(1.0);
-                }
-                return result;
-            }
         }
 
         public async Task SaveScheduleAsync(ICollection<ScheduleItem> newScheduleItems)
@@ -70,11 +47,6 @@ namespace ScheduleEditorModule.Services
                 }
                 await dataContext.SaveChangesAsync();
             }
-        }
-
-        public void SaveSchedule(ICollection<ScheduleItem> newScheduleItems)
-        {
-            
         }
     }
 }
