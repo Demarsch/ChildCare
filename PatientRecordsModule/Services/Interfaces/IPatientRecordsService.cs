@@ -52,7 +52,11 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Record> GetRecord(int recordId);
 
+        IDisposableQueryable<Assignment> GetAssignment(int assignmentId);
+
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
+
+        IDisposableQueryable<RecordPeriod> GetActualRecordPeriods(int executionPlaceId, DateTime onDate);
 
         ICollection<CommonIdName> GetAllowedPersonStaffs(int recordTypeId, int recordTypeRoleId, DateTime onDate);
 

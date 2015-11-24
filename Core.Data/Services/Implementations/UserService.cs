@@ -40,7 +40,8 @@ namespace Core.Data.Services
             foreach (Tuple<Permission, bool> rl in roles)
             {
                 ret.Add(rl);
-                ret.AddRange(DeepRun(rl.Item1.PermissionLinks.Select(x => new Tuple<Permission, bool>(x.Permission1, rl.Item2)).ToList()));
+                if (rl.Item2)
+                    ret.AddRange(DeepRun(rl.Item1.PermissionLinks.Select(x => new Tuple<Permission, bool>(x.Permission1, rl.Item2)).ToList()));
             }
             return ret;
         }

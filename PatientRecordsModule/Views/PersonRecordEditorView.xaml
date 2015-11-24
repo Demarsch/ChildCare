@@ -9,13 +9,13 @@
              xmlns:views="clr-namespace:PatientRecordsModule.Views"
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="500" Height="Auto">
-
+    <UserControl.Resources>
         <DataTemplate x:Key="BrigadeItemTemplate">
             <StackPanel>
                 <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
                 <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
                 <TextBlock Text="{Binding StaffName}" TextAlignment="Center"/>
-                <TextBlock Text="{Binding PersonName}" TextAlignment="Center"/>
+                <TextBlock Text="{Binding PersonName}" FontWeight="Bold" TextAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
 
@@ -23,7 +23,7 @@
             <StackPanel>
                 <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
                 <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding PersonStaffs}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding PersonStaffId}" />
+                <ComboBox ItemsSource="{Binding PersonStaffs}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding PersonStaffId}"/>
             </StackPanel>
         </DataTemplate>
 
@@ -44,7 +44,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <Grid Grid.Row="0"
               Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
             <Grid.ColumnDefinitions>
@@ -58,24 +58,13 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Height="50"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="Black" Margin="2,0,2,2"
+            <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" ItemContainerStyle="{StaticResource ContainerStyle}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="Black" Margin="2,0,2,2"
                         ItemsSource="{Binding Brigade}">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True" />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
-                            <TextBlock Text="{Binding RoleName}"/>
-                            <TextBlock Text="{Binding StaffName}"/>
-                            <TextBlock Text="{Binding PersonName}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
             </ListBox>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Период оказания" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"
@@ -92,16 +81,16 @@
             <TextBlock Grid.Row="1" Grid.Column="2" Text="Время начала услуги" VerticalAlignment="Center" Margin="2,4,2,3"/>
             <toolkit:DateTimePicker Grid.Row="1" Grid.Column="3"  
                                     Value="{Binding BeginDateTime}" 
-                                    Watermark="Дата/время начала" Height="23"/>
+                                    Watermark="Дата/время начала" Height="23" Width="190"/>
             <StackPanel Grid.Row="2" Grid.Column="4" Orientation="Horizontal">
                 <TextBlock VerticalAlignment="Top" Margin="5,0">
                     <Hyperlink Command="{Binding SetCurrentDateTimeBeginCommand}">Текущее время</Hyperlink>
                 </TextBlock>
-            </StackPanel>            
+            </StackPanel>
         </Grid>
-        
+
         <ContentControl Grid.Row="1" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-        
+
         <views:RecordDocumentsView Grid.Row="2" DataContext="{Binding DocumentsViewer}" Margin="2"/>
 
         <Grid Grid.Row="3" Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
@@ -114,8 +103,8 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Время окончания услуги" VerticalAlignment="Center" Margin="2"/>
-            <toolkit:DateTimePicker Grid.Row="0" Grid.Column="1"  Value="{Binding BeginDateTime}" 
-                                    HorizontalAlignment="Left" Watermark="Дата/время окончания" Height="23"/>
+            <toolkit:DateTimePicker Grid.Row="0" Grid.Column="1"  Value="{Binding EndDateTime}" 
+                                    HorizontalAlignment="Left" Watermark="Дата/время окончания" Height="23" Width="190"/>
             <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
                 <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2">
                     <Hyperlink Command="{Binding SetCurrentDateTimeEndCommand}">Текущее время</Hyperlink>

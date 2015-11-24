@@ -110,7 +110,8 @@ namespace PatientRecordsModule
             container.RegisterType<RecordDocumentsCollectionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordDocumentViewModel>(new ContainerControlledLifetimeManager());
             //RecordTypes Protocols
-            container.RegisterType<DefaultProtocolViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<DefaultProtocolViewModel>(new TransientLifetimeManager());
+            container.RegisterType<VisitProtocolViewModel>(new TransientLifetimeManager());
         }
 
         private void RegisterViews()
@@ -136,6 +137,7 @@ namespace PatientRecordsModule
             container.RegisterType<IPatientRecordsService, PatientRecordsService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IRecordTypeEditorResolver, RecordTypeEditorResolver>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ISuggestionProvider, MKBSuggestionProvider>(SuggestionProviderNames.MKB, new ContainerControlledLifetimeManager());
         }

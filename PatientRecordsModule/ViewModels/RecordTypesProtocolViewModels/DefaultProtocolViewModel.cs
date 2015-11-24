@@ -75,7 +75,17 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             return true;
         }
 
-        #endregion
+        public void BindProtocol(int assignmentId, int recordId, int visitId)
+        {
+            //if (assignmentId > 0)
+            //LoadAssignmentData
+            //if (recordId > 0)
+            // LoadRecordData
+            //if (visitId > 0)
+            //LoadVisitData
 
+        }
+
+        #endregion
     }
 }

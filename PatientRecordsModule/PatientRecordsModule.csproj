@@ -123,6 +123,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTOs\BrigadeDTO.cs" />
+    <Compile Include="DTOs\CommonRecordAssignmentDTO.cs" />
+    <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
+    <Compile Include="Misc\RecordTypeEditor.cs" />
     <Compile Include="ViewModels\BrigadeViewModel.cs" />
     <Compile Include="DTOs\VisitTemplateDTO.cs" />
     <Compile Include="DTOs\AssignmentDTO.cs" />
@@ -144,6 +147,7 @@
     <Compile Include="Services\Interfaces\IRecordService.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentsCollectionViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentViewModel.cs" />
+    <Compile Include="ViewModels\RecordTypesProtocolViewModels\VisitProtocolViewModel.cs" />
     <Compile Include="ViewModels\RecordTypesProtocolViewModels\DefaultProtocolViewModel.cs" />
     <Compile Include="ViewModels\VisitCloseViewModel.cs" />
     <Compile Include="ViewModels\VisitEditorViewModel.cs" />

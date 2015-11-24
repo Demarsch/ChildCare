@@ -12,6 +12,8 @@ namespace PatientRecordsModule.Misc
     {
         ProtocolMode CurrentMode { get; set; }
 
+        void BindProtocol(int assignmentId, int recordId, int visitId);
+
         void PrintProtocol();
 
         bool SaveProtocol();

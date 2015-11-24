@@ -18,6 +18,7 @@ namespace Core.Data
         public int RecordTypeId { get; set; }
         public bool HasDocuments { get; set; }
         public bool HasDICOM { get; set; }
+        public string Editor { get; set; }
     
         public virtual RecordType RecordType { get; set; }
     }
