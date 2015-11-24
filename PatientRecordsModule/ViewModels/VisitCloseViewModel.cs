@@ -4,7 +4,7 @@ using Core.Wpf.Mvvm;
 using Core.Wpf.PopupWindowActionAware;
 using Core.Wpf.Services;
 using log4net;
-using PatientRecordsModule.DTOs;
+using PatientRecordsModule.DTO;
 using PatientRecordsModule.Services;
 using Prism.Commands;
 using Prism.Interactivity.InteractionRequest;

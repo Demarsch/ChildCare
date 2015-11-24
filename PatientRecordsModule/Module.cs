@@ -105,6 +105,7 @@ namespace PatientRecordsModule
             container.RegisterType<PersonHierarchicalRecordsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitEditorViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitCloseViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<BrigadeViewModel>(new ContainerControlledLifetimeManager());
             //RecordDocuments
             container.RegisterType<RecordDocumentsCollectionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordDocumentViewModel>(new ContainerControlledLifetimeManager());

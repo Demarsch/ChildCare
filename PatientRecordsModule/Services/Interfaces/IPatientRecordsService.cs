@@ -1,5 +1,6 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
+using PatientRecordsModule.DTO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -52,6 +53,8 @@ namespace PatientRecordsModule.Services
         IDisposableQueryable<Record> GetRecord(int recordId);
 
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
+
+        ICollection<CommonIdName> GetAllowedPersonStaffs(int recordTypeId, int recordTypeRoleId, DateTime onDate);
 
         IEnumerable GetMKBs(string filter);
 

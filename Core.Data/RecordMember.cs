@@ -17,9 +17,11 @@ namespace Core.Data
         public int Id { get; set; }
         public int RecordId { get; set; }
         public int PersonStaffId { get; set; }
+        public int RecordTypeRolePermissionId { get; set; }
         public bool IsActive { get; set; }
     
         public virtual PersonStaff PersonStaff { get; set; }
         public virtual Record Record { get; set; }
+        public virtual RecordTypeRolePermission RecordTypeRolePermission { get; set; }
     }
 }

@@ -21,7 +21,6 @@ using PatientRecordsModule.Services;
 using System.Data.Entity;
 using Core.Extensions;
 using PatientRecordsModule.DTO;
-using PatientRecordsModule.DTOs;
 using Microsoft.Practices.Unity;
 using Core.Wpf.Misc;
 

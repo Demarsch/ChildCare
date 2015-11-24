@@ -668,6 +668,7 @@
           <Property Name="RecordId" Type="int" />
           <Property Name="DocumentId" Type="int" Nullable="false" />
         </EntityType>
+          <Property Name="RecordTypeRolePermissionId" Type="int" Nullable="false" />
         <EntityType Name="RecordPeriods">
           <Key>
             <PropertyRef Name="Id" />
@@ -2095,6 +2096,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RecordMembers_RecordTypeRolePermissions">
+          <End Role="RecordTypeRolePermissions" Type="Self.RecordTypeRolePermissions" Multiplicity="1" />
+          <End Role="RecordMembers" Type="Self.RecordMembers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordTypeRolePermissions">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMembers">
+              <PropertyRef Name="RecordTypeRolePermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RecordPeriods_ExecutionPlaces">
           <End Role="ExecutionPlaces" Type="Self.ExecutionPlaces" Multiplicity="1" />
           <End Role="RecordPeriods" Type="Self.RecordPeriods" Multiplicity="*" />
@@ -3028,6 +3041,10 @@
             <End Role="Records" EntitySet="Records" />
             <End Role="RecordDocuments" EntitySet="RecordDocuments" />
           </AssociationSet>
+          <AssociationSet Name="FK_RecordMembers_RecordTypeRolePermissions" Association="Self.FK_RecordMembers_RecordTypeRolePermissions">
+            <End Role="RecordTypeRolePermissions" EntitySet="RecordTypeRolePermissions" />
+            <End Role="RecordMembers" EntitySet="RecordMembers" />
+          </AssociationSet>
           <AssociationSet Name="FK_RecordPeriods_ExecutionPlaces" Association="Self.FK_RecordPeriods_ExecutionPlaces">
             <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
             <End Role="RecordPeriods" EntitySet="RecordPeriods" />
@@ -3749,15 +3766,6 @@
             <End Role="RecordPeriod" EntitySet="RecordPeriods" />
             <End Role="Record" EntitySet="Records" />
           </AssociationSet>
-          <EntitySet Name="RecordMembers" EntityType="DataLib.RecordMember" />
-          <AssociationSet Name="FK_RecordMembers_PersonStaffs" Association="DataLib.FK_RecordMembers_PersonStaffs">
-            <End Role="PersonStaff" EntitySet="PersonStaffs" />
-            <End Role="RecordMember" EntitySet="RecordMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordMembers_Records" Association="DataLib.FK_RecordMembers_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="RecordMember" EntitySet="RecordMembers" />
-          </AssociationSet>
           <EntitySet Name="RecordTypeRolePermissions" EntityType="DataLib.RecordTypeRolePermission" />
           <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
             <End Role="Permission" EntitySet="Permissions" />
@@ -3779,10 +3787,21 @@
           <AssociationSet Name="FK_Complications_Complications" Association="DataLib.FK_Complications_Complications">
             <End Role="Complication" EntitySet="Complications" />
             <End Role="Complication1" EntitySet="Complications" />
+          <EntitySet Name="RecordMembers" EntityType="DataLib.RecordMember" />
+          <AssociationSet Name="FK_RecordMembers_PersonStaffs" Association="DataLib.FK_RecordMembers_PersonStaffs">
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+            <End Role="RecordMember" EntitySet="RecordMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordMembers_Records" Association="DataLib.FK_RecordMembers_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="RecordMember" EntitySet="RecordMembers" />
           </AssociationSet>
           <AssociationSet Name="FK_Diagnoses_Complications" Association="DataLib.FK_Diagnoses_Complications">
             <End Role="Complication" EntitySet="Complications" />
             <End Role="Diagnosis" EntitySet="Diagnoses" />
+          <AssociationSet Name="FK_RecordMembers_RecordTypeRolePermissions" Association="DataLib.FK_RecordMembers_RecordTypeRolePermissions">
+            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
+            <End Role="RecordMember" EntitySet="RecordMembers" />
           </AssociationSet>
           <AssociationSet Name="FK_Diagnoses_DiagnosLevels" Association="DataLib.FK_Diagnoses_DiagnosLevels">
             <End Role="DiagnosLevel" EntitySet="DiagnosLevels" />
@@ -6400,41 +6419,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="RecordMember">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordId" Type="Int32" Nullable="false" />
-          <Property Name="PersonStaffId" Type="Int32" Nullable="false" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordMembers_PersonStaffs" FromRole="RecordMember" ToRole="PersonStaff" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordMembers_Records" FromRole="RecordMember" ToRole="Record" />
-        </EntityType>
-        <Association Name="FK_RecordMembers_PersonStaffs">
-          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="1" />
-          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PersonStaff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordMember">
-              <PropertyRef Name="PersonStaffId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordMembers_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
-          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordMember">
-              <PropertyRef Name="RecordId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="RecordTypeRolePermission">
           <Key>
             <PropertyRef Name="Id" />
@@ -6450,6 +6434,7 @@
           <NavigationProperty Name="Permission" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="RecordTypeRolePermission" ToRole="Permission" />
           <NavigationProperty Name="RecordTypeRole" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordTypeRole" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordTypeRolePermission" ToRole="RecordType" />
+          <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordMember" />
         </EntityType>
         <Association Name="FK_RecordTypeRolePermissions_Permissions">
           <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
@@ -6489,7 +6474,56 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Complication">
+        <EntityType Name="RecordMember">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="PersonStaffId" Type="Int32" Nullable="false" />
+          <Property Name="RecordTypeRolePermissionId" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordMembers_PersonStaffs" FromRole="RecordMember" ToRole="PersonStaff" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordMembers_Records" FromRole="RecordMember" ToRole="Record" />
+          <NavigationProperty Name="RecordTypeRolePermission" Relationship="DataLib.FK_RecordMembers_RecordTypeRolePermissions" FromRole="RecordMember" ToRole="RecordTypeRolePermission" />
+        </EntityType>
+        <Association Name="FK_RecordMembers_PersonStaffs">
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="1" />
+          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonStaff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMember">
+              <PropertyRef Name="PersonStaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordMembers_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMember">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordMembers_RecordTypeRolePermissions">
+          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="1" />
+          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordTypeRolePermission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMember">
+              <PropertyRef Name="RecordTypeRolePermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+     <EntityType Name="Complication">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -7632,6 +7666,13 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+           <EntitySetMapping Name="RecordMembers">
+            <EntityTypeMapping TypeName="DataLib.RecordMember">
+              <MappingFragment StoreEntitySet="RecordMembers">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="RecordTypeRolePermissionId" ColumnName="RecordTypeRolePermissionId" />
+                <ScalarProperty Name="PersonStaffId" ColumnName="PersonStaffId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
           <EntitySetMapping Name="Complications">
             <EntityTypeMapping TypeName="DataLib.Complication">
               <MappingFragment StoreEntitySet="Complications">

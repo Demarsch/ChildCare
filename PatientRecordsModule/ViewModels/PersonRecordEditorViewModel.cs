@@ -64,7 +64,7 @@ namespace PatientRecordsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            Brigade = new ObservableCollectionEx<BrigadeDTO>();
+            Brigade = new ObservableCollectionEx<BrigadeViewModel>();
             
             printProtocolCommand = new DelegateCommand(PrintProtocol);
             saveProtocolCommand = new DelegateCommand(SaveProtocol);
@@ -77,7 +77,7 @@ namespace PatientRecordsModule.ViewModels
 
         #region Properties
         
-        public ObservableCollectionEx<BrigadeDTO> Brigade { get; set; }
+        public ObservableCollectionEx<BrigadeViewModel> Brigade { get; set; }
 
         private int visitId;
         public int VisitId
@@ -199,6 +199,7 @@ namespace PatientRecordsModule.ViewModels
         private async void LoadBrigadeAsync(int recordId)
         {
             FailureMediator.Deactivate();
+            Brigade.Clear();
             if (recordId < 1) return;
             var loadingIsCompleted = false;
             currentOperationToken = new CancellationTokenSource();
@@ -219,6 +220,7 @@ namespace PatientRecordsModule.ViewModels
                     PersonName = x.PersonStaff.Person.ShortName,
                     PersonId = x.PersonStaff.PersonId,
                     StaffName = x.PersonStaff.Staff.ShortName,
+                    x.RecordTypeRolePermissionId,
                     x.PersonStaffId
                 }).ToListAsync(token);
                 var recordTypeMembersTask = recordTypeRolePermission.Select(x => new
@@ -227,17 +229,27 @@ namespace PatientRecordsModule.ViewModels
                     RoleId = x.RecordTypeMemberRoleId,
                     x.IsRequired,
                     PermissionName = x.Permission.Name,
-                    PermissionId = x.PermissionId
+                    PermissionId = x.PermissionId,
+                    RecordTypeRolePermissionId = x.Id
                 }).ToListAsync(token);
                 await Task.WhenAll(recordMembersTask, recordTypeMembersTask);
-                Brigade.AddRange(recordTypeMembersTask.Result.Select(x => new BrigadeDTO()
+                var recordMembersresult = recordMembersTask.Result;
+                Brigade.AddRange(recordTypeMembersTask.Result.Select(x => new BrigadeViewModel(patientRecordsService, logService, new BrigadeDTO()
                 {
                     IsRequired = x.IsRequired,
                     RoleName = x.RoleName,
                     RoleId = x.RoleId,
-                    PermissionId = x.PermissionId
-                }
-                ));
+                    PermissionId = x.PermissionId,
+                    RecordTypeRolePermissionId = x.RecordTypeRolePermissionId,
+                    PersonName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonName : string.Empty,
+                    StaffName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).StaffName : string.Empty,
+                    PersonStaffId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonStaffId : 0,
+                    RecordTypeId = recordTypeResult.RecordTypeId,
+                    OnDate = recordTypeResult.ActualDateTime
+                })).ToList());
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)

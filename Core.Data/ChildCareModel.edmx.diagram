@@ -198,13 +198,14 @@
         <EntityTypeShape EntityType="DataLib.RecordPeriod" Width="1.5" PointX="15.75" PointY="66.75" />
         <AssociationConnector Association="DataLib.FK_RecordPeriods_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Records_RecordPeriods" />
-        <EntityTypeShape EntityType="DataLib.RecordMember" Width="1.5" PointX="22.5" PointY="60.25" />
-        <AssociationConnector Association="DataLib.FK_RecordMembers_PersonStaffs" />
-        <AssociationConnector Association="DataLib.FK_RecordMembers_Records" />
         <EntityTypeShape EntityType="DataLib.RecordTypeRolePermission" Width="1.5" PointX="18.75" PointY="47" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
+        <EntityTypeShape EntityType="DataLib.RecordMember" Width="1.5" PointX="22.5" PointY="59.125" />
+        <AssociationConnector Association="DataLib.FK_RecordMembers_PersonStaffs" />
+        <AssociationConnector Association="DataLib.FK_RecordMembers_Records" />
+        <AssociationConnector Association="DataLib.FK_RecordMembers_RecordTypeRolePermissions" />
         <EntityTypeShape EntityType="DataLib.Complication" Width="1.5" PointX="25.875" PointY="56.75" />
         <EntityTypeShape EntityType="DataLib.Diagnosis" Width="1.5" PointX="28.125" PointY="54.5" />
         <EntityTypeShape EntityType="DataLib.DiagnosLevel" Width="1.5" PointX="25.875" PointY="53.375" />

@@ -10,6 +10,33 @@
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="500" Height="Auto">
 
+        <DataTemplate x:Key="BrigadeItemTemplate">
+            <StackPanel>
+                <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
+                <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
+                <TextBlock Text="{Binding StaffName}" TextAlignment="Center"/>
+                <TextBlock Text="{Binding PersonName}" TextAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SelectedBrigadeItemTemplate">
+            <StackPanel>
+                <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
+                <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
+                <ComboBox ItemsSource="{Binding PersonStaffs}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding PersonStaffId}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <Style TargetType="{x:Type ListBoxItem}" x:Key="ContainerStyle">
+            <Setter Property="ContentTemplate" Value="{StaticResource BrigadeItemTemplate}" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource SelectedBrigadeItemTemplate}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
