@@ -5,7 +5,6 @@ using System.Linq;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
-using Core.Extensions;
 using Core.Misc;
 using Core.Services;
 using ScheduleModule.DTO;

@@ -7,27 +7,14 @@
                       xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels"
                       xmlns:markupExtensions="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
                       xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-                      xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:HeaderViewModel}"
-                      Header="Расписание">
-    <fluent:RibbonTabItem.Resources>
-        <converters:Converter x:Key="ModeToTextConverter">
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
-                                      To="Назначение" />
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
-                                      To="Просмотр" />
-        </converters:Converter>
-        <converters:Converter x:Key="ModeToIconConverter">
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
-                                      To="pack://application:,,,/ScheduleModule;Component/Resources/Images/EditSchedule48x48.png" />
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
-                                      To="pack://application:,,,/ScheduleModule;Component/Resources/Images/ViewSchedule48x48.png" />
-        </converters:Converter>
-
-    </fluent:RibbonTabItem.Resources>
+                      d:DataContext="{d:DesignInstance viewModels:HeaderViewModel}">
+    <fluent:RibbonTabItem.Header>
+        <TextBlock Text="Расписание"
+                   Style="{x:Null}" />
+    </fluent:RibbonTabItem.Header>
     <fluent:RibbonGroupBox Header="Дата">
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousWeek48x48.png"
@@ -65,12 +52,6 @@
                        Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 7}" />
     </fluent:RibbonGroupBox>
-    <fluent:RibbonGroupBox Header="Режим">
-        <fluent:Button SizeDefinition="Large"
-                       Header="{Binding ContentViewModel.IsInAssignmentMode, Converter={StaticResource ModeToTextConverter}}" 
-                       LargeIcon="{Binding ContentViewModel.IsInAssignmentMode, Converter={StaticResource ModeToIconConverter}}"
-                       Command="{Binding ContentViewModel.ChangeModeCommand}"/>
-    </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Фильтры">
         <fluent:ComboBox Header="Тип услуг"
                          IsEditable="False"
@@ -84,5 +65,12 @@
                          ItemsSource="{Binding ContentViewModel.Rooms}"
                          SelectedItem="{Binding ContentViewModel.SelectedRoom}"
                          DisplayMemberPath="NumberAndName"/>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Перенос"
+                           Visibility="{Binding ContentViewModel.IsMovingAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+        <fluent:Button Size="Large"
+                       Header="Отменить"
+                       Command="{Binding ContentViewModel.CancelAssignmentMovementCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" />
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

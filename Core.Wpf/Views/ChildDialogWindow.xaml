@@ -10,7 +10,8 @@
                   d:DesignHeight="300"
                   d:DesignWidth="300"
                   d:DataContext="{d:DesignInstance mvvm:IDialogViewModel}"
-                  IsModal="True">
+                  IsModal="True"
+                  x:Name="window">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

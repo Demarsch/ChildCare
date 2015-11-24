@@ -162,18 +162,20 @@ namespace PatientInfoModule.ViewModels
                 MaritalStatuses = result.MaritalStatuses;
                 log.InfoFormat("Data sources for patient info content are successfully loaded");
                 dataSourcesLoadingTaskSource.SetResult(true);
+                return true;
             }
             catch (Exception ex)
             {
                 log.Error("Failed to load data sources for patient info content", ex);
                 FailureMediator.Activate("Не удалось загрузить общие данные. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
                 dataSourcesLoadingTaskSource.SetResult(false);
+                dataSourcesLoadingTaskSource = null;
+                return false;
             }
             finally
             {
                 BusyMediator.Deactivate();
             }
-            return await dataSourcesLoadingTaskSource.Task;
         }
 
         private void FillCache()
