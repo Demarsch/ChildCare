@@ -202,14 +202,12 @@
         <EntityTypeShape EntityType="DataLib.Complication" Width="1.5" PointX="25.875" PointY="56.75" />
         <EntityTypeShape EntityType="DataLib.Diagnosis" Width="1.5" PointX="28.125" PointY="54.5" />
         <EntityTypeShape EntityType="DataLib.DiagnosLevel" Width="1.5" PointX="25.875" PointY="53.375" />
-        <EntityTypeShape EntityType="DataLib.DiagnosType" Width="1.5" PointX="23.625" PointY="66.875" />
         <EntityTypeShape EntityType="DataLib.PersonDiagnos" Width="1.5" PointX="25.875" PointY="62.875" />
         <AssociationConnector Association="DataLib.FK_Complications_Complications" />
         <AssociationConnector Association="DataLib.FK_Diagnoses_Complications" />
         <AssociationConnector Association="DataLib.FK_Diagnoses_DiagnosLevels" />
         <AssociationConnector Association="DataLib.FK_Diagnoses_PersonDiagnoses" />
         <AssociationConnector Association="DataLib.FK_Diagnoses_Persons" />
-        <AssociationConnector Association="DataLib.FK_PersonDiagnoses_DiagnosTypes" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Records" />
         <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="0.75" PointY="4.75" />
@@ -222,6 +220,8 @@
         <EntityTypeShape EntityType="DataLib.RecordPeriod" Width="1.5" PointX="15.75" PointY="66.5" />
         <AssociationConnector Association="DataLib.FK_RecordPeriods_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Records_RecordPeriods" />
+        <EntityTypeShape EntityType="DataLib.DiagnosType" Width="1.5" PointX="7.375" PointY="1" />
+        <AssociationConnector Association="DataLib.FK_PersonDiagnoses_DiagnosTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

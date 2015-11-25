@@ -99,10 +99,10 @@ namespace Core.Data
         public virtual DbSet<Complication> Complications { get; set; }
         public virtual DbSet<Diagnosis> Diagnoses { get; set; }
         public virtual DbSet<DiagnosLevel> DiagnosLevels { get; set; }
-        public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
         public virtual DbSet<PersonDiagnos> PersonDiagnoses { get; set; }
         public virtual DbSet<MKB> MKBs { get; set; }
         public virtual DbSet<RecordMember> RecordMembers { get; set; }
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
+        public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
     }
 }

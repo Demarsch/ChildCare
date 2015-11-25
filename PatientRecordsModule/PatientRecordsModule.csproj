@@ -152,7 +152,8 @@
     <Compile Include="ViewModels\Diagnoses\DiagnosViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentsCollectionViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentViewModel.cs" />
-    <Compile Include="ViewModels\RecordTypesProtocols\DefaultProtocolViewModel.cs" />
+    <Compile Include="ViewModels\RecordTypesProtocolViewModels\DefaultProtocolViewModel.cs" />
+    <Compile Include="ViewModels\RecordTypesProtocolViewModels\VisitProtocolViewModel.cs" />
     <Compile Include="ViewModels\VisitCloseViewModel.cs" />
     <Compile Include="ViewModels\VisitEditorViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordEditorViewModel.cs" />

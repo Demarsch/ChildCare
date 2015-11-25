@@ -45,7 +45,7 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             return true;
         }
 
-        public void BindProtocol(int recordTypeId, int assignmentId, int recordId)
+        public void LoadProtocol(int recordTypeId, int assignmentId, int recordId)
         {
             return;
         }

@@ -27,6 +27,7 @@ namespace Core.Data
         public bool AllowCopy { get; set; }
         public bool HasComplications { get; set; }
         public bool NeedMKB { get; set; }
+        public bool NeedSetMainDiagnos { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }

@@ -90,7 +90,7 @@ namespace PatientRecordsModule.ViewModels
         /// Load record diagnoses
         /// </summary>
         /// <param name="recordId">0 - if there is no </param>
-        internal async Task Load(int recordId)
+        internal async void Load(int recordId)
         {
             Diagnoses.Clear();
             if (SpecialValues.IsNewOrNonExisting(recordId))
@@ -130,7 +130,7 @@ namespace PatientRecordsModule.ViewModels
                         DiagnosLevelName = x.DiagnosLevel.Name,
                         ComplicationId = x.ComplicationId,
                         IsMainDiagnos = x.IsMainDiagnos,
-                        //NeedSelectMainDiagnos = x.PersonDiagnos.DiagnosType.NeedSetMainDiagnos
+                        NeedSelectMainDiagnos = x.PersonDiagnos.DiagnosType.NeedSetMainDiagnos
                     }).ToArray();
                 }, token);
                

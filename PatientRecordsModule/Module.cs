@@ -21,10 +21,8 @@ using PatientRecordsModule.Services;
 using Core.Wpf.Events;
 using System.Windows;
 using WpfControls.Editors;
-using PatientRecordsModule.ViewModels;
-using PatientRecordsModule.Views;
-using PatientRecordsModule.ViewModels.RecordTypesProtocols;
-using PatientRecordsModule.Views.RecordTypesProtocols;
+using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using PatientRecordsModule.Views.RecordTypesProtocolViewModels;
 
 namespace PatientRecordsModule
 {

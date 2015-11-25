@@ -12,13 +12,11 @@ namespace PatientRecordsModule.Misc
     {
         ProtocolMode CurrentMode { get; set; }
 
-        void BindProtocol(int assignmentId, int recordId, int visitId);
-
-        void PrintProtocol();
+        void LoadProtocol(int assignmentId, int recordId, int visitId);
 
         bool SaveProtocol();
 
-        Task Load(int id);
+        void PrintProtocol();        
     }
 
     public enum ProtocolMode

@@ -21,7 +21,7 @@ using System.Windows.Input;
 using System.Data.Entity;
 using Core.Extensions;
 using Core.Wpf.Services;
-using PatientRecordsModule.ViewModels.RecordTypesProtocols;
+using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -149,7 +149,7 @@ namespace PatientRecordsModule.ViewModels
                 if (ProtocolEditor != null)
                 {
                     ProtocolEditor.PropertyChanged += ProtocolEditor_PropertyChanged;
-                    ProtocolEditor.BindProtocol(AssignmentId, RecordId, VisitId);
+                    ProtocolEditor.LoadProtocol(AssignmentId, RecordId, VisitId);
                     LoadProtocolCommonData(VisitId, AssignmentId, RecordId);
                 }
                 OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
@@ -412,10 +412,7 @@ namespace PatientRecordsModule.ViewModels
             RecordId = recordId;
             LoadProtocolEditor(visitId, assignmentId, recordId);
 
-            //ProtocolEditor = new DefaultProtocolViewModel(diagnosService, recordService, logService);
-            //await ProtocolEditor.Load(2);
             await DocumentsViewer.LoadDocuments(assignmentId, recordId);
-
         }
 
         private async void LoadProtocolCommonData(int visitId, int assignmentId, int recordId)

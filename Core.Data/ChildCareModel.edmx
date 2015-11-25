@@ -28,6 +28,8 @@
           <Property Name="AssignLpuId" Type="int" />
           <Property Name="RoomId" Type="int" Nullable="false" />
           <Property Name="FinancingSourceId" Type="int" Nullable="false" />
+          <Property Name="UrgentlyId" Type="int" Nullable="false" />
+          <Property Name="ExecutionPlaceId" Type="int" Nullable="false" />
           <Property Name="CancelUserId" Type="int" />
           <Property Name="CancelDateTime" Type="datetime" />
           <Property Name="Note" Type="varchar" MaxLength="8000" Nullable="false" />
@@ -38,8 +40,6 @@
           <Property Name="BillingDateTime" Type="datetime" />
           <Property Name="Cost" Type="float" Nullable="false" />
           <Property Name="RemovedByUserId" Type="int" />
-          <Property Name="UrgentlyId" Type="int" Nullable="false" />
-          <Property Name="ExecutionPlaceId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Branches">
           <Key>
@@ -225,7 +225,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="ShortName" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="Priority" Type="int" Nullable="false" />
           <Property Name="IsActual" Type="bit" Nullable="false" />
           <Property Name="HasMKB" Type="bit" Nullable="false" />
@@ -242,6 +242,7 @@
           <Property Name="AllowCopy" Type="bit" Nullable="false" />
           <Property Name="HasComplications" Type="bit" Nullable="false" />
           <Property Name="NeedMKB" Type="bit" Nullable="false" />
+          <Property Name="NeedSetMainDiagnos" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="DisabilityTypes">
           <Key>
@@ -373,9 +374,9 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
           <Property Name="Code" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
-          <Property Name="ParentId" Type="int" />
         </EntityType>
         <EntityType Name="Okatos">
           <Key>
@@ -688,10 +689,10 @@
           <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ExecutionPlaceId" Type="int" Nullable="false" />
-          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="IsDefault" Type="bit" Nullable="false" />
           <Property Name="IsOperation" Type="bit" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Records">
           <Key>
@@ -3836,7 +3837,6 @@
           <EntitySet Name="Complications" EntityType="DataLib.Complication" />
           <EntitySet Name="Diagnoses" EntityType="DataLib.Diagnosis" />
           <EntitySet Name="DiagnosLevels" EntityType="DataLib.DiagnosLevel" />
-          <EntitySet Name="DiagnosTypes" EntityType="DataLib.DiagnosType" />
           <EntitySet Name="PersonDiagnoses" EntityType="DataLib.PersonDiagnos" />
           <AssociationSet Name="FK_Complications_Complications" Association="DataLib.FK_Complications_Complications">
             <End Role="Complication" EntitySet="Complications" />
@@ -3857,10 +3857,6 @@
           <AssociationSet Name="FK_Diagnoses_Persons" Association="DataLib.FK_Diagnoses_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="Diagnosis" EntitySet="Diagnoses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonDiagnoses_DiagnosTypes" Association="DataLib.FK_PersonDiagnoses_DiagnosTypes">
-            <End Role="DiagnosType" EntitySet="DiagnosTypes" />
-            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonDiagnoses_Persons" Association="DataLib.FK_PersonDiagnoses_Persons">
             <End Role="Person" EntitySet="Persons" />
@@ -3900,6 +3896,11 @@
           <AssociationSet Name="FK_Records_RecordPeriods" Association="DataLib.FK_Records_RecordPeriods">
             <End Role="RecordPeriod" EntitySet="RecordPeriods" />
             <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <EntitySet Name="DiagnosTypes" EntityType="DataLib.DiagnosType" />
+          <AssociationSet Name="FK_PersonDiagnoses_DiagnosTypes" Association="DataLib.FK_PersonDiagnoses_DiagnosTypes">
+            <End Role="DiagnosType" EntitySet="DiagnosTypes" />
+            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -6549,25 +6550,12 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="Priority" Type="Int32" Nullable="false" />
           <Property Name="IsActual" Type="Boolean" Nullable="false" />
           <Property Name="HasMKB" Type="Boolean" Nullable="false" />
           <Property Name="IsComplication" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Diagnoses" Relationship="DataLib.FK_Diagnoses_DiagnosLevels" FromRole="DiagnosLevel" ToRole="Diagnosis" />
-        </EntityType>
-        <EntityType Name="DiagnosType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="Priority" Type="Int32" Nullable="false" />
-          <Property Name="IsActual" Type="Boolean" Nullable="false" />
-          <Property Name="AllowCopy" Type="Boolean" Nullable="false" />
-          <Property Name="HasComplications" Type="Boolean" Nullable="false" />
-          <Property Name="NeedMKB" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_DiagnosTypes" FromRole="DiagnosType" ToRole="PersonDiagnos" />
         </EntityType>
         <EntityType Name="PersonDiagnos">
           <Key>
@@ -6578,9 +6566,9 @@
           <Property Name="RecordId" Type="Int32" Nullable="false" />
           <Property Name="DiagnosTypeId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Diagnoses" Relationship="DataLib.FK_Diagnoses_PersonDiagnoses" FromRole="PersonDiagnos" ToRole="Diagnosis" />
-          <NavigationProperty Name="DiagnosType" Relationship="DataLib.FK_PersonDiagnoses_DiagnosTypes" FromRole="PersonDiagnos" ToRole="DiagnosType" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonDiagnoses_Persons" FromRole="PersonDiagnos" ToRole="Person" />
           <NavigationProperty Name="Record" Relationship="DataLib.FK_PersonDiagnoses_Records" FromRole="PersonDiagnos" ToRole="Record" />
+          <NavigationProperty Name="DiagnosType" Relationship="DataLib.FK_PersonDiagnoses_DiagnosTypes" FromRole="PersonDiagnos" ToRole="DiagnosType" />
         </EntityType>
         <Association Name="FK_Complications_Complications">
           <End Type="DataLib.Complication" Role="Complication" Multiplicity="0..1" />
@@ -6641,18 +6629,6 @@
             </Principal>
             <Dependent Role="Diagnosis">
               <PropertyRef Name="InPersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonDiagnoses_DiagnosTypes">
-          <End Type="DataLib.DiagnosType" Role="DiagnosType" Multiplicity="1" />
-          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DiagnosType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonDiagnos">
-              <PropertyRef Name="DiagnosTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6800,6 +6776,32 @@
             </Principal>
             <Dependent Role="Record">
               <PropertyRef Name="RecordPeriodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DiagnosType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <Property Name="IsActual" Type="Boolean" Nullable="false" />
+          <Property Name="AllowCopy" Type="Boolean" Nullable="false" />
+          <Property Name="HasComplications" Type="Boolean" Nullable="false" />
+          <Property Name="NeedMKB" Type="Boolean" Nullable="false" />
+          <Property Name="NeedSetMainDiagnos" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_DiagnosTypes" FromRole="DiagnosType" ToRole="PersonDiagnos" />
+        </EntityType>
+        <Association Name="FK_PersonDiagnoses_DiagnosTypes">
+          <End Type="DataLib.DiagnosType" Role="DiagnosType" Multiplicity="1" />
+          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DiagnosType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDiagnos">
+              <PropertyRef Name="DiagnosTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7785,19 +7787,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="DiagnosTypes">
-            <EntityTypeMapping TypeName="DataLib.DiagnosType">
-              <MappingFragment StoreEntitySet="DiagnosTypes">
-                <ScalarProperty Name="NeedMKB" ColumnName="NeedMKB" />
-                <ScalarProperty Name="HasComplications" ColumnName="HasComplications" />
-                <ScalarProperty Name="AllowCopy" ColumnName="AllowCopy" />
-                <ScalarProperty Name="IsActual" ColumnName="IsActual" />
-                <ScalarProperty Name="Priority" ColumnName="Priority" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PersonDiagnoses">
             <EntityTypeMapping TypeName="DataLib.PersonDiagnos">
               <MappingFragment StoreEntitySet="PersonDiagnoses">
@@ -7838,6 +7827,20 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DiagnosTypes">
+            <EntityTypeMapping TypeName="DataLib.DiagnosType">
+              <MappingFragment StoreEntitySet="DiagnosTypes">
+                <ScalarProperty Name="NeedSetMainDiagnos" ColumnName="NeedSetMainDiagnos" />
+                <ScalarProperty Name="NeedMKB" ColumnName="NeedMKB" />
+                <ScalarProperty Name="HasComplications" ColumnName="HasComplications" />
+                <ScalarProperty Name="AllowCopy" ColumnName="AllowCopy" />
+                <ScalarProperty Name="IsActual" ColumnName="IsActual" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

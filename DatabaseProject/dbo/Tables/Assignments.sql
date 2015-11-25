@@ -9,6 +9,8 @@
     [AssignLpuId]       INT            NULL,
     [RoomId]            INT            NOT NULL,
     [FinancingSourceId] INT            NOT NULL,
+    [UrgentlyId]        INT            NOT NULL,
+    [ExecutionPlaceId]  INT            NOT NULL,
     [CancelUserId]      INT            NULL,
     [CancelDateTime]    DATETIME       NULL,
     [Note]              VARCHAR (8000) CONSTRAINT [DF_Assignments_Note] DEFAULT ('') NOT NULL,
@@ -19,8 +21,6 @@
     [BillingDateTime]   DATETIME       NULL,
     [Cost]              FLOAT (53)     CONSTRAINT [DF_Assignments_Cost] DEFAULT ((0)) NOT NULL,
     [RemovedByUserId]   INT            NULL,
-    [UrgentlyId]        INT            NOT NULL,
-    [ExecutionPlaceId]  INT            NOT NULL,
     CONSTRAINT [PK_Assignments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Assignments_Assignments] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Assignments] ([Id]),
     CONSTRAINT [FK_Assignments_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
@@ -35,6 +35,8 @@
     CONSTRAINT [FK_Assignments_Users2_RemovedByUser] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 
