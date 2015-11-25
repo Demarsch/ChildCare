@@ -139,6 +139,7 @@
     <Build Include="dbo\Tables\RecordTypeEditors.sql" />
     <Build Include="dbo\Tables\RecordPeriods.sql" />
     <Build Include="dbo\Tables\PersonDiagnoses.sql" />
+    <Build Include="dbo\Tables\RecordMembers.sql" />
     <Build Include="dbo\Tables\DiagnosTypes.sql" />
     <Build Include="dbo\Tables\DiagnosLevels.sql" />
     <Build Include="dbo\Tables\Diagnoses.sql" />

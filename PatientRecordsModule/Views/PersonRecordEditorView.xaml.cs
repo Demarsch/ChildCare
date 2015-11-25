@@ -33,5 +33,10 @@ namespace PatientRecordsModule.Views
             get { return DataContext as PersonRecordEditorViewModel; }
             set { DataContext = value; }
         }
+
+        private void ListBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as ListBox).SelectedItem = null;
+        }
     }
 }

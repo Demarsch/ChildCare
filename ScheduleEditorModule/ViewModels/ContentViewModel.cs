@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Navigation;
@@ -15,12 +14,13 @@ using log4net;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
+using Prism.Regions;
 using ScheduleEditorModule.Services;
 using Shared.Schedule.Events;
 
 namespace ScheduleEditorModule.ViewModels
 {
-    public class ContentViewModel : BindableBase, IDisposable
+    public class ContentViewModel : BindableBase, IDisposable, INavigationAware
     {
         private readonly ILog log;
 
@@ -28,13 +28,13 @@ namespace ScheduleEditorModule.ViewModels
 
         private readonly ICacheService cacheService;
 
-        private readonly IDialogService dialogService;
+        private readonly IDialogServiceAsync dialogService;
 
         private readonly IEventAggregator eventAggregator;
 
         private readonly HashSet<ScheduleItem> unsavedItems;
 
-        public ContentViewModel(IScheduleEditorService scheduleEditorService, ILog log, ICacheService cacheService, IDialogService dialogService, IEventAggregator eventAggregator)
+        public ContentViewModel(IScheduleEditorService scheduleEditorService, ILog log, ICacheService cacheService, IDialogServiceAsync dialogService, IEventAggregator eventAggregator)
         {
             if (scheduleEditorService == null)
             {
@@ -71,22 +71,67 @@ namespace ScheduleEditorModule.ViewModels
                                             Command = saveChangesCommand,
                                             CommandName = "Повторить"
                                         };
-            cancelChangesCommand = new DelegateCommand(CancelChanges, HasChanges);
+            cancelChangesCommand = new DelegateCommand(CancelChangesAsync, HasChanges);
             CopyCommand = new DelegateCommand<object>(Copy);
             pasteCommand = new DelegateCommand<object>(Paste, CanPaste);
-            Rooms = cacheService.GetItems<Room>().Select(x => new ScheduleEditorRoomViewModel(x) { CopyCommand = CopyCommand, PasteCommand = PasteCommand }).ToArray();
-            foreach (var roomDay in Rooms.SelectMany(x => x.Days))
-            {
-                roomDay.CopyCommand = CopyCommand;
-                roomDay.PasteCommand = PasteCommand;
-                roomDay.EditRequested += RoomDayOnEditRequested;
-                roomDay.CloseRequested += RoomDayOnCloseRequested;
-            }
             clipboardContentDescription = "Буфер обмена пуст";
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            SelectedDate = DateTime.Today;
+            selectedDate = DateTime.Today;
+            initialLoadingCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await InitialLoadingAsync()) };
+            loadScheduleCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadScheduleAsync()) };
             CommandManager.RequerySuggested += CommandManagerOnRequerySuggested;
+        }
+
+        private TaskCompletionSource<object> initialLoadingTaskSource;
+
+        private readonly CommandWrapper initialLoadingCommandWrapper;
+
+        private readonly CommandWrapper loadScheduleCommandWrapper;
+
+        private async Task InitialLoadingAsync()
+        {
+            if (initialLoadingTaskSource != null)
+            {
+                await initialLoadingTaskSource.Task;
+                return;
+            }
+            initialLoadingTaskSource = new TaskCompletionSource<object>();
+            log.InfoFormat("Loading data sources for schedule editor content...");
+            BusyMediator.Activate("Загрузка общих данных...");
+            try
+            {
+                await Task.Run((Action)FillCache);
+                Rooms = cacheService.GetItems<Room>().Select(x => new ScheduleEditorRoomViewModel(x) { CopyCommand = CopyCommand, PasteCommand = PasteCommand }).ToArray();
+                CreateWeekDays(selectedDate.GetWeekBegininng());
+                foreach (var roomDay in Rooms.SelectMany(x => x.Days))
+                {
+                    roomDay.CopyCommand = CopyCommand;
+                    roomDay.PasteCommand = PasteCommand;
+                    roomDay.EditRequested += RoomDayOnEditRequested;
+                    roomDay.CloseRequested += RoomDayOnCloseRequested;
+                }
+                await LoadScheduleAsync();
+                log.InfoFormat("Data sources and current week schedule for schedule editor succesfully loaded");
+                initialLoadingTaskSource.SetResult(null);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Failed to load data sources for schedule editor", ex);
+                FailureMediator.Activate("Не удалось загрузить общие данные. Попробуйте еще раз или обратитесь в службу поддержки", initialLoadingCommandWrapper, ex);
+                initialLoadingTaskSource.SetResult(null);
+                initialLoadingTaskSource = null;
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        private void FillCache()
+        {
+            cacheService.GetItems<Room>();
+            cacheService.GetItems<RecordType>();
         }
 
         private void CommandManagerOnRequerySuggested(object sender, EventArgs eventArgs)
@@ -112,7 +157,7 @@ namespace ScheduleEditorModule.ViewModels
             private set { SetProperty(ref clipboardContentDescription, value); }
         }
 
-        private void RoomDayOnEditRequested(object sender, EventArgs e)
+        private async void RoomDayOnEditRequested(object sender, EventArgs e)
         {
             var roomDay = (ScheduleEditorRoomDayViewModel)sender;
             using (var viewModel = new ScheduleEditorEditDayViewModel(cacheService))
@@ -122,22 +167,23 @@ namespace ScheduleEditorModule.ViewModels
                 viewModel.IsThisDayOnly = roomDay.IsThisDayOnly;
                 viewModel.ScheduleItems = roomDay.ScheduleItems;
                 viewModel.IsChanged = false;
-                if (dialogService.ShowDialog(viewModel) == true && (viewModel.IsChanged || viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
+                var result = await dialogService.ShowDialogAsync(viewModel);
+                if (result == true && (viewModel.IsChanged || viewModel.AllowedRecordTypes.Any(x => x.IsChanged)))
                 {
                     var newItems = viewModel.ScheduleItems.ToArray();
                     UpdateUnsavedItems(newItems, roomDay);
                     if (newItems.Length == 1 && newItems[0].RecordTypeId == 0)
                     {
                         log.InfoFormat("Manually closed {0:dd.MM.yy}{1} for room (Id = {2})",
-                            roomDay.RelatedDate,
-                            roomDay.IsThisDayOnly ? " (this day only)" : string.Empty,
-                            roomDay.RoomId);
+                                       roomDay.RelatedDate,
+                                       roomDay.IsThisDayOnly ? " (this day only)" : string.Empty,
+                                       roomDay.RoomId);
                     }
                     log.InfoFormat("Updated {0:dd.MM.yy}{1} with {2} schedule items for room (Id = {3})",
-                        roomDay.RelatedDate,
-                        roomDay.IsThisDayOnly ? " (this day only)" : string.Empty,
-                        newItems.Length,
-                        roomDay.RoomId);
+                                   roomDay.RelatedDate,
+                                   roomDay.IsThisDayOnly ? " (this day only)" : string.Empty,
+                                   newItems.Length,
+                                   roomDay.RoomId);
                 }
             }
         }
@@ -151,10 +197,10 @@ namespace ScheduleEditorModule.ViewModels
             unsavedItems.UnionWith(newScheduleItems.Select(x => x.GetScheduleItem().Clone()).Cast<ScheduleItem>());
             var newCount = unsavedItems.Count;
             log.Info(oldCount == newCount
-                ? "Unsaved item count remains the same"
-                : oldCount > newCount
-                    ? string.Format("Removed {0} items from unsaved collection", oldCount - newCount)
-                    : string.Format("Added {0} items to unsaved collection", newCount - oldCount));
+                         ? "Unsaved item count remains the same"
+                         : oldCount > newCount
+                               ? string.Format("Removed {0} items from unsaved collection", oldCount - newCount)
+                               : string.Format("Added {0} items to unsaved collection", newCount - oldCount));
             saveChangesCommand.RaiseCanExecuteChanged();
             cancelChangesCommand.RaiseCanExecuteChanged();
         }
@@ -164,22 +210,25 @@ namespace ScheduleEditorModule.ViewModels
             var roomDay = (ScheduleEditorRoomDayViewModel)sender;
             var thisDayOnly = e.Result;
             var scheduleItem = new ScheduleItem
-            {
-                BeginDate = roomDay.RelatedDate,
-                EndDate = thisDayOnly ? roomDay.RelatedDate : DateTime.MaxValue.Date,
-                DayOfWeek = roomDay.DayOfWeek,
-                RecordTypeId = null,
-                RoomId = roomDay.RoomId,
-            };
+                               {
+                                   BeginDate = roomDay.RelatedDate,
+                                   EndDate = thisDayOnly ? roomDay.RelatedDate : DateTime.MaxValue.Date,
+                                   DayOfWeek = roomDay.DayOfWeek,
+                                   RecordTypeId = null,
+                                   RoomId = roomDay.RoomId,
+                               };
             var newScheduleItems = new[] { new ScheduleEditorScheduleItemViewModel(scheduleItem, cacheService) };
             roomDay.ScheduleItems.Replace(newScheduleItems);
             log.InfoFormat("Closed {0:dd.MM.yy} for room (Id = {1}){2} via menu", roomDay.RelatedDate, roomDay.RoomId, thisDayOnly ? " (this day only)" : string.Empty);
             UpdateUnsavedItems(newScheduleItems, roomDay);
         }
 
-        private DelegateCommand<int?> closeDayThisWeekCommand; 
+        private readonly DelegateCommand<int?> closeDayThisWeekCommand;
 
-        public ICommand CloseDayThisWeekCommand { get { return closeDayThisWeekCommand; } }
+        public ICommand CloseDayThisWeekCommand
+        {
+            get { return closeDayThisWeekCommand; }
+        }
 
         private void CloseDayThisWeek(int? dayOfWeek)
         {
@@ -194,9 +243,12 @@ namespace ScheduleEditorModule.ViewModels
             return CanCloseSchedule(dayOfWeek, true);
         }
 
-        private DelegateCommand<int?> closeDayCommand; 
+        private readonly DelegateCommand<int?> closeDayCommand;
 
-        public ICommand CloseDayCommand { get { return closeDayCommand; } }
+        public ICommand CloseDayCommand
+        {
+            get { return closeDayCommand; }
+        }
 
         private void CloseDay(int? dayOfWeek)
         {
@@ -215,10 +267,10 @@ namespace ScheduleEditorModule.ViewModels
                 return;
             }
             log.InfoFormat("Closing {0} day of week ({1:dd.MM} - {2:dd.MM}){3}",
-                dayOfWeek,
-                selectedDate.GetWeekBegininng(),
-                selectedDate.GetWeekEnding(),
-                thisWeek ? " (this week only)" : string.Empty);
+                           dayOfWeek,
+                           selectedDate.GetWeekBegininng(),
+                           selectedDate.GetWeekEnding(),
+                           thisWeek ? " (this week only)" : string.Empty);
             foreach (var day in Rooms.Select(x => x.Days[dayOfWeek.Value - 1]))
             {
                 day.CloseCommand.Execute(thisWeek);
@@ -270,10 +322,10 @@ namespace ScheduleEditorModule.ViewModels
                 return;
             }
             log.ErrorFormat("Failed to copy part of schedule. Unexpected type of content - {0}", clipboardContentType);
-            dialogService.ShowError("Не удалось скопировать часть расписания. Тип содержимого неизвестен");
+            FailureMediator.Activate("Не удалось скопировать часть расписания. Тип содержимого неизвестен", canBeDeactivated: true);
         }
 
-        private DelegateCommand<object> pasteCommand;
+        private readonly DelegateCommand<object> pasteCommand;
 
         public ICommand PasteCommand
         {
@@ -301,7 +353,7 @@ namespace ScheduleEditorModule.ViewModels
                 return;
             }
             log.ErrorFormat("Failed to copy part of schedule. Unexpected type of content - {0}", clipboardContentType);
-            dialogService.ShowError("Не удалось скопировать часть расписания. Тип содержимого неизвестен");
+            FailureMediator.Activate("Не удалось вставить скопированное расписания. Тип содержимого неизвестен", canBeDeactivated: true);
         }
 
         private void PasteRoom(ScheduleEditorRoomViewModel destinationRoom)
@@ -328,15 +380,15 @@ namespace ScheduleEditorModule.ViewModels
                 if (newDayItems.Count == 0)
                 {
                     newDayItems.Add(new ScheduleEditorScheduleItemViewModel(new ScheduleItem
-                    {
-                        BeginDate = destinationRoomDay.RelatedDate,
-                        EndDate = DateTime.MaxValue.Date,
-                        DayOfWeek = destinationRoomDay.DayOfWeek,
-                        RecordTypeId = null,
-                        StartTime = TimeSpan.Zero,
-                        EndTime = TimeSpan.Zero,
-                        RoomId = destinationRoomDay.RoomId
-                    }, cacheService));
+                                                                            {
+                                                                                BeginDate = destinationRoomDay.RelatedDate,
+                                                                                EndDate = DateTime.MaxValue.Date,
+                                                                                DayOfWeek = destinationRoomDay.DayOfWeek,
+                                                                                RecordTypeId = null,
+                                                                                StartTime = TimeSpan.Zero,
+                                                                                EndTime = TimeSpan.Zero,
+                                                                                RoomId = destinationRoomDay.RoomId
+                                                                            }, cacheService));
                 }
                 UpdateUnsavedItems(newDayItems, destinationRoomDay);
             }
@@ -363,15 +415,15 @@ namespace ScheduleEditorModule.ViewModels
                 if (newDayItems.Count == 0)
                 {
                     newDayItems.Add(new ScheduleEditorScheduleItemViewModel(new ScheduleItem
-                    {
-                        BeginDate = destinationRoomDay.RelatedDate,
-                        EndDate = DateTime.MaxValue.Date,
-                        DayOfWeek = destinationRoomDay.DayOfWeek,
-                        RecordTypeId = null,
-                        StartTime = TimeSpan.Zero,
-                        EndTime = TimeSpan.Zero,
-                        RoomId = destinationRoomDay.RoomId
-                    }, cacheService));
+                                                                            {
+                                                                                BeginDate = destinationRoomDay.RelatedDate,
+                                                                                EndDate = DateTime.MaxValue.Date,
+                                                                                DayOfWeek = destinationRoomDay.DayOfWeek,
+                                                                                RecordTypeId = null,
+                                                                                StartTime = TimeSpan.Zero,
+                                                                                EndTime = TimeSpan.Zero,
+                                                                                RoomId = destinationRoomDay.RoomId
+                                                                            }, cacheService));
                 }
                 UpdateUnsavedItems(newDayItems, destinationRoomDay);
             }
@@ -396,15 +448,15 @@ namespace ScheduleEditorModule.ViewModels
             if (newDayItems.Count == 0)
             {
                 newDayItems.Add(new ScheduleEditorScheduleItemViewModel(new ScheduleItem
-                {
-                    BeginDate = destinationRoomDay.RelatedDate,
-                    EndDate = DateTime.MaxValue.Date,
-                    DayOfWeek = destinationRoomDay.DayOfWeek,
-                    RecordTypeId = null,
-                    StartTime = TimeSpan.Zero,
-                    EndTime = TimeSpan.Zero,
-                    RoomId = destinationRoomDay.RoomId
-                }, cacheService));
+                                                                        {
+                                                                            BeginDate = destinationRoomDay.RelatedDate,
+                                                                            EndDate = DateTime.MaxValue.Date,
+                                                                            DayOfWeek = destinationRoomDay.DayOfWeek,
+                                                                            RecordTypeId = null,
+                                                                            StartTime = TimeSpan.Zero,
+                                                                            EndTime = TimeSpan.Zero,
+                                                                            RoomId = destinationRoomDay.RoomId
+                                                                        }, cacheService));
             }
             UpdateUnsavedItems(newDayItems, destinationRoomDay);
         }
@@ -452,19 +504,25 @@ namespace ScheduleEditorModule.ViewModels
                 if (differentWeek)
                 {
                     log.InfoFormat("New selected date is {0:dd.MM.yy}", value);
-                    WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x))
-                    {
-                        CloseDayCommand = CloseDayCommand,
-                        CloseDayThisWeekCommand = CloseDayThisWeekCommand,
-                        CopyCommand = CopyCommand,
-                        PasteCommand = PasteCommand
-                    }).ToArray();
+                    CreateWeekDays(newWeekBegining);
+                    //We shouldn't (and we can't) await this task
                     LoadScheduleAsync();
                 }
             }
         }
 
-        public async void LoadScheduleAsync()
+        private void CreateWeekDays(DateTime newWeekBegining)
+        {
+            WeekDays = Enumerable.Range(0, 7).Select(x => new DayOfWeekViewModel(newWeekBegining.AddDays(x))
+                                                          {
+                                                              CloseDayCommand = CloseDayCommand,
+                                                              CloseDayThisWeekCommand = CloseDayThisWeekCommand,
+                                                              CopyCommand = CopyCommand,
+                                                              PasteCommand = PasteCommand
+                                                          }).ToArray();
+        }
+
+        public async Task LoadScheduleAsync()
         {
             try
             {
@@ -472,7 +530,6 @@ namespace ScheduleEditorModule.ViewModels
                 BusyMediator.Activate("Загрузка расписания");
                 var selectedWeekBegining = selectedDate.GetWeekBegininng();
                 log.InfoFormat("Loading schedule editor for {0:dd.MM.yyyy}-{1:dd.MM.yyyy}", selectedWeekBegining, selectedDate.GetWeekEnding());
-                await Task.Delay(TimeSpan.FromSeconds(0.5));
                 var scheduleItems = (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(() => scheduleEditorService.GetRoomsWorkingTimeForWeek(selectedDate))).ToLookup(x => x.RoomId);
                 foreach (var room in Rooms)
                 {
@@ -490,9 +547,9 @@ namespace ScheduleEditorModule.ViewModels
                         }
                         //Now we check if we made changes for different day that influe current day
                         var previousDayUnsavedItems = unsavedItems.Where(x => x.RoomId == day.RoomId && x.DayOfWeek == day.DayOfWeek && x.BeginDate < day.RelatedDate && x.EndDate >= day.RelatedDate)
-                            .GroupBy(x => x.BeginDate)
-                            .OrderByDescending(x => x.Key)
-                            .FirstOrDefault();
+                                                                  .GroupBy(x => x.BeginDate)
+                                                                  .OrderByDescending(x => x.Key)
+                                                                  .FirstOrDefault();
                         if (previousDayUnsavedItems != null)
                         {
                             day.ScheduleItems.Replace(previousDayUnsavedItems.Select(x => new ScheduleEditorScheduleItemViewModel(x, cacheService)));
@@ -509,7 +566,9 @@ namespace ScheduleEditorModule.ViewModels
             catch (Exception ex)
             {
                 log.Error("Failed to load schedule editor", ex);
-                FailureMediator.Activate(string.Format("Не удалось загрузить расписание. Попробуйте выбрать другие даты. Если ошибка повторится, обратитесь в службу поддержки"), exception: ex);
+                FailureMediator.Activate(string.Format("Не удалось загрузить расписание. Попробуйте выбрать другие даты. Если ошибка повторится, обратитесь в службу поддержки"),
+                                         loadScheduleCommandWrapper,
+                                         ex);
             }
             finally
             {
@@ -521,7 +580,10 @@ namespace ScheduleEditorModule.ViewModels
 
         private readonly CommandWrapper saveChangesCommandWrapper;
 
-        public ICommand SaveChangesCommand { get { return saveChangesCommand; } }
+        public ICommand SaveChangesCommand
+        {
+            get { return saveChangesCommand; }
+        }
 
         private async void SaveChangesAsync()
         {
@@ -566,12 +628,15 @@ namespace ScheduleEditorModule.ViewModels
 
         private readonly DelegateCommand cancelChangesCommand;
 
-        public ICommand CancelChangesCommand { get { return cancelChangesCommand; }}
+        public ICommand CancelChangesCommand
+        {
+            get { return cancelChangesCommand; }
+        }
 
-        public void CancelChanges()
+        public async void CancelChangesAsync()
         {
             ClearUnsavedItems();
-            LoadScheduleAsync();
+            await LoadScheduleAsync();
         }
 
         public void Dispose()
@@ -586,6 +651,21 @@ namespace ScheduleEditorModule.ViewModels
             {
                 room.Dispose();
             }
+        }
+
+        public async void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            await InitialLoadingAsync();
+        }
+
+        public bool IsNavigationTarget(NavigationContext navigationContext)
+        {
+            return true;
+        }
+
+        public void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            //TODO: put here logic for current view being deactivated
         }
     }
 }

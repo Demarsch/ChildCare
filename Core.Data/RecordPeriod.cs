@@ -24,8 +24,10 @@ namespace Core.Data
         public string Name { get; set; }
         public string ShortName { get; set; }
         public int ExecutionPlaceId { get; set; }
-        public string Reserved { get; set; }
-        public bool Active { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
+        public bool IsDefault { get; set; }
+        public bool IsOperation { get; set; }
     
         public virtual ExecutionPlace ExecutionPlace { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

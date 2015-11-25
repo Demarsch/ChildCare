@@ -123,6 +123,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTOs\BrigadeDTO.cs" />
+    <Compile Include="DTOs\CommonRecordAssignmentDTO.cs" />
+    <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
+    <Compile Include="Misc\RecordTypeEditor.cs" />
+    <Compile Include="ViewModels\BrigadeViewModel.cs" />
     <Compile Include="DTOs\VisitTemplateDTO.cs" />
     <Compile Include="DTOs\AssignmentDTO.cs" />
     <Compile Include="DTOs\CommonIdName.cs" />

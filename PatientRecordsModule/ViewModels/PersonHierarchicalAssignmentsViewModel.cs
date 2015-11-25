@@ -19,7 +19,7 @@ using Core.Misc;
 using System.Windows.Input;
 using Prism.Events;
 using Core.Wpf.Events;
-using PatientRecordsModule.DTOs;
+using PatientRecordsModule.DTO;
 
 namespace PatientRecordsModule.ViewModels
 {

@@ -99,12 +99,13 @@ namespace ScheduleModule.ViewModels
             selectedDate = overlayAssignmentCollectionViewModel.CurrentDate = DateTime.Today;
             openTime = overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(8.0);
             closeTime = overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(17.0);
-            ChangeModeCommand = new DelegateCommand(ChangeMode, CanChangeMode);
             CancelAssignmentMovementCommand = new DelegateCommand(CancelAssignmentMovement);
             ChangeDateCommand = new DelegateCommand<int?>(ChangeDate);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             LoadDataSources();
+            selectedRoom = unseletedRoom;
+            selectedRecordType = unselectedRecordType;
             SubscribeToEvents();
             LoadAssignmentsAsync(selectedDate);
         }
@@ -351,6 +352,12 @@ namespace ScheduleModule.ViewModels
                 dialogService.ShowError("В базе данных отсутствует информация о доступных источниках финансирования. Обратитесь в службу поддержки");
                 return;
             }
+            var plannedUrgency = cacheService.GetItemByName<Urgently>(Urgently.Planned);
+            if (plannedUrgency == null)
+            {
+                FailureMediator.Activate("В базе данных отсутсвует информация о плановой срочности назначения. Обратитесь в службу поддержки");
+                return;
+            }
             var assignment = new Assignment
                              {
                                  AssignDateTime = freeTimeSlot.StartTime,
@@ -362,6 +369,7 @@ namespace ScheduleModule.ViewModels
                                  RecordTypeId = freeTimeSlot.RecordTypeId,
                                  RoomId = selectedRoom.Id,
                                  IsTemporary = true,
+                                 UrgentlyId = plannedUrgency.Id
                              };
             try
             {
@@ -545,7 +553,6 @@ namespace ScheduleModule.ViewModels
                     if (value)
                     {
                         log.InfoFormat("Entering movement mode for assignment (Id = {0})", movedAssignment.Id);
-                        wasInReadOnlyMode = isInAssignmentMode;
                         previousSelectedRecordType = selectedRecordType;
                         previousSelectedRoom = selectedRoom;
                         IsInAssignmentMode = false;
@@ -557,7 +564,6 @@ namespace ScheduleModule.ViewModels
                     {
                         SelectedRoom = previousSelectedRoom;
                         SelectedRecordType = previousSelectedRecordType;
-                        IsInAssignmentMode = wasInReadOnlyMode;
                         CollectionViewSource.GetDefaultView(recordTypes).Filter = null;
                         log.InfoFormat("Leaving movement mode for assignment (Id = {0})", movedAssignment.Id);
                     }
@@ -577,8 +583,6 @@ namespace ScheduleModule.ViewModels
                 }
             }
         }
-
-        private bool wasInReadOnlyMode;
 
         private RecordType previousSelectedRecordType;
 
@@ -695,19 +699,6 @@ namespace ScheduleModule.ViewModels
             }
         }
 
-        public DelegateCommand ChangeModeCommand { get; private set; }
-
-        private void ChangeMode()
-        {
-            IsInAssignmentMode = !IsInAssignmentMode;
-        }
-
-        private bool CanChangeMode()
-        {
-            return !currentPatientId.IsNewOrNonExisting()
-                   && securityService.HasPrivilege(Privilegies.EditAssignments);
-        }
-
         private RoomViewModel selectedRoom;
 
         public RoomViewModel SelectedRoom
@@ -715,8 +706,9 @@ namespace ScheduleModule.ViewModels
             get { return selectedRoom; }
             set
             {
+                value = value ?? unseletedRoom;
                 SetProperty(ref selectedRoom, value);
-                IsRoomSelected = selectedRoom != null && !ReferenceEquals(selectedRoom, unseletedRoom);
+                IsRoomSelected = !ReferenceEquals(selectedRoom, unseletedRoom);
                 UpdateRoomFilter();
             }
         }
@@ -736,6 +728,7 @@ namespace ScheduleModule.ViewModels
             get { return selectedRecordType; }
             set
             {
+                value = value ?? unselectedRecordType;
                 SetProperty(ref selectedRecordType, value);
                 IsRecordTypeSelected = selectedRecordType != null && !ReferenceEquals(selectedRecordType, unselectedRecordType);
                 UpdateRoomFilter();
@@ -765,7 +758,6 @@ namespace ScheduleModule.ViewModels
                     currentPatientShortName = query.Select(x => x.ShortName).FirstOrDefault();
                 }
                 OverlayAssignmentCollectionViewModel.CurrentPatient = value;
-                ChangeModeCommand.RaiseCanExecuteChanged();
                 ClearScheduleGrid();
                 BuildScheduleGrid();
             }
@@ -782,6 +774,10 @@ namespace ScheduleModule.ViewModels
         private void BuildScheduleGrid()
         {
             if (currentPatientId.IsNewOrNonExisting() && !IsMovingAssignment)
+            {
+                return;
+            }
+            if (!securityService.HasPrivilege(Privilegies.EditAssignments))
             {
                 return;
             }

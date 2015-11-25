@@ -14,6 +14,12 @@ namespace Core.Data
     
     public partial class RecordTypeRolePermission
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public RecordTypeRolePermission()
+        {
+            this.RecordMembers = new HashSet<RecordMember>();
+        }
+    
         public int Id { get; set; }
         public int RecordTypeId { get; set; }
         public int RecordTypeMemberRoleId { get; set; }
@@ -26,5 +32,7 @@ namespace Core.Data
         public virtual Permission Permission { get; set; }
         public virtual RecordTypeRole RecordTypeRole { get; set; }
         public virtual RecordType RecordType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordMember> RecordMembers { get; set; }
     }
 }

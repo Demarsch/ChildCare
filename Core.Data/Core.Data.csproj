@@ -43,6 +43,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
@@ -76,6 +77,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Classes\UserSystemInfo.cs" />
     <Compile Include="CommissionDecision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -138,6 +140,7 @@
     <Compile Include="PartialClasses\PersonName.cs" />
     <Compile Include="PartialClasses\PersonSocialStatus.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />
+    <Compile Include="PartialClasses\Urgently.cs" />
     <Compile Include="PersonDiagnos.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -162,6 +165,7 @@
     <Compile Include="ReportTemplate.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\Implementations\ADUserSystemInfoService.cs" />
     <Compile Include="Services\Implementations\DbContextCacheService.cs" />
     <Compile Include="Services\Implementations\DbContextProvider.cs" />
     <Compile Include="Country.cs">
@@ -202,6 +206,7 @@
     </Compile>
     <Compile Include="Services\Implementations\DbEnvironment.cs" />
     <Compile Include="Services\Implementations\DbSecurityService.cs" />
+    <Compile Include="Services\Implementations\UserService.cs" />
     <Compile Include="Services\Interfaces\IDbContextProvider.cs" />
     <Compile Include="MaritalStatus.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
@@ -300,6 +305,8 @@
     <Compile Include="ScheduleItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\Interfaces\IUserService.cs" />
+    <Compile Include="Services\Interfaces\IUserSystemInfoService.cs" />
     <Compile Include="SocialStatusType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

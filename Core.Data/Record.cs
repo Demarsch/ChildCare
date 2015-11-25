@@ -20,8 +20,8 @@ namespace Core.Data
             this.Assignments = new HashSet<Assignment>();
             this.Records1 = new HashSet<Record>();
             this.RecordDocuments = new HashSet<RecordDocument>();
-            this.RecordMembers = new HashSet<RecordMember>();
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
+            this.RecordMembers = new HashSet<RecordMember>();
         }
     
         public int Id { get; set; }
@@ -56,10 +56,10 @@ namespace Core.Data
         public virtual RecordType RecordType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
-        public virtual RecordPeriod RecordPeriod { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordMember> RecordMembers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RecordMember> RecordMembers { get; set; }
+        public virtual RecordPeriod RecordPeriod { get; set; }
     }
 }

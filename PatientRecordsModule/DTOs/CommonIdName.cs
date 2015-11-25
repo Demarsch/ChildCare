@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PatientRecordsModule.DTOs
+namespace PatientRecordsModule.DTO
 {
     public class CommonIdName
     {

@@ -9,6 +9,7 @@ using System.Collections;
 using Core.Misc;
 using Core.Services;
 using System.Collections.Generic;
+using PatientRecordsModule.DTO;
 
 namespace PatientRecordsModule.Services
 {
@@ -287,6 +288,40 @@ namespace PatientRecordsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<RecordTypeRolePermission>(context.Set<RecordTypeRolePermission>().AsNoTracking().Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
+
+
+        public ICollection<CommonIdName> GetAllowedPersonStaffs(int recordTypeId, int recordTypeRoleId, DateTime onDate)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var permissions = context.Set<RecordTypeRolePermission>().AsNoTracking().Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime &&
+                x.RecordTypeMemberRoleId == recordTypeRoleId).Select(x => x.Permission).ToList();
+                return GetAllUserPermissions(permissions, new List<Permission>()).SelectMany(x => x.UserPermissions).Where(y => onDate >= y.BeginDateTime && onDate < y.EndDateTime).SelectMany(y => y.User.Person.PersonStaffs).Distinct()
+                    .Select(x => new CommonIdName() { Id = x.Id, Name = x.Staff.ShortName + " " + x.Person.ShortName }).ToList();
+            }
+        }
+
+        private List<Permission> GetAllUserPermissions(List<Permission> permissions, List<Permission> allPermissions)
+        {
+            allPermissions.AddRange(permissions);
+            foreach (var permission in permissions.Where(x => x != null))
+                allPermissions.Union(GetAllUserPermissions(permission.PermissionLinks.Select(x => x.Permission1).ToList(), allPermissions));
+            return allPermissions;
+        }
+
+
+        public IDisposableQueryable<Assignment> GetAssignment(int assignmentId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.Id == assignmentId), context);
+        }
+
+
+        public IDisposableQueryable<RecordPeriod> GetActualRecordPeriods(int executionPlaceId, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordPeriod>(context.Set<RecordPeriod>().AsNoTracking().Where(x => x.ExecutionPlaceId == executionPlaceId && onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
         }
     }
 }

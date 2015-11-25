@@ -42,6 +42,8 @@ namespace Core.Data
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public double Cost { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
+        public int UrgentlyId { get; set; }
+        public int ExecutionPlaceId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments1 { get; set; }
@@ -60,5 +62,6 @@ namespace Core.Data
         public virtual RecordType RecordType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
+        public virtual Urgently Urgently { get; set; }
     }
 }

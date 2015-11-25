@@ -107,6 +107,7 @@ namespace PatientRecordsModule
             container.RegisterType<PersonHierarchicalRecordsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitEditorViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitCloseViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<BrigadeViewModel>(new ContainerControlledLifetimeManager());
             //RecordDocuments
             container.RegisterType<RecordDocumentsCollectionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordDocumentViewModel>(new ContainerControlledLifetimeManager());
@@ -114,7 +115,8 @@ namespace PatientRecordsModule
             container.RegisterType<DiagnosesCollectionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<DiagnosViewModel>(new ContainerControlledLifetimeManager());
             //RecordTypes Protocols
-            container.RegisterType<DefaultProtocolViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<DefaultProtocolViewModel>(new TransientLifetimeManager());
+            container.RegisterType<VisitProtocolViewModel>(new TransientLifetimeManager());
         }
 
         private void RegisterViews()
@@ -143,6 +145,7 @@ namespace PatientRecordsModule
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDiagnosService, DiagnosService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IRecordTypeEditorResolver, RecordTypeEditorResolver>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ISuggestionProvider, MKBSuggestionProvider>(SuggestionProviderNames.MKB, new ContainerControlledLifetimeManager());
         }
