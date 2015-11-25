@@ -343,16 +343,7 @@ namespace PatientRecordsModule.ViewModels
         public ObservableCollectionEx<RecordDocumentViewModel> RecordDocuments
         {
             get { return recordDocuments; }
-            set 
-            {
-                if (SetProperty(ref recordDocuments, value))
-                {
-                    //HasDocumentsAttachments = value.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
-                    //HasDICOMAttachments = value.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
-                    //if (value.Any())
-                    //    recordDocuments.First().IsSelected = true;
-                }
-            }
+            set { SetProperty(ref recordDocuments, value);}
         }
 
         public ICommand OpenDocumentCommand 

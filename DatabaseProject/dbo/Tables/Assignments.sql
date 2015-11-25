@@ -23,6 +23,7 @@
     [RemovedByUserId]   INT            NULL,
     CONSTRAINT [PK_Assignments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Assignments_Assignments] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Assignments] ([Id]),
+    CONSTRAINT [FK_Assignments_ExecutionPlaces] FOREIGN KEY ([ExecutionPlaceId]) REFERENCES [dbo].[ExecutionPlaces] ([Id]),
     CONSTRAINT [FK_Assignments_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
     CONSTRAINT [FK_Assignments_Orgs] FOREIGN KEY ([AssignLpuId]) REFERENCES [dbo].[Orgs] ([Id]),
     CONSTRAINT [FK_Assignments_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
@@ -35,6 +36,8 @@
     CONSTRAINT [FK_Assignments_Users2_RemovedByUser] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 

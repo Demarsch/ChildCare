@@ -17,41 +17,13 @@ namespace PatientRecordsModule.ViewModels
             ChangeTracker = new ChangeTrackerEx<DiagnosViewModel>(this);
         }
 
-        private int diagnosId;
-        public int DiagnosId
+        private int id;
+        public int Id
         {
-            get { return diagnosId; }
-            set { SetTrackedProperty(ref diagnosId, value); }
+            get { return id; }
+            set { SetTrackedProperty(ref id, value); }
         }
-
-        private int recordId;
-        public int RecordId
-        {
-            get { return recordId; }
-            set { SetTrackedProperty(ref recordId, value); }
-        }
-
-        private string recordName;
-        public string RecordName
-        {
-            get { return recordName; }
-            set { SetTrackedProperty(ref recordName, value); }
-        }
-
-        private int diagnosTypeId;
-        public int DiagnosTypeId
-        {
-            get { return diagnosTypeId; }
-            set { SetTrackedProperty(ref diagnosTypeId, value); }
-        }
-
-        private string diagnosTypeName;
-        public string DiagnosTypeName
-        {
-            get { return diagnosTypeName; }
-            set { SetTrackedProperty(ref diagnosTypeName, value); }
-        }
-
+       
         private string diagnosText;
         public string DiagnosText
         {
@@ -66,18 +38,25 @@ namespace PatientRecordsModule.ViewModels
             set { SetTrackedProperty(ref mkb, value); }
         }
 
-        private int diagnosLevelId;
-        public int DiagnosLevelId
+        private int levelId;
+        public int LevelId
         {
-            get { return diagnosLevelId; }
-            set { SetTrackedProperty(ref diagnosLevelId, value); }
+            get { return levelId; }
+            set { SetTrackedProperty(ref levelId, value); }
         }
 
-        private string diagnosLevelName;
-        public string DiagnosLevelName
+        private string levelName;
+        public string LevelName
         {
-            get { return diagnosLevelName; }
-            set { SetTrackedProperty(ref diagnosLevelName, value); }
+            get { return levelName; }
+            set { SetTrackedProperty(ref levelName, value); }
+        }
+
+        private int levelPriority;
+        public int LevelPriority
+        {
+            get { return levelPriority; }
+            set { SetTrackedProperty(ref levelPriority, value); }
         }
 
         private int? complicationId;
@@ -94,11 +73,11 @@ namespace PatientRecordsModule.ViewModels
             set { SetTrackedProperty(ref isMainDiagnos, value); }
         }
 
-        private bool needSelectMainDiagnos;
-        public bool NeedSelectMainDiagnos
+        private bool needSetMainDiagnos;
+        public bool NeedSetMainDiagnos
         {
-            get { return needSelectMainDiagnos; }
-            set { SetTrackedProperty(ref needSelectMainDiagnos, value); }
+            get { return needSetMainDiagnos; }
+            set { SetTrackedProperty(ref needSetMainDiagnos, value); }
         } 
 
         public void Dispose()

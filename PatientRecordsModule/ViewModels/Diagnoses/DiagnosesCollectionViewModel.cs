@@ -48,8 +48,9 @@ namespace PatientRecordsModule.ViewModels
             this.recordService = recordService;
             this.logService = logService;
 
-            addDiagnosLevelCommand = new DelegateCommand<int?>(AddDiagnosLevel);
-            removeDiagnosLevelCommand = new DelegateCommand<int?>(RemoveDiagnosLevel);
+            addDiagnosCommand = new DelegateCommand<int?>(AddDiagnos);
+            removeDiagnosCommand = new DelegateCommand(RemoveDiagnos);
+            selectMKBCommand = new DelegateCommand(SelectMKB);
 
             ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
             NotificationInteractionRequest = new InteractionRequest<Notification>();
@@ -119,24 +120,20 @@ namespace PatientRecordsModule.ViewModels
                 {
                     return diagnosesQuery.Select(x => new DiagnosViewModel()
                     { 
-                        DiagnosId = x.Id, 
-                        RecordId = x.PersonDiagnos.RecordId,
-                        RecordName = x.PersonDiagnos.Record.RecordType.Name,
-                        DiagnosTypeId = x.PersonDiagnos.DiagnosTypeId,
-                        DiagnosTypeName = x.PersonDiagnos.DiagnosType.Name,
+                        Id = x.Id,
                         DiagnosText = x.DiagnosText,
                         MKB = x.MKB,
-                        DiagnosLevelId = x.DiagnosLevelId,
-                        DiagnosLevelName = x.DiagnosLevel.Name,
+                        LevelId = x.DiagnosLevelId,
+                        LevelPriority = x.DiagnosLevel.Priority,
+                        LevelName = x.DiagnosLevel.Name,
                         ComplicationId = x.ComplicationId,
                         IsMainDiagnos = x.IsMainDiagnos,
-                        NeedSelectMainDiagnos = x.PersonDiagnos.DiagnosType.NeedSetMainDiagnos
+                        NeedSetMainDiagnos = x.PersonDiagnos.DiagnosType.NeedSetMainDiagnos
                     }).ToArray();
                 }, token);
                
-                Diagnoses.AddRange(result);
-                HasAnyDiagnoses = Diagnoses.Any();
-
+                Diagnoses.AddRange(result.OrderBy(x => x.LevelPriority));
+                SetVisibilityGridData();
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -150,8 +147,7 @@ namespace PatientRecordsModule.ViewModels
             }
             finally
             {
-                if (loadingIsCompleted)
-                   SetVisibilityControlButtons(true);
+                SetVisibilityControlButtons(loadingIsCompleted);
                 if (diagnosLevelsQuery != null)
                     diagnosLevelsQuery.Dispose();
                 if (diagnosesQuery != null)
@@ -165,14 +161,70 @@ namespace PatientRecordsModule.ViewModels
             AllowAddDiagnos = AllowRemoveDiagnos = allowEdit;
         }
 
-        private void AddDiagnosLevel(int? levelId)
+        private void SetVisibilityGridData()
         {
+            HasAnyDiagnoses = Diagnoses.Any();
+            NeedSetMainDiagnos = Diagnoses.Any(x => x.NeedSetMainDiagnos);
+        }
+
+        private void AddDiagnos(int? levelId)
+        {
+            if (!levelId.HasValue) return;
+            var level = diagnosService.GetDiagnosLevelById(levelId.Value).First();
+            
+            int insertPos = -1;
+            for (int i = 0; i < diagnoses.Count; i++)
+			{
+			    if (diagnoses[i].LevelPriority > level.Priority)
+                {
+                    insertPos = i;
+                    break;
+                }
+			}
+
+            var insertDiagnos = new DiagnosViewModel()
+                    {
+                        Id = SpecialValues.NewId,
+                        DiagnosText = string.Empty,
+                        MKB = string.Empty,
+                        LevelId = level.Id,
+                        LevelPriority = level.Priority,
+                        LevelName = level.Name,
+                        ComplicationId = (int?)null,
+                        IsMainDiagnos = false
+                    };
+
+            Diagnoses.Insert((diagnoses.Any() && insertPos != -1) ? insertPos : 0, insertDiagnos);
+            SetVisibilityGridData();
+        }
+
+        private void RemoveDiagnos()
+        {
+            if (SelectedDiagnos == null) return;
+            ConfirmationInteractionRequest.Raise(new Confirmation()
+                {
+                    Title = "Внимание",
+                    Content = "Удалить диагноз '" + SelectedDiagnos.LevelName + "' ?"
+                }, OnDeleteDiagnosDialogClosed);            
+        }
+
+        private void SelectMKB()
+        {
+            //SelectedDiagnos;
             return;
         }
 
-        private void RemoveDiagnosLevel(int? diagnosId)
+        private void OnDeleteDiagnosDialogClosed(Confirmation dialog)
         {
-            return;
+            if (dialog.Confirmed)
+            {
+                string exception = string.Empty;
+                if (diagnosService.DeleteDiagnos(SelectedDiagnos.Id, out exception))
+                {
+                    Diagnoses.Remove(SelectedDiagnos);
+                    SetVisibilityGridData();
+                }
+            }
         }
 
         private ObservableCollectionEx<DiagnosViewModel> diagnoses;
@@ -187,6 +239,20 @@ namespace PatientRecordsModule.ViewModels
         {
             get { return diagnosLevels; }
             set { SetProperty(ref diagnosLevels, value); }
+        }
+
+        private DiagnosViewModel selectedDiagnos;
+        public DiagnosViewModel SelectedDiagnos
+        {
+            get { return selectedDiagnos; }
+            set { SetProperty(ref selectedDiagnos, value); }
+        }
+
+        private bool needSetMainDiagnos;
+        public bool NeedSetMainDiagnos
+        {
+            get { return needSetMainDiagnos; }
+            set { SetProperty(ref needSetMainDiagnos, value); }
         }
 
         private bool allowAddDiagnos;
@@ -210,11 +276,14 @@ namespace PatientRecordsModule.ViewModels
             set { SetProperty(ref hasAnyDiagnoses, value); }
         }
 
-        private readonly DelegateCommand<int?> addDiagnosLevelCommand;
-        public ICommand AddDiagnosLevelCommand { get { return addDiagnosLevelCommand; } }
+        private readonly DelegateCommand<int?> addDiagnosCommand;
+        public ICommand AddDiagnosCommand { get { return addDiagnosCommand; } }
 
-        private readonly DelegateCommand<int?> removeDiagnosLevelCommand;
-        public ICommand RemoveDiagnosLevelCommand { get { return removeDiagnosLevelCommand; } }
+        private readonly DelegateCommand removeDiagnosCommand;
+        public ICommand RemoveDiagnosCommand { get { return removeDiagnosCommand; } }
+
+        private readonly DelegateCommand selectMKBCommand;
+        public ICommand SelectMKBCommand { get { return selectMKBCommand; } }
 
         public void Dispose()
         {

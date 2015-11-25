@@ -11,6 +11,7 @@
              xmlns:prism="http://www.codeplex.com/prism"
              xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
              xmlns:fluent="urn:fluent-ribbon"
+             xmlns:local="clr-namespace:PatientRecordsModule.Misc"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="500"
              d:DataContext="{d:DesignInstance viewModels:DiagnosesCollectionViewModel}">
@@ -51,7 +52,7 @@
                         <Style TargetType="{x:Type fluent:MenuItem}">
                             <Setter Property="Command" 
                                     Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type fluent:DropDownButton}}, 
-                                                    Path=DataContext.AddDiagnosLevelCommand}" />
+                                                    Path=DataContext.AddDiagnosCommand}" />
                             <Setter Property="CommandParameter" Value="{Binding Id}"/>
                             <Setter Property="Header" Value="{Binding Name}"/>                            
                         </Style>
@@ -61,12 +62,12 @@
                 <fluent:Button IsEnabled="{Binding AllowRemoveDiagnos}"
                         Icon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png"
                         SizeDefinition="Middle" Header="Удалить"
-                        Command="{Binding RemoveDiagnosLevelCommand}"
+                        Command="{Binding RemoveDiagnosCommand}"
                         CommandParameter="{Binding ElementName=diagnoses, Path=SelectedItem}">
                 </fluent:Button>
             </ToolBar>
-        </Grid>        
-        
+        </Grid>
+               
         <DataGrid x:Name="diagnoses" 
                   Visibility="{Binding HasAnyDiagnoses, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                   RowHeaderWidth="0"
@@ -74,6 +75,7 @@
                   ItemsSource="{Binding Diagnoses}" 
                   SelectedItem="{Binding SelectedDiagnos, Mode=TwoWay}">
             <DataGrid.Resources>
+                <local:BindingProxy x:Key="proxy" Data="{Binding}" />
                 <Style TargetType="{x:Type DataGridCell}">
                     <Style.Triggers>
                         <Trigger Property="DataGridCell.IsSelected" Value="True">
@@ -88,7 +90,7 @@
                 <DataGridTemplateColumn Header="Вид" Width="SizeToCells" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding DiagnosLevelName}"/>
+                            <TextBlock Text="{Binding LevelName}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -99,7 +101,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="SizeToCells">
+                <DataGridTemplateColumn Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Background="Transparent" BorderThickness="0"                                                  
@@ -119,7 +121,8 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Пролечено" Width="Auto" 
-                                        Visibility="{Binding NeedSelectMainDiagnos, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                        Visibility="{Binding Data.NeedSetMainDiagnos, Converter={x:Static converters:BoolToVisibilityConverter.Instance},
+                        Source={StaticResource proxy}}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsMainDiagnos, Mode=TwoWay}" HorizontalAlignment="Center"/>
