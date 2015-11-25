@@ -347,10 +347,10 @@ namespace PatientRecordsModule.ViewModels
             {
                 if (SetProperty(ref recordDocuments, value))
                 {
-                    HasDocumentsAttachments = value.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
-                    HasDICOMAttachments = value.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
-                    if (value.Any())
-                        recordDocuments.First().IsSelected = true;
+                    //HasDocumentsAttachments = value.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
+                    //HasDICOMAttachments = value.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
+                    //if (value.Any())
+                    //    recordDocuments.First().IsSelected = true;
                 }
             }
         }

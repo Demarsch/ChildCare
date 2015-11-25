@@ -1,0 +1,132 @@
+﻿<UserControl x:Class="PatientRecordsModule.Views.DiagnosesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"       
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:prism="http://www.codeplex.com/prism"
+             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
+             xmlns:fluent="urn:fluent-ribbon"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="500"
+             d:DataContext="{d:DesignInstance viewModels:DiagnosesCollectionViewModel}">
+    <UserControl.Resources>
+        <DataTemplate x:Key="DialogWindowTemplate">
+            <Grid MinWidth="200" MinHeight="100">
+                <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <i:Interaction.Triggers>
+        <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction IsModal="True"
+                                     ContentTemplate="{StaticResource DialogWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction IsModal="True"
+                                     ContentTemplate="{StaticResource DialogWindowTemplate}"/>
+        </prism:InteractionRequestTrigger>
+    </i:Interaction.Triggers>
+
+    <DockPanel LastChildFill="True">
+        <Label DockPanel.Dock="Top" Content="Диагноз" HorizontalAlignment="Left" FontWeight="Medium"/>
+        
+        <Grid DockPanel.Dock="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <ToolBar>
+                <fluent:DropDownButton 
+                    Background="Transparent" BorderThickness="0" IsEnabled="{Binding AllowAddDiagnos}"
+                    Icon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png"
+                    SizeDefinition="Middle" Header="Добавить"
+                    HasTriangle="True"
+                    ItemsSource="{Binding DiagnosLevels}">
+                    <fluent:DropDownButton.ItemContainerStyle>
+                        <Style TargetType="{x:Type fluent:MenuItem}">
+                            <Setter Property="Command" 
+                                    Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type fluent:DropDownButton}}, 
+                                                    Path=DataContext.AddDiagnosLevelCommand}" />
+                            <Setter Property="CommandParameter" Value="{Binding Id}"/>
+                            <Setter Property="Header" Value="{Binding Name}"/>                            
+                        </Style>
+                    </fluent:DropDownButton.ItemContainerStyle>
+                </fluent:DropDownButton>
+                <Separator Margin="10,0"/>
+                <fluent:Button IsEnabled="{Binding AllowRemoveDiagnos}"
+                        Icon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png"
+                        SizeDefinition="Middle" Header="Удалить"
+                        Command="{Binding RemoveDiagnosLevelCommand}"
+                        CommandParameter="{Binding ElementName=diagnoses, Path=SelectedItem}">
+                </fluent:Button>
+            </ToolBar>
+        </Grid>        
+        
+        <DataGrid x:Name="diagnoses" 
+                  Visibility="{Binding HasAnyDiagnoses, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                  RowHeaderWidth="0"
+                  GridLinesVisibility="None" AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
+                  ItemsSource="{Binding Diagnoses}" 
+                  SelectedItem="{Binding SelectedDiagnos, Mode=TwoWay}">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Style.Triggers>
+                        <Trigger Property="DataGridCell.IsSelected" Value="True">
+                            <Setter Property="Background" Value="#CCDAFF" />
+                            <Setter Property="BorderBrush" Value="#CCDAFF" />
+                            <Setter Property="Foreground" Value="#000000" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Вид" Width="SizeToCells" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DiagnosLevelName}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="МКБ" Width="SizeToCells">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding MKB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  BorderThickness="0" MinWidth="40"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="SizeToCells">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Background="Transparent" BorderThickness="0"                                                  
+                                                    Command="{Binding ElementName=diagnoses, Path=DataContext.SelectMKBCommand}"
+                                                    CommandParameter="{Binding}">
+                                <TextBlock Text="..." MinWidth="20" HorizontalAlignment="Center" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Диагноз" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding DiagnosText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                            HorizontalAlignment="Stretch" BorderThickness="0" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Пролечено" Width="Auto" 
+                                        Visibility="{Binding NeedSelectMainDiagnos, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsMainDiagnos, Mode=TwoWay}" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

@@ -137,13 +137,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\DocumentService.cs" />
     <Compile Include="Services\Implementations\PatientRecordsService.cs" />
+    <Compile Include="Services\Implementations\DiagnosService.cs" />
     <Compile Include="Services\Implementations\RecordService.cs" />
     <Compile Include="Services\Interfaces\IDocumentService.cs" />
     <Compile Include="Services\Interfaces\IPatientRecordsService.cs" />
+    <Compile Include="Services\Interfaces\IDiagnosService.cs" />
     <Compile Include="Services\Interfaces\IRecordService.cs" />
+    <Compile Include="ViewModels\Diagnoses\DiagnosesCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Diagnoses\DiagnosLevelViewModel.cs" />
+    <Compile Include="ViewModels\Diagnoses\DiagnosViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentsCollectionViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentViewModel.cs" />
-    <Compile Include="ViewModels\RecordTypesProtocolViewModels\DefaultProtocolViewModel.cs" />
+    <Compile Include="ViewModels\RecordTypesProtocols\DefaultProtocolViewModel.cs" />
     <Compile Include="ViewModels\VisitCloseViewModel.cs" />
     <Compile Include="ViewModels\VisitEditorViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordEditorViewModel.cs" />
@@ -153,6 +158,9 @@
     <Compile Include="ViewModels\PersonHierarchicalRecordsViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalVisitsViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordListViewModel.cs" />
+    <Compile Include="Views\Diagnoses\DiagnosesView.xaml.cs">
+      <DependentUpon>DiagnosesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RecordDocuments\RecordDocumentsView.xaml.cs">
       <DependentUpon>RecordDocumentsView.xaml</DependentUpon>
     </Compile>
@@ -202,11 +210,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Diagnoses\DiagnosesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\RecordDocuments\RecordDocumentsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\RecordTypesProtocolViews\DefaultProtocolView.xaml">
+    <Page Include="Views\RecordTypesProtocols\DefaultProtocolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

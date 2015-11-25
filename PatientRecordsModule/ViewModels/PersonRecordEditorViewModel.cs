@@ -7,7 +7,7 @@ using log4net;
 using PatientRecordsModule.DTO;
 using PatientRecordsModule.Misc;
 using PatientRecordsModule.Services;
-using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using PatientRecordsModule.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
@@ -21,6 +21,7 @@ using System.Windows.Input;
 using System.Data.Entity;
 using Core.Extensions;
 using Core.Wpf.Services;
+using PatientRecordsModule.ViewModels.RecordTypesProtocols;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -29,6 +30,8 @@ namespace PatientRecordsModule.ViewModels
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
         private readonly ILog logService;
+        private readonly IDiagnosService diagnosService;
+        private readonly IRecordService recordService;
 
         private readonly IEventAggregator eventAggregator;
 
@@ -38,7 +41,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Constructors
-        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService,
+        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordService recordService, IDiagnosService diagnosService,
                                            ILog logSevice, IEventAggregator eventAggregator, RecordDocumentsCollectionViewModel documentsViewer)
         {
             if (patientRecordsService == null)
@@ -49,11 +52,21 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("log");
             }
+            if (diagnosService == null)
+            {
+                throw new ArgumentNullException("diagnosService");
+            }
+            if (recordService == null)
+            {
+                throw new ArgumentNullException("recordService");
+            }
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
             }
             this.patientRecordsService = patientRecordsService;
+            this.diagnosService = diagnosService;
+            this.recordService = recordService;
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
 
@@ -86,7 +99,6 @@ namespace PatientRecordsModule.ViewModels
             set
             {
                 SetProperty(ref visitId, value);
-                ProtocolEditor = new DefaultProtocolViewModel();
             }
         }
 
@@ -96,10 +108,7 @@ namespace PatientRecordsModule.ViewModels
             get { return assignmentId; }
             set
             {
-                if (SetProperty(ref assignmentId, value))
-                {
-                    ProtocolEditor = new DefaultProtocolViewModel();
-                }
+                SetProperty(ref assignmentId, value);             
             }
         }
 
@@ -109,10 +118,7 @@ namespace PatientRecordsModule.ViewModels
             get { return recordId; }
             set
             {
-                if (SetProperty(ref recordId, value))
-                {
-                    ProtocolEditor = new DefaultProtocolViewModel();            
-                }
+                SetProperty(ref recordId, value);
             }
         }               
 
@@ -296,6 +302,9 @@ namespace PatientRecordsModule.ViewModels
             VisitId = visitId;
             AssignmentId = assignmentId;
             RecordId = recordId;
+
+            ProtocolEditor = new DefaultProtocolViewModel(diagnosService, recordService, logService);
+            await ProtocolEditor.Load(2);
 
             await DocumentsViewer.LoadDocuments(assignmentId, recordId);
                         

@@ -1,9 +1,11 @@
-﻿<ResourceDictionary x:Class="PatientRecordsModule.Views.RecordTypesProtocolViews.DefaultProtocolView"
+﻿<ResourceDictionary x:Class="PatientRecordsModule.Views.RecordTypesProtocols.DefaultProtocolView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels"
+             xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels.RecordTypesProtocols"
+             xmlns:controls="clr-namespace:PatientRecordsModule.ViewModels"
+             xmlns:views="clr-namespace:PatientRecordsModule.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              mc:Ignorable="d">
     <DataTemplate DataType="{x:Type viewModels:DefaultProtocolViewModel}">
@@ -17,12 +19,14 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
                 <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Discription}"/>
                 <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
                 <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result}"/>
+                <views:DiagnosesView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" DataContext="{Binding DiagnosesEditor}" Margin="2"/>
             </Grid>
             <!--Grid for view protocol-->
             <Grid Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">

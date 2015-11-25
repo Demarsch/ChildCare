@@ -15,6 +15,8 @@ namespace PatientRecordsModule.Misc
         void PrintProtocol();
 
         bool SaveProtocol();
+
+        Task Load(int id);
     }
 
     public enum ProtocolMode

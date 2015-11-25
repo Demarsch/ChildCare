@@ -5,6 +5,6 @@
         <ResourceDictionary Source="../Views/PersonHierarchicalRecordsView.xaml" />
         <ResourceDictionary Source="../Views/PersonHierarchicalVisitsView.xaml" />
 
-        <ResourceDictionary Source="../Views/RecordTypesProtocolViews/DefaultProtocolView.xaml" />
+        <ResourceDictionary Source="../Views/RecordTypesProtocols/DefaultProtocolView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

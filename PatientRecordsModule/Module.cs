@@ -21,8 +21,10 @@ using PatientRecordsModule.Services;
 using Core.Wpf.Events;
 using System.Windows;
 using WpfControls.Editors;
-using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
-using PatientRecordsModule.Views.RecordTypesProtocolViews;
+using PatientRecordsModule.ViewModels;
+using PatientRecordsModule.Views;
+using PatientRecordsModule.ViewModels.RecordTypesProtocols;
+using PatientRecordsModule.Views.RecordTypesProtocols;
 
 namespace PatientRecordsModule
 {
@@ -108,6 +110,9 @@ namespace PatientRecordsModule
             //RecordDocuments
             container.RegisterType<RecordDocumentsCollectionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordDocumentViewModel>(new ContainerControlledLifetimeManager());
+            //Diagnoses
+            container.RegisterType<DiagnosesCollectionViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<DiagnosViewModel>(new ContainerControlledLifetimeManager());
             //RecordTypes Protocols
             container.RegisterType<DefaultProtocolViewModel>(new ContainerControlledLifetimeManager());
         }
@@ -121,6 +126,8 @@ namespace PatientRecordsModule
             container.RegisterType<object, VisitCloseView>(viewNameResolver.Resolve<VisitCloseViewModel>(), new ContainerControlledLifetimeManager());
             //RecordDocuments
             container.RegisterType<object, RecordDocumentsView>(viewNameResolver.Resolve<RecordDocumentsCollectionViewModel>(), new ContainerControlledLifetimeManager());
+            //Diagnoses
+            container.RegisterType<object, DiagnosesView>(viewNameResolver.Resolve<DiagnosesCollectionViewModel>(), new ContainerControlledLifetimeManager());
             //RecordTypes Protocols
             container.RegisterType<object, DefaultProtocolView>(viewNameResolver.Resolve<DefaultProtocolViewModel>(), new ContainerControlledLifetimeManager());
 
@@ -135,6 +142,7 @@ namespace PatientRecordsModule
             container.RegisterType<IPatientRecordsService, PatientRecordsService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IDiagnosService, DiagnosService>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ISuggestionProvider, MKBSuggestionProvider>(SuggestionProviderNames.MKB, new ContainerControlledLifetimeManager());
         }
