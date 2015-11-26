@@ -7,14 +7,15 @@
     [RecordTypeId]    INT          NOT NULL,
     [RecordPeriodId]  INT          NOT NULL,
     [UrgentlyId]      INT          NOT NULL,
-    [BranchId]        INT          NOT NULL,
-    [Number]          VARCHAR (50) CONSTRAINT [DF_Records_Number] DEFAULT ('') NOT NULL,
+    [Number]          INT          CONSTRAINT [DF_Records_Number] DEFAULT ((0)) NOT NULL,
+    [NumberType]      VARCHAR (10) CONSTRAINT [DF_Records_NumberType] DEFAULT ('') NOT NULL,
+    [NumberYear]      INT          CONSTRAINT [DF_Records_NumberYear] DEFAULT ((0)) NOT NULL,
+    [NumberTypeYear]  AS           (((ltrim(str([Number]))+[NumberType])+'-')+substring(ltrim(str([NumberYear])),(3),(2))),
     [IsCompleted]     BIT          NOT NULL,
     [MKB]             VARCHAR (10) CONSTRAINT [DF_Records_MKB] DEFAULT ('') NOT NULL,
     [BeginDateTime]   DATETIME     NOT NULL,
     [EndDateTime]     DATETIME     NOT NULL,
     [ActualDateTime]  DATETIME     NOT NULL,
-    [OKATO]           VARCHAR (16) CONSTRAINT [DF_Records_OKATO] DEFAULT ('') NOT NULL,
     [BillingDateTime] DATETIME     NULL,
     [RemovedByUserId] INT          NULL,
     CONSTRAINT [PK_Records] PRIMARY KEY CLUSTERED ([Id] ASC),
@@ -27,6 +28,10 @@
     CONSTRAINT [FK_Records_Users] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Records_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
+
+
 
 
 

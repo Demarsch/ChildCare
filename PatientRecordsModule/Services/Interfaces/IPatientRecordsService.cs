@@ -17,7 +17,7 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Assignment> GetPersonRootAssignmentsQuery(int personId);
 
-        IDisposableQueryable<Visit> GetPersonVisitsQuery(int personId);
+        IDisposableQueryable<Visit> GetPersonVisitsQuery(int personId, bool onlyOpened);
 
         IDisposableQueryable<Assignment> GetVisitsChildAssignmentsQuery(int visitId);
 
@@ -56,9 +56,13 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
 
+        IDisposableQueryable<Room> GetRooms(DateTime onDate);
+
         IDisposableQueryable<RecordPeriod> GetActualRecordPeriods(int executionPlaceId, DateTime onDate);
 
         ICollection<CommonIdName> GetAllowedPersonStaffs(int recordTypeId, int recordTypeRoleId, DateTime onDate);
+
+        IDisposableQueryable<PersonStaff> GetPersonStaff(int personStaffId);
 
         IEnumerable GetMKBs(string filter);
 
@@ -69,6 +73,8 @@ namespace PatientRecordsModule.Services
         Task<int> SaveVisitAsync(int visitId, int personId, DateTime beginDateTime, int recordContractId, int financingSourceId, int urgentlyId, int visitTemplateId, int executionPlaceId, int sentLPUId, string note, CancellationToken token);
 
         Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token);
+
+        Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime endDateTime, List<RecordMember> brigade, CancellationToken token);
 
         void DeleteVisitAsync(int visitId, int removedByUserId, CancellationToken token);
 

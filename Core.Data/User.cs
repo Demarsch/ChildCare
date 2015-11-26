@@ -21,11 +21,11 @@ namespace Core.Data
             this.Assignments1 = new HashSet<Assignment>();
             this.Assignments2 = new HashSet<Assignment>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
-            this.Records = new HashSet<Record>();
             this.UserMessages = new HashSet<UserMessage>();
             this.UserMessages1 = new HashSet<UserMessage>();
             this.UserPermissions = new HashSet<UserPermission>();
             this.Visits = new HashSet<Visit>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -44,8 +44,6 @@ namespace Core.Data
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual Person Person { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserMessage> UserMessages { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserMessage> UserMessages1 { get; set; }
@@ -53,5 +51,7 @@ namespace Core.Data
         public virtual ICollection<UserPermission> UserPermissions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Record> Records { get; set; }
     }
 }

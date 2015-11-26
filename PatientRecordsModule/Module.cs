@@ -144,6 +144,7 @@ namespace PatientRecordsModule
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDiagnosService, DiagnosService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordTypeEditorResolver, RecordTypeEditorResolver>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IUserService, UserService>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ISuggestionProvider, MKBSuggestionProvider>(SuggestionProviderNames.MKB, new ContainerControlledLifetimeManager());
         }

@@ -74,7 +74,6 @@ namespace Core.Data
         public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
         public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordTypeRole> RecordTypeRoles { get; set; }
         public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
@@ -104,5 +103,6 @@ namespace Core.Data
         public virtual DbSet<RecordMember> RecordMembers { get; set; }
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
         public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
     }
 }

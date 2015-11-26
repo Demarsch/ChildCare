@@ -22,10 +22,14 @@ using System.Data.Entity;
 using Core.Extensions;
 using Core.Wpf.Services;
 using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using System.ComponentModel;
+using Core.Misc;
+using Core.Data.Services;
+using Core.Data.Classes;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonRecordEditorViewModel : BindableBase, IDisposable
+    public class PersonRecordEditorViewModel : TrackableBindableBase, IDisposable, IDataErrorInfo, IChangeTrackerMediator
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -33,20 +37,23 @@ namespace PatientRecordsModule.ViewModels
         private readonly IDiagnosService diagnosService;
         private readonly IRecordTypeEditorResolver recordTypeEditorResolver;
         private readonly IRecordService recordService;
+        private readonly IUserService userService;
 
         private readonly IEventAggregator eventAggregator;
 
         private readonly CommandWrapper reloadRecordBrigadeCommandWrapper;
         private readonly CommandWrapper reloadDataSourceCommandWrapper;
+        private readonly CommandWrapper reloadRecordCommonDataCommandWrapper;
+        private readonly CommandWrapper saveChangesCommandWrapper;
         private CancellationTokenSource currentOperationToken;
 
-        private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
-
         private int recordTypeId = 0;
+        private DateTime onDate = DateTime.MaxValue;
+        private int personId = 0;
         #endregion
 
         #region Constructors
-        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordService recordService, IDiagnosService diagnosService, IRecordTypeEditorResolver recordTypeEditorResolver,
+        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordService recordService, IDiagnosService diagnosService, IRecordTypeEditorResolver recordTypeEditorResolver, IUserService userService,
                                            ILog logSevice, IEventAggregator eventAggregator, RecordDocumentsCollectionViewModel documentsViewer)
         {
             if (patientRecordsService == null)
@@ -73,6 +80,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("recordTypeEditorResolver");
             }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
+            this.userService = userService;
             this.recordTypeEditorResolver = recordTypeEditorResolver;
             this.patientRecordsService = patientRecordsService;
             this.diagnosService = diagnosService;
@@ -82,15 +94,23 @@ namespace PatientRecordsModule.ViewModels
 
             this.documentsViewer = documentsViewer;
             this.documentsViewer.PropertyChanged += documentsViewer_PropertyChanged;
+            SaveRecordCommand = new DelegateCommand(SaveCommonData, CanSaveChanges);
 
-            reloadRecordBrigadeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadBrigadeAsync(recordTypeId, RecordId)) };
-            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => EnsureDataSourceLoaded()) };
+            ChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
+            ChangeTracker.PropertyChanged += OnChangesTracked;
+
+            reloadRecordBrigadeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadBrigadeAsync(recordTypeId, RecordId, onDate)) };
+            reloadRecordCommonDataCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadProtocolCommonData(VisitId, AssignmentId, RecordId)) };
+            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadDataSources(onDate)) };
+            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveCommonData()) };
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             Brigade = new ObservableCollectionEx<BrigadeViewModel>();
             Urgentlies = new ObservableCollectionEx<CommonIdName>();
             RecordPeriods = new ObservableCollectionEx<CommonIdName>();
+            ParentVisits = new ObservableCollectionEx<CommonIdName>();
+            Rooms = new ObservableCollectionEx<CommonIdName>();
 
             printProtocolCommand = new DelegateCommand(PrintProtocol);
             saveProtocolCommand = new DelegateCommand(SaveProtocol);
@@ -105,7 +125,19 @@ namespace PatientRecordsModule.ViewModels
 
         #region Properties
 
+        public IChangeTracker ChangeTracker { get; private set; }
+
         public ObservableCollectionEx<BrigadeViewModel> Brigade { get; set; }
+
+        private string recordTypeName;
+        public string RecordTypeName
+        {
+            get { return recordTypeName; }
+            set
+            {
+                SetProperty(ref recordTypeName, value);
+            }
+        }
 
         private int visitId;
         public int VisitId
@@ -177,6 +209,10 @@ namespace PatientRecordsModule.ViewModels
 
         public ObservableCollectionEx<CommonIdName> RecordPeriods { get; set; }
 
+        public ObservableCollectionEx<CommonIdName> ParentVisits { get; set; }
+
+        public ObservableCollectionEx<CommonIdName> Rooms { get; set; }
+
         private int selectedPeriodId;
         public int SelectedPeriodId
         {
@@ -203,6 +239,30 @@ namespace PatientRecordsModule.ViewModels
         {
             get { return endDateTime; }
             set { SetProperty(ref endDateTime, value); }
+        }
+
+        private int? roomId;
+        public int? RoomId
+        {
+            get { return roomId; }
+            set { SetProperty(ref roomId, value); }
+        }
+
+        private int? parentVisitId;
+        public int? ParentVisitId
+        {
+            get { return parentVisitId; }
+            set { SetProperty(ref parentVisitId, value); }
+        }
+
+        public bool IsVisibleVisits
+        {
+            get { return userService.HasPermission(PermissionType.ChangeRecordParentVisit) || ParentVisitId.ToInt() < 1; }
+        }
+
+        public bool IsVisibleRooms
+        {
+            get { return userService.HasPermission(PermissionType.ChangeRecordRoom) || RoomId.ToInt() < 1; }
         }
 
         public BusyMediator BusyMediator { get; set; }
@@ -251,131 +311,16 @@ namespace PatientRecordsModule.ViewModels
 
         #region Methods
 
-        private async Task<bool> EnsureDataSourceLoaded()
+        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {
-            if (dataSourcesLoadingTaskSource != null)
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
             {
-                return await dataSourcesLoadingTaskSource.Task;
+                (SaveRecordCommand as DelegateCommand).RaiseCanExecuteChanged();
             }
-            dataSourcesLoadingTaskSource = new TaskCompletionSource<bool>();
-            Urgentlies.Clear();
-            RecordPeriods.Clear();
-            BusyMediator.Activate("Загрузка общих данных в редактор...");
-            logService.Info("Loading data sources for common record editor...");
-            IDisposableQueryable<Urgently> urgentliesQuery = null;
-            DateTime curDate = DateTime.Now;
-            try
-            {
-                urgentliesQuery = patientRecordsService.GetActualUrgentlies(curDate);
-
-                var urgentlies = await urgentliesQuery.Select(x => new CommonIdName()
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                }).ToListAsync();
-                Urgentlies.AddRange(urgentlies);
-
-                logService.InfoFormat("Data sources for common record editor are successfully loaded");
-                dataSourcesLoadingTaskSource.SetResult(true);
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to load data sources for common record editor");
-                FailureMediator.Activate("Не удалость загрузить данные для общих данных редактора. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
-                dataSourcesLoadingTaskSource.SetResult(false);
-            }
-            finally
-            {
-                if (urgentliesQuery != null)
-                {
-                    urgentliesQuery.Dispose();
-                }
-                BusyMediator.Deactivate();
-            }
-            return await dataSourcesLoadingTaskSource.Task;
         }
-
-
-        private async void LoadBrigadeAsync(int recordTypeId, int recordId)
+        private bool CanSaveChanges()
         {
-            FailureMediator.Deactivate();
-            Brigade.Clear();
-            if (recordId < 1 && recordTypeId < 1) return;
-            this.recordTypeId = recordTypeId;
-            var loadingIsCompleted = false;
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            BusyMediator.Activate(string.Empty);
-            logService.InfoFormat("Loading brigade for record with Id ={0} and RecordType with Id ={1}", recordId, recordTypeId);
-            IDisposableQueryable<Record> record = null;
-            IDisposableQueryable<RecordMember> recordMembers = null;
-            IDisposableQueryable<RecordTypeRolePermission> recordTypeRolePermission = null;
-            try
-            {
-                record = patientRecordsService.GetRecord(recordId);
-                var recordTypeResult = await record.Select(x => new { x.RecordTypeId, x.ActualDateTime }).FirstOrDefaultAsync(token);
-                recordMembers = patientRecordsService.GetRecordMembers(recordId);
-                recordTypeRolePermission = patientRecordsService.GetRecordTypeMembers(recordTypeResult.RecordTypeId, recordTypeResult.ActualDateTime);
-                var recordMembersTask = recordMembers.Select(x => new
-                {
-                    PersonName = x.PersonStaff.Person.ShortName,
-                    PersonId = x.PersonStaff.PersonId,
-                    StaffName = x.PersonStaff.Staff.ShortName,
-                    x.RecordTypeRolePermissionId,
-                    x.PersonStaffId
-                }).ToListAsync(token);
-                var recordTypeMembersTask = recordTypeRolePermission.Select(x => new
-                {
-                    RoleName = x.RecordTypeRole.Name,
-                    RoleId = x.RecordTypeMemberRoleId,
-                    x.IsRequired,
-                    PermissionName = x.Permission.Name,
-                    PermissionId = x.PermissionId,
-                    RecordTypeRolePermissionId = x.Id
-                }).ToListAsync(token);
-                await Task.WhenAll(recordMembersTask, recordTypeMembersTask);
-                var recordMembersresult = recordMembersTask.Result;
-                Brigade.AddRange(recordTypeMembersTask.Result.Select(x => new BrigadeViewModel(patientRecordsService, logService, new BrigadeDTO()
-                {
-                    IsRequired = x.IsRequired,
-                    RoleName = x.RoleName,
-                    RoleId = x.RoleId,
-                    PermissionId = x.PermissionId,
-                    RecordTypeRolePermissionId = x.RecordTypeRolePermissionId,
-                    PersonName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonName : string.Empty,
-                    StaffName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).StaffName : string.Empty,
-                    PersonStaffId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonStaffId : 0,
-                    RecordTypeId = recordTypeResult.RecordTypeId,
-                    OnDate = recordTypeResult.ActualDateTime
-                })).ToList());
-                loadingIsCompleted = true;
-                this.recordTypeId = 0;
-            }
-            catch (OperationCanceledException)
-            {
-                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to load brigade for record with Id ={0} and RecordType with Id ={1}", recordId, recordTypeId);
-                FailureMediator.Activate("Не удалось загрузить данные о бригаде. Попробуйте еще раз или обратитесь в службу поддержки", reloadRecordBrigadeCommandWrapper, ex);
-                loadingIsCompleted = true;
-            }
-            finally
-            {
-                CommandManager.InvalidateRequerySuggested();
-                if (loadingIsCompleted)
-                {
-                    BusyMediator.Deactivate();
-                }
-                if (record != null)
-                {
-                    record.Dispose();
-                }
-            }
+            return ChangeTracker.HasChanges;
         }
 
         public void Dispose()
@@ -410,20 +355,160 @@ namespace PatientRecordsModule.ViewModels
             VisitId = visitId;
             AssignmentId = assignmentId;
             RecordId = recordId;
+            recordTypeId = 0;
             LoadProtocolEditor(visitId, assignmentId, recordId);
 
             await DocumentsViewer.LoadDocuments(assignmentId, recordId);
         }
 
+
+        private async Task<bool> LoadDataSources(DateTime onDate)
+        {
+            Urgentlies.Clear();
+            Rooms.Clear();
+            BusyMediator.Activate("Загрузка общих данных в редактор...");
+            logService.Info("Loading data sources for common record editor...");
+            IDisposableQueryable<Urgently> urgentliesQuery = null;
+            IDisposableQueryable<Room> roomsQuery = null;
+            this.onDate = onDate;
+            var dataloaded = false;
+            try
+            {
+                urgentliesQuery = patientRecordsService.GetActualUrgentlies(onDate);
+
+                var urgentlies = await urgentliesQuery.Select(x => new CommonIdName()
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
+                Urgentlies.AddRange(urgentlies);
+
+                roomsQuery = patientRecordsService.GetRooms(onDate);
+                var rooms = await roomsQuery.Select(x => new CommonIdName()
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToListAsync();
+                Rooms.AddRange(rooms);
+
+                logService.InfoFormat("Data sources for common record editor are successfully loaded");
+                dataloaded = true;
+                this.onDate = DateTime.MaxValue;
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load data sources for common record editor");
+                FailureMediator.Activate("Не удалость загрузить данные для общих данных редактора. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
+                dataloaded = false;
+            }
+            finally
+            {
+                if (urgentliesQuery != null)
+                {
+                    urgentliesQuery.Dispose();
+                }
+                if (roomsQuery != null)
+                {
+                    roomsQuery.Dispose();
+                }
+                BusyMediator.Deactivate();
+            }
+            return dataloaded;
+        }
+
+        private async void LoadBrigadeAsync(int recordTypeId, int recordId, DateTime onDate)
+        {
+            FailureMediator.Deactivate();
+            Brigade.Clear();
+            if (recordId < 1 && recordTypeId < 1) return;
+            this.recordTypeId = recordTypeId;
+            var loadingIsCompleted = false;
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            BusyMediator.Activate(string.Empty);
+            logService.InfoFormat("Loading brigade for record with Id ={0} and RecordType with Id ={1}", recordId, recordTypeId);
+            IDisposableQueryable<RecordMember> recordMembers = null;
+            IDisposableQueryable<RecordTypeRolePermission> recordTypeRolePermission = null;
+            try
+            {
+                recordMembers = patientRecordsService.GetRecordMembers(recordId);
+                recordTypeRolePermission = patientRecordsService.GetRecordTypeMembers(recordTypeId, onDate);
+                var recordMembersTask = recordMembers.Select(x => new
+                {
+                    PersonName = x.PersonStaff.Person.ShortName,
+                    PersonId = x.PersonStaff.PersonId,
+                    StaffName = x.PersonStaff.Staff.ShortName,
+                    x.RecordTypeRolePermissionId,
+                    x.PersonStaffId,
+                    RecordMemberId = x.Id,
+                    x.RecordId
+                }).ToListAsync(token);
+                var recordTypeMembersTask = recordTypeRolePermission.Select(x => new
+                {
+                    RoleName = x.RecordTypeRole.Name,
+                    RoleId = x.RecordTypeMemberRoleId,
+                    x.IsRequired,
+                    PermissionName = x.Permission.Name,
+                    PermissionId = x.PermissionId,
+                    RecordTypeRolePermissionId = x.Id
+                }).ToListAsync(token);
+                await Task.WhenAll(recordMembersTask, recordTypeMembersTask);
+                var recordMembersresult = recordMembersTask.Result;
+                Brigade.AddRange(recordTypeMembersTask.Result.Select(x => new BrigadeViewModel(patientRecordsService, logService, new BrigadeDTO()
+                {
+                    IsRequired = x.IsRequired,
+                    RoleName = x.RoleName,
+                    RoleId = x.RoleId,
+                    PermissionId = x.PermissionId,
+                    RecordTypeRolePermissionId = x.RecordTypeRolePermissionId,
+                    RecordId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                       recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).RecordId : 0,
+                    RecordMemberId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).RecordMemberId : 0,
+                    PersonName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonName : string.Empty,
+                    StaffName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).StaffName : string.Empty,
+                    PersonStaffId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
+                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonStaffId : 0,
+                    RecordTypeId = recordTypeId,
+                    OnDate = onDate
+                })).ToList());
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load brigade for record with Id ={0} and RecordType with Id ={1}", recordId, recordTypeId);
+                FailureMediator.Activate("Не удалось загрузить данные о бригаде. Попробуйте еще раз или обратитесь в службу поддержки", reloadRecordBrigadeCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (recordMembers != null)
+                {
+                    recordMembers.Dispose();
+                }
+                if (recordTypeRolePermission != null)
+                {
+                    recordTypeRolePermission.Dispose();
+                }
+            }
+        }
+
         private async void LoadProtocolCommonData(int visitId, int assignmentId, int recordId)
         {
-            var dataSourcesLoaded = await EnsureDataSourceLoaded();
             RecordPeriods.Clear();
-            //ChangeTracker.IsEnabled = false;
-            if (!dataSourcesLoaded)
-            {
-                return;
-            }
+            ParentVisits.Clear();
+            ChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -437,6 +522,7 @@ namespace PatientRecordsModule.ViewModels
             IDisposableQueryable<Record> recordQuery = patientRecordsService.GetRecord(recordId);
             IDisposableQueryable<Assignment> assignmentQuery = patientRecordsService.GetAssignment(assignmentId);
             IDisposableQueryable<RecordPeriod> recordPeriodsQuery = null;
+            IDisposableQueryable<Visit> recordVisitsQuery = null;
             DateTime curDate = DateTime.Now;
             try
             {
@@ -445,34 +531,62 @@ namespace PatientRecordsModule.ViewModels
                 {
                     data = await recordQuery.Select(x => new CommonRecordAssignmentDTO()
                         {
+                            ParentVisitId = x.VisitId,
                             RecordTypeId = x.RecordTypeId,
+                            PersonId = x.PersonId,
                             ExecutionPlaceId = x.Visit.ExecutionPlaceId,
                             RecordPeriodId = x.RecordPeriodId,
+                            ActualDateTime = x.ActualDateTime,
                             BeginDateTime = x.BeginDateTime,
                             EndDateTime = x.EndDateTime,
-                            UrgentlyId = x.UrgentlyId
+                            UrgentlyId = x.UrgentlyId,
+                            RoomId = x.RoomId,
+                            RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty)
                         }).FirstOrDefaultAsync(token);
-                    LoadBrigadeAsync(data.RecordTypeId, recordId);
+                    LoadBrigadeAsync(data.RecordTypeId, recordId, data.ActualDateTime);
                 }
                 else if (assignmentId > 0)
                 {
                     data = await assignmentQuery.Select(x => new CommonRecordAssignmentDTO()
                     {
+                        ParentVisitId = x.VisitId,
                         RecordTypeId = x.RecordTypeId,
+                        PersonId = x.PersonId,
                         ExecutionPlaceId = x.ExecutionPlaceId,// x.VisitId.HasValue ? x.Visit.ExecutionPlaceId
                         BeginDateTime = x.AssignDateTime,
-                        UrgentlyId = x.UrgentlyId
+                        ActualDateTime = x.AssignDateTime,
+                        UrgentlyId = x.UrgentlyId,
+                        RoomId = x.RoomId,
+                        RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty)
                     }).FirstOrDefaultAsync(token);
-                    LoadBrigadeAsync(data.RecordTypeId, 0);
+                    LoadBrigadeAsync(data.RecordTypeId, 0, data.ActualDateTime);
                 }
+                //Load recordPeriods
                 recordPeriodsQuery = patientRecordsService.GetActualRecordPeriods(data.ExecutionPlaceId, data.BeginDateTime);
                 var recordPeriods = await recordPeriodsQuery.Select(x => new CommonIdName() { Id = x.Id, Name = x.Name }).ToArrayAsync();
                 RecordPeriods.AddRange(recordPeriods);
+                //Load Person Visits
+                recordVisitsQuery = patientRecordsService.GetPersonVisitsQuery(data.PersonId, !userService.HasPermission(PermissionType.ChangeRecordParentVisit));
+                var visits = await recordVisitsQuery.Select(x => new { x.Id, x.BeginDateTime, x.EndDateTime, x.VisitTemplate.Name }).ToArrayAsync();
+                ParentVisits.AddRange(visits.Select(x => new CommonIdName()
+                {
+                    Id = x.Id,
+                    Name = x.Name + " (" + x.BeginDateTime.ToString("dd.MM.yyyy HH:mm") + " - " +
+                        (x.EndDateTime.HasValue ? x.EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : "...") + ")"
+                }));
+
                 SelectedPeriodId = data.RecordPeriodId.ToInt();
                 SelectedUrgentlyId = data.UrgentlyId;
                 BeginDateTime = data.BeginDateTime;
                 EndDateTime = data.EndDateTime;
-                //ChangeTracker.IsEnabled = true;
+                personId = data.PersonId;
+                recordTypeId = data.RecordTypeId;
+                ParentVisitId = data.ParentVisitId;
+                OnPropertyChanged(() => IsVisibleVisits);
+                RoomId = data.RoomId;
+                OnPropertyChanged(() => IsVisibleRooms);
+                RecordTypeName = data.RecordTypeName;
+                ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -481,8 +595,8 @@ namespace PatientRecordsModule.ViewModels
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to load data from visit template with Id {0}");
-                //FailureMediator.Activate("Не удалость загрузить из шаблона случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadVisitTemplateDataFillingCommandWrapper, ex);
+                logService.ErrorFormatEx(ex, "Failed to load record common data");
+                FailureMediator.Activate("Не удалость загрузить общие данные. Попробуйте еще раз или обратитесь в службу поддержки", reloadRecordCommonDataCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally
@@ -504,17 +618,16 @@ namespace PatientRecordsModule.ViewModels
                 {
                     recordPeriodsQuery.Dispose();
                 }
+                if (recordVisitsQuery != null)
+                {
+                    recordVisitsQuery.Dispose();
+                }
             }
         }
 
         private async void LoadProtocolEditor(int visitId, int assignmentId, int recordId)
         {
-            var dataSourcesLoaded = await EnsureDataSourceLoaded();
             //ChangeTracker.IsEnabled = false;
-            if (!dataSourcesLoaded)
-            {
-                return;
-            }
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -533,13 +646,17 @@ namespace PatientRecordsModule.ViewModels
             {
                 if (recordId > 0)
                 {
-                    var record = await recordQuery.FirstOrDefaultAsync(token);
-                    ProtocolEditor = recordTypeEditorResolver.Resolve(record.RecordType.RecordTypeEditors.FirstOrDefault().Editor);
+                    var record = await recordQuery.Select(x => new { x.ActualDateTime, RecordTypeEditor = x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty }).FirstOrDefaultAsync(token);
+                    var res = await LoadDataSources(record.ActualDateTime);
+                    if (!res) return;
+                    ProtocolEditor = recordTypeEditorResolver.Resolve(record.RecordTypeEditor);
                 }
                 if (assignmentId > 0)
                 {
-                    var assignment = await assignmentQuery.FirstOrDefaultAsync(token);
-                    ProtocolEditor = recordTypeEditorResolver.Resolve(assignment.RecordType.RecordTypeEditors.FirstOrDefault().Editor);
+                    var assignmentEditor = await assignmentQuery.Select(x => x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty).FirstOrDefaultAsync(token);
+                    var res = await LoadDataSources(curDate);
+                    if (!res) return;
+                    ProtocolEditor = recordTypeEditorResolver.Resolve(assignmentEditor);
                 }
                 if (visitId > 0)
                 {
@@ -581,6 +698,54 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        private async void SaveCommonData()
+        {
+            FailureMediator.Deactivate();
+            if (!IsValid)
+            {
+                return;
+            }
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            string recordIdString = RecordId < 1 ? RecordId.ToString() : "(new record)";
+            logService.InfoFormat("Saving record common data Id = {0}", recordIdString);
+            BusyMediator.Activate("Сохранение изменений...");
+            var saveSuccesfull = false;
+            try
+            {
+                var brigade = Brigade.Where(x => x.IsPersonMember).Select(x => x.GetRecordMember()).ToList();
+                var result = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime.Value, brigade, token);
+                saveSuccesfull = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to save data while closing visit for visit with Id = {0}", recordIdString);
+                FailureMediator.Activate("Не удалось сохранить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+                    ChangeTracker.AcceptChanges();
+                    ChangeTracker.IsEnabled = true;
+                    //changeTracker.UntrackAll();
+                }
+            }
+
+            if (ProtocolEditor != null)
+                ProtocolEditor.SaveProtocol();
+        }
+
         private void UnsubscriveFromEvents()
         {
             eventAggregator.GetEvent<SelectionEvent<Visit>>().Subscribe(OnVisitSelected);
@@ -596,8 +761,8 @@ namespace PatientRecordsModule.ViewModels
 
         private void SaveProtocol()
         {
-            if (ProtocolEditor != null)
-                ProtocolEditor.SaveProtocol();
+            // if (CanSaveChanges())
+            SaveCommonData();
         }
 
         private void ShowProtocolInEditMode()
@@ -679,6 +844,8 @@ namespace PatientRecordsModule.ViewModels
             get { return setCurrentDateTimeBeginCommand; }
         }
 
+        public ICommand SaveRecordCommand { get; private set; }
+
         #region RecordDocuments Commands
 
         public ICommand AttachDocumentCommand { get { return DocumentsViewer.AttachDocumentCommand; } }
@@ -704,6 +871,64 @@ namespace PatientRecordsModule.ViewModels
                 OnPropertyChanged(() => CanDetachDICOM);
         }
 
+        #endregion
+
+        #region IDataErrorInfo implementation
+        private bool saveWasRequested;
+
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        private bool IsValid
+        {
+            get
+            {
+                saveWasRequested = true;
+                OnPropertyChanged(string.Empty);
+                return invalidProperties.Count < 1;
+            }
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                switch (columnName)
+                {
+                    case "selectedPeriodId":
+                        result = SelectedPeriodId == null ? "Не указан период выполнения" : string.Empty;
+                        break;
+                    case "selectedUrgentlyId":
+                        result = SelectedUrgentlyId == null ? "Не указана форма оказания помощи" : string.Empty;
+                        break;
+                    case "parentVisitId":
+                        result = ParentVisitId == null ? "Не указан родительский случай" : string.Empty;
+                        break;
+                    case "roomId":
+                        result = RoomId == null ? "Не указан кабинет" : string.Empty;
+                        break;
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
         #endregion
     }
 }

@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using Core.Extensions;
 using Core.Data.Services;
 using System.Windows.Input;
+using System.Data.Entity;
+using Prism.Commands;
 
 namespace PatientRecordsModule.ViewModels
 {
@@ -25,6 +27,8 @@ namespace PatientRecordsModule.ViewModels
         private readonly ILog logService;
 
         private CancellationTokenSource currentOperationToken;
+
+        private BrigadeDTO brigadeDTO;
         #endregion
 
         #region Construcotrs
@@ -40,6 +44,8 @@ namespace PatientRecordsModule.ViewModels
             }
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
+            RemoveRecordMemberCommand = new DelegateCommand(RemoveRecordMember);
+            this.brigadeDTO = brigadeDTO;
             PersonStaffs = new ObservableCollectionEx<CommonIdName>();
             RecordTypeId = brigadeDTO.RecordTypeId;
             OnDate = brigadeDTO.OnDate;
@@ -49,10 +55,12 @@ namespace PatientRecordsModule.ViewModels
             RoleName = brigadeDTO.RoleName;
             PermissionId = brigadeDTO.PermissionId;
             IsRequired = brigadeDTO.IsRequired;
+            RecordMemberId = brigadeDTO.RecordMemberId;
             PersonName = brigadeDTO.PersonName;
             StaffName = brigadeDTO.StaffName;
             PersonStaffId = brigadeDTO.PersonStaffId;
         }
+
         #endregion
 
         #region Properties
@@ -84,6 +92,13 @@ namespace PatientRecordsModule.ViewModels
             set { SetProperty(ref permissionId, value); }
         }
 
+        private int recordMemberId;
+        public int RecordMemberId
+        {
+            get { return recordMemberId; }
+            set { SetProperty(ref recordMemberId, value); }
+        }
+
         private bool isRequired;
         public bool IsRequired
         {
@@ -109,7 +124,12 @@ namespace PatientRecordsModule.ViewModels
         public int PersonStaffId
         {
             get { return personStaffId; }
-            set { SetProperty(ref personStaffId, value); }
+            set
+            {
+                SetProperty(ref personStaffId, value);
+                LoadPersonStaffDataAsync(PersonStaffId);
+                OnPropertyChanged(() => IsPersonMember);
+            }
         }
 
         private int recordTypeId;
@@ -125,6 +145,8 @@ namespace PatientRecordsModule.ViewModels
             get { return onDate; }
             set { SetProperty(ref onDate, value); }
         }
+
+        public bool IsPersonMember { get { return PersonStaffId > 0; } }
 
         public ObservableCollectionEx<CommonIdName> PersonStaffs { get; set; }
         #endregion
@@ -163,7 +185,65 @@ namespace PatientRecordsModule.ViewModels
                 }
             }
         }
+
+        private async void LoadPersonStaffDataAsync(int personStaffId)
+        {
+            //FailureMediator.Deactivate();
+            if (personStaffId < 1)
+            {
+                PersonName = string.Empty;
+                StaffName = string.Empty;
+                return;
+            }
+            var loadingIsCompleted = false;
+            //BusyMediator.Activate(string.Empty);
+            logService.InfoFormat("Loading PersonStaff data with Id ={0}", personStaffId);
+            try
+            {
+                var personStaff = await patientRecordsService.GetPersonStaff(personStaffId).FirstOrDefaultAsync();
+                PersonName = personStaff.PersonName;
+                StaffName = personStaff.Staff.ShortName;
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load PersonStaff data with Id ={0}", personStaffId);
+                //FailureMediator.Activate("Не удалось загрузить данные о сотрудниках, которым можно выполнять данную процедуру. Попробуйте еще раз или обратитесь в службу поддержки", reloadRecordBrigadeCommandWrapper, ex);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    //BusyMediator.Deactivate();
+                }
+            }
+        }
+
+        public RecordMember GetRecordMember()
+        {
+            return new RecordMember()
+            {
+                Id = brigadeDTO.RecordMemberId,
+                IsActive = true,
+                PersonStaffId = PersonStaffId,
+                RecordTypeRolePermissionId = RecordTypeRolePermissionId,
+                RecordId = brigadeDTO.RecordId
+            };
+        }
         #endregion
 
+        #region Commands
+        public ICommand RemoveRecordMemberCommand { get; private set; }
+        private void RemoveRecordMember()
+        {
+            PersonStaffId = 0;
+        }
+        #endregion
     }
 }

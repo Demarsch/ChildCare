@@ -12,9 +12,13 @@
     [MedProfileId]      INT            NOT NULL,
     [IsRecord]          BIT            CONSTRAINT [DF_RecordTypes_IsRecord] DEFAULT ((0)) NOT NULL,
     [Options]           VARCHAR (1000) CONSTRAINT [DF_RecordTypes_Options] DEFAULT ('') NOT NULL,
+    [NumberType]        VARCHAR (10)   CONSTRAINT [DF_RecordTypes_NumberType] DEFAULT ('') NOT NULL,
+    [Priority]          INT            CONSTRAINT [DF_RecordTypes_Priority] DEFAULT ((1)) NOT NULL,
     CONSTRAINT [PK_RecordTypes] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_RecordTypes_RecordTypes] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[RecordTypes] ([Id])
 );
+
+
 
 
 

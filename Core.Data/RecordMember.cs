@@ -21,7 +21,7 @@ namespace Core.Data
         public bool IsActive { get; set; }
     
         public virtual PersonStaff PersonStaff { get; set; }
-        public virtual Record Record { get; set; }
         public virtual RecordTypeRolePermission RecordTypeRolePermission { get; set; }
+        public virtual Record Record { get; set; }
     }
 }
