@@ -112,6 +112,11 @@ namespace PatientRecordsModule
             //Diagnoses
             container.RegisterType<DiagnosesCollectionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<DiagnosViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<DiagnosLevelViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<MKBTreeViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<MKBViewModel>(new ContainerControlledLifetimeManager());            
+            container.RegisterType<ComplicationsTreeViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ComplicationViewModel>(new ContainerControlledLifetimeManager());
             //RecordTypes Protocols
             container.RegisterType<DefaultProtocolViewModel>(new TransientLifetimeManager());
             container.RegisterType<VisitProtocolViewModel>(new TransientLifetimeManager());
@@ -128,6 +133,7 @@ namespace PatientRecordsModule
             container.RegisterType<object, RecordDocumentsView>(viewNameResolver.Resolve<RecordDocumentsCollectionViewModel>(), new ContainerControlledLifetimeManager());
             //Diagnoses
             container.RegisterType<object, DiagnosesView>(viewNameResolver.Resolve<DiagnosesCollectionViewModel>(), new ContainerControlledLifetimeManager());
+
             //RecordTypes Protocols
             container.RegisterType<object, DefaultProtocolView>(viewNameResolver.Resolve<DefaultProtocolViewModel>(), new ContainerControlledLifetimeManager());
 

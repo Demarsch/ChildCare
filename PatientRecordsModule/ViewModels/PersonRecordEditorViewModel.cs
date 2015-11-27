@@ -22,10 +22,12 @@ using System.Data.Entity;
 using Core.Extensions;
 using Core.Wpf.Services;
 using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using Core.Misc;
+using System.ComponentModel;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonRecordEditorViewModel : BindableBase, IDisposable
+    public class PersonRecordEditorViewModel : TrackableBindableBase, IDisposable
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -93,12 +95,35 @@ namespace PatientRecordsModule.ViewModels
             RecordPeriods = new ObservableCollectionEx<CommonIdName>();
 
             printProtocolCommand = new DelegateCommand(PrintProtocol);
-            saveProtocolCommand = new DelegateCommand(SaveProtocol);
+            saveProtocolCommand = new DelegateCommand(SaveProtocol, CanSaveChanges);
             showInEditModeCommand = new DelegateCommand(ShowProtocolInEditMode);
             showInViewModeCommand = new DelegateCommand(ShowProtocolInViewMode);
             setCurrentDateTimeEndCommand = new DelegateCommand(SetCurrentDateTimeEnd);
             setCurrentDateTimeBeginCommand = new DelegateCommand(SetCurrentDateTimeBegin);
             SubscribeToEvents();
+
+            currentInstanceChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);            
+        }
+
+        private readonly IChangeTracker currentInstanceChangeTracker;
+        public IChangeTracker ChangeTracker { get; private set; }
+
+        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                UpdateChangeCommandsState();
+            }
+        }
+
+        private void UpdateChangeCommandsState()
+        {
+            saveProtocolCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool CanSaveChanges()
+        {           
+            return ChangeTracker != null && ChangeTracker.HasChanges;
         }
 
         #endregion
@@ -295,7 +320,6 @@ namespace PatientRecordsModule.ViewModels
             return await dataSourcesLoadingTaskSource.Task;
         }
 
-
         private async void LoadBrigadeAsync(int recordTypeId, int recordId)
         {
             FailureMediator.Deactivate();
@@ -381,6 +405,7 @@ namespace PatientRecordsModule.ViewModels
         public void Dispose()
         {
             UnsubscriveFromEvents();
+            currentInstanceChangeTracker.PropertyChanged -= OnChangesTracked;
         }
 
         private void SubscribeToEvents()
@@ -410,9 +435,8 @@ namespace PatientRecordsModule.ViewModels
             VisitId = visitId;
             AssignmentId = assignmentId;
             RecordId = recordId;
-            LoadProtocolEditor(visitId, assignmentId, recordId);
-
-            await DocumentsViewer.LoadDocuments(assignmentId, recordId);
+            await LoadProtocolEditor(visitId, assignmentId, recordId);
+            ChangeTracker.IsEnabled = true;
         }
 
         private async void LoadProtocolCommonData(int visitId, int assignmentId, int recordId)
@@ -507,10 +531,10 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private async void LoadProtocolEditor(int visitId, int assignmentId, int recordId)
+        private async Task LoadProtocolEditor(int visitId, int assignmentId, int recordId)
         {
-            var dataSourcesLoaded = await EnsureDataSourceLoaded();
-            //ChangeTracker.IsEnabled = false;
+            currentInstanceChangeTracker.IsEnabled = false;
+            var dataSourcesLoaded = await EnsureDataSourceLoaded();            
             if (!dataSourcesLoaded)
             {
                 return;
@@ -546,7 +570,11 @@ namespace PatientRecordsModule.ViewModels
                     var visit = await visitQuery.FirstOrDefaultAsync(token);
                     ProtocolEditor = recordTypeEditorResolver.Resolve("VisitProtocol");
                 }
-                //ChangeTracker.IsEnabled = true;
+                DocumentsViewer.LoadDocuments(assignmentId, recordId);
+
+                var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, ProtocolEditor.ChangeTracker);
+                changeTracker.PropertyChanged += OnChangesTracked;
+                ChangeTracker = changeTracker;  
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -578,6 +606,7 @@ namespace PatientRecordsModule.ViewModels
                 {
                     visitQuery.Dispose();
                 }
+                
             }
         }
 

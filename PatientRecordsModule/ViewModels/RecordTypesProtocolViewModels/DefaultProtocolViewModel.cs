@@ -1,4 +1,6 @@
-﻿using Core.Wpf.Misc;
+﻿using Core.Data.Misc;
+using Core.Misc;
+using Core.Wpf.Misc;
 using log4net;
 using PatientRecordsModule.Misc;
 using PatientRecordsModule.Services;
@@ -21,7 +23,7 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
         private readonly ILog logService;
 
         #region Constructors
-        public DefaultProtocolViewModel(IDiagnosService diagnosService, IRecordService recordService, ILog logService)
+        public DefaultProtocolViewModel(IDiagnosService diagnosService, IRecordService recordService, ILog logService, DiagnosesCollectionViewModel diagnosCollectionViewModel)
         {
             if (logService == null)
             {
@@ -35,35 +37,55 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             {
                 throw new ArgumentNullException("recordService");
             }
+            if (diagnosCollectionViewModel == null)
+            {
+                throw new ArgumentNullException("diagnosCollectionViewModel");
+            }
             this.diagnosService = diagnosService;
             this.recordService = recordService;
             this.logService = logService;
 
             CurrentMode = ProtocolMode.View;
-            this.diagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, logService);
-            this.diagnosesEditor.PropertyChanged += diagnoses_PropertyChanged;         
+            DiagnosesEditor = diagnosCollectionViewModel;  
+     
+            currentInstanceChangeTracker = new ChangeTrackerEx<DefaultProtocolViewModel>(this);
+            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, DiagnosesEditor.ChangeTracker);
+            changeTracker.PropertyChanged += OnChangesTracked;
+            ChangeTracker = changeTracker;
         }
-
-        void diagnoses_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-
-        }
-
         #endregion
 
+        private readonly IChangeTracker currentInstanceChangeTracker;
+
+        public IChangeTracker ChangeTracker { get; set; }
+
+        public void Dispose()
+        {
+            currentInstanceChangeTracker.PropertyChanged -= OnChangesTracked;
+        }
+
+        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                
+            }
+        }            
+
         #region Properties
+
         private string discription;
         public string Discription
         {
             get { return discription; }
-            set { SetProperty(ref discription, value); }
+            set { SetTrackedProperty(ref discription, value); }
         }
 
         private string result;
         public string Result
         {
             get { return result; }
-            set { SetProperty(ref result, value); }
+            set { SetTrackedProperty(ref result, value); }
         }
 
         public bool IsEditMode
@@ -76,15 +98,11 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             get { return CurrentMode == ProtocolMode.View; }
         }
 
-        private DiagnosesCollectionViewModel diagnosesEditor;
-        public DiagnosesCollectionViewModel DiagnosesEditor
-        {
-            get { return diagnosesEditor; }
-            set { SetProperty(ref diagnosesEditor, value); }
-        }
+        public DiagnosesCollectionViewModel DiagnosesEditor { get; private set; }
+
         #endregion
 
-        #region Methods
+        #region Methods       
 
         #endregion
 
@@ -114,11 +132,14 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
         public void LoadProtocol(int assignmentId, int recordId, int visitId)
         {
             if (assignmentId > 0)
+            {
                 LoadAssignmentData(assignmentId);
+                DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination); 
+            }
             else if (recordId > 0)
             {
                 LoadRecordData(recordId);
-                DiagnosesEditor.Load(recordId); 
+                DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId); 
             }
             else if (visitId > 0)
                 LoadVisitData(visitId);

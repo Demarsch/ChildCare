@@ -1,4 +1,5 @@
-﻿using Core.Wpf.Misc;
+﻿using Core.Misc;
+using Core.Wpf.Misc;
 using PatientRecordsModule.Misc;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -51,5 +52,8 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
         }
 
         #endregion
+        
+        private readonly IChangeTracker currentInstanceChangeTracker;
+        public IChangeTracker ChangeTracker { get; set; }
     }
 }

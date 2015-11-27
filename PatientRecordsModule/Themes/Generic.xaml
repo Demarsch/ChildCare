@@ -6,5 +6,7 @@
         <ResourceDictionary Source="../Views/PersonHierarchicalVisitsView.xaml" />
 
         <ResourceDictionary Source="../Views/RecordTypesProtocols/DefaultProtocolView.xaml" />
+        <ResourceDictionary Source="../Views/Diagnoses/MKBTreeView.xaml" />
+        <ResourceDictionary Source="../Views/Diagnoses/ComplicationsTreeView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

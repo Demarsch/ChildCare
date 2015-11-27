@@ -31,6 +31,18 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<DiagnosType>(context.Set<DiagnosType>().Where(x => x.IsActual).OrderBy(x => x.Priority), context);
         }
 
+        public IDisposableQueryable<DiagnosType> GetDiagnosTypeById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<DiagnosType>(context.Set<DiagnosType>().AsNoTracking().Where(x => x.Id == id), context);
+        }
+
+        public IDisposableQueryable<DiagnosType> GetDiagnosTypeByOption(string option)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<DiagnosType>(context.Set<DiagnosType>().AsNoTracking().Where(x => x.Options.Contains(option)), context);
+        }
+
         public IDisposableQueryable<DiagnosLevel> GetActualDiagnosLevels()
         {
             var context = contextProvider.CreateNewContext();
@@ -56,6 +68,42 @@ namespace PatientRecordsModule.Services
                 context.Set<Diagnosis>().Where(a => a.PersonDiagnos == 
                     context.Set<PersonDiagnos>().Where(x => x.RecordId == recordId && (!diagnosTypeId.HasValue || x.DiagnosTypeId == diagnosTypeId))
                                             .OrderByDescending(x => x.Record.ActualDateTime).FirstOrDefault()), context);
+        }
+
+        public IDisposableQueryable<Complication> GetRootComplications()
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Complication>(context.Set<Complication>().Where(x => !x.ParentId.HasValue), context);
+        }
+
+        public IDisposableQueryable<MKB> GetRootMKB()
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => !x.ParentId.HasValue), context);
+        }
+
+        public IDisposableQueryable<MKB> GetMKBChildren(int parentId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => x.ParentId == parentId), context);
+        }
+
+        public IDisposableQueryable<MKB> GetMKBParent(int childId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => x.Id == childId).Select(x => x.MKB2), context);
+        }
+
+        public IDisposableQueryable<MKB> GetMKBById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => x.Id == id), context);
+        }
+
+        public IDisposableQueryable<MKB> GetMKBById(int[] ids)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => ids.Contains(x.Id)), context);
         }
 
         public bool DeleteDiagnos(int diagnosId, out string exception)

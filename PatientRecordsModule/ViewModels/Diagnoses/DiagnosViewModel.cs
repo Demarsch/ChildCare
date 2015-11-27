@@ -15,13 +15,14 @@ namespace PatientRecordsModule.ViewModels
         public DiagnosViewModel()
         {
             ChangeTracker = new ChangeTrackerEx<DiagnosViewModel>(this);
+            ChangeTracker.IsEnabled = true;
         }
 
         private int id;
         public int Id
         {
             get { return id; }
-            set { SetTrackedProperty(ref id, value); }
+            set { SetProperty(ref id, value); }
         }
        
         private string diagnosText;
@@ -42,21 +43,35 @@ namespace PatientRecordsModule.ViewModels
         public int LevelId
         {
             get { return levelId; }
-            set { SetTrackedProperty(ref levelId, value); }
+            set { SetProperty(ref levelId, value); }
         }
 
         private string levelName;
         public string LevelName
         {
             get { return levelName; }
-            set { SetTrackedProperty(ref levelName, value); }
+            set { SetProperty(ref levelName, value); }
         }
 
         private int levelPriority;
         public int LevelPriority
         {
             get { return levelPriority; }
-            set { SetTrackedProperty(ref levelPriority, value); }
+            set { SetProperty(ref levelPriority, value); }
+        }
+
+        private bool isComplication;
+        public bool IsComplication
+        {
+            get { return isComplication; }
+            set { SetProperty(ref isComplication, value); }
+        }
+
+        private bool hasMKB;
+        public bool HasMKB
+        {
+            get { return hasMKB; }
+            set { SetProperty(ref hasMKB, value); }
         }
 
         private int? complicationId;
@@ -71,14 +86,14 @@ namespace PatientRecordsModule.ViewModels
         {
             get { return isMainDiagnos; }
             set { SetTrackedProperty(ref isMainDiagnos, value); }
-        }
-
-        private bool needSetMainDiagnos;
-        public bool NeedSetMainDiagnos
+        }     
+      
+        private bool allowClarification;
+        public bool AllowClarification
         {
-            get { return needSetMainDiagnos; }
-            set { SetTrackedProperty(ref needSetMainDiagnos, value); }
-        } 
+            get { return allowClarification; }
+            set { SetProperty(ref allowClarification, value); }
+        }
 
         public void Dispose()
         {

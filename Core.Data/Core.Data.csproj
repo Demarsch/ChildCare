@@ -131,6 +131,7 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PartialClasses\InsuranceDocument.cs" />
+    <Compile Include="PartialClasses\Complication.cs" />
     <Compile Include="PartialClasses\MKB.cs" />
     <Compile Include="PartialClasses\Okato.cs" />
     <Compile Include="PartialClasses\Org.cs" />

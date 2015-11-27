@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Core.Misc;
+using Prism.Mvvm;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,7 +10,7 @@ using System.Windows.Input;
 
 namespace PatientRecordsModule.Misc
 {
-    public interface IRecordTypeProtocol: INotifyPropertyChanged
+    public interface IRecordTypeProtocol : INotifyPropertyChanged
     {
         ProtocolMode CurrentMode { get; set; }
 
@@ -16,7 +18,9 @@ namespace PatientRecordsModule.Misc
 
         bool SaveProtocol();
 
-        void PrintProtocol();        
+        void PrintProtocol();
+
+        IChangeTracker ChangeTracker { get; set; }
     }
 
     public enum ProtocolMode

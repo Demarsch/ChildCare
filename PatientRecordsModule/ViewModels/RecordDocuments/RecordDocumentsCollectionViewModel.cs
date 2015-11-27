@@ -87,7 +87,7 @@ namespace PatientRecordsModule.ViewModels
         /// </summary>
         /// <param name="assignmentId">0 - if there is no </param>
         /// <param name="recordId">0 - if there is no </param>
-        internal async Task LoadDocuments(int assignmentId, int recordId)
+        internal async void LoadDocuments(int assignmentId, int recordId)
         {
             RecordDocuments.Clear();
             if (SpecialValues.IsNewOrNonExisting(assignmentId) && SpecialValues.IsNewOrNonExisting(recordId))

@@ -12,5 +12,13 @@ namespace Core.Data
         {
             return this.Code + " " + this.Name;
         }
+
+        public bool ContainsFindString(string findString)
+        {
+            if (string.IsNullOrEmpty(findString) || (string.IsNullOrEmpty(this.Name) && string.IsNullOrEmpty(this.Code)))
+                return false;
+
+            return this.Name.IndexOf(findString, StringComparison.InvariantCultureIgnoreCase) > -1 || this.Code.IndexOf(findString, StringComparison.InvariantCultureIgnoreCase) > -1;
+        }
     }
 }

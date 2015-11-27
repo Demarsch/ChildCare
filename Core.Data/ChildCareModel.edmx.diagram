@@ -220,6 +220,7 @@
         <EntityTypeShape EntityType="DataLib.RecordPeriod" Width="1.5" PointX="15.75" PointY="66.5" />
         <AssociationConnector Association="DataLib.FK_RecordPeriods_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Records_RecordPeriods" />
+        <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
         <EntityTypeShape EntityType="DataLib.DiagnosType" Width="1.5" PointX="7.375" PointY="1" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_DiagnosTypes" />
         </Diagram>

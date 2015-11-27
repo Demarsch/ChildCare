@@ -6,10 +6,6 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"       
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
-             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:prism="http://www.codeplex.com/prism"
-             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
              xmlns:fluent="urn:fluent-ribbon"
              xmlns:local="clr-namespace:PatientRecordsModule.Misc"
              mc:Ignorable="d" 
@@ -21,18 +17,44 @@
                 <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
             </Grid>
         </DataTemplate>
-    </UserControl.Resources>
 
-    <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction IsModal="True"
-                                     ContentTemplate="{StaticResource DialogWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>
-        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction IsModal="True"
-                                     ContentTemplate="{StaticResource DialogWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>
-    </i:Interaction.Triggers>
+        <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="Transparent" />
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="AcceptsTab" Value="True"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{StaticResource DisabledBackgroundBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Button" x:Key="ClarificationButton">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter x:Name="MyContentPresenter" 
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                    <Setter Property="Foreground" Value="{StaticResource DisabledBackgroundBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>   
 
     <DockPanel LastChildFill="True">
         <Label DockPanel.Dock="Top" Content="Диагноз" HorizontalAlignment="Left" FontWeight="Medium"/>
@@ -43,7 +65,7 @@
             </Grid.RowDefinitions>
             <ToolBar>
                 <fluent:DropDownButton 
-                    Background="Transparent" BorderThickness="0" IsEnabled="{Binding AllowAddDiagnos}"
+                    Background="Transparent" BorderThickness="0" 
                     Icon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png"
                     SizeDefinition="Middle" Header="Добавить"
                     HasTriangle="True"
@@ -59,7 +81,7 @@
                     </fluent:DropDownButton.ItemContainerStyle>
                 </fluent:DropDownButton>
                 <Separator Margin="10,0"/>
-                <fluent:Button IsEnabled="{Binding AllowRemoveDiagnos}"
+                <fluent:Button 
                         Icon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png"
                         SizeDefinition="Middle" Header="Удалить"
                         Command="{Binding RemoveDiagnosCommand}"
@@ -97,17 +119,18 @@
                 <DataGridTemplateColumn Header="МКБ" Width="SizeToCells">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding MKB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  BorderThickness="0" MinWidth="40"/>
+                            <TextBox Text="{Binding MKB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     IsEnabled="{Binding HasMKB}" MinWidth="40"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Background="Transparent" BorderThickness="0"                                                  
-                                                    Command="{Binding ElementName=diagnoses, Path=DataContext.SelectMKBCommand}"
-                                                    CommandParameter="{Binding}">
-                                <TextBlock Text="..." MinWidth="20" HorizontalAlignment="Center" />
+                            <Button IsEnabled="{Binding AllowClarification}"                                                
+                                    Command="{Binding ElementName=diagnoses, Path=DataContext.MakeClarificationCommand}"
+                                    CommandParameter="{Binding}" Content="..." MinWidth="20"
+                                    Style="{StaticResource ClarificationButton}">
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -116,11 +139,11 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Text="{Binding DiagnosText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                            HorizontalAlignment="Stretch" BorderThickness="0" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
+                                            HorizontalAlignment="Stretch"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Пролечено" Width="Auto" 
+                <DataGridTemplateColumn Header="{Binding Data.MainDiagnosHeader, Source={StaticResource proxy}}" Width="Auto" 
                         Visibility="{Binding Data.NeedSetMainDiagnos, Converter={x:Static converters:BoolToVisibilityConverter.Instance},
                         Source={StaticResource proxy}}">
                     <DataGridTemplateColumn.CellTemplate>

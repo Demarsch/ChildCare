@@ -148,9 +148,13 @@
     <Compile Include="Services\Interfaces\IPatientRecordsService.cs" />
     <Compile Include="Services\Interfaces\IDiagnosService.cs" />
     <Compile Include="Services\Interfaces\IRecordService.cs" />
+    <Compile Include="ViewModels\Diagnoses\ComplicationsTreeViewModel.cs" />
     <Compile Include="ViewModels\Diagnoses\DiagnosesCollectionViewModel.cs" />
     <Compile Include="ViewModels\Diagnoses\DiagnosLevelViewModel.cs" />
     <Compile Include="ViewModels\Diagnoses\DiagnosViewModel.cs" />
+    <Compile Include="ViewModels\Diagnoses\MKBTreeViewModel.cs" />
+    <Compile Include="ViewModels\Diagnoses\ComplicationViewModel.cs" />
+    <Compile Include="ViewModels\Diagnoses\MKBViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentsCollectionViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentViewModel.cs" />
     <Compile Include="ViewModels\RecordTypesProtocolViewModels\DefaultProtocolViewModel.cs" />
@@ -166,6 +170,12 @@
     <Compile Include="ViewModels\PersonRecordListViewModel.cs" />
     <Compile Include="Views\Diagnoses\DiagnosesView.xaml.cs">
       <DependentUpon>DiagnosesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Diagnoses\ComplicationsTreeView.xaml.cs">
+      <DependentUpon>ComplicationsTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Diagnoses\MKBTreeView.xaml.cs">
+      <DependentUpon>MKBTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RecordDocuments\RecordDocumentsView.xaml.cs">
       <DependentUpon>RecordDocumentsView.xaml</DependentUpon>
@@ -217,6 +227,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Diagnoses\DiagnosesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Diagnoses\ComplicationsTreeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Diagnoses\MKBTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
