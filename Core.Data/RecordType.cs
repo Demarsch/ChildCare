@@ -20,12 +20,12 @@ namespace Core.Data
             this.Assignments = new HashSet<Assignment>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
-            this.Records = new HashSet<Record>();
             this.RecordTypeEditors = new HashSet<RecordTypeEditor>();
             this.RecordTypes1 = new HashSet<RecordType>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
             this.RecordTypeCosts = new HashSet<RecordTypeCost>();
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -41,6 +41,8 @@ namespace Core.Data
         public int MedProfileId { get; set; }
         public bool IsRecord { get; set; }
         public string Options { get; set; }
+        public string NumberType { get; set; }
+        public int Priority { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
@@ -48,8 +50,6 @@ namespace Core.Data
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeEditor> RecordTypeEditors { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -61,5 +61,7 @@ namespace Core.Data
         public virtual ICollection<RecordTypeCost> RecordTypeCosts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Record> Records { get; set; }
     }
 }

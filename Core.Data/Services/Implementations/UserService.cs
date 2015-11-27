@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.DirectoryServices.AccountManagement;
 using System.Threading.Tasks;
+using Core.Data.Classes;
 
 namespace Core.Data.Services
 {
@@ -24,13 +25,13 @@ namespace Core.Data.Services
             return UserPrincipal.Current.Sid.ToString();
         }
 
-        public List<string> GetCurrentUserPermissions()
+        public List<Permission> GetCurrentUserPermissions()
         {
             using (var db = contextProvider.CreateNewContext())
             {
                 var curSID = GetCurrentSID();
                 return StackRoles(new List<Permission>(), db.Set<User>().Where(z => z.SID != null && z.SID.ToLower() == curSID).SelectMany(x => x.UserPermissions.Select(y => new { y.Permission, y.IsGranted })).ToList()
-                    .Select(x => new Tuple<Permission, bool>(x.Permission, x.IsGranted)).ToList()).Select(x => x.Name).ToList();
+                    .Select(x => new Tuple<Permission, bool>(x.Permission, x.IsGranted)).ToList()).ToList();
             }
         }
 
@@ -51,6 +52,12 @@ namespace Core.Data.Services
             List<Tuple<Permission, bool>> income = DeepRun(roles);
             List<Permission> deniedPermissions = income.Where(x => !x.Item2).Select(x => x.Item1).ToList();
             return has.Union(income.Select(x => x.Item1)).Where(x => !deniedPermissions.Contains(x)).ToList();
+        }
+
+
+        public bool HasPermission(string permission)
+        {
+            return GetCurrentUserPermissions().Any(x => x.Name == permission);
         }
     }
 }

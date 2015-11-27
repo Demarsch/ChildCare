@@ -391,7 +391,7 @@ namespace PatientRecordsModule.ViewModels
                 })
                 .ToArray()
                 .Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService));
-            var visitsViewModels = patientRecordsService.GetPersonVisitsQuery(PersonId)
+            var visitsViewModels = patientRecordsService.GetPersonVisitsQuery(PersonId, false)
                 .Select(x => new VisitDTO()
                 {
                     Id = x.Id,

@@ -28,7 +28,7 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Diagnosis> Diagnoses { get; set; }
         public virtual Person Person { get; set; }
-        public virtual Record Record { get; set; }
         public virtual DiagnosType DiagnosType { get; set; }
+        public virtual Record Record { get; set; }
     }
 }

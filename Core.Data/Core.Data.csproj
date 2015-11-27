@@ -77,6 +77,8 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Classes\PermissionType.cs" />
+    <Compile Include="Classes\RecordTypesTreeQueryItem.cs" />
     <Compile Include="Classes\UserSystemInfo.cs" />
     <Compile Include="CommissionDecision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
@@ -207,6 +209,7 @@
     </Compile>
     <Compile Include="Services\Implementations\DbEnvironment.cs" />
     <Compile Include="Services\Implementations\DbSecurityService.cs" />
+    <Compile Include="Services\Implementations\RecordTypesTree.cs" />
     <Compile Include="Services\Implementations\UserService.cs" />
     <Compile Include="Services\Interfaces\IDbContextProvider.cs" />
     <Compile Include="MaritalStatus.cs">
@@ -306,6 +309,7 @@
     <Compile Include="ScheduleItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\Interfaces\IRecordTypeTree.cs" />
     <Compile Include="Services\Interfaces\IUserService.cs" />
     <Compile Include="Services\Interfaces\IUserSystemInfoService.cs" />
     <Compile Include="SocialStatusType.cs">

@@ -10,6 +10,7 @@ using Core.Misc;
 using Core.Services;
 using System.Collections.Generic;
 using PatientRecordsModule.DTO;
+using System.Data.Entity;
 
 namespace PatientRecordsModule.Services
 {
@@ -51,10 +52,10 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.PersonId == personId && !x.VisitId.HasValue && !x.RecordId.HasValue && x.RemovedByUserId == null), context);
         }
 
-        public IDisposableQueryable<Visit> GetPersonVisitsQuery(int personId)
+        public IDisposableQueryable<Visit> GetPersonVisitsQuery(int personId, bool onlyOpened)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.PersonId == personId && x.RemovedByUserId == null), context);
+            return new DisposableQueryable<Visit>(context.Set<Visit>().AsNoTracking().Where(x => x.PersonId == personId && x.RemovedByUserId == null && (!onlyOpened || (x.IsCompleted == null || x.IsCompleted == false))), context);
         }
 
         public IDisposableQueryable<Assignment> GetVisitsChildAssignmentsQuery(int visitId)
@@ -240,6 +241,7 @@ namespace PatientRecordsModule.Services
                 if (visitId < 1) return;
                 var visit = context.Set<Visit>().FirstOrDefault(x => x.Id == visitId);
                 visit.IsCompleted = false;
+                visit.EndDateTime = null;
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
@@ -322,6 +324,90 @@ namespace PatientRecordsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<RecordPeriod>(context.Set<RecordPeriod>().AsNoTracking().Where(x => x.ExecutionPlaceId == executionPlaceId && onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
+
+
+        public IDisposableQueryable<PersonStaff> GetPersonStaff(int personStaffId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<PersonStaff>(context.Set<PersonStaff>().AsNoTracking().Where(x => x.Id == personStaffId), context);
+        }
+
+        public IDisposableQueryable<Room> GetRooms(DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Room>(context.Set<Room>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
+
+        public async Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime endDateTime,
+            List<RecordMember> brigade, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                Record record = context.Set<Record>().FirstOrDefault(x => x.Id == recordId);
+                if (record == null)
+                {
+                    RecordType recordType = context.Set<RecordType>().FirstOrDefault(x => x.Id == recordTypeId);
+                    record = new Record()
+                    {
+                        PersonId = personId,
+                        RecordTypeId = recordTypeId,
+                        IsCompleted = false,
+                        MKB = string.Empty,
+                        NumberYear = endDateTime.Year,
+                        NumberType = recordType.NumberType
+                    };
+                    var number = context.Set<Record>().Any(x => x.NumberType == record.NumberType && x.NumberYear == record.NumberYear) ?
+                        context.Set<Record>().Where(x => x.NumberType == record.NumberType && x.NumberYear == record.NumberYear).Max(x => x.Number) + 1 : 1;
+                    record.Number = number;
+                    context.Entry<Record>(record).State = EntityState.Added;
+                }
+                record.RoomId = roomId;
+                record.VisitId = visitId;
+                record.RecordPeriodId = periodId;
+                record.UrgentlyId = urgentlyId;
+                record.BeginDateTime = beginDateTime;
+                record.EndDateTime = endDateTime;
+                record.ActualDateTime = endDateTime;
+
+                //Brigade
+                var old = record.RecordMembers.Where(x => x.IsActive).ToDictionary(x => x.Id);
+                var @new = brigade.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+                var added = brigade.Where(x => x.Id == SpecialValues.NewId).ToArray();
+                var removed = record.RecordMembers.Where(x => !@new.ContainsKey(x.Id))
+                                 .ToArray();
+                var existed = @new.Where(x => old.ContainsKey(x.Key))
+                                  .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                                  .ToArray();
+                foreach (var member in added)
+                {
+                    member.RecordId = record.Id;
+                    context.Entry(member).State = EntityState.Added;
+                }
+                foreach (var member in removed)
+                {
+                    member.IsActive = false;
+                }
+                foreach (var member in existed.Where(x => x.IsChanged))
+                {
+                    member.Old.IsActive = member.New.IsActive;
+                    member.Old.RecordId = member.New.RecordId;
+                    member.Old.PersonStaffId = member.New.PersonStaffId;
+                    member.Old.RecordTypeRolePermissionId = member.New.RecordTypeRolePermissionId;
+                    context.Entry(member.Old).State = EntityState.Modified;
+                }
+                //result.Addresses = added.Concat(existed.Select(x => x.New)).ToArray();
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return record.Id;
+            }
         }
     }
 }
