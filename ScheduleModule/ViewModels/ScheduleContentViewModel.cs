@@ -7,10 +7,14 @@ using System.Windows.Data;
 using System.Windows.Navigation;
 using Core.Data;
 using Core.Data.Misc;
+using Core.Extensions;
 using Core.Misc;
 using Core.Services;
+using Core.Wpf.Events;
+using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
+using Core.Wpf.ViewModels;
 using log4net;
 using Prism.Commands;
 using Prism.Events;
@@ -24,7 +28,7 @@ using Shared.Schedule.Events;
 
 namespace ScheduleModule.ViewModels
 {
-    public class ContentViewModel : BindableBase, INavigationAware, IDisposable
+    public class ScheduleContentViewModel : BindableBase, INavigationAware, IDisposable
     {
         private readonly ILog log;
 
@@ -38,20 +42,20 @@ namespace ScheduleModule.ViewModels
 
         private readonly IEnvironment environment;
 
-        private readonly IDialogService dialogService;
+        private readonly IDialogServiceAsync dialogService;
 
         private readonly ISecurityService securityService;
 
         private readonly IEventAggregator eventAggregator;
 
-        public ContentViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
-                                IScheduleService scheduleService,
-                                ILog log,
-                                ICacheService cacheService,
-                                IEnvironment environment,
-                                IDialogService dialogService,
-                                ISecurityService securityService,
-                                IEventAggregator eventAggregator)
+        public ScheduleContentViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
+                                        IScheduleService scheduleService,
+                                        ILog log,
+                                        ICacheService cacheService,
+                                        IEnvironment environment,
+                                        IDialogServiceAsync dialogService,
+                                        ISecurityService securityService,
+                                        IEventAggregator eventAggregator)
         {
             if (scheduleService == null)
             {
@@ -101,28 +105,39 @@ namespace ScheduleModule.ViewModels
             closeTime = overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(17.0);
             CancelAssignmentMovementCommand = new DelegateCommand(CancelAssignmentMovement);
             ChangeDateCommand = new DelegateCommand<int?>(ChangeDate);
+            ClearFiltersCommand = new DelegateCommand(ClearFilters, CanClearFilters);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
-            LoadDataSources();
+            initialLoadingCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await InitialLoadingAsync()) };
+            loadAssignmentsCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadAssignmentsAsync(selectedDate)) };
             selectedRoom = unseletedRoom;
             selectedRecordType = unselectedRecordType;
             SubscribeToEvents();
-            LoadAssignmentsAsync(selectedDate);
+            firstTimeLoad = true;
         }
+
+        private readonly CommandWrapper loadAssignmentsCommandWrapper;
 
         private void SubscribeToEvents()
         {
             eventAggregator.GetEvent<ScheduleChangedEvent>().Subscribe(OnScheduleChanged);
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
         }
 
         private void UnsubscribeFromEvents()
         {
             eventAggregator.GetEvent<ScheduleChangedEvent>().Unsubscribe(OnScheduleChanged);
+            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
         }
 
-        private void OnScheduleChanged(object obj)
+        private async void OnScheduleChanged(object obj)
         {
-            LoadAssignmentsAsync(selectedDate);
+            await LoadAssignmentsAsync(selectedDate);
+        }
+
+        private void OnPatientSelected(int patientId)
+        {
+            CurrentPatientId = patientId;
         }
 
         public BusyMediator BusyMediator { get; private set; }
@@ -133,7 +148,7 @@ namespace ScheduleModule.ViewModels
 
         private async Task LoadAssignmentsAsync(DateTime date)
         {
-            if (!DataSourcesAreLoaded)
+            if (!await InitialLoadingAsync())
             {
                 return;
             }
@@ -182,9 +197,9 @@ namespace ScheduleModule.ViewModels
             catch (Exception ex)
             {
                 log.Error(string.Format("Failed to load schedule for {0:dd-MM-yyyy}", date), ex);
-                FailureMediator.Activate(
-                                         "При попытке загрузить расписание возникла ошибка. Попробуйте обновить расписание или выбрать другую дату. Если ошибка повторится, обратитесь в службу поддержки",
-                                         exception: ex);
+                FailureMediator.Activate("При попытке загрузить расписание возникла ошибка. Попробуйте обновить расписание или выбрать другую дату. Если ошибка повторится, обратитесь в службу поддержки",
+                                         loadAssignmentsCommandWrapper,
+                                         ex);
             }
             finally
             {
@@ -192,28 +207,58 @@ namespace ScheduleModule.ViewModels
             }
         }
 
-        private void LoadDataSources()
+        private TaskCompletionSource<bool> initialLoadingTaskSource;
+
+        private readonly CommandWrapper initialLoadingCommandWrapper;
+
+        private async Task<bool> InitialLoadingAsync()
         {
+            if (initialLoadingTaskSource != null)
+            {
+                return await initialLoadingTaskSource.Task;
+            }
+            initialLoadingTaskSource = new TaskCompletionSource<bool>();
+            log.Info("Loading data source for schedule...");
+            FailureMediator.Deactivate();
+            BusyMediator.Activate("Загрузка общих данных...");
             try
             {
-                log.Info("Loading data source for schedule...");
-                Rooms = new[] { unseletedRoom }.Concat(scheduleService.GetRooms().Select(x => new RoomViewModel(x, scheduleService, cacheService))).ToArray();
+                await Task.Run((Action)FillCache);
+                var newRooms = await Task.Run((Func<IEnumerable<Room>>)scheduleService.GetRooms);
+                Rooms = new[] { unseletedRoom }.Concat(newRooms.Select(x => new RoomViewModel(x, scheduleService, cacheService))).ToArray();
                 foreach (var room in Rooms)
                 {
                     room.AssignmentCreationRequested += RoomOnAssignmentCreationRequested;
                 }
-                RecordTypes = new[] { unselectedRecordType }.Concat(scheduleService.GetRecordTypes()).ToArray();
-                DataSourcesAreLoaded = true;
+                var newRecordTypes = await Task.Run((Func<IEnumerable<RecordType>>)scheduleService.GetRecordTypes);
+                RecordTypes = new[] { unselectedRecordType }.Concat(newRecordTypes).ToArray();
                 log.InfoFormat("Loaded {0} rooms and {1} record types", (Rooms as RoomViewModel[]).Length, (RecordTypes as RecordType[]).Length);
                 SelectedRecordType = unselectedRecordType;
                 SelectedRoom = unseletedRoom;
+                initialLoadingTaskSource.SetResult(true);
+                return true;
             }
             catch (Exception ex)
             {
                 log.Error("Failed to load datasources for schedule from database", ex);
                 FailureMediator.Activate("При попытке загрузить списки кабинетов и услуг возникла ошибка. Попробуйте перезапустить приложение. Если ошибка повторится, обратитесь в службу поддержки",
-                                         exception: ex);
+                                         initialLoadingCommandWrapper,
+                                         ex);
+                initialLoadingTaskSource.SetResult(false);
+                return false;
             }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        private void FillCache()
+        {
+            cacheService.GetItems<Room>();
+            cacheService.GetItems<RecordType>();
+            cacheService.GetItems<ExecutionPlace>();
+            cacheService.GetItems<Urgently>();
         }
 
         private DateTime openTime;
@@ -232,14 +277,6 @@ namespace ScheduleModule.ViewModels
             private set { SetProperty(ref closeTime, value); }
         }
 
-        private bool dataSourcesAreLoaded;
-
-        public bool DataSourcesAreLoaded
-        {
-            get { return dataSourcesAreLoaded; }
-            private set { SetProperty(ref dataSourcesAreLoaded, value); }
-        }
-
         private ICollection<RoomViewModel> rooms;
 
         public ICollection<RoomViewModel> Rooms
@@ -247,12 +284,13 @@ namespace ScheduleModule.ViewModels
             get { return rooms; }
             private set
             {
-                if (SetProperty(ref rooms, value))
+                filteredRooms.Source = value;
+                if (!SetProperty(ref rooms, value))
                 {
-                    filteredRooms.Source = value;
-                    filteredRooms.View.Filter = FilterRooms;
-                    OnPropertyChanged(() => FilteredRooms);
+                    return;
                 }
+                filteredRooms.View.Filter = FilterRooms;
+                OnPropertyChanged(() => FilteredRooms);
             }
         }
 
@@ -280,21 +318,21 @@ namespace ScheduleModule.ViewModels
 
         #region Assignments
 
-        private void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
+        private async void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
         {
             var room = sender as RoomViewModel;
             var freeTimeSlot = e.Result;
             if (isMovingAssignment)
             {
-                MoveAssignment(movedAssignment, freeTimeSlot);
+                await MoveAssignmentAsync(movedAssignment, freeTimeSlot);
             }
             else
             {
-                CreateNewAssignment(room, freeTimeSlot);
+                await CreateNewAssignmentAsync(room, freeTimeSlot);
             }
         }
 
-        private void MoveAssignment(OccupiedTimeSlotViewModel whatToMove, FreeTimeSlotViewModel whereToMove)
+        private async Task MoveAssignmentAsync(OccupiedTimeSlotViewModel whatToMove, FreeTimeSlotViewModel whereToMove)
         {
             try
             {
@@ -304,7 +342,8 @@ namespace ScheduleModule.ViewModels
                                whatToMove.RoomId,
                                whereToMove.StartTime,
                                whereToMove.RoomId);
-                scheduleService.MoveAssignment(whatToMove.Id, whereToMove.StartTime, (int)whereToMove.EndTime.Subtract(whereToMove.StartTime).TotalMinutes, whereToMove.RoomId);
+                BusyMediator.Activate("Перенос назначения...");
+                await scheduleService.MoveAssignmentAsync(whatToMove.Id, whereToMove.StartTime, (int)whereToMove.EndTime.Subtract(whereToMove.StartTime).TotalMinutes, whereToMove.RoomId);
                 log.Info("Successfully saved to database");
                 var whereToMoveRoom = rooms.First(x => x.Id == whereToMove.RoomId);
                 var whatToMoveRoom = rooms.First(x => x.Id == whatToMove.RoomId);
@@ -328,69 +367,29 @@ namespace ScheduleModule.ViewModels
             }
             catch (AssignmentConflictException ex)
             {
-                dialogService.ShowError(ex.Message);
+                FailureMediator.Activate(ex.Message, true);
             }
             catch (Exception ex)
             {
                 log.Error(string.Format("Failed to move assignment (Id = {0}) to the time slot {1:dd.MM HH:mm}", whatToMove.Id, whereToMove.StartTime), ex);
-                dialogService.ShowError("При попытке перенести назначение возникла ошибка. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
+                FailureMediator.Activate("При попытке перенести назначение возникла ошибка. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки",
+                                         exception: ex,
+                                         canBeDeactivated: true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
             }
         }
 
-        //TODO: worth reviewing this code to probably get rid of all type of assignment objects
-        private void CreateNewAssignment(RoomViewModel selectedRoom, FreeTimeSlotViewModel freeTimeSlot)
+        private async Task CreateNewAssignmentAsync(RoomViewModel selectedRoom, FreeTimeSlotViewModel freeTimeSlot)
         {
-            log.InfoFormat("Trying to create new assignment: room Id  {0}, start time is {1:dd.MM HH:mm}, proposed duration {2}, record type Id {3}",
-                           freeTimeSlot.RoomId,
-                           freeTimeSlot.StartTime,
-                           (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
-                           freeTimeSlot.RecordTypeId);
-            var financingSource = GetFinancingSource();
-            if (financingSource == 0)
+            BusyMediator.Activate("Занимаем слот в расписании...");
+            var assignment = await CreateTemporaryAssignmentAsync(selectedRoom, freeTimeSlot);
+            BusyMediator.Deactivate();
+            if (assignment == null)
             {
-                log.Error("There are no financing sources in database");
-                dialogService.ShowError("В базе данных отсутствует информация о доступных источниках финансирования. Обратитесь в службу поддержки");
                 return;
-            }
-            var plannedUrgency = cacheService.GetItemByName<Urgently>(Urgently.Planned);
-            if (plannedUrgency == null)
-            {
-                FailureMediator.Activate("В базе данных отсутсвует информация о плановой срочности назначения. Обратитесь в службу поддержки");
-                return;
-            }
-            var assignment = new Assignment
-                             {
-                                 AssignDateTime = freeTimeSlot.StartTime,
-                                 Duration = (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
-                                 AssignUserId = environment.CurrentUser.UserId,
-                                 Note = string.Empty,
-                                 FinancingSourceId = financingSource,
-                                 PersonId = currentPatientId,
-                                 RecordTypeId = freeTimeSlot.RecordTypeId,
-                                 RoomId = selectedRoom.Id,
-                                 IsTemporary = true,
-                                 UrgentlyId = plannedUrgency.Id
-                             };
-            try
-            {
-                scheduleService.SaveAssignment(assignment);
-                log.InfoFormat("New assignment (Id = {0}) is saved as temporary", assignment.Id);
-            }
-            catch (AssignmentConflictException ex)
-            {
-                dialogService.ShowError(ex.Message);
-                return;
-            }
-            catch (Exception ex)
-            {
-                log.Error("Failed to save new assignment", ex);
-                dialogService.ShowError(string.Format("Не удалось создать назначение. Причина - {0}{1}Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", ex.Message,
-                                                      Environment.NewLine));
-                return;
-            }
-            if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
-            {
-                OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
             }
             var newAssignmentDTO = new ScheduledAssignmentDTO
                                    {
@@ -413,77 +412,147 @@ namespace ScheduleModule.ViewModels
             newAssignment.MoveRequested += RoomOnAssignmentMoveRequested;
             selectedRoom.TimeSlots.Remove(freeTimeSlot);
             selectedRoom.TimeSlots.Add(newAssignment);
-            var isFailed = false;
-            do
+            var dialogViewModel = new ScheduleAssignmentUpdateViewModel(scheduleService, cacheService, true);
+            dialogViewModel.SelectedFinancingSource = dialogViewModel.FinancingSources.First(x => x.Id == assignment.FinancingSourceId);
+            var dialogResult = await dialogService.ShowDialogAsync(dialogViewModel);
+            if (dialogResult != true)
             {
-                var dialogViewModel = new ScheduleAssignmentUpdateViewModel(scheduleService, cacheService, true);
-                dialogViewModel.SelectedFinancingSource = dialogViewModel.FinancingSources.First(x => x.Id == assignment.FinancingSourceId);
-                var dialogResult = dialogService.ShowDialog(dialogViewModel);
-                if (dialogResult != true)
+                BusyMediator.Activate("Освобождение занятого слота...");
+                try
                 {
-                    try
+                    log.Info("User canceled saving thus new assignment must be deleted");
+                    await scheduleService.DeleteAssignmentAsync(assignment.Id);
+                    selectedRoom.TimeSlots.Remove(newAssignment);
+                    selectedRoom.TimeSlots.Add(freeTimeSlot);
+                    newAssignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
+                    newAssignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
+                    newAssignment.MoveRequested -= RoomOnAssignmentMoveRequested;
+                    log.Info("New assignment was successfully deleted");
+                    if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
                     {
-                        log.Info("User canceled saving thus new assignment must be deleted");
-                        isFailed = false;
-                        scheduleService.DeleteAssignment(assignment.Id);
-                        selectedRoom.TimeSlots.Remove(newAssignment);
-                        selectedRoom.TimeSlots.Add(freeTimeSlot);
-                        newAssignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
-                        newAssignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
-                        newAssignment.MoveRequested -= RoomOnAssignmentMoveRequested;
-                        log.Info("New assignment was successfully deleted");
-                        if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
-                        {
-                            OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
-                        dialogService.ShowError(
-                                                "Не удалось удалить временное назначение. Попробуйте удалить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически");
+                        OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    try
+                    log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
+                    FailureMediator.Activate("Не удалось освободить занятый слот. Попробуйте освободить его вручную через контекстное меню или оставьте его, и через некоторое время оно будет удалено автоматически", 
+                                             true);
+                }
+                finally
+                {
+                    BusyMediator.Deactivate();
+                }
+            }
+            else
+            {
+                BusyMediator.Activate("Сохранение дополнительной информации...");
+                try
+                {
+                    log.Info("User has chosen to save assignment, trying to update assignment...");
+                    assignment.IsTemporary = false;
+                    assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
+                    assignment.Note = dialogViewModel.Note;
+                    assignment.AssignLpuId = dialogViewModel.IsSelfAssigned || dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
+                    await scheduleService.SaveAssignmentAsync(assignment);
+                    newAssignment.IsTemporary = false;
+                    newAssignment.FinancingSourceId = assignment.FinancingSourceId;
+                    newAssignment.Note = assignment.Note;
+                    newAssignment.AssignLpuId = assignment.AssignLpuId;
+                    log.Info("New assignment was updated and moved from temporary state");
+                    if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
                     {
-                        log.Info("User has chosen to save assignment, trying to update assignment...");
-                        assignment.IsTemporary = false;
-                        assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
-                        assignment.Note = dialogViewModel.Note;
-                        assignment.AssignLpuId = dialogViewModel.IsSelfAssigned || dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
-                        scheduleService.SaveAssignment(assignment);
-                        newAssignment.IsTemporary = false;
-                        newAssignment.FinancingSourceId = assignment.FinancingSourceId;
-                        newAssignment.Note = assignment.Note;
-                        newAssignment.AssignLpuId = assignment.AssignLpuId;
-                        isFailed = false;
-                        log.Info("New assignment was updated and moved from temporary state");
-                        if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
-                        {
-                            OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Error(string.Format("Failed to save additional data for temporary assignment (Id ={0})", assignment.Id), ex);
-                        dialogService.ShowError("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию");
-                        isFailed = true;
+                        OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
                     }
                 }
-            } while (isFailed);
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to save additional data for temporary assignment (Id ={0})", assignment.Id), ex);
+                    FailureMediator.Activate("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию",
+                                             exception: ex,
+                                             canBeDeactivated: true);
+                }
+                finally
+                {
+                    BusyMediator.Deactivate();
+                }
+            }
         }
 
-        private void RoomOnAssignmentCancelOrDeleteRequested(object sender, EventArgs e)
+        private async Task<Assignment> CreateTemporaryAssignmentAsync(RoomViewModel selectedRoom, FreeTimeSlotViewModel freeTimeSlot)
         {
-            var assignment = sender as OccupiedTimeSlotViewModel;
+            log.InfoFormat("Trying to create new assignment: room Id  {0}, start time is {1:dd.MM HH:mm}, proposed duration {2}, record type Id {3}",
+                           freeTimeSlot.RoomId,
+                           freeTimeSlot.StartTime,
+                           (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
+                           freeTimeSlot.RecordTypeId);
+            var financingSource = GetFinancingSource();
+            if (financingSource == 0)
+            {
+                log.Error("There are no financing sources in database");
+                FailureMediator.Activate("В базе данных отсутствует информация о доступных источниках финансирования. Обратитесь в службу поддержки", true);
+                return null;
+            }
+            var plannedUrgency = cacheService.GetItems<Urgently>().FirstOrDefault(x => x.IsDefalut);
+            if (plannedUrgency == null)
+            {
+                FailureMediator.Activate("В базе данных отсутсвует информация о плановой срочности назначения. Обратитесь в службу поддержки", true);
+                return null;
+            }
+            var polyclinicPlace = cacheService.GetItems<ExecutionPlace>().FirstOrDefault(x => x.IsPolyclynic);
+            if (polyclinicPlace == null)
+            {
+                FailureMediator.Activate("В базе данных отсутсвует информация о плановой срочности назначения. Обратитесь в службу поддержки", true);
+                return null;
+            }
+            var assignment = new Assignment
+                             {
+                                 AssignDateTime = freeTimeSlot.StartTime,
+                                 Duration = (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
+                                 AssignUserId = environment.CurrentUser.UserId,
+                                 Note = string.Empty,
+                                 FinancingSourceId = financingSource,
+                                 PersonId = currentPatientId,
+                                 RecordTypeId = freeTimeSlot.RecordTypeId,
+                                 RoomId = selectedRoom.Id,
+                                 IsTemporary = true,
+                                 UrgentlyId = plannedUrgency.Id,
+                                 ExecutionPlaceId = polyclinicPlace.Id
+                             };
+            try
+            {
+                await scheduleService.SaveAssignmentAsync(assignment);
+                log.InfoFormat("New assignment (Id = {0}) is saved as temporary", assignment.Id);
+            }
+            catch (AssignmentConflictException ex)
+            {
+                FailureMediator.Activate(ex.Message, true);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Failed to save new assignment", ex);
+                FailureMediator.Activate("Не удалось создать назначение.Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки",
+                                         exception: ex,
+                                         canBeDeactivated: true);
+                return null;
+            }
+            if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
+            {
+                OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
+            }
+            return assignment;
+        }
+
+        private async void RoomOnAssignmentCancelOrDeleteRequested(object sender, EventArgs e)
+        {
+            var assignment = (OccupiedTimeSlotViewModel)sender;
             if (assignment.IsTemporary)
             {
                 try
                 {
                     log.InfoFormat("Trying to manually delete temporary assignment (Id = {0})", assignment.Id);
-                    scheduleService.DeleteAssignment(assignment.Id);
+                    await scheduleService.DeleteAssignmentAsync(assignment.Id);
                     assignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                     assignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                     assignment.MoveRequested -= RoomOnAssignmentMoveRequested;
@@ -499,22 +568,26 @@ namespace ScheduleModule.ViewModels
                 catch (Exception ex)
                 {
                     log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
-                    dialogService.ShowError("Не удалось удалить временное назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
+                    FailureMediator.Activate("Не удалось удалить временное назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", true);
                 }
             }
             else
             {
                 try
                 {
-                    var result = dialogService.AskUser(
-                                                       string.Format("Вы действительно хотите отменить назначение пациента {0} на {1:d MMMM HH:mm}?", assignment.PersonShortName, assignment.StartTime),
-                                                       true);
+                    var confirmation = new ConfirmationDialogViewModel
+                                       {
+                                           Question = string.Format("Вы действительно хотите отменить назначение пациента {0} на {1:d MMMM HH:mm}?",
+                                                                    assignment.PersonShortName,
+                                                                    assignment.StartTime)
+                                       };
+                    var result = await dialogService.ShowDialogAsync(confirmation);
                     if (result != true)
                     {
                         return;
                     }
                     log.InfoFormat("Trying to cancel assignment (Id = {0})", assignment.Id);
-                    scheduleService.CancelAssignment(assignment.Id);
+                    await scheduleService.CancelAssignmentAsync(assignment.Id);
                     rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
                     ClearScheduleGrid();
                     BuildScheduleGrid();
@@ -527,7 +600,7 @@ namespace ScheduleModule.ViewModels
                 catch (Exception ex)
                 {
                     log.Error(string.Format("Failed to cancel assignment (Id = {0})", assignment.Id), ex);
-                    dialogService.ShowError("Не удалось отменить назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
+                    FailureMediator.Activate("Не удалось отменить назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", exception: ex);
                 }
             }
         }
@@ -546,29 +619,30 @@ namespace ScheduleModule.ViewModels
             get { return isMovingAssignment; }
             set
             {
-                if (SetProperty(ref isMovingAssignment, value))
+                if (!SetProperty(ref isMovingAssignment, value))
                 {
-                    CancelAssignmentMovementCommand.RaiseCanExecuteChanged();
-                    movedAssignment.IsBeingMoved = value;
-                    if (value)
-                    {
-                        log.InfoFormat("Entering movement mode for assignment (Id = {0})", movedAssignment.Id);
-                        previousSelectedRecordType = selectedRecordType;
-                        previousSelectedRoom = selectedRoom;
-                        IsInAssignmentMode = false;
-                        SelectedRecordType = recordTypes.First(x => x.Id == movedAssignment.RecordTypeId);
-                        CollectionViewSource.GetDefaultView(recordTypes).Filter = x => (x as RecordType).Id == SelectedRecordType.Id;
-                        SelectedRoom = null;
-                    }
-                    else
-                    {
-                        SelectedRoom = previousSelectedRoom;
-                        SelectedRecordType = previousSelectedRecordType;
-                        CollectionViewSource.GetDefaultView(recordTypes).Filter = null;
-                        log.InfoFormat("Leaving movement mode for assignment (Id = {0})", movedAssignment.Id);
-                    }
-                    UpdateAssignmentsReadOnlyMode();
+                    return;
                 }
+                CancelAssignmentMovementCommand.RaiseCanExecuteChanged();
+                movedAssignment.IsBeingMoved = value;
+                if (value)
+                {
+                    log.InfoFormat("Entering movement mode for assignment (Id = {0})", movedAssignment.Id);
+                    previousSelectedRecordType = selectedRecordType;
+                    previousSelectedRoom = selectedRoom;
+                    SelectedRecordType = recordTypes.First(x => x.Id == movedAssignment.RecordTypeId);
+                    CollectionViewSource.GetDefaultView(recordTypes).Filter = x => ((RecordType)x).Id == SelectedRecordType.Id;
+                    SelectedRoom = unseletedRoom;
+                }
+                else
+                {
+                    SelectedRoom = previousSelectedRoom;
+                    SelectedRecordType = previousSelectedRecordType;
+                    CollectionViewSource.GetDefaultView(recordTypes).Filter = null;
+                    log.InfoFormat("Leaving movement mode for assignment (Id = {0})", movedAssignment.Id);
+                }
+                UpdateAssignmentsReadOnlyMode();
+                ClearFiltersCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -598,39 +672,52 @@ namespace ScheduleModule.ViewModels
             movedAssignment = null;
         }
 
-        private void RoomOnAssignmentUpdateRequested(object sender, EventArgs e)
+        public DelegateCommand ClearFiltersCommand { get; private set; }
+
+        private void ClearFilters()
         {
-            var assignment = sender as OccupiedTimeSlotViewModel;
-            var dialogViewModel = new ScheduleAssignmentUpdateViewModel(scheduleService, cacheService, false);
-            dialogViewModel.Note = assignment.Note;
+            if (!CanClearFilters())
+            {
+                return;
+            }
+            SelectedRecordType = unselectedRecordType;
+            SelectedRoom = unseletedRoom;
+        }
+
+        private bool CanClearFilters()
+        {
+            return (SelectedRecordType != unselectedRecordType
+                   || SelectedRoom != unseletedRoom)
+                   && !IsMovingAssignment;
+        }
+
+        private async void RoomOnAssignmentUpdateRequested(object sender, EventArgs e)
+        {
+            var assignment = (OccupiedTimeSlotViewModel)sender;
+            var dialogViewModel = new ScheduleAssignmentUpdateViewModel(scheduleService, cacheService, false) { Note = assignment.Note };
             dialogViewModel.SelectedFinancingSource = dialogViewModel.FinancingSources.FirstOrDefault(x => x.Id == assignment.FinancingSourceId);
             dialogViewModel.SelectedAssignLpu = dialogViewModel.AssignLpuList.FirstOrDefault(x => x.Id == assignment.AssignLpuId);
-            bool isFailed;
-            do
+            var dialogResult = await dialogService.ShowDialogAsync(dialogViewModel);
+            if (dialogResult != true)
             {
-                var dialogResult = dialogService.ShowDialog(dialogViewModel);
-                if (dialogResult != true)
-                {
-                    return;
-                }
-                try
-                {
-                    log.InfoFormat("Trying to update information on assignment (Id = {0})", assignment.Id);
-                    var newAssignLpuId = dialogViewModel.IsSelfAssigned || dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
-                    scheduleService.UpdateAssignment(assignment.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note, newAssignLpuId);
-                    assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
-                    assignment.Note = dialogViewModel.Note;
-                    assignment.AssignLpuId = newAssignLpuId;
-                    isFailed = false;
-                    log.Info("Successfully updated information");
-                }
-                catch (Exception ex)
-                {
-                    log.Error(string.Format("Failed to update information for existing assignment (Id ={0})", assignment.Id), ex);
-                    dialogService.ShowError("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию");
-                    isFailed = true;
-                }
-            } while (isFailed);
+                return;
+            }
+            try
+            {
+                log.InfoFormat("Trying to update information on assignment (Id = {0})", assignment.Id);
+                var newAssignLpuId = dialogViewModel.IsSelfAssigned || dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
+                await scheduleService.UpdateAssignmentAsync(assignment.Id, dialogViewModel.SelectedFinancingSource.Id, dialogViewModel.Note, newAssignLpuId);
+                assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
+                assignment.Note = dialogViewModel.Note;
+                assignment.AssignLpuId = newAssignLpuId;
+                assignment.IsTemporary = false;
+                log.Info("Successfully updated information");
+            }
+            catch (Exception ex)
+            {
+                log.Error(string.Format("Failed to update information for existing assignment (Id ={0})", assignment.Id), ex);
+                FailureMediator.Activate("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию");
+            }
         }
 
         private int GetFinancingSource()
@@ -662,40 +749,13 @@ namespace ScheduleModule.ViewModels
             get { return selectedDate; }
             set
             {
-                if (SetProperty(ref selectedDate, value))
+                if (!SetProperty(ref selectedDate, value))
                 {
-                    OverlayAssignmentCollectionViewModel.CurrentDate = value;
-                    if (!IsInAssignmentMode)
-                    {
-                        ClearScheduleGrid();
-                    }
-                    LoadAssignmentsAsync(selectedDate)
-                        .ContinueWith(x =>
-                                      {
-                                          if (!IsInAssignmentMode)
-                                          {
-                                              UpdateRoomFilter();
-                                          }
-                                      }, TaskScheduler.FromCurrentSynchronizationContext());
+                    return;
                 }
-            }
-        }
-
-        private bool isInAssignmentMode;
-
-        public bool IsInAssignmentMode
-        {
-            get { return isInAssignmentMode; }
-            set
-            {
-                if (SetProperty(ref isInAssignmentMode, value))
-                {
-                    ClearScheduleGrid();
-                    if (value)
-                    {
-                        BuildScheduleGrid();
-                    }
-                }
+                OverlayAssignmentCollectionViewModel.CurrentDate = value;
+                ClearScheduleGrid();
+                LoadAssignmentsAsync(selectedDate).ContinueWith(x => UpdateRoomFilter(), TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
@@ -710,6 +770,7 @@ namespace ScheduleModule.ViewModels
                 SetProperty(ref selectedRoom, value);
                 IsRoomSelected = !ReferenceEquals(selectedRoom, unseletedRoom);
                 UpdateRoomFilter();
+                ClearFiltersCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -732,6 +793,7 @@ namespace ScheduleModule.ViewModels
                 SetProperty(ref selectedRecordType, value);
                 IsRecordTypeSelected = selectedRecordType != null && !ReferenceEquals(selectedRecordType, unselectedRecordType);
                 UpdateRoomFilter();
+                ClearFiltersCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -753,9 +815,19 @@ namespace ScheduleModule.ViewModels
             set
             {
                 currentPatientId = value;
-                using (var query = scheduleService.GetPatientQuery(currentPatientId))
+                var query = scheduleService.GetPatientQuery(currentPatientId);
+                try
                 {
                     currentPatientShortName = query.Select(x => x.ShortName).FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    log.ErrorFormatEx(ex, "Failed to load short name for patient with Id {0}", currentPatientId);
+                    FailureMediator.Activate("Не удалось получить Ф.И.О. выбранного пациента", exception: ex, canBeDeactivated: true);
+                }
+                finally
+                {
+                    query.Dispose();
                 }
                 OverlayAssignmentCollectionViewModel.CurrentPatient = value;
                 ClearScheduleGrid();
@@ -834,8 +906,19 @@ namespace ScheduleModule.ViewModels
 
         #endregion
 
-        public void OnNavigatedTo(NavigationContext navigationContext)
+        private bool firstTimeLoad;
+
+        public async void OnNavigatedTo(NavigationContext navigationContext)
         {
+            if (firstTimeLoad)
+            {
+                firstTimeLoad = false;
+                await LoadAssignmentsAsync(selectedDate);
+            }
+            else
+            {
+                await InitialLoadingAsync();
+            }
             var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
             CurrentPatientId = targetPatientId;
         }
@@ -847,12 +930,14 @@ namespace ScheduleModule.ViewModels
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            //TODO: put the logic for view deactivation here
+            //TODO: put here logic for current view being deactivated
         }
 
         public void Dispose()
         {
             UnsubscribeFromEvents();
+            initialLoadingCommandWrapper.Dispose();
+            loadAssignmentsCommandWrapper.Dispose();
         }
     }
 }

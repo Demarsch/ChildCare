@@ -23,7 +23,7 @@ using OrganizationContractsModule.Services;
 
 namespace OrganizationContractsModule.ViewModels
 {
-    public class AddContractOrganizationViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo
+    public class AddContractOrganizationViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo, IDisposable
     {
         private readonly IContractService contractService;
         private readonly ILog logService;
@@ -178,5 +178,10 @@ namespace OrganizationContractsModule.ViewModels
             get { throw new NotImplementedException(); }
         }
         #endregion
+
+        public void Dispose()
+        {
+            saveChangesCommandWrapper.Dispose();
+        }
     }
 }

@@ -132,6 +132,7 @@
     <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PartialClasses\ExecutionPlace.cs" />
     <Compile Include="PartialClasses\InsuranceDocument.cs" />
     <Compile Include="PartialClasses\Complication.cs" />
     <Compile Include="PartialClasses\MKB.cs" />

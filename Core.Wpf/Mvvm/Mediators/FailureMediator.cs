@@ -92,6 +92,11 @@ namespace Core.Wpf.Mvvm
             IsActive = true;
         }
 
+        public void Activate(object failureMessage, bool canBeDeactivated)
+        {
+            Activate(failureMessage, null, null, canBeDeactivated);
+        }
+
         public void Deactivate()
         {
             if (canBeDeactivated)

@@ -26,7 +26,7 @@ using Core.Wpf.Services;
 
 namespace OrganizationContractsModule.ViewModels
 {
-    public class OrgContractsViewModel : BindableBase, IConfirmNavigationRequest, IDataErrorInfo
+    public class OrgContractsViewModel : BindableBase, IConfirmNavigationRequest, IDataErrorInfo, IDisposable
     {
         private readonly IContractService contractService;
         private readonly ILog log;
@@ -682,5 +682,12 @@ namespace OrganizationContractsModule.ViewModels
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            reloadContractsDataCommandWrapper.Dispose();
+            reloadDataSourcesCommandWrapper.Dispose();
+            saveChangesCommandWrapper.Dispose();
+        }
     }
 }

@@ -48,15 +48,15 @@ namespace ScheduleEditorModule
 
         private void RegisterViewModels()
         {
-            container.RegisterType<ContentViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ScheduleEditorContentViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<ScheduleEditorEditDayViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
             //This is required by Prism navigation mechanism to resolve view
-            container.RegisterType<object, ContentView>(viewNameResolver.Resolve<ContentViewModel>(), new ContainerControlledLifetimeManager());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(HeaderView));
+            container.RegisterType<object, ScheduleEditorContentView>(viewNameResolver.Resolve<ScheduleEditorContentViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ScheduleEditorHeaderView));
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/ScheduleEditorModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 

@@ -120,18 +120,18 @@
     <Compile Include="Services\Implementations\ScheduleEditorService.cs" />
     <Compile Include="Services\Interfaces\IScheduleEditorService.cs" />
     <Compile Include="ViewModels\DayOfWeekViewModel.cs" />
-    <Compile Include="ViewModels\HeaderViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleEditorHeaderViewModel.cs" />
     <Compile Include="ViewModels\ScheduleEditorEditDayViewModel.cs" />
     <Compile Include="ViewModels\ScheduleEditorEditRecordTypeViewModel.cs" />
     <Compile Include="ViewModels\ScheduleEditorRoomDayViewModel.cs" />
     <Compile Include="ViewModels\ScheduleEditorRoomViewModel.cs" />
     <Compile Include="ViewModels\ScheduleEditorScheduleItemViewModel.cs" />
-    <Compile Include="ViewModels\ContentViewModel.cs" />
-    <Compile Include="Views\HeaderView.xaml.cs">
-      <DependentUpon>HeaderView.xaml</DependentUpon>
+    <Compile Include="ViewModels\ScheduleEditorContentViewModel.cs" />
+    <Compile Include="Views\ScheduleEditorHeaderView.xaml.cs">
+      <DependentUpon>ScheduleEditorHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ContentView.xaml.cs">
-      <DependentUpon>ContentView.xaml</DependentUpon>
+    <Compile Include="Views\ScheduleEditorContentView.xaml.cs">
+      <DependentUpon>ScheduleEditorContentView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -165,7 +165,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\HeaderView.xaml">
+    <Page Include="Views\ScheduleEditorHeaderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -181,7 +181,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ContentView.xaml">
+    <Page Include="Views\ScheduleEditorContentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

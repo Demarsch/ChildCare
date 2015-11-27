@@ -27,7 +27,7 @@ using System.Data.Entity;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonRecordListViewModel : BindableBase, IConfirmNavigationRequest
+    public class PersonRecordListViewModel : BindableBase, IConfirmNavigationRequest, IDisposable
     {
         #region Fields
 
@@ -304,6 +304,10 @@ namespace PatientRecordsModule.ViewModels
         public void Dispose()
         {
             UnsubscriveFromEvents();
+            addNewVisitInListVisitCommandWrapper.Dispose();
+            completeVisitCommandWrapper.Dispose();
+            deleteVisitCommandWrapper.Dispose();
+            reloadPatientVisitsCommandWrapper.Dispose();
         }
 
         private void SubscribeToEvents()

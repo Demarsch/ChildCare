@@ -30,11 +30,11 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual RecordContract RecordContract { get; set; }
         public virtual Urgently Urgently { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
+        public virtual ExecutionPlace ExecutionPlace { get; set; }
     }
 }

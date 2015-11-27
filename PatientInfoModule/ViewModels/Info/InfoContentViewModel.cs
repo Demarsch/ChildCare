@@ -947,6 +947,10 @@ namespace PatientInfoModule.ViewModels
         public void Dispose()
         {
             currentInstanceChangeTracker.PropertyChanged -= OnChangesTracked;
+            currentInstanceChangeTracker.Dispose();
+            reloadDataSourceCommandWrapper.Dispose();
+            reloadPatientDataCommandWrapper.Dispose();
+            saveChangesCommandWrapper.Dispose();
         }
 
         private class DataSource

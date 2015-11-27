@@ -508,6 +508,8 @@ namespace PatientRecordsModule.ViewModels
                 }
                 if (recordTypeRolePermission != null)
             currentInstanceChangeTracker.PropertyChanged -= OnChangesTracked;
+            reloadDataSourceCommandWrapper.Dispose();
+            reloadRecordBrigadeCommandWrapper.Dispose();
                 {
                     recordTypeRolePermission.Dispose();
                 }

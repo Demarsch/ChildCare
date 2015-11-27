@@ -22,7 +22,6 @@
         <EntityTypeShape EntityType="DataLib.DisabilityType" Width="1.5" PointX="6" PointY="64.625" />
         <EntityTypeShape EntityType="DataLib.Document" Width="1.5" PointX="0.75" PointY="47" />
         <EntityTypeShape EntityType="DataLib.Education" Width="1.5" PointX="9" PointY="42.875" />
-        <EntityTypeShape EntityType="DataLib.ExecutionPlace" Width="1.5" PointX="13.5" PointY="58.5" />
         <EntityTypeShape EntityType="DataLib.FinancingSource" Width="1.5" PointX="11.25" PointY="64.5" />
         <EntityTypeShape EntityType="DataLib.HealthGroup" Width="1.5" PointX="9" PointY="62.625" />
         <EntityTypeShape EntityType="DataLib.IdentityDocumentType" Width="1.5" PointX="3" PointY="39.875" />
@@ -107,10 +106,6 @@
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Documents" />
         <AssociationConnector Association="DataLib.FK_Persons_Documents" />
         <AssociationConnector Association="DataLib.FK_PersonEducations_Educations" />
-        <AssociationConnector Association="DataLib.FK_VisitOutcomes_ExecutionPlaces" />
-        <AssociationConnector Association="DataLib.FK_VisitResults_ExecutionPlaces" />
-        <AssociationConnector Association="DataLib.FK_Visits_ExecutionPlaces" />
-        <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_RecordContracts_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_Visits_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_FinancingSources" />
@@ -206,7 +201,6 @@
         <AssociationConnector Association="DataLib.FK_RecordMembers_RecordTypeRolePermissions" />
         <AssociationConnector Association="DataLib.FK_Assignments_Urgentlies" />
         <EntityTypeShape EntityType="DataLib.RecordPeriod" Width="1.5" PointX="15.75" PointY="66.5" />
-        <AssociationConnector Association="DataLib.FK_RecordPeriods_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
         <EntityTypeShape EntityType="DataLib.DiagnosType" Width="1.5" PointX="7.375" PointY="1" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_DiagnosTypes" />
@@ -217,6 +211,13 @@
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Records" />
         <AssociationConnector Association="DataLib.FK_RecordMembers_Records" />
         <AssociationConnector Association="DataLib.FK_Records_RecordPeriods" />
+        <EntityTypeShape EntityType="DataLib.ExecutionPlace" Width="1.5" PointX="8.25" PointY="66.25" />
+        <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_RecordPeriods_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_VisitOutcomes_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_VisitResults_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_Visits_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Records_Records" />
         <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_Records_Rooms" />

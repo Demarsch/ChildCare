@@ -6,12 +6,11 @@ using Prism;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
-using ScheduleModule.Misc;
 using Shell.Shared;
 
-namespace ScheduleModule.ViewModels
+namespace ScheduleEditorModule.ViewModels
 {
-    public class HeaderViewModel : BindableBase, IActiveAware, IDisposable
+    public class ScheduleEditorHeaderViewModel : BindableBase, IActiveAware, IDisposable
     {
         private readonly IRegionManager regionManager;
 
@@ -19,7 +18,10 @@ namespace ScheduleModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public HeaderViewModel(IRegionManager regionManager, IEventAggregator eventAggregator, IViewNameResolver viewNameResolver, ContentViewModel contentViewModel)
+        public ScheduleEditorHeaderViewModel(IRegionManager regionManager,
+                                             IEventAggregator eventAggregator,
+                                             IViewNameResolver viewNameResolver,
+                                             ScheduleEditorContentViewModel scheduleEditorContentViewModel)
         {
             if (regionManager == null)
             {
@@ -33,14 +35,14 @@ namespace ScheduleModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
-            if (contentViewModel == null)
+            if (scheduleEditorContentViewModel == null)
             {
-                throw new ArgumentNullException("contentViewModel");
+                throw new ArgumentNullException("scheduleEditorContentViewModel");
             }
             this.regionManager = regionManager;
             this.eventAggregator = eventAggregator;
             this.viewNameResolver = viewNameResolver;
-            ContentViewModel = contentViewModel;
+            ScheduleEditorContentViewModel = scheduleEditorContentViewModel;
             SubscribeToEvents();
         }
 
@@ -62,7 +64,7 @@ namespace ScheduleModule.ViewModels
             eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
         }
 
-        public ContentViewModel ContentViewModel { get; private set; }
+        public ScheduleEditorContentViewModel ScheduleEditorContentViewModel { get; private set; }
 
         private bool isActive;
 
@@ -87,8 +89,7 @@ namespace ScheduleModule.ViewModels
 
         private void ActivateContent()
         {
-            var navigationParameters = new NavigationParameters { { ParameterNames.PatientId, patientId  } };
-            regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<ContentViewModel>(), navigationParameters);
+            regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<ScheduleEditorContentViewModel>());
         }
 
         public event EventHandler IsActiveChanged = delegate { };

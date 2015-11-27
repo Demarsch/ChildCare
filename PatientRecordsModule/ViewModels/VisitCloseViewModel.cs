@@ -188,6 +188,8 @@ namespace PatientRecordsModule.ViewModels
         void IDisposable.Dispose()
         {
             ChangeTracker.Dispose();
+            reloadVisitDataCommandWrapper.Dispose();
+            saveChangesCommandWrapper.Dispose();
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)

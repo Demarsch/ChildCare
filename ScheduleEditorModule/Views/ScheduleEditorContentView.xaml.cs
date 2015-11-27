@@ -4,20 +4,21 @@ using ScheduleEditorModule.ViewModels;
 namespace ScheduleEditorModule.Views
 {
     /// <summary>
-    /// Interaction logic for HeaderView.xaml
+    /// Interaction logic for ScheduleEditorContentView.xaml
     /// </summary>
-    public partial class HeaderView
+    public partial class ScheduleEditorContentView
     {
-        public HeaderView()
+        public ScheduleEditorContentView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public HeaderViewModel ViewModel
+        public ScheduleEditorContentViewModel ViewModel
         {
-            get { return DataContext as HeaderViewModel; }
+            get { return DataContext as ScheduleEditorContentViewModel; }
             set { DataContext = value; }
         }
+
     }
 }

@@ -178,11 +178,6 @@ namespace ScheduleModule.ViewModels
             FailureMediator.Deactivate();
             Assignments.Clear();
             ShowThatCurrentPatientHasNoAssignments = false;
-            await Task.Delay(TimeSpan.FromSeconds(0.5));
-            if (currentPatient != currentPatientId)
-            {
-                return;
-            }
             try
             {
                 var assignments = await Task<IEnumerable<ScheduledAssignmentDTO>>.Factory.StartNew(() => patientAssignmentService.GetActualAssignments(currentPatientId, currentDate));

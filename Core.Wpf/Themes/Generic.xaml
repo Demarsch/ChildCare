@@ -3,7 +3,11 @@
                     xmlns:mvvm="clr-namespace:Core.Wpf.Mvvm"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters"
                     xmlns:misc="clr-namespace:Core.Wpf.Misc"
-                    xmlns:gif="http://wpfanimatedgif.codeplex.com">
+                    xmlns:gif="http://wpfanimatedgif.codeplex.com"
+                    xmlns:fluent="urn:fluent-ribbon">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Views/ConfirmationDialogView.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     <Duration x:Key="AnimationDuration">0:0:1</Duration>
     <!--Default styles-->
     <Style x:Key="TextHighlightStyle"

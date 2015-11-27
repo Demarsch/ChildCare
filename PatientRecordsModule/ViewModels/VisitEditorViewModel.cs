@@ -565,6 +565,10 @@ namespace PatientRecordsModule.ViewModels
         public void Dispose()
         {
             ChangeTracker.Dispose();
+            reloadDataSourceCommandWrapper.Dispose();
+            reloadVisitDataCommandWrapper.Dispose();
+            reloadVisitTemplateDataFillingCommandWrapper.Dispose();
+            saveChangesCommandWrapper.Dispose();
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)

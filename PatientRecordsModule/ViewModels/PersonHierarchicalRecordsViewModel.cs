@@ -22,7 +22,7 @@ using Prism.Events;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonHierarchicalRecordsViewModel : BindableBase
+    public class PersonHierarchicalRecordsViewModel : BindableBase, IDisposable
     {
         #region Fields
         private readonly RecordDTO record;
@@ -114,6 +114,12 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Methods
+
+        public void Dispose()
+        {
+            reloadPatientVisitsCommandWrapper.Dispose();
+        }
+
         private async void LoadItemsAsync()
         {
             var loadingIsCompleted = false;

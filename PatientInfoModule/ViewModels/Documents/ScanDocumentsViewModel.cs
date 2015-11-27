@@ -22,7 +22,7 @@ using Core.Wpf.Services;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class ScanDocumentsViewModel : BindableBase
+    public class ScanDocumentsViewModel : BindableBase, IDisposable
     {
         private ILog log;
         private IDocumentService documentService;
@@ -251,5 +251,9 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
+        public void Dispose()
+        {
+            saveChangesCommandWrapper.Dispose();
+        }
     }
 }

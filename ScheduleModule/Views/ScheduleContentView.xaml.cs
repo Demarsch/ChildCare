@@ -4,19 +4,19 @@ using ScheduleModule.ViewModels;
 namespace ScheduleModule.Views
 {
     /// <summary>
-    /// Interaction logic for ContentView.xaml
+    /// Interaction logic for ScheduleContentView.xaml
     /// </summary>
-    public partial class ContentView
+    public partial class ScheduleContentView
     {
-        public ContentView()
+        public ScheduleContentView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public ContentViewModel ViewModel
+        public ScheduleContentViewModel ViewModel
         {
-            get { return DataContext as ContentViewModel; }
+            get { return DataContext as ScheduleContentViewModel; }
             set { DataContext = value; }
         }
     }

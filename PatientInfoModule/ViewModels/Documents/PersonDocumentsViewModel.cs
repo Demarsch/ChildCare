@@ -23,7 +23,7 @@ using Core.Wpf.Services;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class PersonDocumentsViewModel : BindableBase, INavigationAware
+    public class PersonDocumentsViewModel : BindableBase, INavigationAware, IDisposable
     {
         private readonly IPatientService patientService;
         private readonly IDocumentService documentService;
@@ -348,6 +348,11 @@ namespace PatientInfoModule.ViewModels
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
             //TODO: place here logic for current view being deactivated
+        }
+
+        public void Dispose()
+        {
+            reloadDocumentsCommandWrapper.Dispose();
         }
     }
 }

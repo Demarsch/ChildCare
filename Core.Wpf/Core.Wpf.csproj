@@ -122,6 +122,7 @@
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />
     <Compile Include="Mvvm\Mediators\FailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />
+    <Compile Include="ViewModels\ConfirmationDialogViewModel.cs" />
     <Compile Include="Mvvm\Misc\FieldValue.cs" />
     <Compile Include="Mvvm\Misc\IDialogViewModel.cs" />
     <Compile Include="Mvvm\Misc\ObservableCollectionChangeTracker.cs" />
@@ -171,6 +172,10 @@
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConfirmationDialogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ChildDialogWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -23,7 +23,7 @@ using PatientRecordsModule.DTO;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class PersonHierarchicalAssignmentsViewModel : BindableBase
+    public class PersonHierarchicalAssignmentsViewModel : BindableBase, IDisposable
     {
         #region Fields
         private readonly AssignmentDTO assignment;
@@ -112,6 +112,12 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Methods
+
+        public void Dispose()
+        {
+            reloadPatientVisitsCommandWrapper.Dispose();
+        }
+
         private async void LoadItemsAsync()
         {
             var loadingIsCompleted = false;

@@ -20,7 +20,7 @@ using Shared.Schedule.Events;
 
 namespace ScheduleEditorModule.ViewModels
 {
-    public class ContentViewModel : BindableBase, IDisposable, INavigationAware
+    public class ScheduleEditorContentViewModel : BindableBase, IDisposable, INavigationAware
     {
         private readonly ILog log;
 
@@ -34,7 +34,11 @@ namespace ScheduleEditorModule.ViewModels
 
         private readonly HashSet<ScheduleItem> unsavedItems;
 
-        public ContentViewModel(IScheduleEditorService scheduleEditorService, ILog log, ICacheService cacheService, IDialogServiceAsync dialogService, IEventAggregator eventAggregator)
+        public ScheduleEditorContentViewModel(IScheduleEditorService scheduleEditorService,
+                                              ILog log,
+                                              ICacheService cacheService,
+                                              IDialogServiceAsync dialogService,
+                                              IEventAggregator eventAggregator)
         {
             if (scheduleEditorService == null)
             {
@@ -83,20 +87,19 @@ namespace ScheduleEditorModule.ViewModels
             CommandManager.RequerySuggested += CommandManagerOnRequerySuggested;
         }
 
-        private TaskCompletionSource<object> initialLoadingTaskSource;
+        private TaskCompletionSource<bool> initialLoadingTaskSource;
 
         private readonly CommandWrapper initialLoadingCommandWrapper;
 
         private readonly CommandWrapper loadScheduleCommandWrapper;
 
-        private async Task InitialLoadingAsync()
+        private async Task<bool> InitialLoadingAsync()
         {
             if (initialLoadingTaskSource != null)
             {
-                await initialLoadingTaskSource.Task;
-                return;
+                return await initialLoadingTaskSource.Task;
             }
-            initialLoadingTaskSource = new TaskCompletionSource<object>();
+            initialLoadingTaskSource = new TaskCompletionSource<bool>();
             log.InfoFormat("Loading data sources for schedule editor content...");
             BusyMediator.Activate("Загрузка общих данных...");
             try
@@ -113,14 +116,16 @@ namespace ScheduleEditorModule.ViewModels
                 }
                 await LoadScheduleAsync();
                 log.InfoFormat("Data sources and current week schedule for schedule editor succesfully loaded");
-                initialLoadingTaskSource.SetResult(null);
+                initialLoadingTaskSource.SetResult(true);
+                return true;
             }
             catch (Exception ex)
             {
                 log.Error("Failed to load data sources for schedule editor", ex);
                 FailureMediator.Activate("Не удалось загрузить общие данные. Попробуйте еще раз или обратитесь в службу поддержки", initialLoadingCommandWrapper, ex);
-                initialLoadingTaskSource.SetResult(null);
+                initialLoadingTaskSource.SetResult(false);
                 initialLoadingTaskSource = null;
+                return false;
             }
             finally
             {
@@ -651,6 +656,9 @@ namespace ScheduleEditorModule.ViewModels
             {
                 room.Dispose();
             }
+            initialLoadingCommandWrapper.Dispose();
+            loadScheduleCommandWrapper.Dispose();
+            saveChangesCommandWrapper.Dispose();
         }
 
         public async void OnNavigatedTo(NavigationContext navigationContext)

@@ -125,7 +125,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\ScheduleService.cs" />
     <Compile Include="Services\Interfaces\IScheduleService.cs" />
-    <Compile Include="ViewModels\HeaderViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleHeaderViewModel.cs" />
     <Compile Include="ViewModels\OverlayAssignmentCollectionViewModel.cs" />
     <Compile Include="ViewModels\OverlayAssignmentViewModel.cs" />
     <Compile Include="ViewModels\DayOfWeekViewModel.cs" />
@@ -134,13 +134,13 @@
     <Compile Include="ViewModels\RoomViewModel.cs" />
     <Compile Include="ViewModels\ScheduleAssignmentUpdateViewModel.cs" />
     <Compile Include="ViewModels\WorkingTimeViewModel.cs" />
-    <Compile Include="ViewModels\ContentViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleContentViewModel.cs" />
     <Compile Include="ViewModels\TimeTickerViewModel.cs" />
-    <Compile Include="Views\HeaderView.xaml.cs">
-      <DependentUpon>HeaderView.xaml</DependentUpon>
+    <Compile Include="Views\ScheduleHeaderView.xaml.cs">
+      <DependentUpon>ScheduleHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ContentView.xaml.cs">
-      <DependentUpon>ContentView.xaml</DependentUpon>
+    <Compile Include="Views\ScheduleContentView.xaml.cs">
+      <DependentUpon>ScheduleContentView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +182,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\HeaderView.xaml">
+    <Page Include="Views\ScheduleHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -194,7 +194,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ContentView.xaml">
+    <Page Include="Views\ScheduleContentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

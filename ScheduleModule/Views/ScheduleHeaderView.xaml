@@ -1,4 +1,4 @@
-﻿<fluent:RibbonTabItem x:Class="ScheduleModule.Views.HeaderView"
+﻿<fluent:RibbonTabItem x:Class="ScheduleModule.Views.ScheduleHeaderView"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,7 +10,13 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:HeaderViewModel}">
+                      d:DataContext="{d:DesignInstance viewModels:ScheduleHeaderViewModel}">
+    <fluent:RibbonTabItem.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin"
+                    Value="0" />
+        </Style>
+    </fluent:RibbonTabItem.Resources>
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Расписание"
                    Style="{x:Null}" />
@@ -19,58 +25,61 @@
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousWeek48x48.png"
                        ToolTip="Предыдущая неделя"
-                       Header="&lt;&lt;"
-                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
-                       CommandParameter="{markupExtensions:Int32 -7}">
-        </fluent:Button>
+                       Header="Предыдущая неделя"
+                       Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       CommandParameter="{markupExtensions:Int32 -7}" />
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousDay48x48.png"
                        ToolTip="Предыдущий день"
-                       Header="&lt;"
-                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       Header="Предыдущий день"
+                       Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 -1}" />
         <StackPanel Orientation="Vertical">
             <DatePicker VerticalAlignment="Center"
-                        SelectedDate="{Binding ContentViewModel.SelectedDate, UpdateSourceTrigger=PropertyChanged}" />
+                        SelectedDate="{Binding ScheduleContentViewModel.SelectedDate, UpdateSourceTrigger=PropertyChanged}" />
             <fluent:Button Size="Middle"
                            Icon="pack://application:,,,/ScheduleModule;Component/Resources/Images/Today48x48.png"
                            Header="Сегодня"
                            HorizontalAlignment="Center"
-                           Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                           Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                            CommandParameter="{x:Null}" />
         </StackPanel>
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/NextDay48x48.png"
                        ToolTip="Следующий день"
-                       Header="&gt;"
-                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       Header="Следующий день"
+                       Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 1}" />
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/NextWeek48x48.png"
                        ToolTip="Следующая неделя"
-                       Header="&gt;&gt;"
-                       Command="{Binding ContentViewModel.ChangeDateCommand, Mode=OneTime}"
+                       Header="Следующая неделя"
+                       Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 7}" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Фильтры">
         <fluent:ComboBox Header="Тип услуг"
                          IsEditable="False"
                          InputWidth="300"
-                         ItemsSource="{Binding ContentViewModel.RecordTypes}"
-                         SelectedItem="{Binding ContentViewModel.SelectedRecordType}"
-                         DisplayMemberPath="Name"/>
+                         ItemsSource="{Binding ScheduleContentViewModel.RecordTypes}"
+                         SelectedItem="{Binding ScheduleContentViewModel.SelectedRecordType}"
+                         DisplayMemberPath="Name" />
         <fluent:ComboBox Header="Кабинет"
                          IsEditable="False"
                          InputWidth="300"
-                         ItemsSource="{Binding ContentViewModel.Rooms}"
-                         SelectedItem="{Binding ContentViewModel.SelectedRoom}"
-                         DisplayMemberPath="NumberAndName"/>
+                         ItemsSource="{Binding ScheduleContentViewModel.Rooms}"
+                         SelectedItem="{Binding ScheduleContentViewModel.SelectedRoom}"
+                         DisplayMemberPath="NumberAndName" />
+        <fluent:Button Header="Убрать фильтры"
+                       Size="Large"
+                       Command="{Binding ScheduleContentViewModel.ClearFiltersCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Перенос"
-                           Visibility="{Binding ContentViewModel.IsMovingAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                           Visibility="{Binding ScheduleContentViewModel.IsMovingAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
         <fluent:Button Size="Large"
                        Header="Отменить"
-                       Command="{Binding ContentViewModel.CancelAssignmentMovementCommand, Mode=OneTime}"
+                       Command="{Binding ScheduleContentViewModel.CancelAssignmentMovementCommand, Mode=OneTime}"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" />
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

@@ -117,6 +117,8 @@ namespace PatientRecordsModule.ViewModels
         public void Dispose()
         {
             UnsubscriveFromEvents();
+            reloadPatientRecordCompletedCommandWrapper.Dispose();
+            reloadPatientVisitCompletedCommandWrapper.Dispose();
         }
 
         private void SubscribeToEvents()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
@@ -197,7 +198,7 @@ namespace ScheduleModule.Services
             return result;
         }
 
-        public void SaveAssignment(Assignment assignment)
+        public async Task SaveAssignmentAsync(Assignment assignment)
         {
             assignment.Note = assignment.Note ?? string.Empty;
             using (var dataContext = contextProvider.CreateNewContext())
@@ -211,16 +212,16 @@ namespace ScheduleModule.Services
                 {
                     dataContext.Entry(assignment).State = EntityState.Modified;
                 }
-                CheckForAssignmentConflicts(dataContext, assignment);
-                dataContext.SaveChanges();
+                await CheckForAssignmentConflicts(dataContext, assignment);
+                await dataContext.SaveChangesAsync();
             }
         }
 
-        internal void CheckForAssignmentConflicts(DbContext dataContext, Assignment newAssignment)
+        internal async Task CheckForAssignmentConflicts(DbContext dataContext, Assignment newAssignment)
         {
             var startTime = newAssignment.AssignDateTime;
             var endTime = newAssignment.AssignDateTime.AddMinutes(newAssignment.Duration);
-            var conflictedAssignment = dataContext.Set<Assignment>()
+            var conflictedAssignment = await dataContext.Set<Assignment>()
                                                   .Where(x => !x.CancelUserId.HasValue && x.Id != newAssignment.Id && (x.RoomId == newAssignment.RoomId || x.PersonId == newAssignment.PersonId))
                                                   .Select(x => new
                                                                {
@@ -230,7 +231,7 @@ namespace ScheduleModule.Services
                                                                    StartTime = x.AssignDateTime,
                                                                    EndTime = DbFunctions.AddMinutes(x.AssignDateTime, x.Duration)
                                                                })
-                                                  .FirstOrDefault(x => (x.StartTime >= startTime && x.StartTime < endTime)
+                                                  .FirstOrDefaultAsync(x => (x.StartTime >= startTime && x.StartTime < endTime)
                                                                        || (x.EndTime > startTime && x.EndTime <= endTime)
                                                                        || (startTime >= x.StartTime && startTime < x.EndTime)
                                                                        || (endTime > x.StartTime && endTime < x.EndTime));
@@ -245,27 +246,27 @@ namespace ScheduleModule.Services
             throw new AssignmentConflictException(conflictedAssignment.Room, conflictedAssignment.StartTime, conflictedAssignment.Patient);
         }
 
-        public void DeleteAssignment(int assignmentId)
+        public async Task DeleteAssignmentAsync(int assignmentId)
         {
             using (var dataContext = contextProvider.CreateNewContext())
             {
                 dataContext.Entry(new Assignment { Id = assignmentId }).State = EntityState.Deleted;
-                dataContext.SaveChanges();
+                await dataContext.SaveChangesAsync();
             }
         }
 
-        public void CancelAssignment(int assignmentId)
+        public async Task CancelAssignmentAsync(int assignmentId)
         {
             using (var dataContext = contextProvider.CreateNewContext())
             {
                 var assignment = dataContext.Set<Assignment>().FirstOrDefault(x => x.Id == assignmentId);
                 assignment.CancelUserId = environment.CurrentUser.UserId;
                 assignment.CancelDateTime = environment.CurrentDate;
-                dataContext.SaveChanges();
+                await dataContext.SaveChangesAsync();
             }
         }
 
-        public void UpdateAssignment(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId)
+        public async Task UpdateAssignmentAsync(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId)
         {
             using (var dataContext = contextProvider.CreateNewContext())
             {
@@ -273,11 +274,12 @@ namespace ScheduleModule.Services
                 assignment.FinancingSourceId = newFinancingSourceId;
                 assignment.Note = newNote;
                 assignment.AssignLpuId = newAssignLpuId;
-                dataContext.SaveChanges();
+                assignment.IsTemporary = false;
+                await dataContext.SaveChangesAsync();
             }
         }
 
-        public void MoveAssignment(int assignmentId, DateTime newTime, int newDuration, int newRoomId)
+        public async Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, int newRoomId)
         {
             using (var dataContext = contextProvider.CreateNewContext())
             {
@@ -285,8 +287,8 @@ namespace ScheduleModule.Services
                 assignment.AssignDateTime = newTime;
                 assignment.Duration = newDuration;
                 assignment.RoomId = newRoomId;
-                CheckForAssignmentConflicts(dataContext, assignment);
-                dataContext.SaveChanges();
+                await CheckForAssignmentConflicts(dataContext, assignment);
+                await dataContext.SaveChangesAsync();
             }
         }
 

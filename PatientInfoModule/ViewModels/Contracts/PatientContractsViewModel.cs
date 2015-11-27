@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class PatientContractsViewModel : TrackableBindableBase, IConfirmNavigationRequest, INavigationAware, IDataErrorInfo, IChangeTrackerMediator
+    public class PatientContractsViewModel : TrackableBindableBase, IConfirmNavigationRequest, IDataErrorInfo, IChangeTrackerMediator, IDisposable
     {
         private readonly IPatientService personService;
         private readonly IContractService contractService;
@@ -154,6 +154,9 @@ namespace PatientInfoModule.ViewModels
         public void Dispose()
         {
             contractItemsTracker.Dispose();
+            reloadContractsDataCommandWrapper.Dispose();
+            reloadDataSourcesCommandWrapper.Dispose();
+            saveChangesCommandWrapper.Dispose();
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)

@@ -21,7 +21,7 @@ using Prism.Mvvm;
 
 namespace PatientSearchModule.ViewModels
 {
-    public class PatientSearchViewModel : BindableBase
+    public class PatientSearchViewModel : BindableBase, IDisposable
     {
         private readonly IPatientSearchService patientSearchService;
 
@@ -224,6 +224,11 @@ namespace PatientSearchModule.ViewModels
                     BusyMediator.Deactivate();
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            searchPatientsCommandWrapper.Dispose();
         }
     }
 }

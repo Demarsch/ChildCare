@@ -51,14 +51,14 @@ namespace ScheduleModule
         {
             container.RegisterType<ScheduleAssignmentUpdateViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<TimeTickerViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<ContentViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ScheduleContentViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
             //This is required by Prism navigation mechanism to resolve view
-            container.RegisterType<object, ContentView>(viewNameResolver.Resolve<ContentViewModel>(), new ContainerControlledLifetimeManager());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(HeaderView));
+            container.RegisterType<object, ScheduleContentView>(viewNameResolver.Resolve<ScheduleContentViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ScheduleHeaderView));
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/ScheduleModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 

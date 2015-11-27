@@ -42,7 +42,6 @@ namespace Core.Data
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
         public virtual DbSet<Education> Educations { get; set; }
-        public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<HealthGroup> HealthGroups { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
@@ -104,5 +103,6 @@ namespace Core.Data
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
         public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
         public virtual DbSet<Record> Records { get; set; }
+        public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
     }
 }

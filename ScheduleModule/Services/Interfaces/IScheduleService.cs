@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Misc;
@@ -19,15 +20,15 @@ namespace ScheduleModule.Services
         
         IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
 
-        void SaveAssignment(Assignment assignment);
+        Task SaveAssignmentAsync(Assignment assignment);
 
-        void DeleteAssignment(int assignmentId);
+        Task DeleteAssignmentAsync(int assignmentId);
 
-        void CancelAssignment(int assignmentId);
+        Task CancelAssignmentAsync(int assignmentId);
 
-        void UpdateAssignment(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId);
+        Task UpdateAssignmentAsync(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId);
 
-        void MoveAssignment(int assignmentId, DateTime newTime, int newDuration, int newRoomId);
+        Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, int newRoomId);
 
         IEnumerable<ScheduledAssignmentDTO> GetAssignments(int patientId);
 

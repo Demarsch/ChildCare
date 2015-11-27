@@ -4,19 +4,19 @@ using ScheduleModule.ViewModels;
 namespace ScheduleModule.Views
 {
     /// <summary>
-    /// Interaction logic for HeaderView.xaml
+    /// Interaction logic for ScheduleHeaderView.xaml
     /// </summary>
-    public partial class HeaderView
+    public partial class ScheduleHeaderView
     {
-        public HeaderView()
+        public ScheduleHeaderView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public HeaderViewModel ViewModel
+        public ScheduleHeaderViewModel ViewModel
         {
-            get { return DataContext as HeaderViewModel; }
+            get { return DataContext as ScheduleHeaderViewModel; }
             set { DataContext = value; }
         }
     }

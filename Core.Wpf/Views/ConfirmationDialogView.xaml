@@ -1,0 +1,19 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:Core.Wpf.ViewModels">
+    <DataTemplate DataType="{x:Type viewModels:ConfirmationDialogViewModel}">
+        <DockPanel LastChildFill="True"
+                   MinWidth="200"
+                   MaxWidth="800">
+            <Image Width="64"
+                   Height="64"
+                   Margin="5"
+                   Source="pack://application:,,,/Core;Component/Resources/Images/Question-64x64.png"
+                   DockPanel.Dock="Left"
+                   VerticalAlignment="Center" />
+            <TextBlock HorizontalAlignment="Stretch"
+                       TextWrapping="WrapWithOverflow"
+                       Text="{Binding Question}" />
+        </DockPanel>
+    </DataTemplate>
+</ResourceDictionary>
