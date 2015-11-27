@@ -192,6 +192,7 @@ namespace PatientRecordsModule.ViewModels
                 IsMainDiagnos = false,
                 HasMKB = level.HasMKB,
                 AllowClarification = level.HasMKB || level.IsComplication
+
             };
 
             Diagnoses.Insert((Diagnoses.Any() && insertPos != -1) ? insertPos : 0, insertDiagnos);
@@ -204,7 +205,7 @@ namespace PatientRecordsModule.ViewModels
             if (messageService.AskUser("Удалить диагноз '" + SelectedDiagnos.LevelName + "' ?") == true)
             {
                 string exception = string.Empty;
-                if (SelectedDiagnos.Id == SpecialValues.NewId)
+                if (SelectedDiagnos.Id != SpecialValues.NewId)
                     diagnosService.DeleteDiagnos(SelectedDiagnos.Id, out exception);
                 Diagnoses.Remove(SelectedDiagnos);
                 SetVisibilityGridData();

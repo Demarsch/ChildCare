@@ -94,7 +94,6 @@ namespace PatientRecordsModule.ViewModels
 
             this.documentsViewer = documentsViewer;
             this.documentsViewer.PropertyChanged += documentsViewer_PropertyChanged;
-            SaveRecordCommand = new DelegateCommand(SaveCommonData, CanSaveChanges);
 
             ChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
             ChangeTracker.PropertyChanged += OnChangesTracked;
@@ -146,9 +145,7 @@ namespace PatientRecordsModule.ViewModels
 
         #endregion
 
-        #region Properties
-
-        public IChangeTracker ChangeTracker { get; private set; }
+        #region Properties      
 
         public ObservableCollectionEx<BrigadeViewModel> Brigade { get; set; }
 
@@ -334,17 +331,7 @@ namespace PatientRecordsModule.ViewModels
 
         #region Methods
 
-        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
-            {
-                (SaveRecordCommand as DelegateCommand).RaiseCanExecuteChanged();
-            }
-        }
-        private bool CanSaveChanges()
-        {
-            return ChangeTracker.HasChanges;
-        }
+       
 
         public void Dispose()
         {
@@ -379,9 +366,8 @@ namespace PatientRecordsModule.ViewModels
             AssignmentId = assignmentId;
             RecordId = recordId;
             recordTypeId = 0;
-            LoadProtocolEditor(visitId, assignmentId, recordId);
-
-            await DocumentsViewer.LoadDocuments(assignmentId, recordId);
+            await LoadProtocolEditor(visitId, assignmentId, recordId);
+            ChangeTracker.IsEnabled = true;
         }
 
 
@@ -651,8 +637,7 @@ namespace PatientRecordsModule.ViewModels
 
         private async Task LoadProtocolEditor(int visitId, int assignmentId, int recordId)
         {
-            currentInstanceChangeTracker.IsEnabled = false;
-            var dataSourcesLoaded = await EnsureDataSourceLoaded();            
+            currentInstanceChangeTracker.IsEnabled = false;          
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -688,6 +673,8 @@ namespace PatientRecordsModule.ViewModels
                     var visit = await visitQuery.FirstOrDefaultAsync(token);
                     ProtocolEditor = recordTypeEditorResolver.Resolve("VisitProtocol");
                 }
+
+                //Load Documents
                 DocumentsViewer.LoadDocuments(assignmentId, recordId);
 
                 var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, ProtocolEditor.ChangeTracker);

@@ -1,6 +1,8 @@
 ﻿using Core.Data.Misc;
 using Core.Misc;
+using Core.Services;
 using Core.Wpf.Misc;
+using Core.Wpf.Services;
 using log4net;
 using PatientRecordsModule.Misc;
 using PatientRecordsModule.Services;
@@ -23,7 +25,8 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
         private readonly ILog logService;
 
         #region Constructors
-        public DefaultProtocolViewModel(IDiagnosService diagnosService, IRecordService recordService, ILog logService, DiagnosesCollectionViewModel diagnosCollectionViewModel)
+        public DefaultProtocolViewModel(IDiagnosService diagnosService, IRecordService recordService, ILog logService, 
+                                        ICacheService cacheService, IDialogServiceAsync dialogService, IDialogService messageService)
         {
             if (logService == null)
             {
@@ -37,16 +40,12 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             {
                 throw new ArgumentNullException("recordService");
             }
-            if (diagnosCollectionViewModel == null)
-            {
-                throw new ArgumentNullException("diagnosCollectionViewModel");
-            }
             this.diagnosService = diagnosService;
             this.recordService = recordService;
             this.logService = logService;
 
             CurrentMode = ProtocolMode.View;
-            DiagnosesEditor = diagnosCollectionViewModel;  
+            DiagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, cacheService, dialogService, messageService, logService);  
      
             currentInstanceChangeTracker = new ChangeTrackerEx<DefaultProtocolViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, DiagnosesEditor.ChangeTracker);

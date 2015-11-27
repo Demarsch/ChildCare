@@ -210,7 +210,6 @@
         <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
         <EntityTypeShape EntityType="DataLib.DiagnosType" Width="1.5" PointX="7.375" PointY="1" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_DiagnosTypes" />
-        <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
         <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="23.25" PointY="50.75" />
         <AssociationConnector Association="DataLib.FK_Assignments_Records" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Records" />

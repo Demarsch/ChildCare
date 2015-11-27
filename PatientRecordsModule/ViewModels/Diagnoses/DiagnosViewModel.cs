@@ -15,7 +15,6 @@ namespace PatientRecordsModule.ViewModels
         public DiagnosViewModel()
         {
             ChangeTracker = new ChangeTrackerEx<DiagnosViewModel>(this);
-            ChangeTracker.IsEnabled = true;
         }
 
         private int id;

@@ -3879,10 +3879,6 @@
             <End Role="DiagnosType" EntitySet="DiagnosTypes" />
             <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
           </AssociationSet>
-          <AssociationSet Name="FK_Assignments_ExecutionPlaces" Association="DataLib.FK_Assignments_ExecutionPlaces">
-            <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
-            <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
           <EntitySet Name="Records" EntityType="DataLib.Record" />
           <AssociationSet Name="FK_Assignments_Records" Association="DataLib.FK_Assignments_Records">
             <End Role="Record" EntitySet="Records" />
@@ -6671,18 +6667,6 @@
             </Principal>
             <Dependent Role="PersonDiagnos">
               <PropertyRef Name="DiagnosTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Assignments_ExecutionPlaces">
-          <End Type="DataLib.ExecutionPlace" Role="ExecutionPlace" Multiplicity="1" />
-          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ExecutionPlace">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Assignment">
-              <PropertyRef Name="ExecutionPlaceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
