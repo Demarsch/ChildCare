@@ -34,9 +34,7 @@ namespace PatientRecordsModule.ViewModels
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
         private readonly ILog logService;
-        private readonly IDiagnosService diagnosService;
         private readonly IRecordTypeEditorResolver recordTypeEditorResolver;
-        private readonly IRecordService recordService;
         private readonly IUserService userService;
 
         private readonly IEventAggregator eventAggregator;
@@ -53,7 +51,7 @@ namespace PatientRecordsModule.ViewModels
         #endregion
 
         #region Constructors
-        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordService recordService, IDiagnosService diagnosService, IRecordTypeEditorResolver recordTypeEditorResolver, IUserService userService,
+        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordTypeEditorResolver recordTypeEditorResolver, IUserService userService,
                                            ILog logSevice, IEventAggregator eventAggregator, RecordDocumentsCollectionViewModel documentsViewer)
         {
             if (patientRecordsService == null)
@@ -63,15 +61,7 @@ namespace PatientRecordsModule.ViewModels
             if (logSevice == null)
             {
                 throw new ArgumentNullException("log");
-            }
-            if (diagnosService == null)
-            {
-                throw new ArgumentNullException("diagnosService");
-            }
-            if (recordService == null)
-            {
-                throw new ArgumentNullException("recordService");
-            }
+            }           
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -87,8 +77,6 @@ namespace PatientRecordsModule.ViewModels
             this.userService = userService;
             this.recordTypeEditorResolver = recordTypeEditorResolver;
             this.patientRecordsService = patientRecordsService;
-            this.diagnosService = diagnosService;
-            this.recordService = recordService;
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
 
@@ -738,7 +726,7 @@ namespace PatientRecordsModule.ViewModels
             try
             {
                 var brigade = Brigade.Where(x => x.IsPersonMember).Select(x => x.GetRecordMember()).ToList();
-                var result = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime.Value, brigade, token);
+                RecordId = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime.Value, brigade, token);
                 saveSuccesfull = true;
             }
             catch (OperationCanceledException)
@@ -762,7 +750,7 @@ namespace PatientRecordsModule.ViewModels
             }
 
             if (ProtocolEditor != null)
-                ProtocolEditor.SaveProtocol();
+                ProtocolEditor.SaveProtocol(RecordId, VisitId);
         }
 
         private void UnsubscriveFromEvents()

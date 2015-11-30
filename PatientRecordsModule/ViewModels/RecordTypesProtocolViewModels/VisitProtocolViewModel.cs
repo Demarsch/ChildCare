@@ -12,12 +12,19 @@ using System.Windows.Input;
 
 namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 {
-    public class VisitProtocolViewModel :BindableBase, IRecordTypeProtocol
+    public class VisitProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol
     {
         #region Constructors
         public VisitProtocolViewModel()
         {
             CurrentMode = ProtocolMode.View;
+
+            ChangeTracker = new ChangeTrackerEx<VisitProtocolViewModel>(this);
+            ChangeTracker.PropertyChanged += ChangeTracker_PropertyChanged;
+        }
+
+        void ChangeTracker_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
         }
 
         #endregion
@@ -41,19 +48,18 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             return;
         }
 
-        public bool SaveProtocol()
+        public bool SaveProtocol(int recordId, int visitId)
         {
             return true;
         }
 
-        public void LoadProtocol(int recordTypeId, int assignmentId, int recordId)
+        public void LoadProtocol(int assignmentId, int recordId, int visitId)
         {
             return;
         }
 
         #endregion
         
-        private readonly IChangeTracker currentInstanceChangeTracker;
         public IChangeTracker ChangeTracker { get; set; }
     }
 }

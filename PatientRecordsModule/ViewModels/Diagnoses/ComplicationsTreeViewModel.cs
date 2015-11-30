@@ -50,7 +50,7 @@ namespace PatientRecordsModule.ViewModels
         private void LoadComplicationsTree(Complication[] nodes, bool needExpand)
         {
             ComplicationsTree.Clear();
-            ComplicationsTree.AddRange(nodes.Select(x => new ComplicationViewModel(diagnosService, x.Complications1.ToArray(), searchComplication, needExpand)
+            ComplicationsTree.AddRange(nodes.Where(x => !x.ParentId.HasValue).Select(x => new ComplicationViewModel(diagnosService, x.Complications1.ToArray(), searchComplication, needExpand)
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -108,7 +108,7 @@ namespace PatientRecordsModule.ViewModels
             {
                 if (searchComplication.Length >= AppConfiguration.UserInputSearchThreshold)
                 {
-                    var matches = this.FindMatches(searchComplication, ComplicationCollection.ToArray()).Distinct();
+                    var matches = this.FindMatches(searchComplication/*, ComplicationCollection.ToArray()*/).Distinct();
                     var p1 = matches.Where(x => !x.ParentId.HasValue);
                     var p2 = matches.Where(x => x.ParentId.HasValue).Select(x => x.Complication1);
                     var matchingResult = (p1.Union(p2)).ToArray();
@@ -119,9 +119,11 @@ namespace PatientRecordsModule.ViewModels
                 LoadComplicationsTree(complicationsRoots, false);
         }
 
-        private IEnumerable<Complication> FindMatches(string searchText, Complication[] roots)
+        private IEnumerable<Complication> FindMatches(string searchText/*, Complication[] roots*/)
         {
-            foreach (var complication in roots)
+            return ComplicationCollection.Where(x => x.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) > -1);
+            
+            /*foreach (var complication in roots)
             {
                 if (complication.ContainsFindString(searchText))
                     yield return complication;
@@ -129,7 +131,7 @@ namespace PatientRecordsModule.ViewModels
                 foreach (var child in complication.Complications1)
                     foreach (var match in this.FindMatches(searchText, new Complication[] { child }))
                         yield return match;
-            }
+            }*/
         }
 
         #endregion

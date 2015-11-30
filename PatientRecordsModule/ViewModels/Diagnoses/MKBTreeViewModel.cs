@@ -50,7 +50,7 @@ namespace PatientRecordsModule.ViewModels
         private void LoadMKBTree(MKB[] nodes, bool needExpand)
         {
             MKBTree.Clear();
-            MKBTree.AddRange(nodes.Select(x => new MKBViewModel(diagnosService, x.MKB1.ToArray(), searchMKB, needExpand)
+            MKBTree.AddRange(nodes.Where(x => !x.ParentId.HasValue).Select(x => new MKBViewModel(diagnosService, x.MKB1.ToArray(), searchMKB, needExpand)
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -100,7 +100,7 @@ namespace PatientRecordsModule.ViewModels
                 bool isLatinLetter = Regex.IsMatch(searchMKB, "^[a-zA-Z0-9]*$");
                 if (isLatinLetter || (!isLatinLetter && AppConfiguration.UserInputSearchThreshold <= searchMKB.Length))
                 {
-                    var matches = this.FindMatches(searchMKB, MKBCollection.ToArray());
+                    var matches = this.FindMatches(searchMKB/*, MKBCollection*/);
                     var p1 = matches.Where(x => !x.ParentId.HasValue);
                     var p2 = matches.Where(x => x.ParentId.HasValue).Select(x => x.MKB2);
                     var matchingResult = (p1.Union(p2)).ToArray();
@@ -111,9 +111,10 @@ namespace PatientRecordsModule.ViewModels
                 LoadMKBTree(mkbRoots, false);
         }
 
-        private IEnumerable<MKB> FindMatches(string searchText, MKB[] roots)
+        private IEnumerable<MKB> FindMatches(string searchText/*, MKB[] roots*/)
         {
-            foreach (var mkb in roots)
+            return MKBCollection.Where(x => x.Name.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) > -1 || x.Code.IndexOf(searchText, StringComparison.InvariantCultureIgnoreCase) > -1);
+            /*foreach (var mkb in roots)
             {
                 if (mkb.ContainsFindString(searchText))
                     yield return mkb;
@@ -121,7 +122,7 @@ namespace PatientRecordsModule.ViewModels
                 foreach (MKB child in mkb.MKB1)
                     foreach (MKB match in this.FindMatches(searchText, new MKB[] { child }))
                         yield return match;
-            }
+            }*/
         }
 
         #endregion

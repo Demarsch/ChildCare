@@ -25,6 +25,8 @@ namespace PatientRecordsModule.Services
 
         bool DeleteDiagnos(int diagnosId, out string exception);
         bool DeletePersonDiagnos(int personDiagnosId, out string exception);
+
+        bool Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnosis, out string exception);
     }
 }
 

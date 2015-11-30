@@ -123,8 +123,11 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             int i = 0;
         }
 
-        public bool SaveProtocol()
+        public bool SaveProtocol(int recordId, int visitId)
         {
+            bool isDiagnosSaved = DiagnosesEditor.Save(recordId);
+
+
             return true;
         }
 
@@ -133,15 +136,15 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             if (assignmentId > 0)
             {
                 LoadAssignmentData(assignmentId);
-                DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination); 
             }
             else if (recordId > 0)
             {
-                LoadRecordData(recordId);
-                DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId); 
+                LoadRecordData(recordId);                
             }
             else if (visitId > 0)
                 LoadVisitData(visitId);
+
+            DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId); 
         }
 
         private void LoadVisitData(int visitId)

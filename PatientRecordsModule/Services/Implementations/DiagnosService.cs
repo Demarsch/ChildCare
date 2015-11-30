@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Media.Imaging;
 using System.IO;
 using Core.Wpf.Services;
+using System.Collections.Generic;
 
 namespace PatientRecordsModule.Services
 {
@@ -162,5 +163,60 @@ namespace PatientRecordsModule.Services
                 return false;
             }
         }
+
+
+        public bool Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnoses, out string exception)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                PersonDiagnos personDiagnos = context.Set<PersonDiagnos>().FirstOrDefault(x => x.RecordId == recordId && x.DiagnosTypeId == diagnosTypeId);
+                if (personDiagnos == null)
+                {
+                    personDiagnos = new PersonDiagnos();
+                    context.Entry<PersonDiagnos>(personDiagnos).State = EntityState.Added;
+                }
+                else
+                    context.Entry<PersonDiagnos>(personDiagnos).State = EntityState.Modified;
+                personDiagnos.PersonId = personId;
+                personDiagnos.RecordId = recordId;
+                personDiagnos.DiagnosTypeId = diagnosTypeId;
+
+
+                var old = personDiagnos.Diagnoses.ToDictionary(x => x.Id);
+                var @new = diagnoses.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+                var added = diagnoses.Where(x => x.Id == SpecialValues.NewId).ToArray();
+                var existed = @new.Where(x => old.ContainsKey(x.Key))
+                                  .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                                  .ToArray();
+                foreach (var diagnos in added)
+                {
+                    diagnos.PersonDiagnosId = personDiagnos.Id;
+                    context.Entry(diagnos).State = EntityState.Added;
+                }                
+                foreach (var diagnos in existed.Where(x => x.IsChanged))
+                {
+                    diagnos.Old.ComplicationId = diagnos.New.ComplicationId;
+                    diagnos.Old.DiagnosLevelId = diagnos.New.DiagnosLevelId;
+                    diagnos.Old.DiagnosText = diagnos.New.DiagnosText;
+                    diagnos.Old.MKB = diagnos.New.MKB;
+                    diagnos.Old.IsMainDiagnos = diagnos.New.IsMainDiagnos;
+                    diagnos.Old.InDateTime = diagnos.New.InDateTime;
+                    diagnos.Old.InPersonId = diagnos.New.InPersonId;
+                    context.Entry(diagnos.Old).State = EntityState.Modified;
+                }
+                try
+                {
+                    context.SaveChanges();
+                    exception = string.Empty;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    exception = ex.Message;
+                    return false;
+                }
+            }
+        }
+
     }
 }
