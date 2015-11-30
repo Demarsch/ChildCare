@@ -25,6 +25,15 @@ namespace Core.Data.Services
             return UserPrincipal.Current.Sid.ToString();
         }
 
+        public User GetUserBySID()
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var curSID = GetCurrentSID();
+                return db.Set<User>().FirstOrDefault(x => x.SID != null && x.SID.ToLower() == curSID);
+            }
+        }
+
         public List<Permission> GetCurrentUserPermissions()
         {
             using (var db = contextProvider.CreateNewContext())

@@ -1,4 +1,5 @@
 ﻿using Core.Data.Misc;
+using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
 using Core.Wpf.Misc;
@@ -18,15 +19,15 @@ using System.Windows.Input;
 
 namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 {
-    public class DefaultProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol
+    public class DefaultProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator
     {
         private readonly IDiagnosService diagnosService;
         private readonly IRecordService recordService;
         private readonly ILog logService;
 
         #region Constructors
-        public DefaultProtocolViewModel(IDiagnosService diagnosService, IRecordService recordService, ILog logService, 
-                                        ICacheService cacheService, IDialogServiceAsync dialogService, IDialogService messageService)
+        public DefaultProtocolViewModel(IDiagnosService diagnosService, IRecordService recordService, ILog logService,
+                                        ICacheService cacheService, IDialogServiceAsync dialogService, IDialogService messageService, IUserService userService)
         {
             if (logService == null)
             {
@@ -45,7 +46,7 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             this.logService = logService;
 
             CurrentMode = ProtocolMode.View;
-            DiagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, cacheService, dialogService, messageService, logService);  
+            DiagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, cacheService, dialogService, messageService, logService, userService);  
      
             currentInstanceChangeTracker = new ChangeTrackerEx<DefaultProtocolViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, DiagnosesEditor.ChangeTracker);
@@ -125,14 +126,20 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 
         public bool SaveProtocol(int recordId, int visitId)
         {
-            bool isDiagnosSaved = DiagnosesEditor.Save(recordId);
+            bool saveIsSuccessful = DiagnosesEditor.Save(recordId);
 
-
-            return true;
+            if (saveIsSuccessful)
+            {
+                ChangeTracker.AcceptChanges();
+                ChangeTracker.IsEnabled = true;
+            }
+            
+            return saveIsSuccessful;
         }
 
         public void LoadProtocol(int assignmentId, int recordId, int visitId)
         {
+            ChangeTracker.IsEnabled = false;
             if (assignmentId > 0)
             {
                 LoadAssignmentData(assignmentId);
@@ -144,21 +151,29 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             else if (visitId > 0)
                 LoadVisitData(visitId);
 
-            DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId); 
+            DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId);
+
+            ChangeTracker.IsEnabled = true;
         }
 
         private void LoadVisitData(int visitId)
         {
+            Discription = string.Empty;
+            Result = string.Empty;
             return;
         }
 
         private void LoadRecordData(int recordId)
         {
+            Discription = string.Empty;
+            Result = string.Empty;
             return;
         }
 
         private void LoadAssignmentData(int assignmentId)
         {
+            Discription = string.Empty;
+            Result = string.Empty;
             return;
         }
 

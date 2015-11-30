@@ -23,9 +23,9 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
-                <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Discription}"/>
+                <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Discription, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
-                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result}"/>
+                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result, UpdateSourceTrigger=PropertyChanged}"/>
                 <views:DiagnosesView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" DataContext="{Binding DiagnosesEditor}" Margin="2"/>
             </Grid>
             <!--Grid for view protocol-->

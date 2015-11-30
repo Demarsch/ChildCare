@@ -1,5 +1,6 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
+using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
 using Core.Wpf.Misc;
@@ -16,6 +17,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -30,12 +32,13 @@ namespace PatientRecordsModule.ViewModels
         private readonly ICacheService cacheService;
         private readonly IDialogServiceAsync dialogService;
         private readonly IDialogService messageService;
+        private readonly IUserService userService;
         private CancellationTokenSource currentLoadingToken;
         private readonly CompositeChangeTracker changeTracker;
         private int diagnosTypeId;
 
         public DiagnosesCollectionViewModel(IDiagnosService diagnosService, IRecordService recordService, ICacheService cacheService, IDialogServiceAsync dialogService, 
-                                            IDialogService messageService, ILog logService)
+                                            IDialogService messageService, ILog logService, IUserService userService)
         {
             if (logService == null)
             {
@@ -61,12 +64,17 @@ namespace PatientRecordsModule.ViewModels
             {
                 throw new ArgumentNullException("messageService");
             }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
             this.diagnosService = diagnosService;
             this.recordService = recordService;
             this.logService = logService;
             this.cacheService = cacheService;
             this.dialogService = dialogService;
             this.messageService = messageService;
+            this.userService = userService;
 
             addDiagnosCommand = new DelegateCommand<int?>(AddDiagnos);
             removeDiagnosCommand = new DelegateCommand(RemoveDiagnos);
@@ -362,20 +370,17 @@ namespace PatientRecordsModule.ViewModels
                                                     IsMainDiagnos = x.IsMainDiagnos,      
                                                     Options = string.Empty,                      
                                                     InDateTime = DateTime.Now,
-                                                    InPersonId = 6 /// ??????????                                                                                
+                                                    InPersonId = userService.GetUserBySID().PersonId,                                                                               
                                                 }).ToArray(), out exception);
                 if (isOK)
                 {
-                    
+                    ChangeTracker.AcceptChanges();
+                    ChangeTracker.IsEnabled = true;
                     return true;
-                }
-                else
-                {
-                    messageService.ShowError(exception);
-                    return false;
                 }
             }
             exception = validationErrors;
+            messageService.ShowError(exception);
             return false;
         }
 
@@ -386,14 +391,23 @@ namespace PatientRecordsModule.ViewModels
             var diagnosType = diagnosService.GetDiagnosTypeById(diagnosTypeId).First();
             if (!Diagnoses.Any())
                 validationErrors += "Не указан диагноз.\r\n";
-            if (diagnosType.NeedSetMainDiagnos && !Diagnoses.Any(x => x.IsMainDiagnos))
-                validationErrors += "Не отмечен диагноз '" + diagnosType.MainDiagnosHeader + "'\r\n";
-            if (Diagnoses.Any(x => x.IsComplication && !x.ComplicationId.HasValue))
-                validationErrors += "Выберите осложнение согласно справочнику.\r\n";
-            if (Diagnoses.Any(x => x.HasMKB && x.MKB == string.Empty))
+            else
             {
-                string mkbLevels = Diagnoses.Where(x => x.HasMKB).Select(x => x.LevelName).Aggregate((x, y) => x + ", " + y);
-                validationErrors += "Не указан код МКБ-10 в графах: " + mkbLevels +  ".\r\n";
+                if (Diagnoses.Any(x => x.DiagnosText == string.Empty))
+                    validationErrors += "Отсутствует текст диагноза.\r\n"; 
+                if (Diagnoses.Any(x => x.HasMKB && x.MKB == string.Empty))
+                {
+                    string mkbLevels = Diagnoses.Where(x => x.HasMKB).Select(x => x.LevelName).Aggregate((x, y) => x + ", " + y);
+                    validationErrors += "Не указан код МКБ-10 в графах: " + mkbLevels + ".\r\n";
+                }
+                Regex patternMKB = new Regex("^[A-TV-Z][0-9][A-Z0-9](\\.[A-Z0-9]{1,4})?$");
+                var invalidPatternMKB = Diagnoses.Where(x => !patternMKB.IsMatch(x.MKB));
+                if (invalidPatternMKB.Any())
+                    validationErrors += "Не верно указан код МКБ-10 в графах: " + invalidPatternMKB.Select(x => x.LevelName).Aggregate((x, y) => x + ", " + y) + ".\r\n";
+                if (diagnosType.NeedSetMainDiagnos && !Diagnoses.Any(x => x.IsMainDiagnos))
+                    validationErrors += "Не отмечен диагноз '" + diagnosType.MainDiagnosHeader + "'\r\n";
+                if (Diagnoses.Any(x => x.IsComplication && !x.ComplicationId.HasValue))
+                    validationErrors += "Выберите осложнение согласно справочнику.\r\n";                
             }
             return validationErrors == string.Empty;
         }

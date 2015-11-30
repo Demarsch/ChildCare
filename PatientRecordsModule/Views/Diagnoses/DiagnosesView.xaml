@@ -120,7 +120,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Text="{Binding MKB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                     IsEnabled="{Binding HasMKB}" MinWidth="40"/>
+                                     IsEnabled="{Binding HasMKB}" MinWidth="40" MaxLength="5"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -148,7 +148,7 @@
                         Source={StaticResource proxy}}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsMainDiagnos, Mode=TwoWay}" HorizontalAlignment="Center"/>
+                            <CheckBox IsChecked="{Binding IsMainDiagnos, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

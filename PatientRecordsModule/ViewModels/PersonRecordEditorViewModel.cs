@@ -88,8 +88,8 @@ namespace PatientRecordsModule.ViewModels
 
             reloadRecordBrigadeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadBrigadeAsync(recordTypeId, RecordId, onDate)) };
             reloadRecordCommonDataCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadProtocolCommonData(VisitId, AssignmentId, RecordId)) };
-            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadDataSources(onDate)) };
-            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveCommonData()) };
+            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadDataSources(onDate)), CommandName = "Повторить" };
+            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveCommonData()), CommandName = "Повторить" };
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
@@ -107,7 +107,8 @@ namespace PatientRecordsModule.ViewModels
             setCurrentDateTimeBeginCommand = new DelegateCommand(SetCurrentDateTimeBegin);
             SubscribeToEvents();
 
-            currentInstanceChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);            
+            currentInstanceChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);    
+        
         }
 
         private readonly IChangeTracker currentInstanceChangeTracker;
@@ -225,42 +226,42 @@ namespace PatientRecordsModule.ViewModels
         public int SelectedPeriodId
         {
             get { return selectedPeriodId; }
-            set { SetProperty(ref selectedPeriodId, value); }
+            set { SetTrackedProperty(ref selectedPeriodId, value); }
         }
 
         private int selectedUrgentlyId;
         public int SelectedUrgentlyId
         {
             get { return selectedUrgentlyId; }
-            set { SetProperty(ref selectedUrgentlyId, value); }
+            set { SetTrackedProperty(ref selectedUrgentlyId, value); }
         }
 
         private DateTime? beginDateTime;
         public DateTime? BeginDateTime
         {
             get { return beginDateTime; }
-            set { SetProperty(ref beginDateTime, value); }
+            set { SetTrackedProperty(ref beginDateTime, value); }
         }
 
         private DateTime? endDateTime;
         public DateTime? EndDateTime
         {
             get { return endDateTime; }
-            set { SetProperty(ref endDateTime, value); }
+            set { SetTrackedProperty(ref endDateTime, value); }
         }
 
         private int? roomId;
         public int? RoomId
         {
             get { return roomId; }
-            set { SetProperty(ref roomId, value); }
+            set { SetTrackedProperty(ref roomId, value); }
         }
 
         private int? parentVisitId;
         public int? ParentVisitId
         {
             get { return parentVisitId; }
-            set { SetProperty(ref parentVisitId, value); }
+            set { SetTrackedProperty(ref parentVisitId, value); }
         }
 
         public bool IsVisibleVisits
@@ -348,14 +349,13 @@ namespace PatientRecordsModule.ViewModels
             SetRVAIds(visitId, 0, 0);
         }
 
-        private async void SetRVAIds(int visitId, int assignmentId, int recordId)
+        private void SetRVAIds(int visitId, int assignmentId, int recordId)
         {
             VisitId = visitId;
             AssignmentId = assignmentId;
             RecordId = recordId;
             recordTypeId = 0;
-            await LoadProtocolEditor(visitId, assignmentId, recordId);
-            ChangeTracker.IsEnabled = true;
+            LoadProtocolEditor(visitId, assignmentId, recordId);            
         }
 
 
@@ -508,7 +508,10 @@ namespace PatientRecordsModule.ViewModels
         {
             RecordPeriods.Clear();
             ParentVisits.Clear();
-            ChangeTracker.IsEnabled = false;
+            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, ProtocolEditor.ChangeTracker);
+            changeTracker.PropertyChanged += OnChangesTracked;
+            ChangeTracker = changeTracker; 
+
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -625,9 +628,8 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private async Task LoadProtocolEditor(int visitId, int assignmentId, int recordId)
-        {
-            currentInstanceChangeTracker.IsEnabled = false;          
+        private async void LoadProtocolEditor(int visitId, int assignmentId, int recordId)
+        {         
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -665,11 +667,7 @@ namespace PatientRecordsModule.ViewModels
                 }
 
                 //Load Documents
-                DocumentsViewer.LoadDocuments(assignmentId, recordId);
-
-                var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, ProtocolEditor.ChangeTracker);
-                changeTracker.PropertyChanged += OnChangesTracked;
-                ChangeTracker = changeTracker;  
+                DocumentsViewer.LoadDocuments(assignmentId, recordId);                
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -736,7 +734,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to save data while closing visit for visit with Id = {0}", recordIdString);
-                FailureMediator.Activate("Не удалось сохранить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось сохранить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex, true);
             }
             finally
             {

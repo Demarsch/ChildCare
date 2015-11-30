@@ -77,8 +77,8 @@ namespace PatientRecordsModule.ViewModels
         {                        
             HasDocumentsAttachments = recordDocuments.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
             HasDICOMAttachments = recordDocuments.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
-            if (hasDocumentsAttachments || hasDocumentsAttachments)
-                recordDocuments.First().IsSelected = true;
+            //if (hasDocumentsAttachments || hasDocumentsAttachments)
+            //    recordDocuments.First().IsSelected = true;
             detachDocumentCommand.RaiseCanExecuteChanged();
         }
 

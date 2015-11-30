@@ -14,5 +14,7 @@ namespace Core.Data.Services
         /// <param name="permission">permission name. Attention! Use PermissionType class for it!</param>
         /// <returns></returns>
         bool HasPermission(string permission);
+
+        User GetUserBySID();
     }
 }
