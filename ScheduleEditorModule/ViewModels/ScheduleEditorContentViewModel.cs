@@ -486,7 +486,13 @@ namespace ScheduleEditorModule.ViewModels
             }
         }
 
-        public IEnumerable<ScheduleEditorRoomViewModel> Rooms { get; private set; }
+        private IEnumerable<ScheduleEditorRoomViewModel> rooms;
+
+        public IEnumerable<ScheduleEditorRoomViewModel> Rooms
+        {
+            get { return rooms; }
+            set { SetProperty(ref rooms, value); }
+        }
 
         private DayOfWeekViewModel[] weekDays;
 

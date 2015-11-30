@@ -122,6 +122,20 @@ namespace PatientInfoModule.Services
             return cacheService.GetItems<HealthGroup>();
         }
 
+        public IEnumerable<RelativeRelationship> GetRelationships()
+        {
+            return cacheService.GetItems<RelativeRelationship>();
+        }
+
+        public async Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+                return await context.Set<PersonRelative>().Where(x => x.PersonId == patientId).ToArrayAsync();
+            }
+        }
+
         #region SavePatientAsync
 
         public async Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token)
@@ -148,12 +162,32 @@ namespace PatientInfoModule.Services
                 PrepareAddresses(data, context, result);
                 PrepareDisabilityDocuments(data, context, result);
                 PrepareSocialStatuses(data, context, result);
+                PrepareRelativeRelationship(data, context, result);
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
                 }
                 await context.SaveChangesAsync(token);
                 return result;
+            }
+        }
+
+        private void PrepareRelativeRelationship(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            if (data.Relative == null)
+            {
+                result.Relative = null;
+                return;
+            }
+            result.Relative = data.Relative;
+            if (data.Relative.Id.IsNewOrNonExisting())
+            {
+                data.Relative.Person1 = data.CurrentPerson;
+                context.Entry(data.Relative).State = EntityState.Added;
+            }
+            else
+            {
+                context.Entry(data.Relative).State = EntityState.Modified;
             }
         }
 

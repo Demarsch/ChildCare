@@ -46,5 +46,9 @@ namespace PatientInfoModule.Services
         Person GetPersonById(int id);
 
         Org GetOrganization(int orgId);
+
+        IEnumerable<RelativeRelationship> GetRelationships();
+
+        Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId);
     }
 }

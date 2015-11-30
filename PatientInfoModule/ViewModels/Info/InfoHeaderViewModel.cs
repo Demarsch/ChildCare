@@ -23,8 +23,6 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
-        private readonly InfoContentViewModel contentViewModel;
-
         public InfoHeaderViewModel(IEventAggregator eventAggregator,
                                    IRegionManager regionManager,
                                    IViewNameResolver viewNameResolver,
@@ -49,10 +47,12 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
-            this.contentViewModel = contentViewModel;
+            ContentViewModel = contentViewModel;
             patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
         }
+
+        public InfoContentViewModel ContentViewModel { get; private set; }
 
         private int patientId;
 
@@ -117,20 +117,5 @@ namespace PatientInfoModule.ViewModels
         }
 
         public event EventHandler IsActiveChanged = delegate { };
-
-        public ICommand CreateNewPatientCommand
-        {
-            get { return contentViewModel.CreateNewPatientCommand; }
-        }
-
-        public ICommand SaveChangesCommand
-        {
-            get { return contentViewModel.SaveChangesCommand; }
-        }
-
-        public ICommand CancelChangesCommand
-        {
-            get { return contentViewModel.CancelChangesCommand; }
-        }
     }
 }

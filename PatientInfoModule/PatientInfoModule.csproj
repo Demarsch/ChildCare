@@ -152,6 +152,7 @@
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\Info\AddressCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\DisabilityDocumentCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Info\PatientInfoViewModel.cs" />
     <Compile Include="ViewModels\Info\SocialStatusCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\DisabilityDocumentViewModel.cs" />
@@ -189,6 +190,9 @@
     </Compile>
     <Compile Include="Views\Info\DisabilityDocumentCollectionView.xaml.cs">
       <DependentUpon>DisabilityDocumentCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Info\PatientInfoView.xaml.cs">
+      <DependentUpon>PatientInfoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Info\SocialStatusCollectionView.xaml.cs">
       <DependentUpon>SocialStatusCollectionView.xaml</DependentUpon>
@@ -283,6 +287,10 @@
     <Page Include="Views\Info\DisabilityDocumentCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Info\PatientInfoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Info\SocialStatusCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

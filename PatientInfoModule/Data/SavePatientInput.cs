@@ -53,5 +53,7 @@ namespace PatientInfoModule.Data
         public ICollection<PersonSocialStatus> CurrentSocialStatuses { get; set; }
 
         public ICollection<PersonSocialStatus> NewSocialStatuses { get; set; }
+
+        public PersonRelative Relative { get; set; }
     }
 }

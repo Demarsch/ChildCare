@@ -18,24 +18,44 @@
         <fluent:Button Header="Создать"
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/AddPatient-48x48.png"
                        SizeDefinition="Large"
-                       Command="{Binding CreateNewPatientCommand}"/>
+                       Command="{Binding ContentViewModel.CreateNewPatientCommand}"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Изменения">
         <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png"
-                       Command="{Binding SaveChangesCommand}"/>
+                       Command="{Binding ContentViewModel.SaveChangesCommand}"/>
         <fluent:Button Header="Отменить"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" 
-                       Command="{Binding CancelChangesCommand}"/>
+                       Command="{Binding ContentViewModel.CancelChangesCommand}"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Родственники"
-                           MinWidth="250">
+                           MinWidth="300">
+        <fluent:Button Size="Large"
+                       Header="Добавить родственника"
+                       Command="{Binding ContentViewModel.AddRelativeCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Relatives48x48.png"/>
         <fluent:InRibbonGallery MinItemsInRow="3"
                                 MaxItemsInRow="5"
                                 ItemWidth="40"
                                 HorizontalAlignment="Stretch"
-                                MinWidth="250"/>
+                                ItemsSource="{Binding ContentViewModel.Relatives}"
+                                MinWidth="250">
+            <fluent:InRibbonGallery.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:PatientInfoViewModel}">
+                    <StackPanel Orientation="Vertical">
+                        <Border BorderBrush="Black"
+                            BorderThickness="1">
+                            <Image Width="40"
+                               Height="40"
+                               Source="{Binding PhotoUri}" />
+                        </Border>
+                        <TextBlock Text="{Binding SelectedRelationship.Name, FallbackValue='Родственник'}"
+                                   HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </DataTemplate>
+            </fluent:InRibbonGallery.ItemTemplate>
+        </fluent:InRibbonGallery>
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

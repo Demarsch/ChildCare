@@ -43,10 +43,26 @@ namespace Core.Extensions
         /// </summary>
         public static int ToInt(this object obj)
         {
-            if (obj is int) return (int)obj;
-            if (obj is double) return Convert.ToInt32((double)obj);
-            if (obj is decimal) return Convert.ToInt32((decimal)obj);
-            if (obj is float) return Convert.ToInt32((float)obj);
+            if (obj == null)
+            {
+                return 0;
+            }
+            if (obj is int)
+            {
+                return (int)obj;
+            }
+            if (obj is double)
+            {
+                return Convert.ToInt32((double)obj);
+            }
+            if (obj is decimal)
+            {
+                return Convert.ToInt32((decimal)obj);
+            }
+            if (obj is float)
+            {
+                return Convert.ToInt32((float)obj);
+            }
             try
             {
                 return int.Parse(obj.ToString());

@@ -26,5 +26,7 @@ namespace PatientInfoModule.Data
         public ICollection<PersonDisability> DisabilityDocuments { get; set; }
         
         public ICollection<PersonSocialStatus> SocialStatuses { get; set; }
+
+        public PersonRelative Relative { get; set; }
     }
 }
