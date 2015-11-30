@@ -80,7 +80,6 @@ namespace Core.Data
         public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<SocialStatusType> SocialStatusTypes { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
-        public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
         public virtual DbSet<UserPermission> UserPermissions { get; set; }
@@ -100,9 +99,10 @@ namespace Core.Data
         public virtual DbSet<PersonDiagnos> PersonDiagnoses { get; set; }
         public virtual DbSet<MKB> MKBs { get; set; }
         public virtual DbSet<RecordMember> RecordMembers { get; set; }
-        public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
         public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
+        public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
+        public virtual DbSet<Urgently> Urgentlies { get; set; }
     }
 }

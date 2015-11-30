@@ -24,13 +24,13 @@ namespace Core.Data
         public string Name { get; set; }
         public string ShortName { get; set; }
         public int ExecutionPlaceId { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
         public bool IsDefault { get; set; }
         public bool IsOperation { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     
+        public virtual ExecutionPlace ExecutionPlace { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
     }
 }

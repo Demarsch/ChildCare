@@ -116,6 +116,9 @@
     <Compile Include="DiagnosType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ExecutionPlace.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="FinancingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -146,6 +149,9 @@
     <Compile Include="PartialClasses\RecordContract.cs" />
     <Compile Include="PartialClasses\Urgently.cs" />
     <Compile Include="PersonDiagnos.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Record.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordContract.cs">
@@ -188,9 +194,6 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Education.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ExecutionPlace.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="HealthGroup.cs">
@@ -283,9 +286,6 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Record.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="RecordContractItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
