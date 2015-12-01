@@ -498,9 +498,10 @@ namespace PatientInfoModule.ViewModels
 
         private void UpdateNameIsChanged()
         {
-            IsNameChanged = currentInstanceChangeTracker.PropertyHasChanges(() => LastName)
-                            || currentInstanceChangeTracker.PropertyHasChanges(() => FirstName)
-                            || currentInstanceChangeTracker.PropertyHasChanges(() => MiddleName);
+            IsNameChanged = currentPerson != null && !currentPerson.Id.IsNewOrNonExisting()
+                            && (currentInstanceChangeTracker.PropertyHasChanges(() => LastName)
+                                || currentInstanceChangeTracker.PropertyHasChanges(() => FirstName)
+                                || currentInstanceChangeTracker.PropertyHasChanges(() => MiddleName));
         }
 
         private bool isIncorrectName;
