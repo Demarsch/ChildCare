@@ -104,5 +104,6 @@ namespace Core.Data
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<Urgently> Urgentlies { get; set; }
+        public virtual DbSet<DefaultProtocol> DefaultProtocols { get; set; }
     }
 }

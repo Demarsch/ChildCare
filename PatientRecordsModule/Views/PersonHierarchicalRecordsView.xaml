@@ -3,34 +3,33 @@
                     xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <HierarchicalDataTemplate DataType="{x:Type viewModels:PersonHierarchicalRecordsViewModel}" ItemsSource="{Binding NestedItems}">
-        <Border BorderThickness="1" BorderBrush="Black" Background="#FF7DA8C7" HorizontalAlignment="Stretch">
-            <Grid>
+        <Border BorderBrush="Black" BorderThickness="0.5" CornerRadius="4">
+            <Grid HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition MinHeight="10"/>
+                    <RowDefinition MinHeight="10"/>
+                    <RowDefinition MinHeight="10"/>
+                    <RowDefinition MinHeight="10"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="48"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Grid.Row="0" Padding="0,0,5,0" HorizontalAlignment="Stretch" Text="{Binding FinSource}"/>
-                <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Source="pack://application:,,,/Core;component/Resources/Images/Record48x48.png"/>
-                <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="pack://application:,,,/Core;component/Resources/Images/Ok48x48.png" 
-                   Visibility="{Binding IsCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                <ContentControl Grid.Column="0"  Grid.Row="1" Grid.RowSpan="2" Content="{Binding BusyMediator}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding RecordTypeName}" FontWeight="Bold" Padding="0" FontSize="12" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                    <TextBlock.ToolTip>
+                        <TextBlock Text="{Binding RecordTypeName}"/>
+                    </TextBlock.ToolTip>
+                </TextBlock>
 
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding RecordTypeName}" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" />
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}" />
-                
-                <!--<ContentControl Content="{Binding CriticalFailureMediator}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />-->
-
+                <Image Grid.Row="1" Grid.Column="0" Grid.RowSpan="3" Source="pack://application:,,,/Core;component/Resources/Images/Record48x48.png" Margin="7,5,7,5" Height="36" Width="36"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DateTimePeriod}" Margin="0" Padding="0" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center" FontStyle="Italic"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomName}" Margin="0" Padding="0" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center" FontStyle="Italic" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                    <TextBlock.ToolTip>
+                        <TextBlock Text="{Binding RoomName}"/>
+                    </TextBlock.ToolTip>
+                </TextBlock>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FinSource}" Margin="0,0,0,2" Padding="0" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             </Grid>
         </Border>
     </HierarchicalDataTemplate>

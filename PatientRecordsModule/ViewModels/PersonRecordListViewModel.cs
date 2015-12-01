@@ -274,7 +274,7 @@ namespace PatientRecordsModule.ViewModels
                     BeginDateTime = x.BeginDateTime,
                     EndDateTime = x.EndDateTime,
                     ActualDateTime = x.BeginDateTime,
-                    FinSource = x.FinancingSource.ShortName,
+                    FinSource = x.FinancingSource.Name,
                     Name = x.VisitTemplate.ShortName,
                     IsCompleted = x.IsCompleted
                 }).FirstOrDefaultAsync(token);
@@ -389,7 +389,7 @@ namespace PatientRecordsModule.ViewModels
                 {
                     Id = x.Id,
                     ActualDateTime = x.AssignDateTime,
-                    FinancingSourceName = x.FinancingSource.ShortName,
+                    FinancingSourceName = x.FinancingSource.Name,
                     RecordTypeName = x.RecordType.Name,
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name
                 })
@@ -402,8 +402,8 @@ namespace PatientRecordsModule.ViewModels
                     BeginDateTime = x.BeginDateTime,
                     EndDateTime = x.EndDateTime,
                     ActualDateTime = x.BeginDateTime,
-                    FinSource = x.FinancingSource.ShortName,
-                    Name = x.VisitTemplate.ShortName,
+                    FinSource = x.FinancingSource.Name,
+                    Name = x.VisitTemplate.Name,
                     IsCompleted = x.IsCompleted,
                 })
                 .ToArray()

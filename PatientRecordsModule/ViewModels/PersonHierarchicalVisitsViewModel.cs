@@ -140,7 +140,7 @@ namespace PatientRecordsModule.ViewModels
                     {
                         Id = x.Id,
                         ActualDateTime = x.AssignDateTime,
-                        FinancingSourceName = x.FinancingSource.ShortName,
+                        FinancingSourceName = x.FinancingSource.Name,
                         RecordTypeName = x.RecordType.Name,
                         RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
                     }).ToListAsync(token);

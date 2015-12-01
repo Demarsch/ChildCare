@@ -204,6 +204,15 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="DefaultProtocols">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecordId" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="8000" Nullable="false" />
+          <Property Name="Conclusion" Type="varchar" MaxLength="8000" Nullable="false" />
+        </EntityType>
         <EntityType Name="Diagnoses">
           <Key>
             <PropertyRef Name="Id" />
@@ -1387,6 +1396,18 @@
             </Principal>
             <Dependent Role="Decisions1">
               <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DefaultProtocols_Records">
+          <End Role="Records" Type="Self.Records" Multiplicity="1" />
+          <End Role="DefaultProtocols" Type="Self.DefaultProtocols" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Records">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DefaultProtocols">
+              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2668,6 +2689,7 @@
           <EntitySet Name="Countries" EntityType="Self.Countries" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Decisions" EntityType="Self.Decisions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DefaultProtocols" EntityType="Self.DefaultProtocols" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Diagnoses" EntityType="Self.Diagnoses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DiagnosLevels" EntityType="Self.DiagnosLevels" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DiagnosTypes" EntityType="Self.DiagnosTypes" Schema="dbo" store:Type="Tables" />
@@ -2871,6 +2893,10 @@
           <AssociationSet Name="FK_Decisions_Decisions" Association="Self.FK_Decisions_Decisions">
             <End Role="Decisions" EntitySet="Decisions" />
             <End Role="Decisions1" EntitySet="Decisions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DefaultProtocols_Records" Association="Self.FK_DefaultProtocols_Records">
+            <End Role="Records" EntitySet="Records" />
+            <End Role="DefaultProtocols" EntitySet="DefaultProtocols" />
           </AssociationSet>
           <AssociationSet Name="FK_Diagnoses_Complications" Association="Self.FK_Diagnoses_Complications">
             <End Role="Complications" EntitySet="Complications" />
@@ -3928,6 +3954,11 @@
           <AssociationSet Name="FK_VisitTemplates_ExecutionPlaces1" Association="DataLib.FK_VisitTemplates_ExecutionPlaces1">
             <End Role="Urgently" EntitySet="Urgentlies" />
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
+          </AssociationSet>
+          <EntitySet Name="DefaultProtocols" EntityType="DataLib.DefaultProtocol" />
+          <AssociationSet Name="FK_DefaultProtocols_Records" Association="DataLib.FK_DefaultProtocols_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="DefaultProtocol" EntitySet="DefaultProtocols" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -6584,6 +6615,7 @@
           <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Record" ToRole="Urgently" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
+          <NavigationProperty Name="DefaultProtocols" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="Record" ToRole="DefaultProtocol" />
         </EntityType>
         <EntityType Name="Urgently">
           <Key>
@@ -6850,6 +6882,28 @@
             </Principal>
             <Dependent Role="VisitTemplate">
               <PropertyRef Name="UrgentlyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DefaultProtocol">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Conclusion" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="DefaultProtocol" ToRole="Record" />
+        </EntityType>
+        <Association Name="FK_DefaultProtocols_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.DefaultProtocol" Role="DefaultProtocol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DefaultProtocol">
+              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7897,6 +7951,16 @@
                 <ScalarProperty Name="PrintName" ColumnName="PrintName" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DefaultProtocols">
+            <EntityTypeMapping TypeName="DataLib.DefaultProtocol">
+              <MappingFragment StoreEntitySet="DefaultProtocols">
+                <ScalarProperty Name="Conclusion" ColumnName="Conclusion" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

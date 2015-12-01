@@ -11,7 +11,7 @@
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:OrgContractsHeaderViewModel}">
     <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Договора с юр.лицами"
+        <TextBlock Text="Договоры с юр.лицами"
                    Style="{x:Null}" />
     </fluent:RibbonTabItem.Header>
     <fluent:RibbonGroupBox Header="Договора" FontWeight="Medium">

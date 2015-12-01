@@ -136,8 +136,8 @@ namespace PatientRecordsModule.ViewModels
                 {
                     Id = x.Id,
                     ActualDateTime = x.AssignDateTime,
-                    FinancingSourceName = x.FinancingSource.ShortName,
-                    RecordTypeName = x.RecordType.Name,
+                    FinancingSourceName = x.FinancingSource.Name,
+                    RecordTypeName = x.RecordType.ShortName != string.Empty ? x.RecordType.ShortName : x.RecordType.Name,
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
                 }).ToListAsync(token);
                 NestedItems.AddRange(childAssignments.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));

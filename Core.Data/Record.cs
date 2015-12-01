@@ -22,6 +22,7 @@ namespace Core.Data
             this.RecordDocuments = new HashSet<RecordDocument>();
             this.RecordMembers = new HashSet<RecordMember>();
             this.Records1 = new HashSet<Record>();
+            this.DefaultProtocols = new HashSet<DefaultProtocol>();
         }
     
         public int Id { get; set; }
@@ -62,5 +63,7 @@ namespace Core.Data
         public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
         public virtual Visit Visit { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DefaultProtocol> DefaultProtocols { get; set; }
     }
 }

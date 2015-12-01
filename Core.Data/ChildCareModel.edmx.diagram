@@ -223,6 +223,8 @@
         <AssociationConnector Association="DataLib.FK_Records_Visits" />
         <AssociationConnector Association="DataLib.FK_Visits_Urgentlies" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces1" />
+        <EntityTypeShape EntityType="DataLib.DefaultProtocol" Width="1.5" PointX="10.5" PointY="69.125" />
+        <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

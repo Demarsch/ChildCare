@@ -107,6 +107,9 @@
     <Compile Include="Complication.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DefaultProtocol.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Diagnosis.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
