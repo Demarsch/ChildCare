@@ -1,8 +1,6 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace PatientInfoModule.Services

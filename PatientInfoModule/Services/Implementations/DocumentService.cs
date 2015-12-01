@@ -4,7 +4,6 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Data.Entity;
 using Core.Wpf.Services;
 using System.Windows.Media.Imaging;

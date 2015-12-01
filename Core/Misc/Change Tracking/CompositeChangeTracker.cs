@@ -36,6 +36,8 @@ namespace Core.Misc
             if (trackers.Add(tracker))
             {
                 tracker.PropertyChanged += OnTrackerPropertyChanged;
+                OnPropertyChanged("IsEnabled");
+                OnPropertyChanged("HasChanges");
             }
         }
 
@@ -44,6 +46,8 @@ namespace Core.Misc
             if (trackers.Remove(tracker))
             {
                 tracker.PropertyChanged -= OnTrackerPropertyChanged;
+                OnPropertyChanged("IsEnabled");
+                OnPropertyChanged("HasChanges");
             }
         }
 
@@ -65,7 +69,7 @@ namespace Core.Misc
 
         public bool IsEnabled
         {
-            get { return trackers.Count > 0 && trackers.All(x => x.IsEnabled); }
+            get { return trackers.Count > 0 && trackers.Any(x => x.IsEnabled); }
             set
             {
                 currentTrackerIsSourceOfChanges = true;
@@ -100,10 +104,6 @@ namespace Core.Misc
 
         public void RestoreChanges()
         {
-            if (!IsEnabled)
-            {
-                return;
-            }
             currentTrackerIsSourceOfChanges = true;
             trackers.ToArray().ForEach(x => x.RestoreChanges());
             currentTrackerIsSourceOfChanges = false;

@@ -5,57 +5,86 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+                      xmlns:converters="clr-namespace:PatientInfoModule.Converters"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:InfoHeaderViewModel}">
+    <fluent:RibbonTabItem.Resources>
+        <converters:PatientGenderToPhotoUriConverter x:Key="GenderToPhotoUriConverter" />
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin"
+                    Value="0" />
+        </Style>
+    </fluent:RibbonTabItem.Resources>
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Основные данные"
                    Style="{x:Null}" />
     </fluent:RibbonTabItem.Header>
     <fluent:RibbonGroupBox Header="Новый пациент"
-                           MinWidth="100">
+                           MinWidth="100"
+                           HorizontalContentAlignment="Center">
         <fluent:Button Header="Создать"
                        LargeIcon="pack://application:,,,/PatientInfoModule;Component/Resources/Images/AddPatient-48x48.png"
                        SizeDefinition="Large"
-                       Command="{Binding ContentViewModel.CreateNewPatientCommand}"/>
+                       HorizontalAlignment="Center"
+                       Command="{Binding ContentViewModel.CreateNewPatientCommand}" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Изменения">
         <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png"
-                       Command="{Binding ContentViewModel.SaveChangesCommand}"/>
+                       Command="{Binding ContentViewModel.SaveChangesCommand}" />
         <fluent:Button Header="Отменить"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" 
-                       Command="{Binding ContentViewModel.CancelChangesCommand}"/>
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png"
+                       Command="{Binding ContentViewModel.CancelChangesCommand}" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Родственники"
                            MinWidth="300">
         <fluent:Button Size="Large"
                        Header="Добавить родственника"
                        Command="{Binding ContentViewModel.AddRelativeCommand, Mode=OneTime}"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Relatives48x48.png"/>
-        <fluent:InRibbonGallery MinItemsInRow="3"
-                                MaxItemsInRow="5"
-                                ItemWidth="40"
-                                HorizontalAlignment="Stretch"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Relatives48x48.png" />
+        <fluent:InRibbonGallery MaxItemsInRow="5"
+                                ItemWidth="80"
                                 ItemsSource="{Binding ContentViewModel.Relatives}"
-                                MinWidth="250">
+                                MinWidth="250"
+                                Orientation="Horizontal">
+            <fluent:InRibbonGallery.ItemContainerStyle>
+                <Style TargetType="{x:Type fluent:GalleryItem}">
+                    <Setter Property="Command"
+                            Value="{Binding DataContext.ContentViewModel.SelectRelativeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:InRibbonGallery}}}" />
+                    <Setter Property="CommandParameter"
+                            Value="{Binding}" />
+                </Style>
+            </fluent:InRibbonGallery.ItemContainerStyle>
             <fluent:InRibbonGallery.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:PatientInfoViewModel}">
                     <StackPanel Orientation="Vertical">
                         <Border BorderBrush="Black"
-                            BorderThickness="1">
-                            <Image Width="40"
-                               Height="40"
-                               Source="{Binding PhotoUri}" />
+                                BorderThickness="1"
+                                HorizontalAlignment="Center"
+                                Background="Transparent">
+                            <Image Width="32"
+                                   Height="32">
+                                <Image.Source>
+                                    <MultiBinding Converter="{StaticResource GenderToPhotoUriConverter}">
+                                        <Binding Path="PhotoUri" />
+                                        <Binding Path="IsMale" />
+                                    </MultiBinding>
+                                </Image.Source>
+                            </Image>
                         </Border>
-                        <TextBlock Text="{Binding SelectedRelationship.Name, FallbackValue='Родственник'}"
-                                   HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding SelectedRelationship.Name, FallbackValue='???'}"
+                                   HorizontalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
             </fluent:InRibbonGallery.ItemTemplate>
         </fluent:InRibbonGallery>
+        <fluent:Button Size="Large"
+                       Header="Возврат к пациенту"
+                       Command="{Binding ContentViewModel.GoBackToPatientCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Back48x48.png" />
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

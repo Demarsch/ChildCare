@@ -138,12 +138,8 @@ namespace PatientInfoModule.Services
 
         #region SavePatientAsync
 
-        public async Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token)
+        public async Task<SavePatientOutput> SavePatientAsync(SavePatientInput data)
         {
-            if (token.IsCancellationRequested)
-            {
-                throw new OperationCanceledException(token);
-            }
             using (var context = contextProvider.CreateNewContext())
             {
                 context.Configuration.ProxyCreationEnabled = false;
@@ -163,11 +159,7 @@ namespace PatientInfoModule.Services
                 PrepareDisabilityDocuments(data, context, result);
                 PrepareSocialStatuses(data, context, result);
                 PrepareRelativeRelationship(data, context, result);
-                if (token.IsCancellationRequested)
-                {
-                    throw new OperationCanceledException(token);
-                }
-                await context.SaveChangesAsync(token);
+                await context.SaveChangesAsync();
                 return result;
             }
         }

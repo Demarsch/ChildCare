@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -76,9 +77,15 @@ namespace PatientInfoModule.ViewModels
             saveChangesCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
             cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
             addRelativeCommand = new DelegateCommand(AddRelative, CanAddRelative);
+            goBackToPatientCommand = new DelegateCommand(GoBackToPatient, CanGoBackToPatient);
+            selectRelativeCommand = new DelegateCommand<PatientInfoViewModel>(SelectRelative);
             saveChangesCommandWrapper = new CommandWrapper { Command = SaveChangesCommand };
-            loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadRelativeListAsync(currentPatientId)) };
+            loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientAndRelativesAsync(patientIdBeingLoaded)) };
+            currentOperation = new TaskCompletionSource<object>();
+            currentOperation.SetResult(null);
         }
+
+        private TaskCompletionSource<object> currentOperation;
 
         public BusyMediator BusyMediator { get; set; }
 
@@ -128,31 +135,23 @@ namespace PatientInfoModule.ViewModels
             get { return saveChangesCommand; }
         }
 
-        private CancellationTokenSource currentOperationToken;
-
         private async void SaveChangesAsync()
         {
+            await currentOperation.Task;
             FailureMediator.Deactivate();
             if (!Validate())
             {
                 return;
             }
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            log.InfoFormat("Saving relatives data for patient with Id = {0}", currentPatientId == SpecialValues.NewId ? "(New patient)" : currentPatientId.ToString());
-            BusyMediator.Activate("Сохранение изменений...");
-            var saveSuccessfull = false;
-            var isNewPatient = patientInfo.CurrentPerson.Id.IsNewOrNonExisting();
+            currentOperation = new TaskCompletionSource<object>();
             PatientInfoViewModel personToSave = null;
             try
             {
+                log.InfoFormat("Saving relatives data for patient with Id = {0}", currentPatientId == SpecialValues.NewId ? "(New patient)" : currentPatientId.ToString());
+                BusyMediator.Activate("Сохранение изменений...");
+                var isNewPatient = patientInfo.CurrentPerson.Id.IsNewOrNonExisting();
                 personToSave = patientInfo;
-                await patientInfo.SaveChangesAsync(token);
+                await patientInfo.SaveChangesAsync();
                 if (isNewPatient)
                 {
                     currentPatientId = patientInfo.CurrentPerson.Id;
@@ -161,10 +160,13 @@ namespace PatientInfoModule.ViewModels
                 foreach (var relative in Relatives.Where(x => x.CurrentPerson.Id.IsNewOrNonExisting() || x.ChangeTracker.HasChanges))
                 {
                     personToSave = relative;
-                    await relative.SaveChangesAsync(token, patientInfo.CurrentPerson);
+                    await relative.SaveChangesAsync(patientInfo.CurrentPerson);
                 }
                 personToSave = null;
-                saveSuccessfull = true;
+                CancelValidation();
+                ChangeTracker.AcceptChanges();
+                ChangeTracker.IsEnabled = true;
+                UpdateCommandsState();
             }
             catch (OperationCanceledException)
             {
@@ -183,13 +185,7 @@ namespace PatientInfoModule.ViewModels
             finally
             {
                 BusyMediator.Deactivate();
-                if (saveSuccessfull)
-                {
-                    CancelValidation();
-                    ChangeTracker.AcceptChanges();
-                    ChangeTracker.IsEnabled = true;
-                    UpdateCommandsState();
-                }
+                currentOperation.SetResult(null);
             }
         }
 
@@ -212,6 +208,10 @@ namespace PatientInfoModule.ViewModels
             FailureMediator.Deactivate();
             ChangeTracker.RestoreChanges();
             CancelValidation();
+            if (SelectedPatientOrRelative.IsRelative && SelectedPatientOrRelative.CurrentPerson.Id.IsNewOrNonExisting())
+            {
+                SelectedPatientOrRelative = patientInfo;
+            }
         }
 
         private bool CanCancelChanges()
@@ -228,17 +228,46 @@ namespace PatientInfoModule.ViewModels
             get { return addRelativeCommand; }
         }
 
-        private void AddRelative()
+        private async void AddRelative()
         {
             var newRelative = relativeInfoFactory();
             newRelative.IsRelative = true;
+            newRelative.PersonRelative = new PersonRelative
+                                         {
+                                             IsRepresentative = !Relatives.Any(x => x.IsRepresentative),
+                                             PersonId = patientInfo.CurrentPerson.Id,
+                                         };
             Relatives.Add(newRelative);
             SelectedPatientOrRelative = newRelative;
+            await newRelative.LoadPatientInfoAsync(SpecialValues.NewId);
         }
 
         private bool CanAddRelative()
         {
             return currentPatientId != SpecialValues.NonExistingId;
+        }
+
+        private readonly DelegateCommand goBackToPatientCommand;
+
+        public ICommand GoBackToPatientCommand { get { return goBackToPatientCommand; } }
+
+        private void GoBackToPatient()
+        {
+            SelectedPatientOrRelative = patientInfo;
+        }
+
+        private bool CanGoBackToPatient()
+        {
+            return selectedPatientOrRelative != patientInfo;
+        }
+
+        private readonly DelegateCommand<PatientInfoViewModel> selectRelativeCommand;
+
+        public ICommand SelectRelativeCommand { get { return selectRelativeCommand; } }
+
+        private void SelectRelative(PatientInfoViewModel relative)
+        {
+            SelectedPatientOrRelative = relative;
         }
 
         #endregion
@@ -268,53 +297,43 @@ namespace PatientInfoModule.ViewModels
         public PatientInfoViewModel SelectedPatientOrRelative
         {
             get { return selectedPatientOrRelative; }
-            set { SetProperty(ref selectedPatientOrRelative, value); }
+            set
+            {
+                SetProperty(ref selectedPatientOrRelative, value);
+                goBackToPatientCommand.RaiseCanExecuteChanged();
+            }
         }
 
-
         private int currentPatientId;
+
+        private int patientIdBeingLoaded;
 
         public async void OnNavigatedTo(NavigationContext navigationContext)
         {
             var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
-            SelectedPatientOrRelative = patientInfo;
-            await Task.WhenAll(LoadRelativeListAsync(targetPatientId), patientInfo.LoadPatientInfoAsync(targetPatientId, CancellationToken.None));
+            await LoadPatientAndRelativesAsync(targetPatientId);
         }
 
-        private async Task LoadRelativeListAsync(int patientId)
+        private async Task LoadPatientAndRelativesAsync(int targetPatientId)
         {
-            if (Interlocked.Exchange(ref currentPatientId, patientId) == patientId)
+            await currentOperation.Task;
+            if (targetPatientId == currentPatientId)
             {
                 return;
             }
-            ClearData();
-            UpdateCommandsState();
-            if (patientId == SpecialValues.NewId || patientId == SpecialValues.NonExistingId)
-            {
-                return;
-            }
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            var loadingIsCompleted = false;
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            BusyMediator.Activate("Загрузка данных пациента...");
-            log.InfoFormat("Loading patient info for patient with Id {0}...", patientId);
+            currentOperation = new TaskCompletionSource<object>();
             try
             {
-                var relatives = await patientService.GetRelativesAsync(patientId);
-                foreach (var relative in relatives)
-                {
-                    var viewModel = relativeInfoFactory();
-                    viewModel.SelectedRelationship = viewModel.Relationships.FirstOrDefault(x => x.Id == relative.RelativeRelationshipId);
-                    //We don't need to wait while relative data is loaded
-                    viewModel.LoadPatientInfoAsync(relative.RelativeId, token);
-                    Relatives.Add(viewModel);
-                }
-                loadingIsCompleted = true;
+                BusyMediator.Activate("Загрузка данных пациента...");
+                log.InfoFormat("Loading patient and relative info for patient with Id {0}...", targetPatientId);
+                ChangeTracker.IsEnabled = false;
+                patientIdBeingLoaded = targetPatientId;
+                await Task.WhenAll(patientInfo.LoadPatientInfoAsync(targetPatientId), LoadRelativesAsync(targetPatientId));
+                currentPatientId = targetPatientId;
+                patientIdBeingLoaded = SpecialValues.NonExistingId;
+                ChangeTracker.IsEnabled = true;
+                UpdateCommandsState();
+                SelectedPatientOrRelative = patientInfo;
             }
             catch (OperationCanceledException)
             {
@@ -322,25 +341,36 @@ namespace PatientInfoModule.ViewModels
             }
             catch (Exception ex)
             {
-                log.ErrorFormatEx(ex, "Failed to load common patient info for patient with Id {0}", patientId);
-                FailureMediator.Activate("Не удалость загрузить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", loadRelativeListWrapper, ex);
-                loadingIsCompleted = true;
+                log.ErrorFormatEx(ex, "Failed to load common and relative info for patient with Id {0}", targetPatientId);
+                FailureMediator.Activate("Не удалось загрузить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", loadRelativeListWrapper, ex);
+                SelectedPatientOrRelative = patientInfo.FailureMediator.IsActive ? patientInfo : Relatives.FirstOrDefault(x => x.FailureMediator.IsActive);
             }
             finally
             {
-                CommandManager.InvalidateRequerySuggested();
-                if (loadingIsCompleted)
-                {
-                    ChangeTracker.IsEnabled = true;
-                    UpdateCommandsState();
-                    BusyMediator.Deactivate();
-                }
+                BusyMediator.Deactivate();
+                currentOperation.SetResult(null);
             }
         }
 
-        private void ClearData()
+        private async Task LoadRelativesAsync(int patientId)
         {
             Relatives.Clear();
+            if (patientId.IsNewOrNonExisting())
+            {
+                return;
+            }
+            BusyMediator.Activate("Загрузка данных пациента...");
+            log.InfoFormat("Loading relative list for patient with Id {0}...", patientId);
+            var relatives = await patientService.GetRelativesAsync(patientId);
+            var tasks = new List<Task>();
+            foreach (var relative in relatives)
+            {
+                var viewModel = relativeInfoFactory();
+                viewModel.PersonRelative = relative;
+                tasks.Add(viewModel.LoadPatientInfoAsync(relative.RelativeId));
+                Relatives.Add(viewModel);
+            }
+            await Task.WhenAll(tasks);
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
@@ -372,7 +402,7 @@ namespace PatientInfoModule.ViewModels
             }
             foreach (var relative in Relatives)
             {
-                result |= relative.Validate();
+                result &= relative.Validate();
                 if (!result && invalidPerson == null)
                 {
                     invalidPerson = relative;

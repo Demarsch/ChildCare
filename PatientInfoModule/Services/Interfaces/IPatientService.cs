@@ -25,7 +25,7 @@ namespace PatientInfoModule.Services
 
         IEnumerable<HealthGroup> GetHealthGroups();
             
-        Task<SavePatientOutput> SavePatientAsync(SavePatientInput data, CancellationToken token);
+        Task<SavePatientOutput> SavePatientAsync(SavePatientInput data);
 
         IEnumerable GetPersonsByFullName(string filter);
 

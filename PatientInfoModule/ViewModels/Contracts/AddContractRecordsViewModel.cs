@@ -2,7 +2,6 @@
 using Core.Data.Misc;
 using Core.Wpf.Mvvm;
 using Core.Wpf.PopupWindowActionAware;
-using Core.Wpf.Services;
 using log4net;
 using Prism.Commands;
 using Prism.Interactivity.InteractionRequest;
@@ -11,14 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Data.Entity;
-using Core.Extensions;
-using Core.Wpf.Misc;
-using Core.Misc;
 using PatientInfoModule.Services;
 using PatientInfoModule.Misc;
 

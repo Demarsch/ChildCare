@@ -110,8 +110,6 @@ namespace ScheduleModule.ViewModels
             unselectedRecordType = new RecordType { Name = "Выберите услугу" };
             initialLoadingCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await InitialLoadingAsync()) };
             loadAssignmentsCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadAssignmentsAsync(selectedDate)) };
-            selectedRoom = unseletedRoom;
-            selectedRecordType = unselectedRecordType;
             SubscribeToEvents();
             firstTimeLoad = true;
         }
@@ -290,6 +288,7 @@ namespace ScheduleModule.ViewModels
                     return;
                 }
                 filteredRooms.View.Filter = FilterRooms;
+                SelectedRoom = unseletedRoom;
                 OnPropertyChanged(() => FilteredRooms);
             }
         }
@@ -306,7 +305,13 @@ namespace ScheduleModule.ViewModels
         public IEnumerable<RecordType> RecordTypes
         {
             get { return recordTypes; }
-            private set { SetProperty(ref recordTypes, value); }
+            private set
+            {
+                if (SetProperty(ref recordTypes, value))
+                {
+                    SelectedRecordType = unselectedRecordType;
+                }
+            }
         }
 
         public DelegateCommand<int?> ChangeDateCommand { get; private set; }
@@ -845,6 +850,11 @@ namespace ScheduleModule.ViewModels
 
         private void BuildScheduleGrid()
         {
+            //This means schedule is not yet loaded
+            if (rooms == null)
+            {
+                return;
+            }
             if (currentPatientId.IsNewOrNonExisting() && !IsMovingAssignment)
             {
                 return;
@@ -863,6 +873,11 @@ namespace ScheduleModule.ViewModels
 
         private void ClearScheduleGrid()
         {
+            //This means schedule is not yet loaded
+            if (rooms == null)
+            {
+                return;
+            }
             foreach (var room in rooms)
             {
                 room.TimeSlots.RemoveWhere(x => x is FreeTimeSlotViewModel);

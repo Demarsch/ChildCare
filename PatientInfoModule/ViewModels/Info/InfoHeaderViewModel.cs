@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
-using Core.Data.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Services;
-using log4net;
 using PatientInfoModule.Misc;
 using Prism;
 using Prism.Events;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Data;
@@ -116,8 +115,10 @@ namespace PatientInfoModule.ViewModels
             FailureMediator = new FailureMediator();
             Relationships = cacheService.GetItems<RelativeRelationship>();
             ActivateChildContentCommand = new DelegateCommand<object>(ActivateChildContent);
-            reloadPatientDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientInfoAsync(patientIdBeingLoaded, CancellationToken.None)) };
+            reloadPatientDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientInfoAsync(patientIdBeingLoaded)) };
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await EnsureDataSourceLoaded()) };
+            currentOperation = new TaskCompletionSource<object>();
+            currentOperation.SetResult(null);
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
@@ -264,7 +265,7 @@ namespace PatientInfoModule.ViewModels
 
         private ICollection<PersonSocialStatus> currentSocialStatuses;
 
-        private int patientIdBeingLoaded;
+        private readonly int patientIdBeingLoaded;
 
         #region Relative related
 
@@ -283,7 +284,8 @@ namespace PatientInfoModule.ViewModels
                            Id = personRelative.Id,
                            IsRepresentative = IsRepresentative,
                            PersonId = personRelative.PersonId,
-                           RelativeId = currentPerson.Id
+                           RelativeId = currentPerson.Id,
+                           RelativeRelationshipId = SelectedRelationship.Id
                        };
             }
             set
@@ -292,11 +294,13 @@ namespace PatientInfoModule.ViewModels
                 personRelative = value;
                 if (value == null)
                 {
+                    IsRelative = false;
                     SelectedRelationship = null;
                     IsRepresentative = false;
                 }
                 else
                 {
+                    IsRelative = true;
                     SelectedRelationship = Relationships.FirstOrDefault(x => x.Id == value.RelativeRelationshipId);
                     IsRepresentative = value.IsRepresentative;
                 }
@@ -542,6 +546,14 @@ namespace PatientInfoModule.ViewModels
             get { return currentPerson; }
         }
 
+        private string photoUri;
+
+        public string PhotoUri
+        {
+            get { return photoUri; }
+            set { SetTrackedProperty(ref photoUri, value); }
+        }
+
         #endregion
 
         public ICommand ActivateChildContentCommand { get; private set; }
@@ -561,32 +573,23 @@ namespace PatientInfoModule.ViewModels
 
         #region Actions
 
-        public async Task SaveChangesAsync(CancellationToken token, Person relativeToPerson = null)
+        public async Task SaveChangesAsync(Person relativeToPerson = null)
         {
             //If there are no changes then there is nothing to save
             if (currentPerson != null && currentPerson.Id != SpecialValues.NewId && !ChangeTracker.HasChanges)
             {
                 return;
             }
+            await currentOperation.Task;
             if (!Validate())
             {
                 return;
             }
-            if (token != CancellationToken.None)
-            {
-                if (currentOperationToken != null)
-                {
-                    currentOperationToken.Cancel();
-                    currentOperationToken.Dispose();
-                }
-                currentOperationToken = new CancellationTokenSource();
-                token = currentOperationToken.Token;
-            }
-            log.InfoFormat("Saving data for patient with Id = {0}", currentPerson == null || currentPerson.Id == SpecialValues.NewId ? "(New patient)" : currentPerson.Id.ToString());
-            BusyMediator.Activate("Сохранение изменений...");
-            var saveSuccesfull = false;
+            currentOperation = new TaskCompletionSource<object>();
             try
             {
+                log.InfoFormat("Saving data for patient with Id = {0}", currentPerson == null || currentPerson.Id == SpecialValues.NewId ? "(New patient)" : currentPerson.Id.ToString());
+                BusyMediator.Activate("Сохранение изменений...");
                 //If validation was successfull then BirthDate.Value can't be null
                 var saveData = new SavePatientInput
                                {
@@ -641,8 +644,7 @@ namespace PatientInfoModule.ViewModels
                                    Relative = PersonRelative
                                };
 
-
-                var result = await patientService.SavePatientAsync(saveData, token);
+                var result = await patientService.SavePatientAsync(saveData);
                 currentPerson = result.Person;
                 currentName = result.Name;
                 currentNationality = result.Nationality;
@@ -655,7 +657,10 @@ namespace PatientInfoModule.ViewModels
                 DisabilityDocuments.Model = currentDisabilityDocuments = result.DisabilityDocuments;
                 SocialStatuses.Model = currentSocialStatuses = result.SocialStatuses;
                 PersonRelative = result.Relative;
-                saveSuccesfull = true;
+                CancelValidation();
+                ChangeTracker.AcceptChanges();
+                ChangeTracker.IsEnabled = true;
+                UpdateNameIsChanged();
             }
             catch (OperationCanceledException)
             {
@@ -670,14 +675,8 @@ namespace PatientInfoModule.ViewModels
             }
             finally
             {
+                currentOperation.SetResult(null);
                 BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-                    CancelValidation();
-                    ChangeTracker.AcceptChanges();
-                    ChangeTracker.IsEnabled = true;
-                    UpdateNameIsChanged();
-                }
             }
         }
 
@@ -693,44 +692,33 @@ namespace PatientInfoModule.ViewModels
 
         private readonly CommandWrapper reloadPatientDataCommandWrapper;
 
-        private CancellationTokenSource currentOperationToken;
+        private TaskCompletionSource<object> currentOperation;
 
-        public async Task LoadPatientInfoAsync(int patientId, CancellationToken token)
+        public async Task LoadPatientInfoAsync(int patientId)
         {
-            if (Interlocked.Exchange(ref patientIdBeingLoaded, patientId) == patientId)
-            {
-                return;
-            }
-            if (currentPerson != null && currentPerson.Id == patientId)
-            {
-                return;
-            }
             var dataSourcesLoaded = await EnsureDataSourceLoaded();
             if (!dataSourcesLoaded)
+            {
+                return;
+            }
+            await currentOperation.Task;
+            if (currentPerson != null && currentPerson.Id == patientId)
             {
                 return;
             }
             ClearData();
             if (patientId == SpecialValues.NewId || patientId == SpecialValues.NonExistingId)
             {
+                currentPerson = new Person { Id = SpecialValues.NewId, AmbNumberString = string.Empty };
+                ChangeTracker.IsEnabled = true;
                 return;
             }
-            if (token != CancellationToken.None)
-            {
-                if (currentOperationToken != null)
-                {
-                    currentOperationToken.Cancel();
-                    currentOperationToken.Dispose();
-                }
-                currentOperationToken = new CancellationTokenSource();
-                token = currentOperationToken.Token;
-            }
-            var loadingIsCompleted = false;
-            BusyMediator.Activate("Загрузка данных пациента...");
-            log.InfoFormat("Loading patient info for patient with Id {0}...", patientId);
+            currentOperation = new TaskCompletionSource<object>();
             IDisposableQueryable<Person> patientQuery = null;
             try
             {
+                BusyMediator.Activate(string.Format("Загрузка данных {0}...", IsRelative ? "родственника" : "пациента"));
+                log.InfoFormat("Loading common info for {0} with Id {1}...", IsRelative ? "relative" : "patient", patientId);
                 patientQuery = patientService.GetPatientQuery(patientId);
                 var result = await patientQuery.Select(x => new
                                                             {
@@ -746,12 +734,7 @@ namespace PatientInfoModule.ViewModels
                                                                 CurrentDisabilityDocuments = x.PersonDisabilities,
                                                                 CurrentSocialStatuses = x.PersonSocialStatuses
                                                             })
-                                               .FirstOrDefaultAsync(token);
-                if (result == null)
-                {
-                    FailureMediator.Activate("Указанный пациент по какой-то причине отсутствует в базе данных. Пожалуйста, обратитесь в службу поддержки");
-                    return;
-                }
+                                               .FirstOrDefaultAsync();
                 currentName = result.CurrentName;
                 currentPerson = result.CurrentPerson;
                 currentHealthGroup = result.CurrentHealthGroup;
@@ -779,7 +762,7 @@ namespace PatientInfoModule.ViewModels
                 EducationId = currentEducation == null ? SpecialValues.NonExistingId : currentEducation.EducationId;
                 MaritalStatusId = currentMaritalStatus == null ? SpecialValues.NonExistingId : currentMaritalStatus.MaritalStatusId;
 
-                loadingIsCompleted = true;
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -787,18 +770,16 @@ namespace PatientInfoModule.ViewModels
             }
             catch (Exception ex)
             {
-                log.ErrorFormatEx(ex, "Failed to load common patient info for patient with Id {0}", patientId);
-                FailureMediator.Activate("Не удалость загрузить данные пациента. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientDataCommandWrapper, ex);
-                loadingIsCompleted = true;
+                log.ErrorFormatEx(ex, "Failed to load common patient info for {0} with Id {1}", IsRelative ? "relative" : "patient", patientId);
+                FailureMediator.Activate(string.Format("Не удалость загрузить данные {0}. Попробуйте еще раз или обратитесь в службу поддержки", IsRelative ? "родственника" : "пациента"),
+                                         reloadPatientDataCommandWrapper,
+                                         ex);
+                throw;
             }
             finally
             {
-                CommandManager.InvalidateRequerySuggested();
-                if (loadingIsCompleted)
-                {
-                    ChangeTracker.IsEnabled = true;
-                    BusyMediator.Deactivate();
-                }
+                currentOperation.SetResult(null);
+                BusyMediator.Deactivate();
                 if (patientQuery != null)
                 {
                     patientQuery.Dispose();

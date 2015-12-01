@@ -8,11 +8,9 @@ using TwainDotNet.Wpf;
 using TwainDotNet.Win32;
 using System.Windows.Interop;
 using System.IO;
-using Core;
 using PatientInfoModule.ViewModels;
 using Core.Wpf.Mvvm;
 using System.Collections.ObjectModel;
-using System.Reflection;
 
 namespace PatientInfoModule.Views
 {

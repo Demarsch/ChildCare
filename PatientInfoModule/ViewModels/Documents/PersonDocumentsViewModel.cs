@@ -18,7 +18,6 @@ using Prism.Regions;
 using Prism.Interactivity.InteractionRequest;
 using PatientInfoModule.Views;
 using Core.Data;
-using System.Collections.Generic;
 using Core.Wpf.Services;
 
 namespace PatientInfoModule.ViewModels

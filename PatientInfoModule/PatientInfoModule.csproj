@@ -115,6 +115,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\PatientGenderToPhotoUriConverter.cs" />
     <Compile Include="Data\SavePatientInput.cs" />
     <Compile Include="Data\SavePatientOutput.cs" />
     <Compile Include="Misc\Common.cs" />

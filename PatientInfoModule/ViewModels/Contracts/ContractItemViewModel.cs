@@ -2,7 +2,6 @@
 using Core.Misc;
 using Core.Wpf.Misc;
 using PatientInfoModule.Services;
-using Prism.Mvvm;
 using System;
 using System.Drawing;
 using System.Windows;

@@ -5,18 +5,14 @@ using System.Windows.Media.Imaging;
 using log4net;
 using Prism.Mvvm;
 using PatientInfoModule.Services;
-using PatientInfoModule.ViewModels;
 using Core.Data;
 using Core.Wpf.Mvvm;
 using System.Windows;
-using System.Threading;
 using Prism.Commands;
 using System.Windows.Input;
 using Core.Data.Misc;
 using Core.Wpf.Misc;
 using Core.Extensions;
-using System.ComponentModel;
-using System.Collections.Generic;
 using Prism.Interactivity.InteractionRequest;
 using Core.Wpf.Services;
 

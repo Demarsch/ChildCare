@@ -11,7 +11,7 @@
              mc:Ignorable="d"
              d:DesignHeight="500"
              d:DesignWidth="1024"
-             d:DataContext="{d:DesignInstance viewModels:InfoContentViewModel}">
+             d:DataContext="{d:DesignInstance viewModels:PatientInfoViewModel}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -71,7 +71,7 @@
                     <Button Command="{Binding TakePhotoCommand}"
                             IsTabStop="False">
                         <StackPanel VerticalAlignment="Stretch">
-                            <Image Source="{Binding PhotoURI}"
+                            <Image Source="{Binding PhotoUri}"
                                    VerticalAlignment="Stretch"
                                    HorizontalAlignment="Center" />
                             <TextBlock VerticalAlignment="Bottom"
@@ -205,6 +205,18 @@
                             <behaviors:MedNumberInputHelperBehavior />
                         </i:Interaction.Behaviors>
                     </TextBox>
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Stretch"
+                                Visibility="{Binding IsRelative, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                        <TextBlock Text="Кем приходится пациенту"/>
+                        <ComboBox ItemsSource="{Binding Relationships}"
+                                  SelectedItem="{Binding SelectedRelationship, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                                  Width="100"
+                                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                                  Margin="3 3 23 3"/>
+                        <CheckBox Content="Является официальным представителем пациента"
+                                  IsChecked="{Binding IsRepresentative, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
                 </StackPanel>
                 <TextBlock Grid.Row="4"
                            Grid.Column="1"

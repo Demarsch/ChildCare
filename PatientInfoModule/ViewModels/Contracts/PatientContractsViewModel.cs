@@ -13,7 +13,6 @@ using log4net;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
-using Prism.Mvvm;
 using Prism.Regions;
 using System.Collections.Generic;
 using System.Drawing;
