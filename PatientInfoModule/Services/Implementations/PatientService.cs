@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Misc;
@@ -494,12 +493,6 @@ namespace PatientInfoModule.Services
             }
             var words = (filter.Contains(',') ? filter.Split(',')[0] : filter).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             return cacheService.GetItems<Person>().Where(x => words.All(y => x.FullName.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
-        }
-
-        public Person GetPersonById(int id)
-        {
-            var context = contextProvider.CreateNewContext();
-            return cacheService.GetItems<Person>().FirstOrDefault(x => x.Id == id);
         }
 
         public Org GetOrganization(int orgId)

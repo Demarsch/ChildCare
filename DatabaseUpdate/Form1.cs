@@ -180,8 +180,8 @@ namespace UpdateDB
 
         public bool SaveToTable(string tbl)
         {
-            //string filePath = textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx";
-            string filePath = "D:\\spr_mkb10.xlsx";
+            string filePath = textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx";
+            //string filePath = "D:\\spr_mkb10.xlsx";
             if (!System.IO.File.Exists(filePath)) return false;
 
             string fields = "";

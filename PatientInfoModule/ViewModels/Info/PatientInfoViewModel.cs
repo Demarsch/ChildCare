@@ -591,6 +591,11 @@ namespace PatientInfoModule.ViewModels
             {
                 log.InfoFormat("Saving data for patient with Id = {0}", currentPerson == null || currentPerson.Id == SpecialValues.NewId ? "(New patient)" : currentPerson.Id.ToString());
                 BusyMediator.Activate("Сохранение изменений...");
+                var personRelative = PersonRelative;
+                if (relativeToPerson != null && personRelative != null)
+                {
+                    personRelative.PersonId = relativeToPerson.Id;
+                }
                 //If validation was successfull then BirthDate.Value can't be null
                 var saveData = new SavePatientInput
                                {
@@ -642,7 +647,7 @@ namespace PatientInfoModule.ViewModels
                                    NewDisabilities = DisabilityDocuments.Model,
                                    CurrentSocialStatuses = currentSocialStatuses ?? new PersonSocialStatus[0],
                                    NewSocialStatuses = SocialStatuses.Model,
-                                   Relative = PersonRelative
+                                   Relative = personRelative
                                };
 
                 var result = await patientService.SavePatientAsync(saveData);
