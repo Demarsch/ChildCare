@@ -48,9 +48,9 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             return;
         }
 
-        public bool SaveProtocol(int recordId, int visitId)
+        public int SaveProtocol(int recordId, int visitId)
         {
-            return true;
+            return 0;
         }
 
         public void LoadProtocol(int assignmentId, int recordId, int visitId)

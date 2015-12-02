@@ -16,7 +16,7 @@ namespace PatientRecordsModule.Misc
 
         void LoadProtocol(int assignmentId, int recordId, int visitId);
 
-        bool SaveProtocol(int recordId, int visitId);
+        int SaveProtocol(int recordId, int visitId);
 
         void PrintProtocol();
 

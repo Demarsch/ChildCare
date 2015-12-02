@@ -8,7 +8,7 @@
              xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels"
              xmlns:views="clr-namespace:PatientRecordsModule.Views"
              mc:Ignorable="d"
-             d:DesignHeight="200" d:DesignWidth="500" Height="Auto">
+             d:DesignHeight="200" d:DesignWidth="600" Height="Auto">
     <UserControl.Resources>
         <DataTemplate x:Key="BrigadeItemTemplate">
             <StackPanel>
@@ -77,63 +77,55 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Случай:" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Случай:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name"  
+                      SelectedValuePath="Id" DisplayMemberPath="Name" MaxHeight="28" Height="28" Margin="2"
                       ItemsSource="{Binding ParentVisits}" 
                       SelectedValue="{Binding ParentVisitId}"/>
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Кабинет:" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
-            <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name"  
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Кабинет:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                      SelectedValuePath="Id" DisplayMemberPath="Name" MaxHeight="28" Height="28" Margin="2"
                       ItemsSource="{Binding Rooms}" 
                       SelectedValue="{Binding RoomId}"/>
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Период оказания" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch"
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Период оказания" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" MaxHeight="28" Margin="2,0"
                       SelectedValuePath="Id" DisplayMemberPath="Name"  
                       ItemsSource="{Binding RecordPeriods}" 
                       SelectedValue="{Binding SelectedPeriodId}"/>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Форма оказания" VerticalAlignment="Center" Margin="2" HorizontalAlignment="Left"/>
-            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch"
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Форма оказания" FontWeight="Medium" VerticalAlignment="Center" Margin="2" HorizontalAlignment="Stretch"/>
+            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" MaxHeight="28" Margin="2,0"
                       SelectedValuePath="Id" DisplayMemberPath="Name" 
                       ItemsSource="{Binding Urgentlies}" 
                       SelectedValue="{Binding SelectedUrgentlyId}"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="2" Text="Время начала услуги" VerticalAlignment="Center" Margin="2,4,2,3"/>
-            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3"  
-                                    Value="{Binding BeginDateTime}" 
-                                    Watermark="Дата/время начала" Height="23" Width="190"/>
-            <StackPanel Grid.Row="5" Grid.Column="4" Orientation="Horizontal">
-                <TextBlock VerticalAlignment="Top" Margin="5,0">
+            <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Vertical">
+                <TextBlock Text="Время начала услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
+                <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
                     <Hyperlink Command="{Binding SetCurrentDateTimeBeginCommand}">Текущее время</Hyperlink>
                 </TextBlock>
             </StackPanel>
-        </Grid>
+            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3" FontSize="18" MaxHeight="28"
+                                    Value="{Binding BeginDateTime}" Margin="0,2"
+                                    Watermark="Дата/время начала"/>
 
-        <ContentControl Grid.Row="1" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-
-        <views:RecordDocumentsView Grid.Row="2" DataContext="{Binding DocumentsViewer}" Margin="2"/>
-
-        <Grid Grid.Row="3" Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Время окончания услуги" VerticalAlignment="Center" Margin="2"/>
-            <toolkit:DateTimePicker Grid.Row="0" Grid.Column="1"  Value="{Binding EndDateTime}" 
-                                    HorizontalAlignment="Left" Watermark="Дата/время окончания" Height="23" Width="190"/>
-            <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2">
+            <StackPanel Grid.Row="5" Grid.Column="2" Orientation="Vertical">
+                <TextBlock Text="Время окончания услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
+                <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
                     <Hyperlink Command="{Binding SetCurrentDateTimeEndCommand}">Текущее время</Hyperlink>
                 </TextBlock>
             </StackPanel>
+            <toolkit:DateTimePicker Grid.Row="5" Grid.Column="3" FontSize="18" MaxHeight="28"
+                                    Value="{Binding EndDateTime}"  Margin="0,2"
+                                    Watermark="Дата/время конца"/>
         </Grid>
+
+        <ContentControl Grid.Row="1" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+       
+        <views:RecordDocumentsView Grid.Row="2" DataContext="{Binding DocumentsViewer}" Margin="2"/>
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="4"/>
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="4"/>
+        
     </Grid>
 </UserControl>

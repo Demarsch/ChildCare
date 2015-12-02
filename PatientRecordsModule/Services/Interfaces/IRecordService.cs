@@ -16,5 +16,7 @@ namespace PatientRecordsModule.Services
         bool SaveRecordDocument(RecordDocument recordDocument, out string message);
         void UpdateMKBRecord(int recordId, string mkb);
         bool DeleteRecordDocument(int documentId, out string message);
+
+        int SaveDefaultProtocol(DefaultProtocol defaultProtocol);
     }
 }

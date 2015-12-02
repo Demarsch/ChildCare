@@ -100,5 +100,20 @@ namespace PatientRecordsModule.Services
             exception = "Ошибка удаления.";
             return false;
         }
+
+
+        public int SaveDefaultProtocol(DefaultProtocol defaultProtocol)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var saveProtocol = defaultProtocol.Id == SpecialValues.NewId ? new DefaultProtocol() : context.Set<DefaultProtocol>().First(x => x.Id == defaultProtocol.Id);
+                saveProtocol.RecordId = defaultProtocol.RecordId;
+                saveProtocol.Description = defaultProtocol.Description;
+                saveProtocol.Conclusion = defaultProtocol.Conclusion;
+                context.Entry(saveProtocol).State = saveProtocol.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                context.SaveChanges();
+                return saveProtocol.Id;
+            }
+        }
     }
 }

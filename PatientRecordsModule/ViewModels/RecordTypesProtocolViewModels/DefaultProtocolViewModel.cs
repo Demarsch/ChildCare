@@ -1,4 +1,5 @@
-﻿using Core.Data.Misc;
+﻿using Core.Data;
+using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
@@ -19,7 +20,7 @@ using System.Windows.Input;
 
 namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 {
-    public class DefaultProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator
+    public class DefaultProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator, IDataErrorInfo
     {
         private readonly IDiagnosService diagnosService;
         private readonly IRecordService recordService;
@@ -74,11 +75,11 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 
         #region Properties
 
-        private string discription;
-        public string Discription
+        private string description;
+        public string Description
         {
-            get { return discription; }
-            set { SetTrackedProperty(ref discription, value); }
+            get { return description; }
+            set { SetTrackedProperty(ref description, value); }
         }
 
         private string result;
@@ -124,17 +125,26 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             int i = 0;
         }
 
-        public bool SaveProtocol(int recordId, int visitId)
+        public int SaveProtocol(int recordId, int visitId)
         {
-            bool saveIsSuccessful = DiagnosesEditor.Save(recordId);
+            if (recordId == SpecialValues.NewId || !IsValid) 
+                return SpecialValues.NonExistingId;
 
-            if (saveIsSuccessful)
+            var defaultProtocol = recordService.GetRecordById(recordId).First().DefaultProtocols.FirstOrDefault();
+            if (defaultProtocol == null)
+                defaultProtocol = new DefaultProtocol() { RecordId = recordId };
+
+            defaultProtocol.Description = Description;
+            defaultProtocol.Conclusion = Result;
+            int saveProtocolId = recordService.SaveDefaultProtocol(defaultProtocol);
+            
+            if (!SpecialValues.IsNewOrNonExisting(saveProtocolId) && DiagnosesEditor.Save(recordId))
             {
                 ChangeTracker.AcceptChanges();
                 ChangeTracker.IsEnabled = true;
+                return saveProtocolId;
             }
-            
-            return saveIsSuccessful;
+            return SpecialValues.NonExistingId;
         }
 
         public void LoadProtocol(int assignmentId, int recordId, int visitId)
@@ -158,23 +168,81 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 
         private void LoadVisitData(int visitId)
         {
-            Discription = string.Empty;
-            Result = string.Empty;
+            ClearProtocolData();
             return;
         }
 
         private void LoadRecordData(int recordId)
         {
-            Discription = string.Empty;
-            Result = string.Empty;
+            var protocol = recordService.GetRecordById(recordId).First().DefaultProtocols.FirstOrDefault();
+            if (protocol != null)
+            {
+                Description = protocol.Description;
+                Result = protocol.Conclusion;
+            }
+            else
+                ClearProtocolData();
             return;
         }
 
         private void LoadAssignmentData(int assignmentId)
         {
-            Discription = string.Empty;
-            Result = string.Empty;
+            ClearProtocolData();
             return;
+        }
+
+        private void ClearProtocolData()
+        {
+            Description = string.Empty;
+            Result = string.Empty;
+        }
+
+        #endregion
+
+        #region Implement IDataError
+
+        private bool saveWasRequested;
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+        private bool IsValid
+        {
+            get
+            {
+                saveWasRequested = true;
+                OnPropertyChanged(string.Empty);
+                return invalidProperties.Count < 1;
+            }
+        }
+
+        string IDataErrorInfo.this[string columnName]
+        {
+            get
+            {
+                if (!saveWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                switch (columnName)
+                {
+                    case "Description":
+                        result = string.IsNullOrEmpty(Description.Trim()) ? "Не заполнено поле 'Описание'" : string.Empty;
+                        break;
+                    case "Result":
+                        result = string.IsNullOrEmpty(Result.Trim()) ? "Не заполнено поле 'Заключение'" : string.Empty;
+                        break;
+                }
+                if (string.IsNullOrEmpty(result))
+                    invalidProperties.Remove(columnName);
+                else
+                    invalidProperties.Add(columnName);
+                return result;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
         }
 
         #endregion

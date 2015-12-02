@@ -354,10 +354,10 @@ namespace PatientRecordsModule.ViewModels
         #endregion
         
         internal bool Save(int recordId)
-        {
-            string exception = string.Empty;
+        {            
             if (Diagnoses.Any() && IsDiagnosValid())
             {
+                string exception = string.Empty;
                 var record = recordService.GetRecordById(recordId).First();
                 int personDiagnosId = diagnosService.Save(record.PersonId, recordId, diagnosTypeId, 
                                                 Diagnoses.Select(x => new Diagnosis() 
@@ -376,7 +376,7 @@ namespace PatientRecordsModule.ViewModels
                 {
                     var personDiagnos = diagnosService.GetPersonDiagnosById(personDiagnosId).First();
                     if (personDiagnos.Diagnoses.Any(x => x.IsMainDiagnos))
-                    { 
+                    {
                         string mkbCode = personDiagnos.Diagnoses.First(x => x.IsMainDiagnos).MKB;
                         recordService.UpdateMKBRecord(recordId, mkbCode);
                     }
@@ -384,14 +384,19 @@ namespace PatientRecordsModule.ViewModels
                     ChangeTracker.IsEnabled = true;
                     return true;
                 }
+                else
+                {
+                    messageService.ShowError(exception);
+                    return false;
+                }
             }
 
-            if (validationErrors == string.Empty)
-                return true;
-            
-            exception = validationErrors;
-            messageService.ShowError(exception);
-            return false;
+            if (validationErrors != string.Empty)
+            {
+                messageService.ShowError(validationErrors);
+                return false;
+            }
+            return true;
         }
 
         private string validationErrors = string.Empty;

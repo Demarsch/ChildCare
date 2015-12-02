@@ -30,7 +30,7 @@
                         <TextBlock Text="{Binding RoomName}"/>
                     </TextBlock.ToolTip>
                 </TextBlock>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FinSource}" Margin="0,0,0,2" Padding="0" FontSize="11" HorizontalAlignment="Left" VerticalAlignment="Center"/>               
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FinSource}" FontWeight="SemiBold" Margin="0,0,5,2" Padding="0" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Center"/>               
             </Grid>
         </Border>        
     </HierarchicalDataTemplate>

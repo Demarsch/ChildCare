@@ -725,7 +725,10 @@ namespace PatientRecordsModule.ViewModels
             {
                 var brigade = Brigade.Where(x => x.IsPersonMember).Select(x => x.GetRecordMember()).ToList();
                 RecordId = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime.Value, brigade, token);
-                saveSuccesfull = true;
+                int protocolId = SpecialValues.NonExistingId;
+                if (ProtocolEditor != null)
+                    protocolId = ProtocolEditor.SaveProtocol(RecordId, VisitId);
+                saveSuccesfull = !SpecialValues.IsNewOrNonExisting(protocolId);
             }
             catch (OperationCanceledException)
             {
@@ -734,7 +737,7 @@ namespace PatientRecordsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to save data while closing visit for visit with Id = {0}", recordIdString);
-                FailureMediator.Activate("Не удалось сохранить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex, true);
+                FailureMediator.Activate("Не удалось сохранить данные. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex, true);
             }
             finally
             {
@@ -747,8 +750,7 @@ namespace PatientRecordsModule.ViewModels
                 }
             }
 
-            if (ProtocolEditor != null)
-                ProtocolEditor.SaveProtocol(RecordId, VisitId);
+            
         }
 
         private void UnsubscriveFromEvents()
