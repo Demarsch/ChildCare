@@ -16,6 +16,7 @@ namespace PatientRecordsModule.ViewModels
 
         public MKBViewModel(IDiagnosService diagnosService, MKB[] childs, string searchMKB, bool needExpand)
         {
+            if (!childs.Any()) return;
             if (diagnosService == null)
             {
                 throw new ArgumentNullException("diagnosService");
@@ -25,8 +26,9 @@ namespace PatientRecordsModule.ViewModels
             if (!string.IsNullOrEmpty(searchMKB))
                 childs = childs.Where(x => x.Name.IndexOf(searchMKB, StringComparison.InvariantCultureIgnoreCase) > -1 ||
                                            x.Code.IndexOf(searchMKB, StringComparison.InvariantCultureIgnoreCase) > -1).ToArray();
+            
             Children = new ObservableCollectionEx<MKBViewModel>
-                        (childs.Select(x => new MKBViewModel(diagnosService, x.MKB1.ToArray(), searchMKB, needExpand)
+                        (childs.Select(x => new MKBViewModel(diagnosService, new MKB[0], searchMKB, needExpand)
                            {
                                Id = x.Id,
                                Name = x.Name,

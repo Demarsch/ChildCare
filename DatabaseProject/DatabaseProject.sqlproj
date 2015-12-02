@@ -145,5 +145,6 @@
     <Build Include="dbo\Tables\Diagnoses.sql" />
     <Build Include="dbo\Tables\Complications.sql" />
     <Build Include="dbo\Tables\DefaultProtocols.sql" />
+    <Build Include="dbo\Tables\MKBGroups.sql" />
   </ItemGroup>
 </Project>

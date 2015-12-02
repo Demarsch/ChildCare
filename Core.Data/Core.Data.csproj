@@ -135,6 +135,9 @@
     <Compile Include="MKB.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="MKBGroup.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

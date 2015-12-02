@@ -16,17 +16,19 @@ namespace PatientRecordsModule.Services
         IDisposableQueryable<DiagnosType> GetDiagnosTypeById(int id);
         IDisposableQueryable<DiagnosType> GetDiagnosTypeByOption(string option);
         IDisposableQueryable<Diagnosis> GetDiagnosById(int id);
+        IDisposableQueryable<PersonDiagnos> GetPersonDiagnosById(int id);
         IDisposableQueryable<Complication> GetRootComplications();
-        IDisposableQueryable<MKB> GetRootMKB();
-        IDisposableQueryable<MKB> GetMKBById(int id);
-        IDisposableQueryable<MKB> GetMKBById(int[] ids);
+        IDisposableQueryable<MKB> GetRootMKB();        
         IDisposableQueryable<MKB> GetMKBChildren(int parentId);
-        IDisposableQueryable<MKB> GetMKBParent(int childId);
+        IDisposableQueryable<MKB> GetMKBById(int[] ids);
+        MKB GetMKBById(int id);        
+        MKB GetMKBByCode(string code);
 
         bool DeleteDiagnos(int diagnosId, out string exception);
         bool DeletePersonDiagnos(int personDiagnosId, out string exception);
 
-        bool Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnosis, out string exception);
+        int Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnosis, out string exception);
+        
     }
 }
 

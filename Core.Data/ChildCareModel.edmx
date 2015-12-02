@@ -385,9 +385,20 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GroupId" Type="int" />
+          <Property Name="ParentId" Type="int" />
           <Property Name="Code" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MKBGroups">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentId" Type="int" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="MKBmin" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="MKBmax" Type="varchar" MaxLength="5" Nullable="false" />
         </EntityType>
         <EntityType Name="Okatos">
           <Key>
@@ -1517,6 +1528,30 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="MKB1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKB_MKBGroups">
+          <End Role="MKBGroups" Type="Self.MKBGroups" Multiplicity="0..1" />
+          <End Role="MKB" Type="Self.MKB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKBGroups">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKB">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKBGroups_MKBGroups">
+          <End Role="MKBGroups" Type="Self.MKBGroups" Multiplicity="0..1" />
+          <End Role="MKBGroups1" Type="Self.MKBGroups" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKBGroups">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKBGroups1">
               <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
@@ -2706,6 +2741,7 @@
           <EntitySet Name="MaritalStatuses" EntityType="Self.MaritalStatuses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MedicalHelpTypes" EntityType="Self.MedicalHelpTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MKB" EntityType="Self.MKB" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MKBGroups" EntityType="Self.MKBGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Okatos" EntityType="Self.Okatos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orgs" EntityType="Self.Orgs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OuterDocumentTypes" EntityType="Self.OuterDocumentTypes" Schema="dbo" store:Type="Tables" />
@@ -2933,6 +2969,14 @@
           <AssociationSet Name="FK_MKB_MKB" Association="Self.FK_MKB_MKB">
             <End Role="MKB" EntitySet="MKB" />
             <End Role="MKB1" EntitySet="MKB" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKB_MKBGroups" Association="Self.FK_MKB_MKBGroups">
+            <End Role="MKBGroups" EntitySet="MKBGroups" />
+            <End Role="MKB" EntitySet="MKB" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKBGroups_MKBGroups" Association="Self.FK_MKBGroups_MKBGroups">
+            <End Role="MKBGroups" EntitySet="MKBGroups" />
+            <End Role="MKBGroups1" EntitySet="MKBGroups" />
           </AssociationSet>
           <AssociationSet Name="FK_OuterDocumentTypes_OuterDocumentTypes" Association="Self.FK_OuterDocumentTypes_OuterDocumentTypes">
             <End Role="OuterDocumentTypes" EntitySet="OuterDocumentTypes" />
@@ -3848,11 +3892,6 @@
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
           </AssociationSet>
-          <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
-          <AssociationSet Name="FK_MKB_MKB" Association="DataLib.FK_MKB_MKB">
-            <End Role="MKB" EntitySet="MKBs" />
-            <End Role="MKB1" EntitySet="MKBs" />
-          </AssociationSet>
           <EntitySet Name="RecordMembers" EntityType="DataLib.RecordMember" />
           <AssociationSet Name="FK_RecordMembers_PersonStaffs" Association="DataLib.FK_RecordMembers_PersonStaffs">
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
@@ -3956,9 +3995,23 @@
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
           </AssociationSet>
           <EntitySet Name="DefaultProtocols" EntityType="DataLib.DefaultProtocol" />
+          <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
+          <EntitySet Name="MKBGroups" EntityType="DataLib.MKBGroup" />
           <AssociationSet Name="FK_DefaultProtocols_Records" Association="DataLib.FK_DefaultProtocols_Records">
             <End Role="Record" EntitySet="Records" />
             <End Role="DefaultProtocol" EntitySet="DefaultProtocols" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKB_MKB" Association="DataLib.FK_MKB_MKB">
+            <End Role="MKB" EntitySet="MKBs" />
+            <End Role="MKB1" EntitySet="MKBs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKB_MKBGroups" Association="DataLib.FK_MKB_MKBGroups">
+            <End Role="MKBGroup" EntitySet="MKBGroups" />
+            <End Role="MKB" EntitySet="MKBs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKBGroups_MKBGroups" Association="DataLib.FK_MKBGroups_MKBGroups">
+            <End Role="MKBGroup" EntitySet="MKBGroups" />
+            <End Role="MKBGroup1" EntitySet="MKBGroups" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -6460,29 +6513,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="MKB">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Code" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="MKB1" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB" ToRole="MKB1" />
-          <NavigationProperty Name="MKB2" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB1" ToRole="MKB" />
-        </EntityType>
-        <Association Name="FK_MKB_MKB">
-          <End Type="DataLib.MKB" Role="MKB" Multiplicity="0..1" />
-          <End Type="DataLib.MKB" Role="MKB1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MKB">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="MKB1">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="RecordMember">
           <Key>
             <PropertyRef Name="Id" />
@@ -6895,6 +6925,32 @@
           <Property Name="Conclusion" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Record" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="DefaultProtocol" ToRole="Record" />
         </EntityType>
+        <EntityType Name="MKB">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GroupId" Type="Int32" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="MKB1" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB" ToRole="MKB1" />
+          <NavigationProperty Name="MKB2" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB1" ToRole="MKB" />
+          <NavigationProperty Name="MKBGroup" Relationship="DataLib.FK_MKB_MKBGroups" FromRole="MKB" ToRole="MKBGroup" />
+        </EntityType>
+        <EntityType Name="MKBGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="MKBmin" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="MKBmax" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="MKBs" Relationship="DataLib.FK_MKB_MKBGroups" FromRole="MKBGroup" ToRole="MKB" />
+          <NavigationProperty Name="MKBGroups1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup" ToRole="MKBGroup1" />
+          <NavigationProperty Name="MKBGroup1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup1" ToRole="MKBGroup" />
+        </EntityType>
         <Association Name="FK_DefaultProtocols_Records">
           <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
           <End Type="DataLib.DefaultProtocol" Role="DefaultProtocol" Multiplicity="*" />
@@ -6904,6 +6960,42 @@
             </Principal>
             <Dependent Role="DefaultProtocol">
               <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKB_MKB">
+          <End Type="DataLib.MKB" Role="MKB" Multiplicity="0..1" />
+          <End Type="DataLib.MKB" Role="MKB1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKB">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKB1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKB_MKBGroups">
+          <End Type="DataLib.MKBGroup" Role="MKBGroup" Multiplicity="0..1" />
+          <End Type="DataLib.MKB" Role="MKB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKBGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKB">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKBGroups_MKBGroups">
+          <End Type="DataLib.MKBGroup" Role="MKBGroup" Multiplicity="0..1" />
+          <End Type="DataLib.MKBGroup" Role="MKBGroup1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKBGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKBGroup1">
+              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7855,16 +7947,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="MKBs">
-            <EntityTypeMapping TypeName="DataLib.MKB">
-              <MappingFragment StoreEntitySet="MKB">
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Code" ColumnName="Code" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordMembers">
             <EntityTypeMapping TypeName="DataLib.RecordMember">
               <MappingFragment StoreEntitySet="RecordMembers">
@@ -7961,6 +8043,28 @@
                 <ScalarProperty Name="Conclusion" ColumnName="Conclusion" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MKBs">
+            <EntityTypeMapping TypeName="DataLib.MKB">
+              <MappingFragment StoreEntitySet="MKB">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MKBGroups">
+            <EntityTypeMapping TypeName="DataLib.MKBGroup">
+              <MappingFragment StoreEntitySet="MKBGroups">
+                <ScalarProperty Name="MKBmax" ColumnName="MKBmax" />
+                <ScalarProperty Name="MKBmin" ColumnName="MKBmin" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

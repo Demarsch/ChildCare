@@ -191,8 +191,6 @@
         <AssociationConnector Association="DataLib.FK_Diagnoses_PersonDiagnoses" />
         <AssociationConnector Association="DataLib.FK_Diagnoses_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Persons" />
-        <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="0.75" PointY="4.75" />
-        <AssociationConnector Association="DataLib.FK_MKB_MKB" />
         <EntityTypeShape EntityType="DataLib.RecordMember" Width="1.5" PointX="22.5" PointY="59.25" />
         <AssociationConnector Association="DataLib.FK_RecordMembers_PersonStaffs" />
         <AssociationConnector Association="DataLib.FK_RecordMembers_RecordTypeRolePermissions" />
@@ -224,7 +222,12 @@
         <AssociationConnector Association="DataLib.FK_Visits_Urgentlies" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces1" />
         <EntityTypeShape EntityType="DataLib.DefaultProtocol" Width="1.5" PointX="10.5" PointY="69.125" />
+        <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="9.625" PointY="9" />
+        <EntityTypeShape EntityType="DataLib.MKBGroup" Width="1.5" PointX="7.375" PointY="9" />
         <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
+        <AssociationConnector Association="DataLib.FK_MKB_MKB" />
+        <AssociationConnector Association="DataLib.FK_MKB_MKBGroups" />
+        <AssociationConnector Association="DataLib.FK_MKBGroups_MKBGroups" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

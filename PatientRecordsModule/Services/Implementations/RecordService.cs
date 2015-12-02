@@ -43,6 +43,18 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Id == id), context);
         }
 
+        public void UpdateMKBRecord(int recordId, string mkb)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var record = context.Set<Record>().FirstOrDefault(x => x.Id == recordId);
+                if (record == null) return;
+                record.MKB = mkb;
+                record.Visit.MKB = mkb;
+                context.SaveChanges();
+            }
+        }
+
         public bool SaveRecordDocument(RecordDocument recordDocument, out string exception)
         {
             using (var context = contextProvider.CreateNewContext())

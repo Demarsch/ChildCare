@@ -109,14 +109,14 @@
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Вид" Width="SizeToCells" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Вид" Width="Auto"  IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding LevelName}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="МКБ" Width="SizeToCells">
+                <DataGridTemplateColumn Header="МКБ" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Text="{Binding MKB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 

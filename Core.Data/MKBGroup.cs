@@ -12,23 +12,25 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class MKB
+    public partial class MKBGroup
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public MKB()
+        public MKBGroup()
         {
-            this.MKB1 = new HashSet<MKB>();
+            this.MKBs = new HashSet<MKB>();
+            this.MKBGroups1 = new HashSet<MKBGroup>();
         }
     
         public int Id { get; set; }
-        public Nullable<int> GroupId { get; set; }
         public Nullable<int> ParentId { get; set; }
-        public string Code { get; set; }
         public string Name { get; set; }
+        public string MKBmin { get; set; }
+        public string MKBmax { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MKB> MKB1 { get; set; }
-        public virtual MKB MKB2 { get; set; }
-        public virtual MKBGroup MKBGroup { get; set; }
+        public virtual ICollection<MKB> MKBs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MKBGroup> MKBGroups1 { get; set; }
+        public virtual MKBGroup MKBGroup1 { get; set; }
     }
 }

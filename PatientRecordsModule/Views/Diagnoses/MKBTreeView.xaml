@@ -7,16 +7,21 @@
              xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels">
     
     <DataTemplate DataType="{x:Type viewModels:MKBTreeViewModel}">
-        <DockPanel LastChildFill="True" MinHeight="500" MaxHeight="500" MinWidth="600" MaxWidth="600"
+        <Grid MinHeight="550" MaxHeight="550" MinWidth="650" MaxWidth="650"
                    ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <xctk:WatermarkTextBox DockPanel.Dock="Top" MinHeight="23" Margin="5" 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <xctk:WatermarkTextBox Grid.Row="0" MinHeight="23" Margin="5" 
                                Text="{Binding SearchMKB, UpdateSourceTrigger=PropertyChanged}">
                 <xctk:WatermarkTextBox.Watermark>
                     <TextBlock Text="Начните вводить название группы или код МКБ" Style="{x:Null}" />
                 </xctk:WatermarkTextBox.Watermark>
             </xctk:WatermarkTextBox>
 
-            <TreeView x:Name="MKBTree" ItemsSource="{Binding MKBTree, Mode=TwoWay}">
+            <TreeView x:Name="MKBTree" Grid.Row="1" ItemsSource="{Binding MKBTree, Mode=TwoWay}">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -40,7 +45,7 @@
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
-
-        </DockPanel>
+            <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="4"/>
+        </Grid>
     </DataTemplate>
 </ResourceDictionary>

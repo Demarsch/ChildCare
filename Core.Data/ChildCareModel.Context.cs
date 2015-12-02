@@ -97,7 +97,6 @@ namespace Core.Data
         public virtual DbSet<Diagnosis> Diagnoses { get; set; }
         public virtual DbSet<DiagnosLevel> DiagnosLevels { get; set; }
         public virtual DbSet<PersonDiagnos> PersonDiagnoses { get; set; }
-        public virtual DbSet<MKB> MKBs { get; set; }
         public virtual DbSet<RecordMember> RecordMembers { get; set; }
         public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
@@ -105,5 +104,7 @@ namespace Core.Data
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DefaultProtocol> DefaultProtocols { get; set; }
+        public virtual DbSet<MKB> MKBs { get; set; }
+        public virtual DbSet<MKBGroup> MKBGroups { get; set; }
     }
 }

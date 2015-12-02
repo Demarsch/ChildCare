@@ -14,6 +14,7 @@ namespace PatientRecordsModule.Services
         IDisposableQueryable<RecordType> GetRecordTypeById(int id);
 
         bool SaveRecordDocument(RecordDocument recordDocument, out string message);
+        void UpdateMKBRecord(int recordId, string mkb);
         bool DeleteRecordDocument(int documentId, out string message);
     }
 }

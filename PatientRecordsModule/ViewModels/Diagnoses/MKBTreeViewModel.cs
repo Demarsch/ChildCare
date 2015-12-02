@@ -20,6 +20,7 @@ namespace PatientRecordsModule.ViewModels
     {
         private readonly IDiagnosService diagnosService;
         private readonly ICacheService cacheService;
+        public BusyMediator BusyMediator { get; set; }
 
         public MKBTreeViewModel(IDiagnosService diagnosService, ICacheService cacheService)
         {
@@ -33,9 +34,11 @@ namespace PatientRecordsModule.ViewModels
             }
             this.diagnosService = diagnosService;
             this.cacheService = cacheService;
+            BusyMediator = new BusyMediator();
+
             CloseCommand = new DelegateCommand<bool?>(Close);
 
-            MKBTree = new ObservableCollectionEx<MKBViewModel>();
+            MKBTree = new ObservableCollectionEx<MKBViewModel>();                  
         }
 
         private MKB[] mkbRoots;
@@ -49,14 +52,19 @@ namespace PatientRecordsModule.ViewModels
 
         private void LoadMKBTree(MKB[] nodes, bool needExpand)
         {
+            BusyMediator.Activate("Загрузка справочника МКБ-10...");
             MKBTree.Clear();
-            MKBTree.AddRange(nodes.Where(x => !x.ParentId.HasValue).Select(x => new MKBViewModel(diagnosService, x.MKB1.ToArray(), searchMKB, needExpand)
+            
+            var roots = nodes.Select(x => new MKBViewModel(diagnosService, x.MKB1.ToArray(), searchMKB, needExpand)
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Code = x.Code,
                     ParentId = x.ParentId
-                }));
+                });
+            MKBTree.AddRange(roots);
+
+            BusyMediator.Deactivate();
         }
 
         #region Properties

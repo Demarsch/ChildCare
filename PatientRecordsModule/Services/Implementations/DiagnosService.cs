@@ -62,6 +62,12 @@ namespace PatientRecordsModule.Services
             return new DisposableQueryable<Diagnosis>(context.Set<Diagnosis>().AsNoTracking().Where(x => x.Id == id), context);
         }
 
+        public IDisposableQueryable<PersonDiagnos> GetPersonDiagnosById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<PersonDiagnos>(context.Set<PersonDiagnos>().Where(x => x.Id == id), context);
+        }
+
         public IDisposableQueryable<Diagnosis> GetRecordDiagnos(int recordId, int? diagnosTypeId = null)
         {
             var context = contextProvider.CreateNewContext();
@@ -88,17 +94,17 @@ namespace PatientRecordsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => x.ParentId == parentId), context);
         }
-
-        public IDisposableQueryable<MKB> GetMKBParent(int childId)
+       
+        public MKB GetMKBById(int id)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => x.Id == childId).Select(x => x.MKB2), context);
+            return context.Set<MKB>().FirstOrDefault(x => x.Id == id);
         }
 
-        public IDisposableQueryable<MKB> GetMKBById(int id)
+        public MKB GetMKBByCode(string code)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<MKB>(context.Set<MKB>().Where(x => x.Id == id), context);
+            return context.Set<MKB>().FirstOrDefault(x => x.Code.ToUpper().Trim() == code.ToUpper().Trim());
         }
 
         public IDisposableQueryable<MKB> GetMKBById(int[] ids)
@@ -165,7 +171,7 @@ namespace PatientRecordsModule.Services
         }
 
 
-        public bool Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnoses, out string exception)
+        public int Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnoses, out string exception)
         {
             using (var context = contextProvider.CreateNewContext())
             {
@@ -180,8 +186,7 @@ namespace PatientRecordsModule.Services
                 personDiagnos.PersonId = personId;
                 personDiagnos.RecordId = recordId;
                 personDiagnos.DiagnosTypeId = diagnosTypeId;
-
-
+                
                 var old = personDiagnos.Diagnoses.ToDictionary(x => x.Id);
                 var @new = diagnoses.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
                 var added = diagnoses.Where(x => x.Id == SpecialValues.NewId).ToArray();
@@ -208,12 +213,12 @@ namespace PatientRecordsModule.Services
                 {
                     context.SaveChanges();
                     exception = string.Empty;
-                    return true;
+                    return personDiagnos.Id;
                 }
                 catch (Exception ex)
                 {
                     exception = ex.Message;
-                    return false;
+                    return SpecialValues.NewId;
                 }
             }
         }

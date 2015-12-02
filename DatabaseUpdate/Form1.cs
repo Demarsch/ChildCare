@@ -180,7 +180,9 @@ namespace UpdateDB
 
         public bool SaveToTable(string tbl)
         {
-            if (!System.IO.File.Exists(textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx")) return false;
+            //string filePath = textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx";
+            string filePath = "D:\\spr_mkb10.xlsx";
+            if (!System.IO.File.Exists(filePath)) return false;
 
             string fields = "";
             string targetfields = "";
@@ -192,7 +194,7 @@ namespace UpdateDB
             List<string> values = new List<string>();
             try
             {
-                var workbook = new XLWorkbook(textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx");
+                var workbook = new XLWorkbook(filePath);
                 var sheet = workbook.Worksheets.First();
                 var cols = sheet.ColumnsUsed().Count();
                 var rows = sheet.RowsUsed().Count();

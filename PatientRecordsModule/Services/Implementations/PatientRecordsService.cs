@@ -337,7 +337,7 @@ namespace PatientRecordsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Room>(context.Set<Room>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
-        }
+        }        
 
         public async Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime endDateTime,
             List<RecordMember> brigade, CancellationToken token)
