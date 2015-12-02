@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Core.Misc
 {
@@ -17,6 +18,24 @@ namespace Core.Misc
         {
             AssociatedItem = associatedItem;
             AssociatedItem.PropertyChanged += ParentViewModelOnPropertyChanged;
+        }
+
+        protected bool PropertyNameEquals<TProperty>(string propertyName, Expression<Func<TItem, TProperty>> propertyExpression)
+        {
+            return string.CompareOrdinal(propertyName, GetPropertyName(propertyExpression)) == 0;
+        }
+
+        private string GetPropertyName<TProperty>(Expression<Func<TItem, TProperty>> propertyExpression)
+        {
+            return ((MemberExpression)propertyExpression.Body).Member.Name;
+        }
+
+        protected void SetError<TProperty>(Expression<Func<TItem, TProperty>> propertyExpression, string error)
+        {
+            if (!string.IsNullOrEmpty(error) || ValidationIsActive)
+            {
+                Errors[GetPropertyName(propertyExpression)] = error;
+            }
         }
 
         private void ParentViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)

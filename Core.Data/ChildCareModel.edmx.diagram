@@ -54,7 +54,6 @@
         <EntityTypeShape EntityType="DataLib.RecordContractLimit" Width="1.5" PointX="15.75" PointY="51.875" />
         <EntityTypeShape EntityType="DataLib.RecordContract" Width="1.5" PointX="13.5" PointY="50.5" />
         <EntityTypeShape EntityType="DataLib.RecordTypeRole" Width="1.5" PointX="13.5" PointY="81.75" />
-        <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="9" PointY="39.875" />
         <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="18" PointY="70" />
         <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="20.25" PointY="65.75" />
@@ -137,7 +136,6 @@
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonRelatives_Persons1" />
-        <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
         <AssociationConnector Association="DataLib.FK_PersonSocialStatuses_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonTalons_Persons" />
@@ -228,6 +226,8 @@
         <AssociationConnector Association="DataLib.FK_MKB_MKB" />
         <AssociationConnector Association="DataLib.FK_MKB_MKBGroups" />
         <AssociationConnector Association="DataLib.FK_MKBGroups_MKBGroups" />
+        <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="0.75" PointY="4.875" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

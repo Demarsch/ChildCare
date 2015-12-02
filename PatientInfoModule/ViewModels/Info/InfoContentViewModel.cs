@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
@@ -78,7 +79,6 @@ namespace PatientInfoModule.ViewModels
             cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
             addRelativeCommand = new DelegateCommand(AddRelative, CanAddRelative);
             goBackToPatientCommand = new DelegateCommand(GoBackToPatient, CanGoBackToPatient);
-            selectRelativeCommand = new DelegateCommand<PatientInfoViewModel>(SelectRelative);
             saveChangesCommandWrapper = new CommandWrapper { Command = SaveChangesCommand };
             loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientAndRelativesAsync(patientIdBeingLoaded)) };
             currentOperation = new TaskCompletionSource<object>();
@@ -261,15 +261,6 @@ namespace PatientInfoModule.ViewModels
             return selectedPatientOrRelative != patientInfo;
         }
 
-        private readonly DelegateCommand<PatientInfoViewModel> selectRelativeCommand;
-
-        public ICommand SelectRelativeCommand { get { return selectRelativeCommand; } }
-
-        private void SelectRelative(PatientInfoViewModel relative)
-        {
-            SelectedPatientOrRelative = relative;
-        }
-
         #endregion
 
         private void RelativesOnBeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -278,6 +269,7 @@ namespace PatientInfoModule.ViewModels
             {
                 foreach (var oldItem in e.OldItems.Cast<PatientInfoViewModel>())
                 {
+                    oldItem.PropertyChanged -= OnRelativeIsRepresentiveChanged;
                     changeTracker.RemoveTracker(oldItem.ChangeTracker);
                 }
             }
@@ -285,7 +277,24 @@ namespace PatientInfoModule.ViewModels
             {
                 foreach (var newItem in e.NewItems.Cast<PatientInfoViewModel>())
                 {
+                    newItem.PropertyChanged += OnRelativeIsRepresentiveChanged;
                     changeTracker.AddTracker(newItem.ChangeTracker);
+                }
+            }
+        }
+
+        private void OnRelativeIsRepresentiveChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "IsRepresentative") == 0)
+            {
+                var thisRelative = (PatientInfoViewModel)sender;
+                if (!thisRelative.IsRepresentative)
+                {
+                    return;
+                }
+                foreach (var otherRelative in Relatives.Where(x => !ReferenceEquals(x, thisRelative)))
+                {
+                    otherRelative.IsRepresentative = false;
                 }
             }
         }
@@ -299,6 +308,7 @@ namespace PatientInfoModule.ViewModels
             get { return selectedPatientOrRelative; }
             set
             {
+                value = value ?? patientInfo;
                 SetProperty(ref selectedPatientOrRelative, value);
                 goBackToPatientCommand.RaiseCanExecuteChanged();
             }

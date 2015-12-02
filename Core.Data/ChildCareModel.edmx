@@ -818,6 +818,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="MustBeMale" Type="bit" />
         </EntityType>
         <EntityType Name="ReportTemplates">
           <Key>
@@ -3413,7 +3414,6 @@
           <EntitySet Name="RecordContractLimits" EntityType="DataLib.RecordContractLimit" />
           <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
           <EntitySet Name="RecordTypeRoles" EntityType="DataLib.RecordTypeRole" />
-          <EntitySet Name="RelativeRelationships" EntityType="DataLib.RelativeRelationship" />
           <EntitySet Name="ReportTemplates" EntityType="DataLib.ReportTemplate" />
           <EntitySet Name="Rooms" EntityType="DataLib.Room" />
           <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
@@ -3701,10 +3701,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_PersonRelatives_Persons1" Association="DataLib.FK_PersonRelatives_Persons1">
             <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonRelative" EntitySet="PersonRelatives" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonRelatives_RelativeRelationships" Association="DataLib.FK_PersonRelatives_RelativeRelationships">
-            <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
             <End Role="PersonRelative" EntitySet="PersonRelatives" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonSocialStatuses_Persons" Association="DataLib.FK_PersonSocialStatuses_Persons">
@@ -4012,6 +4008,11 @@
           <AssociationSet Name="FK_MKBGroups_MKBGroups" Association="DataLib.FK_MKBGroups_MKBGroups">
             <End Role="MKBGroup" EntitySet="MKBGroups" />
             <End Role="MKBGroup1" EntitySet="MKBGroups" />
+          </AssociationSet>
+          <EntitySet Name="RelativeRelationships" EntityType="DataLib.RelativeRelationship" />
+          <AssociationSet Name="FK_PersonRelatives_RelativeRelationships" Association="DataLib.FK_PersonRelatives_RelativeRelationships">
+            <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
+            <End Role="PersonRelative" EntitySet="PersonRelatives" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -4771,14 +4772,6 @@
           <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Options" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" FromRole="RecordTypeRole" ToRole="RecordTypeRolePermission" />
-        </EntityType>
-        <EntityType Name="RelativeRelationship">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_RelativeRelationships" FromRole="RelativeRelationship" ToRole="PersonRelative" />
         </EntityType>
         <EntityType Name="ReportTemplate">
           <Key>
@@ -5808,18 +5801,6 @@
             </Principal>
             <Dependent Role="PersonRelative">
               <PropertyRef Name="RelativeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonRelatives_RelativeRelationships">
-          <End Type="DataLib.RelativeRelationship" Role="RelativeRelationship" Multiplicity="1" />
-          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RelativeRelationship">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonRelative">
-              <PropertyRef Name="RelativeRelationshipId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6999,6 +6980,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RelativeRelationship">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MustBeMale" Type="Boolean" />
+          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_RelativeRelationships" FromRole="RelativeRelationship" ToRole="PersonRelative" />
+        </EntityType>
+        <Association Name="FK_PersonRelatives_RelativeRelationships">
+          <End Type="DataLib.RelativeRelationship" Role="RelativeRelationship" Multiplicity="1" />
+          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationship">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelative">
+              <PropertyRef Name="RelativeRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7642,14 +7644,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="RelativeRelationships">
-            <EntityTypeMapping TypeName="DataLib.RelativeRelationship">
-              <MappingFragment StoreEntitySet="RelativeRelationships">
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ReportTemplates">
             <EntityTypeMapping TypeName="DataLib.ReportTemplate">
               <MappingFragment StoreEntitySet="ReportTemplates">
@@ -8065,6 +8059,15 @@
                 <ScalarProperty Name="MKBmin" ColumnName="MKBmin" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RelativeRelationships">
+            <EntityTypeMapping TypeName="DataLib.RelativeRelationship">
+              <MappingFragment StoreEntitySet="RelativeRelationships">
+                <ScalarProperty Name="MustBeMale" ColumnName="MustBeMale" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
@@ -17,7 +18,6 @@ using PatientInfoModule.Data;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
-using Prism.Events;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -31,15 +31,14 @@ namespace PatientInfoModule.ViewModels
 
         private readonly ILog log;
 
-        private readonly IEventAggregator eventAggregator;
-
         private readonly ICacheService cacheService;
 
         private readonly IAddressSuggestionProvider addressSuggestionProvider;
 
+        private readonly ValidationMediator validator;
+
         public PatientInfoViewModel(IPatientService patientService,
                                     ILog log,
-                                    IEventAggregator eventAggregator,
                                     ICacheService cacheService,
                                     IAddressSuggestionProvider addressSuggestionProvider,
                                     IdentityDocumentCollectionViewModel identityDocumentCollectionViewModel,
@@ -55,10 +54,6 @@ namespace PatientInfoModule.ViewModels
             if (log == null)
             {
                 throw new ArgumentNullException("log");
-            }
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException("eventAggregator");
             }
             if (identityDocumentCollectionViewModel == null)
             {
@@ -97,7 +92,7 @@ namespace PatientInfoModule.ViewModels
             SocialStatuses = socialStatusCollectionViewModel;
             this.patientService = patientService;
             this.log = log;
-            this.eventAggregator = eventAggregator;
+            validator = new ValidationMediator(this);
             patientIdBeingLoaded = SpecialValues.NonExistingId;
             currentInstanceChangeTracker = new ChangeTrackerEx<PatientInfoViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker,
@@ -113,12 +108,20 @@ namespace PatientInfoModule.ViewModels
             ChangeTracker = changeTracker;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            Relationships = cacheService.GetItems<RelativeRelationship>();
+            //We need to have copy of relationship list for every relative
+            Relationships = cacheService.GetItems<RelativeRelationship>().ToArray();
+            CollectionViewSource.GetDefaultView(Relationships).Filter = FilterRelationshipByGender;
             ActivateChildContentCommand = new DelegateCommand<object>(ActivateChildContent);
             reloadPatientDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientInfoAsync(patientIdBeingLoaded)) };
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await EnsureDataSourceLoaded()) };
             currentOperation = new TaskCompletionSource<object>();
             currentOperation.SetResult(null);
+        }
+
+        private bool FilterRelationshipByGender(object o)
+        {
+            var relationship = (RelativeRelationship)o;
+            return relationship.MustBeMale == null || relationship.MustBeMale == IsMale;
         }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
@@ -429,7 +432,11 @@ namespace PatientInfoModule.ViewModels
         public bool IsMale
         {
             get { return isMale; }
-            set { SetTrackedProperty(ref isMale, value); }
+            set
+            {
+                SetTrackedProperty(ref isMale, value);
+                CollectionViewSource.GetDefaultView(Relationships).Refresh();
+            }
         }
 
         private string phones;
@@ -824,11 +831,19 @@ namespace PatientInfoModule.ViewModels
 
         #region Implementation IDataErrorInfo
 
+        public string this[string columnName]
+        {
+            get { return validator[columnName]; }
+        }
+
+        public string Error
+        {
+            get { return validator.Error; }
+        }
+
         public bool Validate()
         {
-            isValidationRequested = true;
-            OnPropertyChanged(string.Empty);
-            return invalidProperties.Count == 0
+            return validator.Validate()
                    & IdentityDocuments.Validate()
                    & InsuranceDocuments.Validate()
                    & Addresses.Validate()
@@ -838,94 +853,261 @@ namespace PatientInfoModule.ViewModels
 
         public void CancelValidation()
         {
-            isValidationRequested = false;
-            OnPropertyChanged();
+            validator.CancelValidation();
             IdentityDocuments.CancelValidation();
             InsuranceDocuments.CancelValidation();
             Addresses.CancelValidation();
             DisabilityDocuments.CancelValidation();
         }
 
-        private bool isValidationRequested;
-
-        private readonly HashSet<string> invalidProperties = new HashSet<string>();
-
-        string IDataErrorInfo.this[string columnName]
+        private class ValidationMediator : ValidationMediator<PatientInfoViewModel>
         {
-            get
+            public ValidationMediator(PatientInfoViewModel associatedItem)
+                : base(associatedItem)
             {
-                if (!isValidationRequested)
-                {
-                    invalidProperties.Remove(columnName);
-                    return string.Empty;
-                }
-                var result = string.Empty;
-                switch (columnName)
-                {
-                    case "LastName":
-                        result = string.IsNullOrWhiteSpace(LastName) ? "Фамилия не указана" : string.Empty;
-                        break;
-                    case "FirstName":
-                        result = string.IsNullOrWhiteSpace(FirstName) ? "Имя не указано" : string.Empty;
-                        break;
-                    case "BirthDate":
-                        result = !BirthDate.HasValue
-                                     ? "Дата рождения не указана"
-                                     : BirthDate.Value.Date > DateTime.Today
-                                           ? "Дата рождения не может быть в будущем"
-                                           : string.Empty;
-                        break;
-                    case "Snils":
-                        result = string.IsNullOrEmpty(Snils) || Snils.Length == FullSnilsLength
-                                     ? string.Empty
-                                     : "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00";
-                        break;
-                    case "MedNumber":
-                        result = string.IsNullOrEmpty(MedNumber) || MedNumber.Length == FullMedNumberLength
-                                     ? string.Empty
-                                     : "ЕМН должен либо быть пустым либо быть в формате 0000000000000000";
-                        break;
-                    case "IsIncorrectName":
-                    case "IsNewName":
-                        result = IsNameChanged && !IsNewName && !IsIncorrectName
-                                     ? "Выберите причину смены Ф.И.О."
-                                     : string.Empty;
-                        break;
-                    case "selectedPatientOrRelative":
-                        result = IsNewName
-                                     ? !NewNameStartDate.HasValue
-                                           ? "Укажите дату, с которой вступили силу изменения Ф.И.О."
-                                           : NewNameStartDate.Value > DateTime.Today
-                                                 ? "Дата смены Ф.И.О. не может быть в будущем"
-                                                 : string.Empty
-                                     : string.Empty;
-                        break;
-                    case "NationalityId":
-                        result = NationalityId == SpecialValues.NonExistingId ? "Укажите гражданство пациента" : string.Empty;
-                        break;
-                    case "HealthGroupId":
-                        result = IsChild && HealthGroupId == SpecialValues.NonExistingId ? "Группа здоровья обязательна для лиц до 18 лет" : string.Empty;
-                        break;
-                    case "SelectedRelationship":
-                        result = IsRelative && SelectedRelationship == null ? "Не указана родственная связь" : string.Empty;
-                        break;
-                }
-                if (string.IsNullOrEmpty(result))
-                {
-                    invalidProperties.Remove(columnName);
-                }
-                else
-                {
-                    invalidProperties.Add(columnName);
-                }
-                return result;
             }
+
+            protected override void OnValidateProperty(string propertyName)
+            {
+                if (PropertyNameEquals(propertyName, x => x.LastName))
+                {
+                    ValidateLastName();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.FirstName))
+                {
+                    ValidateFirstName();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.BirthDate))
+                {
+                    ValidateBirthDate();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.Snils))
+                {
+                    ValidateSnils();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.MedNumber))
+                {
+                    ValidateMedNumber();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.IsIncorrectName) || PropertyNameEquals(propertyName, x => x.IsNewName))
+                {
+                    ValidateIsNewOrIncorrectName();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.NewNameStartDate))
+                {
+                    ValidateNewNameStartDate();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.NationalityId))
+                {
+                    ValidateNationalityId();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.HealthGroupId))
+                {
+                    ValidateHealthGroupId();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.SelectedRelationship))
+                {
+                    ValidateSelectedRelationship();
+                }
+            }
+
+            protected override void RaiseAssociatedObjectPropertyChanged()
+            {
+                AssociatedItem.OnPropertyChanged(string.Empty);
+            }
+
+            protected override void OnValidate()
+            {
+                ValidateLastName();
+                ValidateFirstName();
+                ValidateBirthDate();
+                ValidateSnils();
+                ValidateMedNumber();
+                ValidateIsNewOrIncorrectName();
+                ValidateNewNameStartDate();
+                ValidateNationalityId();
+                ValidateHealthGroupId();
+                ValidateSelectedRelationship();
+            }
+
+            private void ValidateLastName()
+            {
+                SetError(x => x.LastName, string.IsNullOrWhiteSpace(AssociatedItem.LastName) ? "Фамилия не может быть пустой" : string.Empty);
+            }
+
+            private void ValidateFirstName()
+            {
+                SetError(x => x.FirstName, string.IsNullOrWhiteSpace(AssociatedItem.FirstName) ? "Фамилия не может быть пустой" : string.Empty);
+            }
+
+            private void ValidateBirthDate()
+            {
+                var error = string.Empty;
+                if (AssociatedItem.BirthDate == null)
+                {
+                    error = "Не выбрана дата рождения";
+                }
+                else if (AssociatedItem.BirthDate > DateTime.Today)
+                {
+                    error = "Дата рождения не может быть в будущем";
+                }
+                SetError(x => x.BirthDate, error);
+            }
+
+            private void ValidateSnils()
+            {
+                SetError(x => x.Snils,
+                         !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.Snils.Length != FullSnilsLength
+                             ? "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00"
+                             : string.Empty);
+            }
+
+            private void ValidateMedNumber()
+            {
+                SetError(x => x.MedNumber,
+                        !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.MedNumber.Length != FullMedNumberLength
+                            ? "ЕМН должен либо быть пустым либо содержать ровно шестнадцать цифр"
+                            : string.Empty);
+            }
+
+            private void ValidateIsNewOrIncorrectName()
+            {
+                var error = AssociatedItem.IsNameChanged && !AssociatedItem.IsNewName && !AssociatedItem.IsIncorrectName ? "Выберите причину смены Ф.И.О." : string.Empty;
+                SetError(x => x.IsNewName, error);
+                SetError(x => x.IsIncorrectName, error);
+            }
+
+            private void ValidateNewNameStartDate()
+            {
+                var error = string.Empty;
+                if (AssociatedItem.IsNewName)
+                {
+                    if (AssociatedItem.NewNameStartDate == null)
+                    {
+                        error = "Укажите дату, с которой вступили силу изменения Ф.И.О.";
+                    }
+                    else if (AssociatedItem.NewNameStartDate >= AssociatedItem.BirthDate)
+                    {
+                        error = "Дата смены Ф.И.О. не может быть меньше даты рождения";
+                    }
+                }
+                SetError(x => x.NewNameStartDate, error);
+            }
+
+            private void ValidateNationalityId()
+            {
+                  SetError(x => x.NationalityId, AssociatedItem.NationalityId == SpecialValues.NonExistingId ? "Укажите гражданство пациента" : string.Empty);
+            }
+
+            private void ValidateHealthGroupId()
+            {
+                SetError(x => x.HealthGroupId, AssociatedItem.IsChild && AssociatedItem.HealthGroupId == SpecialValues.NonExistingId ? "Группа здоровья обязательна для лиц до 18 лет" : string.Empty);
+            }
+
+            private void ValidateSelectedRelationship()
+            {
+                SetError(x => x.SelectedRelationship, AssociatedItem.IsRelative && AssociatedItem.SelectedRelationship == null ? "Не указана родственная связь" : string.Empty);
+            }
+
         }
 
-        string IDataErrorInfo.Error
-        {
-            get { throw new NotImplementedException(); }
-        }
+        //public bool Validate()
+        //{
+        //    isValidationRequested = true;
+        //    OnPropertyChanged(string.Empty);
+        //    return invalidProperties.Count == 0
+        //           & IdentityDocuments.Validate()
+        //           & InsuranceDocuments.Validate()
+        //           & Addresses.Validate()
+        //           & DisabilityDocuments.Validate()
+        //           & SocialStatuses.Validate();
+        //}
+
+        //public void CancelValidation()
+        //{
+        //    isValidationRequested = false;
+        //    OnPropertyChanged();
+        //    IdentityDocuments.CancelValidation();
+        //    InsuranceDocuments.CancelValidation();
+        //    Addresses.CancelValidation();
+        //    DisabilityDocuments.CancelValidation();
+        //}
+
+        //private bool isValidationRequested;
+
+        //private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        //string IDataErrorInfo.this[string columnName]
+        //{
+        //    get
+        //    {
+        //        if (!isValidationRequested)
+        //        {
+        //            invalidProperties.Remove(columnName);
+        //            return string.Empty;
+        //        }
+        //        var result = string.Empty;
+        //        switch (columnName)
+        //        {
+        //            case "LastName":
+        //                result = string.IsNullOrWhiteSpace(LastName) ? "Фамилия не указана" : string.Empty;
+        //                break;
+        //            case "FirstName":
+        //                result = string.IsNullOrWhiteSpace(FirstName) ? "Имя не указано" : string.Empty;
+        //                break;
+        //            case "BirthDate":
+        //                result = !BirthDate.HasValue
+        //                             ? "Дата рождения не указана"
+        //                             : BirthDate.Value.Date > DateTime.Today
+        //                                   ? "Дата рождения не может быть в будущем"
+        //                                   : string.Empty;
+        //                break;
+        //            case "Snils":
+        //                result = string.IsNullOrEmpty(Snils) || Snils.Length == FullSnilsLength
+        //                             ? string.Empty
+        //                             : "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00";
+        //                break;
+        //            case "MedNumber":
+        //                result = string.IsNullOrEmpty(MedNumber) || MedNumber.Length == FullMedNumberLength
+        //                             ? string.Empty
+        //                             : "ЕМН должен либо быть пустым либо быть в формате 0000000000000000";
+        //                break;
+        //            case "IsIncorrectName":
+        //            case "IsNewName":
+        //                result = IsNameChanged && !IsNewName && !IsIncorrectName
+        //                             ? "Выберите причину смены Ф.И.О."
+        //                             : string.Empty;
+        //                break;
+        //            case "selectedPatientOrRelative":
+        //                result = IsNewName
+        //                             ? !NewNameStartDate.HasValue
+        //                                   ? "Укажите дату, с которой вступили силу изменения Ф.И.О."
+        //                                   : NewNameStartDate.Value > DateTime.Today
+        //                                         ? "Дата смены Ф.И.О. не может быть в будущем"
+        //                                         : string.Empty
+        //                             : string.Empty;
+        //                break;
+        //            case "NationalityId":
+        //                result = NationalityId == SpecialValues.NonExistingId ? "Укажите гражданство пациента" : string.Empty;
+        //                break;
+        //            case "HealthGroupId":
+        //                result = IsChild && HealthGroupId == SpecialValues.NonExistingId ? "Группа здоровья обязательна для лиц до 18 лет" : string.Empty;
+        //                break;
+        //            case "SelectedRelationship":
+        //                result = IsRelative && SelectedRelationship == null ? "Не указана родственная связь" : string.Empty;
+        //                break;
+        //        }
+        //        if (string.IsNullOrEmpty(result))
+        //        {
+        //            invalidProperties.Remove(columnName);
+        //        }
+        //        else
+        //        {
+        //            invalidProperties.Add(columnName);
+        //        }
+        //        return result;
+        //    }
+        //}
 
         #endregion
 
@@ -952,6 +1134,11 @@ namespace PatientInfoModule.ViewModels
             public IEnumerable<HealthGroup> HealthGroups { get; set; }
 
             public IEnumerable<RelativeRelationship> Relationships { get; set; }
+        }
+
+        public void RaisePropertyChanged()
+        {
+            OnPropertyChanged(string.Empty);
         }
     }
 }

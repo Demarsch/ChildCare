@@ -201,6 +201,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Back48x48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Star16x16.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
