@@ -61,7 +61,7 @@ namespace PatientRecordsModule.ViewModels
             if (logSevice == null)
             {
                 throw new ArgumentNullException("log");
-            }           
+            }
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -83,8 +83,9 @@ namespace PatientRecordsModule.ViewModels
             this.documentsViewer = documentsViewer;
             this.documentsViewer.PropertyChanged += documentsViewer_PropertyChanged;
 
-            ChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
-            ChangeTracker.PropertyChanged += OnChangesTracked;
+            ChangeTracker = new CompositeChangeTracker();
+            //ChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
+            //ChangeTracker.PropertyChanged += OnChangesTracked;
 
             reloadRecordBrigadeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadBrigadeAsync(recordTypeId, RecordId, onDate)) };
             reloadRecordCommonDataCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadProtocolCommonData(VisitId, AssignmentId, RecordId)) };
@@ -94,6 +95,7 @@ namespace PatientRecordsModule.ViewModels
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             Brigade = new ObservableCollectionEx<BrigadeViewModel>();
+            Brigade.BeforeCollectionChanged += Brigade_BeforeCollectionChanged;
             Urgentlies = new ObservableCollectionEx<CommonIdName>();
             RecordPeriods = new ObservableCollectionEx<CommonIdName>();
             ParentVisits = new ObservableCollectionEx<CommonIdName>();
@@ -107,8 +109,8 @@ namespace PatientRecordsModule.ViewModels
             setCurrentDateTimeBeginCommand = new DelegateCommand(SetCurrentDateTimeBegin);
             SubscribeToEvents();
 
-            currentInstanceChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);    
-        
+            currentInstanceChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
+
         }
 
         private readonly IChangeTracker currentInstanceChangeTracker;
@@ -128,13 +130,13 @@ namespace PatientRecordsModule.ViewModels
         }
 
         private bool CanSaveChanges()
-        {           
+        {
             return ChangeTracker != null && ChangeTracker.HasChanges;
         }
 
         #endregion
 
-        #region Properties      
+        #region Properties
 
         public ObservableCollectionEx<BrigadeViewModel> Brigade { get; set; }
 
@@ -274,6 +276,13 @@ namespace PatientRecordsModule.ViewModels
             get { return userService.HasPermission(PermissionType.ChangeRecordRoom) || RoomId.ToInt() < 1; }
         }
 
+        private bool isRecordCanBeCompleted;
+        public bool IsRecordCanBeCompleted
+        {
+            get { return isRecordCanBeCompleted; }
+            set { SetProperty(ref isRecordCanBeCompleted, value); }
+        }
+
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
@@ -320,7 +329,7 @@ namespace PatientRecordsModule.ViewModels
 
         #region Methods
 
-       
+
 
         public void Dispose()
         {
@@ -355,7 +364,8 @@ namespace PatientRecordsModule.ViewModels
             AssignmentId = assignmentId;
             RecordId = recordId;
             recordTypeId = 0;
-            LoadProtocolEditor(visitId, assignmentId, recordId);            
+            IsRecordCanBeCompleted = false;
+            LoadProtocolEditor(visitId, assignmentId, recordId);
         }
 
 
@@ -495,12 +505,12 @@ namespace PatientRecordsModule.ViewModels
                     recordMembers.Dispose();
                 }
                 if (recordTypeRolePermission != null)
-            currentInstanceChangeTracker.PropertyChanged -= OnChangesTracked;
-            reloadDataSourceCommandWrapper.Dispose();
-            reloadRecordBrigadeCommandWrapper.Dispose();
                 {
                     recordTypeRolePermission.Dispose();
                 }
+                currentInstanceChangeTracker.PropertyChanged -= OnChangesTracked;
+                reloadDataSourceCommandWrapper.Dispose();
+                reloadRecordBrigadeCommandWrapper.Dispose();
             }
         }
 
@@ -510,7 +520,7 @@ namespace PatientRecordsModule.ViewModels
             ParentVisits.Clear();
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, ProtocolEditor.ChangeTracker);
             changeTracker.PropertyChanged += OnChangesTracked;
-            ChangeTracker = changeTracker; 
+            ChangeTracker = changeTracker;
 
             if (currentOperationToken != null)
             {
@@ -547,6 +557,9 @@ namespace PatientRecordsModule.ViewModels
                             RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty)
                         }).FirstOrDefaultAsync(token);
                     LoadBrigadeAsync(data.RecordTypeId, recordId, data.ActualDateTime);
+                    var curSID = userService.GetCurrentSID();
+                    var MemberCanComplete = await patientRecordsService.GetRecordMembers(recordId).Where(x => x.RecordTypeRolePermission.IsSign && x.PersonStaff.Person.Users.Any(y => y.SID == curSID)).AnyAsync();
+                    IsRecordCanBeCompleted = MemberCanComplete;
                 }
                 else if (assignmentId > 0)
                 {
@@ -629,7 +642,8 @@ namespace PatientRecordsModule.ViewModels
         }
 
         private async void LoadProtocolEditor(int visitId, int assignmentId, int recordId)
-        {         
+        {
+            saveWasRequested = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -648,7 +662,11 @@ namespace PatientRecordsModule.ViewModels
             {
                 if (recordId > 0)
                 {
-                    var record = await recordQuery.Select(x => new { x.ActualDateTime, RecordTypeEditor = x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty }).FirstOrDefaultAsync(token);
+                    var record = await recordQuery.Select(x => new
+                    {
+                        x.ActualDateTime,
+                        RecordTypeEditor = x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty
+                    }).FirstOrDefaultAsync(token);
                     var res = await LoadDataSources(record.ActualDateTime);
                     if (!res) return;
                     ProtocolEditor = recordTypeEditorResolver.Resolve(record.RecordTypeEditor);
@@ -667,7 +685,7 @@ namespace PatientRecordsModule.ViewModels
                 }
 
                 //Load Documents
-                DocumentsViewer.LoadDocuments(assignmentId, recordId);                
+                DocumentsViewer.LoadDocuments(assignmentId, recordId);
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -699,7 +717,7 @@ namespace PatientRecordsModule.ViewModels
                 {
                     visitQuery.Dispose();
                 }
-                
+
             }
         }
 
@@ -724,7 +742,7 @@ namespace PatientRecordsModule.ViewModels
             try
             {
                 var brigade = Brigade.Where(x => x.IsPersonMember).Select(x => x.GetRecordMember()).ToList();
-                RecordId = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime.Value, brigade, token);
+                RecordId = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime, brigade, token);
                 int protocolId = SpecialValues.NonExistingId;
                 if (ProtocolEditor != null)
                     protocolId = ProtocolEditor.SaveProtocol(RecordId, VisitId);
@@ -749,7 +767,6 @@ namespace PatientRecordsModule.ViewModels
                     //changeTracker.UntrackAll();
                 }
             }
-
             
         }
 
@@ -805,7 +822,23 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-
+        void Brigade_BeforeCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (var newItem in e.NewItems.Cast<BrigadeViewModel>())
+                {
+                    (ChangeTracker as CompositeChangeTracker).AddTracker(newItem.ChangeTracker);
+                }
+            }
+            if (e.OldItems != null)
+            {
+                foreach (var oldItem in e.OldItems.Cast<BrigadeViewModel>())
+                {
+                    (ChangeTracker as CompositeChangeTracker).RemoveTracker(oldItem.ChangeTracker);
+                }
+            }
+        }
 
         #endregion
 
@@ -907,17 +940,17 @@ namespace PatientRecordsModule.ViewModels
                 var result = string.Empty;
                 switch (columnName)
                 {
-                    case "selectedPeriodId":
-                        result = SelectedPeriodId == null ? "Не указан период выполнения" : string.Empty;
+                    case "SelectedPeriodId":
+                        result = SelectedPeriodId.ToInt() < 1 ? "Не указан период выполнения" : string.Empty;
                         break;
-                    case "selectedUrgentlyId":
-                        result = SelectedUrgentlyId == null ? "Не указана форма оказания помощи" : string.Empty;
+                    case "SelectedUrgentlyId":
+                        result = SelectedUrgentlyId.ToInt() < 1 ? "Не указана форма оказания помощи" : string.Empty;
                         break;
-                    case "parentVisitId":
-                        result = ParentVisitId == null ? "Не указан родительский случай" : string.Empty;
+                    case "ParentVisitId":
+                        result = ParentVisitId.ToInt() < 1 ? "Не указан родительский случай" : string.Empty;
                         break;
-                    case "roomId":
-                        result = RoomId == null ? "Не указан кабинет" : string.Empty;
+                    case "RoomId":
+                        result = RoomId.ToInt() < 1 ? "Не указан кабинет" : string.Empty;
                         break;
                 }
                 if (string.IsNullOrEmpty(result))

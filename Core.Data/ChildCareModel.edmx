@@ -735,7 +735,7 @@
           <Property Name="IsCompleted" Type="bit" Nullable="false" />
           <Property Name="MKB" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" />
           <Property Name="ActualDateTime" Type="datetime" Nullable="false" />
           <Property Name="BillingDateTime" Type="datetime" />
           <Property Name="RemovedByUserId" Type="int" />
@@ -3904,14 +3904,9 @@
           </AssociationSet>
           <EntitySet Name="ExecutionPlaces" EntityType="DataLib.ExecutionPlace" />
           <EntitySet Name="RecordPeriods" EntityType="DataLib.RecordPeriod" />
-          <EntitySet Name="Records" EntityType="DataLib.Record" />
           <EntitySet Name="Urgentlies" EntityType="DataLib.Urgently" />
           <AssociationSet Name="FK_Assignments_ExecutionPlaces" Association="DataLib.FK_Assignments_ExecutionPlaces">
             <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
-            <End Role="Assignment" EntitySet="Assignments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Assignments_Records" Association="DataLib.FK_Assignments_Records">
-            <End Role="Record" EntitySet="Records" />
             <End Role="Assignment" EntitySet="Assignments" />
           </AssociationSet>
           <AssociationSet Name="FK_Assignments_Urgentlies" Association="DataLib.FK_Assignments_Urgentlies">
@@ -3937,6 +3932,24 @@
           <AssociationSet Name="FK_VisitTemplates_ExecutionPlaces" Association="DataLib.FK_VisitTemplates_ExecutionPlaces">
             <End Role="ExecutionPlace" EntitySet="ExecutionPlaces" />
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Visits_Urgentlies" Association="DataLib.FK_Visits_Urgentlies">
+            <End Role="Urgently" EntitySet="Urgentlies" />
+            <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VisitTemplates_ExecutionPlaces1" Association="DataLib.FK_VisitTemplates_ExecutionPlaces1">
+            <End Role="Urgently" EntitySet="Urgentlies" />
+            <End Role="VisitTemplate" EntitySet="VisitTemplates" />
+          </AssociationSet>
+          <EntitySet Name="DefaultProtocols" EntityType="DataLib.DefaultProtocol" />
+          <EntitySet Name="Records" EntityType="DataLib.Record" />
+          <AssociationSet Name="FK_Assignments_Records" Association="DataLib.FK_Assignments_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="Assignment" EntitySet="Assignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DefaultProtocols_Records" Association="DataLib.FK_DefaultProtocols_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="DefaultProtocol" EntitySet="DefaultProtocols" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonDiagnoses_Records" Association="DataLib.FK_PersonDiagnoses_Records">
             <End Role="Record" EntitySet="Records" />
@@ -3982,21 +3995,8 @@
             <End Role="Visit" EntitySet="Visits" />
             <End Role="Record" EntitySet="Records" />
           </AssociationSet>
-          <AssociationSet Name="FK_Visits_Urgentlies" Association="DataLib.FK_Visits_Urgentlies">
-            <End Role="Urgently" EntitySet="Urgentlies" />
-            <End Role="Visit" EntitySet="Visits" />
-          </AssociationSet>
-          <AssociationSet Name="FK_VisitTemplates_ExecutionPlaces1" Association="DataLib.FK_VisitTemplates_ExecutionPlaces1">
-            <End Role="Urgently" EntitySet="Urgentlies" />
-            <End Role="VisitTemplate" EntitySet="VisitTemplates" />
-          </AssociationSet>
-          <EntitySet Name="DefaultProtocols" EntityType="DataLib.DefaultProtocol" />
           <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
           <EntitySet Name="MKBGroups" EntityType="DataLib.MKBGroup" />
-          <AssociationSet Name="FK_DefaultProtocols_Records" Association="DataLib.FK_DefaultProtocols_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="DefaultProtocol" EntitySet="DefaultProtocols" />
-          </AssociationSet>
           <AssociationSet Name="FK_MKB_MKB" Association="DataLib.FK_MKB_MKB">
             <End Role="MKB" EntitySet="MKBs" />
             <End Role="MKB1" EntitySet="MKBs" />
@@ -4065,8 +4065,8 @@
           <Property Name="UrgentlyId" Type="Int32" Nullable="false" />
           <Property Name="ExecutionPlaceId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_Assignments_ExecutionPlaces" FromRole="Assignment" ToRole="ExecutionPlace" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_Assignments_Records" FromRole="Assignment" ToRole="Record" />
           <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Assignments_Urgentlies" FromRole="Assignment" ToRole="Urgently" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_Assignments_Records" FromRole="Assignment" ToRole="Record" />
         </EntityType>
         <EntityType Name="Branch">
           <Key>
@@ -4952,8 +4952,8 @@
           <NavigationProperty Name="VisitResult" Relationship="DataLib.FK_Visits_VisitResults" FromRole="Visit" ToRole="VisitResult" />
           <NavigationProperty Name="VisitTemplate" Relationship="DataLib.FK_Visits_VisitTemplates" FromRole="Visit" ToRole="VisitTemplate" />
           <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="Visit" ToRole="ExecutionPlace" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Visits" FromRole="Visit" ToRole="Record" />
           <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Visits_Urgentlies" FromRole="Visit" ToRole="Urgently" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Visits" FromRole="Visit" ToRole="Record" />
         </EntityType>
         <EntityType Name="VisitTemplate">
           <Key>
@@ -6590,44 +6590,6 @@
           <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_RecordPeriods_ExecutionPlaces" FromRole="RecordPeriod" ToRole="ExecutionPlace" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordPeriods" FromRole="RecordPeriod" ToRole="Record" />
         </EntityType>
-        <EntityType Name="Record">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PersonId" Type="Int32" Nullable="false" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="VisitId" Type="Int32" Nullable="false" />
-          <Property Name="RoomId" Type="Int32" Nullable="false" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="RecordPeriodId" Type="Int32" Nullable="false" />
-          <Property Name="UrgentlyId" Type="Int32" Nullable="false" />
-          <Property Name="Number" Type="Int32" Nullable="false" />
-          <Property Name="NumberType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="NumberYear" Type="Int32" Nullable="false" />
-          <Property Name="NumberTypeYear" Type="String" MaxLength="23" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="IsCompleted" Type="Boolean" Nullable="false" />
-          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ActualDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="BillingDateTime" Type="DateTime" Precision="3" />
-          <Property Name="RemovedByUserId" Type="Int32" />
-          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Records" FromRole="Record" ToRole="Assignment" />
-          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_Records" FromRole="Record" ToRole="PersonDiagnos" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_Records_Persons" FromRole="Record" ToRole="Person" />
-          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
-          <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_Records" FromRole="Record" ToRole="RecordMember" />
-          <NavigationProperty Name="RecordPeriod" Relationship="DataLib.FK_Records_RecordPeriods" FromRole="Record" ToRole="RecordPeriod" />
-          <NavigationProperty Name="Records1" Relationship="DataLib.FK_Records_Records" FromRole="Record" ToRole="Record1" />
-          <NavigationProperty Name="Record1" Relationship="DataLib.FK_Records_Records" FromRole="Record1" ToRole="Record" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
-          <NavigationProperty Name="Room" Relationship="DataLib.FK_Records_Rooms" FromRole="Record" ToRole="Room" />
-          <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Record" ToRole="Urgently" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
-          <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
-          <NavigationProperty Name="DefaultProtocols" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="Record" ToRole="DefaultProtocol" />
-        </EntityType>
         <EntityType Name="Urgently">
           <Key>
             <PropertyRef Name="Id" />
@@ -6640,9 +6602,9 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Urgentlies" FromRole="Urgently" ToRole="Assignment" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Urgently" ToRole="Record" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Urgentlies" FromRole="Urgently" ToRole="Visit" />
           <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_ExecutionPlaces1" FromRole="Urgently" ToRole="VisitTemplate" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Urgently" ToRole="Record" />
         </EntityType>
         <Association Name="FK_Assignments_ExecutionPlaces">
           <End Type="DataLib.ExecutionPlace" Role="ExecutionPlace" Multiplicity="1" />
@@ -6653,18 +6615,6 @@
             </Principal>
             <Dependent Role="Assignment">
               <PropertyRef Name="ExecutionPlaceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Assignments_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
-          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Assignment">
-              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6737,6 +6687,102 @@
             </Principal>
             <Dependent Role="VisitTemplate">
               <PropertyRef Name="ExecutionPlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Visits_Urgentlies">
+          <End Type="DataLib.Urgently" Role="Urgently" Multiplicity="1" />
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Urgently">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Visit">
+              <PropertyRef Name="UrgentlyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VisitTemplates_ExecutionPlaces1">
+          <End Type="DataLib.Urgently" Role="Urgently" Multiplicity="0..1" />
+          <End Type="DataLib.VisitTemplate" Role="VisitTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Urgently">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VisitTemplate">
+              <PropertyRef Name="UrgentlyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DefaultProtocol">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Conclusion" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="DefaultProtocol" ToRole="Record" />
+        </EntityType>
+        <EntityType Name="Record">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="VisitId" Type="Int32" Nullable="false" />
+          <Property Name="RoomId" Type="Int32" Nullable="false" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="RecordPeriodId" Type="Int32" Nullable="false" />
+          <Property Name="UrgentlyId" Type="Int32" Nullable="false" />
+          <Property Name="Number" Type="Int32" Nullable="false" />
+          <Property Name="NumberType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="NumberYear" Type="Int32" Nullable="false" />
+          <Property Name="NumberTypeYear" Type="String" MaxLength="23" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="IsCompleted" Type="Boolean" Nullable="false" />
+          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <Property Name="ActualDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="BillingDateTime" Type="DateTime" Precision="3" />
+          <Property Name="RemovedByUserId" Type="Int32" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Records" FromRole="Record" ToRole="Assignment" />
+          <NavigationProperty Name="DefaultProtocols" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="Record" ToRole="DefaultProtocol" />
+          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_Records" FromRole="Record" ToRole="PersonDiagnos" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Records_Persons" FromRole="Record" ToRole="Person" />
+          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
+          <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_Records" FromRole="Record" ToRole="RecordMember" />
+          <NavigationProperty Name="RecordPeriod" Relationship="DataLib.FK_Records_RecordPeriods" FromRole="Record" ToRole="RecordPeriod" />
+          <NavigationProperty Name="Records1" Relationship="DataLib.FK_Records_Records" FromRole="Record" ToRole="Record1" />
+          <NavigationProperty Name="Record1" Relationship="DataLib.FK_Records_Records" FromRole="Record1" ToRole="Record" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_Records_Rooms" FromRole="Record" ToRole="Room" />
+          <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Record" ToRole="Urgently" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
+          <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
+        </EntityType>
+        <Association Name="FK_Assignments_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
+          <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Assignment">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DefaultProtocols_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.DefaultProtocol" Role="DefaultProtocol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DefaultProtocol">
+              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6872,40 +6918,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Visits_Urgentlies">
-          <End Type="DataLib.Urgently" Role="Urgently" Multiplicity="1" />
-          <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Urgently">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Visit">
-              <PropertyRef Name="UrgentlyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_VisitTemplates_ExecutionPlaces1">
-          <End Type="DataLib.Urgently" Role="Urgently" Multiplicity="0..1" />
-          <End Type="DataLib.VisitTemplate" Role="VisitTemplate" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Urgently">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="VisitTemplate">
-              <PropertyRef Name="UrgentlyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="DefaultProtocol">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordId" Type="Int32" Nullable="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="Conclusion" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="DefaultProtocol" ToRole="Record" />
-        </EntityType>
         <EntityType Name="MKB">
           <Key>
             <PropertyRef Name="Id" />
@@ -6932,18 +6944,6 @@
           <NavigationProperty Name="MKBGroups1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup" ToRole="MKBGroup1" />
           <NavigationProperty Name="MKBGroup1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup1" ToRole="MKBGroup" />
         </EntityType>
-        <Association Name="FK_DefaultProtocols_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
-          <End Type="DataLib.DefaultProtocol" Role="DefaultProtocol" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="DefaultProtocol">
-              <PropertyRef Name="RecordId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_MKB_MKB">
           <End Type="DataLib.MKB" Role="MKB" Multiplicity="0..1" />
           <End Type="DataLib.MKB" Role="MKB1" Multiplicity="*" />
@@ -7993,6 +7993,29 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Urgentlies">
+            <EntityTypeMapping TypeName="DataLib.Urgently">
+              <MappingFragment StoreEntitySet="Urgentlies">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="IsDefalut" ColumnName="IsDefalut" />
+                <ScalarProperty Name="PrintName" ColumnName="PrintName" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DefaultProtocols">
+            <EntityTypeMapping TypeName="DataLib.DefaultProtocol">
+              <MappingFragment StoreEntitySet="DefaultProtocols">
+                <ScalarProperty Name="Conclusion" ColumnName="Conclusion" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Records">
             <EntityTypeMapping TypeName="DataLib.Record">
               <MappingFragment StoreEntitySet="Records">
@@ -8014,29 +8037,6 @@
                 <ScalarProperty Name="VisitId" ColumnName="VisitId" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Urgentlies">
-            <EntityTypeMapping TypeName="DataLib.Urgently">
-              <MappingFragment StoreEntitySet="Urgentlies">
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="IsDefalut" ColumnName="IsDefalut" />
-                <ScalarProperty Name="PrintName" ColumnName="PrintName" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="DefaultProtocols">
-            <EntityTypeMapping TypeName="DataLib.DefaultProtocol">
-              <MappingFragment StoreEntitySet="DefaultProtocols">
-                <ScalarProperty Name="Conclusion" ColumnName="Conclusion" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

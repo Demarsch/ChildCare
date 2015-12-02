@@ -58,6 +58,12 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             return;
         }
 
+
+        public string CanComplete()
+        {
+            return string.Empty;
+        }
+
         #endregion
         
         public IChangeTracker ChangeTracker { get; set; }

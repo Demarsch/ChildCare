@@ -79,11 +79,30 @@
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png"/>
         <StackPanel Orientation="Horizontal">
             <fluent:Button Header="Завершить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordCompleted48x48.png" 
-                           Command="{Binding CompleteRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeCompleted, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                           Command="{Binding CompleteRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeCompleted, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                           IsEnabled="{Binding IsRecordCanBeCompletedEnabled}"/>
             <fluent:Button Header="Продолжить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordInProgress48x48.png"
                            Command="{Binding InProgressRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeInProgress, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
         </StackPanel>
     </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Документы" FontWeight="Medium" Visibility="{Binding AllowDocuments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+        <fluent:Button x:Name="btnAttachDocument" Command="{Binding AttachDocumentCommand}" 
+                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachDocument48x48.png" />
+        <fluent:Button x:Name="btnDetachDocument" Command="{Binding DetachDocumentCommand}"
+                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachDocument48x48.png" />
+    </fluent:RibbonGroupBox>
+
+    <fluent:RibbonGroupBox Header="DICOM" FontWeight="Medium" Visibility="{Binding AllowDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+        <fluent:Button x:Name="btnAttachDICOM" Command="{Binding AttachDICOMCommand}" 
+                       Visibility="{Binding CanAttachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachFile48x48.png" />
+        <fluent:Button x:Name="btnDetachDICOM" Command="{Binding DetachDICOMCommand}"
+                       Visibility="{Binding CanDetachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                       Header="Открепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachFile48x48.png" />
+        <!--<fluent:Button x:Name="btnMarkDICOM" Command="{Binding MarkDICOMCommand}" 
+                       Header="Отметить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Mark48x48.png" />-->
+    </fluent:RibbonGroupBox>
+    
     <fluent:RibbonGroupBox Header="Изменения">
         <fluent:Button Header="Печать"
                        SizeDefinition="Large"
@@ -97,24 +116,5 @@
         <fluent:Button Header="Закрыть"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" Command="{Binding ShowInViewModeCommand}"  IsEnabled="{Binding IsEditModeActive}"/>
-    </fluent:RibbonGroupBox>
-
-    <fluent:RibbonGroupBox Header="Документы" FontWeight="Medium" Visibility="{Binding AllowDocuments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-        <fluent:Button x:Name="btnAttachDocument" Command="{Binding AttachDocumentCommand}" 
-                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachDocument48x48.png" />
-        <fluent:Button x:Name="btnDetachDocument" Command="{Binding DetachDocumentCommand}"
-                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachDocument48x48.png" />
-    </fluent:RibbonGroupBox>
-    
-    <fluent:RibbonGroupBox Header="DICOM" FontWeight="Medium" Visibility="{Binding AllowDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-        <fluent:Button x:Name="btnAttachDICOM" Command="{Binding AttachDICOMCommand}" 
-                       Visibility="{Binding CanAttachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachFile48x48.png" />
-        <fluent:Button x:Name="btnDetachDICOM" Command="{Binding DetachDICOMCommand}"
-                       Visibility="{Binding CanDetachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                       Header="Открепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachFile48x48.png" />
-        <!--<fluent:Button x:Name="btnMarkDICOM" Command="{Binding MarkDICOMCommand}" 
-                       Header="Отметить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Mark48x48.png" />-->
-    </fluent:RibbonGroupBox>
-    
+    </fluent:RibbonGroupBox>    
 </fluent:RibbonTabItem>
