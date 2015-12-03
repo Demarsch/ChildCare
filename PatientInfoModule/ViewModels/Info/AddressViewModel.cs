@@ -378,23 +378,23 @@ namespace PatientInfoModule.ViewModels
 
             protected override void OnValidateProperty(string propertyName)
             {
-                if (string.CompareOrdinal(propertyName, "AddressTypeId") == 0)
+                if (PropertyNameEquals(propertyName, x => x.AddressTypeId))
                 {
                     ValidateAddressType();
                 }
-                else if (string.CompareOrdinal(propertyName, "FromDate") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.FromDate))
                 {
                     ValidateFromDate();
                 }
-                else if (string.CompareOrdinal(propertyName, "Region") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.Region))
                 {
                     ValidateRegion();
                 }
-                else if (string.CompareOrdinal(propertyName, "UserText") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.UserText))
                 {
                     ValidateUserText();
                 }
-                else if (string.CompareOrdinal(propertyName, "House") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.House))
                 {
                     ValidateHouse();
                 }
@@ -416,62 +416,27 @@ namespace PatientInfoModule.ViewModels
 
             private void ValidateHouse()
             {
-                if (AssociatedItem.Region == null)
-                {
-                    Errors["House"] = "Укажите номер дома";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["House"] = string.Empty;
-                }
+                SetError(x => x.House, AssociatedItem.Region == null ? "Укажите номер дома" : string.Empty);
             }
 
             private void ValidateUserText()
             {
-                if (AssociatedItem.Region == null)
-                {
-                    Errors["UserText"] = "Укажите адрес по документу";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["UserText"] = string.Empty;
-                }
+                SetError(x => x.UserText, AssociatedItem.Region == null ? "Укажите адрес по документу" : string.Empty);
             }
 
             private void ValidateRegion()
             {
-                if (AssociatedItem.Region == null)
-                {
-                    Errors["Region"] = "Выберите регион или иностранное государство";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["Region"] = string.Empty;
-                }
+                SetError(x => x.Region, AssociatedItem.Region == null ? "Выберите регион или иностранное государство" : string.Empty);
             }
 
             private void ValidateFromDate()
             {
-                if (AssociatedItem.FromDate == null)
-                {
-                    Errors["FromDate"] = "Не указана дата начала действия";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["FromDate"] = string.Empty;
-                }
+                SetError(x => x.FromDate, AssociatedItem.FromDate == null ? "Не указана дата начала действия" : string.Empty);
             }
 
             private void ValidateAddressType()
             {
-                if (AssociatedItem.AddressTypeId == null)
-                {
-                    Errors["AddressTypeId"] = "Не указан тип адреса";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["AddressTypeId"] = string.Empty;
-                }
+                SetError(x => x.AddressTypeId, AssociatedItem.AddressTypeId == null ? "Не указан тип адреса" : string.Empty);
             }
         }
 
