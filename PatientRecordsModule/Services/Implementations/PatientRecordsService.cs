@@ -186,7 +186,33 @@ namespace PatientRecordsModule.Services
             }
         }
 
+        public void CompleteRecordAsync(int recordId, CancellationToken token)
+        {
+            ChangeCompleteState(recordId, true, token);
+        }
 
+        public void InProgressRecordAsync(int recordId, CancellationToken token)
+        {
+            ChangeCompleteState(recordId, false, token);
+        }
+
+        private async void ChangeCompleteState(int recordId, bool isCompleted, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                Record record = context.Set<Record>().FirstOrDefault(x => x.Id == recordId);
+                record.IsCompleted = isCompleted;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+            }
+        }
 
         public async Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token)
         {
@@ -337,9 +363,9 @@ namespace PatientRecordsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Room>(context.Set<Room>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
-        }        
+        }
 
-        public async Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime endDateTime,
+        public async Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime? endDateTime,
             List<RecordMember> brigade, CancellationToken token)
         {
             if (token.IsCancellationRequested)
@@ -358,7 +384,7 @@ namespace PatientRecordsModule.Services
                         RecordTypeId = recordTypeId,
                         IsCompleted = false,
                         MKB = string.Empty,
-                        NumberYear = endDateTime.Year,
+                        NumberYear = endDateTime.HasValue ? endDateTime.Value.Year : beginDateTime.Year,
                         NumberType = recordType.NumberType
                     };
                     var number = context.Set<Record>().Any(x => x.NumberType == record.NumberType && x.NumberYear == record.NumberYear) ?
@@ -372,7 +398,7 @@ namespace PatientRecordsModule.Services
                 record.UrgentlyId = urgentlyId;
                 record.BeginDateTime = beginDateTime;
                 record.EndDateTime = endDateTime;
-                record.ActualDateTime = endDateTime;
+                record.ActualDateTime = endDateTime ?? beginDateTime;
 
                 //Brigade
                 var old = record.RecordMembers.Where(x => x.IsActive).ToDictionary(x => x.Id);
@@ -408,6 +434,14 @@ namespace PatientRecordsModule.Services
                 await context.SaveChangesAsync(token);
                 return record.Id;
             }
+        }
+
+
+        public Task<bool> IsBrigadeCompleted(int recordId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return context.Set<Record>().AsNoTracking().AnyAsync(x => x.Id == recordId &&
+                x.RecordType.RecordTypeRolePermissions.Where(y => x.ActualDateTime >= y.BeginDateTime && x.ActualDateTime < y.EndDateTime && y.IsRequired).All(y => y.RecordMembers.Any(z => z.RecordId == recordId && z.IsActive)));
         }
     }
 }

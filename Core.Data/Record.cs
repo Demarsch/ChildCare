@@ -18,11 +18,11 @@ namespace Core.Data
         public Record()
         {
             this.Assignments = new HashSet<Assignment>();
+            this.DefaultProtocols = new HashSet<DefaultProtocol>();
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
             this.RecordDocuments = new HashSet<RecordDocument>();
             this.RecordMembers = new HashSet<RecordMember>();
             this.Records1 = new HashSet<Record>();
-            this.DefaultProtocols = new HashSet<DefaultProtocol>();
         }
     
         public int Id { get; set; }
@@ -40,13 +40,15 @@ namespace Core.Data
         public bool IsCompleted { get; set; }
         public string MKB { get; set; }
         public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
+        public Nullable<System.DateTime> EndDateTime { get; set; }
         public System.DateTime ActualDateTime { get; set; }
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DefaultProtocol> DefaultProtocols { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }
         public virtual Person Person { get; set; }
@@ -63,7 +65,5 @@ namespace Core.Data
         public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
         public virtual Visit Visit { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DefaultProtocol> DefaultProtocols { get; set; }
     }
 }

@@ -100,9 +100,9 @@ namespace Core.Data
         public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DefaultProtocol> DefaultProtocols { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<MKB> MKBs { get; set; }
         public virtual DbSet<MKBGroup> MKBGroups { get; set; }
         public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }

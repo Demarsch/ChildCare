@@ -10,38 +10,45 @@
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="600" Height="Auto">
     <UserControl.Resources>
-        <DataTemplate x:Key="BrigadeItemTemplate">
-            <StackPanel>
-                <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
-                <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
-                <TextBlock Text="{Binding StaffName}" TextAlignment="Center"/>
-                <TextBlock Text="{Binding PersonName}" FontWeight="Bold" TextAlignment="Center"/>
-            </StackPanel>
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+                <ResourceDictionary>
+                    <DataTemplate x:Key="BrigadeItemTemplate">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
+                            <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding StaffName}" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding PersonName}" FontWeight="Bold" TextAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
 
-        <DataTemplate x:Key="SelectedBrigadeItemTemplate">
-            <StackPanel>
-                <Button Command="{Binding RemoveRecordMemberCommand}" ToolTip="Удалить из бригады" Visibility="{Binding IsPersonMember, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove.png" Height="16" Width="16" HorizontalAlignment="Right"/>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-                <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
-                <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding PersonStaffs}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding PersonStaffId}"/>
-            </StackPanel>
-        </DataTemplate>
+                    <DataTemplate x:Key="SelectedBrigadeItemTemplate">
+                        <StackPanel>
+                            <Button Command="{Binding RemoveRecordMemberCommand}" ToolTip="Удалить из бригады" Visibility="{Binding IsPersonMember, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove.png" Height="16" Width="16" HorizontalAlignment="Right"/>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
+                            <TextBlock Text="{Binding RoleName}" TextAlignment="Center"/>
+                            <ComboBox ItemsSource="{Binding PersonStaffs}" DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding PersonStaffId}"/>
+                        </StackPanel>
+                    </DataTemplate>
 
-        <Style TargetType="{x:Type ListBoxItem}" x:Key="ContainerStyle">
-            <Setter Property="ContentTemplate" Value="{StaticResource BrigadeItemTemplate}" />
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="ContentTemplate" Value="{StaticResource SelectedBrigadeItemTemplate}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+                    <Style TargetType="{x:Type ListBoxItem}" x:Key="ContainerStyle">
+                        <Setter Property="ContentTemplate" Value="{StaticResource BrigadeItemTemplate}" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource SelectedBrigadeItemTemplate}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
@@ -79,53 +86,48 @@
             </ListBox>
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Случай:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name" MaxHeight="28" Height="28" Margin="2"
+                      SelectedValuePath="Id" DisplayMemberPath="Name" Margin="2,2,22,2" 
                       ItemsSource="{Binding ParentVisits}" 
-                      SelectedValue="{Binding ParentVisitId}"/>
+                      SelectedValue="{Binding ParentVisitId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Кабинет:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name" MaxHeight="28" Height="28" Margin="2"
+                      SelectedValuePath="Id" DisplayMemberPath="Name"  Margin="2,2,22,2"
                       ItemsSource="{Binding Rooms}" 
-                      SelectedValue="{Binding RoomId}"/>
+                      SelectedValue="{Binding RoomId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Период оказания" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" MaxHeight="28" Margin="2,0"
+            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
                       SelectedValuePath="Id" DisplayMemberPath="Name"  
                       ItemsSource="{Binding RecordPeriods}" 
-                      SelectedValue="{Binding SelectedPeriodId}"/>
+                      SelectedValue="{Binding SelectedPeriodId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Форма оказания" FontWeight="Medium" VerticalAlignment="Center" Margin="2" HorizontalAlignment="Stretch"/>
-            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" MaxHeight="28" Margin="2,0"
+            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
                       SelectedValuePath="Id" DisplayMemberPath="Name" 
                       ItemsSource="{Binding Urgentlies}" 
-                      SelectedValue="{Binding SelectedUrgentlyId}"/>
+                      SelectedValue="{Binding SelectedUrgentlyId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
             <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Vertical">
-                <TextBlock Text="Время начала услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
+                <TextBlock Text="Время окончания услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
                 <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
                     <Hyperlink Command="{Binding SetCurrentDateTimeBeginCommand}">Текущее время</Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3" FontSize="18" MaxHeight="28"
-                                    Value="{Binding BeginDateTime}" Margin="0,2"
-                                    Watermark="Дата/время начала"/>
-
+            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3" Height="23" Width="190" Margin="0,2" Watermark="Дата/время конца" Value="{Binding BeginDateTime}"/>
             <StackPanel Grid.Row="5" Grid.Column="2" Orientation="Vertical">
-                <TextBlock Text="Время окончания услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
+                <TextBlock Text="Время начала услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
                 <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
                     <Hyperlink Command="{Binding SetCurrentDateTimeEndCommand}">Текущее время</Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <toolkit:DateTimePicker Grid.Row="5" Grid.Column="3" FontSize="18" MaxHeight="28"
-                                    Value="{Binding EndDateTime}"  Margin="0,2"
-                                    Watermark="Дата/время конца"/>
+            <toolkit:DateTimePicker Grid.Row="5" Grid.Column="3" Height="23" Width="190" Margin="0,2" Watermark="Дата/время конца" Value="{Binding EndDateTime}"/>
         </Grid>
 
         <ContentControl Grid.Row="1" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-       
+
         <views:RecordDocumentsView Grid.Row="2" DataContext="{Binding DocumentsViewer}" Margin="2"/>
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="4"/>
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="4"/>
-        
+
     </Grid>
 </UserControl>

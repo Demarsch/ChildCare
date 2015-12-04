@@ -344,19 +344,19 @@ namespace PatientInfoModule.ViewModels
 
             protected override void OnValidateProperty(string propertyName)
             {
-                if (string.CompareOrdinal(propertyName, "Position") == 0)
+                if (PropertyNameEquals(propertyName, x => x.Position))
                 {
                     ValidatePosition();
                 }
-                else if (string.CompareOrdinal(propertyName, "SelectedSocialStatusType") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.SelectedSocialStatusType))
                 {
                     ValidateSocialStatusType();
                 }
-                else if (string.CompareOrdinal(propertyName, "FromDate") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.FromDate))
                 {
                     ValidateFromDate();
                 }
-                else if (string.CompareOrdinal(propertyName, "SelectedOrganization") == 0 || string.CompareOrdinal(propertyName, "OrganizationText") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.SelectedOrganization)  || PropertyNameEquals(propertyName, x => x.OrganizationText))
                 {
                     ValidateOrganization();
                 }
@@ -377,55 +377,33 @@ namespace PatientInfoModule.ViewModels
 
             private void ValidateOrganization()
             {
-                if (AssociatedItem.SelectedSocialStatusType != null
-                    && AssociatedItem.SelectedSocialStatusType.NeedPlace
-                    && AssociatedItem.SelectedOrganization == null
-                    && string.IsNullOrWhiteSpace(AssociatedItem.OrganizationText))
-                {
-                    Errors["SelectedOrganization"] = Errors["OrganizationText"] = "Не указано место работы/учебы";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["SelectedOrganization"] = Errors["OrganizationText"] = string.Empty;
-                }
+                var error = AssociatedItem.SelectedSocialStatusType != null
+                            && AssociatedItem.SelectedSocialStatusType.NeedPlace
+                            && AssociatedItem.SelectedOrganization == null
+                            && string.IsNullOrWhiteSpace(AssociatedItem.OrganizationText)
+                    ? "Не указано место работы/учебы"
+                    : string.Empty;
+                SetError(x => x.SelectedOrganization, error);
+                SetError(x => x.OrganizationText, error);
             }
 
             private void ValidateFromDate()
             {
-                if (AssociatedItem.FromDate == null)
-                {
-                    Errors["FromDate"] = "Не указана дата начала действия";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["FromDate"] = string.Empty;
-                }
+                SetError(x => x.FromDate, AssociatedItem.FromDate == null ? "Не указана дата начала действия" : string.Empty);
             }
 
             private void ValidatePosition()
             {
-                if (AssociatedItem.SelectedSocialStatusType != null
-                    && AssociatedItem.SelectedSocialStatusType.NeedPlace
-                    && string.IsNullOrWhiteSpace(AssociatedItem.Position))
-                {
-                    Errors["Position"] = "Не указана должность/позиция";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["Position"] = string.Empty;
-                }
+                SetError(x => x.Position, AssociatedItem.SelectedSocialStatusType != null
+                                          && AssociatedItem.SelectedSocialStatusType.NeedPlace
+                                          && string.IsNullOrWhiteSpace(AssociatedItem.Position)
+                                            ? "Не указана должность/позиция"
+                                            : string.Empty);
             }
 
             private void ValidateSocialStatusType()
             {
-                if (AssociatedItem.SelectedSocialStatusType == null)
-                {
-                    Errors["SelectedSocialStatusType"] = "Не указан тип статуса";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["SelectedSocialStatusType"] = string.Empty;
-                }
+                SetError(x => x.SelectedSocialStatusType, AssociatedItem.SelectedSocialStatusType == null ? "Не указан тип статуса" : string.Empty);
             }
         }
 

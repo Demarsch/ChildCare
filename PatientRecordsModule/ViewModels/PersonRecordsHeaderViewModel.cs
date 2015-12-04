@@ -318,6 +318,8 @@ namespace PatientRecordsModule.ViewModels
                 OnPropertyChanged(() => IsViewModeActive);
             if (e.PropertyName == "IsEditModeInCurrentProtocolEditor")
                 OnPropertyChanged(() => IsEditModeActive);
+            if (e.PropertyName == "IsRecordCanBeCompleted")
+                OnPropertyChanged(() => IsRecordCanBeCompletedEnabled);
 
             if (e.PropertyName == "AllowDocuments")
                 OnPropertyChanged(() => AllowDocuments);
@@ -418,6 +420,11 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
+        public bool IsRecordCanBeCompletedEnabled
+        {
+            get { return personRecordEditorViewModel.IsRecordCanBeCompleted; }
+        }
+
         public bool IsRecordCanBeCompleted
         {
             get { return IsRecordSelected && (IsRecordCompleted == null || IsRecordCompleted == false); }
@@ -507,6 +514,10 @@ namespace PatientRecordsModule.ViewModels
         public ICommand CompleteVisitCommand { get { return personRecordListViewModel.CompleteVisitCommand; } }
 
         public ICommand ReturnToActiveVisitCommand { get { return personRecordListViewModel.ReturnToActiveVisitCommand; } }
+
+        public ICommand CompleteRecordCommand { get { return personRecordListViewModel.CompleteRecordCommand; } }
+
+        public ICommand InProgressRecordCommand { get { return personRecordListViewModel.InProgressRecordCommand; } }
 
         public ICommand PrintProtocolCommand { get { return personRecordEditorViewModel.PrintProtocolCommand; } }
 

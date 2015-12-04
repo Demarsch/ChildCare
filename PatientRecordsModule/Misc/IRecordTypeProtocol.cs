@@ -20,6 +20,8 @@ namespace PatientRecordsModule.Misc
 
         void PrintProtocol();
 
+        string CanComplete();
+
         IChangeTracker ChangeTracker { get; set; }
     }
 

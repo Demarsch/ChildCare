@@ -196,16 +196,20 @@
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_DiagnosTypes" />
         <EntityTypeShape EntityType="DataLib.ExecutionPlace" Width="1.5" PointX="5.25" PointY="71.25" />
         <EntityTypeShape EntityType="DataLib.RecordPeriod" Width="1.5" PointX="6" PointY="85.5" />
-        <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="8.25" PointY="65.375" />
         <EntityTypeShape EntityType="DataLib.Urgently" Width="1.5" PointX="3" PointY="69.375" />
         <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
-        <AssociationConnector Association="DataLib.FK_Assignments_Records" />
         <AssociationConnector Association="DataLib.FK_Assignments_Urgentlies" />
         <AssociationConnector Association="DataLib.FK_RecordPeriods_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_VisitOutcomes_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_VisitResults_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Visits_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces" />
+        <AssociationConnector Association="DataLib.FK_Visits_Urgentlies" />
+        <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces1" />
+        <EntityTypeShape EntityType="DataLib.DefaultProtocol" Width="1.5" PointX="10.5" PointY="69.125" />
+        <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="23.25" PointY="50.75" />
+        <AssociationConnector Association="DataLib.FK_Assignments_Records" />
+        <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Records" />
         <AssociationConnector Association="DataLib.FK_Records_Persons" />
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Records" />
@@ -217,12 +221,8 @@
         <AssociationConnector Association="DataLib.FK_Records_Urgentlies" />
         <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_Records_Visits" />
-        <AssociationConnector Association="DataLib.FK_Visits_Urgentlies" />
-        <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces1" />
-        <EntityTypeShape EntityType="DataLib.DefaultProtocol" Width="1.5" PointX="10.5" PointY="69.125" />
         <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="9.625" PointY="9" />
         <EntityTypeShape EntityType="DataLib.MKBGroup" Width="1.5" PointX="7.375" PointY="9" />
-        <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
         <AssociationConnector Association="DataLib.FK_MKB_MKB" />
         <AssociationConnector Association="DataLib.FK_MKB_MKBGroups" />
         <AssociationConnector Association="DataLib.FK_MKBGroups_MKBGroups" />

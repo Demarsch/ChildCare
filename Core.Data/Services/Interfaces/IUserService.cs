@@ -16,5 +16,7 @@ namespace Core.Data.Services
         bool HasPermission(string permission);
 
         User GetUserBySID();
+
+        string GetCurrentSID();
     }
 }

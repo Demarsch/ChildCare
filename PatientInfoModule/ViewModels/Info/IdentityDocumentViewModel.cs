@@ -343,19 +343,19 @@ namespace PatientInfoModule.ViewModels
 
             protected override void OnValidateProperty(string propertyName)
             {
-                if (string.CompareOrdinal(propertyName, "Series") == 0 || string.CompareOrdinal(propertyName, "Number") == 0)
+                if (PropertyNameEquals(propertyName, x => x.Series) || PropertyNameEquals(propertyName, x => x.Number))
                 {
                     ValidateSeriesAndNumber();
                 }
-                else if (string.CompareOrdinal(propertyName, "DocumentTypeId") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.DocumentTypeId))
                 {
                     ValidateDocumentType();
                 }
-                else if (string.CompareOrdinal(propertyName, "FromDate") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.FromDate))
                 {
                     ValidateFromDate();
                 }
-                else if (string.CompareOrdinal(propertyName, "GivenOrg") == 0 || string.CompareOrdinal(propertyName, "GivenOrgText") == 0)
+                else if (PropertyNameEquals(propertyName, x => x.GivenOrg) || PropertyNameEquals(propertyName, x => x.GivenOrgText))
                 {
                     ValidateGivenOrg();
                 }
@@ -376,50 +376,26 @@ namespace PatientInfoModule.ViewModels
 
             private void ValidateGivenOrg()
             {
-                if (string.IsNullOrWhiteSpace(AssociatedItem.GivenOrg) && string.IsNullOrWhiteSpace(AssociatedItem.GivenOrgText))
-                {
-                    Errors["GivenOrg"] = Errors["GivenOrgText"] = "Не указана выдавшая организация";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["GivenOrg"] = Errors["GivenOrgText"] = string.Empty;
-                }
+                var error = string.IsNullOrWhiteSpace(AssociatedItem.GivenOrg) && string.IsNullOrWhiteSpace(AssociatedItem.GivenOrgText) ? "Не указана выдавшая организация" : string.Empty;
+                SetError(x => x.GivenOrg, error);
+                SetError(x => x.GivenOrgText, error);
             }
 
             private void ValidateFromDate()
             {
-                if (AssociatedItem.FromDate == null)
-                {
-                    Errors["FromDate"] = "Не указана дата выдачи";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["FromDate"] = string.Empty;
-                }
+                SetError(x => x.FromDate, AssociatedItem.FromDate == null ? "Не указана дата выдачи" : string.Empty);
             }
 
             private void ValidateSeriesAndNumber()
             {
-                if (string.IsNullOrWhiteSpace(AssociatedItem.Series) && string.IsNullOrWhiteSpace(AssociatedItem.Number))
-                {
-                    Errors["Series"] = Errors["Number"] = "Серия и номер не могут быть пустыми одновременно";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["Series"] = Errors["Number"] = string.Empty;
-                }
+                var error = string.IsNullOrWhiteSpace(AssociatedItem.Series) && string.IsNullOrWhiteSpace(AssociatedItem.Number) ? "Серия и номер не могут быть пустыми одновременно" : string.Empty;
+                SetError(x => x.Series, error);
+                SetError(x => x.Number, error);
             }
 
             private void ValidateDocumentType()
             {
-                if (AssociatedItem.DocumentTypeId == null)
-                {
-                    Errors["DocumentTypeId"] = "Не указан тип документа";
-                }
-                else if (ValidationIsActive)
-                {
-                    Errors["DocumentTypeId"] = string.Empty;
-                }
+                SetError(x => x.DocumentTypeId, AssociatedItem.DocumentTypeId == null ? "Не указан тип документа" : string.Empty);
             }
         }
 

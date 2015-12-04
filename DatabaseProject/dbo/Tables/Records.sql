@@ -14,7 +14,7 @@
     [IsCompleted]     BIT          NOT NULL,
     [MKB]             VARCHAR (10) CONSTRAINT [DF_Records_MKB] DEFAULT ('') NOT NULL,
     [BeginDateTime]   DATETIME     NOT NULL,
-    [EndDateTime]     DATETIME     NOT NULL,
+    [EndDateTime]     DATETIME     NULL,
     [ActualDateTime]  DATETIME     NOT NULL,
     [BillingDateTime] DATETIME     NULL,
     [RemovedByUserId] INT          NULL,
@@ -28,6 +28,8 @@
     CONSTRAINT [FK_Records_Users] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Records_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 

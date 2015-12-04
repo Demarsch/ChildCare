@@ -16,10 +16,12 @@ using Core.Data.Services;
 using System.Windows.Input;
 using System.Data.Entity;
 using Prism.Commands;
+using Core.Wpf.Misc;
+using Core.Misc;
 
 namespace PatientRecordsModule.ViewModels
 {
-    public class BrigadeViewModel : BindableBase
+    public class BrigadeViewModel : TrackableBindableBase, IChangeTrackerMediator, IDisposable
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -29,6 +31,7 @@ namespace PatientRecordsModule.ViewModels
         private CancellationTokenSource currentOperationToken;
 
         private BrigadeDTO brigadeDTO;
+
         #endregion
 
         #region Construcotrs
@@ -44,6 +47,7 @@ namespace PatientRecordsModule.ViewModels
             }
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
+            ChangeTracker = new ChangeTrackerEx<BrigadeViewModel>(this);
             RemoveRecordMemberCommand = new DelegateCommand(RemoveRecordMember);
             this.brigadeDTO = brigadeDTO;
             PersonStaffs = new ObservableCollectionEx<CommonIdName>();
@@ -52,15 +56,15 @@ namespace PatientRecordsModule.ViewModels
             RoleId = brigadeDTO.RoleId;
             RecordTypeRolePermissionId = brigadeDTO.RecordTypeRolePermissionId;
             LoadPersonStaffsAsync(RecordTypeRolePermissionId);
-            RoleName = brigadeDTO.RoleName;
+            RoleName = brigadeDTO.RoleName + (brigadeDTO.IsRequired ? "*" : string.Empty);
             PermissionId = brigadeDTO.PermissionId;
             IsRequired = brigadeDTO.IsRequired;
             RecordMemberId = brigadeDTO.RecordMemberId;
             PersonName = brigadeDTO.PersonName;
             StaffName = brigadeDTO.StaffName;
             PersonStaffId = brigadeDTO.PersonStaffId;
+            ChangeTracker.IsEnabled = true;
         }
-
         #endregion
 
         #region Properties
@@ -126,7 +130,7 @@ namespace PatientRecordsModule.ViewModels
             get { return personStaffId; }
             set
             {
-                SetProperty(ref personStaffId, value);
+                SetTrackedProperty(ref personStaffId, value);
                 LoadPersonStaffDataAsync(PersonStaffId);
                 OnPropertyChanged(() => IsPersonMember);
             }
@@ -149,6 +153,8 @@ namespace PatientRecordsModule.ViewModels
         public bool IsPersonMember { get { return PersonStaffId > 0; } }
 
         public ObservableCollectionEx<CommonIdName> PersonStaffs { get; set; }
+
+        public IChangeTracker ChangeTracker { get; private set; }
         #endregion
 
         #region Methods
@@ -235,6 +241,11 @@ namespace PatientRecordsModule.ViewModels
                 RecordTypeRolePermissionId = RecordTypeRolePermissionId,
                 RecordId = brigadeDTO.RecordId
             };
+        }
+
+        public void Dispose()
+        {
+            ChangeTracker.Dispose();
         }
         #endregion
 

@@ -52,6 +52,8 @@ namespace PatientRecordsModule.Services
 
         IDisposableQueryable<Record> GetRecord(int recordId);
 
+        Task<bool> IsBrigadeCompleted(int recordId);
+
         IDisposableQueryable<Assignment> GetAssignment(int assignmentId);
 
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
@@ -74,10 +76,14 @@ namespace PatientRecordsModule.Services
 
         Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token);
 
-        Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime endDateTime, List<RecordMember> brigade, CancellationToken token);
+        Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime? endDateTime, List<RecordMember> brigade, CancellationToken token);
 
         void DeleteVisitAsync(int visitId, int removedByUserId, CancellationToken token);
 
         void ReturnToActiveVisitAsync(int visitId, CancellationToken token);
+
+        void CompleteRecordAsync(int recordId, CancellationToken token);
+
+        void InProgressRecordAsync(int recordId, CancellationToken token);
     }
 }

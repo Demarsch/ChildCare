@@ -47,8 +47,8 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             this.logService = logService;
 
             CurrentMode = ProtocolMode.View;
-            DiagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, cacheService, dialogService, messageService, logService, userService);  
-     
+            DiagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, cacheService, dialogService, messageService, logService, userService);
+
             currentInstanceChangeTracker = new ChangeTrackerEx<DefaultProtocolViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, DiagnosesEditor.ChangeTracker);
             changeTracker.PropertyChanged += OnChangesTracked;
@@ -69,9 +69,9 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
         {
             if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
             {
-                
+
             }
-        }            
+        }
 
         #region Properties
 
@@ -103,7 +103,7 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 
         #endregion
 
-        #region Methods       
+        #region Methods
 
         #endregion
 
@@ -127,7 +127,7 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
 
         public int SaveProtocol(int recordId, int visitId)
         {
-            if (recordId == SpecialValues.NewId || !IsValid) 
+            if (recordId == SpecialValues.NewId || !IsValid)
                 return SpecialValues.NonExistingId;
 
             var defaultProtocol = recordService.GetRecordById(recordId).First().DefaultProtocols.FirstOrDefault();
@@ -137,7 +137,7 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             defaultProtocol.Description = Description;
             defaultProtocol.Conclusion = Result;
             int saveProtocolId = recordService.SaveDefaultProtocol(defaultProtocol);
-            
+
             if (!SpecialValues.IsNewOrNonExisting(saveProtocolId) && DiagnosesEditor.Save(recordId))
             {
                 ChangeTracker.AcceptChanges();
@@ -156,7 +156,7 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             }
             else if (recordId > 0)
             {
-                LoadRecordData(recordId);                
+                LoadRecordData(recordId);
             }
             else if (visitId > 0)
                 LoadVisitData(visitId);
@@ -164,6 +164,14 @@ namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
             DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId);
 
             ChangeTracker.IsEnabled = true;
+        }
+
+        public string CanComplete()
+        {
+            string resStr = string.Empty;
+            if (!DiagnosesEditor.Diagnoses.Any())
+                resStr = "диагноз услуги";
+            return resStr;
         }
 
         private void LoadVisitData(int visitId)

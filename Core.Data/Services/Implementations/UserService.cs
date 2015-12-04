@@ -20,7 +20,7 @@ namespace Core.Data.Services
             this.contextProvider = contextProvider;
         }
 
-        private string GetCurrentSID()
+        public string GetCurrentSID()
         {
             return UserPrincipal.Current.Sid.ToString();
         }

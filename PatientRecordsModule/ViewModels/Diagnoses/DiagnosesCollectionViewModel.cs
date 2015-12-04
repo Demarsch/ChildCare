@@ -37,7 +37,7 @@ namespace PatientRecordsModule.ViewModels
         private readonly CompositeChangeTracker changeTracker;
         private int diagnosTypeId;
 
-        public DiagnosesCollectionViewModel(IDiagnosService diagnosService, IRecordService recordService, ICacheService cacheService, IDialogServiceAsync dialogService, 
+        public DiagnosesCollectionViewModel(IDiagnosService diagnosService, IRecordService recordService, ICacheService cacheService, IDialogServiceAsync dialogService,
                                             IDialogService messageService, ILog logService, IUserService userService)
         {
             if (logService == null)
@@ -99,8 +99,8 @@ namespace PatientRecordsModule.ViewModels
             IDisposableQueryable<DiagnosLevel> diagnosLevelsQuery = null;
             IDisposableQueryable<Diagnosis> diagnosesQuery = null;
             try
-            {                
-                DiagnosLevels.Clear();                
+            {
+                DiagnosLevels.Clear();
                 diagnosLevelsQuery = diagnosService.GetActualDiagnosLevels();
                 DiagnosLevels.AddRange(diagnosLevelsQuery.Select(x => new DiagnosLevelViewModel() { Id = x.Id, Name = x.Name }).ToArray());
 
@@ -112,9 +112,18 @@ namespace PatientRecordsModule.ViewModels
                 if (recordId != 0)
                 {
                     Diagnoses.Clear();
+                    if (currentLoadingToken != null)
+                    {
+                        currentLoadingToken.Cancel();
+                        currentLoadingToken.Dispose();
+                    }
+                    currentLoadingToken = new CancellationTokenSource();
+                    var token = currentLoadingToken.Token;
                     ChangeTracker.IsEnabled = false;
                     diagnosesQuery = diagnosService.GetRecordDiagnos(recordId);
-                    var result = diagnosesQuery.Select(x => new DiagnosViewModel()
+                    var result = await Task.Factory.StartNew(() =>
+                    {
+                    	return diagnosesQuery.Select(x => new DiagnosViewModel()
                         {
                             Id = x.Id,
                             DiagnosText = x.DiagnosText,
@@ -128,6 +137,7 @@ namespace PatientRecordsModule.ViewModels
                             ComplicationId = x.ComplicationId,
                             IsMainDiagnos = x.IsMainDiagnos
                         }).ToArray();
+                   }, token);
 
                     Diagnoses.AddRange(result.OrderBy(x => x.LevelPriority));
                     SetVisibilityGridData();
@@ -150,12 +160,12 @@ namespace PatientRecordsModule.ViewModels
                 if (diagnosesQuery != null)
                     diagnosesQuery.Dispose();
                 ChangeTracker.IsEnabled = true;
-            }            
-        }        
+            }
+        }
 
         private void SetVisibilityGridData()
         {
-            HasAnyDiagnoses = Diagnoses.Any();            
+            HasAnyDiagnoses = Diagnoses.Any();
         }
 
         private void AddDiagnos(int? levelId)
@@ -207,7 +217,7 @@ namespace PatientRecordsModule.ViewModels
                     diagnosService.DeleteDiagnos(SelectedDiagnos.Id, out exception);
                 Diagnoses.Remove(SelectedDiagnos);
                 SetVisibilityGridData();
-            };            
+            };
         }
 
         private async void MakeClarification()
@@ -220,7 +230,7 @@ namespace PatientRecordsModule.ViewModels
                     var result = await dialogService.ShowDialogAsync(viewModel);
                     if (result == true)
                     {
-                        var selectedMKB = viewModel.MKBTree.Any(x => x.IsSelected) ? viewModel.MKBTree.First(x => x.IsSelected) : 
+                        var selectedMKB = viewModel.MKBTree.Any(x => x.IsSelected) ? viewModel.MKBTree.First(x => x.IsSelected) :
                                                                                      viewModel.MKBTree.SelectMany(x => x.Children).First(x => x.IsSelected);
                         SelectedDiagnos.MKB = selectedMKB.Code;
                     }
@@ -238,7 +248,7 @@ namespace PatientRecordsModule.ViewModels
                         SelectedDiagnos.ComplicationId = checkedComplications.First().Id;
                         SelectedDiagnos.DiagnosText = checkedComplications.First().Name;
                         for (int i = 1; i < checkedComplications.Count; i++)
-                            AddDiagnosLevel(SelectedDiagnos.LevelId, checkedComplications[i].Id, checkedComplications[i].Name);                           
+                            AddDiagnosLevel(SelectedDiagnos.LevelId, checkedComplications[i].Id, checkedComplications[i].Name);
                     }
                 }
             }
@@ -280,7 +290,7 @@ namespace PatientRecordsModule.ViewModels
         {
             get { return needSetMainDiagnos; }
             set { SetProperty(ref needSetMainDiagnos, value); }
-        }             
+        }
 
         private bool hasAnyDiagnoses;
         public bool HasAnyDiagnoses
@@ -311,7 +321,7 @@ namespace PatientRecordsModule.ViewModels
         }
 
         #endregion
-        
+
         #region Events
 
         void OnBeforeDiagnosCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -352,7 +362,7 @@ namespace PatientRecordsModule.ViewModels
         }
 
         #endregion
-        
+
         internal bool Save(int recordId)
         {            
             if (Diagnoses.Any() && IsDiagnosValid())
@@ -360,17 +370,17 @@ namespace PatientRecordsModule.ViewModels
                 string exception = string.Empty;
                 var record = recordService.GetRecordById(recordId).First();
                 int personDiagnosId = diagnosService.Save(record.PersonId, recordId, diagnosTypeId, 
-                                                Diagnoses.Select(x => new Diagnosis() 
-                                                { 
-                                                    Id = x.Id, 
+                                                Diagnoses.Select(x => new Diagnosis()
+                                                {
+                                                    Id = x.Id,
                                                     ComplicationId = x.ComplicationId,
                                                     DiagnosLevelId = x.LevelId,
                                                     DiagnosText = x.DiagnosText,
                                                     MKB = x.MKB,
-                                                    IsMainDiagnos = x.IsMainDiagnos,      
-                                                    Options = string.Empty,                      
+                                                    IsMainDiagnos = x.IsMainDiagnos,
+                                                    Options = string.Empty,
                                                     InDateTime = DateTime.Now,
-                                                    InPersonId = userService.GetUserBySID().PersonId,                                                                               
+                                                    InPersonId = userService.GetUserBySID().PersonId,
                                                 }).ToArray(), out exception);
                 if (personDiagnosId != SpecialValues.NewId)
                 {
@@ -407,25 +417,32 @@ namespace PatientRecordsModule.ViewModels
                 validationErrors += "Отсутствует информация о пользователе (SID пользователя не зарегистрирован в МИС).\r\n";
 
             var diagnosType = diagnosService.GetDiagnosTypeById(diagnosTypeId).FirstOrDefault();
-            if (Diagnoses.Any(x => x.DiagnosText == string.Empty))
-                validationErrors += "Отсутствует текст диагноза.\r\n";
-            if (Diagnoses.Any(x => x.HasMKB && x.MKB == string.Empty))
-            {
-                string mkbLevels = Diagnoses.Where(x => x.HasMKB && x.MKB == string.Empty).Select(x => x.LevelName).Aggregate((x, y) => x + ", " + y);
-                validationErrors += "Не указан код МКБ-10 в графах: " + mkbLevels + ".\r\n";
-            }
+            if (diagnosType == null)
+                return true;
+            if (!Diagnoses.Any())
+                return true;
             else
             {
-                var invalidMKB = Diagnoses.Where(x => x.HasMKB && diagnosService.GetMKBByCode(x.MKB) == null);
-                if (invalidMKB.Any())
-                    validationErrors += "Не верно указан код МКБ-10 в графах: " + invalidMKB.Select(x => x.LevelName).Aggregate((x, y) => x + ", " + y) + ".\r\n";
-            }            
 
-            if (diagnosType != null && diagnosType.NeedSetMainDiagnos && !Diagnoses.Any(x => x.IsMainDiagnos))
-                validationErrors += "Не отмечен диагноз '" + diagnosType.MainDiagnosHeader + "'\r\n";
-            if (Diagnoses.Any(x => x.IsComplication && !x.ComplicationId.HasValue))
-                validationErrors += "Выберите осложнение согласно справочнику.\r\n";
-                           
+                if (Diagnoses.Any(x => x.DiagnosText == string.Empty))
+                    validationErrors += "Отсутствует текст диагноза.\r\n";
+                if (Diagnoses.Any(x => x.HasMKB && x.MKB == string.Empty))
+                {
+                    string mkbLevels = Diagnoses.Where(x => x.HasMKB && x.MKB == string.Empty).Select(x => x.LevelName).Aggregate((x, y) => x + ", " + y);
+                    validationErrors += "Не указан код МКБ-10 в графах: " + mkbLevels + ".\r\n";
+                }
+                else
+                {
+                    var invalidMKB = Diagnoses.Where(x => x.HasMKB && diagnosService.GetMKBByCode(x.MKB) == null);
+                    if (invalidMKB.Any())
+                        validationErrors += "Не верно указан код МКБ-10 в графах: " + invalidMKB.Select(x => x.LevelName).Aggregate((x, y) => x + ", " + y) + ".\r\n";
+                }
+
+                if (diagnosType != null && diagnosType.NeedSetMainDiagnos && !Diagnoses.Any(x => x.IsMainDiagnos))
+                    validationErrors += "Не отмечен диагноз '" + diagnosType.MainDiagnosHeader + "'\r\n";
+                if (Diagnoses.Any(x => x.IsComplication && !x.ComplicationId.HasValue))
+                    validationErrors += "Выберите осложнение согласно справочнику.\r\n";
+            }
             return validationErrors == string.Empty;
         }
     }
