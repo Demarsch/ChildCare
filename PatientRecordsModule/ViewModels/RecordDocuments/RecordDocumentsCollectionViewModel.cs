@@ -28,6 +28,7 @@ namespace PatientRecordsModule.ViewModels
 {
     public class RecordDocumentsCollectionViewModel : BindableBase, IDisposable
     {
+        #region Fields
         private readonly IDocumentService documentService;
         private readonly IFileService fileService;
         private readonly IRecordService recordService;
@@ -37,6 +38,9 @@ namespace PatientRecordsModule.ViewModels
         public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
         private int recordId;
         private int assignmentId;
+        #endregion
+
+        #region Constructor
 
         public RecordDocumentsCollectionViewModel(IDocumentService documentService, IRecordService recordService, IFileService fileService, ILog logService)
         {
@@ -70,18 +74,13 @@ namespace PatientRecordsModule.ViewModels
             NotificationInteractionRequest = new InteractionRequest<Notification>();
 
             RecordDocuments = new ObservableCollectionEx<RecordDocumentViewModel>();
-            RecordDocuments.CollectionChanged += RecordDocuments_CollectionChanged;
+            RecordDocuments.BeforeCollectionChanged += OnBeforeRecordDocumentsChanged;
+            RecordDocuments.CollectionChanged += OnRecordDocumentsChanged;
         }
 
-        void RecordDocuments_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {                        
-            HasDocumentsAttachments = recordDocuments.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
-            HasDICOMAttachments = recordDocuments.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
-            //if (hasDocumentsAttachments || hasDocumentsAttachments)
-            //    recordDocuments.First().IsSelected = true;
-            detachDocumentCommand.RaiseCanExecuteChanged();
-        }
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Load record attachments
         /// </summary>
@@ -247,6 +246,28 @@ namespace PatientRecordsModule.ViewModels
             }, OnDialogClosed);
         }
 
+        private void AttachDICOM()
+        {
+            return;
+        }
+
+        private void DetachDICOM()
+        {
+            return;
+        }
+
+        public void Dispose()
+        {
+            foreach (var document in RecordDocuments)
+                document.PropertyChanged -= OnDocumentPropertyChanged;
+            RecordDocuments.BeforeCollectionChanged -= OnBeforeRecordDocumentsChanged;
+            RecordDocuments.CollectionChanged -= OnRecordDocumentsChanged;
+        }
+
+        #endregion
+
+        #region Events
+
         private void OnDialogClosed(Confirmation confirmation)
         {
             if (confirmation.Confirmed)
@@ -263,20 +284,32 @@ namespace PatientRecordsModule.ViewModels
             }
         }
 
-        private void AttachDICOM()
+        void OnRecordDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            return;
+            HasDocumentsAttachments = recordDocuments.Any(x => !x.Extension.Equals(FileServiceFilters.DICOMExtention));
+            HasDICOMAttachments = recordDocuments.Any(x => x.Extension.Equals(FileServiceFilters.DICOMExtention));
         }
 
-        private void DetachDICOM()
+        void OnBeforeRecordDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            return;
+            if (e.NewItems != null)
+            {
+                foreach (var newItem in e.NewItems.Cast<RecordDocumentViewModel>())
+                    newItem.PropertyChanged += OnDocumentPropertyChanged;
+            }
+            if (e.OldItems != null)
+            {
+                foreach (var oldItem in e.OldItems.Cast<RecordDocumentViewModel>())
+                    oldItem.PropertyChanged -= OnDocumentPropertyChanged;
+            }
         }
 
-        public void Dispose()
+        private void OnDocumentPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-
+            detachDocumentCommand.RaiseCanExecuteChanged();
         }
+
+        #endregion
 
         #region Properties
 

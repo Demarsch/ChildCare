@@ -38,7 +38,7 @@ namespace PatientRecordsModule.ViewModels
 
             CloseCommand = new DelegateCommand<bool?>(Close);
 
-            MKBTree = new ObservableCollectionEx<MKBViewModel>();                  
+                 
         }
 
         private MKB[] mkbRoots;
@@ -69,6 +69,7 @@ namespace PatientRecordsModule.ViewModels
 
         #region Properties
 
+        
         public ICollection<MKB> MKBCollection { get; private set; }
 
         /// <summary>
@@ -77,7 +78,15 @@ namespace PatientRecordsModule.ViewModels
         private ObservableCollectionEx<MKBViewModel> mkbTree;
         public ObservableCollectionEx<MKBViewModel> MKBTree
         {
-            get { return mkbTree; }
+            get 
+            {
+                if (mkbTree == null)
+                {
+                    mkbTree = new ObservableCollectionEx<MKBViewModel>();
+                    Initialize();
+                }
+                return mkbTree; 
+            }
             set { SetProperty(ref mkbTree, value); }
         }       
 
@@ -159,9 +168,7 @@ namespace PatientRecordsModule.ViewModels
             if (validate == true)
             {
                 if (!MKBTree.Any(x => x.IsSelected || x.Children.Any(a => a.IsSelected)))
-                {
                     return;
-                }
                 OnCloseRequested(new ReturnEventArgs<bool>(true));
             }
             else

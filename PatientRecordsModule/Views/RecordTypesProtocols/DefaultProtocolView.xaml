@@ -11,7 +11,7 @@
     <DataTemplate DataType="{x:Type viewModels:DefaultProtocolViewModel}">
         <Grid>
             <!--Grid for edit protocol-->
-            <GroupBox Header="Протокол" FontWeight="Medium" Margin="2,20,2,2" BorderBrush="Black" BorderThickness="1"
+            <GroupBox Header="Протокол" Margin="2,20,2,2" BorderBrush="Black" BorderThickness="1"
                       Visibility="{Binding IsEditMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">        
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -26,10 +26,10 @@
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
                     <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Description, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
                     <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
                     <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
                     <views:DiagnosesView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" DataContext="{Binding DiagnosesEditor}" Margin="2"/>
                 </Grid>
             </GroupBox>
@@ -44,9 +44,9 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание:" Margin="5" FontSize="13" FontWeight="Medium"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание:" Margin="5" FontSize="13" FontWeight="Medium" VerticalAlignment="Top"/>
                 <TextBlock Grid.Row="0"  Grid.Column="1" Text="{Binding Description}" HorizontalAlignment="Stretch"/>
-                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение:" Margin="5" FontSize="13" FontWeight="Medium"/>
+                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение:" Margin="5" FontSize="13" FontWeight="Medium" VerticalAlignment="Top"/>
                 <TextBlock  Grid.Row="1" Grid.Column="1" Text="{Binding Result}" HorizontalAlignment="Stretch"/>
             </Grid>
         </Grid>

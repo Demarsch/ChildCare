@@ -216,7 +216,7 @@ namespace PatientRecordsModule.ViewModels
             {
                 using (var viewModel = new MKBTreeViewModel(diagnosService, cacheService))
                 {
-                    viewModel.Initialize();
+                    //viewModel.Initialize();
                     var result = await dialogService.ShowDialogAsync(viewModel);
                     if (result == true)
                     {
