@@ -107,7 +107,7 @@ namespace ScheduleModule.ViewModels
             ChangeDateCommand = new DelegateCommand<int?>(ChangeDate);
             ClearFiltersCommand = new DelegateCommand(ClearFilters, CanClearFilters);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
-            unselectedRecordType = new RecordType { Name = "Выберите услугу" };
+            unselectedRecordType = new RecordType { Name = "Выберите услугу", Assignable = false };
             initialLoadingCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await InitialLoadingAsync()) };
             loadAssignmentsCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadAssignmentsAsync(selectedDate)) };
             SubscribeToEvents();

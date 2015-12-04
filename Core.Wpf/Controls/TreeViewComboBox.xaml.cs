@@ -1,10 +1,19 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Core.Misc;
+using Core.Wpf.Converters;
+using Core.Wpf.Extensions;
+using Fluent;
+using Xceed.Wpf.Toolkit.Core.Utilities;
+using ComboBox = System.Windows.Controls.ComboBox;
 
 namespace Core.Wpf.Controls
 {
@@ -43,6 +52,21 @@ namespace Core.Wpf.Controls
         public TreeViewComboBox()
         {
             InitializeComponent();
+            Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            var isInRibbon = this.FindAncestor<Ribbon>() != null;
+            var comboBox = isInRibbon ? new Fluent.ComboBox { IsEditable = false } : new ComboBox();
+            comboBox.MaxDropDownHeight = 0.0;
+            var binding = new Binding("DisplayMemberPath") { RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor) { AncestorType = typeof(UserControl) } };
+            comboBox.SetBinding(ItemsControl.DisplayMemberPathProperty, binding);
+            binding = new Binding("IsOpen") { Source = popup, Converter = ReversedBoolConverter.Instance };
+            comboBox.SetBinding(IsHitTestVisibleProperty, binding);
+            comboBox.DropDownOpened += ComboBoxOnDropDownOpened;
+            comboBoxPlaceholder.Content = comboBox;
+            popup.PlacementTarget = comboBox;
         }
 
         public double MaxDropDownHeight
@@ -115,7 +139,7 @@ namespace Core.Wpf.Controls
         {
             if (newSelectedItem == null)
             {
-                comboBox.ItemsSource = null;
+                ((ComboBox)comboBoxPlaceholder.Content).ItemsSource = null;
             }
             var currentItem = newSelectedItem as IHierarchyItem;
             hierarchyStack = new Stack();
@@ -173,7 +197,7 @@ namespace Core.Wpf.Controls
             {
                 return;
             }
-            Predicate<object> selectionPredicate = SelectionPredicate == SelectBottomLevelOnlyPredicate ? SelectBottomLevelOnly : SelectionPredicate;
+            var selectionPredicate = SelectionPredicate == SelectBottomLevelOnlyPredicate ? SelectBottomLevelOnly : SelectionPredicate;
             if (selectionPredicate(e.NewValue))
             {
                 SelecteItemInCombobox(e.NewValue);
@@ -183,6 +207,7 @@ namespace Core.Wpf.Controls
 
         private void SelecteItemInCombobox(object newValue)
         {
+            var comboBox = (ComboBox)comboBoxPlaceholder.Content;
             comboBox.ItemsSource = new[] { newValue };
             comboBox.SelectedIndex = 0;
             SelectedItem = newValue;
@@ -190,6 +215,7 @@ namespace Core.Wpf.Controls
 
         private void ComboBoxOnDropDownOpened(object sender, EventArgs eventArgs)
         {
+            var comboBox = (ComboBox)sender;
             comboBox.IsDropDownOpen = false;
             new DispatcherTimer(TimeSpan.FromSeconds(0.1), DispatcherPriority.Normal, OpenPopupCallback, Dispatcher).Start();
         }
@@ -198,6 +224,16 @@ namespace Core.Wpf.Controls
         {
             ((DispatcherTimer)sender).Stop();
             popup.IsOpen = true;
+            treeView.Focus();
+            Mouse.Capture(treeView, CaptureMode.SubTree);
+            Mouse.AddPreviewMouseUpOutsideCapturedElementHandler(treeView, TreeViewOnMouseUp);
+        }
+
+        private void TreeViewOnMouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            Mouse.RemovePreviewMouseUpOutsideCapturedElementHandler(treeView, TreeViewOnMouseUp);
+            treeView.ReleaseMouseCapture();
+            popup.IsOpen = false;
         }
 
         private void TreeView_OnSelected(object sender, RoutedEventArgs e)

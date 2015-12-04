@@ -160,6 +160,10 @@
       <Project>{CF75CDE2-002C-4113-824A-03A3B7C6847B}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.DataTemplates\Shared.DataTemplates.csproj">
+      <Project>{ee5f4410-13f6-477f-8ad6-99e848234331}</Project>
+      <Name>Shared.DataTemplates</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.Schedule\Shared.Schedule.csproj">
       <Project>{95DCE91E-6880-4977-9861-2F65D8D61264}</Project>
       <Name>Shared.Schedule</Name>

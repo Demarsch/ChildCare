@@ -6,7 +6,7 @@
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
                       xmlns:converters="clr-namespace:PatientInfoModule.Converters"
-                      xmlns:converters1="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                      xmlns:coreConverters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
@@ -76,7 +76,7 @@
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Top"
                                        Margin="0 2 2 0"
-                                       Visibility="{Binding IsRepresentative, Converter={x:Static converters1:BoolToVisibilityConverter.Instance}}"
+                                       Visibility="{Binding IsRepresentative, Converter={x:Static coreConverters:BoolToVisibilityConverter.Instance}}"
                                        Source="pack://application:,,,/Core;Component/Resources/Images/Star16x16.png" />
                             </Grid>
                         </Border>
