@@ -1,0 +1,21 @@
+﻿using System;
+using System.Globalization;
+using System.Windows.Data;
+
+namespace Core.Wpf.Converters
+{
+    public class ReversedBoolConverter : IValueConverter
+    {
+        public static readonly ReversedBoolConverter Instance = new ReversedBoolConverter();
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+    }
+}

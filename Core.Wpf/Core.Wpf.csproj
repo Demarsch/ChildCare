@@ -102,9 +102,13 @@
     <Compile Include="Behaviors\ScrollSynchronizer.cs" />
     <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
+    <Compile Include="Controls\TreeViewComboBox.xaml.cs">
+      <DependentUpon>TreeViewComboBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
     <Compile Include="Converters\CompletedToColorConverter.cs" />
     <Compile Include="Converters\BoolToWindowStateConverter.cs" />
+    <Compile Include="Converters\ReversedBoolConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\Converter.cs" />
@@ -161,6 +165,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\TreeViewComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PopupWindowAction\DefaultWindows\DefaultConfirmationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

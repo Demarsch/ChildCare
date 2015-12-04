@@ -10,9 +10,9 @@ namespace Core.Misc
     {
         protected readonly TItem AssociatedItem;
 
-        protected readonly Dictionary<string, string> Errors = new Dictionary<string, string>(StringComparer.Ordinal);
+        private readonly Dictionary<string, string> Errors = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        protected bool ValidationIsActive { get; private set; }
+        private bool ValidationIsActive { get; set; }
 
         protected ValidationMediator(TItem associatedItem)
         {

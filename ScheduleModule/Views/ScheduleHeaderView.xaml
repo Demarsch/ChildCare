@@ -7,6 +7,8 @@
                       xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels"
                       xmlns:markupExtensions="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
                       xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                      xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
+                      xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"

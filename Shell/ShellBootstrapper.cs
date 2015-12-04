@@ -1,4 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Threading.Tasks;
+using System.Windows;
+using Core.Data;
 using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
@@ -44,6 +49,35 @@ namespace Shell
             base.ConfigureContainer();
             RegisterServices();
             RegisterViews();
+            BuildCacheHierarchyAsync();
+        }
+
+        private async void BuildCacheHierarchyAsync()
+        {
+            await Task.Factory.StartNew(BuildCacheHierarchy);
+        }
+
+        private void BuildCacheHierarchy()
+        {
+            var cacheService = Container.Resolve<ICacheService>();
+            foreach (var recordType in cacheService.GetItems<RecordType>())
+            {
+                if (recordType.ParentId == null)
+                {
+                    continue;
+                }
+                var parentRecordType = cacheService.GetItemById<RecordType>(recordType.ParentId.Value);
+                if (parentRecordType == null)
+                {
+                    continue;
+                }
+                if (parentRecordType.RecordTypes1 == null)
+                {
+                    parentRecordType.RecordTypes1 = new List<RecordType>();
+                }
+                recordType.RecordType1 = parentRecordType;
+                parentRecordType.RecordTypes1.Add(recordType);
+            }
         }
 
         private void RegisterViews()

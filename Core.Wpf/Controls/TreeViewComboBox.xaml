@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="Core.Wpf.Controls.TreeViewComboBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <ComboBox MaxDropDownHeight="0"
+                  x:Name="comboBox"
+                  DisplayMemberPath="{Binding DisplayMemberPath, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  IsHitTestVisible="{Binding IsOpen, ElementName=popup, Converter={x:Static converters:ReversedBoolConverter.Instance}}"
+                  DropDownOpened="ComboBoxOnDropDownOpened"/>
+        <Popup StaysOpen="False"
+               PlacementTarget="{x:Reference comboBox}"
+               Placement="Bottom"
+               MaxHeight="{Binding MaxDropDownHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+               x:Name="popup">
+            <TreeView x:Name="treeView"
+                      MinWidth="{Binding ActualWidth, ElementName=comboBox}"
+                      ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                      ItemTemplate="{Binding ItemTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                      TreeViewItem.Selected="TreeView_OnSelected"
+                      SelectedItemChanged="TreeViewOnSelectedItemChanged">
+            </TreeView>
+        </Popup>
+    </Grid>
+</UserControl>

@@ -153,6 +153,7 @@
     <Compile Include="PartialClasses\PersonName.cs" />
     <Compile Include="PartialClasses\PersonSocialStatus.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />
+    <Compile Include="PartialClasses\RecordType.cs" />
     <Compile Include="PartialClasses\Urgently.cs" />
     <Compile Include="PersonDiagnos.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
