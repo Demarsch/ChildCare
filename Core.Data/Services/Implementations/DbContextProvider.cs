@@ -37,10 +37,10 @@ namespace Core.Data.Services
                 }
                 lock (sharedContextLock)
                 {
-                     if (sharedContext != null)
-                {
-                    return sharedContext;
-                }
+                    if (sharedContext != null)
+                    {
+                        return sharedContext;
+                    }
                     if (isDisposed)
                     {
                         throw new ObjectDisposedException("SharedContext");
@@ -48,6 +48,7 @@ namespace Core.Data.Services
                     var local = CreateNewContext();
                     local.Configuration.AutoDetectChangesEnabled = false;
                     local.Configuration.ProxyCreationEnabled = false;
+                    local.Configuration.LazyLoadingEnabled = false;
                     Thread.MemoryBarrier();
                     sharedContext = local;
                 }

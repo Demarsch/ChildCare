@@ -102,9 +102,10 @@ namespace Core.Data
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
         public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DefaultProtocol> DefaultProtocols { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<MKB> MKBs { get; set; }
         public virtual DbSet<MKBGroup> MKBGroups { get; set; }
         public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }
+        public virtual DbSet<RelativeRelationshipConnection> RelativeRelationshipConnections { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
     }
 }

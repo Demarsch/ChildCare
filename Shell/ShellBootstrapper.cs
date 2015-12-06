@@ -54,10 +54,22 @@ namespace Shell
 
         private async void BuildCacheHierarchyAsync()
         {
-            await Task.Factory.StartNew(BuildCacheHierarchy);
+            await Task.WhenAll(Task.Factory.StartNew(BuildRecordTypeHierarchy),
+                               Task.Factory.StartNew(BuildRelativeRelationshipHierarchy));
         }
 
-        private void BuildCacheHierarchy()
+        private void BuildRelativeRelationshipHierarchy()
+        {
+            var cacheService = Container.Resolve<ICacheService>();
+            foreach (var relationshipConnection in cacheService.GetItems<RelativeRelationshipConnection>())
+            {
+                //At this point RelativeRelationshipConnection  type is loaded and cacheService will automatically attach its objects to RelativeRelationship objects
+                relationshipConnection.RelativeRelationship = cacheService.GetItemById<RelativeRelationship>(relationshipConnection.ParentRelationshipId);
+                relationshipConnection.RelativeRelationship1 = cacheService.GetItemById<RelativeRelationship>(relationshipConnection.ChildRelationshipId);
+            }
+        }
+
+        private void BuildRecordTypeHierarchy()
         {
             var cacheService = Container.Resolve<ICacheService>();
             foreach (var recordType in cacheService.GetItems<RecordType>())
@@ -100,6 +112,7 @@ namespace Shell
             Container.RegisterType<IDialogService, WindowDialogService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IDialogServiceAsync, WindowsDialogServiceAsync>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("SHELL"));
+            var context = Container.Resolve<IDbContextProvider>().SharedContext;
         }
 
         protected override IModuleCatalog CreateModuleCatalog()

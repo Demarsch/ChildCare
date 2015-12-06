@@ -18,6 +18,8 @@ namespace Core.Data
         public RelativeRelationship()
         {
             this.PersonRelatives = new HashSet<PersonRelative>();
+            this.RelativeRelationshipConnections = new HashSet<RelativeRelationshipConnection>();
+            this.RelativeRelationshipConnections1 = new HashSet<RelativeRelationshipConnection>();
         }
     
         public int Id { get; set; }
@@ -26,5 +28,9 @@ namespace Core.Data
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonRelative> PersonRelatives { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections1 { get; set; }
     }
 }

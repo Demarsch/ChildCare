@@ -154,6 +154,7 @@
     <Compile Include="PartialClasses\PersonSocialStatus.cs" />
     <Compile Include="PartialClasses\RecordContract.cs" />
     <Compile Include="PartialClasses\RecordType.cs" />
+    <Compile Include="PartialClasses\RelativeRelationship.cs" />
     <Compile Include="PartialClasses\Urgently.cs" />
     <Compile Include="PersonDiagnos.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
@@ -177,6 +178,9 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordTypeRolePermission.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RelativeRelationshipConnection.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ReportTemplate.cs">

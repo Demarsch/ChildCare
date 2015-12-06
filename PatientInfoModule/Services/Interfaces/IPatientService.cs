@@ -47,6 +47,8 @@ namespace PatientInfoModule.Services
 
         IEnumerable<RelativeRelationship> GetRelationships();
 
+        RelativeRelationship GetSymmetricalRelationship(RelativeRelationship relationship, bool symmetricalRelationshipIsMale);
+
         Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId);
     }
 }

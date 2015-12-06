@@ -81,7 +81,7 @@ namespace PatientInfoModule.Services
             {
                 return new InsuranceCompany[0];
             }
-            var words = filter.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             return cacheService.GetItems<InsuranceCompany>().Where(x => words.All(y => x.NameSMOK.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1
                                                                                        || x.AddressF.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
         }
@@ -97,7 +97,7 @@ namespace PatientInfoModule.Services
             using (var contex = contextProvider.CreateNewContext())
             {
                 return contex.Set<Org>().Where(x => words.All(y => x.Name.Contains(y) || x.Details.Contains(y)))
-                                        .ToArray();
+                             .ToArray();
             }
         }
 
@@ -124,6 +124,30 @@ namespace PatientInfoModule.Services
         public IEnumerable<RelativeRelationship> GetRelationships()
         {
             return cacheService.GetItems<RelativeRelationship>();
+        }
+
+        public RelativeRelationship GetSymmetricalRelationship(RelativeRelationship relationship, bool symmetricalRelationshipIsMale)
+        {
+            RelativeRelationship result = null;
+            if (relationship.RelativeRelationshipConnections != null)
+            {
+                result = relationship.RelativeRelationshipConnections
+                                     .Where(x => x.RelativeRelationship1.MustBeMale == null || x.RelativeRelationship1.MustBeMale == symmetricalRelationshipIsMale)
+                                     .Select(x => x.RelativeRelationship1)
+                                     .FirstOrDefault();
+            }
+            if (result != null)
+            {
+                return result;
+            }
+            if (relationship.RelativeRelationshipConnections1 != null)
+            {
+                result = relationship.RelativeRelationshipConnections1
+                                     .Where(x => x.RelativeRelationship.MustBeMale == null || x.RelativeRelationship.MustBeMale == symmetricalRelationshipIsMale)
+                                     .Select(x => x.RelativeRelationship)
+                                     .FirstOrDefault();
+            }
+            return result;
         }
 
         public async Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId)
@@ -157,28 +181,65 @@ namespace PatientInfoModule.Services
                 PrepareAddresses(data, context, result);
                 PrepareDisabilityDocuments(data, context, result);
                 PrepareSocialStatuses(data, context, result);
-                PrepareRelativeRelationship(data, context, result);
+                await PrepareRelativeRelationshipAsync(data, context, result);
                 await context.SaveChangesAsync();
                 return result;
             }
         }
 
-        private void PrepareRelativeRelationship(SavePatientInput data, DbContext context, SavePatientOutput result)
+        private async Task PrepareRelativeRelationshipAsync(SavePatientInput data, DbContext context, SavePatientOutput result)
         {
+            result.Relative = data.Relative;
             if (data.Relative == null)
             {
-                result.Relative = null;
                 return;
             }
-            result.Relative = data.Relative;
+            var symmetricRelativeIsMale = await context.Set<Person>().Where(x => x.Id == data.Relative.PersonId).Select(x => x.IsMale).FirstAsync();
+            var symmetricalRelationship = GetSymmetricalRelationship(cacheService.GetItemById<RelativeRelationship>(data.Relative.RelativeRelationshipId), symmetricRelativeIsMale);
             if (data.Relative.Id.IsNewOrNonExisting())
             {
                 data.Relative.Person1 = data.CurrentPerson;
                 context.Entry(data.Relative).State = EntityState.Added;
+                if (symmetricalRelationship != null)
+                {
+                    var symmetricalRelative = new PersonRelative
+                                              {
+                                                  Person = data.CurrentPerson,
+                                                  RelativeId = data.Relative.PersonId,
+                                                  RelativeRelationshipId = symmetricalRelationship.Id
+                                              };
+                    context.Entry(symmetricalRelative).State = EntityState.Added;
+                }
             }
             else
             {
                 context.Entry(data.Relative).State = EntityState.Modified;
+                var symmetricalRelative = await context.Set<PersonRelative>().FirstOrDefaultAsync(x => x.PersonId == data.Relative.RelativeId && x.RelativeId == data.Relative.PersonId);
+                if (symmetricalRelative != null)
+                {
+                    if (symmetricalRelationship != null)
+                    {
+                        symmetricalRelative.RelativeRelationshipId = symmetricalRelationship.Id;
+                        context.Entry(symmetricalRelative).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        context.Entry(symmetricalRelative).State = EntityState.Deleted;
+                    }
+                }
+                else
+                {
+                    if (symmetricalRelationship != null)
+                    {
+                        symmetricalRelative = new PersonRelative
+                                              {
+                                                  PersonId = data.CurrentPerson.Id,
+                                                  RelativeId = data.Relative.PersonId,
+                                                  RelativeRelationshipId = symmetricalRelationship.Id
+                                              };
+                        context.Entry(symmetricalRelative).State = EntityState.Added;
+                    }
+                }
             }
         }
 

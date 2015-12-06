@@ -207,6 +207,16 @@
         <AssociationConnector Association="DataLib.FK_Visits_Urgentlies" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_ExecutionPlaces1" />
         <EntityTypeShape EntityType="DataLib.DefaultProtocol" Width="1.5" PointX="10.5" PointY="69.125" />
+        <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="9.625" PointY="9" />
+        <EntityTypeShape EntityType="DataLib.MKBGroup" Width="1.5" PointX="7.375" PointY="9" />
+        <AssociationConnector Association="DataLib.FK_MKB_MKB" />
+        <AssociationConnector Association="DataLib.FK_MKB_MKBGroups" />
+        <AssociationConnector Association="DataLib.FK_MKBGroups_MKBGroups" />
+        <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="2.5" PointX="0.5" PointY="4.875" />
+        <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
+        <EntityTypeShape EntityType="DataLib.RelativeRelationshipConnection" Width="2.5" PointX="0.5" PointY="7.75" />
+        <AssociationConnector Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships" />
+        <AssociationConnector Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships1" />
         <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="23.25" PointY="50.75" />
         <AssociationConnector Association="DataLib.FK_Assignments_Records" />
         <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
@@ -221,13 +231,6 @@
         <AssociationConnector Association="DataLib.FK_Records_Urgentlies" />
         <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_Records_Visits" />
-        <EntityTypeShape EntityType="DataLib.MKB" Width="1.5" PointX="9.625" PointY="9" />
-        <EntityTypeShape EntityType="DataLib.MKBGroup" Width="1.5" PointX="7.375" PointY="9" />
-        <AssociationConnector Association="DataLib.FK_MKB_MKB" />
-        <AssociationConnector Association="DataLib.FK_MKB_MKBGroups" />
-        <AssociationConnector Association="DataLib.FK_MKBGroups_MKBGroups" />
-        <EntityTypeShape EntityType="DataLib.RelativeRelationship" Width="1.5" PointX="0.75" PointY="4.875" />
-        <AssociationConnector Association="DataLib.FK_PersonRelatives_RelativeRelationships" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

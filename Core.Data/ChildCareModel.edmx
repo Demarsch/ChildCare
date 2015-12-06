@@ -812,6 +812,14 @@
           <Property Name="NumberType" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Priority" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="RelativeRelationshipConnections">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentRelationshipId" Type="int" Nullable="false" />
+          <Property Name="ChildRelationshipId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="RelativeRelationships">
           <Key>
             <PropertyRef Name="Id" />
@@ -2433,6 +2441,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RelativeRelationshipConnections_RelativeRelationships">
+          <End Role="RelativeRelationships" Type="Self.RelativeRelationships" Multiplicity="1" />
+          <End Role="RelativeRelationshipConnections" Type="Self.RelativeRelationshipConnections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationships">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RelativeRelationshipConnections">
+              <PropertyRef Name="ParentRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RelativeRelationshipConnections_RelativeRelationships1">
+          <End Role="RelativeRelationships" Type="Self.RelativeRelationships" Multiplicity="1" />
+          <End Role="RelativeRelationshipConnections" Type="Self.RelativeRelationshipConnections" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationships">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RelativeRelationshipConnections">
+              <PropertyRef Name="ChildRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ScheduleItem_RecordTypes">
           <End Role="RecordTypes" Type="Self.RecordTypes" Multiplicity="0..1" />
           <End Role="ScheduleItem" Type="Self.ScheduleItem" Multiplicity="*" />
@@ -2776,6 +2808,7 @@
           <EntitySet Name="RecordTypeRolePermissions" EntityType="Self.RecordTypeRolePermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypeRoles" EntityType="Self.RecordTypeRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordTypes" EntityType="Self.RecordTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RelativeRelationshipConnections" EntityType="Self.RelativeRelationshipConnections" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RelativeRelationships" EntityType="Self.RelativeRelationships" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportTemplates" EntityType="Self.ReportTemplates" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rooms" EntityType="Self.Rooms" Schema="dbo" store:Type="Tables" />
@@ -3266,6 +3299,14 @@
           <AssociationSet Name="FK_RecordTypes_RecordTypes" Association="Self.FK_RecordTypes_RecordTypes">
             <End Role="RecordTypes" EntitySet="RecordTypes" />
             <End Role="RecordTypes1" EntitySet="RecordTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RelativeRelationshipConnections_RelativeRelationships" Association="Self.FK_RelativeRelationshipConnections_RelativeRelationships">
+            <End Role="RelativeRelationships" EntitySet="RelativeRelationships" />
+            <End Role="RelativeRelationshipConnections" EntitySet="RelativeRelationshipConnections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RelativeRelationshipConnections_RelativeRelationships1" Association="Self.FK_RelativeRelationshipConnections_RelativeRelationships1">
+            <End Role="RelativeRelationships" EntitySet="RelativeRelationships" />
+            <End Role="RelativeRelationshipConnections" EntitySet="RelativeRelationshipConnections" />
           </AssociationSet>
           <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="Self.FK_ScheduleItem_RecordTypes">
             <End Role="RecordTypes" EntitySet="RecordTypes" />
@@ -3942,6 +3983,34 @@
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
           </AssociationSet>
           <EntitySet Name="DefaultProtocols" EntityType="DataLib.DefaultProtocol" />
+          <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
+          <EntitySet Name="MKBGroups" EntityType="DataLib.MKBGroup" />
+          <AssociationSet Name="FK_MKB_MKB" Association="DataLib.FK_MKB_MKB">
+            <End Role="MKB" EntitySet="MKBs" />
+            <End Role="MKB1" EntitySet="MKBs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKB_MKBGroups" Association="DataLib.FK_MKB_MKBGroups">
+            <End Role="MKBGroup" EntitySet="MKBGroups" />
+            <End Role="MKB" EntitySet="MKBs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MKBGroups_MKBGroups" Association="DataLib.FK_MKBGroups_MKBGroups">
+            <End Role="MKBGroup" EntitySet="MKBGroups" />
+            <End Role="MKBGroup1" EntitySet="MKBGroups" />
+          </AssociationSet>
+          <EntitySet Name="RelativeRelationships" EntityType="DataLib.RelativeRelationship" />
+          <AssociationSet Name="FK_PersonRelatives_RelativeRelationships" Association="DataLib.FK_PersonRelatives_RelativeRelationships">
+            <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
+            <End Role="PersonRelative" EntitySet="PersonRelatives" />
+          </AssociationSet>
+          <EntitySet Name="RelativeRelationshipConnections" EntityType="DataLib.RelativeRelationshipConnection" />
+          <AssociationSet Name="FK_RelativeRelationshipConnections_RelativeRelationships" Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships">
+            <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
+            <End Role="RelativeRelationshipConnection" EntitySet="RelativeRelationshipConnections" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RelativeRelationshipConnections_RelativeRelationships1" Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships1">
+            <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
+            <End Role="RelativeRelationshipConnection" EntitySet="RelativeRelationshipConnections" />
+          </AssociationSet>
           <EntitySet Name="Records" EntityType="DataLib.Record" />
           <AssociationSet Name="FK_Assignments_Records" Association="DataLib.FK_Assignments_Records">
             <End Role="Record" EntitySet="Records" />
@@ -3994,25 +4063,6 @@
           <AssociationSet Name="FK_Records_Visits" Association="DataLib.FK_Records_Visits">
             <End Role="Visit" EntitySet="Visits" />
             <End Role="Record" EntitySet="Records" />
-          </AssociationSet>
-          <EntitySet Name="MKBs" EntityType="DataLib.MKB" />
-          <EntitySet Name="MKBGroups" EntityType="DataLib.MKBGroup" />
-          <AssociationSet Name="FK_MKB_MKB" Association="DataLib.FK_MKB_MKB">
-            <End Role="MKB" EntitySet="MKBs" />
-            <End Role="MKB1" EntitySet="MKBs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MKB_MKBGroups" Association="DataLib.FK_MKB_MKBGroups">
-            <End Role="MKBGroup" EntitySet="MKBGroups" />
-            <End Role="MKB" EntitySet="MKBs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_MKBGroups_MKBGroups" Association="DataLib.FK_MKBGroups_MKBGroups">
-            <End Role="MKBGroup" EntitySet="MKBGroups" />
-            <End Role="MKBGroup1" EntitySet="MKBGroups" />
-          </AssociationSet>
-          <EntitySet Name="RelativeRelationships" EntityType="DataLib.RelativeRelationship" />
-          <AssociationSet Name="FK_PersonRelatives_RelativeRelationships" Association="DataLib.FK_PersonRelatives_RelativeRelationships">
-            <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
-            <End Role="PersonRelative" EntitySet="PersonRelatives" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -6724,6 +6774,125 @@
           <Property Name="Conclusion" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Record" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="DefaultProtocol" ToRole="Record" />
         </EntityType>
+        <EntityType Name="MKB">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GroupId" Type="Int32" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="MKB1" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB" ToRole="MKB1" />
+          <NavigationProperty Name="MKB2" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB1" ToRole="MKB" />
+          <NavigationProperty Name="MKBGroup" Relationship="DataLib.FK_MKB_MKBGroups" FromRole="MKB" ToRole="MKBGroup" />
+        </EntityType>
+        <EntityType Name="MKBGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="MKBmin" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="MKBmax" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="MKBs" Relationship="DataLib.FK_MKB_MKBGroups" FromRole="MKBGroup" ToRole="MKB" />
+          <NavigationProperty Name="MKBGroups1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup" ToRole="MKBGroup1" />
+          <NavigationProperty Name="MKBGroup1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup1" ToRole="MKBGroup" />
+        </EntityType>
+        <Association Name="FK_MKB_MKB">
+          <End Type="DataLib.MKB" Role="MKB" Multiplicity="0..1" />
+          <End Type="DataLib.MKB" Role="MKB1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKB">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKB1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKB_MKBGroups">
+          <End Type="DataLib.MKBGroup" Role="MKBGroup" Multiplicity="0..1" />
+          <End Type="DataLib.MKB" Role="MKB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKBGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKB">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MKBGroups_MKBGroups">
+          <End Type="DataLib.MKBGroup" Role="MKBGroup" Multiplicity="0..1" />
+          <End Type="DataLib.MKBGroup" Role="MKBGroup1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MKBGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MKBGroup1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RelativeRelationship">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="MustBeMale" Type="Boolean" />
+          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_RelativeRelationships" FromRole="RelativeRelationship" ToRole="PersonRelative" />
+          <NavigationProperty Name="RelativeRelationshipConnections" Relationship="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships" FromRole="RelativeRelationship" ToRole="RelativeRelationshipConnection" />
+          <NavigationProperty Name="RelativeRelationshipConnections1" Relationship="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships1" FromRole="RelativeRelationship" ToRole="RelativeRelationshipConnection" />
+        </EntityType>
+        <Association Name="FK_PersonRelatives_RelativeRelationships">
+          <End Type="DataLib.RelativeRelationship" Role="RelativeRelationship" Multiplicity="1" />
+          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationship">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonRelative">
+              <PropertyRef Name="RelativeRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RelativeRelationshipConnection">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentRelationshipId" Type="Int32" Nullable="false" />
+          <Property Name="ChildRelationshipId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RelativeRelationship" Relationship="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships" FromRole="RelativeRelationshipConnection" ToRole="RelativeRelationship" />
+          <NavigationProperty Name="RelativeRelationship1" Relationship="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships1" FromRole="RelativeRelationshipConnection" ToRole="RelativeRelationship" />
+        </EntityType>
+        <Association Name="FK_RelativeRelationshipConnections_RelativeRelationships">
+          <End Type="DataLib.RelativeRelationship" Role="RelativeRelationship" Multiplicity="1" />
+          <End Type="DataLib.RelativeRelationshipConnection" Role="RelativeRelationshipConnection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationship">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RelativeRelationshipConnection">
+              <PropertyRef Name="ParentRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RelativeRelationshipConnections_RelativeRelationships1">
+          <End Type="DataLib.RelativeRelationship" Role="RelativeRelationship" Multiplicity="1" />
+          <End Type="DataLib.RelativeRelationshipConnection" Role="RelativeRelationshipConnection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RelativeRelationship">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RelativeRelationshipConnection">
+              <PropertyRef Name="ChildRelationshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="Record">
           <Key>
             <PropertyRef Name="Id" />
@@ -6915,89 +7084,6 @@
             </Principal>
             <Dependent Role="Record">
               <PropertyRef Name="VisitId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="MKB">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="GroupId" Type="Int32" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Code" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="MKB1" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB" ToRole="MKB1" />
-          <NavigationProperty Name="MKB2" Relationship="DataLib.FK_MKB_MKB" FromRole="MKB1" ToRole="MKB" />
-          <NavigationProperty Name="MKBGroup" Relationship="DataLib.FK_MKB_MKBGroups" FromRole="MKB" ToRole="MKBGroup" />
-        </EntityType>
-        <EntityType Name="MKBGroup">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="MKBmin" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
-          <Property Name="MKBmax" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="MKBs" Relationship="DataLib.FK_MKB_MKBGroups" FromRole="MKBGroup" ToRole="MKB" />
-          <NavigationProperty Name="MKBGroups1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup" ToRole="MKBGroup1" />
-          <NavigationProperty Name="MKBGroup1" Relationship="DataLib.FK_MKBGroups_MKBGroups" FromRole="MKBGroup1" ToRole="MKBGroup" />
-        </EntityType>
-        <Association Name="FK_MKB_MKB">
-          <End Type="DataLib.MKB" Role="MKB" Multiplicity="0..1" />
-          <End Type="DataLib.MKB" Role="MKB1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MKB">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="MKB1">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_MKB_MKBGroups">
-          <End Type="DataLib.MKBGroup" Role="MKBGroup" Multiplicity="0..1" />
-          <End Type="DataLib.MKB" Role="MKB" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MKBGroup">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="MKB">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_MKBGroups_MKBGroups">
-          <End Type="DataLib.MKBGroup" Role="MKBGroup" Multiplicity="0..1" />
-          <End Type="DataLib.MKBGroup" Role="MKBGroup1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MKBGroup">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="MKBGroup1">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="RelativeRelationship">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="MustBeMale" Type="Boolean" />
-          <NavigationProperty Name="PersonRelatives" Relationship="DataLib.FK_PersonRelatives_RelativeRelationships" FromRole="RelativeRelationship" ToRole="PersonRelative" />
-        </EntityType>
-        <Association Name="FK_PersonRelatives_RelativeRelationships">
-          <End Type="DataLib.RelativeRelationship" Role="RelativeRelationship" Multiplicity="1" />
-          <End Type="DataLib.PersonRelative" Role="PersonRelative" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RelativeRelationship">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonRelative">
-              <PropertyRef Name="RelativeRelationshipId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8016,31 +8102,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Records">
-            <EntityTypeMapping TypeName="DataLib.Record">
-              <MappingFragment StoreEntitySet="Records">
-                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
-                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
-                <ScalarProperty Name="ActualDateTime" ColumnName="ActualDateTime" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="MKB" ColumnName="MKB" />
-                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
-                <ScalarProperty Name="NumberTypeYear" ColumnName="NumberTypeYear" />
-                <ScalarProperty Name="NumberYear" ColumnName="NumberYear" />
-                <ScalarProperty Name="NumberType" ColumnName="NumberType" />
-                <ScalarProperty Name="Number" ColumnName="Number" />
-                <ScalarProperty Name="UrgentlyId" ColumnName="UrgentlyId" />
-                <ScalarProperty Name="RecordPeriodId" ColumnName="RecordPeriodId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
-                <ScalarProperty Name="VisitId" ColumnName="VisitId" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="MKBs">
             <EntityTypeMapping TypeName="DataLib.MKB">
               <MappingFragment StoreEntitySet="MKB">
@@ -8068,6 +8129,40 @@
               <MappingFragment StoreEntitySet="RelativeRelationships">
                 <ScalarProperty Name="MustBeMale" ColumnName="MustBeMale" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RelativeRelationshipConnections">
+            <EntityTypeMapping TypeName="DataLib.RelativeRelationshipConnection">
+              <MappingFragment StoreEntitySet="RelativeRelationshipConnections">
+                <ScalarProperty Name="ChildRelationshipId" ColumnName="ChildRelationshipId" />
+                <ScalarProperty Name="ParentRelationshipId" ColumnName="ParentRelationshipId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Records">
+            <EntityTypeMapping TypeName="DataLib.Record">
+              <MappingFragment StoreEntitySet="Records">
+                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
+                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
+                <ScalarProperty Name="ActualDateTime" ColumnName="ActualDateTime" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="MKB" ColumnName="MKB" />
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
+                <ScalarProperty Name="NumberTypeYear" ColumnName="NumberTypeYear" />
+                <ScalarProperty Name="NumberYear" ColumnName="NumberYear" />
+                <ScalarProperty Name="NumberType" ColumnName="NumberType" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="UrgentlyId" ColumnName="UrgentlyId" />
+                <ScalarProperty Name="RecordPeriodId" ColumnName="RecordPeriodId" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
+                <ScalarProperty Name="VisitId" ColumnName="VisitId" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

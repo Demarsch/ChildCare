@@ -146,5 +146,6 @@
     <Build Include="dbo\Tables\Complications.sql" />
     <Build Include="dbo\Tables\DefaultProtocols.sql" />
     <Build Include="dbo\Tables\MKBGroups.sql" />
+    <Build Include="dbo\Tables\RelativeRelationshipConnections.sql" />
   </ItemGroup>
 </Project>

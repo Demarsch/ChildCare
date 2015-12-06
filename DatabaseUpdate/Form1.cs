@@ -105,7 +105,7 @@ namespace UpdateDB
             }
 
             var workbook = new XLWorkbook();
-            var sheet = workbook.Worksheets.Add(st + " Data");
+            var sheet = workbook.Worksheets.Add("Data");
 
             try
             {
