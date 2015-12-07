@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
 using Prism.Commands;
@@ -53,7 +54,7 @@ namespace ScheduleModule.ViewModels
             }
             if (IsTemporary)
             {
-                return assignment.AssignUserId == environment.CurrentUser.UserId || securityService.HasPrivilege(Privilegies.DeleteTemporaryAssignments);
+                return assignment.AssignUserId == environment.CurrentUser.Id || securityService.HasPrivilege(Privilegies.DeleteTemporaryAssignments);
             }
             return securityService.HasPrivilege(Privilegies.EditAssignments);
         }

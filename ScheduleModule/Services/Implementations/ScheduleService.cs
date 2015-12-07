@@ -260,7 +260,7 @@ namespace ScheduleModule.Services
             using (var dataContext = contextProvider.CreateNewContext())
             {
                 var assignment = dataContext.Set<Assignment>().FirstOrDefault(x => x.Id == assignmentId);
-                assignment.CancelUserId = environment.CurrentUser.UserId;
+                assignment.CancelUserId = environment.CurrentUser.Id;
                 assignment.CancelDateTime = environment.CurrentDate;
                 await dataContext.SaveChangesAsync();
             }

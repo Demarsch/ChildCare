@@ -14,6 +14,6 @@
 
         public const string ScheduleModule = "ScheduleModule";
 
-        public const string ScheduleEditor = "ScheduleEditor";
+        public const string ScheduleEditorModule = "ScheduleEditorModule";
     }
 }

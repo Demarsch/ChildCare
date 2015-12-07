@@ -72,7 +72,6 @@
     <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
-    <Compile Include="Misc\IEnvironment.cs" />
     <Compile Include="Misc\IHierarchyItem.cs" />
     <Compile Include="Misc\TimeIntervals\ITimeInterval.cs" />
     <Compile Include="Misc\TimeIntervals\TimeInterval.cs" />

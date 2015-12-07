@@ -130,6 +130,7 @@
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
+    <Compile Include="Services\Interfaces\IEnvironment.cs" />
     <Compile Include="Misc\OptionValues.cs" />
     <Compile Include="Misc\SpecialValues.cs" />
     <Compile Include="MKB.cs">

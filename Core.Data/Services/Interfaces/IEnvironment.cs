@@ -1,11 +1,10 @@
 ﻿using System;
-using Core.DTO;
 
-namespace Core.Misc
+namespace Core.Data.Services
 {
     public interface IEnvironment
     {
-        UserDTO CurrentUser { get; }
+        User CurrentUser { get; }
 
         DateTime CurrentDate { get; }
     }

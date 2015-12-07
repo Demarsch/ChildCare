@@ -29,9 +29,10 @@ namespace AdminModule
 
         public void Initialize()
         {
-            CoreReports.Initialize(container);
-
             container.RegisterInstance(LogManager.GetLogger("ADMINING"));
+            var log = container.Resolve<ILog>();
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.AdminModule);
+            CoreReports.Initialize(container);
 
             container.RegisterType<AdminEmptyViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<object, AdminEmptyView>(viewNameResolver.Resolve<AdminEmptyViewModel>(), new ContainerControlledLifetimeManager());
@@ -46,6 +47,7 @@ namespace AdminModule
             container.RegisterType<AdminHeaderViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<AdminHeaderView>(new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<AdminHeaderView>());
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.AdminModule);
         }
     }
 }

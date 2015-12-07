@@ -100,8 +100,8 @@ namespace Shell
         private void CheckCurrentUserIsAccessible()
         {
             var serverDate = environment.CurrentDate.ToString(DateTimeFormats.ShortDateTimeFormat);
-            var currentUserShortName = environment.CurrentUser.PersonShortName;
-            log.InfoFormat("Application is run under user '{0}', current server time is {1}", currentUserShortName, serverDate);
+            var currentUserSid = environment.CurrentUser.SID;
+            log.InfoFormat("Application is run under user with SID '{0}', current server time is {1}", currentUserSid, serverDate);
         }
 
         private void SubscribeToEvents()

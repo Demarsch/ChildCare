@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Core.Data.Services;
+using Core.Wpf.Services;
+using log4net;
+using Microsoft.Practices.Unity;
+using OrganizationContractsModule.Services;
+using OrganizationContractsModule.ViewModels;
+using OrganizationContractsModule.Views;
 using Prism.Events;
 using Prism.Modularity;
 using Prism.Regions;
 using Shell.Shared;
-using log4net;
-using Microsoft.Practices.Unity;
-using Core.Data.Services;
-using Core.Wpf.Services;
-using Fluent;
-using Core.Data;
-using System.Data.Entity;
-using Core.Wpf.Events;
-using System.Windows;
-using OrganizationContractsModule.ViewModels;
-using OrganizationContractsModule.Views;
-using OrganizationContractsModule.Services;
 
-namespace PatientRecordsModule
+namespace OrganizationContracts
 {
     [Module(ModuleName = WellKnownModuleNames.OrganizationContractsModule)]
     public class Module : IModule
@@ -84,9 +75,11 @@ namespace PatientRecordsModule
         #region Methods
         public void Initialize()
         {
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.OrganizationContractsModule);
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.OrganizationContractsModule);
         }
 
         private void RegisterViewModels()

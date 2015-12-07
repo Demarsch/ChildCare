@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Core.Wpf.Services;
+using log4net;
 using Microsoft.Practices.Unity;
 using Prism.Modularity;
 using Prism.Regions;
@@ -21,8 +22,14 @@ namespace ScheduleModule
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public Module(IUnityContainer container, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        private readonly ILog log;
+
+        public Module(IUnityContainer container, IRegionManager regionManager, IViewNameResolver viewNameResolver, ILog log)
         {
+            if (log == null)
+            {
+                throw new ArgumentNullException("log");
+            }
             if (container == null)
             {
                 throw new ArgumentNullException("container");
@@ -38,13 +45,16 @@ namespace ScheduleModule
             this.container = container;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.log = log;
         }
 
         public void Initialize()
         {
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.ScheduleModule);
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.ScheduleModule);
         }
 
         private void RegisterViewModels()

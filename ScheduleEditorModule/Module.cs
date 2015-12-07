@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Core.Wpf.Services;
+using log4net;
 using Microsoft.Practices.Unity;
 using Prism.Modularity;
 using Prism.Regions;
@@ -11,7 +12,7 @@ using Shell.Shared;
 
 namespace ScheduleEditorModule
 {
-    [Module(ModuleName = WellKnownModuleNames.ScheduleEditor)]
+    [Module(ModuleName = WellKnownModuleNames.ScheduleEditorModule)]
     public class Module : IModule
     {
         private readonly IUnityContainer container;
@@ -20,7 +21,9 @@ namespace ScheduleEditorModule
 
         private readonly IViewNameResolver viewNameResolver;
 
-        public Module(IUnityContainer container, IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        private readonly ILog log;
+
+        public Module(IUnityContainer container, IRegionManager regionManager, IViewNameResolver viewNameResolver, ILog log)
         {
             if (container == null)
             {
@@ -34,16 +37,23 @@ namespace ScheduleEditorModule
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (log == null)
+            {
+                throw new ArgumentNullException("log");
+            }
             this.container = container;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.log = log;
         }
 
         public void Initialize()
         {
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.ScheduleEditorModule);
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.ScheduleEditorModule);
         }
 
         private void RegisterViewModels()

@@ -90,9 +90,11 @@ namespace PatientRecordsModule
         #region Methods
         public void Initialize()
         {
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.PatientRecordsModule);
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientRecordsModule);
         }
 
         private void RegisterViewModels()

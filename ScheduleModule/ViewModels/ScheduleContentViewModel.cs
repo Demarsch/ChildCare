@@ -7,6 +7,7 @@ using System.Windows.Data;
 using System.Windows.Navigation;
 using Core.Data;
 using Core.Data.Misc;
+using Core.Data.Services;
 using Core.Extensions;
 using Core.Misc;
 using Core.Services;
@@ -514,7 +515,7 @@ namespace ScheduleModule.ViewModels
                              {
                                  AssignDateTime = freeTimeSlot.StartTime,
                                  Duration = (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
-                                 AssignUserId = environment.CurrentUser.UserId,
+                                 AssignUserId = environment.CurrentUser.Id,
                                  Note = string.Empty,
                                  FinancingSourceId = financingSource,
                                  PersonId = currentPatientId,

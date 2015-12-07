@@ -37,14 +37,17 @@ namespace PatientSearchModule
 
         public void Initialize()
         {
+            RegisterLoger();
+            var log = container.Resolve<ILog>();
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.PatientSearchModule);
             RegisterServices();
             RegisterViews();
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientSearchModule);
         }
 
         private void RegisterServices()
         {
-            container.RegisterInstance(LogManager.GetLogger("PATSEARCH"));
-
+            
             container.RegisterType<IUserInputNormalizer, UserInputNormalizer>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISearchExpressionProvider<Person>, PersonBirthDateSearchExpressionProvider>("PersonBirthDate", new ContainerControlledLifetimeManager());
             container.RegisterType<ISearchExpressionProvider<Person>, PersonIdentityDocumentNumberSearchExpressionProvider>("PersonIdentityNumber", new ContainerControlledLifetimeManager());
@@ -54,6 +57,11 @@ namespace PatientSearchModule
             container.RegisterType<IEnumerable<ISearchExpressionProvider<Person>>, ISearchExpressionProvider<Person>[]>();
             container.RegisterType<ISearchExpressionProvider<Person>, CompositeSearchExpressionProvider<Person>>();
             container.RegisterType<IPatientSearchService, PatientSearchService>(new ContainerControlledLifetimeManager());
+        }
+
+        private void RegisterLoger()
+        {
+            container.RegisterInstance(LogManager.GetLogger("PATSEARCH"));
         }
 
         private void RegisterViews()

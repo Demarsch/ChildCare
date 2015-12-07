@@ -80,10 +80,12 @@ namespace PatientInfoModule
 
         public void Initialize()
         {
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.PatientInfoModule);
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
             InitiateLongRunningOperations();
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientInfoModule);
         }
 
         private void RegisterViewModels()

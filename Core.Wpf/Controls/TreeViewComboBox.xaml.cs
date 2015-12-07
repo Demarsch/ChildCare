@@ -226,14 +226,15 @@ namespace Core.Wpf.Controls
             popup.IsOpen = true;
             treeView.Focus();
             Mouse.Capture(treeView, CaptureMode.SubTree);
-            Mouse.AddPreviewMouseUpOutsideCapturedElementHandler(treeView, TreeViewOnMouseUp);
+            Mouse.AddPreviewMouseDownOutsideCapturedElementHandler(treeView, TreeViewOnMouseDown);
         }
 
-        private void TreeViewOnMouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        private void TreeViewOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            Mouse.RemovePreviewMouseUpOutsideCapturedElementHandler(treeView, TreeViewOnMouseUp);
+            Mouse.RemovePreviewMouseDownOutsideCapturedElementHandler(treeView, TreeViewOnMouseDown);
             treeView.ReleaseMouseCapture();
             popup.IsOpen = false;
+            mouseButtonEventArgs.Handled = true;
         }
 
         private void TreeView_OnSelected(object sender, RoutedEventArgs e)

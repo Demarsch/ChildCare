@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Core.DTO;
-using Core.Misc;
 
 namespace Core.Data.Services
 {
@@ -9,39 +7,35 @@ namespace Core.Data.Services
     {
         private readonly IDbContextProvider dataContextProvider;
 
-        public DbEnvironment(IDbContextProvider dataContextProvider)
+        private readonly IUserService userService;
+
+        public DbEnvironment(IDbContextProvider dataContextProvider, IUserService userService)
         {
             if (dataContextProvider == null)
             {
                 throw new ArgumentNullException("dataContextProvider");
             }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
             this.dataContextProvider = dataContextProvider;
+            this.userService = userService;
         }
 
-        private UserDTO currentUser;
+        private User currentUser;
 
-        public UserDTO CurrentUser
+        public User CurrentUser
         {
             get
             {
                 if (currentUser == null)
                 {
-                    var userLogin = dataContextProvider.SharedContext.Database.SqlQuery<string>("SELECT SYSTEM_USER").First();
-                    using (var context = dataContextProvider.CreateNewContext())
+                    var userSid = userService.GetCurrentSID();
+                    currentUser = userService.GetUserBySID();
+                    if (currentUser == null)
                     {
-                        currentUser = context.Set<User>().Where(x => x.SID == userLogin)
-                                             .Select(x => new UserDTO
-                                                          {
-                                                              PersonFullName = x.Person.FullName,
-                                                              PersonId = x.PersonId,
-                                                              PersonShortName = x.Person.ShortName,
-                                                              UserId = x.Id
-                                                          })
-                                             .FirstOrDefault();
-                        if (currentUser == null)
-                        {
-                            throw new ApplicationException(string.Format("Database doesn't contain information about user with login '{0}'", userLogin));
-                        }
+                        throw new ApplicationException(string.Format("Database doesn't contain information about user with SID '{0}'", userSid));
                     }
                 }
                 return currentUser;
