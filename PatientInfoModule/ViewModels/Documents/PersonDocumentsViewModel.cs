@@ -253,7 +253,7 @@ namespace PatientInfoModule.ViewModels
             document.FileSize = document.FileData.Length;
             document.UploadDate = DateTime.Now;
 
-            int documentId = await documentService.UploadDocument(document);
+            int documentId = await documentService.UploadDocumentAsync(document);
             if (documentId != SpecialValues.NewId)
             {
                 PersonOuterDocument personOuterDocument = new PersonOuterDocument();

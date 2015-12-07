@@ -84,7 +84,7 @@ namespace PatientInfoModule.ViewModels
 
                 try
                 {
-                    item.DocumentId = await documentService.UploadDocument(document);
+                    item.DocumentId = await documentService.UploadDocumentAsync(document);
                     saveSuccesfull = true;
                 }
                 catch (Exception ex)
