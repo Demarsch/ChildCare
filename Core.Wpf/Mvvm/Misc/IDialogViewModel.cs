@@ -12,7 +12,7 @@ namespace Core.Wpf.Mvvm
         string ConfirmButtonText { get; }
 
         string CancelButtonText { get; }
-        //The real value should be of type bool? but this type has problems with boxing/unboxing
+        
         DelegateCommand<bool?> CloseCommand { get; }
 
         event EventHandler<ReturnEventArgs<bool>> CloseRequested;

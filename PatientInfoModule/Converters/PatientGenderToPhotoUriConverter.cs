@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Core.Wpf.Converters;
 
@@ -10,10 +11,10 @@ namespace PatientInfoModule.Converters
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var photoUri = values[0] as string;
-            if (!string.IsNullOrEmpty(photoUri))
+            var photoUri = values[0] as ImageSource;
+            if (photoUri != null)
             {
-                return new BitmapImage(new Uri(photoUri));
+                return photoUri;
             }
             var isMale = (bool)values[1];
             return new BitmapImage((Uri)GenderToImageConverter.Instance.Convert(isMale, targetType, parameter, culture));

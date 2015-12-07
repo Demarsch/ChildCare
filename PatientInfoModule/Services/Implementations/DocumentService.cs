@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Media;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
@@ -10,9 +11,10 @@ using System.Windows.Media.Imaging;
 
 namespace PatientInfoModule.Services
 {
-    public class DocumentService: IDocumentService
+    public class DocumentService : IDocumentService
     {
         private readonly IDbContextProvider contextProvider;
+
         private readonly IFileService fileService;
 
         public DocumentService(IDbContextProvider contextProvider, IFileService fileService)
@@ -29,8 +31,8 @@ namespace PatientInfoModule.Services
             this.fileService = fileService;
         }
 
-        public async Task<int> UploadDocument(Document document)
-        {            
+        public async Task<int> UploadDocumentAsync(Document document)
+        {
             using (var db = contextProvider.CreateNewContext())
             {
                 var saveDocument = document.Id == SpecialValues.NewId ? new Document() : db.Set<Document>().First(x => x.Id == document.Id);
@@ -42,10 +44,10 @@ namespace PatientInfoModule.Services
                 saveDocument.FileData = document.FileData;
                 saveDocument.FileSize = document.FileSize;
                 saveDocument.UploadDate = document.UploadDate;
-                db.Entry<Document>(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                db.Entry(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                 await db.SaveChangesAsync();
                 return saveDocument.Id;
-            }            
+            }
         }
 
         public void DeleteDocumentById(int documentId)
@@ -79,13 +81,19 @@ namespace PatientInfoModule.Services
         public string GetDocumentFile(int documentId)
         {
             var document = GetDocumentById(documentId).First();
-            return fileService.GetFileFromBinaryData(document.FileData, document.Extension);            
+            return fileService.GetFileFromBinaryData(document.FileData, document.Extension);
         }
 
         public BitmapImage GetDocumentThumbnail(int documentId)
         {
             var document = GetDocumentById(documentId).First();
-            return fileService.GetThumbnailForFile(document.FileData, document.Extension);            
+            return fileService.GetThumbnailForFile(document.FileData, document.Extension);
+        }
+
+        public ImageSource GetImageSourceFromBinaryData(byte[] source)
+        {
+            var imageSourceConverter = new ImageSourceConverter();
+            return (ImageSource)imageSourceConverter.ConvertFrom(source);
         }
     }
 }

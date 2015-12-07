@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Extensions;
@@ -13,11 +15,13 @@ using Core.Misc;
 using Core.Services;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
+using Core.Wpf.Services;
 using log4net;
 using PatientInfoModule.Data;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
+using Shared.Patient.ViewModels;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -33,6 +37,12 @@ namespace PatientInfoModule.ViewModels
 
         private readonly ICacheService cacheService;
 
+        private readonly IDialogServiceAsync dialogService;
+
+        private readonly IDocumentService documentService;
+
+        private readonly IFileService fileService;
+
         private readonly IAddressSuggestionProvider addressSuggestionProvider;
 
         private readonly ValidationMediator validator;
@@ -40,6 +50,9 @@ namespace PatientInfoModule.ViewModels
         public PatientInfoViewModel(IPatientService patientService,
                                     ILog log,
                                     ICacheService cacheService,
+                                    IDialogServiceAsync dialogService,
+                                    IDocumentService documentService,
+                                    IFileService fileService,
                                     IAddressSuggestionProvider addressSuggestionProvider,
                                     IdentityDocumentCollectionViewModel identityDocumentCollectionViewModel,
                                     InsuranceDocumentCollectionViewModel insuranceDocumentCollectionViewModel,
@@ -54,6 +67,18 @@ namespace PatientInfoModule.ViewModels
             if (log == null)
             {
                 throw new ArgumentNullException("log");
+            }
+            if (documentService == null)
+            {
+                throw new ArgumentNullException("documentService");
+            }
+            if (fileService == null)
+            {
+                throw new ArgumentNullException("fileService");
+            }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
             }
             if (identityDocumentCollectionViewModel == null)
             {
@@ -84,6 +109,9 @@ namespace PatientInfoModule.ViewModels
                 throw new ArgumentNullException("addressSuggestionProvider");
             }
             this.cacheService = cacheService;
+            this.dialogService = dialogService;
+            this.documentService = documentService;
+            this.fileService = fileService;
             this.addressSuggestionProvider = addressSuggestionProvider;
             IdentityDocuments = identityDocumentCollectionViewModel;
             InsuranceDocuments = insuranceDocumentCollectionViewModel;
@@ -554,15 +582,51 @@ namespace PatientInfoModule.ViewModels
             get { return currentPerson; }
         }
 
-        private string photoUri;
+        private ImageSource photoSource;
 
-        public string PhotoUri
+        public ImageSource PhotoSource
         {
-            get { return photoUri; }
-            set { SetTrackedProperty(ref photoUri, value); }
+            get { return photoSource; }
+            set { SetTrackedProperty(ref photoSource, value); }
         }
 
         #endregion
+
+        public ICommand TakePhotoCommand { get; set; }
+
+        private PhotoViewModel photoViewModel;
+
+        private async void TakePhotoAsync()
+        {
+            if (photoViewModel == null)
+            {
+                photoViewModel = new PhotoViewModel();
+            }
+            var dialogResult = await dialogService.ShowDialogAsync(photoViewModel);
+            if (dialogResult == true)
+            {
+                var encoder = new JpegBitmapEncoder();
+                var fileData = fileService.GetBinaryDataFromImage(encoder, photoViewModel.SnapshotTaken);
+                var str = string.Empty;
+                if (fileData != null && fileData.Length > 0)
+                {
+                    //TODO: move this save to real patient save
+                    var photoId = await documentService.UploadDocumentAsync(new Document
+                                                             {
+                                                                 FileData = fileData,
+                                                                 Description = "фото",
+                                                                 DisplayName = "фото",
+                                                                 Extension = "jpg",
+                                                                 FileName = "фото",
+                                                                 FileSize = fileData.Length,
+                                                                 UploadDate = DateTime.Now
+                                                             });
+                }
+                PhotoSource = photoViewModel.SnapshotTaken;
+                photoViewModel.SnapshotBitmap = null;
+                photoViewModel.SnapshotTaken = null;
+            }
+        }
 
         public ICommand ActivateChildContentCommand { get; private set; }
 
@@ -606,16 +670,18 @@ namespace PatientInfoModule.ViewModels
                 //If validation was successfull then BirthDate.Value can't be null
                 var saveData = new SavePatientInput
                                {
-                                   CurrentName = currentName == null ? null : new PersonName
-                                                                              {
-                                                                                  LastName = currentName.LastName,
-                                                                                  FirstName = currentName.FirstName,
-                                                                                  MiddleName = currentName.MiddleName,
-                                                                                  BeginDateTime = currentName.BeginDateTime,
-                                                                                  EndDateTime = currentName.EndDateTime,
-                                                                                  Id = currentName.Id,
-                                                                                  PersonId = currentName.PersonId
-                                                                              },
+                                   CurrentName = currentName == null
+                                                     ? null
+                                                     : new PersonName
+                                                       {
+                                                           LastName = currentName.LastName,
+                                                           FirstName = currentName.FirstName,
+                                                           MiddleName = currentName.MiddleName,
+                                                           BeginDateTime = currentName.BeginDateTime,
+                                                           EndDateTime = currentName.EndDateTime,
+                                                           Id = currentName.Id,
+                                                           PersonId = currentName.PersonId
+                                                       },
                                    NewName = new PersonName
                                              {
                                                  LastName = LastName,
@@ -965,9 +1031,9 @@ namespace PatientInfoModule.ViewModels
             private void ValidateMedNumber()
             {
                 SetError(x => x.MedNumber,
-                        !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.MedNumber.Length != FullMedNumberLength
-                            ? "ЕМН должен либо быть пустым либо содержать ровно шестнадцать цифр"
-                            : string.Empty);
+                         !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.MedNumber.Length != FullMedNumberLength
+                             ? "ЕМН должен либо быть пустым либо содержать ровно шестнадцать цифр"
+                             : string.Empty);
             }
 
             private void ValidateIsNewOrIncorrectName()
@@ -996,7 +1062,7 @@ namespace PatientInfoModule.ViewModels
 
             private void ValidateNationalityId()
             {
-                  SetError(x => x.NationalityId, AssociatedItem.NationalityId == SpecialValues.NonExistingId ? "Укажите гражданство пациента" : string.Empty);
+                SetError(x => x.NationalityId, AssociatedItem.NationalityId == SpecialValues.NonExistingId ? "Укажите гражданство пациента" : string.Empty);
             }
 
             private void ValidateHealthGroupId()
@@ -1008,7 +1074,6 @@ namespace PatientInfoModule.ViewModels
             {
                 SetError(x => x.SelectedRelationship, AssociatedItem.IsRelative && AssociatedItem.SelectedRelationship == null ? "Не указана родственная связь" : string.Empty);
             }
-
         }
 
         //public bool Validate()

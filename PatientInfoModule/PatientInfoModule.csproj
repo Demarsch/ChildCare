@@ -251,12 +251,20 @@
       <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.Patient\Shared.Patient.csproj">
+      <Project>{5d4698bd-6256-4bc5-a566-be7cd9a840bb}</Project>
+      <Name>Shared.Patient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shell.Shared\Shell.Shared.csproj">
       <Project>{4E0D997F-374E-43BE-9617-8DA82504B7C8}</Project>
       <Name>Shell.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Contracts\AddContractRecordsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

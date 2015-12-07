@@ -115,6 +115,7 @@ namespace PatientInfoModule
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeaderView));
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeaderView));
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeaderView));
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientInfoModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
         private async void OnPatientSelectedAsync(int patientId)
