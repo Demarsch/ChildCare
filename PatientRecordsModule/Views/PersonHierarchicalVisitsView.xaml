@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels">
+                    xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
     <HierarchicalDataTemplate DataType="{x:Type viewModels:PersonHierarchicalVisitsViewModel}" ItemsSource="{Binding NestedItems}">

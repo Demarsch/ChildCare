@@ -251,6 +251,10 @@
       <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PatientRecordsModule\Shared.PatientRecords.csproj">
+      <Project>{5b63c016-181b-49e5-9b91-9120a78ebf72}</Project>
+      <Name>Shared.PatientRecords</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.Patient\Shared.Patient.csproj">
       <Project>{5d4698bd-6256-4bc5-a566-be7cd9a840bb}</Project>
       <Name>Shared.Patient</Name>

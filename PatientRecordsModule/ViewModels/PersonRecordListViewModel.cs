@@ -7,11 +7,11 @@ using System.Collections.ObjectModel;
 using Core;
 using Prism.Mvvm;
 using Core.Wpf.Mvvm;
-using PatientRecordsModule.Services;
-using PatientRecordsModule.DTO;
+using Shared.PatientRecords.Services;
+using Shared.PatientRecords.DTO;
 using Core.Data.Misc;
 using Prism.Regions;
-using PatientRecordsModule.Misc;
+using Shared.PatientRecords.Misc;
 using System.Threading;
 using log4net;
 using Core.Data;
@@ -26,7 +26,7 @@ using Prism.Interactivity.InteractionRequest;
 using System.Data.Entity;
 using Core.Wpf.Services;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class PersonRecordListViewModel : BindableBase, IConfirmNavigationRequest, IDisposable
     {

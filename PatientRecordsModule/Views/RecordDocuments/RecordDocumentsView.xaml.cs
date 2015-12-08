@@ -1,7 +1,7 @@
 ﻿using Microsoft.Practices.Unity;
-using PatientRecordsModule.ViewModels;
+using Shared.PatientRecords.ViewModels;
 
-namespace PatientRecordsModule.Views
+namespace Shared.PatientRecords.Views
 {
     /// <summary>
     /// Interaction logic for RecordDocsView.xaml

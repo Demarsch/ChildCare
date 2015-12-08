@@ -1,7 +1,7 @@
 ﻿using Core.Services;
 using Core.Wpf.Services;
 using log4net;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class RecordDocumentViewModel : BindableBase
     {

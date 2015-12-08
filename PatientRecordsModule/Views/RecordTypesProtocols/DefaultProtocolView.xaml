@@ -1,11 +1,11 @@
-﻿<ResourceDictionary x:Class="PatientRecordsModule.Views.RecordTypesProtocolViewModels.DefaultProtocolView"
+﻿<ResourceDictionary x:Class="Shared.PatientRecords.Views.RecordTypesProtocolViewModels.DefaultProtocolView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:viewModels="clr-namespace:PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels"
-             xmlns:controls="clr-namespace:PatientRecordsModule.ViewModels"
-             xmlns:views="clr-namespace:PatientRecordsModule.Views"
+             xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels"
+             xmlns:controls="clr-namespace:Shared.PatientRecords.ViewModels"
+             xmlns:views="clr-namespace:Shared.PatientRecords.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              mc:Ignorable="d">
     <DataTemplate DataType="{x:Type viewModels:DefaultProtocolViewModel}">

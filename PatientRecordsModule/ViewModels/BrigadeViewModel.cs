@@ -2,8 +2,8 @@
 using Core.Data.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
-using PatientRecordsModule.DTO;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.DTO;
+using Shared.PatientRecords.Services;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ using Prism.Commands;
 using Core.Wpf.Misc;
 using Core.Misc;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class BrigadeViewModel : TrackableBindableBase, IChangeTrackerMediator, IDisposable
     {

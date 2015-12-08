@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using Core.Wpf.Services;
 
-namespace PatientRecordsModule.Services
+namespace Shared.PatientRecords.Services
 {
     public class RecordService : IRecordService
     {

@@ -6,8 +6,8 @@ using Core.Services;
 using Core.Wpf.Misc;
 using Core.Wpf.Services;
 using log4net;
-using PatientRecordsModule.Misc;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Misc;
+using Shared.PatientRecords.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -18,7 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
+namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 {
     public class DefaultProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator, IDataErrorInfo
     {

@@ -17,14 +17,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Misc;
 using System.Linq;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Services;
 using System.Data.Entity;
 using Core.Extensions;
-using PatientRecordsModule.DTO;
+using Shared.PatientRecords.DTO;
 using Microsoft.Practices.Unity;
 using Core.Wpf.Misc;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class PersonRecordsHeaderViewModel : BindableBase, IActiveAware, IDisposable
     {

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PatientRecordsModule.Views.Diagnoses
+namespace Shared.PatientRecords.Views.Diagnoses
 {
     /// <summary>
     /// Interaction logic for MKBTreeView.xaml

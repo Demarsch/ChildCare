@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PatientRecordsModule.Misc
+namespace Shared.PatientRecords.Misc
 {
     public interface IRecordTypeEditorResolver
     {

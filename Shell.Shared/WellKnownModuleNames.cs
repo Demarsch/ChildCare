@@ -6,8 +6,6 @@
 
         public const string PatientInfoModule = "PatientInfoModule";
 
-        public const string PatientRecordsModule = "PatientRecordsModule";
-
         public const string OrganizationContractsModule = "OrganizationContracts";
 
         public const string AdminModule = "AdminModule";

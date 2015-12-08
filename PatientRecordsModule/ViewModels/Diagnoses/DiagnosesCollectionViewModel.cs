@@ -7,7 +7,7 @@ using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
 using log4net;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Services;
 using Prism.Commands;
 using Prism.Interactivity.InteractionRequest;
 using Prism.Mvvm;
@@ -22,7 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class DiagnosesCollectionViewModel : BindableBase, IDisposable, IChangeTrackerMediator
     {

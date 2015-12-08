@@ -1,6 +1,6 @@
 ﻿using Core.Misc;
 using Core.Wpf.Misc;
-using PatientRecordsModule.Misc;
+using Shared.PatientRecords.Misc;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels
+namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 {
     public class VisitProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol
     {

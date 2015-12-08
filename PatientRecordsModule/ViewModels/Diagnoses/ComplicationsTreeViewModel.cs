@@ -2,7 +2,7 @@
 using Core.Misc;
 using Core.Services;
 using Core.Wpf.Mvvm;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     class ComplicationsTreeViewModel : BindableBase, IDisposable, IDialogViewModel
     {

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using Core.Wpf.Mvvm;
 using Prism.Mvvm;
-using PatientRecordsModule.Services;
-using PatientRecordsModule.DTO;
+using Shared.PatientRecords.Services;
+using Shared.PatientRecords.DTO;
 using log4net;
 using Core.Wpf.Misc;
 using System.Threading;
@@ -19,9 +19,9 @@ using Core.Misc;
 using System.Windows.Input;
 using Prism.Events;
 using Core.Wpf.Events;
-using PatientRecordsModule.DTO;
+using Shared.PatientRecords.DTO;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class PersonHierarchicalAssignmentsViewModel : BindableBase, IDisposable
     {

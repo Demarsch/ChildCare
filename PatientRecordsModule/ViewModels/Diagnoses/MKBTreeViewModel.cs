@@ -3,7 +3,7 @@ using Core.Misc;
 using Core.Services;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class MKBTreeViewModel : BindableBase, IDisposable, IDialogViewModel
     {

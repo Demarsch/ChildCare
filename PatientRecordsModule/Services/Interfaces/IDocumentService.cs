@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace PatientRecordsModule.Services
+namespace Shared.PatientRecords.Services
 {
     public interface IDocumentService
     {

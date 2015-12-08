@@ -11,7 +11,7 @@ using System.IO;
 using Core.Wpf.Services;
 using System.Collections.Generic;
 
-namespace PatientRecordsModule.Services
+namespace Shared.PatientRecords.Services
 {
     public class DiagnosService : IDiagnosService
     {

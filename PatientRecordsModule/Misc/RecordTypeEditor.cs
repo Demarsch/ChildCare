@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Data;
-using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels;
 
-namespace PatientRecordsModule.Misc
+namespace Shared.PatientRecords.Misc
 {
     public class RecordTypeEditorResolver : IRecordTypeEditorResolver
     {

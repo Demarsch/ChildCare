@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace PatientRecordsModule.Misc
+namespace Shared.PatientRecords.Misc
 {
     public class BindingProxy : Freezable
     {

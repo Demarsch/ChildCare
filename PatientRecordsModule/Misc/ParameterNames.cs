@@ -1,4 +1,4 @@
-﻿namespace PatientRecordsModule.Misc
+﻿namespace Shared.PatientRecords.Misc
 {
     public static class ParameterNames
     {

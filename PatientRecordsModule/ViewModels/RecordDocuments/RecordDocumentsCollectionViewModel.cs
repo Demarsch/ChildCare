@@ -1,6 +1,6 @@
 ﻿using Core.Wpf.Mvvm;
 using log4net;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Services;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ using System.Collections.Specialized;
 using System.Windows;
 using Core.Wpf.Misc;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class RecordDocumentsCollectionViewModel : BindableBase, IDisposable
     {

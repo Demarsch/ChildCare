@@ -12,23 +12,21 @@ using Microsoft.Practices.Unity;
 using Core.Data.Services;
 using Core.Wpf.Services;
 using Fluent;
-using PatientRecordsModule.Misc;
+using Shared.PatientRecords.Misc;
 using Core.Data;
 using System.Data.Entity;
-using PatientRecordsModule.ViewModels;
-using PatientRecordsModule.Views;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.ViewModels;
+using Shared.PatientRecords.Views;
+using Shared.PatientRecords.Services;
 using Core.Wpf.Events;
 using System.Windows;
 using WpfControls.Editors;
-using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
-using PatientRecordsModule.Views.RecordTypesProtocolViewModels;
+using Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels;
+using Shared.PatientRecords.Views.RecordTypesProtocolViewModels;
 
-namespace PatientRecordsModule
+namespace Shared.PatientRecords
 {
-    [Module(ModuleName = WellKnownModuleNames.PatientRecordsModule)]
-    [ModuleDependency(WellKnownModuleNames.PatientSearchModule)]
-    public class Module : IModule
+    public class PatientRecords
     {
         #region Fields
         private const string PatientIsNotSelected = "Пациент не выбран";
@@ -47,7 +45,7 @@ namespace PatientRecordsModule
         #endregion
 
         #region Constructors
-        public Module(IUnityContainer container,
+        public PatientRecords(IUnityContainer container,
                      IRegionManager regionManager,
                      IDbContextProvider contextProvider,
                      IViewNameResolver viewNameResolver,
@@ -90,11 +88,11 @@ namespace PatientRecordsModule
         #region Methods
         public void Initialize()
         {
-            log.InfoFormat("{0} module init start", WellKnownModuleNames.PatientRecordsModule);
+            log.InfoFormat("Patient records library start");
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
-            log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientRecordsModule);
+            log.InfoFormat("Patient records library finished");
         }
 
         private void RegisterViewModels()
@@ -142,7 +140,7 @@ namespace PatientRecordsModule
 
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonRecordsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecordsView>());
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientRecordsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/Shared.PatientRecords;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
         private void RegisterServices()

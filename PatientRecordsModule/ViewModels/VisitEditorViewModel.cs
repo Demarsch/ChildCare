@@ -4,8 +4,8 @@ using Core.Wpf.Mvvm;
 using Core.Wpf.PopupWindowActionAware;
 using Core.Wpf.Services;
 using log4net;
-using PatientRecordsModule.DTO;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.DTO;
+using Shared.PatientRecords.Services;
 using Prism.Commands;
 using Prism.Interactivity.InteractionRequest;
 using Prism.Mvvm;
@@ -22,7 +22,7 @@ using Core.Extensions;
 using Core.Wpf.Misc;
 using Core.Misc;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class VisitEditorViewModel : TrackableBindableBase, INotification, IPopupWindowActionAware, IChangeTrackerMediator, IDataErrorInfo, IDisposable
     {

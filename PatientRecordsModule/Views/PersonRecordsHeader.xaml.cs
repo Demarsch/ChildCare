@@ -1,5 +1,6 @@
-﻿using Microsoft.Practices.Unity;
-using PatientRecordsModule.ViewModels;
+﻿using Fluent;
+using Microsoft.Practices.Unity;
+using Shared.PatientRecords.ViewModels;
 using Prism;
 using Prism.Mvvm;
 using System;
@@ -17,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PatientRecordsModule.Views
+namespace Shared.PatientRecords.Views
 {
     /// <summary>
     /// Interaction logic for PersonVisitsHeader.xaml
@@ -34,6 +35,12 @@ namespace PatientRecordsModule.Views
         {
             get { return DataContext as PersonRecordsHeaderViewModel; }
             set { DataContext = value; }
+        }
+
+        [Dependency(Shared.PatientRecords.Misc.Common.RibbonGroupName)]
+        public RibbonContextualTabGroup ContextualTabGroup
+        {
+            set { Group = value; }
         }
     }
 }

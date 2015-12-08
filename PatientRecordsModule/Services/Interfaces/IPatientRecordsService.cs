@@ -1,13 +1,13 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
-using PatientRecordsModule.DTO;
+using Shared.PatientRecords.DTO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PatientRecordsModule.Services
+namespace Shared.PatientRecords.Services
 {
     public interface IPatientRecordsService
     {

@@ -9,10 +9,10 @@ using System.Collections;
 using Core.Misc;
 using Core.Services;
 using System.Collections.Generic;
-using PatientRecordsModule.DTO;
+using Shared.PatientRecords.DTO;
 using System.Data.Entity;
 
-namespace PatientRecordsModule.Services
+namespace Shared.PatientRecords.Services
 {
     public class PatientRecordsService : IPatientRecordsService
     {

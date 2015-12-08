@@ -4,10 +4,10 @@ using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
-using PatientRecordsModule.DTO;
-using PatientRecordsModule.Misc;
-using PatientRecordsModule.Services;
-using PatientRecordsModule.ViewModels;
+using Shared.PatientRecords.DTO;
+using Shared.PatientRecords.Misc;
+using Shared.PatientRecords.Services;
+using Shared.PatientRecords.ViewModels;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
@@ -21,13 +21,13 @@ using System.Windows.Input;
 using System.Data.Entity;
 using Core.Extensions;
 using Core.Wpf.Services;
-using PatientRecordsModule.ViewModels.RecordTypesProtocolViewModels;
+using Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels;
 using Core.Misc;
 using System.ComponentModel;
 using Core.Data.Services;
 using Core.Data.Classes;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class PersonRecordEditorViewModel : TrackableBindableBase, IDisposable, IDataErrorInfo, IChangeTrackerMediator
     {

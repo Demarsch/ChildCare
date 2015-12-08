@@ -3,8 +3,8 @@ using Core.Data.Misc;
 using Core.Wpf.Events;
 using Core.Wpf.Services;
 using log4net;
-using PatientRecordsModule.Misc;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Misc;
+using Shared.PatientRecords.Services;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class PersonRecordsViewModel : BindableBase, IConfirmNavigationRequest
     {

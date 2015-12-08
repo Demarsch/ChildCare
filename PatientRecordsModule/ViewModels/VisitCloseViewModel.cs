@@ -4,8 +4,8 @@ using Core.Wpf.Mvvm;
 using Core.Wpf.PopupWindowActionAware;
 using Core.Wpf.Services;
 using log4net;
-using PatientRecordsModule.DTO;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.DTO;
+using Shared.PatientRecords.Services;
 using Prism.Commands;
 using Prism.Interactivity.InteractionRequest;
 using Prism.Mvvm;
@@ -23,9 +23,9 @@ using Core.Wpf.Misc;
 using Core.Misc;
 using WpfControls.Editors;
 using Microsoft.Practices.Unity;
-using PatientRecordsModule.Misc;
+using Shared.PatientRecords.Misc;
 
-namespace PatientRecordsModule.ViewModels
+namespace Shared.PatientRecords.ViewModels
 {
     public class VisitCloseViewModel : TrackableBindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo, IChangeTrackerMediator, IDisposable
     {

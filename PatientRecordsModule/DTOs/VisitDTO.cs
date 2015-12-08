@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PatientRecordsModule.DTO
+namespace Shared.PatientRecords.DTO
 {
     public class VisitDTO
     {

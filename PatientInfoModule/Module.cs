@@ -20,6 +20,7 @@ using Prism.Modularity;
 using Prism.Regions;
 using Shell.Shared;
 using WpfControls.Editors;
+using Shared.PatientRecords;
 
 namespace PatientInfoModule
 {
@@ -85,6 +86,8 @@ namespace PatientInfoModule
             RegisterViewModels();
             RegisterViews();
             InitiateLongRunningOperations();
+            var PatientRecords = new PatientRecords(container, regionManager, contextProvider, viewNameResolver, eventAggregator, log);
+            PatientRecords.Initialize();
             log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientInfoModule);
         }
 

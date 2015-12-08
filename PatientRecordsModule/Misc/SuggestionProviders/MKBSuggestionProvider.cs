@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
-using PatientRecordsModule.Services;
+using Shared.PatientRecords.Services;
 using WpfControls.Editors;
 
-namespace PatientRecordsModule.Misc
+namespace Shared.PatientRecords.Misc
 {
     public class MKBSuggestionProvider : ISuggestionProvider
     {
