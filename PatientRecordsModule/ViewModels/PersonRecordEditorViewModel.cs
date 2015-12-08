@@ -197,6 +197,7 @@ namespace Shared.PatientRecords.ViewModels
                 }
                 OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
                 OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+                OnPropertyChanged(() => ShowProtocol);
             }
         }
 
@@ -204,7 +205,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             get
             {
-                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View);
+                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View) && !IsVisit;
             }
         }
 
@@ -212,7 +213,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             get
             {
-                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.Edit);
+                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.Edit) && !IsVisit;
             }
         }
 
@@ -286,6 +287,149 @@ namespace Shared.PatientRecords.ViewModels
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
+
+        #region ViewMode Properties
+
+        private bool showProtocol;
+        public bool ShowProtocol
+        {
+            get { return (RecordId > 0 || IsEditModeInCurrentProtocolEditor); }
+            set { SetProperty(ref showProtocol, value); }
+        }
+
+        private string visitView;
+        public string VisitView
+        {
+            get { return visitView; }
+            set { SetProperty(ref visitView, value); }
+        }
+
+        private string roomView;
+        public string RoomView
+        {
+            get { return roomView; }
+            set { SetProperty(ref roomView, value); }
+        }
+
+        private string periodView;
+        public string PeriodView
+        {
+            get { return periodView; }
+            set { SetProperty(ref periodView, value); }
+        }
+
+        private string urgentlyView;
+        public string UrgentlyView
+        {
+            get { return urgentlyView; }
+            set { SetProperty(ref urgentlyView, value); }
+        }
+
+        private string beginDateView;
+        public string BeginDateView
+        {
+            get { return beginDateView; }
+            set { SetProperty(ref beginDateView, value); }
+        }
+
+        private string endDateView;
+        public string EndDateView
+        {
+            get { return endDateView; }
+            set { SetProperty(ref endDateView, value); }
+        }
+
+        private string brigadeView;
+        public string BrigadeView
+        {
+            get { return brigadeView; }
+            set { SetProperty(ref brigadeView, value); }
+        }
+
+        private bool isVisit;
+        public bool IsVisit
+        {
+            get { return isVisit; }
+            set { SetProperty(ref isVisit, value); }
+        }
+
+        private string visitBeginDateView;
+        public string VisitBeginDateView
+        {
+            get { return visitBeginDateView; }
+            set { SetProperty(ref visitBeginDateView, value); }
+        }
+
+        private string executionPlaceView;
+        public string ExecutionPlaceView
+        {
+            get { return executionPlaceView; }
+            set { SetProperty(ref executionPlaceView, value); }
+        }
+
+        private string contractView;
+        public string ContractView
+        {
+            get { return contractView; }
+            set { SetProperty(ref contractView, value); }
+        }
+
+        private string finSourceView;
+        public string FinSourceView
+        {
+            get { return finSourceView; }
+            set { SetProperty(ref finSourceView, value); }
+        }
+
+        private string visitOKATOView;
+        public string VisitOKATOView
+        {
+            get { return visitOKATOView; }
+            set { SetProperty(ref visitOKATOView, value); }
+        }
+
+        private string visitUrgentlyView;
+        public string VisitUrgentlyView
+        {
+            get { return visitUrgentlyView; }
+            set { SetProperty(ref visitUrgentlyView, value); }
+        }
+
+        private string visitMKBView;
+        public string VisitMKBView
+        {
+            get { return visitMKBView; }
+            set { SetProperty(ref visitMKBView, value); }
+        }
+
+        private string sentLPUView;
+        public string SentLPUView
+        {
+            get { return sentLPUView; }
+            set { SetProperty(ref sentLPUView, value); }
+        }
+
+        private string visitResultView;
+        public string VisitResultView
+        {
+            get { return visitResultView; }
+            set { SetProperty(ref visitResultView, value); }
+        }
+
+        private string visitOutcomeView;
+        public string VisitOutcomeView
+        {
+            get { return visitOutcomeView; }
+            set { SetProperty(ref visitOutcomeView, value); }
+        }
+
+        private string visitNoteView;
+        public string VisitNoteView
+        {
+            get { return visitNoteView; }
+            set { SetProperty(ref visitNoteView, value); }
+        }
+        #endregion
 
         #region Properties RecordDocuments
 
@@ -540,6 +684,7 @@ namespace Shared.PatientRecords.ViewModels
             try
             {
                 CommonRecordAssignmentDTO data = new CommonRecordAssignmentDTO();
+                IsVisit = false;                
                 if (recordId > 0)
                 {
                     data = await recordQuery.Select(x => new CommonRecordAssignmentDTO()
@@ -557,7 +702,7 @@ namespace Shared.PatientRecords.ViewModels
                             RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty)
                         }).FirstOrDefaultAsync(token);
                     LoadBrigadeAsync(data.RecordTypeId, recordId, data.ActualDateTime);
-                    var curSID = userService.GetCurrentSID();
+                    var curSID = userService.GetCurrentUserSID();
                     var MemberCanComplete = await patientRecordsService.GetRecordMembers(recordId).Where(x => x.RecordTypeRolePermission.IsSign && x.PersonStaff.Person.Users.Any(y => y.SID == curSID)).AnyAsync();
                     IsRecordCanBeCompleted = MemberCanComplete;
                 }
@@ -577,6 +722,11 @@ namespace Shared.PatientRecords.ViewModels
                     }).FirstOrDefaultAsync(token);
                     LoadBrigadeAsync(data.RecordTypeId, 0, data.ActualDateTime);
                 }
+                else if (visitId > 0)
+                {
+                    IsVisit = true;
+                    ParentVisitId = visitId;
+                }
                 //Load recordPeriods
                 recordPeriodsQuery = patientRecordsService.GetActualRecordPeriods(data.ExecutionPlaceId, data.BeginDateTime);
                 var recordPeriods = await recordPeriodsQuery.Select(x => new CommonIdName() { Id = x.Id, Name = x.Name }).ToArrayAsync();
@@ -591,17 +741,47 @@ namespace Shared.PatientRecords.ViewModels
                         (x.EndDateTime.HasValue ? x.EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : "...") + ")"
                 }));
 
-                SelectedPeriodId = data.RecordPeriodId.ToInt();
-                SelectedUrgentlyId = data.UrgentlyId;
-                BeginDateTime = data.BeginDateTime;
-                EndDateTime = data.EndDateTime;
-                personId = data.PersonId;
-                recordTypeId = data.RecordTypeId;
-                ParentVisitId = data.ParentVisitId;
-                OnPropertyChanged(() => IsVisibleVisits);
-                RoomId = data.RoomId;
-                OnPropertyChanged(() => IsVisibleRooms);
-                RecordTypeName = data.RecordTypeName;
+                string defValue = " - ";
+                if (IsVisit)
+                {
+                    var selectedVisit = patientRecordsService.GetVisit(ParentVisitId.Value).First();
+                    VisitView = selectedVisit.VisitTemplate.Name;
+                    VisitBeginDateView = selectedVisit.BeginDateTime.ToString("dd.MM.yyyy HH:mm");
+                    ExecutionPlaceView = selectedVisit.ExecutionPlace.Name;
+                    ContractView = selectedVisit.RecordContract.DisplayName;
+                    FinSourceView = selectedVisit.FinancingSource.Name;
+                    VisitUrgentlyView = selectedVisit.Urgently.Name;
+                    VisitOKATOView = !string.IsNullOrEmpty(selectedVisit.OKATO) ? selectedVisit.OKATO : defValue;
+                    VisitMKBView = !string.IsNullOrEmpty(selectedVisit.MKB) ? selectedVisit.MKB : defValue;
+                    SentLPUView = selectedVisit.Org.Name;
+                    VisitResultView = selectedVisit.VisitResultId.HasValue ? selectedVisit.VisitResult.Name : defValue;
+                    VisitOutcomeView = selectedVisit.VisitOutcomeId.HasValue ? selectedVisit.VisitOutcome.Name : defValue;
+                    VisitNoteView = !string.IsNullOrEmpty(selectedVisit.Note) ? selectedVisit.Note : defValue;
+                }
+                else
+                {
+                    SelectedPeriodId = data.RecordPeriodId.ToInt();
+                    SelectedUrgentlyId = data.UrgentlyId;
+                    BeginDateTime = data.BeginDateTime;
+                    EndDateTime = data.EndDateTime;
+                    personId = data.PersonId;
+                    recordTypeId = data.RecordTypeId;
+                    ParentVisitId = data.ParentVisitId;
+                    OnPropertyChanged(() => IsVisibleVisits);
+                    RoomId = data.RoomId;
+                    OnPropertyChanged(() => IsVisibleRooms);
+                    RecordTypeName = data.RecordTypeName;
+
+                    //Set View Mode Properties                   
+                    VisitView = ParentVisits.Any(x => x.Id == ParentVisitId) ? ParentVisits.First(x => x.Id == ParentVisitId).Name : defValue;
+                    RoomView = Rooms.Any(x => x.Id == RoomId) ? Rooms.First(x => x.Id == RoomId).Name : defValue;
+                    PeriodView = RecordPeriods.Any(x => x.Id == SelectedPeriodId) ? RecordPeriods.First(x => x.Id == SelectedPeriodId).Name : defValue;
+                    UrgentlyView = Urgentlies.Any(x => x.Id == SelectedUrgentlyId) ? Urgentlies.First(x => x.Id == SelectedUrgentlyId).Name : defValue;
+                    BeginDateView = BeginDateTime.HasValue ? BeginDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
+                    EndDateView = EndDateTime.HasValue ? EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
+                    BrigadeView = Brigade.Any() ? Brigade.Select(x => x.RoleName + ": " + x.StaffName + " " + x.PersonName).Aggregate((x,y) => x + "; " + y) : defValue;
+                }
+
                 ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
@@ -819,6 +999,7 @@ namespace Shared.PatientRecords.ViewModels
             {
                 OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
                 OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+                OnPropertyChanged(() => ShowProtocol);
             }
         }
 

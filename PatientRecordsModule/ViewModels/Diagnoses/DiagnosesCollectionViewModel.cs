@@ -380,7 +380,7 @@ namespace Shared.PatientRecords.ViewModels
                                                     IsMainDiagnos = x.IsMainDiagnos,
                                                     Options = string.Empty,
                                                     InDateTime = DateTime.Now,
-                                                    InPersonId = userService.GetUserBySID().PersonId,
+                                                    InPersonId = userService.GetCurrentUser().PersonId,
                                                 }).ToArray(), out exception);
                 if (personDiagnosId != SpecialValues.NewId)
                 {
@@ -413,9 +413,6 @@ namespace Shared.PatientRecords.ViewModels
         private bool IsDiagnosValid()
         {
             validationErrors = string.Empty;            
-            if (userService.GetUserBySID() == null)
-                validationErrors += "Отсутствует информация о пользователе (SID пользователя не зарегистрирован в МИС).\r\n";
-
             var diagnosType = diagnosService.GetDiagnosTypeById(diagnosTypeId).FirstOrDefault();
             if (diagnosType == null)
                 return true;

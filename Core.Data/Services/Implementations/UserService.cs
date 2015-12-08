@@ -20,16 +20,16 @@ namespace Core.Data.Services
             this.contextProvider = contextProvider;
         }
 
-        public string GetCurrentSID()
+        public string GetCurrentUserSID()
         {
             return UserPrincipal.Current.Sid.ToString();
         }
 
-        public User GetUserBySID()
+        public User GetCurrentUser()
         {
             using (var db = contextProvider.CreateNewContext())
             {
-                var curSID = GetCurrentSID();
+                var curSID = GetCurrentUserSID();
                 return db.Set<User>().FirstOrDefault(x => x.SID != null && x.SID.ToLower() == curSID);
             }
         }
@@ -38,7 +38,7 @@ namespace Core.Data.Services
         {
             using (var db = contextProvider.CreateNewContext())
             {
-                var curSID = GetCurrentSID();
+                var curSID = GetCurrentUserSID();
                 return StackRoles(new List<Permission>(), db.Set<User>().Where(z => z.SID != null && z.SID.ToLower() == curSID).SelectMany(x => x.UserPermissions.Select(y => new { y.Permission, y.IsGranted })).ToList()
                     .Select(x => new Tuple<Permission, bool>(x.Permission, x.IsGranted)).ToList()).ToList();
             }

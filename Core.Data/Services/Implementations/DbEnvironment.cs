@@ -31,8 +31,8 @@ namespace Core.Data.Services
             {
                 if (currentUser == null)
                 {
-                    var userSid = userService.GetCurrentSID();
-                    currentUser = userService.GetUserBySID();
+                    var userSid = userService.GetCurrentUserSID();
+                    currentUser = userService.GetCurrentUser();
                     if (currentUser == null)
                     {
                         throw new ApplicationException(string.Format("Database doesn't contain information about user with SID '{0}'", userSid));

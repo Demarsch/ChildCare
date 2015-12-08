@@ -8,7 +8,7 @@
              xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels"
              xmlns:views="clr-namespace:Shared.PatientRecords.Views"
              mc:Ignorable="d"
-             d:DesignHeight="200" d:DesignWidth="600" Height="Auto">
+             d:DesignHeight="650" d:DesignWidth="600" Height="Auto">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -54,13 +54,14 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>           
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0"
-              Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+              Visibility="{Binding IsEditModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToCollapsedConverter.Instance}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
@@ -86,45 +87,124 @@
             </ListBox>
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Случай:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name" Margin="2,2,22,2" 
+                      SelectedValuePath="Id" DisplayMemberPath="Name" Margin="2" 
                       ItemsSource="{Binding ParentVisits}" 
                       SelectedValue="{Binding ParentVisitId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Кабинет:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name"  Margin="2,2,22,2"
+                      SelectedValuePath="Id" DisplayMemberPath="Name"  Margin="2"
                       ItemsSource="{Binding Rooms}" 
                       SelectedValue="{Binding RoomId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Период оказания" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
+            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2"
                       SelectedValuePath="Id" DisplayMemberPath="Name"  
                       ItemsSource="{Binding RecordPeriods}" 
                       SelectedValue="{Binding SelectedPeriodId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Форма оказания" FontWeight="Medium" VerticalAlignment="Center" Margin="2" HorizontalAlignment="Stretch"/>
-            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
+            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2"
                       SelectedValuePath="Id" DisplayMemberPath="Name" 
                       ItemsSource="{Binding Urgentlies}" 
                       SelectedValue="{Binding SelectedUrgentlyId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
             <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Vertical">
-                <TextBlock Text="Время окончания услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
-                <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
-                    <Hyperlink Command="{Binding SetCurrentDateTimeBeginCommand}">Текущее время</Hyperlink>
-                </TextBlock>
-            </StackPanel>
-            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3" Height="23" Width="190" Margin="0,2" Watermark="Дата/время конца" Value="{Binding BeginDateTime}"/>
-            <StackPanel Grid.Row="5" Grid.Column="2" Orientation="Vertical">
                 <TextBlock Text="Время начала услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
                 <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
-                    <Hyperlink Command="{Binding SetCurrentDateTimeEndCommand}">Текущее время</Hyperlink>
+                    <Hyperlink Command="{Binding SetCurrentDateTimeBeginCommand}">текущее время</Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <toolkit:DateTimePicker Grid.Row="5" Grid.Column="3" Height="23" Width="190" Margin="0,2" Watermark="Дата/время конца" Value="{Binding EndDateTime}"/>
+            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3" Height="23" Width="190" Margin="2" Watermark="Дата/время конца" Value="{Binding BeginDateTime}"/>
+            <StackPanel Grid.Row="5" Grid.Column="2" Orientation="Vertical">
+                <TextBlock Text="Время окончания услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
+                <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
+                    <Hyperlink Command="{Binding SetCurrentDateTimeEndCommand}">текущее время</Hyperlink>
+                </TextBlock>
+            </StackPanel>
+            <toolkit:DateTimePicker Grid.Row="5" Grid.Column="3" Height="23" Width="190" Margin="2" Watermark="Дата/время конца" Value="{Binding EndDateTime}"/>
         </Grid>
 
-        <ContentControl Grid.Row="1" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <Grid Grid.Row="1"
+              Visibility="{Binding IsViewModeInCurrentProtocolEditor, Converter={x:Static converters:BoolToCollapsedConverter.Instance}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding RecordTypeName}" FontWeight="Bold" FontSize="20" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Случай:" FontSize="13" Margin="5,10,2,2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding VisitView}" FontSize="13" Margin="10,10,2,2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Кабинет:" Margin="5,2" FontSize="13" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding RoomView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Период оказания:" Margin="5,2" FontSize="13" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding PeriodView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Форма оказания:" Margin="5,2" FontSize="13" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding UrgentlyView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="5" Grid.Column="0"  Text="Время начала услуги:"  Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="5" Grid.Column="1"  Text="{Binding BeginDateView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Время окончания услуги:" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding EndDateView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="7" Grid.Column="0"  Text="Бригада:" FontWeight="Medium"  Margin="5,2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="7" Grid.Column="1"  Text="{Binding BrigadeView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        </Grid>
 
-        <views:RecordDocumentsView Grid.Row="2" DataContext="{Binding DocumentsViewer}" Margin="2"/>
+        <Grid Grid.Row="2"
+              Visibility="{Binding IsVisit, Converter={x:Static converters:BoolToCollapsedConverter.Instance}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding VisitView}" FontWeight="Bold" FontSize="20" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Дата/время начала случая:" FontSize="13" Margin="5,20,5,2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding VisitBeginDateView}" FontSize="13" Margin="5,20,5,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Место выполнения:" Margin="5,2" FontSize="13" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ExecutionPlaceView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Источник финансирования:" Margin="5,2" FontSize="13" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FinSourceView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Договор:" Margin="5,2" FontSize="13" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ContractView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="5" Grid.Column="0"  Text="Форма оказания:"  Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="5" Grid.Column="1"  Text="{Binding VisitUrgentlyView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="ОКАТО:" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding VisitOKATOView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="МКБ-10:" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding VisitMKBView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Направившее ЛПУ:" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SentLPUView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Результат обращения:" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding VisitResultView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Исход:" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding VisitOutcomeView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="11" Grid.Column="0"  Text="Примечание:" FontWeight="Medium"  Margin="5,2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="11" Grid.Column="1"  Text="{Binding VisitNoteView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        </Grid>
+        
+        <ContentControl Grid.Row="3" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        Visibility="{Binding ShowProtocol, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}"/>
+
+        <views:RecordDocumentsView Grid.Row="4" DataContext="{Binding DocumentsViewer}" Margin="2"/>
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="4"/>
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="4"/>

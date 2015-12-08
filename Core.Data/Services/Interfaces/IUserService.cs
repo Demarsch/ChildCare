@@ -15,8 +15,8 @@ namespace Core.Data.Services
         /// <returns></returns>
         bool HasPermission(string permission);
 
-        User GetUserBySID();
+        User GetCurrentUser();
 
-        string GetCurrentSID();
+        string GetCurrentUserSID();
     }
 }

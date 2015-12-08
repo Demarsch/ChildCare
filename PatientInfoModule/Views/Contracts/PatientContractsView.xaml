@@ -129,7 +129,7 @@
                             <GridView.Columns>
                                 <GridViewColumn x:Name="ContractDate" Width="70" Header="Дата" DisplayMemberBinding="{Binding Path=ContractBeginDate, StringFormat=dd.MM.yyyy}"></GridViewColumn>
                                 <GridViewColumn x:Name="ContractName" Width="200" Header="Договор" DisplayMemberBinding="{Binding Path=ContractName}"></GridViewColumn>
-                                <GridViewColumn x:Name="Cost" Width="70" Header="Сумма" DisplayMemberBinding="{Binding Path=ContractCost}"></GridViewColumn>
+                                <GridViewColumn x:Name="Cost" Width="70" Header="Сумма, руб" DisplayMemberBinding="{Binding Path=ContractCost}"></GridViewColumn>
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>

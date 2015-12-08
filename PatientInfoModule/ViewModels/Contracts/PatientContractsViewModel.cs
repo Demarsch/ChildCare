@@ -777,7 +777,6 @@ namespace PatientInfoModule.ViewModels
                 });
                 return;
             }
-            throw new NotImplementedException();
         }
 
         private void PrintContract()
@@ -791,7 +790,6 @@ namespace PatientInfoModule.ViewModels
                 });
                 return;
             }
-            throw new NotImplementedException();
         }
 
         private void RemoveContract()
