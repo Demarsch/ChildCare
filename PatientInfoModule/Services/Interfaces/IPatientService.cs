@@ -31,7 +31,7 @@ namespace PatientInfoModule.Services
 
         IDisposableQueryable<PersonStaff> GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end);
 
-        IDisposableQueryable<PersonStaff> GetAllowedPersonStaffs(int recordTypeId, int memberRoleId);
+        IDisposableQueryable<PersonStaff> GetAllowedPersonStaffs(int recordTypeId, int memberRoleId, DateTime onDate);
 
         IDisposableQueryable<PersonOuterDocument> GetPersonOuterDocuments(int personId);
 

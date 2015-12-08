@@ -1052,7 +1052,7 @@ namespace PatientInfoModule.ViewModels
                     {
                         error = "Укажите дату, с которой вступили силу изменения Ф.И.О.";
                     }
-                    else if (AssociatedItem.NewNameStartDate >= AssociatedItem.BirthDate)
+                    else if (AssociatedItem.NewNameStartDate < AssociatedItem.BirthDate)
                     {
                         error = "Дата смены Ф.И.О. не может быть меньше даты рождения";
                     }

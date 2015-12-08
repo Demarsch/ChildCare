@@ -19,7 +19,7 @@ namespace OrganizationContractsModule.Services
         IDisposableQueryable<FinancingSource> GetActiveFinancingSources();
         IDisposableQueryable<RecordType> GetRecordTypesByOptions(string options);
         IDisposableQueryable<RecordTypeRole> GetRecordTypeRolesByOptions(string options);
-        IDisposableQueryable<PersonStaff> GetAllowedPersonStaffs(int recordTypeId, int memberRoleId);
+        IDisposableQueryable<PersonStaff> GetAllowedPersonStaffs(int recordTypeId, int memberRoleId, DateTime onDate);
         IDisposableQueryable<Visit> GetVisitsByContractId(int contractId);
         Task<int> SaveOrgAsync(Org org);
     }

@@ -91,20 +91,24 @@ namespace OrganizationContractsModule.ViewModels
 
         #region Properties
 
-        private ObservableCollectionEx<FieldValue> years;
-        public ObservableCollectionEx<FieldValue> Years
+        private DateTime filterBeginDate;
+        public DateTime FilterBeginDate
         {
-            get { return years; }
-            set { SetProperty(ref years, value); }
-        }
-
-        private int selectedYear;
-        public int SelectedYear
-        {
-            get { return selectedYear; }
+            get { return filterBeginDate; }
             set
             {
-                if (SetProperty(ref selectedYear, value))
+                if (SetProperty(ref filterBeginDate, value) && value <= FilterEndDate)
+                    LoadContractsAsync();
+            }
+        }
+
+        private DateTime filterEndDate;
+        public DateTime FilterEndDate
+        {
+            get { return filterEndDate; }
+            set
+            {
+                if (SetProperty(ref filterEndDate, value) && value >= FilterBeginDate)
                     LoadContractsAsync();
             }
         }
@@ -278,7 +282,7 @@ namespace OrganizationContractsModule.ViewModels
                 FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles", reloadDataSourcesCommandWrapper);
                 return;
             }
-            var personStaffs = await contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
+            var personStaffs = await contractService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id, DateTime.Now).ToArrayAsync();
             if (!personStaffs.Any())
             {
                 FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions", reloadDataSourcesCommandWrapper);
@@ -308,20 +312,14 @@ namespace OrganizationContractsModule.ViewModels
             Organizations = new ObservableCollectionEx<FieldValue>(orgs);
             SelectedOrganizationId = SpecialValues.NonExistingId;
 
-            List<FieldValue> elements = new List<FieldValue>();
-            elements.Add(new FieldValue() { Value = -1, Field = "- все -" });
-            int begin = DateTime.Now.Year - 10;
-            int end = DateTime.Now.Year + 10;
-            for(int i = begin; i < end; i++)
-                elements.Add(new FieldValue() { Value = i, Field = i + " год" });
-            Years = new ObservableCollectionEx<FieldValue>(elements);
-            SelectedYear = DateTime.Now.Year;
+            FilterBeginDate = DateTime.Now;
+            FilterEndDate = DateTime.Now;
             SelectedFilterFinSourceId = SpecialValues.NonExistingId;
         }
 
         private async void LoadContractsAsync()
         {
-            if (selectedFilterFinSourceId == 0 || selectedYear == 0) return;
+            if (selectedFilterFinSourceId == 0) return;
             if (currentLoadingToken != null)
             {
                 currentLoadingToken.Cancel();
@@ -336,8 +334,7 @@ namespace OrganizationContractsModule.ViewModels
             IOrderedQueryable<RecordContract> contractsQuery = null;
             try
             {
-                contractsQuery = contractService.GetContractsWithOrgs(new DateTime(selectedYear, 1, 1), new DateTime(selectedYear, 12, 31), selectedFilterFinSourceId)
-                                                .OrderBy(x => x.BeginDateTime);
+                contractsQuery = contractService.GetContractsWithOrgs(filterBeginDate, filterEndDate, selectedFilterFinSourceId).OrderBy(x => x.BeginDateTime);
                 var result = await Task.Factory.StartNew(() =>
                 {
                     return contractsQuery.Select(x => new

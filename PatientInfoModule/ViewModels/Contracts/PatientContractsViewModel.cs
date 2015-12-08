@@ -100,7 +100,6 @@ namespace PatientInfoModule.ViewModels
             NotificationInteractionRequest = new InteractionRequest<Notification>();
             AddContractRecordsInteractionRequest = new InteractionRequest<AddContractRecordsViewModel>();
 
-            Contracts = new ObservableCollectionEx<ContractViewModel>();
             ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
 
             contractItemsTracker = new CompositeChangeTracker(ChangeTracker);
@@ -187,7 +186,7 @@ namespace PatientInfoModule.ViewModels
                 FailureMediator.Activate("В МИС не найдена информация об услуге 'Договор' и/или об ответственных за выполнение. Отсутствует запись в таблицах RecordTypes, RecordTypeRoles", reloadDataSourcesCommandWrapper);
                 return;
             }
-            var personStaffs = await personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id).ToArrayAsync();
+            var personStaffs = await personService.GetAllowedPersonStaffs(contractRecord.Id, reliableStaff.Id, DateTime.Now).ToArrayAsync();
             if (!personStaffs.Any())
             {
                 FailureMediator.Activate("В МИС не найдена информация о правах на выполнение услуги. Отсутствует запись в таблице RecordTypeRolePermissions", reloadDataSourcesCommandWrapper);
@@ -201,7 +200,6 @@ namespace PatientInfoModule.ViewModels
             List<FieldValue> elements = new List<FieldValue>();
             elements.Add(new FieldValue() { Value = -1, Field = "- все -" });
             elements.AddRange(personStaffs.Select(x => new FieldValue() { Value = x.Id, Field = x.Person.ShortName }));
-            FilterRegistrators = new ObservableCollectionEx<FieldValue>(elements);
             Registrators = new ObservableCollectionEx<FieldValue>(elements);
 
             List<FieldValue> finSources = new List<FieldValue>();
@@ -217,13 +215,9 @@ namespace PatientInfoModule.ViewModels
             PaymentTypes = new ObservableCollectionEx<FieldValue>(paymentTypesSource);
 
             IsCashless = false;
-            Contracts = new ObservableCollectionEx<ContractViewModel>();
-
             SelectedRegistratorId = SpecialValues.NonExistingId;
             SelectedPaymentTypeId = SpecialValues.NonExistingId;
             SelectedFinancingSourceId = SpecialValues.NonExistingId;            
-
-            SelectedFilterRegistratorId = SpecialValues.NonExistingId;
         }
 
         private async void LoadContractsAsync(int patientId)
@@ -247,7 +241,7 @@ namespace PatientInfoModule.ViewModels
             IDisposableQueryable<RecordContract> contractsQuery = null;
             try
             {
-                contractsQuery = contractService.GetContracts(patientId, null, null, selectedFilterRegistratorId);
+                contractsQuery = contractService.GetContracts(patientId);
                 var result = await Task.Factory.StartNew(() =>
                             {
                                 return contractsQuery.Select(x => new
@@ -425,25 +419,7 @@ namespace PatientInfoModule.ViewModels
         {
             get { return contractsSum; }
             set { SetProperty(ref contractsSum, value); }
-        }
-
-        private ObservableCollectionEx<FieldValue> filterRegistrators;
-        public ObservableCollectionEx<FieldValue> FilterRegistrators
-        {
-            get { return filterRegistrators; }
-            set { SetProperty(ref filterRegistrators, value); }
-        }
-
-        private int selectedFilterRegistratorId;
-        public int SelectedFilterRegistratorId
-        {
-            get { return selectedFilterRegistratorId; }
-            set
-            {
-                SetProperty(ref selectedFilterRegistratorId, value);
-                LoadContractsAsync(this.patientId);
-            }
-        }
+        }        
 
         private ObservableCollectionEx<ContractViewModel> contracts;
         public ObservableCollectionEx<ContractViewModel> Contracts
@@ -600,6 +576,7 @@ namespace PatientInfoModule.ViewModels
             {
                 this.patientId = targetPatientId;
                 LoadDataSources();
+                LoadContractsAsync(this.patientId);
             }
         }
 

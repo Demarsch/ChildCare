@@ -67,11 +67,9 @@
             <DockPanel Grid.Column="0" Grid.Row="0" DockPanel.Dock="Left" LastChildFill="True" MaxWidth="400">
                 <DockPanel DockPanel.Dock="Top" LastChildFill="True">
                     <Label Content="Временной интервал " DockPanel.Dock="Left"/>
-                    <ComboBox ItemsSource="{Binding Years}" 
-                              DisplayMemberPath="Field" 
-                              SelectedValuePath="Value"
-                              SelectedValue="{Binding SelectedYear, Mode=TwoWay}"
-                              Margin="2"/>
+                    <DatePicker SelectedDate="{Binding FilterBeginDate, Mode=TwoWay}" Width="115" Margin="2"/>
+                    <Label Content="-" DockPanel.Dock="Left"/>
+                    <DatePicker SelectedDate="{Binding FilterEndDate, Mode=TwoWay}" Width="115" Margin="2"/>
                 </DockPanel>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="True">
                     <Label Content="Ист. финансирования" DockPanel.Dock="Left"/>
@@ -97,7 +95,7 @@
                                 </Style>
                             </GridView.ColumnHeaderContainerStyle>
                             <GridView.Columns>
-                                <GridViewColumn x:Name="ContractNumber" Header="№ дог." DisplayMemberBinding="{Binding Path=ContractNumber}"></GridViewColumn>
+                                <GridViewColumn x:Name="ContractNumber" Width="75" Header="№ договора" DisplayMemberBinding="{Binding Path=ContractNumber}"></GridViewColumn>
                                 <GridViewColumn x:Name="OrganizationName" Width="300" Header="Организация" DisplayMemberBinding="{Binding Path=ContractName}"></GridViewColumn>
                             </GridView.Columns>
                         </GridView>

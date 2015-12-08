@@ -96,11 +96,6 @@
                
             <DockPanel Grid.Column="0" Grid.Row="0" DockPanel.Dock="Left" LastChildFill="True" MaxWidth="360">
                 <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
-                    <TextBlock Text="Ответственный" FontWeight="Bold" Margin="5"/>
-                    <ComboBox ItemsSource="{Binding FilterRegistrators}" 
-                              DisplayMemberPath="Field" 
-                              SelectedValuePath="Value"
-                              SelectedValue="{Binding SelectedFilterRegistratorId, Mode=TwoWay}" Margin="5,0"/>
                     <Grid Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>

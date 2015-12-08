@@ -49,7 +49,7 @@ namespace PatientRecordsModule.Services
         public IDisposableQueryable<Assignment> GetPersonRootAssignmentsQuery(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.PersonId == personId && !x.VisitId.HasValue && !x.RecordId.HasValue && x.RemovedByUserId == null), context);
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.PersonId == personId && !x.VisitId.HasValue && !x.RecordId.HasValue && x.RemovedByUserId == null && !x.CancelUserId.HasValue), context);
         }
 
         public IDisposableQueryable<Visit> GetPersonVisitsQuery(int personId, bool onlyOpened)
