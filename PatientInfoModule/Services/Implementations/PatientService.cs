@@ -19,7 +19,9 @@ namespace PatientInfoModule.Services
 
         private readonly ICacheService cacheService;
 
-        public PatientService(IDbContextProvider contextProvider, ICacheService cacheService)
+        private readonly IDocumentService documentService;
+
+        public PatientService(IDbContextProvider contextProvider, ICacheService cacheService, IDocumentService documentService)
         {
             if (contextProvider == null)
             {
@@ -29,8 +31,13 @@ namespace PatientInfoModule.Services
             {
                 throw new ArgumentNullException("cacheService");
             }
+            if (documentService == null)
+            {
+                throw new ArgumentNullException("documentService");
+            }
             this.contextProvider = contextProvider;
             this.cacheService = cacheService;
+            this.documentService = documentService;
         }
 
         public IDisposableQueryable<Person> GetPatientQuery(int patientId)
@@ -181,9 +188,35 @@ namespace PatientInfoModule.Services
                 PrepareAddresses(data, context, result);
                 PrepareDisabilityDocuments(data, context, result);
                 PrepareSocialStatuses(data, context, result);
+                await PreparePhotoAsync(data, context, result);
                 await PrepareRelativeRelationshipAsync(data, context, result);
                 await context.SaveChangesAsync();
                 return result;
+            }
+        }
+
+        private async Task PreparePhotoAsync(SavePatientInput data, DbContext context, SavePatientOutput result)
+        {
+            if (data.NewPhoto == null || data.NewPhoto.Length == 0)
+            {
+                return;
+            }
+            var photoId = await documentService.UploadDocumentAsync(new Document
+            {
+                FileData = data.NewPhoto,
+                Description = "фото",
+                DisplayName = "фото",
+                Extension = "jpg",
+                FileName = "фото",
+                FileSize = data.NewPhoto.Length,
+                UploadDate = DateTime.Now
+            });
+            var currentPhotoId = data.CurrentPerson.PhotoId;
+            result.Person.PhotoId = photoId;
+            //If patient already had photo we need to delete it
+            if (currentPhotoId != null && !currentPhotoId.Value.IsNewOrNonExisting())
+            {
+                context.Entry(new Document { Id = currentPhotoId.Value }).State = EntityState.Deleted;
             }
         }
 

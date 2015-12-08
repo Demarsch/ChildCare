@@ -120,6 +120,7 @@ namespace PatientInfoModule.ViewModels
             SocialStatuses = socialStatusCollectionViewModel;
             this.patientService = patientService;
             this.log = log;
+            TakePhotoCommand = new DelegateCommand(TakePhotoAsync);
             validator = new ValidationMediator(this);
             patientIdBeingLoaded = SpecialValues.NonExistingId;
             currentInstanceChangeTracker = new ChangeTrackerEx<PatientInfoViewModel>(this);
@@ -605,23 +606,6 @@ namespace PatientInfoModule.ViewModels
             var dialogResult = await dialogService.ShowDialogAsync(photoViewModel);
             if (dialogResult == true)
             {
-                var encoder = new JpegBitmapEncoder();
-                var fileData = fileService.GetBinaryDataFromImage(encoder, photoViewModel.SnapshotTaken);
-                var str = string.Empty;
-                if (fileData != null && fileData.Length > 0)
-                {
-                    //TODO: move this save to real patient save
-                    var photoId = await documentService.UploadDocumentAsync(new Document
-                                                             {
-                                                                 FileData = fileData,
-                                                                 Description = "фото",
-                                                                 DisplayName = "фото",
-                                                                 Extension = "jpg",
-                                                                 FileName = "фото",
-                                                                 FileSize = fileData.Length,
-                                                                 UploadDate = DateTime.Now
-                                                             });
-                }
                 PhotoSource = photoViewModel.SnapshotTaken;
                 photoViewModel.SnapshotBitmap = null;
                 photoViewModel.SnapshotTaken = null;
@@ -720,7 +704,8 @@ namespace PatientInfoModule.ViewModels
                                    NewDisabilities = DisabilityDocuments.Model,
                                    CurrentSocialStatuses = currentSocialStatuses ?? new PersonSocialStatus[0],
                                    NewSocialStatuses = SocialStatuses.Model,
-                                   Relative = personRelative
+                                   Relative = personRelative,
+                                   NewPhoto = ChangeTracker.PropertyHasChanges(() => PhotoSource) ? fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource) : null
                                };
 
                 var result = await patientService.SavePatientAsync(saveData);
@@ -814,6 +799,14 @@ namespace PatientInfoModule.ViewModels
                                                                 CurrentSocialStatuses = x.PersonSocialStatuses
                                                             })
                                                .FirstOrDefaultAsync();
+                if (result.CurrentPerson.PhotoId != null)
+                {
+                    using (var documentQuery = documentService.GetDocumentById(result.CurrentPerson.PhotoId.Value))
+                    {
+                        var document = await documentQuery.FirstAsync();
+                        PhotoSource = fileService.GetImageSourceFromBinaryData(document.FileData);
+                    }
+                }
                 currentName = result.CurrentName;
                 currentPerson = result.CurrentPerson;
                 currentHealthGroup = result.CurrentHealthGroup;
@@ -893,6 +886,7 @@ namespace PatientInfoModule.ViewModels
             MaritalStatusId = SpecialValues.NonExistingId;
             EducationId = SpecialValues.NonExistingId;
             HealthGroupId = SpecialValues.NonExistingId;
+            PhotoSource = null;
         }
 
         #region Implementation IDataErrorInfo

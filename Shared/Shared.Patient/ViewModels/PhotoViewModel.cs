@@ -30,9 +30,10 @@ namespace Shared.Patient.ViewModels
             VideoPreviewWidth = 240;
             VideoPreviewHeight = 320;
             SelectedVideoDeviceId = string.Empty;
-            if (MediaDeviceList.Any())
+            var mediaDevice = MediaDeviceList.FirstOrDefault();
+            if (mediaDevice != null)
             {
-                SelectedVideoDeviceId = MediaDeviceList.First().UsbId;
+                SelectedVideoDeviceId = mediaDevice.UsbId;
             }
             CloseCommand = new DelegateCommand<bool?>(Close);
             snapshotCommand = new DelegateCommand(OnSnapshot);

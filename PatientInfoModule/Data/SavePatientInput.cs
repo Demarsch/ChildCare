@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 using Core.Data;
 
 namespace PatientInfoModule.Data
@@ -55,5 +56,7 @@ namespace PatientInfoModule.Data
         public ICollection<PersonSocialStatus> NewSocialStatuses { get; set; }
 
         public PersonRelative Relative { get; set; }
+
+        public byte[] NewPhoto { get; set; }
     }
 }

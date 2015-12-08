@@ -67,6 +67,7 @@ namespace Core.Wpf.Views
             if (viewModel != null)
             {
                 viewModel.CloseRequested -= OnCloseRequested;
+                DataContext = null;
             }
             base.OnClosed(e);
         }

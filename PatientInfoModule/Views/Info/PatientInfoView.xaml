@@ -71,7 +71,7 @@
                     <Button Command="{Binding TakePhotoCommand}"
                             IsTabStop="False">
                         <StackPanel VerticalAlignment="Stretch">
-                            <Image Source="{Binding PhotoUri}"
+                            <Image Source="{Binding PhotoSource}"
                                    VerticalAlignment="Stretch"
                                    HorizontalAlignment="Center" />
                             <TextBlock VerticalAlignment="Bottom"
