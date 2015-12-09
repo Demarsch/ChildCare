@@ -57,6 +57,7 @@ namespace Core.Wpf.Controls
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
+            Loaded -= OnLoaded;
             var isInRibbon = this.FindAncestor<Ribbon>() != null;
             var comboBox = isInRibbon ? new Fluent.ComboBox { IsEditable = false } : new ComboBox();
             comboBox.MaxDropDownHeight = 0.0;
@@ -67,6 +68,14 @@ namespace Core.Wpf.Controls
             comboBox.DropDownOpened += ComboBoxOnDropDownOpened;
             comboBoxPlaceholder.Content = comboBox;
             popup.PlacementTarget = comboBox;
+            if (isInRibbon)
+            {
+                var ribbonBrush = TryFindResource("ButtonHoverInnerBackgroundBrush");
+                if (ribbonBrush != null)
+                {
+                    treeView.Resources.Add(SystemColors.HighlightBrushKey, ribbonBrush);
+                }
+            }
         }
 
         public double MaxDropDownHeight

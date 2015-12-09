@@ -8,6 +8,7 @@
                       xmlns:markupExtensions="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
                       xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
+                      xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
@@ -83,7 +84,8 @@
                                        SelectedItem="{Binding ScheduleContentViewModel.SelectedRecordType}"
                                        DisplayMemberPath="Name"
                                        Width="300" 
-                                       ItemTemplate="{StaticResource AssignableTypesAsHyperlinks}"/>
+                                       ItemTemplate="{StaticResource NonAssignableTypesGrayedOut}"
+                                       SelectionPredicate="{x:Static data:RecordType.AssignableRecordTypeSelectionPredicate}"/>
             <TextBlock Grid.Row="1"
                        Grid.Column="0"
                        Text="Кабинет"
@@ -96,20 +98,6 @@
                              SelectedItem="{Binding ScheduleContentViewModel.SelectedRoom}"
                              DisplayMemberPath="NumberAndName" />
         </Grid>
-        <!--<StackPanel Orientation="Horizontal">
-            <TextBlock Text="Тип услуг"
-                       Margin="5 0 0 0"/>
-            <controls:TreeViewComboBox ItemsSource="{Binding ScheduleContentViewModel.RecordTypes}"
-                                   SelectedItem="{Binding ScheduleContentViewModel.SelectedRecordType}"
-                                   DisplayMemberPath="Name" 
-                                   Width="300" />
-        </StackPanel>
-        <fluent:ComboBox Header="Кабинет"
-                         IsEditable="False"
-                         InputWidth="292"
-                         ItemsSource="{Binding ScheduleContentViewModel.Rooms}"
-                         SelectedItem="{Binding ScheduleContentViewModel.SelectedRoom}"
-                         DisplayMemberPath="NumberAndName" />-->
         <fluent:Button Header="Убрать фильтры"
                        Size="Large"
                        Command="{Binding ScheduleContentViewModel.ClearFiltersCommand, Mode=OneTime}"

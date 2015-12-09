@@ -5,40 +5,17 @@
                     xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf">
     <!--RecordType-->
     <HierarchicalDataTemplate DataType="{x:Type data:RecordType}"
-                              x:Key="AssignableTypesAsHyperlinks"
+                              x:Key="NonAssignableTypesGrayedOut"
                               ItemsSource="{Binding RecordTypes1}">
         <HierarchicalDataTemplate.Resources>
-            <converters:Converter x:Key="RevBoolToVisibilityConverter"
-                                  DefaultValue="{x:Static Visibility.Collapsed}">
+            <converters:Converter x:Key="AssignableToForegroundConverter"
+                                  DefaultValue="{x:Static Brushes.Black}">
                 <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
-                                          To="{x:Static Visibility.Visible}" />
-            </converters:Converter>
-            <converters:Converter x:Key="IsSelectedToBrushConverter">
-                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
-                                          To="{x:Static Brushes.White}" />
-                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
-                                          To="{x:Static Brushes.Blue}" />
+                                          To="{x:Static Brushes.Gray}" />
             </converters:Converter>
         </HierarchicalDataTemplate.Resources>
-        <Grid>
             <TextBlock Text="{Binding Name}" 
-                       Visibility="{Binding Assignable, Converter={StaticResource RevBoolToVisibilityConverter}}"/>
-            <TextBlock Visibility="{Binding Assignable, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                       Text="{Binding Name}"
-                       Foreground="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}, Converter={StaticResource IsSelectedToBrushConverter}}"
-                       TextDecorations="Underline"
-                       x:Name="Hyperlink" />
-        </Grid>
-        <HierarchicalDataTemplate.Triggers>
-            <Trigger SourceName="Hyperlink"
-                     Property="IsMouseOver"
-                     Value="True">
-                <Setter TargetName="Hyperlink"
-                        Property="Cursor"
-                        Value="{x:Static Cursors.Hand}" />
-            </Trigger>
-        </HierarchicalDataTemplate.Triggers>
-
+                       Foreground="{Binding Assignable, Converter={StaticResource AssignableToForegroundConverter}}"/>
     </HierarchicalDataTemplate>
 
 </ResourceDictionary>
