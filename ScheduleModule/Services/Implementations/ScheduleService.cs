@@ -50,7 +50,7 @@ namespace ScheduleModule.Services
         public IEnumerable<RecordType> GetRecordTypes()
         {
             return cacheService.GetItems<RecordType>()
-                               .Where(x => x.Assignable != null && x.ParentId == null)
+                               .Where(x => x.Assignable != null && x.IsRecord && (x.ParentId == null || x.RecordType1.Assignable == null))
                                .OrderBy(x => x.Name)
                                .ToArray();
         }

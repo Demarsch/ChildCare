@@ -123,6 +123,7 @@
     <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\FileServiceActions.cs" />
     <Compile Include="Misc\FileServiceFilters.cs" />
+    <Compile Include="Misc\KeyToCharTranslator.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
     <Compile Include="Misc\TrackableBindableBase.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />

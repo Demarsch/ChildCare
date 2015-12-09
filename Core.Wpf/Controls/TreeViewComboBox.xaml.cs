@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Core.Extensions;
 using Core.Misc;
 using Core.Wpf.Converters;
 using Core.Wpf.Extensions;
+using Core.Wpf.Misc;
 using Fluent;
 using Xceed.Wpf.Toolkit.Core.Utilities;
+using Binding = System.Windows.Data.Binding;
 using ComboBox = System.Windows.Controls.ComboBox;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace Core.Wpf.Controls
 {
@@ -37,11 +44,90 @@ namespace Core.Wpf.Controls
             typeof (TreeViewComboBox),
             new PropertyMetadata(SelectBottomLevelOnlyPredicate));
 
-        public static readonly DependencyProperty DisplayMemberPathProperty = DependencyProperty.Register("DisplayMemberPathPath", typeof (string), typeof (TreeViewComboBox), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty DisplayMemberPathProperty = DependencyProperty.Register("DisplayMemberPath", typeof (string), typeof (TreeViewComboBox), new PropertyMetadata(default(string)));
 
         public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register("ItemTemplate", typeof (DataTemplate), typeof (TreeViewComboBox), new PropertyMetadata(default(DataTemplate)));
 
         public static readonly DependencyProperty MaxDropDownHeightProperty = DependencyProperty.Register("MaxDropDownHeight", typeof (double), typeof (TreeViewComboBox), new PropertyMetadata(SystemParameters.PrimaryScreenHeight / 3));
+
+        public static readonly DependencyProperty FilterProperty = DependencyProperty.Register("Filter", typeof(string), typeof(TreeViewComboBox), new PropertyMetadata(OnFilterChanged));
+
+        private static void OnFilterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var treeViewComboBox = (TreeViewComboBox)d;
+            //treeViewComboBox.WaitForItemGenerationAndFilter(treeViewComboBox.treeView.ItemContainerGenerator);
+            //WaitForItemGenerationAndFilter(treeViewComboBox, treeViewComboBox.treeView.ItemContainerGenerator);
+
+        }
+
+        private void WaitForItemGenerationAndFilter(ItemContainerGenerator itemContainerGenerator)
+        {
+            if (itemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
+            {
+                itemContainerGenerator.StatusChanged += OnItemsGeneratedForFilter;
+            }
+            foreach (var treeViewItem in itemContainerGenerator.Items.Cast<TreeViewItem>())
+            {
+                if (treeViewItem.Items.Count == 0)
+                {
+                    treeViewItem.Visibility = treeViewItem.DataContext.GetValue(DisplayMemberPath).ToString().Contains(Filter)
+                                                  ? Visibility.Visible
+                                                  : Visibility.Collapsed;
+                    var parent = treeViewItem.Parent as TreeViewItem;
+                    if (parent != null)
+                    {
+                        parent.Visibility = itemContainerGenerator.Items.Cast<TreeViewItem>().All(x => x.Visibility == Visibility.Visible) ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    treeViewItem.IsExpanded = true;
+                    WaitForItemGenerationAndFilter(treeViewItem.ItemContainerGenerator);
+                }
+            }
+            //TreeViewItem treeViewItem = null;
+            //while (hierarchyStack.Count > 0)
+            //{
+            //    var item = hierarchyStack.Peek();
+            //    treeViewItem = (TreeViewItem)itemContainerGenerator.ContainerFromItem(item);
+            //    if (treeViewItem == null)
+            //    {
+            //        itemContainerGenerator.StatusChanged += ItemContainerGeneratorOnStatusChanged;
+            //        return;
+            //    }
+            //    hierarchyStack.Pop();
+            //    if (hierarchyStack.Count > 0)
+            //    {
+            //        treeViewItem.IsExpanded = true;
+            //    }
+            //    itemContainerGenerator = treeViewItem.ItemContainerGenerator;
+            //}
+            //if (treeViewItem == null)
+            //{
+            //    return;
+            //}
+            //treeViewItem.BringIntoView();
+            //ignoreSelectionChanged = true;
+            //treeViewItem.IsSelected = true;
+            //ignoreSelectionChanged = false;
+        }
+
+        private void OnItemsGeneratedForFilter(object sender, EventArgs e)
+        {
+            var itemContainerGenerator = (ItemContainerGenerator)sender;
+            if (itemContainerGenerator.Status != GeneratorStatus.ContainersGenerated)
+            {
+                return;
+            }
+            itemContainerGenerator.StatusChanged -= OnItemsGeneratedForFilter;
+            WaitForItemGenerationAndFilter(itemContainerGenerator);
+        }
+
+        public string Filter
+        {
+            get { return (string)GetValue(FilterProperty); }
+            set { SetValue(FilterProperty, value); }
+        }
 
         private Stack hierarchyStack;
 
@@ -53,6 +139,25 @@ namespace Core.Wpf.Controls
         {
             InitializeComponent();
             Loaded += OnLoaded;
+            treeView.KeyDown += TreeViewOnPreviewKeyDown;
+        }
+
+        private void TreeViewOnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Back)
+            {
+                if (!string.IsNullOrEmpty(Filter))
+                {
+                    Filter = Filter.Substring(0, Filter.Length - 1);
+                }
+                return;
+
+            }
+            var @char = KeyToCharTranslator.GetCharFromKey(e.Key);
+            if (@char != '\0')
+            {
+                Filter = Filter + char.ToUpper(@char);
+            }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -234,14 +339,14 @@ namespace Core.Wpf.Controls
             ((DispatcherTimer)sender).Stop();
             popup.IsOpen = true;
             treeView.Focus();
-            Mouse.Capture(treeView, CaptureMode.SubTree);
-            Mouse.AddPreviewMouseDownOutsideCapturedElementHandler(treeView, TreeViewOnMouseDown);
+            Mouse.Capture(stackPanel, CaptureMode.SubTree);
+            Mouse.AddPreviewMouseDownOutsideCapturedElementHandler(stackPanel, OnMouseDownOusidePopupContent);
         }
 
-        private void TreeViewOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        private void OnMouseDownOusidePopupContent(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            Mouse.RemovePreviewMouseDownOutsideCapturedElementHandler(treeView, TreeViewOnMouseDown);
-            treeView.ReleaseMouseCapture();
+            Mouse.RemovePreviewMouseDownOutsideCapturedElementHandler(stackPanel, OnMouseDownOusidePopupContent);
+            stackPanel.ReleaseMouseCapture();
             popup.IsOpen = false;
             mouseButtonEventArgs.Handled = true;
         }
@@ -249,6 +354,16 @@ namespace Core.Wpf.Controls
         private void TreeView_OnSelected(object sender, RoutedEventArgs e)
         {
             itemToBeSelected = e.OriginalSource as TreeViewItem;
+        }
+
+        private void OnClearFilterButtonClick(object sender, RoutedEventArgs e)
+        {
+            Filter = string.Empty;
+        }
+
+        private void PopupOnClosed(object sender, EventArgs e)
+        {
+            Filter = string.Empty;
         }
     }
 }
