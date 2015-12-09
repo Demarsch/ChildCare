@@ -112,6 +112,7 @@ namespace Shell
             Container.RegisterType<IDialogService, WindowDialogService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IDialogServiceAsync, WindowsDialogServiceAsync>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IUserService, UserService>(new ContainerControlledLifetimeManager());
+            Container.RegisterType<IFileService, FileService>(new ContainerControlledLifetimeManager());
             Container.RegisterInstance(LogManager.GetLogger("COMMON"));
             //Resolving shared context here to avoid multithreading issue
             var context = Container.Resolve<IDbContextProvider>().SharedContext;

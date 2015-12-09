@@ -90,6 +90,10 @@ namespace Core.Wpf.Services
 
         public ImageSource GetImageSourceFromBinaryData(byte[] source)
         {
+            if (source == null)
+            {
+                return null;
+            }
             var imageSourceConverter = new ImageSourceConverter();
             return (ImageSource)imageSourceConverter.ConvertFrom(source);
         }

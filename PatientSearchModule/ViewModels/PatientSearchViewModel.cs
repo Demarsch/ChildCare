@@ -11,6 +11,7 @@ using Core.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
+using Core.Wpf.Services;
 using log4net;
 using PatientSearchModule.Misc;
 using PatientSearchModule.Model;
@@ -32,12 +33,15 @@ namespace PatientSearchModule.ViewModels
         private readonly IUserInputNormalizer userInputNormalizer;
 
         private readonly IEventAggregator eventAggregator;
+        
+        private readonly IFileService fileService;
 
         public PatientSearchViewModel(IPatientSearchService patientSearchService,
                                       ILog log,
                                       ICacheService cacheService,
                                       IUserInputNormalizer userInputNormalizer,
-                                      IEventAggregator eventAggregator)
+                                      IEventAggregator eventAggregator,
+                                      IFileService fileService)
         {
             if (patientSearchService == null)
             {
@@ -59,8 +63,13 @@ namespace PatientSearchModule.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
+            if (fileService == null)
+            {
+                throw new ArgumentNullException("fileService");
+            }
             this.userInputNormalizer = userInputNormalizer;
             this.eventAggregator = eventAggregator;
+            this.fileService = fileService;
             this.cacheService = cacheService;
             this.userInputNormalizer = userInputNormalizer;
             this.log = log;
@@ -180,7 +189,9 @@ namespace PatientSearchModule.ViewModels
                                                                          .FirstOrDefault(),
                                                          IdentityDocument = x.PersonIdentityDocuments
                                                                              .OrderByDescending(y => y.BeginDate)
-                                                                             .FirstOrDefault()
+                                                                             .FirstOrDefault(),
+                                                         Photo = x.Document.FileData
+                                                                             
                                                      })
                                         .ToArrayAsync(token);
                 var patients = await result.Select(x => new FoundPatientViewModel
@@ -192,7 +203,8 @@ namespace PatientSearchModule.ViewModels
                                                             IsMale = x.IsMale,
                                                             IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
                                                             MedNumber = x.MedNumber,
-                                                            Snils = Person.DelimitizeSnils(x.Snils)
+                                                            Snils = Person.DelimitizeSnils(x.Snils),
+                                                            Photo = fileService.GetImageSourceFromBinaryData(x.Photo)
                                                         })
                                            .ToArrayAsync(token);
                 log.InfoFormat("Found {0} patients", patients.Length);

@@ -15,7 +15,6 @@ namespace Core.Reports
             //services
             container.RegisterInstance(LogManager.GetLogger("REPORTING"));
             container.RegisterType<IReportTemplateService, ReportTemplateService>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IFileService, FileService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IReportGeneratorHelper, ReportGeneratorHelper>(new ContainerControlledLifetimeManager());
 
             //generators

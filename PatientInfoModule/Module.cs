@@ -180,7 +180,6 @@ namespace PatientInfoModule
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IFileService, FileService>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ISuggestionProvider, IdentityDocumentGivenOrgSuggestionProvider>(SuggestionProviderNames.IdentityDocumentGiveOrganization, new ContainerControlledLifetimeManager());
             container.RegisterType<ISuggestionProvider, InsuranceCompanySuggestionProvider>(SuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());

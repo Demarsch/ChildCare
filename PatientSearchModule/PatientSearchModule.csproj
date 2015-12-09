@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\PatientGenderToImageSourceConverter.cs" />
     <Compile Include="Misc\PatientSearchQuery.cs" />
     <Compile Include="Model\User Input Processing\Search Expression Providers\PersonBirthDateSearchExpressionProvider.cs" />
     <Compile Include="Model\User Input Processing\Input Normalization\IUserInputNormalizer.cs" />

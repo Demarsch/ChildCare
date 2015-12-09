@@ -5,18 +5,21 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
-                      xmlns:converters="clr-namespace:PatientInfoModule.Converters"
                       xmlns:coreConverters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:InfoHeaderViewModel}">
     <fluent:RibbonTabItem.Resources>
-        <converters:PatientGenderToPhotoUriConverter x:Key="GenderToPhotoUriConverter" />
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="Margin"
                     Value="0" />
         </Style>
+        <coreConverters:Converter x:Key="NullToInvisibilityConverter"
+                                  DefaultValue="{x:Static Visibility.Collapsed}">
+            <coreConverters:ConverterItem From="{x:Null}"
+                                          To="{x:Static Visibility.Visible}" />
+        </coreConverters:Converter>
     </fluent:RibbonTabItem.Resources>
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Основные данные"
@@ -56,34 +59,47 @@
                                 SelectedItem="{Binding ContentViewModel.SelectedPatientOrRelative, Mode=TwoWay}">
             <fluent:InRibbonGallery.ItemTemplate>
                 <DataTemplate DataType="{x:Type viewModels:PatientInfoViewModel}">
-                    <StackPanel Orientation="Vertical">
-                        <Border BorderBrush="Black"
-                                BorderThickness="1"
-                                HorizontalAlignment="Center"
-                                Background="Transparent">
-                            <Grid>
-                                <Image Height="32"
-                                       Stretch="Fill"
-                                       StretchDirection="Both">
-                                    <Image.Source>
-                                        <MultiBinding Converter="{StaticResource GenderToPhotoUriConverter}">
-                                            <Binding Path="PhotoSource" />
-                                            <Binding Path="IsMale" />
-                                        </MultiBinding>
-                                    </Image.Source>
-                                </Image>
-                                <Image Width="8"
-                                       Height="8"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Top"
-                                       Margin="0 2 2 0"
-                                       Visibility="{Binding IsRepresentative, Converter={x:Static coreConverters:BoolToVisibilityConverter.Instance}}"
-                                       Source="pack://application:,,,/Core;Component/Resources/Images/Star16x16.png" />
-                            </Grid>
-                        </Border>
-                        <TextBlock Text="{Binding SelectedRelationship.Name, FallbackValue='???'}"
-                                   HorizontalAlignment="Center" />
-                    </StackPanel>
+                    <Border BorderBrush="Black"
+                            BorderThickness="1"
+                            Height="58"
+                            Width="80"
+                            Background="Transparent">
+                        <Grid HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch">
+                            <Image HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"
+                                   Stretch="Fill"
+                                   StretchDirection="Both"
+                                   Source="{Binding PhotoSource}"
+                                   x:Name="photoImage" />
+                            <Image HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Height="40"
+                                   Width="40"
+                                   Stretch="Fill"
+                                   Source="{Binding IsMale, Converter={x:Static coreConverters:GenderToImageConverter.Instance}}"
+                                   Visibility="{Binding PhotoSource, Converter={StaticResource NullToInvisibilityConverter}}" />
+                            <Label Background="White"
+                                   BorderBrush="Black"
+                                   BorderThickness="1 1 1 0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   Opacity="0.7"
+                                   Padding="0">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Width="12"
+                                           Height="12"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           Margin="0 2 2 0"
+                                           Visibility="{Binding IsRepresentative, Converter={x:Static coreConverters:BoolToVisibilityConverter.Instance}}"
+                                           Source="pack://application:,,,/Core;Component/Resources/Images/Star16x16.png" />
+                                    <TextBlock Text="{Binding SelectedRelationship.Name, FallbackValue='???'}"
+                                               Margin="1 0 1 0" />
+                                </StackPanel>
+                            </Label>
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </fluent:InRibbonGallery.ItemTemplate>
         </fluent:InRibbonGallery>

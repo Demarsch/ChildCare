@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Media;
 using Core.Data;
 using Prism.Mvvm;
 
@@ -86,6 +87,14 @@ namespace PatientSearchModule.ViewModels
         {
             get { return identityDocument; }
             set { SetProperty(ref identityDocument, value); }
+        }
+
+        private ImageSource photo;
+
+        public ImageSource Photo
+        {
+            get { return photo; }
+            set { SetProperty(ref photo, value); }
         }
 
         public string FullName

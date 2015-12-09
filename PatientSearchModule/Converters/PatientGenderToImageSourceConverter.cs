@@ -5,9 +5,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Core.Wpf.Converters;
 
-namespace PatientInfoModule.Converters
+namespace PatientSearchModule.Converters
 {
-    public class PatientGenderToPhotoUriConverter : IMultiValueConverter
+    public class PatientGenderToImageSourceConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
