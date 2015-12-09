@@ -12,15 +12,19 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class RecordDocument
+    public partial class AnalyseResult
     {
         public int Id { get; set; }
-        public Nullable<int> AssignmentId { get; set; }
-        public Nullable<int> RecordId { get; set; }
-        public int DocumentId { get; set; }
+        public int RecordId { get; set; }
+        public int ParameterRecordTypeId { get; set; }
+        public string Value { get; set; }
+        public Nullable<int> UnitId { get; set; }
+        public bool IsNormal { get; set; }
+        public bool IsAboveRef { get; set; }
+        public bool IsBelowRef { get; set; }
     
-        public virtual Document Document { get; set; }
-        public virtual Assignment Assignment { get; set; }
         public virtual Record Record { get; set; }
+        public virtual RecordType RecordType { get; set; }
+        public virtual Unit Unit { get; set; }
     }
 }

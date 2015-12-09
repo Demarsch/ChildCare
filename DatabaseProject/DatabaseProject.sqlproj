@@ -147,5 +147,8 @@
     <Build Include="dbo\Tables\DefaultProtocols.sql" />
     <Build Include="dbo\Tables\MKBGroups.sql" />
     <Build Include="dbo\Tables\RelativeRelationshipConnections.sql" />
+    <Build Include="dbo\Tables\Units.sql" />
+    <Build Include="dbo\Tables\AnalyseResults.sql" />
+    <Build Include="dbo\Tables\AnalyseRefferences.sql" />
   </ItemGroup>
 </Project>

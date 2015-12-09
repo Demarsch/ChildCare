@@ -31,8 +31,8 @@ namespace Core.Data
     
         public virtual Permission Permission { get; set; }
         public virtual RecordTypeRole RecordTypeRole { get; set; }
-        public virtual RecordType RecordType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordMember> RecordMembers { get; set; }
+        public virtual RecordType RecordType { get; set; }
     }
 }

@@ -12,27 +12,20 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class Room
+    public partial class Unit
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Room()
+        public Unit()
         {
-            this.ScheduleItems = new HashSet<ScheduleItem>();
-            this.Assignments = new HashSet<Assignment>();
-            this.Records = new HashSet<Record>();
+            this.AnalyseResults = new HashSet<AnalyseResult>();
         }
     
         public int Id { get; set; }
-        public string Number { get; set; }
         public string Name { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
+        public string ShortName { get; set; }
+        public bool UseForMedWare { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
+        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
     }
 }

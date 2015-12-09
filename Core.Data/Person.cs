@@ -17,7 +17,6 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Person()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.InsuranceDocuments = new HashSet<InsuranceDocument>();
             this.PersonAddresses = new HashSet<PersonAddress>();
@@ -40,6 +39,7 @@ namespace Core.Data
             this.Visits = new HashSet<Visit>();
             this.Diagnoses = new HashSet<Diagnosis>();
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
+            this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
         }
     
@@ -61,8 +61,6 @@ namespace Core.Data
         public int PersonHospListHashCode { get; set; }
         public int RadiationListHashCode { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual Document Document { get; set; }
@@ -108,6 +106,8 @@ namespace Core.Data
         public virtual ICollection<Diagnosis> Diagnoses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Assignment> Assignments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
     }

@@ -10,6 +10,14 @@
                       d:DesignHeight="300"
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:PersonRecordsHeaderViewModel}">
+    <fluent:RibbonTabItem.Resources>
+        <ResourceDictionary>            
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="5,0" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </fluent:RibbonTabItem.Resources>
     <fluent:RibbonTabItem.Header>
         <TextBlock Text="Случаи"
                    Style="{x:Null}" />
@@ -72,8 +80,10 @@
         </StackPanel>
         <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
     </fluent:RibbonGroupBox>
-    <fluent:RibbonGroupBox Header="Назначения">
-        <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Assignment48x48.png"/>
+    <fluent:RibbonGroupBox Header="Запись на услугу">
+        <fluent:Button Size="Large" Header="Прием врача" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentAdd48x48.png"/>
+        <fluent:Button Size="Large" Header="Анализы" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AnalyseAdd48x48.png"
+                       Command="{Binding AddAnalyseCommand}"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Услуги">
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png"/>

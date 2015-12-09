@@ -26,7 +26,6 @@ namespace Core.Data
         }
     
         public virtual DbSet<AddressType> AddressTypes { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Branch> Branches { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
@@ -88,7 +87,6 @@ namespace Core.Data
         public virtual DbSet<Visit> Visits { get; set; }
         public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
-        public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RecordDocument> RecordDocuments { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
@@ -106,6 +104,11 @@ namespace Core.Data
         public virtual DbSet<MKBGroup> MKBGroups { get; set; }
         public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }
         public virtual DbSet<RelativeRelationshipConnection> RelativeRelationshipConnections { get; set; }
+        public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
+        public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Record> Records { get; set; }
+        public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<Unit> Units { get; set; }
     }
 }

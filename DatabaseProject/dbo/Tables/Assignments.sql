@@ -11,6 +11,7 @@
     [FinancingSourceId] INT            NOT NULL,
     [UrgentlyId]        INT            NOT NULL,
     [ExecutionPlaceId]  INT            NOT NULL,
+    [AnalyseOptions]    VARCHAR (1000) CONSTRAINT [DF_Assignments_AnalyseOption] DEFAULT ('') NOT NULL,
     [CancelUserId]      INT            NULL,
     [CancelDateTime]    DATETIME       NULL,
     [Note]              VARCHAR (8000) CONSTRAINT [DF_Assignments_Note] DEFAULT ('') NOT NULL,
@@ -36,6 +37,8 @@
     CONSTRAINT [FK_Assignments_Users2_RemovedByUser] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 

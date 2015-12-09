@@ -12,15 +12,18 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class RecordDocument
+    public partial class AnalyseRefference
     {
         public int Id { get; set; }
-        public Nullable<int> AssignmentId { get; set; }
-        public Nullable<int> RecordId { get; set; }
-        public int DocumentId { get; set; }
+        public int RecordTypeId { get; set; }
+        public int ParameterRecordTypeId { get; set; }
+        public bool IsMale { get; set; }
+        public int AgeFrom { get; set; }
+        public Nullable<int> AgeTo { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public Nullable<System.DateTime> EndDateTime { get; set; }
     
-        public virtual Document Document { get; set; }
-        public virtual Assignment Assignment { get; set; }
-        public virtual Record Record { get; set; }
+        public virtual RecordType RecordType { get; set; }
+        public virtual RecordType RecordType1 { get; set; }
     }
 }

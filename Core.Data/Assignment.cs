@@ -32,6 +32,9 @@ namespace Core.Data
         public Nullable<int> AssignLpuId { get; set; }
         public int RoomId { get; set; }
         public int FinancingSourceId { get; set; }
+        public int UrgentlyId { get; set; }
+        public int ExecutionPlaceId { get; set; }
+        public string AnalyseOptions { get; set; }
         public Nullable<int> CancelUserId { get; set; }
         public Nullable<System.DateTime> CancelDateTime { get; set; }
         public string Note { get; set; }
@@ -42,27 +45,25 @@ namespace Core.Data
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public double Cost { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
-        public int UrgentlyId { get; set; }
-        public int ExecutionPlaceId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments1 { get; set; }
         public virtual Assignment Assignment1 { get; set; }
+        public virtual ExecutionPlace ExecutionPlace { get; set; }
         public virtual FinancingSource FinancingSource { get; set; }
         public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
+        public virtual Record Record { get; set; }
+        public virtual RecordType RecordType { get; set; }
         public virtual Room Room { get; set; }
+        public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
         public virtual User User2 { get; set; }
         public virtual Visit Visit { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        public virtual RecordType RecordType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
-        public virtual Urgently Urgently { get; set; }
-        public virtual Record Record { get; set; }
     }
 }
