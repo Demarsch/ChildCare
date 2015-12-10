@@ -34,7 +34,7 @@ namespace Core.Data
         public int FinancingSourceId { get; set; }
         public int UrgentlyId { get; set; }
         public int ExecutionPlaceId { get; set; }
-        public string AnalyseOptions { get; set; }
+        public string ParametersOptions { get; set; }
         public Nullable<int> CancelUserId { get; set; }
         public Nullable<System.DateTime> CancelDateTime { get; set; }
         public string Note { get; set; }

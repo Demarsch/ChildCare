@@ -13,5 +13,7 @@ namespace Core.Data.Misc
         public static readonly string DiagnosSpecialistExamination = "|specialistExamination|";
         public static readonly string DiagnosDischarge = "|discharge|";
 
+        //Rooms
+        public static readonly string LaboratoryRoom = "|laboratoryRoom|";
     }
 }

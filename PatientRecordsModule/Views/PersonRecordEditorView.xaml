@@ -138,6 +138,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding RecordTypeName}" FontWeight="Bold" FontSize="20" TextAlignment="Center" HorizontalAlignment="Stretch"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Случай:" FontSize="13" Margin="5,10,2,2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
@@ -152,8 +154,12 @@
             <TextBlock Grid.Row="5" Grid.Column="1"  Text="{Binding BeginDateView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
             <TextBlock Grid.Row="6" Grid.Column="0" Text="Время окончания услуги:" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
             <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding EndDateView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="7" Grid.Column="0"  Text="Бригада:" FontWeight="Medium"  Margin="5,2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-            <TextBlock Grid.Row="7" Grid.Column="1"  Text="{Binding BrigadeView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Назначенные параметры:" Visibility="{Binding IsAnalyse, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding ParametersView}" Visibility="{Binding IsAnalyse, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Примечания:" Visibility="{Binding IsAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" Margin="5,2" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding DetailsView}" Visibility="{Binding IsAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="9" Grid.Column="0"  Text="Бригада:" FontWeight="Medium"  Margin="5,2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+            <TextBlock Grid.Row="9" Grid.Column="1"  Text="{Binding BrigadeView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
         </Grid>
 
         <Grid Grid.Row="2"

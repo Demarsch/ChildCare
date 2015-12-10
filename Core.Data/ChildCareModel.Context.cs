@@ -106,9 +106,9 @@ namespace Core.Data
         public virtual DbSet<RelativeRelationshipConnection> RelativeRelationshipConnections { get; set; }
         public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
         public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
     }
 }

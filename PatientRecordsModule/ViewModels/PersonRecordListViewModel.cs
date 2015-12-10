@@ -432,11 +432,18 @@ namespace Shared.PatientRecords.ViewModels
             {
                 viewModel.Initialize(this.PersonId, assignmentId, recordId, visitId);
                 var result = await dialogService.ShowDialogAsync(viewModel);
-                if (result == true)
+                if (viewModel.AssignIsSuccessful)
                 {
-                    //AddAnalyseToPatientRecords(result.VisitId);      
+                    LoadRootItemsAsync(this.personId);
+                    //foreach (var assignment in viewModel.AssignedAnalyses)
+                    //    AddAssignmentToPatientRecords(assignment.Key, assignment.Value);      
                 }
             }
+        }
+
+        private void AddAssignmentToPatientRecords(int assignmentId, int? visitId)
+        {
+            
         }
 
         #endregion

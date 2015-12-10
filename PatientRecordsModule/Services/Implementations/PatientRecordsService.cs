@@ -455,5 +455,53 @@ namespace Shared.PatientRecords.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<RecordType>(context.Set<RecordType>().AsNoTracking().Where(x => x.Id == recordTypeId).SelectMany(x => x.RecordTypes1), context);
         }
+
+        public async Task<int> CreateAnalyseAssignmentAsync(Assignment assignment, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                Assignment savedAssignment = new Assignment();
+                context.Entry<Assignment>(savedAssignment).State = EntityState.Added;
+                savedAssignment.ParentId = assignment.ParentId;
+                savedAssignment.RecordTypeId = assignment.RecordTypeId;
+                savedAssignment.PersonId = assignment.PersonId;
+                savedAssignment.AssignDateTime = assignment.AssignDateTime;
+                savedAssignment.Duration = assignment.Duration;
+                savedAssignment.AssignUserId = assignment.AssignUserId;
+                savedAssignment.AssignLpuId = assignment.AssignLpuId;
+                savedAssignment.RoomId = assignment.RoomId;
+                savedAssignment.FinancingSourceId = assignment.FinancingSourceId;
+                savedAssignment.UrgentlyId = assignment.UrgentlyId;
+                savedAssignment.ExecutionPlaceId = assignment.ExecutionPlaceId;
+                savedAssignment.ParametersOptions = assignment.ParametersOptions;
+                savedAssignment.CancelUserId = assignment.CancelUserId;
+                savedAssignment.CancelDateTime = assignment.CancelDateTime;
+                savedAssignment.Note = assignment.Note;
+                savedAssignment.RecordId = assignment.RecordId;
+                savedAssignment.VisitId = assignment.VisitId;
+                savedAssignment.IsTemporary = assignment.IsTemporary;
+                savedAssignment.CreationDateTime = assignment.CreationDateTime;
+                savedAssignment.BillingDateTime = assignment.BillingDateTime;
+                savedAssignment.Cost = assignment.Cost;
+                savedAssignment.RemovedByUserId = assignment.RemovedByUserId;
+
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return savedAssignment.Id;
+            }
+        }
+
+        public IDisposableQueryable<RecordType> GetRecordTypeById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Id == id), context);
+        }
     }
 }

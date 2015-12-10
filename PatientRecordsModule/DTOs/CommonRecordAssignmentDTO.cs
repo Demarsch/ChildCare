@@ -19,5 +19,9 @@ namespace Shared.PatientRecords.DTO
         public DateTime? EndDateTime { get; set; }
         public DateTime ActualDateTime { get; set; }
         public string RecordTypeName { get; set; }
+        public string Parameters { get; set; }
+        public string Details { get; set; }
+        public bool IsAnalyse { get; set; }
+        public bool IsAssignment { get; set; }
     }
 }

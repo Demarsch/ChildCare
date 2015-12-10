@@ -29,9 +29,14 @@ namespace Core.Wpf.Services
                             MessageBoxImage.Error);
         }
 
-        public void ShowMessage(string message)
+        public void ShowInformation(string message)
         {
             MessageBox.Show(GetActiveWindow(), message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public void ShowWarning(string message)
+        {
+            MessageBox.Show(GetActiveWindow(), message, "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         public bool? AskUser(string question, bool isWarning = false)

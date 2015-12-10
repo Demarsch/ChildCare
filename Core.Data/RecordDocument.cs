@@ -20,7 +20,7 @@ namespace Core.Data
         public int DocumentId { get; set; }
     
         public virtual Document Document { get; set; }
-        public virtual Assignment Assignment { get; set; }
         public virtual Record Record { get; set; }
+        public virtual Assignment Assignment { get; set; }
     }
 }

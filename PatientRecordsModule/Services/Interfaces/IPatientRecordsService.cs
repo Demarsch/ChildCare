@@ -89,5 +89,9 @@ namespace Shared.PatientRecords.Services
         IDisposableQueryable<RecordType> GetRecordTypes(bool isAnalyse = false);
 
         IDisposableQueryable<RecordType> GetChildRecordTypesQuery(int recordTypeId);
+
+        Task<int> CreateAnalyseAssignmentAsync(Assignment assignment, CancellationToken token);
+
+        IDisposableQueryable<RecordType> GetRecordTypeById(int id);
     }
 }

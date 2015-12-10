@@ -8,6 +8,10 @@ namespace Core.Wpf.Services
 
         void ShowError(string error);
 
+        void ShowInformation(string message);
+
+        void ShowWarning(string message);
+
         bool? AskUser(string question, bool isWarning = false);
 
         string[] ShowOpenFileDialog(bool allowMultipleChoice);

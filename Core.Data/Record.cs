@@ -18,12 +18,12 @@ namespace Core.Data
         public Record()
         {
             this.AnalyseResults = new HashSet<AnalyseResult>();
-            this.Assignments = new HashSet<Assignment>();
             this.DefaultProtocols = new HashSet<DefaultProtocol>();
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
             this.RecordDocuments = new HashSet<RecordDocument>();
             this.RecordMembers = new HashSet<RecordMember>();
             this.Records1 = new HashSet<Record>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -49,8 +49,6 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DefaultProtocol> DefaultProtocols { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }
@@ -68,5 +66,7 @@ namespace Core.Data
         public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
         public virtual Visit Visit { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Assignment> Assignments { get; set; }
     }
 }

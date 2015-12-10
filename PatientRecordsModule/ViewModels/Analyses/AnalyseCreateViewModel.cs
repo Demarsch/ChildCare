@@ -18,21 +18,23 @@ using System.Threading.Tasks;
 using System.Windows.Navigation;
 using Core.Data.Misc;
 using Core.Data.Classes;
+using System.ComponentModel;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class AnalyseCreateViewModel : BindableBase, IDisposable, IDialogViewModel
+    public class AnalyseCreateViewModel : BindableBase, IDisposable, IDialogViewModel, IDataErrorInfo
     {
         private readonly IPatientRecordsService recordService;
         private readonly ILog logService;
         private readonly IDialogServiceAsync dialogService;
         private readonly IDialogService messageService;
         private readonly IUserService userService;
-        private CancellationTokenSource currentLoadingToken;
+        private CancellationTokenSource currentSavingToken;
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
         private readonly CommandWrapper reloadDataSourceCommandWrapper;
         private readonly CommandWrapper reloadParametersCommandWrapper;
+        private readonly CommandWrapper saveChangesCommandWrapper;
         private int personId;
         private int assignmentId;
         private int recordId;
@@ -72,6 +74,7 @@ namespace Shared.PatientRecords.ViewModels
             CloseCommand = new DelegateCommand<bool?>(Close);
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => Initialize(personId, assignmentId, recordId, visitId)), CommandName = "Повторить" };
             reloadParametersCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadParameters(SelectedAnalyseId)), CommandName = "Повторить" };
+            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => CreateAnalyseAssignment()), CommandName = "Повторить" };
 
             FinSources = new ObservableCollectionEx<FieldValue>();
             Urgentlies = new ObservableCollectionEx<FieldValue>();
@@ -79,6 +82,7 @@ namespace Shared.PatientRecords.ViewModels
             Visits = new ObservableCollectionEx<FieldValue>();
             Analyses = new ObservableCollectionEx<FieldValue>();
             Parameters = new ObservableCollectionEx<AnalyseParameterViewModel>();
+            AssignedAnalyses = new List<KeyValuePair<int, int?>>();
         }
 
         internal async void Initialize(int personId, int assignmentId, int recordId, int visitId)
@@ -92,6 +96,7 @@ namespace Shared.PatientRecords.ViewModels
             ExecutionPlaces.Clear();
             Urgentlies.Clear();
             Analyses.Clear();
+            AssignedAnalyses.Clear();
             BusyMediator.Activate("Загрузка данных...");
             logService.Info("Loading data sources for create analyse...");
             IDisposableQueryable<Visit> visitQuery = null;
@@ -101,6 +106,9 @@ namespace Shared.PatientRecords.ViewModels
             IDisposableQueryable<ExecutionPlace> executionPlacesQuery = null;
             try
             {
+                if (!recordService.GetRooms(DateTime.Now).Any(x => x.Options.Contains(OptionValues.LaboratoryRoom)))
+                    FailureMediator.Activate("В МИС не найдена информация о кабинете для проведения лабораторных исследований. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper);
+
                 bool allowAssignToClosedVisits = userService.HasPermission(PermissionType.ChangeRecordParentVisit);
                 visitQuery = recordService.GetPersonVisitsQuery(this.personId, !allowAssignToClosedVisits);
                 var visitsSelectQuery = await visitQuery.Select(x => new { x.Id, x.BeginDateTime, x.VisitTemplate.Name }).ToArrayAsync();
@@ -161,6 +169,7 @@ namespace Shared.PatientRecords.ViewModels
                     SelectedFinSourceId = SpecialValues.NonExistingId;
                     SelectedUrgentlyId = SpecialValues.NonExistingId;
                     SelectedExecutionPlaceId = SpecialValues.NonExistingId;
+                    AnalyseDetails = string.Empty;
                 }
                 AssignDateTime = DateTime.Now;
                 logService.InfoFormat("Data sources for create analyse are successfully loaded");
@@ -197,7 +206,7 @@ namespace Shared.PatientRecords.ViewModels
                 parametersQuery = recordService.GetChildRecordTypesQuery(SelectedAnalyseId);
                 var parametersSelectQuery = await parametersQuery.Select(x => new { x.Id, x.Name, x.ShortName }).ToArrayAsync();
                 Parameters.AddRange(parametersSelectQuery.Select(x => new AnalyseParameterViewModel() { Id = x.Id, Name = x.Name, ShortName = x.ShortName }));
-                CheckAllParameters(true);
+                IsCheckAllParameters = true;
             }
             catch (Exception ex)
             {
@@ -212,11 +221,100 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
+        private void LoadVisitRelatedData(int visitId)
+        {
+            if (!SpecialValues.IsNewOrNonExisting(visitId))
+            {
+                var visit = recordService.GetVisit(visitId).First();
+                SelectedVisitId = this.visitId;
+                SelectedFinSourceId = visit.FinancingSourceId;
+                SelectedUrgentlyId = visit.UrgentlyId;
+                SelectedExecutionPlaceId = visit.ExecutionPlaceId;
+            }
+            else
+            {
+                SelectedVisitId = SpecialValues.NonExistingId;
+                SelectedFinSourceId = SpecialValues.NonExistingId;
+                var urg = recordService.GetActualUrgentlies(DateTime.Now);
+                SelectedUrgentlyId = urg.Any(x => x.IsDefalut) ? urg.First(x => x.IsDefalut).Id : SpecialValues.NonExistingId;
+                SelectedExecutionPlaceId = SpecialValues.NonExistingId;
+                AnalyseDetails = string.Empty;
+            }
+        }
+
         private void CheckAllParameters(bool isChecked)
         {
             Parameters.ForEach(x => x.IsChecked = isChecked);
         }
-        
+
+        private async void CreateAnalyseAssignment()
+        {
+            FailureMediator.Deactivate();
+            BusyMediator.Activate("Запись на анализ...");
+            logService.Info("Create analyse ...");
+            if (currentSavingToken != null)
+            {
+                currentSavingToken.Cancel();
+                currentSavingToken.Dispose();
+            }
+            currentSavingToken = new CancellationTokenSource();
+            var token = currentSavingToken.Token;
+            var saveSuccesfull = false;
+            try
+            {                
+                Assignment analyseAssignment = new Assignment();
+                analyseAssignment.ParentId = (int?)null;
+                analyseAssignment.RecordTypeId = SelectedAnalyseId;
+                analyseAssignment.PersonId = this.personId;
+                analyseAssignment.AssignDateTime = AssignDateTime;
+                analyseAssignment.Duration = 0;
+                analyseAssignment.AssignUserId = userService.GetCurrentUser().Id;
+                analyseAssignment.AssignLpuId = (int?)null;
+                analyseAssignment.RoomId = recordService.GetRooms(AssignDateTime).First(x => x.Options.Contains(OptionValues.LaboratoryRoom)).Id;
+                analyseAssignment.FinancingSourceId = SelectedFinSourceId;
+                analyseAssignment.UrgentlyId = SelectedUrgentlyId;
+                analyseAssignment.ExecutionPlaceId = SelectedExecutionPlaceId;
+                analyseAssignment.ParametersOptions = GetAssignParameters();
+                analyseAssignment.CancelUserId = (int?)null;
+                analyseAssignment.CancelDateTime = (DateTime?)null;
+                analyseAssignment.Note = AnalyseDetails;
+                analyseAssignment.RecordId = (int?)null;
+                analyseAssignment.VisitId = !SpecialValues.IsNewOrNonExisting(SelectedVisitId) ? SelectedVisitId : (int?)null;
+                analyseAssignment.IsTemporary = false;
+                analyseAssignment.CreationDateTime = DateTime.Now;
+                analyseAssignment.BillingDateTime = (DateTime?)null; // договор??
+                analyseAssignment.Cost = 0.0;
+                analyseAssignment.RemovedByUserId = (int?)null;
+
+                string exception = string.Empty;
+                int createdAnalyseId = await recordService.CreateAnalyseAssignmentAsync(analyseAssignment, token);
+                AssignedAnalyses.Add(new KeyValuePair<int, int?>(createdAnalyseId, analyseAssignment.VisitId));
+                saveSuccesfull = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {            
+                logService.ErrorFormatEx(ex, "Failed to create analyse for person with Id = {1}", this.personId);
+                FailureMediator.Activate("Не удалось создать запись на лабораторное исследование. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                    messageService.ShowInformation("Назначение прошло успешно.");
+            }                           
+        }
+
+        public List<KeyValuePair<int, int?>> AssignedAnalyses { get; private set; }
+
+        private string GetAssignParameters()
+        {
+            return Parameters.Where(x => x.IsChecked).Select(x => x.Id.ToString()).Aggregate((x, y) => x + "|" + y);
+        }
+
         #region Properties
 
         private bool isCheckAllParameters;
@@ -255,8 +353,12 @@ namespace Shared.PatientRecords.ViewModels
         public int SelectedVisitId
         {
             get { return selectedVisitId; }
-            set { SetProperty(ref selectedVisitId, value); }
-        }
+            set 
+            {
+                if (SetProperty(ref selectedVisitId, value))
+                    LoadVisitRelatedData(value);
+            }
+        }        
 
         private ObservableCollectionEx<FieldValue> analyses;
         public ObservableCollectionEx<FieldValue> Analyses
@@ -325,6 +427,12 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref assignDateTime, value); }
         }
 
+        private string analyseDetails;
+        public string AnalyseDetails
+        {
+            get { return analyseDetails; }
+            set { SetProperty(ref analyseDetails, value); }
+        }
         #endregion
 
         #region IDialogViewModel
@@ -346,18 +454,26 @@ namespace Shared.PatientRecords.ViewModels
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
 
+        public bool AssignIsSuccessful = false;
         private void Close(bool? validate)
         {
+            assignWasRequested = true;
             if (validate == true)
             {
-                //return;                
+                if (IsValid)
+                {
+                    CreateAnalyseAssignment();
+                    AssignIsSuccessful = true;
+                }
+                else
+                    FailureMediator.Activate("Проверьте правильность заполнения полей.", null, null, true);
             }
             else
             {
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
             }
         }
-
+        
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
 
         protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
@@ -375,5 +491,62 @@ namespace Shared.PatientRecords.ViewModels
         {
 
         }
+
+        #region IDataError
+
+        private bool assignWasRequested;
+
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        private bool IsValid
+        {
+            get
+            {
+                assignWasRequested = true;
+                OnPropertyChanged(string.Empty);
+                return invalidProperties.Count < 1;
+            }
+        }
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public string this[string columnName]
+        {
+            get 
+            {
+                if (!assignWasRequested)
+                {
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
+                }
+                var result = string.Empty;
+                if (columnName == "SelectedAnalyseId")
+                    result = SpecialValues.IsNewOrNonExisting(selectedAnalyseId) ? "Укажите наименование исследования" : string.Empty;
+                if (columnName == "SelectedFinSourceId")
+                    result = SpecialValues.IsNewOrNonExisting(selectedFinSourceId) ? "Укажите источник финансирования" : string.Empty;
+                if (columnName == "SelectedUrgentlyId")
+                    result = SpecialValues.IsNewOrNonExisting(selectedUrgentlyId) ? "Укажите форму оказания мед. помощи" : string.Empty;
+                if (columnName == "SelectedExecutionPlaceId")
+                    result = SpecialValues.IsNewOrNonExisting(selectedExecutionPlaceId) ? "Укажите место выполнения" : string.Empty;
+                if (columnName == "AssignDateTime")
+                {
+                    DateTime date;
+                    result = DateTime.TryParse(AssignDateTime.ToString("dd.MM.yyyy HH:mm"), out date) ? "Укажите корректную дату/время записи" : string.Empty;
+                }
+                if (columnName == "Parameters")
+                    result = Parameters.All(x => !x.IsChecked) ? "Не выбраны параметры назначаемого анализа" : string.Empty;
+                
+                if (string.IsNullOrEmpty(result))
+                    invalidProperties.Remove(columnName);
+                else
+                    invalidProperties.Add(columnName);
+                return result;
+            }
+        }
+
+        #endregion
     }
 }
+

@@ -339,11 +339,39 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref endDateView, value); }
         }
 
+        private string parametersView;
+        public string ParametersView
+        {
+            get { return parametersView; }
+            set { SetProperty(ref parametersView, value); }
+        }
+
+        private string detailsView;
+        public string DetailsView
+        {
+            get { return detailsView; }
+            set { SetProperty(ref detailsView, value); }
+        }
+
         private string brigadeView;
         public string BrigadeView
         {
             get { return brigadeView; }
             set { SetProperty(ref brigadeView, value); }
+        }
+
+        private bool isAnalyse;
+        public bool IsAnalyse
+        {
+            get { return isAnalyse; }
+            set { SetProperty(ref isAnalyse, value); }
+        }
+
+        private bool isAssignment;
+        public bool IsAssignment
+        {
+            get { return isAssignment; }
+            set { SetProperty(ref isAssignment, value); }
         }
 
         private bool isVisit;
@@ -699,7 +727,8 @@ namespace Shared.PatientRecords.ViewModels
                             EndDateTime = x.EndDateTime,
                             UrgentlyId = x.UrgentlyId,
                             RoomId = x.RoomId,
-                            RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty)
+                            RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty),
+                            IsAnalyse = x.RecordType.IsAnalyse
                         }).FirstOrDefaultAsync(token);
                     LoadBrigadeAsync(data.RecordTypeId, recordId, data.ActualDateTime);
                     var curSID = userService.GetCurrentUserSID();
@@ -718,7 +747,11 @@ namespace Shared.PatientRecords.ViewModels
                         ActualDateTime = x.AssignDateTime,
                         UrgentlyId = x.UrgentlyId,
                         RoomId = x.RoomId,
-                        RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty)
+                        Parameters = x.ParametersOptions,
+                        Details = x.Note,
+                        RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty),
+                        IsAnalyse = x.RecordType.IsAnalyse,
+                        IsAssignment = true
                     }).FirstOrDefaultAsync(token);
                     LoadBrigadeAsync(data.RecordTypeId, 0, data.ActualDateTime);
                 }
@@ -779,7 +812,12 @@ namespace Shared.PatientRecords.ViewModels
                     UrgentlyView = Urgentlies.Any(x => x.Id == SelectedUrgentlyId) ? Urgentlies.First(x => x.Id == SelectedUrgentlyId).Name : defValue;
                     BeginDateView = BeginDateTime.HasValue ? BeginDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
                     EndDateView = EndDateTime.HasValue ? EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
+                    DetailsView = !string.IsNullOrEmpty(data.Details) ? data.Details : defValue;
+                    ParametersView = !string.IsNullOrEmpty(data.Parameters) ? 
+                                     data.Parameters.Split('|').Select(x => patientRecordsService.GetRecordTypeById(int.Parse(x)).First().Name).Aggregate((x,y) => x + "; " + y) : defValue;
                     BrigadeView = Brigade.Any() ? Brigade.Select(x => x.RoleName + ": " + x.StaffName + " " + x.PersonName).Aggregate((x,y) => x + "; " + y) : defValue;
+                    IsAnalyse = data.IsAnalyse;
+                    IsAssignment = data.IsAssignment;
                 }
 
                 ChangeTracker.IsEnabled = true;
