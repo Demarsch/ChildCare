@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Core.Extensions;
 using Core.Misc;
@@ -91,11 +92,21 @@ namespace Core.Wpf.Controls
             if (newValue.Length < AppConfiguration.UserInputSearchThreshold)
             {
                 treeViewComboBox.CollapseAndClearFilter(treeViewComboBox.treeView.ItemContainerGenerator);
+                treeViewComboBox.NoFilteredItems = false;
             }
             else
             {
                 treeViewComboBox.ExpandAndFilter(treeViewComboBox.treeView.ItemContainerGenerator);
             }
+        }
+
+        public static readonly DependencyProperty NoFilteredItemsProperty = DependencyProperty.Register(
+                                                        "NoFilteredItems", typeof(bool), typeof(TreeViewComboBox), new PropertyMetadata(default(bool)));
+
+        public bool NoFilteredItems
+        {
+            get { return (bool)GetValue(NoFilteredItemsProperty); }
+            set { SetValue(NoFilteredItemsProperty, value); }
         }
 
         private void CollapseAndClearFilter(ItemContainerGenerator itemContainerGenerator)
@@ -151,6 +162,11 @@ namespace Core.Wpf.Controls
                                             ? Visibility.Visible : Visibility.Collapsed;
                 parent = parent.Parent as TreeViewItem;
             }
+            NoFilteredItems = Enumerable.Range(0, treeView.ItemContainerGenerator.Items.Count)
+                                        .Select(x => treeView.ItemContainerGenerator.ContainerFromIndex(x))
+                                        .Cast<TreeViewItem>()
+                                        .All(x => x.Visibility == Visibility.Collapsed);
+
         }
 
         private void OnItemsGeneratedForFilter(object sender, EventArgs e)
