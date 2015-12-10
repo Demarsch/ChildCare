@@ -85,7 +85,8 @@
                                        DisplayMemberPath="Name"
                                        Width="300" 
                                        ItemTemplate="{StaticResource NonAssignableTypesGrayedOut}"
-                                       SelectionPredicate="{x:Static data:RecordType.AssignableRecordTypeSelectionPredicate}"/>
+                                       SelectionPredicate="{x:Static data:RecordType.AssignableRecordTypeSelectionPredicate}"
+                                       FilterPredicate="{x:Static data:RecordType.AssignableRecordTypeFilterPredicate}"/>
             <TextBlock Grid.Row="1"
                        Grid.Column="0"
                        Text="Кабинет"

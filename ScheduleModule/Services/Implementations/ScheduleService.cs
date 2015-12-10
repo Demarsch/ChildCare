@@ -49,10 +49,30 @@ namespace ScheduleModule.Services
 
         public IEnumerable<RecordType> GetRecordTypes()
         {
-            return cacheService.GetItems<RecordType>()
-                               .Where(x => x.Assignable != null && x.IsRecord && (x.ParentId == null || x.RecordType1.Assignable == null))
-                               .OrderBy(x => x.Name)
-                               .ToArray();
+            return cacheService.GetItems<RecordType>().Where(x => x.ParentId == null && x.IsRecord)
+                .Select(Copy)
+                .Where(x => x != null)
+                .ToArray();
+        }
+
+        private RecordType Copy(RecordType recordType)
+        {
+            if (recordType.Assignable == null)
+            {
+                return null;
+            }
+            var result = new RecordType { Id = recordType.Id, Name = recordType.Name, Assignable = recordType.Assignable };
+            var children = recordType.RecordTypes1.Select(Copy).Where(x => x != null).ToList();
+            if (children.Count == 0 && result.Assignable != true)
+            {
+                return null;
+            }
+            result.RecordTypes1 = children.Count == 0 ? null : children;
+            foreach (var childRecortType in children)
+            {
+                childRecortType.RecordType1 = result;
+            }
+            return result;
         }
 
         public ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date)

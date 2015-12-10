@@ -8,7 +8,7 @@ namespace Core.Wpf.Misc
     {
         public static char GetCharFromKey(Key key)
         {
-            var ch = ' ';
+            var ch = '\0';
             var virtualKey = KeyInterop.VirtualKeyFromKey(key);
             var keyboardState = new byte[256];
             WinApiInteraction.GetKeyboardState(keyboardState);
