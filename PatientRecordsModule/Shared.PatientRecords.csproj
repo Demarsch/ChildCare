@@ -127,6 +127,8 @@
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
     <Compile Include="Misc\RecordTypeEditor.cs" />
+    <Compile Include="ViewModels\Analyses\AnalyseCreateViewModel.cs" />
+    <Compile Include="ViewModels\Analyses\AnalyseParameterViewModel.cs" />
     <Compile Include="ViewModels\BrigadeViewModel.cs" />
     <Compile Include="DTOs\VisitTemplateDTO.cs" />
     <Compile Include="DTOs\AssignmentDTO.cs" />
@@ -225,6 +227,10 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Analyses\AnalyseCreateView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Diagnoses\DiagnosesView.xaml">
       <SubType>Designer</SubType>

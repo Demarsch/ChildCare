@@ -527,6 +527,8 @@ namespace Shared.PatientRecords.ViewModels
 
         public ICommand ShowInViewModeCommand { get { return personRecordEditorViewModel.ShowInViewModeCommand; } }
 
+        public ICommand CreateAnalyseCommand { get { return personRecordListViewModel.CreateAnalyseCommand; } }
+
         public ICommand AttachDocumentCommand { get { return personRecordEditorViewModel.AttachDocumentCommand; } }
         public ICommand DetachDocumentCommand { get { return personRecordEditorViewModel.DetachDocumentCommand; } }
         public ICommand AttachDICOMCommand { get { return personRecordEditorViewModel.AttachDICOMCommand; } }

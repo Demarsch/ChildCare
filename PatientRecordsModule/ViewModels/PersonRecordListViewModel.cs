@@ -25,6 +25,8 @@ using Core.Wpf.Events;
 using Prism.Interactivity.InteractionRequest;
 using System.Data.Entity;
 using Core.Wpf.Services;
+using Core.Services;
+using Core.Data.Services;
 
 namespace Shared.PatientRecords.ViewModels
 {
@@ -34,8 +36,10 @@ namespace Shared.PatientRecords.ViewModels
 
         private readonly IPatientRecordsService patientRecordsService;
         private readonly IEventAggregator eventAggregator;
-        private readonly IDialogService dialogService;
+        private readonly IDialogService messageService;
+        private readonly IDialogServiceAsync dialogService;
         private readonly ILog logService;
+        private readonly IUserService userService;
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
         private readonly CommandWrapper deleteVisitCommandWrapper;
         private readonly CommandWrapper addNewVisitInListVisitCommandWrapper;
@@ -50,6 +54,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly DelegateCommand<int?> completeRecordCommand;
         private readonly DelegateCommand<int?> inProgressRecordCommand;
         private readonly DelegateCommand<int?> returnToActiveVisitCommand;
+        private readonly DelegateCommand<object> сreateAnalyseCommand;
 
         private readonly Func<VisitEditorViewModel> visitEditorViewModelFactory;
         private readonly Func<VisitCloseViewModel> visitCloseViewModelFactory;
@@ -60,7 +65,7 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region  Constructors
-        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IDialogService dialogService, IEventAggregator eventAggregator, Func<VisitEditorViewModel> visitEditorViewModelFactory, Func<VisitCloseViewModel> visitCloseViewModelFactory)
+        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IDialogService messageService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator, Func<VisitEditorViewModel> visitEditorViewModelFactory, Func<VisitCloseViewModel> visitCloseViewModelFactory)
         {
             if (patientRecordsService == null)
             {
@@ -82,11 +87,21 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("visitCloseViewModelFactory");
             }
+            if (messageService == null)
+            {
+                throw new ArgumentNullException("messageService");
+            }
             if (dialogService == null)
             {
                 throw new ArgumentNullException("dialogService");
+            }           
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
             }
+            this.messageService = messageService;
             this.dialogService = dialogService;
+            this.userService = userService;
             this.visitCloseViewModelFactory = visitCloseViewModelFactory;
             this.visitEditorViewModelFactory = visitEditorViewModelFactory;
             this.eventAggregator = eventAggregator;
@@ -112,6 +127,7 @@ namespace Shared.PatientRecords.ViewModels
             completeRecordCommand = new DelegateCommand<int?>(CompleteRecordAsync);
             inProgressRecordCommand = new DelegateCommand<int?>(InProgressRecord);
             returnToActiveVisitCommand = new DelegateCommand<int?>(ReturnToActiveVisit);
+            сreateAnalyseCommand = new DelegateCommand<object>(СreateAnalyse);
             VisitEditorInteractionRequest = new InteractionRequest<VisitEditorViewModel>();
             VisitCloseInteractionRequest = new InteractionRequest<VisitCloseViewModel>();
             RootItems = new ObservableCollectionEx<object>();
@@ -183,7 +199,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (visitId < 1)
             {
-                dialogService.ShowError("Данная случай не найден");
+                messageService.ShowError("Данная случай не найден");
                 return;
             }
             var visitCloseViewModel = visitCloseViewModelFactory();
@@ -196,7 +212,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (!recordId.HasValue)
             {
-                dialogService.ShowError("Данная запись не найдена");
+                messageService.ShowError("Данная запись не найдена");
                 return;
             }
             FailureMediator.Deactivate();
@@ -239,7 +255,7 @@ namespace Shared.PatientRecords.ViewModels
 
                 if (!string.IsNullOrEmpty(errors))
                 {
-                    dialogService.ShowError("Чтобы закрыть услугу необходимо указать " + errors);
+                    messageService.ShowError("Чтобы закрыть услугу необходимо указать " + errors);
                 }
                 else
                 {
@@ -274,7 +290,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (!recordId.HasValue)
             {
-                dialogService.ShowError("Данная запись не найдена");
+                messageService.ShowError("Данная запись не найдена");
                 return;
             }
             FailureMediator.Deactivate();
@@ -360,7 +376,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         public ICommand DeleteVisitCommand { get { return deleteVisitCommand; } }
-        private async void DeleteVisitAsync(int? visitId)
+        private void DeleteVisitAsync(int? visitId)
         {
             FailureMediator.Deactivate();
             this.visitId = visitId;
@@ -399,6 +415,30 @@ namespace Shared.PatientRecords.ViewModels
                 }
             }
         }
+
+        public ICommand CreateAnalyseCommand { get { return сreateAnalyseCommand; } }
+        private async void СreateAnalyse(object parameter)
+        {
+            if (SpecialValues.IsNewOrNonExisting(this.PersonId))
+            {
+                messageService.ShowError("Не выбран пациент");
+                return;
+            }
+            var values = (object[])parameter;
+            int assignmentId = (int)values[0];
+            int recordId = (int)values[1];
+            int visitId = (int)values[2];
+            using (var viewModel = new AnalyseCreateViewModel(patientRecordsService, dialogService, messageService, logService, userService))
+            {
+                viewModel.Initialize(this.PersonId, assignmentId, recordId, visitId);
+                var result = await dialogService.ShowDialogAsync(viewModel);
+                if (result == true)
+                {
+                    //AddAnalyseToPatientRecords(result.VisitId);      
+                }
+            }
+        }
+
         #endregion
 
         #region Methods

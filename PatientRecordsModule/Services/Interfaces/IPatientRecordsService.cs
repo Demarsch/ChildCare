@@ -85,5 +85,9 @@ namespace Shared.PatientRecords.Services
         void CompleteRecordAsync(int recordId, CancellationToken token);
 
         void InProgressRecordAsync(int recordId, CancellationToken token);
+
+        IDisposableQueryable<RecordType> GetRecordTypes(bool isAnalyse = false);
+
+        IDisposableQueryable<RecordType> GetChildRecordTypesQuery(int recordTypeId);
     }
 }

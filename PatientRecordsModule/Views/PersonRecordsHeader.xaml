@@ -83,7 +83,15 @@
     <fluent:RibbonGroupBox Header="Запись на услугу">
         <fluent:Button Size="Large" Header="Прием врача" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentAdd48x48.png"/>
         <fluent:Button Size="Large" Header="Анализы" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AnalyseAdd48x48.png"
-                       Command="{Binding AddAnalyseCommand}"/>
+                       Command="{Binding CreateAnalyseCommand}">
+            <fluent:Button.CommandParameter>
+                <MultiBinding Converter="{x:Static converters:CommandMultiValueConverter.Instance}">
+                    <Binding Path="AssignmentId"/>
+                    <Binding Path="RecordId"/>                    
+                    <Binding Path="VisitId"/>
+                </MultiBinding>
+            </fluent:Button.CommandParameter>
+        </fluent:Button>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Услуги">
         <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png"/>

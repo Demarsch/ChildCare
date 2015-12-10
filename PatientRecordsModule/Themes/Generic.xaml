@@ -8,5 +8,6 @@
         <ResourceDictionary Source="../Views/RecordTypesProtocols/DefaultProtocolView.xaml" />
         <ResourceDictionary Source="../Views/Diagnoses/MKBTreeView.xaml" />
         <ResourceDictionary Source="../Views/Diagnoses/ComplicationsTreeView.xaml" />
+        <ResourceDictionary Source="../Views/Analyses/AnalyseCreateView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

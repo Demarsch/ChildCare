@@ -443,5 +443,17 @@ namespace Shared.PatientRecords.Services
             return context.Set<Record>().AsNoTracking().AnyAsync(x => x.Id == recordId &&
                 x.RecordType.RecordTypeRolePermissions.Where(y => x.ActualDateTime >= y.BeginDateTime && x.ActualDateTime < y.EndDateTime && y.IsRequired).All(y => y.RecordMembers.Any(z => z.RecordId == recordId && z.IsActive)));
         }
+
+        public IDisposableQueryable<RecordType> GetRecordTypes(bool isAnalyse = false)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordType>(context.Set<RecordType>().AsNoTracking().Where(x => isAnalyse ? x.IsAnalyse == isAnalyse : true), context);
+        }
+
+        public IDisposableQueryable<RecordType> GetChildRecordTypesQuery(int recordTypeId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordType>(context.Set<RecordType>().AsNoTracking().Where(x => x.Id == recordTypeId).SelectMany(x => x.RecordTypes1), context);
+        }
     }
 }
