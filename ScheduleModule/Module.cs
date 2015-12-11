@@ -12,7 +12,7 @@ using Shell.Shared;
 
 namespace ScheduleModule
 {
-    [Module(ModuleName = WellKnownModuleNames.ScheduleModule)]
+    [Module(ModuleName = WellKnownModuleNames.ScheduleModule, OnDemand = true)]
     [ModuleDependency(WellKnownModuleNames.PatientSearchModule)]
     public class Module : IModule
     {

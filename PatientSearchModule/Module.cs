@@ -14,7 +14,7 @@ using Shell.Shared;
 
 namespace PatientSearchModule
 {
-    [Module(ModuleName = WellKnownModuleNames.PatientSearchModule)]
+    [Module(ModuleName = WellKnownModuleNames.PatientSearchModule, OnDemand = true)]
     public class Module : IModule
     {
         private readonly IUnityContainer container;

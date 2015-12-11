@@ -24,7 +24,7 @@ using Shared.PatientRecords;
 
 namespace PatientInfoModule
 {
-    [Module(ModuleName = WellKnownModuleNames.PatientInfoModule)]
+    [Module(ModuleName = WellKnownModuleNames.PatientInfoModule, OnDemand = true)]
     [ModuleDependency(WellKnownModuleNames.PatientSearchModule)]
     public class Module : IModule
     {

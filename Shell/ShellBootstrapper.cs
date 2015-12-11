@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Core.Data;
@@ -14,6 +15,7 @@ using Microsoft.Practices.Unity;
 using Prism.Modularity;
 using Prism.Regions;
 using Prism.Unity;
+using Shell.Shared;
 
 namespace Shell
 {
@@ -33,7 +35,7 @@ namespace Shell
             var connectionEstablished = await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
             if (connectionEstablished)
             {
-                base.InitializeModules();
+                CustomLoadModules();
             }
         }
 
@@ -99,7 +101,17 @@ namespace Shell
 
         protected override void InitializeModules()
         {
-            //Do nothing as we actually still wait for connection status at this point
+            //Do nothing as we perform custom module loading
+        }
+
+        private void CustomLoadModules()
+        {
+            base.InitializeModules();
+            var moduleManager = Container.Resolve<IModuleManager>();
+            foreach (var module in ModuleCatalog.Modules)
+            {
+                moduleManager.LoadModule(module.ModuleName);
+            }
         }
 
         private void RegisterServices()

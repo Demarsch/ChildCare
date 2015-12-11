@@ -13,7 +13,7 @@ using Shell.Shared;
 
 namespace OrganizationContracts
 {
-    [Module(ModuleName = WellKnownModuleNames.OrganizationContractsModule)]
+    [Module(ModuleName = WellKnownModuleNames.OrganizationContractsModule, OnDemand = true)]
     public class Module : IModule
     {
         #region Fields

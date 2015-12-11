@@ -160,7 +160,7 @@ namespace Core.Wpf.Controls
                                               .Select(x => (TreeViewItem)parent.ItemContainerGenerator.ContainerFromIndex(x))
                                               .Any(x => x.Visibility == Visibility.Visible)
                                             ? Visibility.Visible : Visibility.Collapsed;
-                parent = parent.Parent as TreeViewItem;
+                parent = parent.FindVisualAncestor<TreeViewItem>();
             }
             NoFilteredItems = Enumerable.Range(0, treeView.ItemContainerGenerator.Items.Count)
                                         .Select(x => treeView.ItemContainerGenerator.ContainerFromIndex(x))

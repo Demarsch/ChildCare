@@ -12,7 +12,7 @@ using Shell.Shared;
 
 namespace ScheduleEditorModule
 {
-    [Module(ModuleName = WellKnownModuleNames.ScheduleEditorModule)]
+    [Module(ModuleName = WellKnownModuleNames.ScheduleEditorModule, OnDemand = true)]
     public class Module : IModule
     {
         private readonly IUnityContainer container;

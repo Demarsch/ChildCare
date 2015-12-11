@@ -13,7 +13,7 @@ using Core.Reports;
 
 namespace AdminModule
 {
-    [Module(ModuleName = WellKnownModuleNames.AdminModule)]
+    [Module(ModuleName = WellKnownModuleNames.AdminModule, OnDemand = true)]
     public class Module : IModule
     {
         IUnityContainer container;
