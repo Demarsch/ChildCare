@@ -31,10 +31,6 @@ namespace Shared.PatientRecords.ViewModels
         private readonly IUserService userService;
         private CancellationTokenSource currentSavingToken;
         public BusyMediator BusyMediator { get; set; }
-        public FailureMediator FailureMediator { get; set; }
-        private readonly CommandWrapper reloadDataSourceCommandWrapper;
-        private readonly CommandWrapper reloadParametersCommandWrapper;
-        private readonly CommandWrapper saveChangesCommandWrapper;
         private int personId;
         private int assignmentId;
         private int recordId;
@@ -69,13 +65,9 @@ namespace Shared.PatientRecords.ViewModels
             this.userService = userService;
 
             BusyMediator = new BusyMediator();
-            FailureMediator = new FailureMediator();
 
             CloseCommand = new DelegateCommand<bool?>(Close);
-            reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => Initialize(personId, assignmentId, recordId, visitId)), CommandName = "Повторить" };
-            reloadParametersCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadParameters(SelectedAnalyseId)), CommandName = "Повторить" };
-            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => CreateAnalyseAssignment()), CommandName = "Повторить" };
-
+           
             FinSources = new ObservableCollectionEx<FieldValue>();
             Urgentlies = new ObservableCollectionEx<FieldValue>();
             ExecutionPlaces = new ObservableCollectionEx<FieldValue>();
@@ -87,7 +79,6 @@ namespace Shared.PatientRecords.ViewModels
 
         internal async void Initialize(int personId, int assignmentId, int recordId, int visitId)
         {
-            FailureMediator.Deactivate();
             this.personId = personId;
             this.assignmentId = assignmentId;
             this.recordId = recordId;
@@ -175,7 +166,7 @@ namespace Shared.PatientRecords.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load data sources for create analyse");
-                FailureMediator.Activate("Не удалось загрузить данные для назначения анализов. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper, ex);
+                messageService.ShowError("Не удалось загрузить данные для назначения анализов. ");
             }
             finally
             {
@@ -209,7 +200,7 @@ namespace Shared.PatientRecords.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load analyse parameters");
-                FailureMediator.Activate("Не удалось загрузить параметры выбранного анализа. Попробуйте еще раз или обратитесь в службу поддержки", reloadParametersCommandWrapper, ex);
+                messageService.ShowError("Не удалось загрузить параметры выбранного анализа.");
             }
             finally
             {
@@ -247,7 +238,6 @@ namespace Shared.PatientRecords.ViewModels
 
         private async void CreateAnalyseAssignment()
         {
-            FailureMediator.Deactivate();
             BusyMediator.Activate("Запись на анализ...");
             logService.Info("Create analyse ...");
             if (currentSavingToken != null)
@@ -296,7 +286,7 @@ namespace Shared.PatientRecords.ViewModels
             catch (Exception ex)
             {            
                 logService.ErrorFormatEx(ex, "Failed to create analyse for person with Id = {1}", this.personId);
-                FailureMediator.Activate("Не удалось создать запись на лабораторное исследование. Попробуйте еще раз или обратитесь в службу поддержки", saveChangesCommandWrapper, ex);
+                messageService.ShowError("Не удалось создать запись на лабораторное исследование.");
             }
             finally
             {
@@ -464,7 +454,7 @@ namespace Shared.PatientRecords.ViewModels
                     AssignIsSuccessful = true;
                 }
                 else
-                    FailureMediator.Activate("Проверьте правильность заполнения полей.", null, null, true);
+                    messageService.ShowWarning("Проверьте правильность заполнения полей.");
             }
             else
             {
