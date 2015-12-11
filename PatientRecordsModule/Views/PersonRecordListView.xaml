@@ -4,27 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:prism="http://www.codeplex.com/prism"
-             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
              xmlns:views="clr-namespace:Shared.PatientRecords.Views"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="250" Width="250">
-    <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding VisitEditorInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction IsModal="True">
-                <popup:PopupWindowAction.WindowContent>
-                    <views:VisitEditorView/>
-                </popup:PopupWindowAction.WindowContent>
-            </popup:PopupWindowAction>
-        </prism:InteractionRequestTrigger>
-        <prism:InteractionRequestTrigger SourceObject="{Binding VisitCloseInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction IsModal="True">
-                <popup:PopupWindowAction.WindowContent>
-                    <views:VisitCloseView/>
-                </popup:PopupWindowAction.WindowContent>
-            </popup:PopupWindowAction>
-        </prism:InteractionRequestTrigger>
-    </i:Interaction.Triggers>
     <UserControl.Resources>
         
     </UserControl.Resources>

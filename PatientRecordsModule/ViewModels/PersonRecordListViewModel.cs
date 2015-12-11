@@ -30,34 +30,19 @@ using Core.Data.Services;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class PersonRecordListViewModel : BindableBase, IConfirmNavigationRequest, IDisposable
+    public class PersonRecordListViewModel : BindableBase, IDisposable
     {
         #region Fields
 
         private readonly IPatientRecordsService patientRecordsService;
         private readonly IEventAggregator eventAggregator;
-        private readonly IDialogService messageService;
         private readonly IDialogServiceAsync dialogService;
         private readonly ILog logService;
         private readonly IUserService userService;
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
-        private readonly CommandWrapper deleteVisitCommandWrapper;
         private readonly CommandWrapper addNewVisitInListVisitCommandWrapper;
-        private readonly CommandWrapper completeVisitCommandWrapper;
-        private readonly CommandWrapper completeRecordCommandWrapper;
-        private readonly CommandWrapper inProgressRecordCommandWrapper;
         //private readonly ChangeTrackerEx<PersonRecordListViewModel> changeTracker;
-        private readonly DelegateCommand<int?> createNewVisitCommand;
-        private readonly DelegateCommand<int?> editVisitCommand;
-        private readonly DelegateCommand<int?> deleteVisitCommand;
-        private readonly DelegateCommand<int?> completeVisitCommand;
-        private readonly DelegateCommand<int?> completeRecordCommand;
-        private readonly DelegateCommand<int?> inProgressRecordCommand;
-        private readonly DelegateCommand<int?> returnToActiveVisitCommand;
-        private readonly DelegateCommand<object> сreateAnalyseCommand;
-
-        private readonly Func<VisitEditorViewModel> visitEditorViewModelFactory;
-        private readonly Func<VisitCloseViewModel> visitCloseViewModelFactory;
+        
 
         private CancellationTokenSource currentOperationToken;
         private int? visitId;
@@ -65,7 +50,7 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region  Constructors
-        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IDialogService messageService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator, Func<VisitEditorViewModel> visitEditorViewModelFactory, Func<VisitCloseViewModel> visitCloseViewModelFactory)
+        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator)
         {
             if (patientRecordsService == null)
             {
@@ -79,31 +64,16 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
-            if (visitEditorViewModelFactory == null)
-            {
-                throw new ArgumentNullException("newVisitCreatingViewModelFactory");
-            }
-            if (visitCloseViewModelFactory == null)
-            {
-                throw new ArgumentNullException("visitCloseViewModelFactory");
-            }
-            if (messageService == null)
-            {
-                throw new ArgumentNullException("messageService");
-            }
             if (dialogService == null)
             {
                 throw new ArgumentNullException("dialogService");
-            }           
+            }
             if (userService == null)
             {
                 throw new ArgumentNullException("userService");
             }
-            this.messageService = messageService;
             this.dialogService = dialogService;
             this.userService = userService;
-            this.visitCloseViewModelFactory = visitCloseViewModelFactory;
-            this.visitEditorViewModelFactory = visitEditorViewModelFactory;
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
@@ -115,26 +85,9 @@ namespace Shared.PatientRecords.ViewModels
                 Command = new DelegateCommand(() => LoadRootItemsAsync(PersonId)),
                 CommandName = "Повторить",
             };
-            deleteVisitCommandWrapper = new CommandWrapper { Command = deleteVisitCommand };
-            completeVisitCommandWrapper = new CommandWrapper { Command = completeVisitCommand };
-            completeRecordCommandWrapper = new CommandWrapper { Command = completeRecordCommand };
-            inProgressRecordCommandWrapper = new CommandWrapper { Command = inProgressRecordCommand };
             addNewVisitInListVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => AddNewVisitToList(visitId)) };
-            createNewVisitCommand = new DelegateCommand<int?>(CreateNewVisit);
-            editVisitCommand = new DelegateCommand<int?>(EditVisit);
-            deleteVisitCommand = new DelegateCommand<int?>(DeleteVisitAsync);
-            completeVisitCommand = new DelegateCommand<int?>(CompleteVisitAsync);
-            completeRecordCommand = new DelegateCommand<int?>(CompleteRecordAsync);
-            inProgressRecordCommand = new DelegateCommand<int?>(InProgressRecord);
-            returnToActiveVisitCommand = new DelegateCommand<int?>(ReturnToActiveVisit);
-            сreateAnalyseCommand = new DelegateCommand<object>(СreateAnalyse);
-            VisitEditorInteractionRequest = new InteractionRequest<VisitEditorViewModel>();
-            VisitCloseInteractionRequest = new InteractionRequest<VisitCloseViewModel>();
             RootItems = new ObservableCollectionEx<object>();
             this.PersonId = SpecialValues.NonExistingId;
-            SubscribeToEvents();
-            //ToDo: If this row exist, all work
-            //LoadRootItemsAsync(1);
         }
         #endregion
 
@@ -166,289 +119,14 @@ namespace Shared.PatientRecords.ViewModels
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
-
-        public InteractionRequest<VisitEditorViewModel> VisitEditorInteractionRequest { get; private set; }
-
-        public InteractionRequest<VisitCloseViewModel> VisitCloseInteractionRequest { get; private set; }
         #endregion
 
         #region Commands
-        public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
-        private void CreateNewVisit(int? selectedTemplate)
-        {
-            var newVisitCreatingViewModel = visitEditorViewModelFactory();
-            newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { AddNewVisitToList(vm.VisitId); });
-        }
 
-        public ICommand EditVisitCommand { get { return editVisitCommand; } }
-        private void EditVisit(int? visitId)
-        {
-            if (visitId < 1)
-            {
-                FailureMediator.Activate("Данная случай не найден", true);
-                return;
-            }
-            var newVisitCreatingViewModel = visitEditorViewModelFactory();
-            newVisitCreatingViewModel.IntializeCreation(PersonId, null, visitId, DateTime.Now, "Редактировать случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { /*UpdateVisit(vm.VisitId);*/ });
-        }
-
-        public ICommand CompleteVisitCommand { get { return completeVisitCommand; } }
-        private void CompleteVisitAsync(int? visitId)
-        {
-            if (visitId < 1)
-            {
-                messageService.ShowError("Данная случай не найден");
-                return;
-            }
-            var visitCloseViewModel = visitCloseViewModelFactory();
-            visitCloseViewModel.IntializeCreation(visitId.Value, "Завершить случай");
-            VisitCloseInteractionRequest.Raise(visitCloseViewModel, (vm) => {/* UpdateVisit(vm.VisitId);*/ });
-        }
-
-        public ICommand CompleteRecordCommand { get { return completeRecordCommand; } }
-        private async void CompleteRecordAsync(int? recordId)
-        {
-            if (!recordId.HasValue)
-            {
-                messageService.ShowError("Данная запись не найдена");
-                return;
-            }
-            FailureMediator.Deactivate();
-            this.recordId = recordId;
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            logService.InfoFormat("Complete record with Id = {0}", recordId);
-            BusyMediator.Activate("Закрытие услуги...");
-            var saveSuccesfull = false;
-            var errors = string.Empty;
-            IDisposableQueryable<Record> recordQuery = patientRecordsService.GetRecord(recordId.Value);
-            try
-            {
-                var recordTask = recordQuery.Select(x => new
-                {
-                    x.EndDateTime
-                }).FirstOrDefaultAsync();
-                var isBrigadeComletedTask = patientRecordsService.IsBrigadeCompleted(recordId.Value);
-                await Task.WhenAll(recordTask, isBrigadeComletedTask);
-
-                if (!recordTask.Result.EndDateTime.HasValue)
-                {
-                    if (errors != string.Empty)
-                        errors += "\r\n";
-                    errors += "дату окончания услуги";
-                }
-
-                if (!isBrigadeComletedTask.Result)
-                {
-                    if (errors != string.Empty)
-                        errors += "\r\n";
-                    errors += "всех членов бригады, которые являются обязательными";
-                }
-                //ToDo: check Protocol.CanComplete() 
-
-                if (!string.IsNullOrEmpty(errors))
-                {
-                    messageService.ShowError("Чтобы закрыть услугу необходимо указать " + errors);
-                }
-                else
-                {
-                    patientRecordsService.CompleteRecordAsync(recordId.Value, token);
-                    saveSuccesfull = true;
-
-                    this.recordId = 0;
-                }
-                //UpdateVisit(visitId);
-            }
-            catch (OperationCanceledException)
-            {
-                //Nothing to do as it means that we somehow cancelled save operation
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to complete record with Id = {0}", recordId);
-                FailureMediator.Activate("Не удалось закрыть услугу. Попробуйте еще раз или обратитесь в службу поддержки", completeVisitCommandWrapper, ex, true);
-            }
-            finally
-            {
-                BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-
-                }
-            }
-        }
-
-        public ICommand InProgressRecordCommand { get { return inProgressRecordCommand; } }
-        private void InProgressRecord(int? recordId)
-        {
-            if (!recordId.HasValue)
-            {
-                messageService.ShowError("Данная запись не найдена");
-                return;
-            }
-            FailureMediator.Deactivate();
-            this.recordId = recordId;
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            logService.InfoFormat("InProgress record with Id = {0}", recordId);
-            BusyMediator.Activate("Продолжить услугу...");
-            var saveSuccesfull = false;
-            var errors = string.Empty;
-            try
-            {
-                patientRecordsService.InProgressRecordAsync(recordId.Value, token);
-                saveSuccesfull = true;
-
-                this.recordId = 0;
-                //UpdateVisit(visitId);
-            }
-            catch (OperationCanceledException)
-            {
-                //Nothing to do as it means that we somehow cancelled save operation
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to inProgress record with Id = {0}", recordId);
-                FailureMediator.Activate("Не удалось открыть и продолжить услугу. Попробуйте еще раз или обратитесь в службу поддержки", completeVisitCommandWrapper, ex, true);
-            }
-            finally
-            {
-                BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-
-                }
-            }
-        }
-
-        public ICommand ReturnToActiveVisitCommand { get { return returnToActiveVisitCommand; } }
-        private void ReturnToActiveVisit(int? visitId)
-        {
-            if (visitId < 1) return;
-            FailureMediator.Deactivate();
-            this.visitId = visitId;
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            logService.InfoFormat("Uncompleting visit with Id = {0} for person with Id = {1}", visitId, personId);
-            BusyMediator.Activate("Открытие случая...");
-            var saveSuccesfull = false;
-            try
-            {
-                patientRecordsService.ReturnToActiveVisitAsync(visitId.Value, token);
-                saveSuccesfull = true;
-                this.visitId = 0;
-                //UpdateVisit(visitId);
-            }
-            catch (OperationCanceledException)
-            {
-                //Nothing to do as it means that we somehow cancelled save operation
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to uncomplete visit with Id = {0} for person with Id = {1}", visitId, personId);
-                FailureMediator.Activate("Не удалось открыть случай. Попробуйте еще раз или обратитесь в службу поддержки", completeVisitCommandWrapper, ex);
-            }
-            finally
-            {
-                BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-
-                }
-            }
-        }
-
-        public ICommand DeleteVisitCommand { get { return deleteVisitCommand; } }
-        private void DeleteVisitAsync(int? visitId)
-        {
-            FailureMediator.Deactivate();
-            this.visitId = visitId;
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            logService.InfoFormat("Deleting visit with Id = {0} for person with Id = {1}", visitId, personId);
-            BusyMediator.Activate("Удаление случая...");
-            var saveSuccesfull = false;
-            try
-            {
-                patientRecordsService.DeleteVisitAsync(visitId.Value, 1, token);
-                saveSuccesfull = true;
-                this.visitId = 0;
-                //DeleteVisitFromList(visitId);
-            }
-            catch (OperationCanceledException)
-            {
-                //Nothing to do as it means that we somehow cancelled save operation
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to delete visit with Id = {0} for person with Id = {1}", visitId, personId);
-                FailureMediator.Activate("Не удалось удалить случай. Попробуйте еще раз или обратитесь в службу поддержки", deleteVisitCommandWrapper, ex);
-            }
-            finally
-            {
-                BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-
-                }
-            }
-        }
-
-        public ICommand CreateAnalyseCommand { get { return сreateAnalyseCommand; } }
-        private async void СreateAnalyse(object parameter)
-        {
-            if (SpecialValues.IsNewOrNonExisting(this.PersonId))
-            {
-                messageService.ShowError("Не выбран пациент");
-                return;
-            }
-            if (!patientRecordsService.GetRooms(DateTime.Now).Any(x => x.Options.Contains(OptionValues.LaboratoryRoom)))
-            {
-                messageService.ShowError("В МИС не найдена информация о кабинете для проведения лабораторных исследований");
-                return;
-            }
-            var values = (object[])parameter;
-            int assignmentId = (int)values[0];
-            int recordId = (int)values[1];
-            int visitId = (int)values[2];
-            using (var viewModel = new AnalyseCreateViewModel(patientRecordsService, dialogService, messageService, logService, userService))
-            {                
-                viewModel.Initialize(this.PersonId, assignmentId, recordId, visitId);
-                var result = await dialogService.ShowDialogAsync(viewModel);
-                if (viewModel.AssignIsSuccessful)
-                {
-                    LoadRootItemsAsync(this.personId);
-                    //foreach (var assignment in viewModel.AssignedAnalyses)
-                    //    AddAssignmentToPatientRecords(assignment.Key, assignment.Value);      
-                }
-            }
-        }
 
         private void AddAssignmentToPatientRecords(int assignmentId, int? visitId)
         {
-            
+
         }
 
         #endregion
@@ -493,7 +171,7 @@ namespace Shared.PatientRecords.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to add new visit in records list with Id = {0} for person with Id = {1}", visitId, personId);
-                FailureMediator.Activate("Не удалось добавить новый случай в список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", deleteVisitCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось добавить новый случай в список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", addNewVisitInListVisitCommandWrapper, ex);
             }
             finally
             {
@@ -507,30 +185,9 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-            UnsubscriveFromEvents();
             addNewVisitInListVisitCommandWrapper.Dispose();
-            completeVisitCommandWrapper.Dispose();
-            deleteVisitCommandWrapper.Dispose();
             reloadPatientVisitsCommandWrapper.Dispose();
         }
-
-        private void SubscribeToEvents()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
-        }
-
-        private void OnPatientSelected(int personId)
-        {
-            this.PersonId = personId;
-            LoadRootItemsAsync(this.PersonId);
-        }
-
-        private void UnsubscriveFromEvents()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
-        }
-
-
 
         public async void LoadRootItemsAsync(int personId)
         {
@@ -615,34 +272,6 @@ namespace Shared.PatientRecords.ViewModels
             resList.AddRange(assignmentsViewModels);
             resList.AddRange(visitsViewModels);
             return resList.ToList();
-        }
-
-        #endregion
-
-        #region IConfirmNavigationRequest implimentation
-
-        public void ConfirmNavigationRequest(NavigationContext navigationContext, Action<bool> continuationCallback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsNavigationTarget(NavigationContext navigationContext)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnNavigatedFrom(NavigationContext navigationContext)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnNavigatedTo(NavigationContext navigationContext)
-        {
-            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PersonId] ?? SpecialValues.NonExistingId;
-            if (targetPatientId != personId)
-            {
-                LoadRootItemsAsync(targetPatientId);
-            }
         }
 
         #endregion

@@ -51,8 +51,8 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region Constructors
-        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordTypeEditorResolver recordTypeEditorResolver, IUserService userService,
-                                           ILog logSevice, IEventAggregator eventAggregator, RecordDocumentsCollectionViewModel documentsViewer)
+        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordTypeEditorResolver recordTypeEditorResolver, IUserService userService, ILog logSevice, IEventAggregator eventAggregator, 
+                                           RecordDocumentsCollectionViewModel documentsViewer)
         {
             if (patientRecordsService == null)
             {
@@ -69,6 +69,14 @@ namespace Shared.PatientRecords.ViewModels
             if (recordTypeEditorResolver == null)
             {
                 throw new ArgumentNullException("recordTypeEditorResolver");
+            }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
+            if (documentsViewer == null)
+            {
+                throw new ArgumentNullException("documentsViewer");
             }
             if (userService == null)
             {
@@ -712,7 +720,7 @@ namespace Shared.PatientRecords.ViewModels
             try
             {
                 CommonRecordAssignmentDTO data = new CommonRecordAssignmentDTO();
-                IsVisit = false;                
+                IsVisit = false;
                 if (recordId > 0)
                 {
                     data = await recordQuery.Select(x => new CommonRecordAssignmentDTO()
@@ -813,9 +821,9 @@ namespace Shared.PatientRecords.ViewModels
                     BeginDateView = BeginDateTime.HasValue ? BeginDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
                     EndDateView = EndDateTime.HasValue ? EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
                     DetailsView = !string.IsNullOrEmpty(data.Details) ? data.Details : defValue;
-                    ParametersView = !string.IsNullOrEmpty(data.Parameters) ? 
-                                     data.Parameters.Split('|').Select(x => patientRecordsService.GetRecordTypeById(int.Parse(x)).First().Name).Aggregate((x,y) => x + "; " + y) : defValue;
-                    BrigadeView = Brigade.Any() ? Brigade.Select(x => x.RoleName + ": " + x.StaffName + " " + x.PersonName).Aggregate((x,y) => x + "; " + y) : defValue;
+                    ParametersView = !string.IsNullOrEmpty(data.Parameters) ?
+                                     data.Parameters.Split('|').Select(x => patientRecordsService.GetRecordTypeById(int.Parse(x)).First().Name).Aggregate((x, y) => x + "; " + y) : defValue;
+                    BrigadeView = Brigade.Any() ? Brigade.Select(x => x.RoleName + ": " + x.StaffName + " " + x.PersonName).Aggregate((x, y) => x + "; " + y) : defValue;
                     IsAnalyse = data.IsAnalyse;
                     IsAssignment = data.IsAssignment;
                 }
@@ -985,7 +993,7 @@ namespace Shared.PatientRecords.ViewModels
                     //changeTracker.UntrackAll();
                 }
             }
-            
+
         }
 
         private void UnsubscriveFromEvents()

@@ -8,6 +8,7 @@ using Prism.Mvvm;
 using Prism.Regions;
 using ScheduleModule.Misc;
 using Shell.Shared;
+using Core.Wpf.Misc;
 
 namespace ScheduleModule.ViewModels
 {

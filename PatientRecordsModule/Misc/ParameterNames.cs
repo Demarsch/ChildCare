@@ -2,6 +2,6 @@
 {
     public static class ParameterNames
     {
-        public static readonly string PersonId = "PersonId";
+        public static readonly string PatientId = "PatientId";
     }
 }

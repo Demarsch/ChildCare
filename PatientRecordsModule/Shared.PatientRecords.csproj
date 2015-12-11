@@ -126,6 +126,7 @@
     <Compile Include="DTOs\CommonRecordAssignmentDTO.cs" />
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
+    <Compile Include="Misc\ParameterNames.cs" />
     <Compile Include="Misc\RecordTypeEditor.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseCreateViewModel.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseParameterViewModel.cs" />
@@ -138,7 +139,6 @@
     <Compile Include="DTOs\VisitDTO.cs" />
     <Compile Include="Misc\Common.cs" />
     <Compile Include="Misc\IRecordTypeProtocol.cs" />
-    <Compile Include="Misc\ParameterNames.cs" />
     <Compile Include="Misc\SuggestionProviders\MKBSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
     <Compile Include="PatientRecords.cs" />

@@ -3,11 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:views="clr-namespace:Shared.PatientRecords.Views"
+             xmlns:prism="http://www.codeplex.com/prism"
+             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <DockPanel LastChildFill="True">
-        <views:PersonRecordListView x:Name="personRecordList" DockPanel.Dock="Left"/>
-        <views:PersonRecordEditorView x:Name="personRecordEditor" Margin="1"/>
-    </DockPanel>
+    <i:Interaction.Triggers>
+        <prism:InteractionRequestTrigger SourceObject="{Binding VisitEditorInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction IsModal="True">
+                <popup:PopupWindowAction.WindowContent>
+                    <views:VisitEditorView/>
+                </popup:PopupWindowAction.WindowContent>
+            </popup:PopupWindowAction>
+        </prism:InteractionRequestTrigger>
+        <prism:InteractionRequestTrigger SourceObject="{Binding VisitCloseInteractionRequest, Mode=OneWay}">
+            <popup:PopupWindowAction IsModal="True">
+                <popup:PopupWindowAction.WindowContent>
+                    <views:VisitCloseView/>
+                </popup:PopupWindowAction.WindowContent>
+            </popup:PopupWindowAction>
+        </prism:InteractionRequestTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <views:PersonRecordListView x:Name="personRecordList" DockPanel.Dock="Left"/>
+            <views:PersonRecordEditorView x:Name="personRecordEditor" Margin="1"/>
+        </DockPanel>
+
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding CriticalFailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+    </Grid>
 </UserControl>
