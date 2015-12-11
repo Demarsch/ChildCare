@@ -19,6 +19,7 @@ namespace Core.Data
         {
             this.Branches1 = new HashSet<Branch>();
             this.PersonStaffs = new HashSet<PersonStaff>();
+            this.Eqiupments = new HashSet<Eqiupment>();
         }
     
         public int Id { get; set; }
@@ -33,5 +34,7 @@ namespace Core.Data
         public virtual Branch Branch1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Eqiupment> Eqiupments { get; set; }
     }
 }

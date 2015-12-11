@@ -150,7 +150,6 @@
         <AssociationConnector Association="DataLib.FK_Visits_VisitOutcomes" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitResults" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitTemplates" />
-        <EntityTypeShape EntityType="DataLib.RecordTypeEditor" Width="2" PointX="7.625" PointY="5.625" />
         <EntityTypeShape EntityType="DataLib.RecordDocument" Width="1.5" PointX="22.5" PointY="63.25" />
         <EntityTypeShape EntityType="DataLib.RecordTypeCost" Width="1.5" PointX="13.5" PointY="32.5" />
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Documents" />
@@ -219,7 +218,6 @@
         <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_Records_Visits" />
         <AssociationConnector Association="DataLib.FK_RecordTypeCosts_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordTypeEditors_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
@@ -239,6 +237,16 @@
         <AssociationConnector Association="DataLib.FK_Assignments_Visits" />
         <AssociationConnector Association="DataLib.FK_RecordContractItems_Assignments" />
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Assignments" />
+        <EntityTypeShape EntityType="DataLib.Eqiupment" Width="1.5" PointX="23.25" PointY="49.125" />
+        <EntityTypeShape EntityType="DataLib.EqiupmentType" Width="1.5" PointX="21" PointY="48.5" />
+        <EntityTypeShape EntityType="DataLib.RecordEquipment" Width="1.5" PointX="28.5" PointY="62.125" />
+        <AssociationConnector Association="DataLib.FK_Eqiupments_Branches" />
+        <AssociationConnector Association="DataLib.FK_Eqiupments_EqiupmentTypes" />
+        <AssociationConnector Association="DataLib.FK_Eqiupments_Rooms" />
+        <AssociationConnector Association="DataLib.FK_RecordEquipments_Eqiupments" />
+        <AssociationConnector Association="DataLib.FK_RecordEquipments_Records" />
+        <EntityTypeShape EntityType="DataLib.RecordTypeEditor" Width="1.5" PointX="3" PointY="29" />
+        <AssociationConnector Association="DataLib.FK_RecordTypeEditors_RecordTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

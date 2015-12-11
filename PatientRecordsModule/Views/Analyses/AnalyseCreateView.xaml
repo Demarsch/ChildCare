@@ -100,6 +100,9 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
+            <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="8" Grid.ColumnSpan="2" />
+            <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="8" Grid.ColumnSpan="2" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

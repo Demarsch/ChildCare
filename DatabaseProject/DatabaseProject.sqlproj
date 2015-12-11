@@ -150,5 +150,8 @@
     <Build Include="dbo\Tables\Units.sql" />
     <Build Include="dbo\Tables\AnalyseResults.sql" />
     <Build Include="dbo\Tables\AnalyseRefferences.sql" />
+    <Build Include="dbo\Tables\RecordEquipments.sql" />
+    <Build Include="dbo\Tables\EqiupmentTypes.sql" />
+    <Build Include="dbo\Tables\Eqiupments.sql" />
   </ItemGroup>
 </Project>

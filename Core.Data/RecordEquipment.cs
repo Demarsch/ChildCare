@@ -12,15 +12,16 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class RecordTypeEditor
+    public partial class RecordEquipment
     {
         public int Id { get; set; }
-        public int RecordTypeId { get; set; }
-        public string Editor { get; set; }
-        public bool HasDocuments { get; set; }
-        public bool HasDICOM { get; set; }
-        public bool UseEquipments { get; set; }
+        public int RecordId { get; set; }
+        public int EquipmentId { get; set; }
+        public Nullable<System.DateTime> BeginDateTime { get; set; }
+        public Nullable<System.DateTime> EndDateTime { get; set; }
+        public double Duration { get; set; }
     
-        public virtual RecordType RecordType { get; set; }
+        public virtual Eqiupment Eqiupment { get; set; }
+        public virtual Record Record { get; set; }
     }
 }

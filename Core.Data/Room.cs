@@ -20,6 +20,7 @@ namespace Core.Data
             this.ScheduleItems = new HashSet<ScheduleItem>();
             this.Records = new HashSet<Record>();
             this.Assignments = new HashSet<Assignment>();
+            this.Eqiupments = new HashSet<Eqiupment>();
         }
     
         public int Id { get; set; }
@@ -35,5 +36,7 @@ namespace Core.Data
         public virtual ICollection<Record> Records { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Eqiupment> Eqiupments { get; set; }
     }
 }

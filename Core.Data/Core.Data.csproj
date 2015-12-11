@@ -125,6 +125,12 @@
     <Compile Include="DiagnosType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Eqiupment.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EqiupmentType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ExecutionPlace.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -136,6 +142,9 @@
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
+    <Compile Include="RecordEquipment.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Services\Interfaces\IEnvironment.cs" />
     <Compile Include="Misc\OptionValues.cs" />
     <Compile Include="Misc\SpecialValues.cs" />

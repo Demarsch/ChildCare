@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.Data;
 using Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels;
+using Shared.PatientRecords.ViewModels;
 
 namespace Shared.PatientRecords.Misc
 {
@@ -14,7 +15,9 @@ namespace Shared.PatientRecords.Misc
 
         private readonly Func<VisitProtocolViewModel> visitProtocol;
 
-        public RecordTypeEditorResolver(Func<DefaultProtocolViewModel> defaultProtocol, Func<VisitProtocolViewModel> visitProtocol)
+        private readonly Func<AnalyseProtocolViewModel> analyseProtocol;
+
+        public RecordTypeEditorResolver(Func<DefaultProtocolViewModel> defaultProtocol, Func<VisitProtocolViewModel> visitProtocol, Func<AnalyseProtocolViewModel> analyseProtocol)
         {
             if (defaultProtocol == null)
             {
@@ -26,6 +29,7 @@ namespace Shared.PatientRecords.Misc
             }
             this.visitProtocol = visitProtocol;
             this.defaultProtocol = defaultProtocol;
+            this.analyseProtocol = analyseProtocol;
         }
 
         public IRecordTypeProtocol Resolve(string editor)
@@ -36,6 +40,8 @@ namespace Shared.PatientRecords.Misc
                     return defaultProtocol();
                 case "VisitProtocol":
                     return visitProtocol();
+                case "AnalyseProtocol":
+                    return analyseProtocol();
                 default:
                     return defaultProtocol();
             }

@@ -424,12 +424,17 @@ namespace Shared.PatientRecords.ViewModels
                 messageService.ShowError("Не выбран пациент");
                 return;
             }
+            if (!patientRecordsService.GetRooms(DateTime.Now).Any(x => x.Options.Contains(OptionValues.LaboratoryRoom)))
+            {
+                messageService.ShowError("В МИС не найдена информация о кабинете для проведения лабораторных исследований");
+                return;
+            }
             var values = (object[])parameter;
             int assignmentId = (int)values[0];
             int recordId = (int)values[1];
             int visitId = (int)values[2];
             using (var viewModel = new AnalyseCreateViewModel(patientRecordsService, dialogService, messageService, logService, userService))
-            {
+            {                
                 viewModel.Initialize(this.PersonId, assignmentId, recordId, visitId);
                 var result = await dialogService.ShowDialogAsync(viewModel);
                 if (viewModel.AssignIsSuccessful)

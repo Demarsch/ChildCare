@@ -31,7 +31,7 @@ namespace Shared.PatientRecords.ViewModels
         #region Fields
         private readonly IDocumentService documentService;
         private readonly IFileService fileService;
-        private readonly IRecordService recordService;
+        private readonly IPatientRecordsService recordService;
         private readonly ILog logService;
         private CancellationTokenSource currentLoadingToken;
         public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
@@ -42,7 +42,7 @@ namespace Shared.PatientRecords.ViewModels
 
         #region Constructor
 
-        public RecordDocumentsCollectionViewModel(IDocumentService documentService, IRecordService recordService, IFileService fileService, ILog logService)
+        public RecordDocumentsCollectionViewModel(IDocumentService documentService, IPatientRecordsService recordService, IFileService fileService, ILog logService)
         {
             if (logService == null)
             {
@@ -150,8 +150,8 @@ namespace Shared.PatientRecords.ViewModels
                 if (loadingIsCompleted)
                 {
                     var recordType = (!SpecialValues.IsNewOrNonExisting(this.recordId) ?
-                                                    recordService.GetRecordById(this.recordId).Select(x => x.RecordType).FirstOrDefault() :
-                                                    recordService.GetAssignmentById(this.assignmentId).Select(x => x.RecordType).FirstOrDefault());
+                                                    recordService.GetRecord(this.recordId).Select(x => x.RecordType).FirstOrDefault() :
+                                                    recordService.GetAssignment(this.assignmentId).Select(x => x.RecordType).FirstOrDefault());
                     if (recordType != null)
                         SetVisibilityControlButtons(recordType.Id); 
                 }
@@ -212,7 +212,7 @@ namespace Shared.PatientRecords.ViewModels
                         recordDocument.DocumentId = documentId;
 
                         string exception = string.Empty;
-                        if (recordService.SaveRecordDocument(recordDocument, out exception))
+                        if (documentService.SaveRecordDocument(recordDocument, out exception))
                         {
                             RecordDocuments.Add(new RecordDocumentViewModel(fileService, documentService)
                             {
@@ -276,7 +276,7 @@ namespace Shared.PatientRecords.ViewModels
                 if (selectedFile != null)
                 {
                     string exception = string.Empty;
-                    if (recordService.DeleteRecordDocument(selectedFile.DocumentId, out exception))
+                    if (documentService.DeleteRecordDocument(selectedFile.DocumentId, out exception))
                         RecordDocuments.Remove(selectedFile);
                     else
                         NotificationInteractionRequest.Raise(new Notification() { Title = "Внимание", Content = exception });

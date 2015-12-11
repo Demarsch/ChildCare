@@ -86,7 +86,6 @@ namespace Core.Data
         public virtual DbSet<VisitResult> VisitResults { get; set; }
         public virtual DbSet<Visit> Visits { get; set; }
         public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
-        public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
         public virtual DbSet<RecordDocument> RecordDocuments { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
@@ -110,5 +109,9 @@ namespace Core.Data
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<Eqiupment> Eqiupments { get; set; }
+        public virtual DbSet<EqiupmentType> EqiupmentTypes { get; set; }
+        public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
+        public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
     }
 }

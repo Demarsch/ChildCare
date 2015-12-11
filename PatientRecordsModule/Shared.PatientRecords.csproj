@@ -129,6 +129,7 @@
     <Compile Include="Misc\RecordTypeEditor.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseCreateViewModel.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseParameterViewModel.cs" />
+    <Compile Include="ViewModels\Analyses\AnalyseProtocolViewModel.cs" />
     <Compile Include="ViewModels\BrigadeViewModel.cs" />
     <Compile Include="DTOs\VisitTemplateDTO.cs" />
     <Compile Include="DTOs\AssignmentDTO.cs" />
@@ -145,11 +146,9 @@
     <Compile Include="Services\Implementations\DocumentService.cs" />
     <Compile Include="Services\Implementations\PatientRecordsService.cs" />
     <Compile Include="Services\Implementations\DiagnosService.cs" />
-    <Compile Include="Services\Implementations\RecordService.cs" />
     <Compile Include="Services\Interfaces\IDocumentService.cs" />
     <Compile Include="Services\Interfaces\IPatientRecordsService.cs" />
     <Compile Include="Services\Interfaces\IDiagnosService.cs" />
-    <Compile Include="Services\Interfaces\IRecordService.cs" />
     <Compile Include="ViewModels\Diagnoses\ComplicationsTreeViewModel.cs" />
     <Compile Include="ViewModels\Diagnoses\DiagnosesCollectionViewModel.cs" />
     <Compile Include="ViewModels\Diagnoses\DiagnosLevelViewModel.cs" />
@@ -231,6 +230,10 @@
     <Page Include="Views\Analyses\AnalyseCreateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Analyses\AnalyseProtocolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Diagnoses\DiagnosesView.xaml">
       <SubType>Designer</SubType>

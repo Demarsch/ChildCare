@@ -503,5 +503,31 @@ namespace Shared.PatientRecords.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Id == id), context);
         }
+
+        public void UpdateMKBRecord(int recordId, string mkb)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var record = context.Set<Record>().FirstOrDefault(x => x.Id == recordId);
+                if (record == null) return;
+                record.MKB = mkb;
+                record.Visit.MKB = mkb;
+                context.SaveChanges();
+            }
+        }
+
+        public int SaveDefaultProtocol(DefaultProtocol defaultProtocol)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var saveProtocol = defaultProtocol.Id == SpecialValues.NewId ? new DefaultProtocol() : context.Set<DefaultProtocol>().First(x => x.Id == defaultProtocol.Id);
+                saveProtocol.RecordId = defaultProtocol.RecordId;
+                saveProtocol.Description = defaultProtocol.Description;
+                saveProtocol.Conclusion = defaultProtocol.Conclusion;
+                context.Entry(saveProtocol).State = saveProtocol.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                context.SaveChanges();
+                return saveProtocol.Id;
+            }
+        }
     }
 }

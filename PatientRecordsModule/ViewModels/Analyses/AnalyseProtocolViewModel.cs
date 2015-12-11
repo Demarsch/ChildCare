@@ -18,39 +18,35 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
+namespace Shared.PatientRecords.ViewModels
 {
-    public class DefaultProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator, IDataErrorInfo
+    public class AnalyseProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator, IDataErrorInfo
     {
-        private readonly IDiagnosService diagnosService;
         private readonly IPatientRecordsService recordService;
         private readonly ILog logService;
 
         #region Constructors
-        public DefaultProtocolViewModel(IDiagnosService diagnosService, IPatientRecordsService recordService, ILog logService,
-                                        ICacheService cacheService, IDialogServiceAsync dialogService, IDialogService messageService, IUserService userService)
+        public AnalyseProtocolViewModel(IPatientRecordsService recordService, ILog logService, IDialogServiceAsync dialogService, IDialogService messageService, IUserService userService)
         {
             if (logService == null)
             {
                 throw new ArgumentNullException("logService");
             }
-            if (diagnosService == null)
+            if (recordService == null)
             {
-                throw new ArgumentNullException("diagnosService");
+                throw new ArgumentNullException("recordService");
             }
             if (recordService == null)
             {
                 throw new ArgumentNullException("recordService");
             }
-            this.diagnosService = diagnosService;
             this.recordService = recordService;
             this.logService = logService;
 
             CurrentMode = ProtocolMode.View;
-            DiagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, cacheService, dialogService, messageService, logService, userService);
 
-            currentInstanceChangeTracker = new ChangeTrackerEx<DefaultProtocolViewModel>(this);
-            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, DiagnosesEditor.ChangeTracker);
+            currentInstanceChangeTracker = new ChangeTrackerEx<AnalyseProtocolViewModel>(this);
+            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker);
             changeTracker.PropertyChanged += OnChangesTracked;
             ChangeTracker = changeTracker;
         }
@@ -160,17 +156,12 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
             }
             else if (visitId > 0)
                 LoadVisitData(visitId);
-
-            DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId);
-
             ChangeTracker.IsEnabled = true;
         }
 
         public string CanComplete()
         {
             string resStr = string.Empty;
-            if (!DiagnosesEditor.Diagnoses.Any())
-                resStr = "диагноз услуги";
             return resStr;
         }
 

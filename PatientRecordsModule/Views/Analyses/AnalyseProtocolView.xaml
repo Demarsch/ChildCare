@@ -1,0 +1,53 @@
+﻿<ResourceDictionary x:Class="Shared.PatientRecords.Views.AnalyseProtocolView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels"
+             xmlns:views="clr-namespace:Shared.PatientRecords.Views"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             mc:Ignorable="d">
+    <DataTemplate DataType="{x:Type viewModels:AnalyseProtocolViewModel}">
+        <Grid>
+            <!--Grid for edit protocol-->
+            <GroupBox Header="Протокол" BorderBrush="Black" BorderThickness="1"
+                      Visibility="{Binding IsEditMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">        
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
+                    <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Description, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
+                    <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
+                    <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
+                    <views:DiagnosesView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" DataContext="{Binding DiagnosesEditor}" Margin="2"/>
+                </Grid>
+            </GroupBox>
+        <!--Grid for view protocol-->
+            <Grid Margin="0,10,0,0" Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Анализ:" Margin="5" FontSize="13" FontWeight="Medium" VerticalAlignment="Top"/>
+                <TextBlock Grid.Row="0"  Grid.Column="1" Text="{Binding Description}" HorizontalAlignment="Stretch"/>
+                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Анализ:" Margin="5" FontSize="13" FontWeight="Medium" VerticalAlignment="Top"/>
+                <TextBlock  Grid.Row="1" Grid.Column="1" Text="{Binding Result}" HorizontalAlignment="Stretch"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

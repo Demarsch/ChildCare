@@ -311,6 +311,33 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="512" Nullable="false" />
         </EntityType>
+        <EntityType Name="Eqiupments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EquipmentTypeId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="RoomId" Type="int" />
+          <Property Name="BranchId" Type="int" />
+          <Property Name="CatalogNumber" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="NameToEconomics" Type="varchar" MaxLength="555" Nullable="false" />
+          <Property Name="ProductionDate" Type="datetime" Nullable="false" />
+          <Property Name="StartUseDate" Type="datetime" Nullable="false" />
+          <Property Name="EndUseDate" Type="datetime" Nullable="false" />
+          <Property Name="SertificateNumber" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="InventoryNumber" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="PhotoPath" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="IPAddress" Type="varchar" MaxLength="16" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EqiupmentTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Code" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="ExecutionPlaces">
           <Key>
             <PropertyRef Name="Id" />
@@ -720,6 +747,17 @@
           <Property Name="RecordId" Type="int" />
           <Property Name="DocumentId" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="RecordEquipments">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RecordId" Type="int" Nullable="false" />
+          <Property Name="EquipmentId" Type="int" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" />
+          <Property Name="EndDateTime" Type="datetime" />
+          <Property Name="Duration" Type="float" Nullable="false" />
+        </EntityType>
         <EntityType Name="RecordMembers">
           <Key>
             <PropertyRef Name="Id" />
@@ -793,9 +831,10 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RecordTypeId" Type="int" Nullable="false" />
+          <Property Name="Editor" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="HasDocuments" Type="bit" Nullable="false" />
           <Property Name="HasDICOM" Type="bit" Nullable="false" />
-          <Property Name="Editor" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UseEquipments" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="RecordTypeRolePermissions">
           <Key>
@@ -1580,6 +1619,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Eqiupments_Branches">
+          <End Role="Branches" Type="Self.Branches" Multiplicity="0..1" />
+          <End Role="Eqiupments" Type="Self.Eqiupments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Branches">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Eqiupments">
+              <PropertyRef Name="BranchId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eqiupments_EqiupmentTypes">
+          <End Role="EqiupmentTypes" Type="Self.EqiupmentTypes" Multiplicity="1" />
+          <End Role="Eqiupments" Type="Self.Eqiupments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EqiupmentTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Eqiupments">
+              <PropertyRef Name="EquipmentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eqiupments_Rooms">
+          <End Role="Rooms" Type="Self.Rooms" Multiplicity="0..1" />
+          <End Role="Eqiupments" Type="Self.Eqiupments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Rooms">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Eqiupments">
+              <PropertyRef Name="RoomId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_InsuranceDocuments_InsuranceCompanies">
           <End Role="InsuranceCompanies" Type="Self.InsuranceCompanies" Multiplicity="1" />
           <End Role="InsuranceDocuments" Type="Self.InsuranceDocuments" Multiplicity="*" />
@@ -2306,6 +2381,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RecordEquipments_Eqiupments">
+          <End Role="Eqiupments" Type="Self.Eqiupments" Multiplicity="1" />
+          <End Role="RecordEquipments" Type="Self.RecordEquipments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Eqiupments">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordEquipments">
+              <PropertyRef Name="EquipmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordEquipments_Records">
+          <End Role="Records" Type="Self.Records" Multiplicity="1" />
+          <End Role="RecordEquipments" Type="Self.RecordEquipments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Records">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordEquipments">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RecordMembers_PersonStaffs">
           <End Role="PersonStaffs" Type="Self.PersonStaffs" Multiplicity="1" />
           <End Role="RecordMembers" Type="Self.RecordMembers" Multiplicity="*" />
@@ -2865,6 +2964,8 @@
           <EntitySet Name="DisabilityTypes" EntityType="Self.DisabilityTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Documents" EntityType="Self.Documents" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Educations" EntityType="Self.Educations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Eqiupments" EntityType="Self.Eqiupments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EqiupmentTypes" EntityType="Self.EqiupmentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ExecutionPlaces" EntityType="Self.ExecutionPlaces" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FinancingSources" EntityType="Self.FinancingSources" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HealthGroups" EntityType="Self.HealthGroups" Schema="dbo" store:Type="Tables" />
@@ -2901,6 +3002,7 @@
           <EntitySet Name="RecordContractLimits" EntityType="Self.RecordContractLimits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordContracts" EntityType="Self.RecordContracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordDocuments" EntityType="Self.RecordDocuments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RecordEquipments" EntityType="Self.RecordEquipments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordMembers" EntityType="Self.RecordMembers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RecordPeriods" EntityType="Self.RecordPeriods" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Records" EntityType="Self.Records" Schema="dbo" store:Type="Tables" />
@@ -3105,6 +3207,18 @@
           <AssociationSet Name="FK_Diagnoses_Persons" Association="Self.FK_Diagnoses_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="Diagnoses" EntitySet="Diagnoses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eqiupments_Branches" Association="Self.FK_Eqiupments_Branches">
+            <End Role="Branches" EntitySet="Branches" />
+            <End Role="Eqiupments" EntitySet="Eqiupments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eqiupments_EqiupmentTypes" Association="Self.FK_Eqiupments_EqiupmentTypes">
+            <End Role="EqiupmentTypes" EntitySet="EqiupmentTypes" />
+            <End Role="Eqiupments" EntitySet="Eqiupments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eqiupments_Rooms" Association="Self.FK_Eqiupments_Rooms">
+            <End Role="Rooms" EntitySet="Rooms" />
+            <End Role="Eqiupments" EntitySet="Eqiupments" />
           </AssociationSet>
           <AssociationSet Name="FK_InsuranceDocuments_InsuranceCompanies" Association="Self.FK_InsuranceDocuments_InsuranceCompanies">
             <End Role="InsuranceCompanies" EntitySet="InsuranceCompanies" />
@@ -3345,6 +3459,14 @@
           <AssociationSet Name="FK_RecordDocuments_Records" Association="Self.FK_RecordDocuments_Records">
             <End Role="Records" EntitySet="Records" />
             <End Role="RecordDocuments" EntitySet="RecordDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordEquipments_Eqiupments" Association="Self.FK_RecordEquipments_Eqiupments">
+            <End Role="Eqiupments" EntitySet="Eqiupments" />
+            <End Role="RecordEquipments" EntitySet="RecordEquipments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordEquipments_Records" Association="Self.FK_RecordEquipments_Records">
+            <End Role="Records" EntitySet="Records" />
+            <End Role="RecordEquipments" EntitySet="RecordEquipments" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordMembers_PersonStaffs" Association="Self.FK_RecordMembers_PersonStaffs">
             <End Role="PersonStaffs" EntitySet="PersonStaffs" />
@@ -3925,7 +4047,6 @@
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
-          <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />
           <EntitySet Name="RecordDocuments" EntityType="DataLib.RecordDocument" />
           <EntitySet Name="RecordTypeCosts" EntityType="DataLib.RecordTypeCost" />
           <AssociationSet Name="FK_RecordDocuments_Documents" Association="DataLib.FK_RecordDocuments_Documents">
@@ -4132,10 +4253,6 @@
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeEditors_RecordTypes" Association="DataLib.FK_RecordTypeEditors_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordTypeEditor" EntitySet="RecordTypeEditors" />
-          </AssociationSet>
           <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypes" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
@@ -4209,6 +4326,34 @@
             <End Role="Assignment" EntitySet="Assignments" />
             <End Role="RecordDocument" EntitySet="RecordDocuments" />
           </AssociationSet>
+          <EntitySet Name="Eqiupments" EntityType="DataLib.Eqiupment" />
+          <EntitySet Name="EqiupmentTypes" EntityType="DataLib.EqiupmentType" />
+          <EntitySet Name="RecordEquipments" EntityType="DataLib.RecordEquipment" />
+          <AssociationSet Name="FK_Eqiupments_Branches" Association="DataLib.FK_Eqiupments_Branches">
+            <End Role="Branch" EntitySet="Branches" />
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eqiupments_EqiupmentTypes" Association="DataLib.FK_Eqiupments_EqiupmentTypes">
+            <End Role="EqiupmentType" EntitySet="EqiupmentTypes" />
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Eqiupments_Rooms" Association="DataLib.FK_Eqiupments_Rooms">
+            <End Role="Room" EntitySet="Rooms" />
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordEquipments_Eqiupments" Association="DataLib.FK_RecordEquipments_Eqiupments">
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
+            <End Role="RecordEquipment" EntitySet="RecordEquipments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordEquipments_Records" Association="DataLib.FK_RecordEquipments_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="RecordEquipment" EntitySet="RecordEquipments" />
+          </AssociationSet>
+          <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />
+          <AssociationSet Name="FK_RecordTypeEditors_RecordTypes" Association="DataLib.FK_RecordTypeEditors_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordTypeEditor" EntitySet="RecordTypeEditors" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -4233,6 +4378,7 @@
           <NavigationProperty Name="Branches1" Relationship="DataLib.FK_Branches_Branches" FromRole="Branch" ToRole="Branch1" />
           <NavigationProperty Name="Branch1" Relationship="DataLib.FK_Branches_Branches" FromRole="Branch1" ToRole="Branch" />
           <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Branches" FromRole="Branch" ToRole="PersonStaff" />
+          <NavigationProperty Name="Eqiupments" Relationship="DataLib.FK_Eqiupments_Branches" FromRole="Branch" ToRole="Eqiupment" />
         </EntityType>
         <EntityType Name="CommissionDecision">
           <Key>
@@ -4949,6 +5095,7 @@
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Rooms" FromRole="Room" ToRole="Record" />
           <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Room" ToRole="Assignment" />
+          <NavigationProperty Name="Eqiupments" Relationship="DataLib.FK_Eqiupments_Rooms" FromRole="Room" ToRole="Eqiupment" />
         </EntityType>
         <EntityType Name="ScheduleItem">
           <Key>
@@ -6139,17 +6286,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="RecordTypeEditor">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="HasDocuments" Type="Boolean" Nullable="false" />
-          <Property Name="HasDICOM" Type="Boolean" Nullable="false" />
-          <Property Name="Editor" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordTypeEditor" ToRole="RecordType" />
-        </EntityType>
         <EntityType Name="RecordDocument">
           <Key>
             <PropertyRef Name="Id" />
@@ -6777,6 +6913,7 @@
           <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
           <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Records" FromRole="Record" ToRole="Assignment" />
+          <NavigationProperty Name="RecordEquipments" Relationship="DataLib.FK_RecordEquipments_Records" FromRole="Record" ToRole="RecordEquipment" />
         </EntityType>
         <EntityType Name="RecordType">
           <Key>
@@ -6806,12 +6943,12 @@
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordType" ToRole="RecordContractLimit" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordTypes" FromRole="RecordType" ToRole="Record" />
           <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
-          <NavigationProperty Name="RecordTypeEditors" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordType" ToRole="RecordTypeEditor" />
           <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordType" ToRole="RecordTypeRolePermission" />
           <NavigationProperty Name="RecordTypes1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType" ToRole="RecordType1" />
           <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType1" ToRole="RecordType" />
           <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="RecordType" ToRole="ScheduleItem" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="RecordType" ToRole="Assignment" />
+          <NavigationProperty Name="RecordTypeEditors" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordType" ToRole="RecordTypeEditor" />
         </EntityType>
         <EntityType Name="Unit">
           <Key>
@@ -7061,20 +7198,6 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="RecordTypeCost">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeEditors_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataLib.RecordTypeEditor" Role="RecordTypeEditor" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeEditor">
               <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -7338,6 +7461,137 @@
             </Principal>
             <Dependent Role="RecordDocument">
               <PropertyRef Name="AssignmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Eqiupment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EquipmentTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="RoomId" Type="Int32" />
+          <Property Name="BranchId" Type="Int32" />
+          <Property Name="CatalogNumber" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="NameToEconomics" Type="String" Nullable="false" MaxLength="555" FixedLength="false" Unicode="false" />
+          <Property Name="ProductionDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="StartUseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndUseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="SertificateNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="InventoryNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PhotoPath" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="IPAddress" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Branch" Relationship="DataLib.FK_Eqiupments_Branches" FromRole="Eqiupment" ToRole="Branch" />
+          <NavigationProperty Name="EqiupmentType" Relationship="DataLib.FK_Eqiupments_EqiupmentTypes" FromRole="Eqiupment" ToRole="EqiupmentType" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_Eqiupments_Rooms" FromRole="Eqiupment" ToRole="Room" />
+          <NavigationProperty Name="RecordEquipments" Relationship="DataLib.FK_RecordEquipments_Eqiupments" FromRole="Eqiupment" ToRole="RecordEquipment" />
+        </EntityType>
+        <EntityType Name="EqiupmentType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Code" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Eqiupments" Relationship="DataLib.FK_Eqiupments_EqiupmentTypes" FromRole="EqiupmentType" ToRole="Eqiupment" />
+        </EntityType>
+        <EntityType Name="RecordEquipment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="EquipmentId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <Property Name="Duration" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Eqiupment" Relationship="DataLib.FK_RecordEquipments_Eqiupments" FromRole="RecordEquipment" ToRole="Eqiupment" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordEquipments_Records" FromRole="RecordEquipment" ToRole="Record" />
+        </EntityType>
+        <Association Name="FK_Eqiupments_Branches">
+          <End Type="DataLib.Branch" Role="Branch" Multiplicity="0..1" />
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Branch">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Eqiupment">
+              <PropertyRef Name="BranchId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eqiupments_EqiupmentTypes">
+          <End Type="DataLib.EqiupmentType" Role="EqiupmentType" Multiplicity="1" />
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EqiupmentType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Eqiupment">
+              <PropertyRef Name="EquipmentTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Eqiupments_Rooms">
+          <End Type="DataLib.Room" Role="Room" Multiplicity="0..1" />
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Room">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Eqiupment">
+              <PropertyRef Name="RoomId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordEquipments_Eqiupments">
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="1" />
+          <End Type="DataLib.RecordEquipment" Role="RecordEquipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Eqiupment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordEquipment">
+              <PropertyRef Name="EquipmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordEquipments_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.RecordEquipment" Role="RecordEquipment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordEquipment">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RecordTypeEditor">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Editor" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="HasDocuments" Type="Boolean" Nullable="false" />
+          <Property Name="HasDICOM" Type="Boolean" Nullable="false" />
+          <Property Name="UseEquipments" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordTypeEditor" ToRole="RecordType" />
+        </EntityType>
+        <Association Name="FK_RecordTypeEditors_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.RecordTypeEditor" Role="RecordTypeEditor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeEditor">
+              <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8127,17 +8381,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypeEditors">
-            <EntityTypeMapping TypeName="DataLib.RecordTypeEditor">
-              <MappingFragment StoreEntitySet="RecordTypeEditors">
-                <ScalarProperty Name="Editor" ColumnName="Editor" />
-                <ScalarProperty Name="HasDICOM" ColumnName="HasDICOM" />
-                <ScalarProperty Name="HasDocuments" ColumnName="HasDocuments" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="RecordDocuments">
             <EntityTypeMapping TypeName="DataLib.RecordDocument">
               <MappingFragment StoreEntitySet="RecordDocuments">
@@ -8459,6 +8702,59 @@
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Eqiupments">
+            <EntityTypeMapping TypeName="DataLib.Eqiupment">
+              <MappingFragment StoreEntitySet="Eqiupments">
+                <ScalarProperty Name="IPAddress" ColumnName="IPAddress" />
+                <ScalarProperty Name="PhotoPath" ColumnName="PhotoPath" />
+                <ScalarProperty Name="InventoryNumber" ColumnName="InventoryNumber" />
+                <ScalarProperty Name="SertificateNumber" ColumnName="SertificateNumber" />
+                <ScalarProperty Name="EndUseDate" ColumnName="EndUseDate" />
+                <ScalarProperty Name="StartUseDate" ColumnName="StartUseDate" />
+                <ScalarProperty Name="ProductionDate" ColumnName="ProductionDate" />
+                <ScalarProperty Name="NameToEconomics" ColumnName="NameToEconomics" />
+                <ScalarProperty Name="CatalogNumber" ColumnName="CatalogNumber" />
+                <ScalarProperty Name="BranchId" ColumnName="BranchId" />
+                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="EquipmentTypeId" ColumnName="EquipmentTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EqiupmentTypes">
+            <EntityTypeMapping TypeName="DataLib.EqiupmentType">
+              <MappingFragment StoreEntitySet="EqiupmentTypes">
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordEquipments">
+            <EntityTypeMapping TypeName="DataLib.RecordEquipment">
+              <MappingFragment StoreEntitySet="RecordEquipments">
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="EquipmentId" ColumnName="EquipmentId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordTypeEditors">
+            <EntityTypeMapping TypeName="DataLib.RecordTypeEditor">
+              <MappingFragment StoreEntitySet="RecordTypeEditors">
+                <ScalarProperty Name="UseEquipments" ColumnName="UseEquipments" />
+                <ScalarProperty Name="HasDICOM" ColumnName="HasDICOM" />
+                <ScalarProperty Name="HasDocuments" ColumnName="HasDocuments" />
+                <ScalarProperty Name="Editor" ColumnName="Editor" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

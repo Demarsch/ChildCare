@@ -27,7 +27,7 @@ namespace Shared.PatientRecords.ViewModels
     public class DiagnosesCollectionViewModel : BindableBase, IDisposable, IChangeTrackerMediator
     {
         private readonly IDiagnosService diagnosService;
-        private readonly IRecordService recordService;
+        private readonly IPatientRecordsService recordService;
         private readonly ILog logService;
         private readonly ICacheService cacheService;
         private readonly IDialogServiceAsync dialogService;
@@ -37,7 +37,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly CompositeChangeTracker changeTracker;
         private int diagnosTypeId;
 
-        public DiagnosesCollectionViewModel(IDiagnosService diagnosService, IRecordService recordService, ICacheService cacheService, IDialogServiceAsync dialogService,
+        public DiagnosesCollectionViewModel(IDiagnosService diagnosService, IPatientRecordsService recordService, ICacheService cacheService, IDialogServiceAsync dialogService,
                                             IDialogService messageService, ILog logService, IUserService userService)
         {
             if (logService == null)
@@ -368,7 +368,7 @@ namespace Shared.PatientRecords.ViewModels
             if (Diagnoses.Any() && IsDiagnosValid())
             {
                 string exception = string.Empty;
-                var record = recordService.GetRecordById(recordId).First();
+                var record = recordService.GetRecord(recordId).First();
                 int personDiagnosId = diagnosService.Save(record.PersonId, recordId, diagnosTypeId, 
                                                 Diagnoses.Select(x => new Diagnosis()
                                                 {

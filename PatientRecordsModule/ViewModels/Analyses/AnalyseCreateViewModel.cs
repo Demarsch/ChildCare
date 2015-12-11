@@ -87,6 +87,7 @@ namespace Shared.PatientRecords.ViewModels
 
         internal async void Initialize(int personId, int assignmentId, int recordId, int visitId)
         {
+            FailureMediator.Deactivate();
             this.personId = personId;
             this.assignmentId = assignmentId;
             this.recordId = recordId;
@@ -105,10 +106,7 @@ namespace Shared.PatientRecords.ViewModels
             IDisposableQueryable<Urgently> urgentliesQuery = null;
             IDisposableQueryable<ExecutionPlace> executionPlacesQuery = null;
             try
-            {
-                if (!recordService.GetRooms(DateTime.Now).Any(x => x.Options.Contains(OptionValues.LaboratoryRoom)))
-                    FailureMediator.Activate("В МИС не найдена информация о кабинете для проведения лабораторных исследований. Попробуйте еще раз или обратитесь в службу поддержки", reloadDataSourceCommandWrapper);
-
+            {                
                 bool allowAssignToClosedVisits = userService.HasPermission(PermissionType.ChangeRecordParentVisit);
                 visitQuery = recordService.GetPersonVisitsQuery(this.personId, !allowAssignToClosedVisits);
                 var visitsSelectQuery = await visitQuery.Select(x => new { x.Id, x.BeginDateTime, x.VisitTemplate.Name }).ToArrayAsync();

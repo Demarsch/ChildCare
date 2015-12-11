@@ -107,5 +107,51 @@ namespace Shared.PatientRecords.Services
                 return true;
             }
         }
+
+        public bool SaveRecordDocument(RecordDocument recordDocument, out string exception)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var saveDocument = recordDocument.Id == SpecialValues.NewId ? new RecordDocument() : context.Set<RecordDocument>().First(x => x.Id == recordDocument.Id);
+                saveDocument.AssignmentId = recordDocument.AssignmentId;
+                saveDocument.RecordId = recordDocument.RecordId;
+                saveDocument.DocumentId = recordDocument.DocumentId;
+                context.Entry(saveDocument).State = saveDocument.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                try
+                {
+                    context.SaveChanges();
+                    exception = string.Empty;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    exception = ex.Message;
+                    return false;
+                }
+            }
+        }
+
+        public bool DeleteRecordDocument(int documentId, out string exception)
+        {
+            var context = contextProvider.CreateNewContext();
+            var recordDocument = context.Set<RecordDocument>().FirstOrDefault(x => x.DocumentId == documentId);
+            if (recordDocument != null)
+            {
+                context.Entry(recordDocument).State = EntityState.Deleted;
+                try
+                {
+                    context.SaveChanges();
+                    exception = string.Empty;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    exception = ex.Message;
+                    return false;
+                }
+            }
+            exception = "Ошибка удаления.";
+            return false;
+        }
     }
 }

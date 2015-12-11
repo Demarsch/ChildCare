@@ -119,6 +119,7 @@ namespace Shared.PatientRecords
             container.RegisterType<ComplicationViewModel>(new ContainerControlledLifetimeManager());
             //Analyses
             container.RegisterType<AnalyseCreateViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<AnalyseProtocolViewModel>(new TransientLifetimeManager());
             //RecordTypes Protocols
             container.RegisterType<DefaultProtocolViewModel>(new TransientLifetimeManager());
             container.RegisterType<VisitProtocolViewModel>(new TransientLifetimeManager());
@@ -137,6 +138,7 @@ namespace Shared.PatientRecords
             container.RegisterType<object, DiagnosesView>(viewNameResolver.Resolve<DiagnosesCollectionViewModel>(), new ContainerControlledLifetimeManager());
             //Analyses
             container.RegisterType<object, DiagnosesView>(viewNameResolver.Resolve<DiagnosesCollectionViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, AnalyseProtocolView>(viewNameResolver.Resolve<AnalyseProtocolViewModel>(), new ContainerControlledLifetimeManager());
             //RecordTypes Protocols
             container.RegisterType<object, DefaultProtocolView>(viewNameResolver.Resolve<DefaultProtocolViewModel>(), new ContainerControlledLifetimeManager());
 
@@ -150,7 +152,6 @@ namespace Shared.PatientRecords
         {
             container.RegisterType<IPatientRecordsService, PatientRecordsService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDiagnosService, DiagnosService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordTypeEditorResolver, RecordTypeEditorResolver>(new ContainerControlledLifetimeManager());
             container.RegisterType<IUserService, UserService>(new ContainerControlledLifetimeManager());

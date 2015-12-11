@@ -93,5 +93,9 @@ namespace Shared.PatientRecords.Services
         Task<int> CreateAnalyseAssignmentAsync(Assignment assignment, CancellationToken token);
 
         IDisposableQueryable<RecordType> GetRecordTypeById(int id);
+                
+        void UpdateMKBRecord(int recordId, string mkb);
+
+        int SaveDefaultProtocol(DefaultProtocol defaultProtocol);
     }
 }

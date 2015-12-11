@@ -12,15 +12,19 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class RecordTypeEditor
+    public partial class EqiupmentType
     {
-        public int Id { get; set; }
-        public int RecordTypeId { get; set; }
-        public string Editor { get; set; }
-        public bool HasDocuments { get; set; }
-        public bool HasDICOM { get; set; }
-        public bool UseEquipments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public EqiupmentType()
+        {
+            this.Eqiupments = new HashSet<Eqiupment>();
+        }
     
-        public virtual RecordType RecordType { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Code { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Eqiupment> Eqiupments { get; set; }
     }
 }
