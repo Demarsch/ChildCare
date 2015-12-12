@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
 using Core.Extensions;
 using Core.Misc;
@@ -84,6 +81,8 @@ namespace Core.Wpf.Controls
             return objString.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) != -1;
         }
 
+        private bool isClearingFilters;
+
         private static void OnFilterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var treeViewComboBox = (TreeViewComboBox)d;
@@ -91,8 +90,10 @@ namespace Core.Wpf.Controls
             newValue = newValue.Trim();
             if (newValue.Length < AppConfiguration.UserInputSearchThreshold)
             {
+                treeViewComboBox.isClearingFilters = true;
                 treeViewComboBox.CollapseAndClearFilter(treeViewComboBox.treeView.ItemContainerGenerator);
                 treeViewComboBox.NoFilteredItems = false;
+                treeViewComboBox.isClearingFilters = false;
             }
             else
             {
@@ -292,30 +293,16 @@ namespace Core.Wpf.Controls
         private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (TreeViewComboBox)d;
-            //TODO: hierarchical validation that new item exists in the tree
-            control.SelecteItemInCombobox(e.NewValue);
-            if (control.popup.IsOpen)
-            {
-                control.SelectItemInTreeView(e.NewValue);
-            }
-            else
-            {
-                control.popup.Opened += control.PopupOnOpened;
-            }
+            control.SelectItemInCombobox(e.NewValue);
         }
 
         private void PopupOnOpened(object sender, EventArgs eventArgs)
         {
-            popup.Opened -= PopupOnOpened;
             SelectItemInTreeView(SelectedItem);
         }
 
         private void SelectItemInTreeView(object newSelectedItem)
         {
-            if (newSelectedItem == null)
-            {
-                ((ComboBox)comboBoxPlaceholder.Content).ItemsSource = null;
-            }
             var currentItem = newSelectedItem as IHierarchyItem;
             hierarchyStack = new Stack();
             while (currentItem != null)
@@ -368,24 +355,30 @@ namespace Core.Wpf.Controls
 
         private void TreeViewOnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (ignoreSelectionChanged)
+            if (ignoreSelectionChanged || isClearingFilters)
             {
                 return;
             }
             var selectionPredicate = SelectionPredicate == SelectBottomLevelOnlyPredicate ? SelectBottomLevelOnly : SelectionPredicate;
             if (selectionPredicate(e.NewValue))
             {
-                SelecteItemInCombobox(e.NewValue);
+                SelectedItem = e.NewValue;
                 popup.IsOpen = false;
             }
         }
 
-        private void SelecteItemInCombobox(object newValue)
+        private void SelectItemInCombobox(object newValue)
         {
             var comboBox = (ComboBox)comboBoxPlaceholder.Content;
-            comboBox.ItemsSource = new[] { newValue };
-            comboBox.SelectedIndex = 0;
-            SelectedItem = newValue;
+            if (newValue == null)
+            {
+                comboBox.ItemsSource = null;
+            }
+            else
+            {
+                comboBox.ItemsSource = new[] { newValue };
+                comboBox.SelectedIndex = 0;
+            }
         }
 
         private void ComboBoxOnDropDownOpened(object sender, EventArgs eventArgs)

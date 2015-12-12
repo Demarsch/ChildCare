@@ -125,7 +125,8 @@ namespace OrganizationContractsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonStaff>(context.Set<RecordTypeRolePermission>()
                 .Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.RecordTypeMemberRoleId == memberRoleId)
-                    .SelectMany(x => x.Permission.UserPermissions.SelectMany(a => a.User.Person.PersonStaffs)), context);
+                    .SelectMany(x => x.Permission.PermissionGroupMemberships.SelectMany(y => y.PermissionGroup.UserPermisionGroups)
+                        .SelectMany(z => z.User.Person.PersonStaffs)), context);
         }
 
         public IDisposableQueryable<Visit> GetVisitsByContractId(int contractId)

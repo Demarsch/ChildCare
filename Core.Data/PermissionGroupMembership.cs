@@ -12,16 +12,13 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class UserPermission
+    public partial class PermissionGroupMembership
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
         public int PermissionId { get; set; }
-        public bool IsGranted { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
+        public int GroupId { get; set; }
     
+        public virtual PermissionGroup PermissionGroup { get; set; }
         public virtual Permission Permission { get; set; }
-        public virtual User User { get; set; }
     }
 }

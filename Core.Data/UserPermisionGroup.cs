@@ -12,13 +12,13 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PermissionLink
+    public partial class UserPermisionGroup
     {
         public int Id { get; set; }
-        public Nullable<int> ParentId { get; set; }
-        public int ChildId { get; set; }
+        public int UserId { get; set; }
+        public int PermissionGroupId { get; set; }
     
-        public virtual Permission Permission { get; set; }
-        public virtual Permission Permission1 { get; set; }
+        public virtual PermissionGroup PermissionGroup { get; set; }
+        public virtual User User { get; set; }
     }
 }

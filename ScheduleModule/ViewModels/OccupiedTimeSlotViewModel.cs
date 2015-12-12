@@ -54,9 +54,9 @@ namespace ScheduleModule.ViewModels
             }
             if (IsTemporary)
             {
-                return assignment.AssignUserId == environment.CurrentUser.Id || securityService.HasPrivilege(Privilegies.DeleteTemporaryAssignments);
+                return assignment.AssignUserId == environment.CurrentUser.Id || securityService.HasPermission(Privilegies.DeleteTemporaryAssignments);
             }
-            return securityService.HasPrivilege(Privilegies.EditAssignments);
+            return securityService.HasPermission(Privilegies.EditAssignments);
         }
 
         public DelegateCommand UpdateCommand { get; private set; }
@@ -76,7 +76,7 @@ namespace ScheduleModule.ViewModels
             {
                 return false;
             }
-            return securityService.HasPrivilege(Privilegies.EditAssignments);
+            return securityService.HasPermission(Privilegies.EditAssignments);
         }
 
         public DelegateCommand MoveCommand { get; private set; }

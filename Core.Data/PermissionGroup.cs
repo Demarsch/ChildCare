@@ -12,22 +12,27 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class Permission
+    public partial class PermissionGroup
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Permission()
+        public PermissionGroup()
         {
             this.PermissionGroupMemberships = new HashSet<PermissionGroupMembership>();
-            this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
+            this.PermissionGroups1 = new HashSet<PermissionGroup>();
+            this.UserPermisionGroups = new HashSet<UserPermisionGroup>();
         }
     
         public int Id { get; set; }
+        public Nullable<int> ParentId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
+        public virtual ICollection<PermissionGroup> PermissionGroups1 { get; set; }
+        public virtual PermissionGroup PermissionGroup1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<UserPermisionGroup> UserPermisionGroups { get; set; }
     }
 }

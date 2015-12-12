@@ -20,12 +20,12 @@ namespace Core.Data
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.UserMessages = new HashSet<UserMessage>();
             this.UserMessages1 = new HashSet<UserMessage>();
-            this.UserPermissions = new HashSet<UserPermission>();
             this.Visits = new HashSet<Visit>();
             this.Records = new HashSet<Record>();
             this.Assignments = new HashSet<Assignment>();
             this.Assignments1 = new HashSet<Assignment>();
             this.Assignments2 = new HashSet<Assignment>();
+            this.UserPermisionGroups = new HashSet<UserPermisionGroup>();
         }
     
         public int Id { get; set; }
@@ -42,8 +42,6 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserMessage> UserMessages1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserPermission> UserPermissions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Visit> Visits { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Record> Records { get; set; }
@@ -53,5 +51,7 @@ namespace Core.Data
         public virtual ICollection<Assignment> Assignments1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Assignment> Assignments2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<UserPermisionGroup> UserPermisionGroups { get; set; }
     }
 }

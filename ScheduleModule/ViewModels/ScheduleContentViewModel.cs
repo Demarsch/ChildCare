@@ -860,7 +860,7 @@ namespace ScheduleModule.ViewModels
             {
                 return;
             }
-            if (!securityService.HasPrivilege(Privilegies.EditAssignments))
+            if (!securityService.HasPermission(Privilegies.EditAssignments))
             {
                 return;
             }

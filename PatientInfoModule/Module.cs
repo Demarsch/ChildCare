@@ -26,6 +26,7 @@ namespace PatientInfoModule
 {
     [Module(ModuleName = WellKnownModuleNames.PatientInfoModule, OnDemand = true)]
     [ModuleDependency(WellKnownModuleNames.PatientSearchModule)]
+    [PermissionRequired(Permission.PatientInfoModuleAccess)]
     public class Module : IModule
     {
         private const string PatientIsNotSelected = "Пациент не выбран";

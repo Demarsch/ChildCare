@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using Core.Data;
@@ -35,6 +36,7 @@ namespace Shell
             var connectionEstablished = await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
             if (connectionEstablished)
             {
+                await BuildCacheHierarchyAsync();
                 CustomLoadModules();
             }
         }
@@ -51,13 +53,21 @@ namespace Shell
             base.ConfigureContainer();
             RegisterServices();
             RegisterViews();
-            BuildCacheHierarchyAsync();
         }
 
-        private async void BuildCacheHierarchyAsync()
+        private async Task BuildCacheHierarchyAsync()
         {
             await Task.WhenAll(Task.Factory.StartNew(BuildRecordTypeHierarchy),
-                               Task.Factory.StartNew(BuildRelativeRelationshipHierarchy));
+                               Task.Factory.StartNew(BuildRelativeRelationshipHierarchy),
+                               Task.Factory.StartNew(BuildPermissionGroupHierarchy));
+        }
+
+        private void BuildPermissionGroupHierarchy()
+        {
+            var cacheService = Container.Resolve<ICacheService>();
+            cacheService.GetItems<Permission>();
+            cacheService.GetItems<PermissionGroup>();
+            cacheService.GetItems<PermissionGroupMembership>();
         }
 
         private void BuildRelativeRelationshipHierarchy()
@@ -108,10 +118,25 @@ namespace Shell
         {
             base.InitializeModules();
             var moduleManager = Container.Resolve<IModuleManager>();
-            foreach (var module in ModuleCatalog.Modules)
+            foreach (var module in ModuleCatalog.Modules.Where(HasPermissionForModule))
             {
                 moduleManager.LoadModule(module.ModuleName);
             }
+        }
+
+        private bool HasPermissionForModule(ModuleInfo moduleInfo)
+        {
+            var attribute = Type.GetType(moduleInfo.ModuleType).GetCustomAttribute<PermissionRequiredAttribute>();
+            if (attribute == null)
+            {
+                return false;
+            }
+            var requiredPermission = attribute.PermissionName;
+            if (string.IsNullOrEmpty(requiredPermission))
+            {
+                return true;
+            }
+            return Container.Resolve<ISecurityService>().HasPermission(requiredPermission);
         }
 
         private void RegisterServices()

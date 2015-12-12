@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using Core.Misc;
+
 namespace Core.Data
 {
     using System;

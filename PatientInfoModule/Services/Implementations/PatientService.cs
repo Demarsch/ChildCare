@@ -612,7 +612,10 @@ namespace PatientInfoModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonStaff>(context.Set<RecordTypeRolePermission>()
                                                                .Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.RecordTypeMemberRoleId == memberRoleId)
-                                                               .SelectMany(x => x.Permission.UserPermissions.SelectMany(a => a.User.Person.PersonStaffs)), context);
+                                                               .SelectMany(x => x.Permission.PermissionGroupMemberships)
+                                                               .Select(x => x.PermissionGroup)
+                                                               .SelectMany(x => x.UserPermisionGroups)
+                                                               .SelectMany(x => x.User.Person.PersonStaffs), context);
         }
 
         public IDisposableQueryable<PersonOuterDocument> GetPersonOuterDocuments(int personId)

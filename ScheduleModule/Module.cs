@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using Core.Data;
 using Core.Wpf.Services;
 using log4net;
 using Microsoft.Practices.Unity;
@@ -14,6 +15,7 @@ namespace ScheduleModule
 {
     [Module(ModuleName = WellKnownModuleNames.ScheduleModule, OnDemand = true)]
     [ModuleDependency(WellKnownModuleNames.PatientSearchModule)]
+    [PermissionRequired(Permission.ScheduleModuleAccess)]
     public class Module : IModule
     {
         private readonly IUnityContainer container;

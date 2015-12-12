@@ -53,8 +53,6 @@ namespace Core.Data
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<OuterDocumentType> OuterDocumentTypes { get; set; }
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
-        public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
-        public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<PersonAddress> PersonAddresses { get; set; }
         public virtual DbSet<PersonDisability> PersonDisabilities { get; set; }
         public virtual DbSet<PersonEducation> PersonEducations { get; set; }
@@ -80,7 +78,6 @@ namespace Core.Data
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
-        public virtual DbSet<UserPermission> UserPermissions { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
         public virtual DbSet<VisitResult> VisitResults { get; set; }
@@ -113,5 +110,9 @@ namespace Core.Data
         public virtual DbSet<EqiupmentType> EqiupmentTypes { get; set; }
         public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
+        public virtual DbSet<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
+        public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; }
+        public virtual DbSet<UserPermisionGroup> UserPermisionGroups { get; set; }
     }
 }

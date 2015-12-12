@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Data;
 using Core.Data.Services;
 using Core.Wpf.Services;
 using log4net;
@@ -14,6 +15,7 @@ using Shell.Shared;
 namespace OrganizationContracts
 {
     [Module(ModuleName = WellKnownModuleNames.OrganizationContractsModule, OnDemand = true)]
+    [PermissionRequired(Permission.OrganizationContractsModuleAccess)]
     public class Module : IModule
     {
         #region Fields

@@ -1,57 +1,72 @@
-﻿using Core.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Core.Data;
 using Core.Data.Misc;
+using Core.Data.Services;
+using Core.Extensions;
+using Core.Misc;
+using Core.Services;
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
+using Prism.Commands;
+using Prism.Events;
 using Shared.PatientRecords.DTO;
 using Shared.PatientRecords.Misc;
 using Shared.PatientRecords.Services;
-using Shared.PatientRecords.ViewModels;
-using Prism.Commands;
-using Prism.Events;
-using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Data.Entity;
-using Core.Extensions;
-using Core.Wpf.Services;
-using Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels;
-using Core.Misc;
-using System.ComponentModel;
-using Core.Data.Services;
-using Core.Data.Classes;
 
 namespace Shared.PatientRecords.ViewModels
 {
     public class PersonRecordEditorViewModel : TrackableBindableBase, IDisposable, IDataErrorInfo, IChangeTrackerMediator
     {
         #region Fields
+
         private readonly IPatientRecordsService patientRecordsService;
+
         private readonly ILog logService;
+
         private readonly IRecordTypeEditorResolver recordTypeEditorResolver;
+
         private readonly IUserService userService;
 
         private readonly IEventAggregator eventAggregator;
 
+        private readonly ISecurityService securityService;
+
         private readonly CommandWrapper reloadRecordBrigadeCommandWrapper;
+
         private readonly CommandWrapper reloadDataSourceCommandWrapper;
+
         private readonly CommandWrapper reloadRecordCommonDataCommandWrapper;
+
         private readonly CommandWrapper saveChangesCommandWrapper;
+
         private CancellationTokenSource currentOperationToken;
 
-        private int recordTypeId = 0;
+        private int recordTypeId;
+
         private DateTime onDate = DateTime.MaxValue;
-        private int personId = 0;
+
+        private int personId;
+
         #endregion
 
         #region Constructors
-        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService, IRecordTypeEditorResolver recordTypeEditorResolver, IUserService userService, ILog logSevice, IEventAggregator eventAggregator, 
+
+        public PersonRecordEditorViewModel(IPatientRecordsService patientRecordsService,
+                                           IRecordTypeEditorResolver recordTypeEditorResolver,
+                                           IUserService userService,
+                                           ILog logSevice,
+                                           IEventAggregator eventAggregator,
+                                           ISecurityService securityService,
                                            RecordDocumentsCollectionViewModel documentsViewer)
         {
             if (patientRecordsService == null)
@@ -82,11 +97,16 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("userService");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
             this.userService = userService;
             this.recordTypeEditorResolver = recordTypeEditorResolver;
             this.patientRecordsService = patientRecordsService;
-            this.logService = logSevice;
+            logService = logSevice;
             this.eventAggregator = eventAggregator;
+            this.securityService = securityService;
 
             this.documentsViewer = documentsViewer;
             this.documentsViewer.PropertyChanged += documentsViewer_PropertyChanged;
@@ -95,8 +115,8 @@ namespace Shared.PatientRecords.ViewModels
             //ChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
             //ChangeTracker.PropertyChanged += OnChangesTracked;
 
-            reloadRecordBrigadeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadBrigadeAsync(recordTypeId, RecordId, onDate)) };
-            reloadRecordCommonDataCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadProtocolCommonData(VisitId, AssignmentId, RecordId)) };
+            reloadRecordBrigadeCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadBrigadeAsync(recordTypeId, RecordId, onDate)) };
+            reloadRecordCommonDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadProtocolCommonData(VisitId, AssignmentId, RecordId)) };
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadDataSources(onDate)), CommandName = "Повторить" };
             saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveCommonData()), CommandName = "Повторить" };
 
@@ -118,10 +138,10 @@ namespace Shared.PatientRecords.ViewModels
             SubscribeToEvents();
 
             currentInstanceChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
-
         }
 
         private readonly IChangeTracker currentInstanceChangeTracker;
+
         public IChangeTracker ChangeTracker { get; private set; }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
@@ -149,53 +169,48 @@ namespace Shared.PatientRecords.ViewModels
         public ObservableCollectionEx<BrigadeViewModel> Brigade { get; set; }
 
         private string recordTypeName;
+
         public string RecordTypeName
         {
             get { return recordTypeName; }
-            set
-            {
-                SetProperty(ref recordTypeName, value);
-            }
+            set { SetProperty(ref recordTypeName, value); }
         }
 
         private int visitId;
+
         public int VisitId
         {
             get { return visitId; }
-            set
-            {
-                SetProperty(ref visitId, value);
-            }
+            set { SetProperty(ref visitId, value); }
         }
 
         private int assignmentId;
+
         public int AssignmentId
         {
             get { return assignmentId; }
-            set
-            {
-                SetProperty(ref assignmentId, value);
-            }
+            set { SetProperty(ref assignmentId, value); }
         }
 
         private int recordId;
+
         public int RecordId
         {
             get { return recordId; }
-            set
-            {
-                SetProperty(ref recordId, value);
-            }
+            set { SetProperty(ref recordId, value); }
         }
 
         private IRecordTypeProtocol protocolEditor;
+
         public IRecordTypeProtocol ProtocolEditor
         {
             get { return protocolEditor; }
             set
             {
                 if (ProtocolEditor != null)
+                {
                     ProtocolEditor.PropertyChanged -= ProtocolEditor_PropertyChanged;
+                }
                 SetProperty(ref protocolEditor, value);
                 if (ProtocolEditor != null)
                 {
@@ -211,18 +226,12 @@ namespace Shared.PatientRecords.ViewModels
 
         public bool IsViewModeInCurrentProtocolEditor
         {
-            get
-            {
-                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View) && !IsVisit;
-            }
+            get { return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View) && !IsVisit; }
         }
 
         public bool IsEditModeInCurrentProtocolEditor
         {
-            get
-            {
-                return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.Edit) && !IsVisit;
-            }
+            get { return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.Edit) && !IsVisit; }
         }
 
         public ObservableCollectionEx<CommonIdName> Urgentlies { get; set; }
@@ -234,6 +243,7 @@ namespace Shared.PatientRecords.ViewModels
         public ObservableCollectionEx<CommonIdName> Rooms { get; set; }
 
         private int selectedPeriodId;
+
         public int SelectedPeriodId
         {
             get { return selectedPeriodId; }
@@ -241,6 +251,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private int selectedUrgentlyId;
+
         public int SelectedUrgentlyId
         {
             get { return selectedUrgentlyId; }
@@ -248,6 +259,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private DateTime? beginDateTime;
+
         public DateTime? BeginDateTime
         {
             get { return beginDateTime; }
@@ -255,6 +267,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private DateTime? endDateTime;
+
         public DateTime? EndDateTime
         {
             get { return endDateTime; }
@@ -262,6 +275,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private int? roomId;
+
         public int? RoomId
         {
             get { return roomId; }
@@ -269,6 +283,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private int? parentVisitId;
+
         public int? ParentVisitId
         {
             get { return parentVisitId; }
@@ -277,15 +292,16 @@ namespace Shared.PatientRecords.ViewModels
 
         public bool IsVisibleVisits
         {
-            get { return userService.HasPermission(PermissionType.ChangeRecordParentVisit) || ParentVisitId.ToInt() < 1; }
+            get { return securityService.HasPermission(Permission.ChangeRecordParentVisit) || ParentVisitId.ToInt() < 1; }
         }
 
         public bool IsVisibleRooms
         {
-            get { return userService.HasPermission(PermissionType.ChangeRecordRoom) || RoomId.ToInt() < 1; }
+            get { return securityService.HasPermission(Permission.ChangeRecordRoom) || RoomId.ToInt() < 1; }
         }
 
         private bool isRecordCanBeCompleted;
+
         public bool IsRecordCanBeCompleted
         {
             get { return isRecordCanBeCompleted; }
@@ -299,6 +315,7 @@ namespace Shared.PatientRecords.ViewModels
         #region ViewMode Properties
 
         private bool showProtocol;
+
         public bool ShowProtocol
         {
             get { return (RecordId > 0 || IsEditModeInCurrentProtocolEditor); }
@@ -306,6 +323,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitView;
+
         public string VisitView
         {
             get { return visitView; }
@@ -313,6 +331,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string roomView;
+
         public string RoomView
         {
             get { return roomView; }
@@ -320,6 +339,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string periodView;
+
         public string PeriodView
         {
             get { return periodView; }
@@ -327,6 +347,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string urgentlyView;
+
         public string UrgentlyView
         {
             get { return urgentlyView; }
@@ -334,6 +355,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string beginDateView;
+
         public string BeginDateView
         {
             get { return beginDateView; }
@@ -341,6 +363,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string endDateView;
+
         public string EndDateView
         {
             get { return endDateView; }
@@ -348,6 +371,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string parametersView;
+
         public string ParametersView
         {
             get { return parametersView; }
@@ -355,6 +379,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string detailsView;
+
         public string DetailsView
         {
             get { return detailsView; }
@@ -362,6 +387,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string brigadeView;
+
         public string BrigadeView
         {
             get { return brigadeView; }
@@ -369,6 +395,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool isAnalyse;
+
         public bool IsAnalyse
         {
             get { return isAnalyse; }
@@ -376,6 +403,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool isAssignment;
+
         public bool IsAssignment
         {
             get { return isAssignment; }
@@ -383,6 +411,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool isVisit;
+
         public bool IsVisit
         {
             get { return isVisit; }
@@ -390,6 +419,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitBeginDateView;
+
         public string VisitBeginDateView
         {
             get { return visitBeginDateView; }
@@ -397,6 +427,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string executionPlaceView;
+
         public string ExecutionPlaceView
         {
             get { return executionPlaceView; }
@@ -404,6 +435,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string contractView;
+
         public string ContractView
         {
             get { return contractView; }
@@ -411,6 +443,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string finSourceView;
+
         public string FinSourceView
         {
             get { return finSourceView; }
@@ -418,6 +451,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitOKATOView;
+
         public string VisitOKATOView
         {
             get { return visitOKATOView; }
@@ -425,6 +459,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitUrgentlyView;
+
         public string VisitUrgentlyView
         {
             get { return visitUrgentlyView; }
@@ -432,6 +467,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitMKBView;
+
         public string VisitMKBView
         {
             get { return visitMKBView; }
@@ -439,6 +475,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string sentLPUView;
+
         public string SentLPUView
         {
             get { return sentLPUView; }
@@ -446,6 +483,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitResultView;
+
         public string VisitResultView
         {
             get { return visitResultView; }
@@ -453,6 +491,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitOutcomeView;
+
         public string VisitOutcomeView
         {
             get { return visitOutcomeView; }
@@ -460,16 +499,19 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private string visitNoteView;
+
         public string VisitNoteView
         {
             get { return visitNoteView; }
             set { SetProperty(ref visitNoteView, value); }
         }
+
         #endregion
 
         #region Properties RecordDocuments
 
         private RecordDocumentsCollectionViewModel documentsViewer;
+
         public RecordDocumentsCollectionViewModel DocumentsViewer
         {
             get { return documentsViewer; }
@@ -477,6 +519,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool allowDocuments;
+
         public bool AllowDocuments
         {
             get { return DocumentsViewer.AllowDocuments; }
@@ -484,6 +527,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool allowDICOM;
+
         public bool AllowDICOM
         {
             get { return DocumentsViewer.AllowDICOM; }
@@ -491,6 +535,7 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool canAttachDICOM;
+
         public bool CanAttachDICOM
         {
             get { return DocumentsViewer.CanAttachDICOM; }
@@ -498,18 +543,18 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool canDetachDICOM;
+
         public bool CanDetachDICOM
         {
             get { return DocumentsViewer.CanDetachDICOM; }
             set { SetProperty(ref canDetachDICOM, value); }
         }
+
         #endregion
 
         #endregion
 
         #region Methods
-
-
 
         public void Dispose()
         {
@@ -563,19 +608,19 @@ namespace Shared.PatientRecords.ViewModels
             {
                 urgentliesQuery = patientRecordsService.GetActualUrgentlies(onDate);
 
-                var urgentlies = await urgentliesQuery.Select(x => new CommonIdName()
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                }).ToListAsync();
+                var urgentlies = await urgentliesQuery.Select(x => new CommonIdName
+                                                                   {
+                                                                       Id = x.Id,
+                                                                       Name = x.Name
+                                                                   }).ToListAsync();
                 Urgentlies.AddRange(urgentlies);
 
                 roomsQuery = patientRecordsService.GetRooms(onDate);
-                var rooms = await roomsQuery.Select(x => new CommonIdName()
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                }).ToListAsync();
+                var rooms = await roomsQuery.Select(x => new CommonIdName
+                                                         {
+                                                             Id = x.Id,
+                                                             Name = x.Name
+                                                         }).ToListAsync();
                 Rooms.AddRange(rooms);
 
                 logService.InfoFormat("Data sources for common record editor are successfully loaded");
@@ -607,7 +652,10 @@ namespace Shared.PatientRecords.ViewModels
         {
             FailureMediator.Deactivate();
             Brigade.Clear();
-            if (recordId < 1 && recordTypeId < 1) return;
+            if (recordId < 1 && recordTypeId < 1)
+            {
+                return;
+            }
             this.recordTypeId = recordTypeId;
             var loadingIsCompleted = false;
             currentOperationToken = new CancellationTokenSource();
@@ -621,46 +669,101 @@ namespace Shared.PatientRecords.ViewModels
                 recordMembers = patientRecordsService.GetRecordMembers(recordId);
                 recordTypeRolePermission = patientRecordsService.GetRecordTypeMembers(recordTypeId, onDate);
                 var recordMembersTask = recordMembers.Select(x => new
-                {
-                    PersonName = x.PersonStaff.Person.ShortName,
-                    PersonId = x.PersonStaff.PersonId,
-                    StaffName = x.PersonStaff.Staff.ShortName,
-                    x.RecordTypeRolePermissionId,
-                    x.PersonStaffId,
-                    RecordMemberId = x.Id,
-                    x.RecordId
-                }).ToListAsync(token);
+                                                                  {
+                                                                      PersonName = x.PersonStaff.Person.ShortName,
+                                                                      x.PersonStaff.PersonId,
+                                                                      StaffName = x.PersonStaff.Staff.ShortName,
+                                                                      x.RecordTypeRolePermissionId,
+                                                                      x.PersonStaffId,
+                                                                      RecordMemberId = x.Id,
+                                                                      x.RecordId
+                                                                  }).ToListAsync(token);
                 var recordTypeMembersTask = recordTypeRolePermission.Select(x => new
-                {
-                    RoleName = x.RecordTypeRole.Name,
-                    RoleId = x.RecordTypeMemberRoleId,
-                    x.IsRequired,
-                    PermissionName = x.Permission.Name,
-                    PermissionId = x.PermissionId,
-                    RecordTypeRolePermissionId = x.Id
-                }).ToListAsync(token);
+                                                                                 {
+                                                                                     RoleName = x.RecordTypeRole.Name,
+                                                                                     RoleId = x.RecordTypeMemberRoleId,
+                                                                                     x.IsRequired,
+                                                                                     PermissionName = x.Permission.Name,
+                                                                                     x.PermissionId,
+                                                                                     RecordTypeRolePermissionId = x.Id
+                                                                                 }).ToListAsync(token);
                 await Task.WhenAll(recordMembersTask, recordTypeMembersTask);
                 var recordMembersresult = recordMembersTask.Result;
-                Brigade.AddRange(recordTypeMembersTask.Result.Select(x => new BrigadeViewModel(patientRecordsService, logService, new BrigadeDTO()
-                {
-                    IsRequired = x.IsRequired,
-                    RoleName = x.RoleName,
-                    RoleId = x.RoleId,
-                    PermissionId = x.PermissionId,
-                    RecordTypeRolePermissionId = x.RecordTypeRolePermissionId,
-                    RecordId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                       recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).RecordId : 0,
-                    RecordMemberId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).RecordMemberId : 0,
-                    PersonName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonName : string.Empty,
-                    StaffName = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).StaffName : string.Empty,
-                    PersonStaffId = recordMembersresult.Any(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId) ?
-                        recordMembersresult.FirstOrDefault(y => y.RecordTypeRolePermissionId == x.RecordTypeRolePermissionId).PersonStaffId : 0,
-                    RecordTypeId = recordTypeId,
-                    OnDate = onDate
-                })).ToList());
+                Brigade.AddRange(recordTypeMembersTask.Result.Select(x => new BrigadeViewModel(patientRecordsService, logService, new BrigadeDTO
+                                                                                                                                  {
+                                                                                                                                      IsRequired = x.IsRequired,
+                                                                                                                                      RoleName = x.RoleName,
+                                                                                                                                      RoleId = x.RoleId,
+                                                                                                                                      PermissionId = x.PermissionId,
+                                                                                                                                      RecordTypeRolePermissionId = x.RecordTypeRolePermissionId,
+                                                                                                                                      RecordId =
+                                                                                                                                          recordMembersresult.Any(
+                                                                                                                                                                  y =>
+                                                                                                                                                                  y.RecordTypeRolePermissionId ==
+                                                                                                                                                                  x.RecordTypeRolePermissionId)
+                                                                                                                                              ? recordMembersresult.FirstOrDefault(
+                                                                                                                                                                                   y =>
+                                                                                                                                                                                   y
+                                                                                                                                                                                       .RecordTypeRolePermissionId ==
+                                                                                                                                                                                   x
+                                                                                                                                                                                       .RecordTypeRolePermissionId)
+                                                                                                                                                                   .RecordId
+                                                                                                                                              : 0,
+                                                                                                                                      RecordMemberId =
+                                                                                                                                          recordMembersresult.Any(
+                                                                                                                                                                  y =>
+                                                                                                                                                                  y.RecordTypeRolePermissionId ==
+                                                                                                                                                                  x.RecordTypeRolePermissionId)
+                                                                                                                                              ? recordMembersresult.FirstOrDefault(
+                                                                                                                                                                                   y =>
+                                                                                                                                                                                   y
+                                                                                                                                                                                       .RecordTypeRolePermissionId ==
+                                                                                                                                                                                   x
+                                                                                                                                                                                       .RecordTypeRolePermissionId)
+                                                                                                                                                                   .RecordMemberId
+                                                                                                                                              : 0,
+                                                                                                                                      PersonName =
+                                                                                                                                          recordMembersresult.Any(
+                                                                                                                                                                  y =>
+                                                                                                                                                                  y.RecordTypeRolePermissionId ==
+                                                                                                                                                                  x.RecordTypeRolePermissionId)
+                                                                                                                                              ? recordMembersresult.FirstOrDefault(
+                                                                                                                                                                                   y =>
+                                                                                                                                                                                   y
+                                                                                                                                                                                       .RecordTypeRolePermissionId ==
+                                                                                                                                                                                   x
+                                                                                                                                                                                       .RecordTypeRolePermissionId)
+                                                                                                                                                                   .PersonName
+                                                                                                                                              : string.Empty,
+                                                                                                                                      StaffName =
+                                                                                                                                          recordMembersresult.Any(
+                                                                                                                                                                  y =>
+                                                                                                                                                                  y.RecordTypeRolePermissionId ==
+                                                                                                                                                                  x.RecordTypeRolePermissionId)
+                                                                                                                                              ? recordMembersresult.FirstOrDefault(
+                                                                                                                                                                                   y =>
+                                                                                                                                                                                   y
+                                                                                                                                                                                       .RecordTypeRolePermissionId ==
+                                                                                                                                                                                   x
+                                                                                                                                                                                       .RecordTypeRolePermissionId)
+                                                                                                                                                                   .StaffName
+                                                                                                                                              : string.Empty,
+                                                                                                                                      PersonStaffId =
+                                                                                                                                          recordMembersresult.Any(
+                                                                                                                                                                  y =>
+                                                                                                                                                                  y.RecordTypeRolePermissionId ==
+                                                                                                                                                                  x.RecordTypeRolePermissionId)
+                                                                                                                                              ? recordMembersresult.FirstOrDefault(
+                                                                                                                                                                                   y =>
+                                                                                                                                                                                   y
+                                                                                                                                                                                       .RecordTypeRolePermissionId ==
+                                                                                                                                                                                   x
+                                                                                                                                                                                       .RecordTypeRolePermissionId)
+                                                                                                                                                                   .PersonStaffId
+                                                                                                                                              : 0,
+                                                                                                                                      RecordTypeId = recordTypeId,
+                                                                                                                                      OnDate = onDate
+                                                                                                                                  })).ToList());
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -712,55 +815,59 @@ namespace Shared.PatientRecords.ViewModels
             var token = currentOperationToken.Token;
             BusyMediator.Activate("Загрузка общих данных протокола...");
             logService.InfoFormat("Loading common record data...");
-            IDisposableQueryable<Record> recordQuery = patientRecordsService.GetRecord(recordId);
-            IDisposableQueryable<Assignment> assignmentQuery = patientRecordsService.GetAssignment(assignmentId);
+            var recordQuery = patientRecordsService.GetRecord(recordId);
+            var assignmentQuery = patientRecordsService.GetAssignment(assignmentId);
             IDisposableQueryable<RecordPeriod> recordPeriodsQuery = null;
             IDisposableQueryable<Visit> recordVisitsQuery = null;
-            DateTime curDate = DateTime.Now;
+            var curDate = DateTime.Now;
             try
             {
-                CommonRecordAssignmentDTO data = new CommonRecordAssignmentDTO();
+                var data = new CommonRecordAssignmentDTO();
                 IsVisit = false;
                 if (recordId > 0)
                 {
-                    data = await recordQuery.Select(x => new CommonRecordAssignmentDTO()
-                        {
-                            ParentVisitId = x.VisitId,
-                            RecordTypeId = x.RecordTypeId,
-                            PersonId = x.PersonId,
-                            ExecutionPlaceId = x.Visit.ExecutionPlaceId,
-                            RecordPeriodId = x.RecordPeriodId,
-                            ActualDateTime = x.ActualDateTime,
-                            BeginDateTime = x.BeginDateTime,
-                            EndDateTime = x.EndDateTime,
-                            UrgentlyId = x.UrgentlyId,
-                            RoomId = x.RoomId,
-                            RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty),
-                            IsAnalyse = x.RecordType.IsAnalyse
-                        }).FirstOrDefaultAsync(token);
+                    data = await recordQuery.Select(x => new CommonRecordAssignmentDTO
+                                                         {
+                                                             ParentVisitId = x.VisitId,
+                                                             RecordTypeId = x.RecordTypeId,
+                                                             PersonId = x.PersonId,
+                                                             ExecutionPlaceId = x.Visit.ExecutionPlaceId,
+                                                             RecordPeriodId = x.RecordPeriodId,
+                                                             ActualDateTime = x.ActualDateTime,
+                                                             BeginDateTime = x.BeginDateTime,
+                                                             EndDateTime = x.EndDateTime,
+                                                             UrgentlyId = x.UrgentlyId,
+                                                             RoomId = x.RoomId,
+                                                             RecordTypeName =
+                                                                 x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty),
+                                                             IsAnalyse = x.RecordType.IsAnalyse
+                                                         }).FirstOrDefaultAsync(token);
                     LoadBrigadeAsync(data.RecordTypeId, recordId, data.ActualDateTime);
                     var curSID = userService.GetCurrentUserSID();
-                    var MemberCanComplete = await patientRecordsService.GetRecordMembers(recordId).Where(x => x.RecordTypeRolePermission.IsSign && x.PersonStaff.Person.Users.Any(y => y.SID == curSID)).AnyAsync();
+                    var MemberCanComplete =
+                        await patientRecordsService.GetRecordMembers(recordId).Where(x => x.RecordTypeRolePermission.IsSign && x.PersonStaff.Person.Users.Any(y => y.SID == curSID)).AnyAsync();
                     IsRecordCanBeCompleted = MemberCanComplete;
                 }
                 else if (assignmentId > 0)
                 {
-                    data = await assignmentQuery.Select(x => new CommonRecordAssignmentDTO()
-                    {
-                        ParentVisitId = x.VisitId,
-                        RecordTypeId = x.RecordTypeId,
-                        PersonId = x.PersonId,
-                        ExecutionPlaceId = x.ExecutionPlaceId,// x.VisitId.HasValue ? x.Visit.ExecutionPlaceId
-                        BeginDateTime = x.AssignDateTime,
-                        ActualDateTime = x.AssignDateTime,
-                        UrgentlyId = x.UrgentlyId,
-                        RoomId = x.RoomId,
-                        Parameters = x.ParametersOptions,
-                        Details = x.Note,
-                        RecordTypeName = x.RecordType.Name + (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty),
-                        IsAnalyse = x.RecordType.IsAnalyse,
-                        IsAssignment = true
-                    }).FirstOrDefaultAsync(token);
+                    data = await assignmentQuery.Select(x => new CommonRecordAssignmentDTO
+                                                             {
+                                                                 ParentVisitId = x.VisitId,
+                                                                 RecordTypeId = x.RecordTypeId,
+                                                                 PersonId = x.PersonId,
+                                                                 ExecutionPlaceId = x.ExecutionPlaceId, // x.VisitId.HasValue ? x.Visit.ExecutionPlaceId
+                                                                 BeginDateTime = x.AssignDateTime,
+                                                                 ActualDateTime = x.AssignDateTime,
+                                                                 UrgentlyId = x.UrgentlyId,
+                                                                 RoomId = x.RoomId,
+                                                                 Parameters = x.ParametersOptions,
+                                                                 Details = x.Note,
+                                                                 RecordTypeName =
+                                                                     x.RecordType.Name +
+                                                                     (x.RecordType.Code != null && x.RecordType.Code != string.Empty ? " (" + x.RecordType.Code + ")" : string.Empty),
+                                                                 IsAnalyse = x.RecordType.IsAnalyse,
+                                                                 IsAssignment = true
+                                                             }).FirstOrDefaultAsync(token);
                     LoadBrigadeAsync(data.RecordTypeId, 0, data.ActualDateTime);
                 }
                 else if (visitId > 0)
@@ -770,19 +877,19 @@ namespace Shared.PatientRecords.ViewModels
                 }
                 //Load recordPeriods
                 recordPeriodsQuery = patientRecordsService.GetActualRecordPeriods(data.ExecutionPlaceId, data.BeginDateTime);
-                var recordPeriods = await recordPeriodsQuery.Select(x => new CommonIdName() { Id = x.Id, Name = x.Name }).ToArrayAsync();
+                var recordPeriods = await recordPeriodsQuery.Select(x => new CommonIdName { Id = x.Id, Name = x.Name }).ToArrayAsync(token);
                 RecordPeriods.AddRange(recordPeriods);
                 //Load Person Visits
-                recordVisitsQuery = patientRecordsService.GetPersonVisitsQuery(data.PersonId, !userService.HasPermission(PermissionType.ChangeRecordParentVisit));
-                var visits = await recordVisitsQuery.Select(x => new { x.Id, x.BeginDateTime, x.EndDateTime, x.VisitTemplate.Name }).ToArrayAsync();
-                ParentVisits.AddRange(visits.Select(x => new CommonIdName()
-                {
-                    Id = x.Id,
-                    Name = x.Name + " (" + x.BeginDateTime.ToString("dd.MM.yyyy HH:mm") + " - " +
-                        (x.EndDateTime.HasValue ? x.EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : "...") + ")"
-                }));
+                recordVisitsQuery = patientRecordsService.GetPersonVisitsQuery(data.PersonId, !securityService.HasPermission(Permission.ChangeRecordParentVisit));
+                var visits = await recordVisitsQuery.Select(x => new { x.Id, x.BeginDateTime, x.EndDateTime, x.VisitTemplate.Name }).ToArrayAsync(token);
+                ParentVisits.AddRange(visits.Select(x => new CommonIdName
+                                                         {
+                                                             Id = x.Id,
+                                                             Name = x.Name + " (" + x.BeginDateTime.ToString("dd.MM.yyyy HH:mm") + " - " +
+                                                                    (x.EndDateTime.HasValue ? x.EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : "...") + ")"
+                                                         }));
 
-                string defValue = " - ";
+                var defValue = " - ";
                 if (IsVisit)
                 {
                     var selectedVisit = patientRecordsService.GetVisit(ParentVisitId.Value).First();
@@ -821,8 +928,9 @@ namespace Shared.PatientRecords.ViewModels
                     BeginDateView = BeginDateTime.HasValue ? BeginDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
                     EndDateView = EndDateTime.HasValue ? EndDateTime.Value.ToString("dd.MM.yyyy HH:mm") : defValue;
                     DetailsView = !string.IsNullOrEmpty(data.Details) ? data.Details : defValue;
-                    ParametersView = !string.IsNullOrEmpty(data.Parameters) ?
-                                     data.Parameters.Split('|').Select(x => patientRecordsService.GetRecordTypeById(int.Parse(x)).First().Name).Aggregate((x, y) => x + "; " + y) : defValue;
+                    ParametersView = !string.IsNullOrEmpty(data.Parameters)
+                                         ? data.Parameters.Split('|').Select(x => patientRecordsService.GetRecordTypeById(int.Parse(x)).First().Name).Aggregate((x, y) => x + "; " + y)
+                                         : defValue;
                     BrigadeView = Brigade.Any() ? Brigade.Select(x => x.RoleName + ": " + x.StaffName + " " + x.PersonName).Aggregate((x, y) => x + "; " + y) : defValue;
                     IsAnalyse = data.IsAnalyse;
                     IsAssignment = data.IsAssignment;
@@ -880,28 +988,35 @@ namespace Shared.PatientRecords.ViewModels
             var token = currentOperationToken.Token;
             BusyMediator.Activate("Загрузка протокола...");
             logService.InfoFormat("Loading protocol editor...");
-            IDisposableQueryable<Record> recordQuery = patientRecordsService.GetRecord(recordId);
-            IDisposableQueryable<Assignment> assignmentQuery = patientRecordsService.GetAssignment(assignmentId);
-            IDisposableQueryable<Visit> visitQuery = patientRecordsService.GetVisit(visitId);
-            DateTime curDate = DateTime.Now;
+            var recordQuery = patientRecordsService.GetRecord(recordId);
+            var assignmentQuery = patientRecordsService.GetAssignment(assignmentId);
+            var visitQuery = patientRecordsService.GetVisit(visitId);
+            var curDate = DateTime.Now;
             try
             {
                 if (recordId > 0)
                 {
                     var record = await recordQuery.Select(x => new
-                    {
-                        x.ActualDateTime,
-                        RecordTypeEditor = x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty
-                    }).FirstOrDefaultAsync(token);
+                                                               {
+                                                                   x.ActualDateTime,
+                                                                   RecordTypeEditor = x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty
+                                                               }).FirstOrDefaultAsync(token);
                     var res = await LoadDataSources(record.ActualDateTime);
-                    if (!res) return;
+                    if (!res)
+                    {
+                        return;
+                    }
                     ProtocolEditor = recordTypeEditorResolver.Resolve(record.RecordTypeEditor);
                 }
                 if (assignmentId > 0)
                 {
-                    var assignmentEditor = await assignmentQuery.Select(x => x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty).FirstOrDefaultAsync(token);
+                    var assignmentEditor =
+                        await assignmentQuery.Select(x => x.RecordType.RecordTypeEditors.Any() ? x.RecordType.RecordTypeEditors.FirstOrDefault().Editor : string.Empty).FirstOrDefaultAsync(token);
                     var res = await LoadDataSources(curDate);
-                    if (!res) return;
+                    if (!res)
+                    {
+                        return;
+                    }
                     ProtocolEditor = recordTypeEditorResolver.Resolve(assignmentEditor);
                 }
                 if (visitId > 0)
@@ -943,7 +1058,6 @@ namespace Shared.PatientRecords.ViewModels
                 {
                     visitQuery.Dispose();
                 }
-
             }
         }
 
@@ -961,18 +1075,23 @@ namespace Shared.PatientRecords.ViewModels
             }
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
-            string recordIdString = RecordId < 1 ? RecordId.ToString() : "(new record)";
+            var recordIdString = RecordId < 1 ? RecordId.ToString() : "(new record)";
             logService.InfoFormat("Saving record common data Id = {0}", recordIdString);
             BusyMediator.Activate("Сохранение изменений...");
             var saveSuccesfull = false;
             try
             {
                 var brigade = Brigade.Where(x => x.IsPersonMember).Select(x => x.GetRecordMember()).ToList();
-                RecordId = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime, brigade, token);
-                int protocolId = SpecialValues.NonExistingId;
+                RecordId =
+                    await
+                    patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value,
+                                                                    EndDateTime, brigade, token);
+                var protocolId = SpecialValues.NonExistingId;
                 if (ProtocolEditor != null)
+                {
                     protocolId = ProtocolEditor.SaveProtocol(RecordId, VisitId);
-                saveSuccesfull = !SpecialValues.IsNewOrNonExisting(protocolId);
+                }
+                saveSuccesfull = !protocolId.IsNewOrNonExisting();
             }
             catch (OperationCanceledException)
             {
@@ -993,7 +1112,6 @@ namespace Shared.PatientRecords.ViewModels
                     //changeTracker.UntrackAll();
                 }
             }
-
         }
 
         private void UnsubscriveFromEvents()
@@ -1006,7 +1124,9 @@ namespace Shared.PatientRecords.ViewModels
         private void PrintProtocol()
         {
             if (ProtocolEditor != null)
+            {
                 ProtocolEditor.PrintProtocol();
+            }
         }
 
         private void SaveProtocol()
@@ -1018,13 +1138,17 @@ namespace Shared.PatientRecords.ViewModels
         private void ShowProtocolInEditMode()
         {
             if (ProtocolEditor != null)
+            {
                 protocolEditor.CurrentMode = ProtocolMode.Edit;
+            }
         }
 
         private void ShowProtocolInViewMode()
         {
             if (ProtocolEditor != null)
+            {
                 protocolEditor.CurrentMode = ProtocolMode.View;
+            }
         }
 
         private void SetCurrentDateTimeEnd()
@@ -1039,7 +1163,7 @@ namespace Shared.PatientRecords.ViewModels
             BeginDateTime = new DateTime(dtNow.Year, dtNow.Month, dtNow.Day, dtNow.Hour, dtNow.Minute, 0);
         }
 
-        void ProtocolEditor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void ProtocolEditor_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "CurrentMode")
             {
@@ -1049,7 +1173,7 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
-        void Brigade_BeforeCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Brigade_BeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
@@ -1071,41 +1195,43 @@ namespace Shared.PatientRecords.ViewModels
 
         #region Commands
 
-        private DelegateCommand printProtocolCommand;
+        private readonly DelegateCommand printProtocolCommand;
+
         public ICommand PrintProtocolCommand
         {
             get { return printProtocolCommand; }
-
         }
 
-        private DelegateCommand saveProtocolCommand;
+        private readonly DelegateCommand saveProtocolCommand;
+
         public ICommand SaveProtocolCommand
         {
             get { return saveProtocolCommand; }
-
         }
 
-        private DelegateCommand showInEditModeCommand;
+        private readonly DelegateCommand showInEditModeCommand;
+
         public ICommand ShowInEditModeCommand
         {
             get { return showInEditModeCommand; }
-
         }
 
-        private DelegateCommand showInViewModeCommand;
+        private readonly DelegateCommand showInViewModeCommand;
+
         public ICommand ShowInViewModeCommand
         {
             get { return showInViewModeCommand; }
-
         }
 
-        private DelegateCommand setCurrentDateTimeEndCommand;
+        private readonly DelegateCommand setCurrentDateTimeEndCommand;
+
         public ICommand SetCurrentDateTimeEndCommand
         {
             get { return setCurrentDateTimeEndCommand; }
         }
 
-        private DelegateCommand setCurrentDateTimeBeginCommand;
+        private readonly DelegateCommand setCurrentDateTimeBeginCommand;
+
         public ICommand SetCurrentDateTimeBeginCommand
         {
             get { return setCurrentDateTimeBeginCommand; }
@@ -1115,10 +1241,25 @@ namespace Shared.PatientRecords.ViewModels
 
         #region RecordDocuments Commands
 
-        public ICommand AttachDocumentCommand { get { return DocumentsViewer.AttachDocumentCommand; } }
-        public ICommand DetachDocumentCommand { get { return DocumentsViewer.DetachDocumentCommand; } }
-        public ICommand AttachDICOMCommand { get { return DocumentsViewer.AttachDICOMCommand; } }
-        public ICommand DetachDICOMCommand { get { return DocumentsViewer.DetachDICOMCommand; } }
+        public ICommand AttachDocumentCommand
+        {
+            get { return DocumentsViewer.AttachDocumentCommand; }
+        }
+
+        public ICommand DetachDocumentCommand
+        {
+            get { return DocumentsViewer.DetachDocumentCommand; }
+        }
+
+        public ICommand AttachDICOMCommand
+        {
+            get { return DocumentsViewer.AttachDICOMCommand; }
+        }
+
+        public ICommand DetachDICOMCommand
+        {
+            get { return DocumentsViewer.DetachDICOMCommand; }
+        }
 
         #endregion
 
@@ -1126,21 +1267,30 @@ namespace Shared.PatientRecords.ViewModels
 
         #region Events
 
-        void documentsViewer_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void documentsViewer_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "AllowDocuments")
+            {
                 OnPropertyChanged(() => AllowDocuments);
+            }
             if (e.PropertyName == "AllowDICOM")
+            {
                 OnPropertyChanged(() => AllowDICOM);
+            }
             if (e.PropertyName == "CanAttachDICOM")
+            {
                 OnPropertyChanged(() => CanAttachDICOM);
+            }
             if (e.PropertyName == "CanDetachDICOM")
+            {
                 OnPropertyChanged(() => CanDetachDICOM);
+            }
         }
 
         #endregion
 
         #region IDataErrorInfo implementation
+
         private bool saveWasRequested;
 
         private readonly HashSet<string> invalidProperties = new HashSet<string>();
@@ -1196,6 +1346,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             get { throw new NotImplementedException(); }
         }
+
         #endregion
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Core.Misc;
 
 namespace Core.Data
 {
-    public partial class RecordType : IHierarchyItem
+    [DebuggerDisplay("{Id} - {Name}")]
+    public partial class RecordType : IHierarchyItem<RecordType>, IHierarchyItem
     {
         public static readonly Predicate<object> AssignableRecordTypeSelectionPredicate = x => ((RecordType)x).Assignable == true;
 
@@ -13,20 +15,19 @@ namespace Core.Data
 
         private static readonly char[] Separators = { ' ' };
 
-        private static bool AssignableRecordTypeFilter(object o, string s)
+        private static bool AssignableRecordTypeFilter(object item, string filter)
         {
-            var recordType = (RecordType)o;
-            var words = s.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+            var recordType = (RecordType)item;
+            var words = filter.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
             return words.All(x => recordType.Name.IndexOf(x, StringComparison.CurrentCultureIgnoreCase) != -1);
         }
 
-        IHierarchyItem IHierarchyItem.Parent { get { return RecordType1; } }
+        IHierarchyItem IHierarchyItem.Parent { get { return Parent; } }
 
-        IEnumerable<IHierarchyItem> IHierarchyItem.Children { get { return RecordTypes1; } }
+        IEnumerable<IHierarchyItem> IHierarchyItem.Children { get { return Children; } }
 
-        public override string ToString()
-        {
-            return string.Format("{0} - {1}", Id, Name);
-        }
+        public IEnumerable<RecordType> Children { get { return RecordTypes1; } }
+
+        public RecordType Parent { get { return RecordType1; } }
     }
 }

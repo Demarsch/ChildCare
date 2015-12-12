@@ -61,6 +61,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ChangeTrackerExtensions.cs" />
+    <Compile Include="Extensions\HierarchyItemExtensions.cs" />
     <Compile Include="Extensions\LogExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
