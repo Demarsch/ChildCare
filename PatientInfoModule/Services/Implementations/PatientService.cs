@@ -47,6 +47,8 @@ namespace PatientInfoModule.Services
             return new DisposableQueryable<Person>(context.Set<Person>().AsNoTracking().Where(x => x.Id == patientId), context);
         }
 
+        private readonly char[] separators = { ' ' };
+
         public IEnumerable<string> GetIdentityDocumentGivenOrganizations(string filter)
         {
             filter = (filter ?? string.Empty).Trim();
@@ -54,10 +56,11 @@ namespace PatientInfoModule.Services
             {
                 return new string[0];
             }
+            var words = filter.Split(separators, StringSplitOptions.RemoveEmptyEntries).ToArray();
             using (var context = contextProvider.CreateNewContext())
             {
                 return context.Set<PersonIdentityDocument>()
-                              .Where(x => x.GivenOrg.Contains(filter))
+                              .Where(x => words.All(y => x.GivenOrg.Contains(y)))
                               .Select(x => x.GivenOrg)
                               .Distinct()
                               .Take(AppConfiguration.SearchResultTakeTopCount)
@@ -72,10 +75,11 @@ namespace PatientInfoModule.Services
             {
                 return new string[0];
             }
+            var words = filter.Split(separators, StringSplitOptions.RemoveEmptyEntries).ToArray();
             using (var context = contextProvider.CreateNewContext())
             {
                 return context.Set<PersonDisability>()
-                              .Where(x => x.GivenOrg.Contains(filter))
+                              .Where(x => words.All(y => x.GivenOrg.Contains(y)))
                               .Select(x => x.GivenOrg)
                               .Distinct()
                               .Take(AppConfiguration.SearchResultTakeTopCount)
@@ -90,7 +94,7 @@ namespace PatientInfoModule.Services
             {
                 return new InsuranceCompany[0];
             }
-            var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var words = filter.Split(separators, StringSplitOptions.RemoveEmptyEntries).ToArray();
             return cacheService.GetItems<InsuranceCompany>().Where(x => words.All(y => x.NameSMOK.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1
                                                                                        || x.AddressF.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
                                .Take(AppConfiguration.SearchResultTakeTopCount);
@@ -103,7 +107,7 @@ namespace PatientInfoModule.Services
             {
                 return new Org[0];
             }
-            var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var words = filter.Split(separators, StringSplitOptions.RemoveEmptyEntries).ToArray();
             using (var contex = contextProvider.CreateNewContext())
             {
                 return contex.Set<Org>().Where(x => words.All(y => x.Name.Contains(y) || x.Details.Contains(y)))
