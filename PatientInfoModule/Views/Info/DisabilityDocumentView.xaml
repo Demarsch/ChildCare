@@ -55,7 +55,8 @@
                 HorizontalAlignment="Right"
                 ToolTip="Удалить документ"
                 Template="{StaticResource CloseButtonTemplate}"
-                Command="{Binding DeleteCommand, Mode=OneTime}"/>
+                Command="{Binding DeleteCommand, Mode=OneTime}"
+                IsTabStop="False"/>
         <TextBlock Grid.Row="1"
                    Grid.Column="0"
                    Text="Тип документа" />

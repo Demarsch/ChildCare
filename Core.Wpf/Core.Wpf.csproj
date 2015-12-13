@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\DataContextPropagationBehavior.cs" />
+    <Compile Include="Behaviors\FocusAdvancement.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\MedNumberInputHelperBehavior.cs" />
     <Compile Include="Behaviors\MouseWheelHorizontalScroll.cs" />
