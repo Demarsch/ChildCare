@@ -681,7 +681,8 @@ namespace PatientInfoModule.ViewModels
                                                        MedNumber = MedNumber,
                                                        IsMale = IsMale,
                                                        Phones = Phones,
-                                                       Email = Email
+                                                       Email = Email,
+                                                       PhotoId = currentPerson == null ? SpecialValues.NewId : currentPerson.PhotoId
                                                    },
                                    IsIncorrectName = IsIncorrectName,
                                    IsNewName = IsNewName || currentName == null,
@@ -1049,6 +1050,11 @@ namespace PatientInfoModule.ViewModels
                     else if (AssociatedItem.NewNameStartDate < AssociatedItem.BirthDate)
                     {
                         error = "Дата смены Ф.И.О. не может быть меньше даты рождения";
+                    }
+                    else if (AssociatedItem.NewNameStartDate < AssociatedItem.currentName.BeginDateTime)
+                    {
+                        error = string.Format("Дата смены Ф.И.О. не может быть меньше предыдущей даты смены Ф.И.О. ({0})",
+                                              AssociatedItem.currentName.BeginDateTime.ToString(DateTimeFormats.ShortDateFormat));
                     }
                 }
                 SetError(x => x.NewNameStartDate, error);

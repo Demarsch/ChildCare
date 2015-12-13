@@ -24,14 +24,10 @@ namespace ScheduleModule
 
         private readonly IViewNameResolver viewNameResolver;
 
-        private readonly ILog log;
+        private ILog log;
 
-        public Module(IUnityContainer container, IRegionManager regionManager, IViewNameResolver viewNameResolver, ILog log)
+        public Module(IUnityContainer container, IRegionManager regionManager, IViewNameResolver viewNameResolver)
         {
-            if (log == null)
-            {
-                throw new ArgumentNullException("log");
-            }
             if (container == null)
             {
                 throw new ArgumentNullException("container");
@@ -44,19 +40,25 @@ namespace ScheduleModule
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
-            this.container = container;
+            this.container = container.CreateChildContainer();
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
-            this.log = log;
         }
 
         public void Initialize()
         {
+            RegisterLogger();
             log.InfoFormat("{0} module init start", WellKnownModuleNames.ScheduleModule);
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
             log.InfoFormat("{0} module init finished", WellKnownModuleNames.ScheduleModule);
+        }
+
+        private void RegisterLogger()
+        {
+            log = LogManager.GetLogger("SCHEDULE");
+            container.RegisterInstance(log);
         }
 
         private void RegisterViewModels()
@@ -70,7 +72,8 @@ namespace ScheduleModule
         {
             //This is required by Prism navigation mechanism to resolve view
             container.RegisterType<object, ScheduleContentView>(viewNameResolver.Resolve<ScheduleContentViewModel>(), new ContainerControlledLifetimeManager());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ScheduleHeaderView));
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<ScheduleContentView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<ScheduleHeaderView>());
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/ScheduleModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
