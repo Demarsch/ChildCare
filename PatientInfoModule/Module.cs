@@ -43,14 +43,13 @@ namespace PatientInfoModule
 
         private readonly IEventAggregator eventAggregator;
 
-        private readonly ILog log;
+        private ILog log;
 
         public Module(IUnityContainer container,
                       IRegionManager regionManager,
                       IViewNameResolver viewNameResolver,
                       IDbContextProvider contextProvider,
-                      IEventAggregator eventAggregator,
-                      ILog log)
+                      IEventAggregator eventAggregator)
         {
             if (container == null)
             {
@@ -68,27 +67,23 @@ namespace PatientInfoModule
             {
                 throw new ArgumentNullException("contextProvider");
             }
-            if (log == null)
-            {
-                throw new ArgumentNullException("log");
-            }
             this.container = container.CreateChildContainer();
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.contextProvider = contextProvider;
             this.eventAggregator = eventAggregator;
-            this.log = log;
         }
 
         public void Initialize()
         {
+            RegisterLogger();
             log.InfoFormat("{0} module init start", WellKnownModuleNames.PatientInfoModule);
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
             InitiateLongRunningOperations();
-            var PatientRecords = new PatientRecords(container, regionManager, contextProvider, viewNameResolver, eventAggregator, log);
-            PatientRecords.Initialize();
+            var patientRecords = container.Resolve<PatientRecords>();
+            patientRecords.Initialize();
             log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientInfoModule);
         }
 
@@ -104,9 +99,13 @@ namespace PatientInfoModule
         {
             //This is required by Prism navigation mechanism to resolve view
             container.RegisterType<object, EmptyPatientInfoView>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<EmptyPatientInfoView>());
             container.RegisterType<object, InfoContentView>(viewNameResolver.Resolve<InfoContentViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<InfoContentView>());
             container.RegisterType<object, PatientContractsView>(viewNameResolver.Resolve<PatientContractsViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PatientContractsView>());
             container.RegisterType<object, PersonDocumentsView>(viewNameResolver.Resolve<PersonDocumentsViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonDocumentsView>());
             container.RegisterInstance(Common.RibbonGroupName,
                                        new RibbonContextualTabGroup
                                        {
@@ -116,9 +115,10 @@ namespace PatientInfoModule
                                            Header = PatientIsNotSelected
                                        });
             eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync, true);
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(InfoHeaderView));
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(DocumentsHeaderView));
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, typeof(ContractsHeaderView));
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<InfoHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<DocumentsHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<ContractsHeaderView>());
+
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientInfoModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
@@ -176,7 +176,6 @@ namespace PatientInfoModule
 
         private void RegisterServices()
         {
-            container.RegisterInstance(LogManager.GetLogger("PATINFO"));
 
             container.RegisterType<IPatientService, PatientService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
@@ -191,6 +190,12 @@ namespace PatientInfoModule
             container.RegisterType<ISuggestionProvider, DisabilityDocumentGivenOrgSuggestionProvider>(SuggestionProviderNames.DisabilityDocumentGivenOrganization, new ContainerControlledLifetimeManager());
             container.RegisterType<ISuggestionProvider, OrganizationSuggestionProvider>(SuggestionProviderNames.Organization, new ContainerControlledLifetimeManager());
             container.RegisterType<IAddressSuggestionProvider, AddressSuggestionProvider>(new ContainerControlledLifetimeManager());
+        }
+
+        private void RegisterLogger()
+        {
+            log = LogManager.GetLogger("PATINFO");
+            container.RegisterInstance(log);
         }
 
         private void InitiateLongRunningOperations()
