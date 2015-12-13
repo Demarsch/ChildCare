@@ -9,5 +9,6 @@
         <ResourceDictionary Source="../Views/Diagnoses/MKBTreeView.xaml" />
         <ResourceDictionary Source="../Views/Diagnoses/ComplicationsTreeView.xaml" />
         <ResourceDictionary Source="../Views/Analyses/AnalyseCreateView.xaml" />
+        <ResourceDictionary Source="../Views/Analyses/AnalyseProtocolView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

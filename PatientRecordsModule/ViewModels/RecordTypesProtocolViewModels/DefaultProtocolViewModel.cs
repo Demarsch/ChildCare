@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Threading;
 
 namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 {
@@ -25,6 +26,7 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
         private readonly IDiagnosService diagnosService;
         private readonly IPatientRecordsService recordService;
         private readonly ILog logService;
+        private CancellationTokenSource currentToken;
 
         #region Constructors
         public DefaultProtocolViewModel(IDiagnosService diagnosService, IPatientRecordsService recordService, ILog logService,
@@ -136,6 +138,7 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 
             defaultProtocol.Description = Description;
             defaultProtocol.Conclusion = Result;
+
             int saveProtocolId = recordService.SaveDefaultProtocol(defaultProtocol);
 
             if (!SpecialValues.IsNewOrNonExisting(saveProtocolId) && DiagnosesEditor.Save(recordId))

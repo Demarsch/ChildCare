@@ -193,16 +193,8 @@
         <EntityTypeShape EntityType="DataLib.RelativeRelationshipConnection" Width="2.5" PointX="0.5" PointY="7.75" />
         <AssociationConnector Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships" />
         <AssociationConnector Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships1" />
-        <EntityTypeShape EntityType="DataLib.AnalyseRefference" Width="1.5" PointX="3" PointY="32.75" />
-        <EntityTypeShape EntityType="DataLib.AnalyseResult" Width="1.5" PointX="22.875" PointY="54.625" />
         <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="20.625" PointY="70" />
         <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="0.75" PointY="38.75" />
-        <EntityTypeShape EntityType="DataLib.Unit" Width="1.5" PointX="20.625" PointY="55.25" />
-        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" />
-        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_Records" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_Units" />
         <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
         <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Records" />
         <AssociationConnector Association="DataLib.FK_Records_Persons" />
@@ -247,6 +239,14 @@
         <AssociationConnector Association="DataLib.FK_RecordEquipments_Records" />
         <EntityTypeShape EntityType="DataLib.RecordTypeEditor" Width="1.5" PointX="3" PointY="29" />
         <AssociationConnector Association="DataLib.FK_RecordTypeEditors_RecordTypes" />
+        <EntityTypeShape EntityType="DataLib.AnalyseResult" Width="1.5" PointX="28.875" PointY="49.625" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_Records" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_RecordTypes" />
+        <EntityTypeShape EntityType="DataLib.Unit" Width="1.5" PointX="4.375" PointY="3.875" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_Units" />
+        <EntityTypeShape EntityType="DataLib.AnalyseRefference" Width="1.5" PointX="3" PointY="32.5" />
+        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" />
+        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_RecordTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

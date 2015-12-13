@@ -17,16 +17,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Core.Wpf.Mvvm;
+using Shared.PatientRecords.DTO;
+using System.Threading;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class AnalyseProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator, IDataErrorInfo
+    public class AnalyseProtocolViewModel : TrackableBindableBase, IRecordTypeProtocol, IChangeTrackerMediator
     {
         private readonly IPatientRecordsService recordService;
+        private readonly IDialogService messageService;
+        private readonly IUserService userService;
+        private readonly ICacheService cacheService;
         private readonly ILog logService;
-
+        private CancellationTokenSource currentToken;
+        private int personId;
+        private bool isMale = false;
+        private int years = 0;
+        private DateTime date = DateTime.Now;
+        private readonly IChangeTracker currentInstanceChangeTracker;
+        
         #region Constructors
-        public AnalyseProtocolViewModel(IPatientRecordsService recordService, ILog logService, IDialogServiceAsync dialogService, IDialogService messageService, IUserService userService)
+        public AnalyseProtocolViewModel(IPatientRecordsService recordService, ILog logService, IDialogService messageService, IUserService userService, ICacheService cacheService)
         {
             if (logService == null)
             {
@@ -36,73 +48,138 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("recordService");
             }
-            if (recordService == null)
+            if (messageService == null)
             {
-                throw new ArgumentNullException("recordService");
+                throw new ArgumentNullException("messageService");
+            }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
             }
             this.recordService = recordService;
+            this.cacheService = cacheService;
+            this.messageService = messageService;
+            this.userService = userService;
             this.logService = logService;
 
             CurrentMode = ProtocolMode.View;
 
+            AnalyseResults = new ObservableCollectionEx<AnalyseResultViewModel>();
+            AnalyseResults.BeforeCollectionChanged += OnBeforeDiagnosCollectionChanged;
+            AnalyseResultsView = new ObservableCollectionEx<AnalyseResultViewModel>();
+
+            ChartData = new ObservableCollectionEx<Point>();
+            RefMinData = new ObservableCollectionEx<Point>();
+            RefMaxData = new ObservableCollectionEx<Point>();
+
             currentInstanceChangeTracker = new ChangeTrackerEx<AnalyseProtocolViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker);
-            changeTracker.PropertyChanged += OnChangesTracked;
             ChangeTracker = changeTracker;
         }
+       
         #endregion
 
-        private readonly IChangeTracker currentInstanceChangeTracker;
-
-        public IChangeTracker ChangeTracker { get; set; }
-
-        public void Dispose()
+        private void OnBeforeDiagnosCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            currentInstanceChangeTracker.PropertyChanged -= OnChangesTracked;
-        }
-
-        private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            if (e.NewItems != null)
             {
-
+                foreach (var newItem in e.NewItems.Cast<AnalyseResultViewModel>())
+                    (ChangeTracker as CompositeChangeTracker).AddTracker(newItem.ChangeTracker);
+            }
+            if (e.OldItems != null)
+            {
+                foreach (var oldItem in e.OldItems.Cast<AnalyseResultViewModel>())
+                    (ChangeTracker as CompositeChangeTracker).RemoveTracker(oldItem.ChangeTracker);
             }
         }
 
         #region Properties
 
-        private string description;
-        public string Description
+        public IChangeTracker ChangeTracker { get; set; }
+
+        public ObservableCollectionEx<AnalyseResultViewModel> AnalyseResults { get; private set; }
+
+        private AnalyseResultViewModel selectedAnalyseResult;
+        public AnalyseResultViewModel SelectedAnalyseResult
         {
-            get { return description; }
-            set { SetTrackedProperty(ref description, value); }
+            get { return selectedAnalyseResult; }
+            set { SetProperty(ref selectedAnalyseResult, value); }
         }
 
-        private string result;
-        public string Result
+        public ObservableCollectionEx<AnalyseResultViewModel> AnalyseResultsView { get; private set; }
+
+        private AnalyseResultViewModel selectedAnalyseResultView;
+        public AnalyseResultViewModel SelectedAnalyseResultView
         {
-            get { return result; }
-            set { SetTrackedProperty(ref result, value); }
+            get { return selectedAnalyseResultView; }
+            set 
+            { 
+                if (SetProperty(ref selectedAnalyseResultView, value) && value != null)
+                {
+                    ChartData.Clear();
+                    RefMinData.Clear();
+                    RefMaxData.Clear();
+                    if (value.RefMax == 0.0 && value.RefMin == 0.0)
+                        ShowChart = false;
+                    else
+                    {
+                        var analysesQuery = recordService.GetAnalyseResults(personId, value.RecordTypeId, value.ParameterRecordTypeId);
+                        var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, Value = x.Value }).OrderBy(x => x.Date).ToArray();
+                        ChartData.AddRange(analysesSelect.Select(x => new Point(x.Date, double.Parse(x.Value))).ToArray());
+
+                        RefMinData.Add(new Point(analysesSelect.Min(x => x.Date), value.RefMin));
+                        RefMinData.Add(new Point(analysesSelect.Max(x => x.Date), value.RefMin));
+
+                        RefMaxData.Add(new Point(analysesSelect.Min(x => x.Date), value.RefMax));
+                        RefMaxData.Add(new Point(analysesSelect.Max(x => x.Date), value.RefMax));
+
+                        SelectedParameter = value.ParameterName;
+                        ShowChart = true;
+                    }
+                }
+            }
         }
 
+        private string selectedParameter;
+        public string SelectedParameter
+        {
+            get { return selectedParameter; }
+            set { SetProperty(ref selectedParameter, value); }
+        }
+
+        private bool showChart;
+        public bool ShowChart
+        {
+            get { return showChart; }
+            set { SetProperty(ref showChart, value); }
+
+        }
         public bool IsEditMode
         {
-            get { return CurrentMode == ProtocolMode.Edit; }
+            get 
+            {
+                return CurrentMode == ProtocolMode.Edit;
+            }
         }
 
         public bool IsViewMode
         {
-            get { return CurrentMode == ProtocolMode.View; }
+            get
+            {
+                return CurrentMode == ProtocolMode.View;    
+            }
         }
 
-        public DiagnosesCollectionViewModel DiagnosesEditor { get; private set; }
+        public ObservableCollectionEx<Point> ChartData { get; private set; }
+        public ObservableCollectionEx<Point> RefMinData { get; private set; }
+        public ObservableCollectionEx<Point> RefMaxData { get; private set; }
 
         #endregion
-
-        #region Methods
-
-        #endregion
-
+ 
         #region IRecordTypeProtocol implementation
         private ProtocolMode currentMode;
         public ProtocolMode CurrentMode
@@ -123,127 +200,202 @@ namespace Shared.PatientRecords.ViewModels
 
         public int SaveProtocol(int recordId, int visitId)
         {
-            if (recordId == SpecialValues.NewId || !IsValid)
+            if (recordId == SpecialValues.NewId || !ProtocolIsValid())
                 return SpecialValues.NonExistingId;
-
-            var defaultProtocol = recordService.GetRecord(recordId).First().DefaultProtocols.FirstOrDefault();
-            if (defaultProtocol == null)
-                defaultProtocol = new DefaultProtocol() { RecordId = recordId };
-
-            defaultProtocol.Description = Description;
-            defaultProtocol.Conclusion = Result;
-            int saveProtocolId = recordService.SaveDefaultProtocol(defaultProtocol);
-
-            if (!SpecialValues.IsNewOrNonExisting(saveProtocolId) && DiagnosesEditor.Save(recordId))
+            
+            int[] ids = recordService.SaveAnalyseResult(recordId, AnalyseResults
+                                        .Select(x => new AnalyseResult()
+                                        {
+                                            Id = x.Id,
+                                            ParameterRecordTypeId = x.ParameterRecordTypeId,
+                                            Value = x.ResultText,
+                                            UnitId = !SpecialValues.IsNewOrNonExisting(x.SelectedUnitId) ? x.SelectedUnitId : (int?)null,
+                                            IsNormal = x.IsNormal,
+                                            IsBelowRef = x.IsBelow,
+                                            IsAboveRef = x.IsAbove,
+                                            Details = x.Details
+                                        }).ToArray());
+            if (ids.Any())
             {
                 ChangeTracker.AcceptChanges();
                 ChangeTracker.IsEnabled = true;
-                return saveProtocolId;
+                for (int i = 0; i < AnalyseResults.Count; i++)
+                    AnalyseResults[i].Id = ids[i];
+                LoadAnalyseResultView(recordId);
+                return 1;
             }
             return SpecialValues.NonExistingId;
         }
 
         public void LoadProtocol(int assignmentId, int recordId, int visitId)
         {
+            if (visitId > 0) return;
             ChangeTracker.IsEnabled = false;
+            AnalyseResults.Clear();
             if (assignmentId > 0)
-            {
                 LoadAssignmentData(assignmentId);
-            }
             else if (recordId > 0)
-            {
                 LoadRecordData(recordId);
-            }
-            else if (visitId > 0)
-                LoadVisitData(visitId);
             ChangeTracker.IsEnabled = true;
         }
 
+        #endregion
+
+        #region Methods
+
+        private bool ProtocolIsValid()
+        {
+            if (!AnalyseResults.Any() || AnalyseResults.All(x => x.ResultText.Trim() == string.Empty))
+            {
+                messageService.ShowWarning("Не заполнены результаты лабораторного исследования");
+                return false;
+            }
+            return true;
+        }    
+             
         public string CanComplete()
         {
             string resStr = string.Empty;
+            if (!AnalyseResults.Any() || AnalyseResults.All(x => x.ResultText.Trim() == string.Empty))
+                resStr = "результаты лабораторного исследования";
             return resStr;
+        }   
+
+        private async void LoadAssignmentData(int assignmentId)
+        {           
+            var assignment = recordService.GetAssignment(assignmentId).First();
+            personId = assignment.PersonId;
+            isMale = assignment.Person.IsMale;
+            double days = assignment.AssignDateTime.Subtract(assignment.Person.BirthDate).TotalDays;
+            years = (int)(days / 365);
+            date = assignment.AssignDateTime;
+            await LoadAnalyseParameters(assignment.RecordTypeId);
         }
 
-        private void LoadVisitData(int visitId)
+        private async void LoadRecordData(int recordId)
         {
-            ClearProtocolData();
-            return;
-        }
+            var record = recordService.GetRecord(recordId).First();
+            personId = record.PersonId;
+            isMale = record.Person.IsMale;
+            double days = record.ActualDateTime.Subtract(record.Person.BirthDate).TotalDays;
+            years = (int)(days / 365);
+            date = record.ActualDateTime;
 
-        private void LoadRecordData(int recordId)
-        {
-            var protocol = recordService.GetRecord(recordId).First().DefaultProtocols.FirstOrDefault();
-            if (protocol != null)
+            if (record.AnalyseResults.Any())
             {
-                Description = protocol.Description;
-                Result = protocol.Conclusion;
+                await LoadAnalyseParameters(record.RecordTypeId);
+                FillAnalyseResults(record.AnalyseResults.Select(x => new AnalyseParameterDTO() 
+                    { 
+                        Id = x.Id, 
+                        ParameterRecordTypeId = x.ParameterRecordTypeId, 
+                        Name = x.RecordType.Name, 
+                        UnitId = x.UnitId, 
+                        Result = x.Value,
+                        Details = x.Details
+                    }).ToArray());
+                LoadAnalyseResultView(record.Id);
+            }
+        }
+                
+        private void FillAnalyseResults(AnalyseParameterDTO[] analyseParameterDTO)
+        {
+            foreach (var item in analyseParameterDTO)
+            {
+                var result = AnalyseResults.FirstOrDefault(x => x.ParameterRecordTypeId == item.ParameterRecordTypeId);
+                if (result != null)
+                {
+                    result.Id = item.Id;
+                    result.ResultText = item.Result;
+                    result.SelectedUnitId = item.UnitId.HasValue ? item.UnitId.Value : SpecialValues.NonExistingId;
+                    result.Details = item.Details;
+                }
+            }
+        }
+        
+        private async Task<bool> LoadAnalyseParameters(int recordTypeId)
+        {
+            var parameters = recordService.GetRecordTypeById(recordTypeId).First().RecordTypes1;
+            if (parameters.Any())
+            {
+                if (currentToken != null)
+                {
+                    currentToken.Cancel();
+                    currentToken.Dispose();
+                }
+                currentToken = new CancellationTokenSource();
+                var token = currentToken.Token;
+                var result = await Task.Factory.StartNew(() =>
+                    {
+                        return parameters.Select(x => new AnalyseResultViewModel(recordService, cacheService) 
+                            { 
+                                RecordTypeId = recordTypeId,
+                                IsMale = isMale,
+                                Age = years,
+                                Date = date,
+                                ParameterRecordTypeId = x.Id,
+                                ParameterName = x.Name,
+                                Priority = x.Priority,
+                                ResultText = string.Empty,
+                                SelectedUnitId = SpecialValues.NonExistingId,
+                                Details = string.Empty,
+                                RefMin = x.AnalyseRefferences
+                                        .Where(a => a.RecordTypeId == recordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                        .Select(a => a.RefMin).FirstOrDefault(),
+                                RefMax = x.AnalyseRefferences
+                                        .Where(a => a.RecordTypeId == recordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                        .Select(a => a.RefMax).FirstOrDefault()
+                            }).ToArray();
+                    }, token);
+
+                AnalyseResults.AddRange(result.OrderBy(x => x.Priority));
+                return true;
             }
             else
-                ClearProtocolData();
-            return;
-        }
-
-        private void LoadAssignmentData(int assignmentId)
-        {
-            ClearProtocolData();
-            return;
-        }
-
-        private void ClearProtocolData()
-        {
-            Description = string.Empty;
-            Result = string.Empty;
-        }
-
-        #endregion
-
-        #region Implement IDataError
-
-        private bool saveWasRequested;
-        private readonly HashSet<string> invalidProperties = new HashSet<string>();
-        private bool IsValid
-        {
-            get
             {
-                saveWasRequested = true;
-                OnPropertyChanged(string.Empty);
-                return invalidProperties.Count < 1;
+                messageService.ShowWarning("У данного исследования отсутствуют измеряемые параметры");
+                return false;
             }
         }
 
-        string IDataErrorInfo.this[string columnName]
+        private void LoadAnalyseResultView(int recordId)
         {
-            get
-            {
-                if (!saveWasRequested)
-                {
-                    invalidProperties.Remove(columnName);
-                    return string.Empty;
-                }
-                var result = string.Empty;
-                switch (columnName)
-                {
-                    case "Description":
-                        result = string.IsNullOrEmpty(Description.Trim()) ? "Не заполнено поле 'Описание'" : string.Empty;
-                        break;
-                    case "Result":
-                        result = string.IsNullOrEmpty(Result.Trim()) ? "Не заполнено поле 'Заключение'" : string.Empty;
-                        break;
-                }
-                if (string.IsNullOrEmpty(result))
-                    invalidProperties.Remove(columnName);
-                else
-                    invalidProperties.Add(columnName);
-                return result;
-            }
+            var record = recordService.GetRecord(recordId).First();
+            AnalyseResultsView.Clear();
+            AnalyseResultsView.AddRange(record.AnalyseResults
+                    .Select(x => new AnalyseResultViewModel(recordService, cacheService)
+                    {
+                        RecordTypeId = record.RecordTypeId,
+                        IsMale = isMale,
+                        Age = years,
+                        Date = date,
+                        ParameterRecordTypeId = x.ParameterRecordTypeId,
+                        ParameterName = x.RecordType.Name,
+                        Priority = x.RecordType.Priority,
+                        ResultText = x.Value,
+                        UnitView = x.UnitId.HasValue ? x.Unit.ShortName : string.Empty,
+                        Details = x.Details,
+                        RefMin = x.RecordType.AnalyseRefferences
+                                        .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                        .Select(a => a.RefMin).FirstOrDefault(),
+                        RefMax = x.RecordType.AnalyseRefferences
+                                .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                .Select(a => a.RefMax).FirstOrDefault()
+                    }).ToArray().OrderBy(x => x.Priority));
+            if (AnalyseResultsView.Any())
+                SelectedAnalyseResultView = AnalyseResultsView.First();
+            else
+                ShowChart = false;
         }
 
-        string IDataErrorInfo.Error
+        public void Dispose()
         {
-            get { throw new NotImplementedException(); }
+            ChangeTracker.Dispose();
+            AnalyseResults.BeforeCollectionChanged -= OnBeforeDiagnosCollectionChanged;
         }
-
         #endregion
+
     }
+
+    
+
 }

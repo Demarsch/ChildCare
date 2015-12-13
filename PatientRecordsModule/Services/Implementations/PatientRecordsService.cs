@@ -366,7 +366,7 @@ namespace Shared.PatientRecords.Services
         }
 
         public async Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime? endDateTime,
-            List<RecordMember> brigade, CancellationToken token)
+            List<RecordMember> brigade, int assignmentId, CancellationToken token)
         {
             if (token.IsCancellationRequested)
             {
@@ -432,6 +432,15 @@ namespace Shared.PatientRecords.Services
                     throw new OperationCanceledException(token);
                 }
                 await context.SaveChangesAsync(token);
+
+                if (!SpecialValues.IsNewOrNonExisting(assignmentId))
+                {
+                    var assignment = context.Set<Assignment>().FirstOrDefault(x => x.Id == assignmentId);
+                    assignment.RecordId = record.Id;
+                    assignment.VisitId = visitId;
+                    await context.SaveChangesAsync(token);
+                }
+
                 return record.Id;
             }
         }
@@ -528,6 +537,68 @@ namespace Shared.PatientRecords.Services
                 context.SaveChanges();
                 return saveProtocol.Id;
             }
+        }
+
+        public int[] SaveAnalyseResult(int recordId, AnalyseResult[] analyseResults)
+        {            
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var old = context.Set<AnalyseResult>().Where(x => x.RecordId == recordId).ToDictionary(x => x.Id);
+                var @new = analyseResults.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+                var added = analyseResults.Where(x => x.Id == SpecialValues.NewId && !string.IsNullOrEmpty(x.Value)).ToArray();
+                var existed = @new.Where(x => old.ContainsKey(x.Key))
+                                  .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                                  .ToArray();
+                foreach (var result in added)
+                {
+                    result.RecordId = recordId;
+                    context.Entry(result).State = EntityState.Added;
+                }
+                foreach (var result in existed.Where(x => x.IsChanged))
+                {
+                    if (!string.IsNullOrEmpty(result.Old.Value) && string.IsNullOrEmpty(result.New.Value))
+                    {
+                        result.Old.Id = SpecialValues.NewId;
+                        context.Entry(result.Old).State = EntityState.Deleted;
+                    }
+                    else
+                    {
+                        result.Old.ParameterRecordTypeId = result.New.ParameterRecordTypeId;
+                        result.Old.Value = result.New.Value;
+                        result.Old.UnitId = result.New.UnitId;
+                        result.Old.IsNormal = result.New.IsNormal;
+                        result.Old.IsAboveRef = result.New.IsAboveRef;
+                        result.Old.IsBelowRef = result.New.IsBelowRef;
+                        result.Old.Details = result.New.Details;
+                        context.Entry(result.Old).State = EntityState.Modified;
+                    }
+                }
+                try
+                {
+                    context.SaveChanges();
+                    return analyseResults.Select(x => x.Id).ToArray();
+                }
+                catch
+                {
+                    return new int[0];
+                }
+            }
+        }
+        
+        public IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool isMale, int age, DateTime date)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<AnalyseRefference>(context.Set<AnalyseRefference>()
+                .Where(x => x.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId && x.IsMale == isMale && 
+                            x.AgeFrom <= age && x.AgeTo >= age && x.BeginDateTime <= date && x.EndDateTime > date), context);
+        }
+
+
+        public IDisposableQueryable<AnalyseResult> GetAnalyseResults(int personId, int recordTypeId, int parameterRecordTypeId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<AnalyseResult>(context.Set<AnalyseResult>()
+                        .Where(x => x.Record.PersonId == personId && x.Record.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId), context);
         }
     }
 }

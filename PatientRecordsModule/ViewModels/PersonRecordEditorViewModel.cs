@@ -968,7 +968,7 @@ namespace Shared.PatientRecords.ViewModels
             try
             {
                 var brigade = Brigade.Where(x => x.IsPersonMember).Select(x => x.GetRecordMember()).ToList();
-                RecordId = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime, brigade, token);
+                RecordId = await patientRecordsService.SaveRecordCommonDataAsync(RecordId, recordTypeId, personId, ParentVisitId.Value, RoomId.Value, SelectedPeriodId, SelectedUrgentlyId, BeginDateTime.Value, EndDateTime, brigade, AssignmentId, token);
                 int protocolId = SpecialValues.NonExistingId;
                 if (ProtocolEditor != null)
                     protocolId = ProtocolEditor.SaveProtocol(RecordId, VisitId);
@@ -1178,7 +1178,7 @@ namespace Shared.PatientRecords.ViewModels
                         break;
                     case "RoomId":
                         result = RoomId.ToInt() < 1 ? "Не указан кабинет" : string.Empty;
-                        break;
+                        break;                    
                 }
                 if (string.IsNullOrEmpty(result))
                 {

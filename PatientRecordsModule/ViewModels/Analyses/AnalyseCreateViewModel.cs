@@ -265,7 +265,7 @@ namespace Shared.PatientRecords.ViewModels
                 analyseAssignment.ParametersOptions = GetAssignParameters();
                 analyseAssignment.CancelUserId = (int?)null;
                 analyseAssignment.CancelDateTime = (DateTime?)null;
-                analyseAssignment.Note = AnalyseDetails;
+                analyseAssignment.Note = AnalyseDetails.ToSafeString();
                 analyseAssignment.RecordId = (int?)null;
                 analyseAssignment.VisitId = !SpecialValues.IsNewOrNonExisting(SelectedVisitId) ? SelectedVisitId : (int?)null;
                 analyseAssignment.IsTemporary = false;
@@ -285,7 +285,7 @@ namespace Shared.PatientRecords.ViewModels
             }
             catch (Exception ex)
             {            
-                logService.ErrorFormatEx(ex, "Failed to create analyse for person with Id = {1}", this.personId);
+                logService.ErrorFormatEx(ex, "Failed to create analyse for person with Id = {0}", this.personId);
                 messageService.ShowError("Не удалось создать запись на лабораторное исследование.");
             }
             finally

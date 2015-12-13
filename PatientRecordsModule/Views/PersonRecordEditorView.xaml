@@ -87,22 +87,22 @@
             </ListBox>
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Случай:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleVisits, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name" Margin="2" 
+                      SelectedValuePath="Id" DisplayMemberPath="Name" Margin="2,2,20,2" 
                       ItemsSource="{Binding ParentVisits}" 
                       SelectedValue="{Binding ParentVisitId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Кабинет:" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Visibility="{Binding IsVisibleRooms, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
-                      SelectedValuePath="Id" DisplayMemberPath="Name"  Margin="2"
+                      SelectedValuePath="Id" DisplayMemberPath="Name"  Margin="2,2,20,2"
                       ItemsSource="{Binding Rooms}" 
                       SelectedValue="{Binding RoomId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Период оказания" Margin="2" FontWeight="Medium" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2"
+            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,15,2"
                       SelectedValuePath="Id" DisplayMemberPath="Name"  
                       ItemsSource="{Binding RecordPeriods}" 
                       SelectedValue="{Binding SelectedPeriodId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Форма оказания" FontWeight="Medium" VerticalAlignment="Center" Margin="2" HorizontalAlignment="Stretch"/>
-            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2"
+            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,15,2"
                       SelectedValuePath="Id" DisplayMemberPath="Name" 
                       ItemsSource="{Binding Urgentlies}" 
                       SelectedValue="{Binding SelectedUrgentlyId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
@@ -113,14 +113,18 @@
                     <Hyperlink Command="{Binding SetCurrentDateTimeBeginCommand}">текущее время</Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3" Height="23" Width="190" Margin="2" Watermark="Дата/время конца" Value="{Binding BeginDateTime}"/>
+            <toolkit:DateTimePicker Grid.Row="4" Grid.Column="3" Height="23" Width="190" Margin="2,2,20,2" Watermark="Дата/время конца" 
+                                    Value="{Binding BeginDateTime, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                    Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
             <StackPanel Grid.Row="5" Grid.Column="2" Orientation="Vertical">
                 <TextBlock Text="Время окончания услуги" FontWeight="Medium" VerticalAlignment="Bottom" Margin="15,0,7,0" HorizontalAlignment="Right"/>
                 <TextBlock VerticalAlignment="Top" Margin="15,0,7,0" HorizontalAlignment="Right">
                     <Hyperlink Command="{Binding SetCurrentDateTimeEndCommand}">текущее время</Hyperlink>
                 </TextBlock>
             </StackPanel>
-            <toolkit:DateTimePicker Grid.Row="5" Grid.Column="3" Height="23" Width="190" Margin="2" Watermark="Дата/время конца" Value="{Binding EndDateTime}"/>
+            <toolkit:DateTimePicker Grid.Row="5" Grid.Column="3" Height="23" Width="190" Margin="2,2,20,2" Watermark="Дата/время конца" 
+                                    Value="{Binding EndDateTime, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                    Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
         </Grid>
 
         <Grid Grid.Row="1"

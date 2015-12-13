@@ -369,7 +369,7 @@ namespace Shared.PatientRecords.ViewModels
             {
                 string exception = string.Empty;
                 var record = recordService.GetRecord(recordId).First();
-                int personDiagnosId = diagnosService.Save(record.PersonId, recordId, diagnosTypeId, 
+                int[] ids = diagnosService.Save(record.PersonId, recordId, diagnosTypeId, 
                                                 Diagnoses.Select(x => new Diagnosis()
                                                 {
                                                     Id = x.Id,
@@ -382,12 +382,15 @@ namespace Shared.PatientRecords.ViewModels
                                                     InDateTime = DateTime.Now,
                                                     InPersonId = userService.GetCurrentUser().PersonId,
                                                 }).ToArray(), out exception);
-                if (personDiagnosId != SpecialValues.NewId)
+
+                if (ids.Any())
                 {
-                    var personDiagnos = diagnosService.GetPersonDiagnosById(personDiagnosId).First();
-                    if (personDiagnos.Diagnoses.Any(x => x.IsMainDiagnos))
+                    for (int i = 0; i < Diagnoses.Count; i++)
+                        Diagnoses[i].Id = ids[i];
+
+                    if (Diagnoses.Any(x => x.IsMainDiagnos))
                     {
-                        string mkbCode = personDiagnos.Diagnoses.First(x => x.IsMainDiagnos).MKB;
+                        string mkbCode = Diagnoses.First(x => x.IsMainDiagnos).MKB;
                         recordService.UpdateMKBRecord(recordId, mkbCode);
                     }
                     ChangeTracker.AcceptChanges();

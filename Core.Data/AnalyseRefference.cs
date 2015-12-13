@@ -20,6 +20,8 @@ namespace Core.Data
         public bool IsMale { get; set; }
         public int AgeFrom { get; set; }
         public Nullable<int> AgeTo { get; set; }
+        public double RefMin { get; set; }
+        public double RefMax { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public Nullable<System.DateTime> EndDateTime { get; set; }
     

@@ -80,6 +80,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Controls.DataVisualization.Toolkit.4.0.0.0\lib\net40-Client\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.3.6.0.221\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -122,15 +126,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTOs\AnalyseParameterDTO.cs" />
     <Compile Include="DTOs\BrigadeDTO.cs" />
     <Compile Include="DTOs\CommonRecordAssignmentDTO.cs" />
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
+    <Compile Include="Misc\Point.cs" />
     <Compile Include="Misc\RecordTypeEditor.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseCreateViewModel.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseParameterViewModel.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseProtocolViewModel.cs" />
+    <Compile Include="ViewModels\Analyses\AnalyseResultViewModel.cs" />
     <Compile Include="ViewModels\BrigadeViewModel.cs" />
     <Compile Include="DTOs\VisitTemplateDTO.cs" />
     <Compile Include="DTOs\AssignmentDTO.cs" />

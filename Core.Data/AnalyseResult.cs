@@ -22,6 +22,7 @@ namespace Core.Data
         public bool IsNormal { get; set; }
         public bool IsAboveRef { get; set; }
         public bool IsBelowRef { get; set; }
+        public string Details { get; set; }
     
         public virtual Record Record { get; set; }
         public virtual RecordType RecordType { get; set; }

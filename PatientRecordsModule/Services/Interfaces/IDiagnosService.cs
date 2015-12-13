@@ -27,7 +27,7 @@ namespace Shared.PatientRecords.Services
         bool DeleteDiagnos(int diagnosId, out string exception);
         bool DeletePersonDiagnos(int personDiagnosId, out string exception);
 
-        int Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnosis, out string exception);
+        int[] Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnosis, out string exception);
         
     }
 }

@@ -171,7 +171,7 @@ namespace Shared.PatientRecords.Services
         }
 
 
-        public int Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnoses, out string exception)
+        public int[] Save(int personId, int recordId, int diagnosTypeId, Diagnosis[] diagnoses, out string exception)
         {
             using (var context = contextProvider.CreateNewContext())
             {
@@ -213,12 +213,12 @@ namespace Shared.PatientRecords.Services
                 {
                     context.SaveChanges();
                     exception = string.Empty;
-                    return personDiagnos.Id;
+                    return diagnoses.Select(x => x.Id).ToArray();
                 }
                 catch (Exception ex)
                 {
                     exception = ex.Message;
-                    return SpecialValues.NewId;
+                    return new int[0];
                 }
             }
         }

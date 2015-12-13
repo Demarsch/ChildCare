@@ -116,6 +116,7 @@ namespace PatientInfoModule.ViewModels
 
             saveChangesCommandWrapper = new CommandWrapper { Command = saveContractCommand };
             IsActive = false;
+            LoadDataSources();
         }
 
         void OnBeforeContractItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -227,6 +228,7 @@ namespace PatientInfoModule.ViewModels
             {
                 return;
             }
+
             if (currentLoadingToken != null)
             {
                 currentLoadingToken.Cancel();
@@ -574,8 +576,7 @@ namespace PatientInfoModule.ViewModels
             var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
             if (targetPatientId != patientId)
             {
-                this.patientId = targetPatientId;
-                LoadDataSources();
+                this.patientId = targetPatientId;                
                 LoadContractsAsync(this.patientId);
             }
         }

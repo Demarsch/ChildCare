@@ -76,7 +76,7 @@ namespace Shared.PatientRecords.Services
 
         Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token);
 
-        Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime? endDateTime, List<RecordMember> brigade, CancellationToken token);
+        Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime? endDateTime, List<RecordMember> brigade, int assignmentId, CancellationToken token);
 
         void DeleteVisitAsync(int visitId, int removedByUserId, CancellationToken token);
 
@@ -97,5 +97,11 @@ namespace Shared.PatientRecords.Services
         void UpdateMKBRecord(int recordId, string mkb);
 
         int SaveDefaultProtocol(DefaultProtocol defaultProtocol);
+
+        int[] SaveAnalyseResult(int recordId, AnalyseResult[] analyseResults);
+
+        IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool isMale, int age, DateTime date);
+
+        IDisposableQueryable<AnalyseResult> GetAnalyseResults(int personId, int recordTypeId, int parameterRecordTypeId);
     }
 }

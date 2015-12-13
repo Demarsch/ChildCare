@@ -6,48 +6,202 @@
              xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels"
              xmlns:views="clr-namespace:Shared.PatientRecords.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             mc:Ignorable="d">
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:datavis="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+             xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+             xmlns:chartingprimitives="clr-namespace:System.Windows.Controls.DataVisualization.Charting.Primitives;assembly=System.Windows.Controls.DataVisualization.Toolkit">
+
     <DataTemplate DataType="{x:Type viewModels:AnalyseProtocolViewModel}">
-        <Grid>
-            <!--Grid for edit protocol-->
-            <GroupBox Header="Протокол" BorderBrush="Black" BorderThickness="1"
-                      Visibility="{Binding IsEditMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">        
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
+        <!--Grid for edit protocol-->
+        <Grid Margin="0,10,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Описание"/>
-                    <TextBox Grid.Row="0"  Grid.Column="1" Text="{Binding Description, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
-                    <TextBlock  Grid.Row="1" Grid.Column="0" Text="Заключение"/>
-                    <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Result, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" TextWrapping="Wrap" AcceptsReturn="True" AcceptsTab="True"/>
-                    <views:DiagnosesView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" DataContext="{Binding DiagnosesEditor}" Margin="2"/>
-                </Grid>
-            </GroupBox>
-        <!--Grid for view protocol-->
-            <Grid Margin="0,10,0,0" Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
+            <DataGrid Grid.Row="0" x:Name="analyseResultsEditor" Visibility="{Binding IsEditMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" 
+                        RowHeaderWidth="0" GridLinesVisibility="None" AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
+                        ItemsSource="{Binding AnalyseResults}" 
+                        SelectedItem="{Binding SelectedAnalyseResult, Mode=TwoWay}">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Исследуемый параметр" Width="Auto" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ParameterName}" FontSize="13" FontWeight="Medium"  Margin="5,0"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Результат" Width="Auto" >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding ResultText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  
+                                                Background="{Binding Background}"
+                                                HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Ед. измерения" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox HorizontalAlignment="Stretch"
+                                            SelectedValuePath="Value" 
+                                            DisplayMemberPath="Field" 
+                                            SelectedValue="{Binding SelectedUnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            ItemsSource="{Binding Units}" Margin="5,0" FontSize="13"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Референсный интервал" Width="Auto" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ResultReference}" HorizontalAlignment="Stretch" TextAlignment="Center" Margin="5,0" FontSize="13"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Примечания" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <xctk:WatermarkTextBox Watermark="доп. информация к результату..." 
+                                        TextWrapping="Wrap" AcceptsReturn="True" Margin="5,0"
+                                        Text="{Binding Details, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="13"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Анализ:" Margin="5" FontSize="13" FontWeight="Medium" VerticalAlignment="Top"/>
-                <TextBlock Grid.Row="0"  Grid.Column="1" Text="{Binding Description}" HorizontalAlignment="Stretch"/>
-                <TextBlock  Grid.Row="1" Grid.Column="0" Text="Анализ:" Margin="5" FontSize="13" FontWeight="Medium" VerticalAlignment="Top"/>
-                <TextBlock  Grid.Row="1" Grid.Column="1" Text="{Binding Result}" HorizontalAlignment="Stretch"/>
-            </Grid>
+            <DataGrid Grid.Row="0" x:Name="analyseResultsViewer" Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                        RowHeaderWidth="0" GridLinesVisibility="None" AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
+                        ItemsSource="{Binding AnalyseResultsView}" 
+                        SelectedItem="{Binding SelectedAnalyseResultView, Mode=TwoWay}">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                <Setter Property="Background" Value="#FFE4E8EC" />
+                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Исследуемый параметр" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ParameterName}" FontSize="13" FontWeight="Medium" Margin="5"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Результат" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ResultText}" Background="{Binding Background}" TextAlignment="Center" FontSize="13" Margin="5"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Ед. измерения" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding UnitView}" FontSize="13" Margin="5"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Референсный интервал" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ResultReference}" TextAlignment="Center" FontSize="13" Margin="5"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Примечания" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Details}" Margin="5" FontSize="13"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <DockPanel Grid.Row="1" LastChildFill="True" Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                <charting:Chart Background="White" Title="Динамика изменения" Margin="0" Padding="0" Height="200"
+                                Visibility="{Binding ShowChart, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                    <charting:Chart.LegendStyle>
+                        <Style TargetType="datavis:Legend">
+                            <Setter Property="Width" Value="0" />
+                        </Style>
+                    </charting:Chart.LegendStyle>
+                    <charting:Chart.Axes>
+                        <charting:LinearAxis Orientation="Y" Title="Значение" ShowGridLines="False"/>
+                    </charting:Chart.Axes>
+                    <charting:LineSeries ItemsSource="{Binding Path=RefMinData}" IndependentValuePath="Date" DependentValuePath="Value">
+                        <charting:LineSeries.Template>
+                            <ControlTemplate TargetType="charting:LineSeries">
+                                <Canvas x:Name="PlotArea">
+                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Blue" Style="{TemplateBinding PolylineStyle}" />
+                                </Canvas>
+                            </ControlTemplate>
+                        </charting:LineSeries.Template>
+                    </charting:LineSeries>
+                    <charting:LineSeries ItemsSource="{Binding Path=RefMaxData}" IndependentValuePath="Date" DependentValuePath="Value">
+                        <charting:LineSeries.Template>
+                            <ControlTemplate TargetType="charting:LineSeries">
+                                <Canvas x:Name="PlotArea">
+                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Red" Style="{TemplateBinding PolylineStyle}" />
+                                </Canvas>
+                            </ControlTemplate>
+                        </charting:LineSeries.Template>
+                    </charting:LineSeries>
+                    <charting:LineSeries ItemsSource="{Binding Path=ChartData}" IndependentValuePath="Date" DependentValuePath="Value">
+                        <charting:LineSeries.Template>
+                            <ControlTemplate TargetType="charting:LineSeries">
+                                <Canvas x:Name="PlotArea">
+                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Green" Style="{TemplateBinding PolylineStyle}" />
+                                </Canvas>
+                            </ControlTemplate>
+                        </charting:LineSeries.Template>
+                    </charting:LineSeries>
+                    <charting:Chart.Template>
+                        <ControlTemplate TargetType="charting:Chart">
+                            <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                                <DockPanel LastChildFill="True" Margin="5">
+                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                                        <Separator Background="Green" BorderBrush="Green" BorderThickness="6" Width="20" Margin="50,2,2,2"/>
+                                        <TextBlock Text="{Binding SelectedParameter}" TextAlignment="Center" FontSize="13" FontWeight="Medium"/>
+                                        <Separator Background="Red" BorderBrush="Red" BorderThickness="6" Width="20" Margin="20,2,2,2"/>
+                                        <TextBlock Text="Макс. референсный предел" TextAlignment="Center" FontSize="13" FontWeight="Medium"/>
+                                        <Separator Background="Blue" BorderBrush="Blue" BorderThickness="6" Width="20" Margin="20,2,2,2"/>
+                                        <TextBlock Text="Мин. референсный предел" TextAlignment="Center" FontSize="13" FontWeight="Medium"/>
+                                    </StackPanel>
+
+                                    <chartingprimitives:EdgePanel x:Name="ChartArea" Style="{TemplateBinding ChartAreaStyle}">
+                                        <Grid Canvas.ZIndex="-1" Style="{TemplateBinding PlotAreaStyle}" />
+                                        <Border Canvas.ZIndex="10" BorderThickness="0" />
+                                    </chartingprimitives:EdgePanel>
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </charting:Chart.Template>
+                </charting:Chart>
+            </DockPanel>
+
         </Grid>
     </DataTemplate>
 </ResourceDictionary>
