@@ -28,9 +28,35 @@ namespace Core.Extensions
             return false;
         }
 
+        public static bool IsSameOrParentOf<TItem>(this TItem item, TItem child) where TItem : class, IHierarchyItem
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
+            if (child == null)
+            {
+                throw new ArgumentNullException("child");
+            }
+            return item.Equals(child) || item.IsParentOf(child);
+        }
+
         public static bool IsChildOf<TItem>(this TItem item, TItem parent) where TItem : class, IHierarchyItem
         {
             return parent.IsParentOf(item);
+        }
+
+        public static bool IsSameOrChildOf<TItem>(this TItem item, TItem parent) where TItem : class, IHierarchyItem
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+            return item.Equals(parent) || item.IsChildOf(parent);
         }
 
         public static IEnumerable<TItem> GetAllParents<TItem>(this TItem item, bool takeItself = false) where TItem : class, IHierarchyItem<TItem>
@@ -62,10 +88,13 @@ namespace Core.Extensions
             {
                 result.Add(item);
             }
-            result.AddRange(item.Children);
-            foreach (var child in item.Children)
+            if (item.Children != null)
             {
-                result.AddRange(child.GetAllChildren());
+                result.AddRange(item.Children);
+                foreach (var child in item.Children)
+                {
+                    result.AddRange(child.GetAllChildren());
+                }
             }
             return result;
         }

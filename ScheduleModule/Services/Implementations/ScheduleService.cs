@@ -20,10 +20,8 @@ namespace ScheduleModule.Services
 
         private readonly IEnvironment environment;
 
-        private readonly ICacheService cacheService;
-
         public ScheduleService(IDbContextProvider contextProvider, IEnvironment environment, ICacheService cacheService)
-            : base(contextProvider)
+            : base(contextProvider, cacheService)
         {
             if (contextProvider == null)
             {
@@ -38,41 +36,7 @@ namespace ScheduleModule.Services
                 throw new ArgumentNullException("cacheService");
             }
             this.environment = environment;
-            this.cacheService = cacheService;
             this.contextProvider = contextProvider;
-        }
-
-        public IEnumerable<Room> GetRooms()
-        {
-            return cacheService.GetItems<Room>();
-        }
-
-        public IEnumerable<RecordType> GetRecordTypes()
-        {
-            return cacheService.GetItems<RecordType>().Where(x => x.ParentId == null && x.IsRecord)
-                .Select(Copy)
-                .Where(x => x != null)
-                .ToArray();
-        }
-
-        private RecordType Copy(RecordType recordType)
-        {
-            if (recordType.Assignable == null)
-            {
-                return null;
-            }
-            var result = new RecordType { Id = recordType.Id, Name = recordType.Name, Assignable = recordType.Assignable };
-            var children = recordType.RecordTypes1.Select(Copy).Where(x => x != null).ToList();
-            if (children.Count == 0 && result.Assignable != true)
-            {
-                return null;
-            }
-            result.RecordTypes1 = children.Count == 0 ? null : children;
-            foreach (var childRecortType in children)
-            {
-                childRecortType.RecordType1 = result;
-            }
-            return result;
         }
 
         public ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date)
@@ -299,14 +263,14 @@ namespace ScheduleModule.Services
             }
         }
 
-        public async Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, int newRoomId)
+        public async Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, Room newRoom)
         {
             using (var dataContext = contextProvider.CreateNewContext())
             {
                 var assignment = dataContext.Set<Assignment>().First(x => x.Id == assignmentId);
                 assignment.AssignDateTime = newTime;
                 assignment.Duration = newDuration;
-                assignment.RoomId = newRoomId;
+                assignment.RoomId = newRoom.Id;
                 await CheckForAssignmentConflicts(dataContext, assignment);
                 await dataContext.SaveChangesAsync();
             }

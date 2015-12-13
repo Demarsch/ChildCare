@@ -7,9 +7,19 @@ using Core.Misc;
 namespace Core.Data
 {
     [DebuggerDisplay("{Id} - {Name}")]
-    public partial class RecordType : IHierarchyItem<RecordType>, IHierarchyItem
+    public partial class RecordType : IHierarchyItem<RecordType>
     {
-        public static readonly Predicate<object> AssignableRecordTypeSelectionPredicate = x => ((RecordType)x).Assignable == true;
+        public static readonly Predicate<object> AssignableRecordTypeSelectorPredicate = AssignableRecordTypeSelector;
+
+        private static bool AssignableRecordTypeSelector(object obj)
+        {
+            var recordType = (RecordType)obj;
+            if (recordType == null)
+            {
+                return false;
+            }
+            return recordType.Assignable == true;
+        }
 
         public static readonly Func<object, string, bool> AssignableRecordTypeFilterPredicate = AssignableRecordTypeFilter;
 
@@ -29,5 +39,32 @@ namespace Core.Data
         public IEnumerable<RecordType> Children { get { return RecordTypes1; } }
 
         public RecordType Parent { get { return RecordType1; } }
+
+        protected bool Equals(RecordType other)
+        {
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+            return Equals((RecordType)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
     }
 }

@@ -225,6 +225,15 @@ namespace Core.Wpf.Controls
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             Loaded -= OnLoaded;
+            EnsureComboboxIsCreated();
+        }
+
+        private void EnsureComboboxIsCreated()
+        {
+            if (comboBoxPlaceholder.Content != null)
+            {
+                return;
+            }
             var isInRibbon = this.FindAncestor<Ribbon>() != null;
             var comboBox = isInRibbon ? new Fluent.ComboBox { IsEditable = false } : new ComboBox();
             comboBox.MaxDropDownHeight = 0.0;
@@ -369,6 +378,7 @@ namespace Core.Wpf.Controls
 
         private void SelectItemInCombobox(object newValue)
         {
+            EnsureComboboxIsCreated();
             var comboBox = (ComboBox)comboBoxPlaceholder.Content;
             if (newValue == null)
             {

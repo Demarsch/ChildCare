@@ -1,6 +1,7 @@
 ﻿using System;
 using Core.Data;
 using Core.Misc;
+using Core.Services;
 
 namespace ScheduleModule.ViewModels
 {
@@ -10,17 +11,25 @@ namespace ScheduleModule.ViewModels
 
         private DateTime date;
 
-        public WorkingTimeViewModel(ScheduleItem scheduleItem, DateTime date)
+        public WorkingTimeViewModel(ScheduleItem scheduleItem, DateTime date, ICacheService cacheService)
         {
             if (scheduleItem == null)
+            {
                 throw new ArgumentNullException("scheduleItem");
+            }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
             this.scheduleItem = scheduleItem;
             this.date = date.Date;
+            Room = cacheService.GetItemById<Room>(scheduleItem.RoomId);
+            RecordType = scheduleItem.RecordTypeId == null ? null : cacheService.GetItemById<RecordType>(scheduleItem.RecordTypeId.Value);
         }
 
-        public int RoomId { get { return scheduleItem.RoomId; } }
+        public Room Room { get; private set; }
 
-        public int RecordTypeId { get { return scheduleItem.RecordTypeId.Value; } }
+        public RecordType RecordType { get; set; }
 
         public DateTime StartTime { get { return date.Add(scheduleItem.StartTime); } }
 

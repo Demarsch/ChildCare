@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Core.Data;
 using Core.Misc;
 using Prism.Mvvm;
 
@@ -23,14 +24,14 @@ namespace ScheduleEditorModule.ViewModels
             set { SetProperty(ref isChanged, value); }
         }
 
-        private int recordTypeId;
+        private RecordType recordType;
 
-        public int RecordTypeId
+        public RecordType RecordType
         {
-            get { return recordTypeId; }
+            get { return recordType; }
             set
             {
-                if (SetProperty(ref recordTypeId, value))
+                if (SetProperty(ref recordType, value))
                 {
                     IsChanged = true;
                 };

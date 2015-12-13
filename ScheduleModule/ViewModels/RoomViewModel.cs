@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Navigation;
 using Core.Data;
+using Core.Extensions;
 using Core.Misc;
-using Core.Services;
 using Core.Wpf.Mvvm;
 using Prism.Mvvm;
 using ScheduleModule.Services;
@@ -13,13 +13,9 @@ namespace ScheduleModule.ViewModels
 {
     public class RoomViewModel : BindableBase
     {
-        private readonly Room room;
-
         private readonly IScheduleService scheduleService;
 
-        private readonly ICacheService cacheService;
-
-        public RoomViewModel(Room room, IScheduleService scheduleService, ICacheService cacheService)
+        public RoomViewModel(Room room, IScheduleService scheduleService)
         {
             if (room == null)
             {
@@ -29,13 +25,8 @@ namespace ScheduleModule.ViewModels
             {
                 throw new ArgumentNullException("scheduleService");
             }
-            if (cacheService == null)
-            {
-                throw new ArgumentNullException("cacheService");
-            }
-            this.cacheService = cacheService;
             this.scheduleService = scheduleService;
-            this.room = room;
+            Room = room;
             //TODO: these values are used to avoid exception when TimelinePanel.Height becomes negative when bound to the same default DateTime value
             //TODO: probably worth using fallback value on binding side
             openTime = DateTime.Today.AddHours(8.0);
@@ -44,11 +35,7 @@ namespace ScheduleModule.ViewModels
             TimeSlots = new ObservableCollectionEx<ITimeInterval>();
         }
 
-        public int Id { get { return room.Id; } }
-
-        public string Number { get { return room.Number; } }
-
-        public string Name { get { return room.Name; } }
+        public Room Room { get; private set; }
 
         public ObservableCollectionEx<ITimeInterval> TimeSlots { get; private set; }
 
@@ -72,9 +59,11 @@ namespace ScheduleModule.ViewModels
         {
             get
             {
-                if (Number == null)
-                    return Name;
-                return string.Format("№{0} - {1}", Number, Name);
+                if (string.IsNullOrEmpty(Room.Number))
+                {
+                    return Room.Name;
+                }
+                return string.Format("№{0} - {1}", Room.Number, Room.Name);
             }
         }
 
@@ -86,31 +75,35 @@ namespace ScheduleModule.ViewModels
             set { SetProperty(ref workingTimes, value); }
         }
 
-        public bool AllowsRecordType(int recordTypeId)
+        public bool AllowsRecordType(RecordType recordType)
         {
-            return workingTimes.Any(x => x.RecordTypeId == recordTypeId);
+            if (recordType == null)
+            {
+                return false;
+            }
+            return workingTimes.Any(x => x.RecordType.IsSameOrParentOf(recordType));
         }
 
-        public void BuildScheduleGrid(DateTime date, int? selectedRoomId, int? selectedRecordTypeId)
+        public void BuildScheduleGrid(DateTime date, Room selectedRoom, RecordType selectedRecordType)
         {
             foreach (var freeTimeSlot in TimeSlots.OfType<FreeTimeSlotViewModel>())
             {
                 freeTimeSlot.AssignmentCreationRequested -= FreeTimeSlotOnAssignmentCreationRequested;
             }
-            if (!selectedRecordTypeId.HasValue || (selectedRoomId.HasValue && selectedRoomId.Value != Id) || !AllowsRecordType(selectedRecordTypeId.Value))
+            if (selectedRecordType == null || (selectedRoom != null && selectedRoom != Room) || !AllowsRecordType(selectedRecordType))
             {
                 TimeSlots.RemoveWhere(x => x is FreeTimeSlotViewModel);
                 return;
             }
-            var recordType = cacheService.GetItemById<RecordType>(selectedRecordTypeId.Value);
-            var availableTimeIntervals = scheduleService.GetAvailableTimeIntervals(
-                workingTimes.Where(x => x.RecordTypeId == selectedRecordTypeId.Value),
-                TimeSlots.OfType<OccupiedTimeSlotViewModel>(), 
-                recordType.Duration, 
-                recordType.MinDuration);
-            var freeTimeSlots = availableTimeIntervals.Select(x => new FreeTimeSlotViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordTypeId.Value, Id)).ToArray();
+            var availableTimeIntervals = scheduleService.GetAvailableTimeIntervals(workingTimes.Where(x => x.RecordType.IsSameOrParentOf(selectedRecordType)),
+                                                                                   TimeSlots.OfType<OccupiedTimeSlotViewModel>(),
+                                                                                   selectedRecordType.Duration,
+                                                                                   selectedRecordType.MinDuration);
+            var freeTimeSlots = availableTimeIntervals.Select(x => new FreeTimeSlotViewModel(date.Add(x.StartTime), date.Add(x.EndTime), selectedRecordType, Room)).ToArray();
             foreach (var freeTimeSlot in freeTimeSlots)
+            {
                 freeTimeSlot.AssignmentCreationRequested += FreeTimeSlotOnAssignmentCreationRequested;
+            }
             TimeSlots.AddRange(freeTimeSlots);
         }
 

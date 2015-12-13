@@ -21,6 +21,16 @@
 
         #endregion
 
+        #region Assignments
+
+        public static readonly string EditAssignments = "Редактирование назначений";
+
+        public static readonly string EditSchedule = "Редактирование расписания";
+
+        public static readonly string DeleteTemporaryAssignments = "Удаление временных назначений";
+
+        #endregion
+
         public readonly static string ChangeRecordParentVisit = "Изменить родительский случай";
 
         public readonly static string ChangeRecordRoom = "Изменить кабинет услуги";

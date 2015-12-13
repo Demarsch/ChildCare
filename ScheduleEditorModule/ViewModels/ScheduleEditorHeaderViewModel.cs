@@ -10,26 +10,19 @@ using Shell.Shared;
 
 namespace ScheduleEditorModule.ViewModels
 {
-    public class ScheduleEditorHeaderViewModel : BindableBase, IActiveAware, IDisposable
+    public class ScheduleEditorHeaderViewModel : BindableBase, IActiveAware
     {
         private readonly IRegionManager regionManager;
-
-        private readonly IEventAggregator eventAggregator;
 
         private readonly IViewNameResolver viewNameResolver;
 
         public ScheduleEditorHeaderViewModel(IRegionManager regionManager,
-                                             IEventAggregator eventAggregator,
                                              IViewNameResolver viewNameResolver,
                                              ScheduleEditorContentViewModel scheduleEditorContentViewModel)
         {
             if (regionManager == null)
             {
                 throw new ArgumentNullException("regionManager");
-            }
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException("eventAggregator");
             }
             if (viewNameResolver == null)
             {
@@ -40,28 +33,8 @@ namespace ScheduleEditorModule.ViewModels
                 throw new ArgumentNullException("scheduleEditorContentViewModel");
             }
             this.regionManager = regionManager;
-            this.eventAggregator = eventAggregator;
             this.viewNameResolver = viewNameResolver;
             ScheduleEditorContentViewModel = scheduleEditorContentViewModel;
-            SubscribeToEvents();
-        }
-
-        private int patientId;
-
-        private void OnPatientSelected(int patientId)
-        {
-            this.patientId = patientId;
-            ActivateContent();
-        }
-
-        private void SubscribeToEvents()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
-        }
-
-        private void UnsubscriveFromEvents()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
         }
 
         public ScheduleEditorContentViewModel ScheduleEditorContentViewModel { get; private set; }
@@ -93,10 +66,5 @@ namespace ScheduleEditorModule.ViewModels
         }
 
         public event EventHandler IsActiveChanged = delegate { };
-
-        public void Dispose()
-        {
-            UnsubscriveFromEvents();
-        }
     }
 }

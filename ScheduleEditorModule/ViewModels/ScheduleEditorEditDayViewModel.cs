@@ -11,6 +11,7 @@ using Core.Services;
 using Core.Wpf.Mvvm;
 using Prism.Commands;
 using Prism.Mvvm;
+using Shared.Schedule.Services;
 using Shell.Shared;
 
 namespace ScheduleEditorModule.ViewModels
@@ -19,16 +20,21 @@ namespace ScheduleEditorModule.ViewModels
     {
         private readonly ICacheService cacheService;
 
-        public ScheduleEditorEditDayViewModel(ICacheService cacheService)
+        public ScheduleEditorEditDayViewModel(IScheduleServiceBase scheduleServiceBase, ICacheService cacheService)
         {
             if (cacheService == null)
             {
                 throw new ArgumentNullException("cacheService");
             }
+            if (scheduleServiceBase == null)
+            {
+                throw new ArgumentNullException("scheduleServiceBase");
+            }
             this.cacheService = cacheService;
             AllowedRecordTypes = new ObservableCollectionEx<ScheduleEditorEditRecordTypeViewModel>();
             AllowedRecordTypes.CollectionChanged += OnAllowedRecordTypesChanged;
-            AssignableRecordTypes = cacheService.GetItems<RecordType>().Where(x => x.Assignable.GetValueOrDefault()).ToArray();
+            AssignableRecordTypes = scheduleServiceBase.GetRecordTypes();
+            allAssignableRecortTypes = AssignableRecordTypes.SelectMany(x => x.GetAllChildren(true)).ToArray();
             CloseCommand = new DelegateCommand<bool?>(Close);
             addRecordTypeCommand = new DelegateCommand(AddRecordType, CanAddRecordType);
             ClearRecordTypesCommand = new DelegateCommand(ClearRecordTypes);
@@ -50,7 +56,9 @@ namespace ScheduleEditorModule.ViewModels
 
         public ObservableCollectionEx<ScheduleEditorEditRecordTypeViewModel> AllowedRecordTypes { get; private set; }
 
-        public ICollection<RecordType> AssignableRecordTypes { get; private set; }
+        public IEnumerable<RecordType> AssignableRecordTypes { get; private set; }
+
+        private readonly RecordType[] allAssignableRecortTypes; 
 
         public IEnumerable<ScheduleEditorScheduleItemViewModel> ScheduleItems
         {
@@ -60,7 +68,7 @@ namespace ScheduleEditorModule.ViewModels
                                                                                                    {
                                                                                                        StartTime = y.StartTime,
                                                                                                        EndTime = y.EndTime,
-                                                                                                       RecordTypeId = x.RecordTypeId
+                                                                                                       RecordTypeId = x.RecordType.Id
                                                                                                    })).ToList();
                 foreach (var scheduleItem in scheduleItems)
                 {
@@ -86,10 +94,14 @@ namespace ScheduleEditorModule.ViewModels
             }
             set
             {
-                AllowedRecordTypes.Replace(
-                                           value.Where(x => x.RecordTypeId != 0)
+                AllowedRecordTypes.Replace(value.Where(x => x.RecordTypeId != 0)
                                                 .GroupBy(x => x.RecordTypeId)
-                                                .Select(x => new ScheduleEditorEditRecordTypeViewModel { RecordTypeId = x.Key, TimeIntervals = x, IsChanged = false }));
+                                                .Select(x => new ScheduleEditorEditRecordTypeViewModel
+                                                             {
+                                                                 RecordType = cacheService.GetItemById<RecordType>(x.Key), 
+                                                                 TimeIntervals = x, 
+                                                                 IsChanged = false
+                                                             }));
             }
         }
 
@@ -187,11 +199,11 @@ namespace ScheduleEditorModule.ViewModels
 
         private void AddRecordType()
         {
-            var usedRecordTypes = new HashSet<int>(AllowedRecordTypes.Select(x => x.RecordTypeId));
-            var firstUnusedRecordType = AssignableRecordTypes.Select(x => x.Id).FirstOrDefault(x => !usedRecordTypes.Contains(x));
+            var usedRecordTypes = new HashSet<RecordType>(AllowedRecordTypes.Select(x => x.RecordType));
+            var firstUnusedRecordType = allAssignableRecortTypes.FirstOrDefault(x => !usedRecordTypes.Contains(x));
             AllowedRecordTypes.Add(new ScheduleEditorEditRecordTypeViewModel
                                    {
-                                       RecordTypeId = firstUnusedRecordType, 
+                                       RecordType = firstUnusedRecordType, 
                                        Times = ConfigurationManager.AppSettings[ApplicationSettings.DefaultRecordTypeTime]
                                    });
             addRecordTypeCommand.RaiseCanExecuteChanged();
@@ -199,7 +211,7 @@ namespace ScheduleEditorModule.ViewModels
 
         private bool CanAddRecordType()
         {
-            return AllowedRecordTypes.Select(x => x.RecordTypeId).Distinct().Count() < AssignableRecordTypes.Count;
+            return AllowedRecordTypes.Select(x => x.RecordType).Distinct().Count() < allAssignableRecortTypes.Length;
         }
 
         public ICommand ClearRecordTypesCommand { get; private set; }

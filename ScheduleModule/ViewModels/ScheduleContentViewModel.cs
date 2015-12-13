@@ -107,7 +107,7 @@ namespace ScheduleModule.ViewModels
             CancelAssignmentMovementCommand = new DelegateCommand(CancelAssignmentMovement);
             ChangeDateCommand = new DelegateCommand<int?>(ChangeDate);
             ClearFiltersCommand = new DelegateCommand(ClearFilters, CanClearFilters);
-            unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService, cacheService);
+            unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу", Assignable = true };
             initialLoadingCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await InitialLoadingAsync()) };
             loadAssignmentsCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadAssignmentsAsync(selectedDate)) };
@@ -173,24 +173,24 @@ namespace ScheduleModule.ViewModels
                     CloseTime = OverlayAssignmentCollectionViewModel.CurrentDateRoomsCloseTime = date.Add(workingTimes.Max(x => x.Max(y => y.EndTime)));
                 }
                 UpdateTimeTickers();
-                foreach (var room in rooms)
+                foreach (var roomViewModel in rooms)
                 {
-                    room.OpenTime = OpenTime;
-                    room.CloseTime = CloseTime;
-                    foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>().Where(x => x != movedAssignment))
+                    roomViewModel.OpenTime = OpenTime;
+                    roomViewModel.CloseTime = CloseTime;
+                    foreach (var occupiedTimeSlot in roomViewModel.TimeSlots.OfType<OccupiedTimeSlotViewModel>().Where(x => x != movedAssignment))
                     {
                         occupiedTimeSlot.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                         occupiedTimeSlot.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                         occupiedTimeSlot.MoveRequested -= RoomOnAssignmentMoveRequested;
                     }
-                    room.TimeSlots.Replace(assignments[room.Id].Select(x => new OccupiedTimeSlotViewModel(x, environment, securityService)));
-                    foreach (var occupiedTimeSlot in room.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
+                    roomViewModel.TimeSlots.Replace(assignments[roomViewModel.Room.Id].Select(x => new OccupiedTimeSlotViewModel(x, environment, securityService, cacheService)));
+                    foreach (var occupiedTimeSlot in roomViewModel.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
                     {
                         occupiedTimeSlot.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
                         occupiedTimeSlot.UpdateRequested += RoomOnAssignmentUpdateRequested;
                         occupiedTimeSlot.MoveRequested += RoomOnAssignmentMoveRequested;
                     }
-                    room.WorkingTimes = workingTimes[room.Id].Select(x => new WorkingTimeViewModel(x, date)).ToArray();
+                    roomViewModel.WorkingTimes = workingTimes[roomViewModel.Room.Id].Select(x => new WorkingTimeViewModel(x, date, cacheService)).ToArray();
                 }
             }
             catch (Exception ex)
@@ -224,7 +224,7 @@ namespace ScheduleModule.ViewModels
             {
                 await Task.Run((Action)FillCache);
                 var newRooms = await Task.Run((Func<IEnumerable<Room>>)scheduleService.GetRooms);
-                Rooms = new[] { unseletedRoom }.Concat(newRooms.Select(x => new RoomViewModel(x, scheduleService, cacheService))).ToArray();
+                Rooms = new[] { unseletedRoom }.Concat(newRooms.Select(x => new RoomViewModel(x, scheduleService))).ToArray();
                 foreach (var room in Rooms)
                 {
                     room.AssignmentCreationRequested += RoomOnAssignmentCreationRequested;
@@ -347,21 +347,21 @@ namespace ScheduleModule.ViewModels
                                whatToMove.StartTime,
                                whatToMove.RoomId,
                                whereToMove.StartTime,
-                               whereToMove.RoomId);
+                               whereToMove.Room.Id);
                 BusyMediator.Activate("Перенос назначения...");
-                await scheduleService.MoveAssignmentAsync(whatToMove.Id, whereToMove.StartTime, (int)whereToMove.EndTime.Subtract(whereToMove.StartTime).TotalMinutes, whereToMove.RoomId);
+                await scheduleService.MoveAssignmentAsync(whatToMove.Id, whereToMove.StartTime, (int)whereToMove.EndTime.Subtract(whereToMove.StartTime).TotalMinutes, whereToMove.Room);
                 log.Info("Successfully saved to database");
-                var whereToMoveRoom = rooms.First(x => x.Id == whereToMove.RoomId);
-                var whatToMoveRoom = rooms.First(x => x.Id == whatToMove.RoomId);
+                var whereToMoveRoom = rooms.First(x => x.Room == whereToMove.Room);
+                var whatToMoveRoom = rooms.First(x => x.Room == whatToMove.Room);
                 whereToMove.AssignmentCreationRequested -= whereToMoveRoom.FreeTimeSlotOnAssignmentCreationRequested;
                 whereToMoveRoom.TimeSlots.Remove(whereToMove);
-                if (whatToMove.RoomId != whereToMove.RoomId || whatToMove.StartTime.Date != whereToMove.StartTime.Date)
+                if (whatToMove.Room != whereToMove.Room || whatToMove.StartTime.Date != whereToMove.StartTime.Date)
                 {
                     whatToMoveRoom.TimeSlots.Remove(whatToMove);
                     whereToMoveRoom.TimeSlots.Add(whatToMove);
                 }
                 whatToMove.UpdateTime(whereToMove.StartTime, whereToMove.EndTime);
-                whatToMove.RoomId = whereToMove.RoomId;
+                whatToMove.RoomId = whereToMove.Room.Id;
                 CancelAssignmentMovement();
                 log.Info("Movement completed");
                 ClearScheduleGrid();
@@ -412,7 +412,7 @@ namespace ScheduleModule.ViewModels
                                        Note = assignment.Note,
                                        FinancingSourceId = assignment.FinancingSourceId
                                    };
-            var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment, securityService);
+            var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment, securityService, cacheService);
             newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
             newAssignment.UpdateRequested += RoomOnAssignmentUpdateRequested;
             newAssignment.MoveRequested += RoomOnAssignmentMoveRequested;
@@ -488,10 +488,10 @@ namespace ScheduleModule.ViewModels
         private async Task<Assignment> CreateTemporaryAssignmentAsync(RoomViewModel selectedRoom, FreeTimeSlotViewModel freeTimeSlot)
         {
             log.InfoFormat("Trying to create new assignment: room Id  {0}, start time is {1:dd.MM HH:mm}, proposed duration {2}, record type Id {3}",
-                           freeTimeSlot.RoomId,
+                           freeTimeSlot.Room.Id,
                            freeTimeSlot.StartTime,
                            (int)freeTimeSlot.EndTime.Subtract(freeTimeSlot.StartTime).TotalMinutes,
-                           freeTimeSlot.RecordTypeId);
+                           freeTimeSlot.RecordType.Id);
             var financingSource = GetFinancingSource();
             if (financingSource == 0)
             {
@@ -519,8 +519,8 @@ namespace ScheduleModule.ViewModels
                                  Note = string.Empty,
                                  FinancingSourceId = financingSource,
                                  PersonId = currentPatientId,
-                                 RecordTypeId = freeTimeSlot.RecordTypeId,
-                                 RoomId = selectedRoom.Id,
+                                 RecordTypeId = freeTimeSlot.RecordType.Id,
+                                 RoomId = selectedRoom.Room.Id,
                                  IsTemporary = true,
                                  UrgentlyId = plannedUrgency.Id,
                                  ExecutionPlaceId = polyclinicPlace.Id
@@ -562,7 +562,7 @@ namespace ScheduleModule.ViewModels
                     assignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                     assignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                     assignment.MoveRequested -= RoomOnAssignmentMoveRequested;
-                    rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
+                    rooms.First(x => x.Room == assignment.Room).TimeSlots.Remove(assignment);
                     ClearScheduleGrid();
                     BuildScheduleGrid();
                     log.Info("Temporary assignment was manually deleted");
@@ -594,7 +594,7 @@ namespace ScheduleModule.ViewModels
                     }
                     log.InfoFormat("Trying to cancel assignment (Id = {0})", assignment.Id);
                     await scheduleService.CancelAssignmentAsync(assignment.Id);
-                    rooms.First(x => x.Id == assignment.RoomId).TimeSlots.Remove(assignment);
+                    rooms.First(x => x.Room == assignment.Room).TimeSlots.Remove(assignment);
                     ClearScheduleGrid();
                     BuildScheduleGrid();
                     log.Info("Assignment was canceled");
@@ -860,13 +860,13 @@ namespace ScheduleModule.ViewModels
             {
                 return;
             }
-            if (!securityService.HasPermission(Privilegies.EditAssignments))
+            if (!securityService.HasPermission(Permission.EditAssignments))
             {
                 return;
             }
             foreach (var room in rooms)
             {
-                room.BuildScheduleGrid(selectedDate, isRoomSelected ? (int?)selectedRoom.Id : null, isRecordTypeSelected ? (int?)selectedRecordType.Id : null);
+                room.BuildScheduleGrid(selectedDate, isRoomSelected ? selectedRoom.Room : null, isRecordTypeSelected ? selectedRecordType : null);
             }
             UpdateAssignmentsReadOnlyMode();
             log.Info("Schedule grid is built");
@@ -893,7 +893,7 @@ namespace ScheduleModule.ViewModels
             {
                 return false;
             }
-            return (!isRoomSelected || room.Id == selectedRoom.Id) && (!isRecordTypeSelected || room.AllowsRecordType(selectedRecordType.Id));
+            return (!isRoomSelected || room == selectedRoom) && (!isRecordTypeSelected || room.AllowsRecordType(selectedRecordType));
         }
 
         #endregion
