@@ -120,10 +120,10 @@
                                                         VerticalAlignment="Stretch">
                                                 <TextBlock HorizontalAlignment="Center"
                                                            Margin="3"
-                                                           Text="{Binding Number, StringFormat='#{0}', Mode=OneTime}" />
+                                                           Text="{Binding Room.Number, StringFormat='#{0}', Mode=OneTime}" />
                                                 <TextBlock HorizontalAlignment="Center"
                                                            Margin="3"
-                                                           Text="{Binding Name, Mode=OneTime}"
+                                                           Text="{Binding Room.Name, Mode=OneTime}"
                                                            MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Border}}}"
                                                            TextWrapping="WrapWithOverflow" />
                                             </StackPanel>

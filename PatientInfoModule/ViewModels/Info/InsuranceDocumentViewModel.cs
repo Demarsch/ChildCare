@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using Core.Data;
@@ -250,7 +251,8 @@ namespace PatientInfoModule.ViewModels
                     return string.Empty;
                 }
                 var result = new StringBuilder();
-                result.Append(cacheService.GetItemById<InsuranceDocumentType>(documentTypeId.Value).Name);
+                var insuranceDocumentType = cacheService.GetItemById<InsuranceDocumentType>(documentTypeId.Value);
+                result.Append(insuranceDocumentType.Name);
                 if (!string.IsNullOrWhiteSpace(series))
                 {
                     result.Append(' ')
@@ -263,7 +265,8 @@ namespace PatientInfoModule.ViewModels
                 }
                 if (insuranceCompany != null || fromDate != null)
                 {
-                    result.Append(" выдан");
+                    result.Append(' ')
+                        .Append(TryGetGrammaticallyProperWord(insuranceDocumentType));
                     if (insuranceCompany != null)
                     {
                         result.Append(' ')
@@ -290,6 +293,23 @@ namespace PatientInfoModule.ViewModels
                 }
                 return result.ToString();
             }
+        }
+
+        private string TryGetGrammaticallyProperWord(InsuranceDocumentType insuranceDocumentType)
+        {
+            const string result = "выдан";
+            var firstWord = insuranceDocumentType.Name.Split(' ').First();
+            if (firstWord.EndsWith("о", StringComparison.CurrentCultureIgnoreCase)
+                || firstWord.EndsWith("е", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "выдано";
+            }
+            if (firstWord.EndsWith("а", StringComparison.CurrentCultureIgnoreCase)
+                || firstWord.EndsWith("я", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "выдана";
+            }
+            return result;
         }
 
         #region IDataErrorInfo validation

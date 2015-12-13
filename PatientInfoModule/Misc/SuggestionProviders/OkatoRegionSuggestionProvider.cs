@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using Core.Data;
+using Core.Expressions;
 using Core.Misc;
 using Core.Services;
 using WpfControls.Editors;
@@ -19,9 +20,11 @@ namespace PatientInfoModule.Misc
                 throw new ArgumentNullException("cacheService");
             }
             regions = cacheService.GetItems<Okato>()
-                .Where(x => x.CodeOKATO.EndsWith("000000000") || x.CodeOKATO.StartsWith("C"))
-                .ToArray();
+                                  .Where(x => x.CodeOKATO.EndsWith("000000000") || x.CodeOKATO.StartsWith("C"))
+                                  .ToArray();
         }
+
+        private readonly char[] separators = { ' ' };
 
         public IEnumerable GetSuggestions(string filter)
         {
@@ -30,7 +33,9 @@ namespace PatientInfoModule.Misc
             {
                 return new Okato[0];
             }
-            return regions.Where(x => x.FullName.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) != -1);
+            var words = filter.Trim().Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            return regions.Where(x => words.All(y => x.FullName.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
+                          .Take(AppConfiguration.SearchResultTakeTopCount);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Services;
+using Core.Services;
 using Shared.Schedule.Services;
 
 namespace ScheduleEditorModule.Services
@@ -13,8 +14,8 @@ namespace ScheduleEditorModule.Services
     {
         private readonly IDbContextProvider contextProvider;
 
-        public ScheduleEditorService(IDbContextProvider contextProvider)
-            : base(contextProvider)
+        public ScheduleEditorService(IDbContextProvider contextProvider, ICacheService cacheService)
+            : base(contextProvider, cacheService)
         {
             if (contextProvider == null)
             {

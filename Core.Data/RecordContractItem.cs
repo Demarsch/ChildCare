@@ -27,7 +27,7 @@ namespace Core.Data
     
         public virtual PersonStaff PersonStaff { get; set; }
         public virtual RecordContract RecordContract { get; set; }
-        public virtual RecordType RecordType { get; set; }
         public virtual Assignment Assignment { get; set; }
+        public virtual RecordType RecordType { get; set; }
     }
 }

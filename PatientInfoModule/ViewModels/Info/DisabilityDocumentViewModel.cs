@@ -279,7 +279,7 @@ namespace PatientInfoModule.ViewModels
                 }
                 if (!string.IsNullOrWhiteSpace(givenOrgText) || !string.IsNullOrWhiteSpace(givenOrg) || fromDate != null)
                 {
-                    result.Append(" выдан");
+                    result.Append(" подтверждено");
                     if (!string.IsNullOrWhiteSpace(givenOrg))
                     {
                         result.Append(' ')

@@ -119,7 +119,6 @@
     <Compile Include="Exceptions\AssignmentConflictException.cs" />
     <Compile Include="Exceptions\SamePatientAssignmentConflictException.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
-    <Compile Include="Misc\Privilegies.cs" />
     <Compile Include="Misc\UIConfiguration.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

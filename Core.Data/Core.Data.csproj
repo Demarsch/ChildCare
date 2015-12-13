@@ -83,7 +83,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Classes\PermissionType.cs" />
     <Compile Include="Classes\RecordTypesTreeQueryItem.cs" />
     <Compile Include="Classes\UserSystemInfo.cs" />
     <Compile Include="CommissionDecision.cs">
@@ -142,7 +141,21 @@
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
+    <Compile Include="PartialClasses\Permission.cs" />
+    <Compile Include="PartialClasses\PermissionGroup.cs" />
+    <Compile Include="PermissionGroup.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PermissionGroupMembership.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Record.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RecordEquipment.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Services\Interfaces\IEnvironment.cs" />
@@ -173,9 +186,6 @@
     <Compile Include="PartialClasses\RelativeRelationship.cs" />
     <Compile Include="PartialClasses\Urgently.cs" />
     <Compile Include="PersonDiagnos.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Record.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordContract.cs">
@@ -267,9 +277,6 @@
     <Compile Include="Permission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="PermissionLink.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Person.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -319,9 +326,6 @@
     <Compile Include="RecordContractLimit.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="RecordType.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="RecordTypeCost.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -361,7 +365,7 @@
     <Compile Include="UserMessageType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="UserPermission.cs">
+    <Compile Include="UserPermisionGroup.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Visit.cs">

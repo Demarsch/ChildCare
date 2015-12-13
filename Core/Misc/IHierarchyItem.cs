@@ -8,4 +8,11 @@ namespace Core.Misc
 
         IEnumerable<IHierarchyItem> Children { get; }
     }
+
+    public interface IHierarchyItem<out TItem> : IHierarchyItem where TItem : IHierarchyItem
+    {
+        new TItem Parent { get; }
+
+        new IEnumerable<TItem> Children { get; } 
+    }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Core.Data;
 using Prism.Modularity;
 using Shell.Shared;
 using Microsoft.Practices.Unity;
@@ -14,11 +12,14 @@ using Core.Reports;
 namespace AdminModule
 {
     [Module(ModuleName = WellKnownModuleNames.AdminModule, OnDemand = true)]
+    [PermissionRequired(Permission.AdminModuleAccess)]
     public class Module : IModule
     {
-        IUnityContainer container;
-        IRegionManager regionManager;
-        IViewNameResolver viewNameResolver;
+        private readonly IUnityContainer container;
+
+        private readonly IRegionManager regionManager;
+
+        private readonly IViewNameResolver viewNameResolver;
 
         public Module(IUnityContainer container, IRegionManager regionManager, IViewNameResolver viewNameResolver)
         {

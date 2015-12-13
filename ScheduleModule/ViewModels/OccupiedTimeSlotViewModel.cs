@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Data;
 using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
@@ -17,7 +18,9 @@ namespace ScheduleModule.ViewModels
 
         private readonly ISecurityService securityService;
 
-        public OccupiedTimeSlotViewModel(ScheduledAssignmentDTO assignment, IEnvironment environment, ISecurityService securityService)
+        private readonly ICacheService cacheService;
+
+        public OccupiedTimeSlotViewModel(ScheduledAssignmentDTO assignment, IEnvironment environment, ISecurityService securityService, ICacheService cacheService)
         {
             if (assignment == null)
             {
@@ -31,7 +34,12 @@ namespace ScheduleModule.ViewModels
             {
                 throw new ArgumentNullException("securityService");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
             this.securityService = securityService;
+            this.cacheService = cacheService;
             this.environment = environment;
             this.assignment = assignment;
             CancelOrDeleteCommand = new DelegateCommand(CancelOrDelete, CanCancelOrDelete);
@@ -54,9 +62,9 @@ namespace ScheduleModule.ViewModels
             }
             if (IsTemporary)
             {
-                return assignment.AssignUserId == environment.CurrentUser.Id || securityService.HasPrivilege(Privilegies.DeleteTemporaryAssignments);
+                return assignment.AssignUserId == environment.CurrentUser.Id || securityService.HasPermission(Permission.DeleteTemporaryAssignments);
             }
-            return securityService.HasPrivilege(Privilegies.EditAssignments);
+            return securityService.HasPermission(Permission.EditAssignments);
         }
 
         public DelegateCommand UpdateCommand { get; private set; }
@@ -76,7 +84,7 @@ namespace ScheduleModule.ViewModels
             {
                 return false;
             }
-            return securityService.HasPrivilege(Privilegies.EditAssignments);
+            return securityService.HasPermission(Permission.EditAssignments);
         }
 
         public DelegateCommand MoveCommand { get; private set; }
@@ -115,6 +123,8 @@ namespace ScheduleModule.ViewModels
                 }
             }
         }
+
+        public Room Room { get { return cacheService.GetItemById<Room>(assignment.RoomId); } }
 
         public int RecordTypeId { get { return assignment.RecordTypeId; } }
 

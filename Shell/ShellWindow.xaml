@@ -46,7 +46,7 @@
         <xctk:WindowContainer ModalBackgroundBrush="#33333333">
             <views:ChildDialogWindow x:Name="childDialogWindow"
                                      WindowStartupLocation="Center"
-                                     WindowStyle="ToolWindow"/>
+                                     WindowStyle="None"/>
         </xctk:WindowContainer>
     </Grid>
 </fluent:RibbonWindow>

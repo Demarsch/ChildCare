@@ -29,7 +29,8 @@
                Placement="Bottom"
                MaxHeight="{Binding MaxDropDownHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                x:Name="popup"
-               Closed="PopupOnClosed">
+               Closed="PopupOnClosed"
+               Opened="PopupOnOpened">
             <Border Background="White"
                     BorderBrush="Black"
                     BorderThickness="1">
@@ -224,7 +225,7 @@
                                        Text="{Binding Filter, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" />
                             <Button Template="{StaticResource CloseButtonTemplate}"
                                     HorizontalAlignment="Right"
-                                    Margin="0 0 3 3"
+                                    Margin="0 2 2 2"
                                     Click="OnClearFilterButtonClick" />
                         </Grid>
                     </Border>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using Core.Data;
 using Core.Wpf.Services;
 using log4net;
 using Microsoft.Practices.Unity;
@@ -13,6 +14,7 @@ using Shell.Shared;
 namespace ScheduleEditorModule
 {
     [Module(ModuleName = WellKnownModuleNames.ScheduleEditorModule, OnDemand = true)]
+    [PermissionRequired(Permission.ScheduleEditorModuleAccess)]
     public class Module : IModule
     {
         private readonly IUnityContainer container;

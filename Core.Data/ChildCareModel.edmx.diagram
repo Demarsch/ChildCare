@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" ZoomLevel="83" >
+      <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" ZoomLevel="62" >
         <EntityTypeShape EntityType="DataLib.AddressType" Width="1.5" PointX="6" PointY="34.125" />
         <EntityTypeShape EntityType="DataLib.Branch" Width="1.5" PointX="6" PointY="37.875" />
         <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="15.75" PointY="61.5" />
@@ -33,8 +33,6 @@
         <EntityTypeShape EntityType="DataLib.Org" Width="1.5" PointX="11.25" PointY="58.5" />
         <EntityTypeShape EntityType="DataLib.OuterDocumentType" Width="1.5" PointX="3" PointY="43.125" />
         <EntityTypeShape EntityType="DataLib.PaymentType" Width="1.5" PointX="11.25" PointY="62" />
-        <EntityTypeShape EntityType="DataLib.PermissionLink" Width="1.5" PointX="7.5" PointY="107.5" />
-        <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="5.25" PointY="98.5" />
         <EntityTypeShape EntityType="DataLib.PersonAddress" Width="1.5" PointX="8.25" PointY="57.875" />
         <EntityTypeShape EntityType="DataLib.PersonDisability" Width="1.5" PointX="8.25" PointY="50.25" />
         <EntityTypeShape EntityType="DataLib.PersonEducation" Width="1.5" PointX="11.25" PointY="46.5" />
@@ -60,7 +58,6 @@
         <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="6" PointY="61.375" />
         <EntityTypeShape EntityType="DataLib.UserMessage" Width="1.5" PointX="10.5" PointY="103.25" />
         <EntityTypeShape EntityType="DataLib.UserMessageType" Width="1.5" PointX="8.25" PointY="101" />
-        <EntityTypeShape EntityType="DataLib.UserPermission" Width="1.5" PointX="7.5" PointY="103.625" />
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="5.25" PointY="103" />
         <EntityTypeShape EntityType="DataLib.VisitOutcome" Width="1.5" PointX="15.75" PointY="74" />
         <EntityTypeShape EntityType="DataLib.VisitResult" Width="1.5" PointX="15.75" PointY="77.5" />
@@ -111,9 +108,6 @@
         <AssociationConnector Association="DataLib.FK_OuterDocumentTypes_OuterDocumentTypes" />
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_OuterDocumentTypes" />
         <AssociationConnector Association="DataLib.FK_RecordContracts_PaymentTypes" />
-        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions" />
-        <AssociationConnector Association="DataLib.FK_PermissionLinks_Permissions1" />
-        <AssociationConnector Association="DataLib.FK_UserPermissions_Permissions" />
         <AssociationConnector Association="DataLib.FK_Addresses_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonDisabilities_Persons" />
         <AssociationConnector Association="DataLib.FK_PersonEducations_Persons" />
@@ -145,7 +139,6 @@
         <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
         <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
-        <AssociationConnector Association="DataLib.FK_Permissions_Users" />
         <AssociationConnector Association="DataLib.FK_Visits_Users_RemovedByUser" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitOutcomes" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitResults" />
@@ -155,7 +148,6 @@
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Documents" />
         <AssociationConnector Association="DataLib.FK_RecordTypeCosts_FinancingSources" />
         <EntityTypeShape EntityType="DataLib.RecordTypeRolePermission" Width="1.5" PointX="18.75" PointY="47" />
-        <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" />
         <EntityTypeShape EntityType="DataLib.Complication" Width="1.5" PointX="25.875" PointY="56.75" />
         <EntityTypeShape EntityType="DataLib.Diagnosis" Width="1.5" PointX="28.125" PointY="54.5" />
@@ -193,27 +185,35 @@
         <EntityTypeShape EntityType="DataLib.RelativeRelationshipConnection" Width="2.5" PointX="0.5" PointY="7.75" />
         <AssociationConnector Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships" />
         <AssociationConnector Association="DataLib.FK_RelativeRelationshipConnections_RelativeRelationships1" />
-        <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="20.625" PointY="70" />
-        <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="0.75" PointY="38.75" />
-        <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
-        <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Records" />
-        <AssociationConnector Association="DataLib.FK_Records_Persons" />
-        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordDocuments_Records" />
-        <AssociationConnector Association="DataLib.FK_RecordMembers_Records" />
-        <AssociationConnector Association="DataLib.FK_Records_RecordPeriods" />
-        <AssociationConnector Association="DataLib.FK_Records_Records" />
-        <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_Records_Rooms" />
-        <AssociationConnector Association="DataLib.FK_Records_Urgentlies" />
-        <AssociationConnector Association="DataLib.FK_Records_Users" />
-        <AssociationConnector Association="DataLib.FK_Records_Visits" />
-        <AssociationConnector Association="DataLib.FK_RecordTypeCosts_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
-        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="22.875" PointY="68.625" />
+        <EntityTypeShape EntityType="DataLib.Eqiupment" Width="1.5" PointX="23.25" PointY="49.125" />
+        <EntityTypeShape EntityType="DataLib.EqiupmentType" Width="1.5" PointX="21" PointY="48.5" />
+        <EntityTypeShape EntityType="DataLib.RecordEquipment" Width="1.5" PointX="28.5" PointY="62.125" />
+        <AssociationConnector Association="DataLib.FK_Eqiupments_Branches" />
+        <AssociationConnector Association="DataLib.FK_Eqiupments_EqiupmentTypes" />
+        <AssociationConnector Association="DataLib.FK_Eqiupments_Rooms" />
+        <AssociationConnector Association="DataLib.FK_RecordEquipments_Eqiupments" />
+        <EntityTypeShape EntityType="DataLib.RecordTypeEditor" Width="1.5" PointX="3" PointY="29" />
+        <EntityTypeShape EntityType="DataLib.PermissionGroupMembership" Width="1.5" PointX="13.625" PointY="41.875" />
+        <EntityTypeShape EntityType="DataLib.PermissionGroup" Width="1.5" PointX="9.375" PointY="2.125" />
+        <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="2.25" PointY="75.5" />
+        <EntityTypeShape EntityType="DataLib.UserPermisionGroup" Width="1.5" PointX="16.625" PointY="43.625" />
+        <AssociationConnector Association="DataLib.FK_PermissionGroupMemberships_PermissionGroups" />
+        <AssociationConnector Association="DataLib.FK_PermissionGroupMemberships_Permissions" />
+        <AssociationConnector Association="DataLib.FK_PermissionGroups_PermissionGroups" />
+        <AssociationConnector Association="DataLib.FK_UserPermisionGroups_PermissionGroups" />
+        <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
+        <AssociationConnector Association="DataLib.FK_UserPermisionGroups_Users" />
+        <EntityTypeShape EntityType="DataLib.AnalyseRefference" Width="1.5" PointX="3" PointY="51.125" />
+        <EntityTypeShape EntityType="DataLib.AnalyseResult" Width="1.5" PointX="25.5" PointY="55.125" />
+        <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="25.5" PointY="71.875" />
+        <EntityTypeShape EntityType="DataLib.Record" Width="1.5" PointX="23.25" PointY="72.25" />
+        <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="0.75" PointY="45.5" />
+        <EntityTypeShape EntityType="DataLib.Unit" Width="1.5" PointX="23.25" PointY="55.75" />
+        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" />
+        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_Records" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_Units" />
         <AssociationConnector Association="DataLib.FK_Assignments_Assignments" />
         <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
         <AssociationConnector Association="DataLib.FK_Assignments_FinancingSources" />
@@ -229,24 +229,26 @@
         <AssociationConnector Association="DataLib.FK_Assignments_Visits" />
         <AssociationConnector Association="DataLib.FK_RecordContractItems_Assignments" />
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Assignments" />
-        <EntityTypeShape EntityType="DataLib.Eqiupment" Width="1.5" PointX="23.25" PointY="49.125" />
-        <EntityTypeShape EntityType="DataLib.EqiupmentType" Width="1.5" PointX="21" PointY="48.5" />
-        <EntityTypeShape EntityType="DataLib.RecordEquipment" Width="1.5" PointX="28.5" PointY="62.125" />
-        <AssociationConnector Association="DataLib.FK_Eqiupments_Branches" />
-        <AssociationConnector Association="DataLib.FK_Eqiupments_EqiupmentTypes" />
-        <AssociationConnector Association="DataLib.FK_Eqiupments_Rooms" />
-        <AssociationConnector Association="DataLib.FK_RecordEquipments_Eqiupments" />
+        <AssociationConnector Association="DataLib.FK_DefaultProtocols_Records" />
+        <AssociationConnector Association="DataLib.FK_PersonDiagnoses_Records" />
+        <AssociationConnector Association="DataLib.FK_Records_Persons" />
+        <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordDocuments_Records" />
         <AssociationConnector Association="DataLib.FK_RecordEquipments_Records" />
-        <EntityTypeShape EntityType="DataLib.RecordTypeEditor" Width="1.5" PointX="3" PointY="29" />
+        <AssociationConnector Association="DataLib.FK_RecordMembers_Records" />
+        <AssociationConnector Association="DataLib.FK_Records_RecordPeriods" />
+        <AssociationConnector Association="DataLib.FK_Records_Records" />
+        <AssociationConnector Association="DataLib.FK_Records_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_Records_Rooms" />
+        <AssociationConnector Association="DataLib.FK_Records_Urgentlies" />
+        <AssociationConnector Association="DataLib.FK_Records_Users" />
+        <AssociationConnector Association="DataLib.FK_Records_Visits" />
+        <AssociationConnector Association="DataLib.FK_RecordTypeCosts_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeEditors_RecordTypes" />
-        <EntityTypeShape EntityType="DataLib.AnalyseResult" Width="1.5" PointX="28.875" PointY="49.625" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_Records" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_RecordTypes" />
-        <EntityTypeShape EntityType="DataLib.Unit" Width="1.5" PointX="4.375" PointY="3.875" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_Units" />
-        <EntityTypeShape EntityType="DataLib.AnalyseRefference" Width="1.5" PointX="3" PointY="32.5" />
-        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" />
-        <AssociationConnector Association="DataLib.FK_AnalyseRefferences_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

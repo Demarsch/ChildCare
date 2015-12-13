@@ -105,7 +105,7 @@ namespace ScheduleEditorModule.ViewModels
             try
             {
                 await Task.Run((Action)FillCache);
-                Rooms = cacheService.GetItems<Room>().Select(x => new ScheduleEditorRoomViewModel(x) { CopyCommand = CopyCommand, PasteCommand = PasteCommand }).ToArray();
+                Rooms = scheduleEditorService.GetRooms().Select(x => new ScheduleEditorRoomViewModel(x) { CopyCommand = CopyCommand, PasteCommand = PasteCommand }).ToArray();
                 CreateWeekDays(selectedDate.GetWeekBegininng());
                 foreach (var roomDay in Rooms.SelectMany(x => x.Days))
                 {
@@ -165,7 +165,7 @@ namespace ScheduleEditorModule.ViewModels
         private async void RoomDayOnEditRequested(object sender, EventArgs e)
         {
             var roomDay = (ScheduleEditorRoomDayViewModel)sender;
-            using (var viewModel = new ScheduleEditorEditDayViewModel(cacheService))
+            using (var viewModel = new ScheduleEditorEditDayViewModel(scheduleEditorService, cacheService))
             {
                 viewModel.CurrentDate = roomDay.RelatedDate;
                 viewModel.CurrentRoomId = roomDay.RoomId;

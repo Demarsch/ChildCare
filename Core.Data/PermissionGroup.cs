@@ -12,32 +12,27 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class Urgently
+    public partial class PermissionGroup
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Urgently()
+        public PermissionGroup()
         {
-            this.Visits = new HashSet<Visit>();
-            this.VisitTemplates = new HashSet<VisitTemplate>();
-            this.Assignments = new HashSet<Assignment>();
-            this.Records = new HashSet<Record>();
+            this.PermissionGroupMemberships = new HashSet<PermissionGroupMembership>();
+            this.PermissionGroups1 = new HashSet<PermissionGroup>();
+            this.UserPermisionGroups = new HashSet<UserPermisionGroup>();
         }
     
         public int Id { get; set; }
+        public Nullable<int> ParentId { get; set; }
         public string Name { get; set; }
-        public string ShortName { get; set; }
-        public string PrintName { get; set; }
-        public bool IsDefalut { get; set; }
-        public System.DateTime BeginDateTime { get; set; }
-        public System.DateTime EndDateTime { get; set; }
+        public string Description { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
+        public virtual ICollection<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<VisitTemplate> VisitTemplates { get; set; }
+        public virtual ICollection<PermissionGroup> PermissionGroups1 { get; set; }
+        public virtual PermissionGroup PermissionGroup1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
+        public virtual ICollection<UserPermisionGroup> UserPermisionGroups { get; set; }
     }
 }

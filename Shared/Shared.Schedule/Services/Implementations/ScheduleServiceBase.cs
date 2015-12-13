@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Data;
 using Core.Data.Services;
 using Core.Extensions;
+using Core.Services;
 
 namespace Shared.Schedule.Services
 {
@@ -11,13 +12,20 @@ namespace Shared.Schedule.Services
     {
         private readonly IDbContextProvider contextProvider;
 
-        public ScheduleServiceBase(IDbContextProvider contextProvider)
+        private readonly ICacheService cacheService;
+
+        public ScheduleServiceBase(IDbContextProvider contextProvider, ICacheService cacheService)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
             this.contextProvider = contextProvider;
+            this.cacheService = cacheService;
         }
 
         public IEnumerable<ScheduleItem> GetRoomsWorkingTimeForDay(DateTime date)
@@ -50,6 +58,39 @@ namespace Shared.Schedule.Services
                 }
                 return result;
             }
+        }
+
+        public IEnumerable<Room> GetRooms()
+        {
+            return cacheService.GetItems<Room>();
+        }
+
+        public IEnumerable<RecordType> GetRecordTypes()
+        {
+            return cacheService.GetItems<RecordType>().Where(x => x.ParentId == null && x.IsRecord)
+                .Select(CopyRecordType)
+                .Where(x => x != null)
+                .ToArray();
+        }
+
+        private RecordType CopyRecordType(RecordType recordType)
+        {
+            if (recordType.Assignable == null)
+            {
+                return null;
+            }
+            var result = new RecordType { Id = recordType.Id, Name = recordType.Name, Assignable = recordType.Assignable };
+            var children = recordType.RecordTypes1.Select(CopyRecordType).Where(x => x != null).ToList();
+            if (children.Count == 0 && result.Assignable != true)
+            {
+                return null;
+            }
+            result.RecordTypes1 = children.Count == 0 ? null : children;
+            foreach (var childRecortType in children)
+            {
+                childRecortType.RecordType1 = result;
+            }
+            return result;
         }
     }
 }

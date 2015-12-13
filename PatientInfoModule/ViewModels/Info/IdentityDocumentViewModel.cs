@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using Core.Data;
@@ -266,7 +267,8 @@ namespace PatientInfoModule.ViewModels
                     return string.Empty;
                 }
                 var result = new StringBuilder();
-                result.Append(cacheService.GetItemById<IdentityDocumentType>(documentTypeId.Value).Name);
+                var identityDocumentType = cacheService.GetItemById<IdentityDocumentType>(documentTypeId.Value);
+                result.Append(identityDocumentType.Name);
                 if (!string.IsNullOrWhiteSpace(series))
                 {
                     result.Append(' ')
@@ -279,7 +281,8 @@ namespace PatientInfoModule.ViewModels
                 }
                 if (!string.IsNullOrWhiteSpace(givenOrgText) || !string.IsNullOrWhiteSpace(givenOrg) || fromDate != null)
                 {
-                    result.Append(" выдан");
+                    result.Append(' ')
+                          .Append(TryGetGrammaticallyProperWord(identityDocumentType));
                     if (!string.IsNullOrWhiteSpace(givenOrg))
                     {
                         result.Append(' ')
@@ -311,6 +314,23 @@ namespace PatientInfoModule.ViewModels
                 }
                 return result.ToString();
             }
+        }
+
+        private string TryGetGrammaticallyProperWord(IdentityDocumentType identityDocumentType)
+        {
+            const string result = "выдан";
+            var firstWord = identityDocumentType.Name.Split(' ').First();
+            if (firstWord.EndsWith("о", StringComparison.CurrentCultureIgnoreCase)
+                || firstWord.EndsWith("е", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "выдано";
+            }
+            if (firstWord.EndsWith("а", StringComparison.CurrentCultureIgnoreCase)
+                || firstWord.EndsWith("я", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return "выдана";
+            }
+            return result;
         }
 
         #region IDataErrorInfo validation

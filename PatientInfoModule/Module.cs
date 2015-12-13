@@ -26,6 +26,7 @@ namespace PatientInfoModule
 {
     [Module(ModuleName = WellKnownModuleNames.PatientInfoModule, OnDemand = true)]
     [ModuleDependency(WellKnownModuleNames.PatientSearchModule)]
+    [PermissionRequired(Permission.PatientInfoModuleAccess)]
     public class Module : IModule
     {
         private const string PatientIsNotSelected = "Пациент не выбран";
@@ -71,7 +72,7 @@ namespace PatientInfoModule
             {
                 throw new ArgumentNullException("log");
             }
-            this.container = container;
+            this.container = container.CreateChildContainer();
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.contextProvider = contextProvider;
@@ -175,6 +176,8 @@ namespace PatientInfoModule
 
         private void RegisterServices()
         {
+            container.RegisterInstance(LogManager.GetLogger("PATINFO"));
+
             container.RegisterType<IPatientService, PatientService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());

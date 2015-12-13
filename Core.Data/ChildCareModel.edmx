@@ -497,13 +497,22 @@
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Options" Type="varchar" MaxLength="1000" Nullable="false" />
         </EntityType>
-        <EntityType Name="PermissionLinks">
+        <EntityType Name="PermissionGroupMemberships">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PermissionId" Type="int" Nullable="false" />
+          <Property Name="GroupId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PermissionGroups">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentId" Type="int" />
-          <Property Name="ChildId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="1000" />
         </EntityType>
         <EntityType Name="Permissions">
           <Key>
@@ -511,9 +520,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="Description" Type="varchar" MaxLength="8000" Nullable="false" />
-          <Property Name="IsGroup" Type="bit" Nullable="false" />
-          <Property Name="ReadOnly" Type="bit" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="8000" />
         </EntityType>
         <EntityType Name="PersonAddresses">
           <Key>
@@ -997,16 +1004,13 @@
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
-        <EntityType Name="UserPermissions">
+        <EntityType Name="UserPermisionGroups">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="PermissionId" Type="int" Nullable="false" />
-          <Property Name="IsGranted" Type="bit" Nullable="false" />
-          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
-          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+          <Property Name="PermissionGroupId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -1754,39 +1758,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PermissionLinks_Permissions">
-          <End Role="Permissions" Type="Self.Permissions" Multiplicity="0..1" />
-          <End Role="PermissionLinks" Type="Self.PermissionLinks" Multiplicity="*" />
+        <Association Name="FK_PermissionGroupMemberships_PermissionGroups">
+          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="1" />
+          <End Role="PermissionGroupMemberships" Type="Self.PermissionGroupMemberships" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Permissions">
+            <Principal Role="PermissionGroups">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="PermissionLinks">
-              <PropertyRef Name="ParentId" />
+            <Dependent Role="PermissionGroupMemberships">
+              <PropertyRef Name="GroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PermissionLinks_Permissions1">
+        <Association Name="FK_PermissionGroupMemberships_Permissions">
           <End Role="Permissions" Type="Self.Permissions" Multiplicity="1" />
-          <End Role="PermissionLinks" Type="Self.PermissionLinks" Multiplicity="*" />
+          <End Role="PermissionGroupMemberships" Type="Self.PermissionGroupMemberships" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Permissions">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="PermissionLinks">
-              <PropertyRef Name="ChildId" />
+            <Dependent Role="PermissionGroupMemberships">
+              <PropertyRef Name="PermissionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Permissions_Users">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="UserPermissions" Type="Self.UserPermissions" Multiplicity="*" />
+        <Association Name="FK_PermissionGroups_PermissionGroups">
+          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="0..1" />
+          <End Role="PermissionGroups1" Type="Self.PermissionGroups" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Users">
+            <Principal Role="PermissionGroups">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="UserPermissions">
-              <PropertyRef Name="UserId" />
+            <Dependent Role="PermissionGroups1">
+              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2726,15 +2730,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserPermissions_Permissions">
-          <End Role="Permissions" Type="Self.Permissions" Multiplicity="1" />
-          <End Role="UserPermissions" Type="Self.UserPermissions" Multiplicity="*" />
+        <Association Name="FK_UserPermisionGroups_PermissionGroups">
+          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="1" />
+          <End Role="UserPermisionGroups" Type="Self.UserPermisionGroups" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Permissions">
+            <Principal Role="PermissionGroups">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="UserPermissions">
-              <PropertyRef Name="PermissionId" />
+            <Dependent Role="UserPermisionGroups">
+              <PropertyRef Name="PermissionGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermisionGroups_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserPermisionGroups" Type="Self.UserPermisionGroups" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserPermisionGroups">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2984,7 +3000,8 @@
           <EntitySet Name="Orgs" EntityType="Self.Orgs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OuterDocumentTypes" EntityType="Self.OuterDocumentTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PaymentTypes" EntityType="Self.PaymentTypes" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PermissionLinks" EntityType="Self.PermissionLinks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PermissionGroupMemberships" EntityType="Self.PermissionGroupMemberships" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PermissionGroups" EntityType="Self.PermissionGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonAddresses" EntityType="Self.PersonAddresses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonDiagnoses" EntityType="Self.PersonDiagnoses" Schema="dbo" store:Type="Tables" />
@@ -3025,7 +3042,7 @@
           <EntitySet Name="Urgentlies" EntityType="Self.Urgentlies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserMessages" EntityType="Self.UserMessages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserMessageTypes" EntityType="Self.UserMessageTypes" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserPermissions" EntityType="Self.UserPermissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserPermisionGroups" EntityType="Self.UserPermisionGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitOutcomes" EntityType="Self.VisitOutcomes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitResults" EntityType="Self.VisitResults" Schema="dbo" store:Type="Tables" />
@@ -3255,17 +3272,17 @@
             <End Role="OuterDocumentTypes" EntitySet="OuterDocumentTypes" />
             <End Role="OuterDocumentTypes1" EntitySet="OuterDocumentTypes" />
           </AssociationSet>
-          <AssociationSet Name="FK_PermissionLinks_Permissions" Association="Self.FK_PermissionLinks_Permissions">
-            <End Role="Permissions" EntitySet="Permissions" />
-            <End Role="PermissionLinks" EntitySet="PermissionLinks" />
+          <AssociationSet Name="FK_PermissionGroupMemberships_PermissionGroups" Association="Self.FK_PermissionGroupMemberships_PermissionGroups">
+            <End Role="PermissionGroups" EntitySet="PermissionGroups" />
+            <End Role="PermissionGroupMemberships" EntitySet="PermissionGroupMemberships" />
           </AssociationSet>
-          <AssociationSet Name="FK_PermissionLinks_Permissions1" Association="Self.FK_PermissionLinks_Permissions1">
+          <AssociationSet Name="FK_PermissionGroupMemberships_Permissions" Association="Self.FK_PermissionGroupMemberships_Permissions">
             <End Role="Permissions" EntitySet="Permissions" />
-            <End Role="PermissionLinks" EntitySet="PermissionLinks" />
+            <End Role="PermissionGroupMemberships" EntitySet="PermissionGroupMemberships" />
           </AssociationSet>
-          <AssociationSet Name="FK_Permissions_Users" Association="Self.FK_Permissions_Users">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          <AssociationSet Name="FK_PermissionGroups_PermissionGroups" Association="Self.FK_PermissionGroups_PermissionGroups">
+            <End Role="PermissionGroups" EntitySet="PermissionGroups" />
+            <End Role="PermissionGroups1" EntitySet="PermissionGroups" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonAddresses_AddressTypes" Association="Self.FK_PersonAddresses_AddressTypes">
             <End Role="AddressTypes" EntitySet="AddressTypes" />
@@ -3575,9 +3592,13 @@
             <End Role="UserMessageTypes" EntitySet="UserMessageTypes" />
             <End Role="UserMessages" EntitySet="UserMessages" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserPermissions_Permissions" Association="Self.FK_UserPermissions_Permissions">
-            <End Role="Permissions" EntitySet="Permissions" />
-            <End Role="UserPermissions" EntitySet="UserPermissions" />
+          <AssociationSet Name="FK_UserPermisionGroups_PermissionGroups" Association="Self.FK_UserPermisionGroups_PermissionGroups">
+            <End Role="PermissionGroups" EntitySet="PermissionGroups" />
+            <End Role="UserPermisionGroups" EntitySet="UserPermisionGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermisionGroups_Users" Association="Self.FK_UserPermisionGroups_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserPermisionGroups" EntitySet="UserPermisionGroups" />
           </AssociationSet>
           <AssociationSet Name="FK_Users_Persons" Association="Self.FK_Users_Persons">
             <End Role="Persons" EntitySet="Persons" />
@@ -3681,8 +3702,6 @@
           <EntitySet Name="Orgs" EntityType="DataLib.Org" />
           <EntitySet Name="OuterDocumentTypes" EntityType="DataLib.OuterDocumentType" />
           <EntitySet Name="PaymentTypes" EntityType="DataLib.PaymentType" />
-          <EntitySet Name="PermissionLinks" EntityType="DataLib.PermissionLink" />
-          <EntitySet Name="Permissions" EntityType="DataLib.Permission" />
           <EntitySet Name="PersonAddresses" EntityType="DataLib.PersonAddress" />
           <EntitySet Name="PersonDisabilities" EntityType="DataLib.PersonDisability" />
           <EntitySet Name="PersonEducations" EntityType="DataLib.PersonEducation" />
@@ -3708,7 +3727,6 @@
           <EntitySet Name="Staffs" EntityType="DataLib.Staff" />
           <EntitySet Name="UserMessages" EntityType="DataLib.UserMessage" />
           <EntitySet Name="UserMessageTypes" EntityType="DataLib.UserMessageType" />
-          <EntitySet Name="UserPermissions" EntityType="DataLib.UserPermission" />
           <EntitySet Name="Users" EntityType="DataLib.User" />
           <EntitySet Name="VisitOutcomes" EntityType="DataLib.VisitOutcome" />
           <EntitySet Name="VisitResults" EntityType="DataLib.VisitResult" />
@@ -3894,18 +3912,6 @@
             <End Role="PaymentType" EntitySet="PaymentTypes" />
             <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
-          <AssociationSet Name="FK_PermissionLinks_Permissions" Association="DataLib.FK_PermissionLinks_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="PermissionLink" EntitySet="PermissionLinks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PermissionLinks_Permissions1" Association="DataLib.FK_PermissionLinks_Permissions1">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="PermissionLink" EntitySet="PermissionLinks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserPermissions_Permissions" Association="DataLib.FK_UserPermissions_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="UserPermission" EntitySet="UserPermissions" />
-          </AssociationSet>
           <AssociationSet Name="FK_Addresses_Persons" Association="DataLib.FK_Addresses_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonAddress" EntitySet="PersonAddresses" />
@@ -4030,10 +4036,6 @@
             <End Role="UserMessageType" EntitySet="UserMessageTypes" />
             <End Role="UserMessage" EntitySet="UserMessages" />
           </AssociationSet>
-          <AssociationSet Name="FK_Permissions_Users" Association="DataLib.FK_Permissions_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="UserPermission" EntitySet="UserPermissions" />
-          </AssociationSet>
           <AssociationSet Name="FK_Visits_Users_RemovedByUser" Association="DataLib.FK_Visits_Users_RemovedByUser">
             <End Role="User" EntitySet="Users" />
             <End Role="Visit" EntitySet="Visits" />
@@ -4061,10 +4063,6 @@
             <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
           <EntitySet Name="RecordTypeRolePermissions" EntityType="DataLib.RecordTypeRolePermission" />
-          <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
-          </AssociationSet>
           <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
             <End Role="RecordTypeRole" EntitySet="RecordTypeRoles" />
             <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
@@ -4171,81 +4169,80 @@
             <End Role="RelativeRelationship" EntitySet="RelativeRelationships" />
             <End Role="RelativeRelationshipConnection" EntitySet="RelativeRelationshipConnections" />
           </AssociationSet>
-          <EntitySet Name="Records" EntityType="DataLib.Record" />
-          <EntitySet Name="RecordTypes" EntityType="DataLib.RecordType" />
-          <AssociationSet Name="FK_DefaultProtocols_Records" Association="DataLib.FK_DefaultProtocols_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="DefaultProtocol" EntitySet="DefaultProtocols" />
+          <EntitySet Name="Eqiupments" EntityType="DataLib.Eqiupment" />
+          <EntitySet Name="EqiupmentTypes" EntityType="DataLib.EqiupmentType" />
+          <EntitySet Name="RecordEquipments" EntityType="DataLib.RecordEquipment" />
+          <AssociationSet Name="FK_Eqiupments_Branches" Association="DataLib.FK_Eqiupments_Branches">
+            <End Role="Branch" EntitySet="Branches" />
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
           </AssociationSet>
-          <AssociationSet Name="FK_PersonDiagnoses_Records" Association="DataLib.FK_PersonDiagnoses_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
+          <AssociationSet Name="FK_Eqiupments_EqiupmentTypes" Association="DataLib.FK_Eqiupments_EqiupmentTypes">
+            <End Role="EqiupmentType" EntitySet="EqiupmentTypes" />
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
           </AssociationSet>
-          <AssociationSet Name="FK_Records_Persons" Association="DataLib.FK_Records_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="Record" EntitySet="Records" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContractItems_RecordTypes" Association="DataLib.FK_RecordContractItems_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordContractLimits_RecordTypes" Association="DataLib.FK_RecordContractLimits_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordContractLimit" EntitySet="RecordContractLimits" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordDocuments_Records" Association="DataLib.FK_RecordDocuments_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="RecordDocument" EntitySet="RecordDocuments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordMembers_Records" Association="DataLib.FK_RecordMembers_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="RecordMember" EntitySet="RecordMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Records_RecordPeriods" Association="DataLib.FK_Records_RecordPeriods">
-            <End Role="RecordPeriod" EntitySet="RecordPeriods" />
-            <End Role="Record" EntitySet="Records" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Records_Records" Association="DataLib.FK_Records_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="Record1" EntitySet="Records" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Records_RecordTypes" Association="DataLib.FK_Records_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="Record" EntitySet="Records" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Records_Rooms" Association="DataLib.FK_Records_Rooms">
+          <AssociationSet Name="FK_Eqiupments_Rooms" Association="DataLib.FK_Eqiupments_Rooms">
             <End Role="Room" EntitySet="Rooms" />
-            <End Role="Record" EntitySet="Records" />
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
           </AssociationSet>
-          <AssociationSet Name="FK_Records_Urgentlies" Association="DataLib.FK_Records_Urgentlies">
-            <End Role="Urgently" EntitySet="Urgentlies" />
-            <End Role="Record" EntitySet="Records" />
+          <AssociationSet Name="FK_RecordEquipments_Eqiupments" Association="DataLib.FK_RecordEquipments_Eqiupments">
+            <End Role="Eqiupment" EntitySet="Eqiupments" />
+            <End Role="RecordEquipment" EntitySet="RecordEquipments" />
           </AssociationSet>
-          <AssociationSet Name="FK_Records_Users" Association="DataLib.FK_Records_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Record" EntitySet="Records" />
+          <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />          
+          <EntitySet Name="PermissionGroupMemberships" EntityType="DataLib.PermissionGroupMembership" />
+          <EntitySet Name="PermissionGroups" EntityType="DataLib.PermissionGroup" />
+          <EntitySet Name="Permissions" EntityType="DataLib.Permission" />
+          <EntitySet Name="UserPermisionGroups" EntityType="DataLib.UserPermisionGroup" />
+          <AssociationSet Name="FK_PermissionGroupMemberships_PermissionGroups" Association="DataLib.FK_PermissionGroupMemberships_PermissionGroups">
+            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
+            <End Role="PermissionGroupMembership" EntitySet="PermissionGroupMemberships" />
           </AssociationSet>
-          <AssociationSet Name="FK_Records_Visits" Association="DataLib.FK_Records_Visits">
-            <End Role="Visit" EntitySet="Visits" />
-            <End Role="Record" EntitySet="Records" />
+          <AssociationSet Name="FK_PermissionGroupMemberships_Permissions" Association="DataLib.FK_PermissionGroupMemberships_Permissions">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="PermissionGroupMembership" EntitySet="PermissionGroupMemberships" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="DataLib.FK_RecordTypeCosts_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
+          <AssociationSet Name="FK_PermissionGroups_PermissionGroups" Association="DataLib.FK_PermissionGroups_PermissionGroups">
+            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
+            <End Role="PermissionGroup1" EntitySet="PermissionGroups" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypes" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
+          <AssociationSet Name="FK_UserPermisionGroups_PermissionGroups" Association="DataLib.FK_UserPermisionGroups_PermissionGroups">
+            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
+            <End Role="UserPermisionGroup" EntitySet="UserPermisionGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
+            <End Role="Permission" EntitySet="Permissions" />
             <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordTypes_RecordTypes" Association="DataLib.FK_RecordTypes_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordType1" EntitySet="RecordTypes" />
+          <AssociationSet Name="FK_UserPermisionGroups_Users" Association="DataLib.FK_UserPermisionGroups_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserPermisionGroup" EntitySet="UserPermisionGroups" />
           </AssociationSet>
-          <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
-          </AssociationSet>
+          <EntitySet Name="AnalyseRefferences" EntityType="DataLib.AnalyseRefference" />
+          <EntitySet Name="AnalyseResults" EntityType="DataLib.AnalyseResult" />
           <EntitySet Name="Assignments" EntityType="DataLib.Assignment" />
+          <EntitySet Name="Records" EntityType="DataLib.Record" />
+          <EntitySet Name="RecordTypes" EntityType="DataLib.RecordType" />
+          <EntitySet Name="Units" EntityType="DataLib.Unit" />
+          <AssociationSet Name="FK_AnalyseRefferences_ParameterRecordTypes" Association="DataLib.FK_AnalyseRefferences_ParameterRecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="AnalyseRefference" EntitySet="AnalyseRefferences" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AnalyseRefferences_RecordTypes" Association="DataLib.FK_AnalyseRefferences_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="AnalyseRefference" EntitySet="AnalyseRefferences" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AnalyseResults_Records" Association="DataLib.FK_AnalyseResults_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="AnalyseResult" EntitySet="AnalyseResults" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AnalyseResults_RecordTypes" Association="DataLib.FK_AnalyseResults_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="AnalyseResult" EntitySet="AnalyseResults" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AnalyseResults_Units" Association="DataLib.FK_AnalyseResults_Units">
+            <End Role="Unit" EntitySet="Units" />
+            <End Role="AnalyseResult" EntitySet="AnalyseResults" />
+          </AssociationSet>
           <AssociationSet Name="FK_Assignments_Assignments" Association="DataLib.FK_Assignments_Assignments">
             <End Role="Assignment" EntitySet="Assignments" />
             <End Role="Assignment1" EntitySet="Assignments" />
@@ -4306,56 +4303,85 @@
             <End Role="Assignment" EntitySet="Assignments" />
             <End Role="RecordDocument" EntitySet="RecordDocuments" />
           </AssociationSet>
-          <EntitySet Name="Eqiupments" EntityType="DataLib.Eqiupment" />
-          <EntitySet Name="EqiupmentTypes" EntityType="DataLib.EqiupmentType" />
-          <EntitySet Name="RecordEquipments" EntityType="DataLib.RecordEquipment" />
-          <AssociationSet Name="FK_Eqiupments_Branches" Association="DataLib.FK_Eqiupments_Branches">
-            <End Role="Branch" EntitySet="Branches" />
-            <End Role="Eqiupment" EntitySet="Eqiupments" />
+          <AssociationSet Name="FK_DefaultProtocols_Records" Association="DataLib.FK_DefaultProtocols_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="DefaultProtocol" EntitySet="DefaultProtocols" />
           </AssociationSet>
-          <AssociationSet Name="FK_Eqiupments_EqiupmentTypes" Association="DataLib.FK_Eqiupments_EqiupmentTypes">
-            <End Role="EqiupmentType" EntitySet="EqiupmentTypes" />
-            <End Role="Eqiupment" EntitySet="Eqiupments" />
+          <AssociationSet Name="FK_PersonDiagnoses_Records" Association="DataLib.FK_PersonDiagnoses_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="PersonDiagnos" EntitySet="PersonDiagnoses" />
           </AssociationSet>
-          <AssociationSet Name="FK_Eqiupments_Rooms" Association="DataLib.FK_Eqiupments_Rooms">
-            <End Role="Room" EntitySet="Rooms" />
-            <End Role="Eqiupment" EntitySet="Eqiupments" />
+          <AssociationSet Name="FK_Records_Persons" Association="DataLib.FK_Records_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="Record" EntitySet="Records" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordEquipments_Eqiupments" Association="DataLib.FK_RecordEquipments_Eqiupments">
-            <End Role="Eqiupment" EntitySet="Eqiupments" />
-            <End Role="RecordEquipment" EntitySet="RecordEquipments" />
+          <AssociationSet Name="FK_RecordContractItems_RecordTypes" Association="DataLib.FK_RecordContractItems_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordContractItem" EntitySet="RecordContractItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordContractLimits_RecordTypes" Association="DataLib.FK_RecordContractLimits_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordContractLimit" EntitySet="RecordContractLimits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordDocuments_Records" Association="DataLib.FK_RecordDocuments_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="RecordDocument" EntitySet="RecordDocuments" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordEquipments_Records" Association="DataLib.FK_RecordEquipments_Records">
             <End Role="Record" EntitySet="Records" />
             <End Role="RecordEquipment" EntitySet="RecordEquipments" />
           </AssociationSet>
-          <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />
+          <AssociationSet Name="FK_RecordMembers_Records" Association="DataLib.FK_RecordMembers_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="RecordMember" EntitySet="RecordMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_RecordPeriods" Association="DataLib.FK_Records_RecordPeriods">
+            <End Role="RecordPeriod" EntitySet="RecordPeriods" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Records" Association="DataLib.FK_Records_Records">
+            <End Role="Record" EntitySet="Records" />
+            <End Role="Record1" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_RecordTypes" Association="DataLib.FK_Records_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Rooms" Association="DataLib.FK_Records_Rooms">
+            <End Role="Room" EntitySet="Rooms" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Urgentlies" Association="DataLib.FK_Records_Urgentlies">
+            <End Role="Urgently" EntitySet="Urgentlies" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Users" Association="DataLib.FK_Records_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Records_Visits" Association="DataLib.FK_Records_Visits">
+            <End Role="Visit" EntitySet="Visits" />
+            <End Role="Record" EntitySet="Records" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="DataLib.FK_RecordTypeCosts_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
+          </AssociationSet>
           <AssociationSet Name="FK_RecordTypeEditors_RecordTypes" Association="DataLib.FK_RecordTypeEditors_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordTypeEditor" EntitySet="RecordTypeEditors" />
           </AssociationSet>
-          <EntitySet Name="AnalyseResults" EntityType="DataLib.AnalyseResult" />
-          <AssociationSet Name="FK_AnalyseResults_Records" Association="DataLib.FK_AnalyseResults_Records">
-            <End Role="Record" EntitySet="Records" />
-            <End Role="AnalyseResult" EntitySet="AnalyseResults" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AnalyseResults_RecordTypes" Association="DataLib.FK_AnalyseResults_RecordTypes">
+          <AssociationSet Name="FK_RecordTypeRolePermissions_RecordTypes" Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="AnalyseResult" EntitySet="AnalyseResults" />
+            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
           </AssociationSet>
-          <EntitySet Name="Units" EntityType="DataLib.Unit" />
-          <AssociationSet Name="FK_AnalyseResults_Units" Association="DataLib.FK_AnalyseResults_Units">
-            <End Role="Unit" EntitySet="Units" />
-            <End Role="AnalyseResult" EntitySet="AnalyseResults" />
-          </AssociationSet>
-          <EntitySet Name="AnalyseRefferences" EntityType="DataLib.AnalyseRefference" />
-          <AssociationSet Name="FK_AnalyseRefferences_ParameterRecordTypes" Association="DataLib.FK_AnalyseRefferences_ParameterRecordTypes">
+          <AssociationSet Name="FK_RecordTypes_RecordTypes" Association="DataLib.FK_RecordTypes_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="AnalyseRefference" EntitySet="AnalyseRefferences" />
+            <End Role="RecordType1" EntitySet="RecordTypes" />
           </AssociationSet>
-          <AssociationSet Name="FK_AnalyseRefferences_RecordTypes" Association="DataLib.FK_AnalyseRefferences_RecordTypes">
+          <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="AnalyseRefference" EntitySet="AnalyseRefferences" />
+            <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -4743,30 +4769,6 @@
           <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PaymentTypes" FromRole="PaymentType" ToRole="RecordContract" />
         </EntityType>
-        <EntityType Name="PermissionLink">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="ChildId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Permission" Relationship="DataLib.FK_PermissionLinks_Permissions" FromRole="PermissionLink" ToRole="Permission" />
-          <NavigationProperty Name="Permission1" Relationship="DataLib.FK_PermissionLinks_Permissions1" FromRole="PermissionLink" ToRole="Permission" />
-        </EntityType>
-        <EntityType Name="Permission">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="IsGroup" Type="Boolean" Nullable="false" />
-          <Property Name="ReadOnly" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="PermissionLinks" Relationship="DataLib.FK_PermissionLinks_Permissions" FromRole="Permission" ToRole="PermissionLink" />
-          <NavigationProperty Name="PermissionLinks1" Relationship="DataLib.FK_PermissionLinks_Permissions1" FromRole="Permission" ToRole="PermissionLink" />
-          <NavigationProperty Name="UserPermissions" Relationship="DataLib.FK_UserPermissions_Permissions" FromRole="Permission" ToRole="UserPermission" />
-          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="Permission" ToRole="RecordTypeRolePermission" />
-        </EntityType>
         <EntityType Name="PersonAddress">
           <Key>
             <PropertyRef Name="Id" />
@@ -4945,8 +4947,8 @@
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
           <NavigationProperty Name="Diagnoses" Relationship="DataLib.FK_Diagnoses_Persons" FromRole="Person" ToRole="Diagnosis" />
           <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_Persons" FromRole="Person" ToRole="PersonDiagnos" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
         </EntityType>
         <EntityType Name="PersonSocialStatus">
           <Key>
@@ -5014,8 +5016,8 @@
           <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="RecordContractItem" ToRole="PersonStaff" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContractItem" ToRole="RecordContract" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordContractItem" ToRole="RecordType" />
           <NavigationProperty Name="Assignment" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="RecordContractItem" ToRole="Assignment" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordContractItem" ToRole="RecordType" />
         </EntityType>
         <EntityType Name="RecordContractLimit">
           <Key>
@@ -5095,10 +5097,10 @@
           <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_Rooms" FromRole="Room" ToRole="ScheduleItem" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Rooms" FromRole="Room" ToRole="Record" />
           <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Room" ToRole="Assignment" />
           <NavigationProperty Name="Eqiupments" Relationship="DataLib.FK_Eqiupments_Rooms" FromRole="Room" ToRole="Eqiupment" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Rooms" FromRole="Room" ToRole="Assignment" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Rooms" FromRole="Room" ToRole="Record" />
         </EntityType>
         <EntityType Name="ScheduleItem">
           <Key>
@@ -5163,19 +5165,6 @@
           <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="UserMessages" Relationship="DataLib.FK_UserMessages_UserMessageTypes" FromRole="UserMessageType" ToRole="UserMessage" />
         </EntityType>
-        <EntityType Name="UserPermission">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="PermissionId" Type="Int32" Nullable="false" />
-          <Property Name="IsGranted" Type="Boolean" Nullable="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Permission" Relationship="DataLib.FK_UserPermissions_Permissions" FromRole="UserPermission" ToRole="Permission" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_Permissions_Users" FromRole="UserPermission" ToRole="User" />
-        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="Id" />
@@ -5189,12 +5178,12 @@
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Users_Persons" FromRole="User" ToRole="Person" />
           <NavigationProperty Name="UserMessages" Relationship="DataLib.FK_UserMessages_RecieverUsers1" FromRole="User" ToRole="UserMessage" />
           <NavigationProperty Name="UserMessages1" Relationship="DataLib.FK_UserMessages_SenderUsers" FromRole="User" ToRole="UserMessage" />
-          <NavigationProperty Name="UserPermissions" Relationship="DataLib.FK_Permissions_Users" FromRole="User" ToRole="UserPermission" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Users_RemovedByUser" FromRole="User" ToRole="Visit" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Users" FromRole="User" ToRole="Record" />
+          <NavigationProperty Name="UserPermisionGroups" Relationship="DataLib.FK_UserPermisionGroups_Users" FromRole="User" ToRole="UserPermisionGroup" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Users_AssignUser" FromRole="User" ToRole="Assignment" />
           <NavigationProperty Name="Assignments1" Relationship="DataLib.FK_Assignments_Users1_CancelUser" FromRole="User" ToRole="Assignment" />
           <NavigationProperty Name="Assignments2" Relationship="DataLib.FK_Assignments_Users2_RemovedByUser" FromRole="User" ToRole="Assignment" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Users" FromRole="User" ToRole="Record" />
         </EntityType>
         <EntityType Name="VisitOutcome">
           <Key>
@@ -5255,8 +5244,8 @@
           <NavigationProperty Name="VisitTemplate" Relationship="DataLib.FK_Visits_VisitTemplates" FromRole="Visit" ToRole="VisitTemplate" />
           <NavigationProperty Name="ExecutionPlace" Relationship="DataLib.FK_Visits_ExecutionPlaces" FromRole="Visit" ToRole="ExecutionPlace" />
           <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Visits_Urgentlies" FromRole="Visit" ToRole="Urgently" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Visits" FromRole="Visit" ToRole="Record" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Visits" FromRole="Visit" ToRole="Assignment" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Visits" FromRole="Visit" ToRole="Record" />
         </EntityType>
         <EntityType Name="VisitTemplate">
           <Key>
@@ -5817,42 +5806,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PermissionLinks_Permissions">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="0..1" />
-          <End Type="DataLib.PermissionLink" Role="PermissionLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionLink">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PermissionLinks_Permissions1">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.PermissionLink" Role="PermissionLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionLink">
-              <PropertyRef Name="ChildId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserPermissions_Permissions">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.UserPermission" Role="UserPermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserPermission">
-              <PropertyRef Name="PermissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Addresses_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -6229,18 +6182,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Permissions_Users">
-          <End Type="DataLib.User" Role="User" Multiplicity="1" />
-          <End Type="DataLib.UserPermission" Role="UserPermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserPermission">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Visits_Users_RemovedByUser">
           <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
           <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
@@ -6298,8 +6239,8 @@
           <Property Name="RecordId" Type="Int32" />
           <Property Name="DocumentId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Document" Relationship="DataLib.FK_RecordDocuments_Documents" FromRole="RecordDocument" ToRole="Document" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="RecordDocument" ToRole="Record" />
           <NavigationProperty Name="Assignment" Relationship="DataLib.FK_RecordDocuments_Assignments" FromRole="RecordDocument" ToRole="Assignment" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="RecordDocument" ToRole="Record" />
         </EntityType>
         <EntityType Name="RecordTypeCost">
           <Key>
@@ -6361,23 +6302,11 @@
           <Property Name="IsRequired" Type="Boolean" Nullable="false" />
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Permission" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="RecordTypeRolePermission" ToRole="Permission" />
           <NavigationProperty Name="RecordTypeRole" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordTypeRole" />
           <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordMember" />
+          <NavigationProperty Name="Permission" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="RecordTypeRolePermission" ToRole="Permission" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordTypeRolePermission" ToRole="RecordType" />
         </EntityType>
-        <Association Name="FK_RecordTypeRolePermissions_Permissions">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermission">
-              <PropertyRef Name="PermissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
           <End Type="DataLib.RecordTypeRole" Role="RecordTypeRole" Multiplicity="1" />
           <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
@@ -6631,8 +6560,8 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Urgentlies" FromRole="Urgently" ToRole="Visit" />
           <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_ExecutionPlaces1" FromRole="Urgently" ToRole="VisitTemplate" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Urgently" ToRole="Record" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Urgentlies" FromRole="Urgently" ToRole="Assignment" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Urgently" ToRole="Record" />
         </EntityType>
         <Association Name="FK_RecordPeriods_ExecutionPlaces">
           <End Type="DataLib.ExecutionPlace" Role="ExecutionPlace" Multiplicity="1" />
@@ -6847,301 +6776,260 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Record">
+        <EntityType Name="Eqiupment">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PersonId" Type="Int32" Nullable="false" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="VisitId" Type="Int32" Nullable="false" />
-          <Property Name="RoomId" Type="Int32" Nullable="false" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="RecordPeriodId" Type="Int32" Nullable="false" />
-          <Property Name="UrgentlyId" Type="Int32" Nullable="false" />
-          <Property Name="Number" Type="Int32" Nullable="false" />
-          <Property Name="NumberType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="NumberYear" Type="Int32" Nullable="false" />
-          <Property Name="NumberTypeYear" Type="String" MaxLength="23" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
-          <Property Name="IsCompleted" Type="Boolean" Nullable="false" />
-          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EquipmentTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="RoomId" Type="Int32" />
+          <Property Name="BranchId" Type="Int32" />
+          <Property Name="CatalogNumber" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="NameToEconomics" Type="String" Nullable="false" MaxLength="555" FixedLength="false" Unicode="false" />
+          <Property Name="ProductionDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="StartUseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndUseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="SertificateNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="InventoryNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PhotoPath" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="IPAddress" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Branch" Relationship="DataLib.FK_Eqiupments_Branches" FromRole="Eqiupment" ToRole="Branch" />
+          <NavigationProperty Name="EqiupmentType" Relationship="DataLib.FK_Eqiupments_EqiupmentTypes" FromRole="Eqiupment" ToRole="EqiupmentType" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_Eqiupments_Rooms" FromRole="Eqiupment" ToRole="Room" />
+          <NavigationProperty Name="RecordEquipments" Relationship="DataLib.FK_RecordEquipments_Eqiupments" FromRole="Eqiupment" ToRole="RecordEquipment" />
+        </EntityType>
+        <EntityType Name="EqiupmentType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Code" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Eqiupments" Relationship="DataLib.FK_Eqiupments_EqiupmentTypes" FromRole="EqiupmentType" ToRole="Eqiupment" />
+        </EntityType>
+        <EntityType Name="RecordEquipment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="EquipmentId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Precision="3" />
-          <Property Name="ActualDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="BillingDateTime" Type="DateTime" Precision="3" />
-          <Property Name="RemovedByUserId" Type="Int32" />
-          <NavigationProperty Name="DefaultProtocols" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="Record" ToRole="DefaultProtocol" />
-          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_Records" FromRole="Record" ToRole="PersonDiagnos" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_Records_Persons" FromRole="Record" ToRole="Person" />
-          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
-          <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_Records" FromRole="Record" ToRole="RecordMember" />
-          <NavigationProperty Name="RecordPeriod" Relationship="DataLib.FK_Records_RecordPeriods" FromRole="Record" ToRole="RecordPeriod" />
-          <NavigationProperty Name="Records1" Relationship="DataLib.FK_Records_Records" FromRole="Record" ToRole="Record1" />
-          <NavigationProperty Name="Record1" Relationship="DataLib.FK_Records_Records" FromRole="Record1" ToRole="Record" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
-          <NavigationProperty Name="Room" Relationship="DataLib.FK_Records_Rooms" FromRole="Record" ToRole="Room" />
-          <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Record" ToRole="Urgently" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
-          <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
-          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Records" FromRole="Record" ToRole="Assignment" />
-          <NavigationProperty Name="RecordEquipments" Relationship="DataLib.FK_RecordEquipments_Records" FromRole="Record" ToRole="RecordEquipment" />
-          <NavigationProperty Name="AnalyseResults" Relationship="DataLib.FK_AnalyseResults_Records" FromRole="Record" ToRole="AnalyseResult" />
+          <Property Name="Duration" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Eqiupment" Relationship="DataLib.FK_RecordEquipments_Eqiupments" FromRole="RecordEquipment" ToRole="Eqiupment" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordEquipments_Records" FromRole="RecordEquipment" ToRole="Record" />
         </EntityType>
-        <EntityType Name="RecordType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="MinDuration" Type="Int32" Nullable="false" />
-          <Property Name="Duration" Type="Int32" Nullable="false" />
-          <Property Name="DisplayOrder" Type="Int32" Nullable="false" />
-          <Property Name="Assignable" Type="Boolean" />
-          <Property Name="RecordTypeGroupId" Type="Int32" Nullable="false" />
-          <Property Name="MedProfileId" Type="Int32" Nullable="false" />
-          <Property Name="IsRecord" Type="Boolean" Nullable="false" />
-          <Property Name="IsAnalyse" Type="Boolean" Nullable="false" />
-          <Property Name="IsAnalyseParameter" Type="Boolean" Nullable="false" />
-          <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="NumberType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Priority" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordType" ToRole="RecordContractItem" />
-          <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordType" ToRole="RecordContractLimit" />
-          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordTypes" FromRole="RecordType" ToRole="Record" />
-          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
-          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordType" ToRole="RecordTypeRolePermission" />
-          <NavigationProperty Name="RecordTypes1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType" ToRole="RecordType1" />
-          <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType1" ToRole="RecordType" />
-          <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="RecordType" ToRole="ScheduleItem" />
-          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="RecordType" ToRole="Assignment" />
-          <NavigationProperty Name="RecordTypeEditors" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordType" ToRole="RecordTypeEditor" />
-          <NavigationProperty Name="AnalyseResults" Relationship="DataLib.FK_AnalyseResults_RecordTypes" FromRole="RecordType" ToRole="AnalyseResult" />
-          <NavigationProperty Name="AnalyseRefferences" Relationship="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" FromRole="RecordType" ToRole="AnalyseRefference" />
-          <NavigationProperty Name="AnalyseRefferences1" Relationship="DataLib.FK_AnalyseRefferences_RecordTypes" FromRole="RecordType" ToRole="AnalyseRefference" />
-        </EntityType>
-        <Association Name="FK_DefaultProtocols_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
-          <End Type="DataLib.DefaultProtocol" Role="DefaultProtocol" Multiplicity="*" />
+        <Association Name="FK_Eqiupments_Branches">
+          <End Type="DataLib.Branch" Role="Branch" Multiplicity="0..1" />
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Record">
+            <Principal Role="Branch">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="DefaultProtocol">
-              <PropertyRef Name="RecordId" />
+            <Dependent Role="Eqiupment">
+              <PropertyRef Name="BranchId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonDiagnoses_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
-          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="*" />
+        <Association Name="FK_Eqiupments_EqiupmentTypes">
+          <End Type="DataLib.EqiupmentType" Role="EqiupmentType" Multiplicity="1" />
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Record">
+            <Principal Role="EqiupmentType">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="PersonDiagnos">
-              <PropertyRef Name="RecordId" />
+            <Dependent Role="Eqiupment">
+              <PropertyRef Name="EquipmentTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Records_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Record">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContractItems_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractItem">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordContractLimits_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.RecordContractLimit" Role="RecordContractLimit" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordContractLimit">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordDocuments_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
-          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordDocument">
-              <PropertyRef Name="RecordId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordMembers_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
-          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordMember">
-              <PropertyRef Name="RecordId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Records_RecordPeriods">
-          <End Type="DataLib.RecordPeriod" Role="RecordPeriod" Multiplicity="1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordPeriod">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Record">
-              <PropertyRef Name="RecordPeriodId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Records_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
-          <End Type="DataLib.Record" Role="Record1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Record1">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Records_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Record">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Records_Rooms">
-          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+        <Association Name="FK_Eqiupments_Rooms">
+          <End Type="DataLib.Room" Role="Room" Multiplicity="0..1" />
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Room">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Record">
+            <Dependent Role="Eqiupment">
               <PropertyRef Name="RoomId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Records_Urgentlies">
-          <End Type="DataLib.Urgently" Role="Urgently" Multiplicity="1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+        <Association Name="FK_RecordEquipments_Eqiupments">
+          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="1" />
+          <End Type="DataLib.RecordEquipment" Role="RecordEquipment" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Urgently">
+            <Principal Role="Eqiupment">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Record">
-              <PropertyRef Name="UrgentlyId" />
+            <Dependent Role="RecordEquipment">
+              <PropertyRef Name="EquipmentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Records_Users">
-          <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+        <EntityType Name="RecordTypeEditor">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Editor" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="HasDocuments" Type="Boolean" Nullable="false" />
+          <Property Name="HasDICOM" Type="Boolean" Nullable="false" />
+          <Property Name="UseEquipments" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordTypeEditor" ToRole="RecordType" />
+        </EntityType>
+        <EntityType Name="PermissionGroupMembership">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PermissionId" Type="Int32" Nullable="false" />
+          <Property Name="GroupId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PermissionGroup" Relationship="DataLib.FK_PermissionGroupMemberships_PermissionGroups" FromRole="PermissionGroupMembership" ToRole="PermissionGroup" />
+          <NavigationProperty Name="Permission" Relationship="DataLib.FK_PermissionGroupMemberships_Permissions" FromRole="PermissionGroupMembership" ToRole="Permission" />
+        </EntityType>
+        <EntityType Name="PermissionGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PermissionGroupMemberships" Relationship="DataLib.FK_PermissionGroupMemberships_PermissionGroups" FromRole="PermissionGroup" ToRole="PermissionGroupMembership" />
+          <NavigationProperty Name="PermissionGroups1" Relationship="DataLib.FK_PermissionGroups_PermissionGroups" FromRole="PermissionGroup" ToRole="PermissionGroup1" />
+          <NavigationProperty Name="PermissionGroup1" Relationship="DataLib.FK_PermissionGroups_PermissionGroups" FromRole="PermissionGroup1" ToRole="PermissionGroup" />
+          <NavigationProperty Name="UserPermisionGroups" Relationship="DataLib.FK_UserPermisionGroups_PermissionGroups" FromRole="PermissionGroup" ToRole="UserPermisionGroup" />
+        </EntityType>
+        <EntityType Name="Permission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PermissionGroupMemberships" Relationship="DataLib.FK_PermissionGroupMemberships_Permissions" FromRole="Permission" ToRole="PermissionGroupMembership" />
+          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="Permission" ToRole="RecordTypeRolePermission" />
+        </EntityType>
+        <EntityType Name="UserPermisionGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="PermissionGroupId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PermissionGroup" Relationship="DataLib.FK_UserPermisionGroups_PermissionGroups" FromRole="UserPermisionGroup" ToRole="PermissionGroup" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_UserPermisionGroups_Users" FromRole="UserPermisionGroup" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_PermissionGroupMemberships_PermissionGroups">
+          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="1" />
+          <End Type="DataLib.PermissionGroupMembership" Role="PermissionGroupMembership" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="User">
+            <Principal Role="PermissionGroup">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Record">
-              <PropertyRef Name="RemovedByUserId" />
+            <Dependent Role="PermissionGroupMembership">
+              <PropertyRef Name="GroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Records_Visits">
-          <End Type="DataLib.Visit" Role="Visit" Multiplicity="1" />
-          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+        <Association Name="FK_PermissionGroupMemberships_Permissions">
+          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
+          <End Type="DataLib.PermissionGroupMembership" Role="PermissionGroupMembership" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Visit">
+            <Principal Role="Permission">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Record">
-              <PropertyRef Name="VisitId" />
+            <Dependent Role="PermissionGroupMembership">
+              <PropertyRef Name="PermissionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordTypeCosts_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
+        <Association Name="FK_PermissionGroups_PermissionGroups">
+          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="0..1" />
+          <End Type="DataLib.PermissionGroup" Role="PermissionGroup1" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="RecordType">
+            <Principal Role="PermissionGroup">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="RecordTypeCost">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermission">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypes_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="0..1" />
-          <End Type="DataLib.RecordType" Role="RecordType1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordType1">
+            <Dependent Role="PermissionGroup1">
               <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ScheduleItem_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="0..1" />
-          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
+        <Association Name="FK_UserPermisionGroups_PermissionGroups">
+          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="1" />
+          <End Type="DataLib.UserPermisionGroup" Role="UserPermisionGroup" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="RecordType">
+            <Principal Role="PermissionGroup">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="ScheduleItem">
-              <PropertyRef Name="RecordTypeId" />
+            <Dependent Role="UserPermisionGroup">
+              <PropertyRef Name="PermissionGroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RecordTypeRolePermissions_Permissions">
+          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
+          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeRolePermission">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermisionGroups_Users">
+          <End Type="DataLib.User" Role="User" Multiplicity="1" />
+          <End Type="DataLib.UserPermisionGroup" Role="UserPermisionGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserPermisionGroup">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AnalyseRefference">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="ParameterRecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="IsMale" Type="Boolean" Nullable="false" />
+          <Property Name="AgeFrom" Type="Int32" Nullable="false" />
+          <Property Name="AgeTo" Type="Int32" />
+          <Property Name="RefMin" Type="Double" Nullable="false" />
+          <Property Name="RefMax" Type="Double" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" FromRole="AnalyseRefference" ToRole="RecordType" />
+          <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_AnalyseRefferences_RecordTypes" FromRole="AnalyseRefference" ToRole="RecordType" />
+        </EntityType>
+        <EntityType Name="AnalyseResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordId" Type="Int32" Nullable="false" />
+          <Property Name="ParameterRecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UnitId" Type="Int32" />
+          <Property Name="IsNormal" Type="Boolean" Nullable="false" />
+          <Property Name="IsAboveRef" Type="Boolean" Nullable="false" />
+          <Property Name="IsBelowRef" Type="Boolean" Nullable="false" />
+          <Property Name="Details" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Record" Relationship="DataLib.FK_AnalyseResults_Records" FromRole="AnalyseResult" ToRole="Record" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_AnalyseResults_RecordTypes" FromRole="AnalyseResult" ToRole="RecordType" />
+          <NavigationProperty Name="Unit" Relationship="DataLib.FK_AnalyseResults_Units" FromRole="AnalyseResult" ToRole="Unit" />
+        </EntityType>
         <EntityType Name="Assignment">
           <Key>
             <PropertyRef Name="Id" />
@@ -7186,6 +7074,151 @@
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_Assignments" FromRole="Assignment" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Assignments" FromRole="Assignment" ToRole="RecordDocument" />
         </EntityType>
+        <EntityType Name="Record">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="VisitId" Type="Int32" Nullable="false" />
+          <Property Name="RoomId" Type="Int32" Nullable="false" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="RecordPeriodId" Type="Int32" Nullable="false" />
+          <Property Name="UrgentlyId" Type="Int32" Nullable="false" />
+          <Property Name="Number" Type="Int32" Nullable="false" />
+          <Property Name="NumberType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="NumberYear" Type="Int32" Nullable="false" />
+          <Property Name="NumberTypeYear" Type="String" MaxLength="23" FixedLength="false" Unicode="false" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="IsCompleted" Type="Boolean" Nullable="false" />
+          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
+          <Property Name="ActualDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="BillingDateTime" Type="DateTime" Precision="3" />
+          <Property Name="RemovedByUserId" Type="Int32" />
+          <NavigationProperty Name="AnalyseResults" Relationship="DataLib.FK_AnalyseResults_Records" FromRole="Record" ToRole="AnalyseResult" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Records" FromRole="Record" ToRole="Assignment" />
+          <NavigationProperty Name="DefaultProtocols" Relationship="DataLib.FK_DefaultProtocols_Records" FromRole="Record" ToRole="DefaultProtocol" />
+          <NavigationProperty Name="PersonDiagnoses" Relationship="DataLib.FK_PersonDiagnoses_Records" FromRole="Record" ToRole="PersonDiagnos" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_Records_Persons" FromRole="Record" ToRole="Person" />
+          <NavigationProperty Name="RecordDocuments" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="Record" ToRole="RecordDocument" />
+          <NavigationProperty Name="RecordEquipments" Relationship="DataLib.FK_RecordEquipments_Records" FromRole="Record" ToRole="RecordEquipment" />
+          <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_Records" FromRole="Record" ToRole="RecordMember" />
+          <NavigationProperty Name="RecordPeriod" Relationship="DataLib.FK_Records_RecordPeriods" FromRole="Record" ToRole="RecordPeriod" />
+          <NavigationProperty Name="Records1" Relationship="DataLib.FK_Records_Records" FromRole="Record" ToRole="Record1" />
+          <NavigationProperty Name="Record1" Relationship="DataLib.FK_Records_Records" FromRole="Record1" ToRole="Record" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_Records_RecordTypes" FromRole="Record" ToRole="RecordType" />
+          <NavigationProperty Name="Room" Relationship="DataLib.FK_Records_Rooms" FromRole="Record" ToRole="Room" />
+          <NavigationProperty Name="Urgently" Relationship="DataLib.FK_Records_Urgentlies" FromRole="Record" ToRole="Urgently" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_Records_Users" FromRole="Record" ToRole="User" />
+          <NavigationProperty Name="Visit" Relationship="DataLib.FK_Records_Visits" FromRole="Record" ToRole="Visit" />
+        </EntityType>
+        <EntityType Name="RecordType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="MinDuration" Type="Int32" Nullable="false" />
+          <Property Name="Duration" Type="Int32" Nullable="false" />
+          <Property Name="DisplayOrder" Type="Int32" Nullable="false" />
+          <Property Name="Assignable" Type="Boolean" />
+          <Property Name="RecordTypeGroupId" Type="Int32" Nullable="false" />
+          <Property Name="MedProfileId" Type="Int32" Nullable="false" />
+          <Property Name="IsRecord" Type="Boolean" Nullable="false" />
+          <Property Name="IsAnalyse" Type="Boolean" Nullable="false" />
+          <Property Name="IsAnalyseParameter" Type="Boolean" Nullable="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="NumberType" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AnalyseRefferences" Relationship="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" FromRole="RecordType" ToRole="AnalyseRefference" />
+          <NavigationProperty Name="AnalyseRefferences1" Relationship="DataLib.FK_AnalyseRefferences_RecordTypes" FromRole="RecordType" ToRole="AnalyseRefference" />
+          <NavigationProperty Name="AnalyseResults" Relationship="DataLib.FK_AnalyseResults_RecordTypes" FromRole="RecordType" ToRole="AnalyseResult" />
+          <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="RecordType" ToRole="Assignment" />
+          <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordType" ToRole="RecordContractItem" />
+          <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordType" ToRole="RecordContractLimit" />
+          <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordTypes" FromRole="RecordType" ToRole="Record" />
+          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
+          <NavigationProperty Name="RecordTypeEditors" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordType" ToRole="RecordTypeEditor" />
+          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordType" ToRole="RecordTypeRolePermission" />
+          <NavigationProperty Name="RecordTypes1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType" ToRole="RecordType1" />
+          <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType1" ToRole="RecordType" />
+          <NavigationProperty Name="ScheduleItems" Relationship="DataLib.FK_ScheduleItem_RecordTypes" FromRole="RecordType" ToRole="ScheduleItem" />
+        </EntityType>
+        <EntityType Name="Unit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="OnlyForMedWare" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="AnalyseResults" Relationship="DataLib.FK_AnalyseResults_Units" FromRole="Unit" ToRole="AnalyseResult" />
+        </EntityType>
+        <Association Name="FK_AnalyseRefferences_ParameterRecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
+          <End Type="DataLib.AnalyseRefference" Role="AnalyseRefference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AnalyseRefference">
+              <PropertyRef Name="ParameterRecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AnalyseRefferences_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
+          <End Type="DataLib.AnalyseRefference" Role="AnalyseRefference" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AnalyseRefference">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AnalyseResults_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.AnalyseResult" Role="AnalyseResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AnalyseResult">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AnalyseResults_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
+          <End Type="DataLib.AnalyseResult" Role="AnalyseResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AnalyseResult">
+              <PropertyRef Name="ParameterRecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AnalyseResults_Units">
+          <End Type="DataLib.Unit" Role="Unit" Multiplicity="0..1" />
+          <End Type="DataLib.AnalyseResult" Role="AnalyseResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Unit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AnalyseResult">
+              <PropertyRef Name="UnitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Assignments_Assignments">
           <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="0..1" />
           <End Type="DataLib.Assignment" Role="Assignment1" Multiplicity="*" />
@@ -7366,96 +7399,75 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Eqiupment">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="EquipmentTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="RoomId" Type="Int32" />
-          <Property Name="BranchId" Type="Int32" />
-          <Property Name="CatalogNumber" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="NameToEconomics" Type="String" Nullable="false" MaxLength="555" FixedLength="false" Unicode="false" />
-          <Property Name="ProductionDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="StartUseDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndUseDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="SertificateNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="InventoryNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PhotoPath" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="IPAddress" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Branch" Relationship="DataLib.FK_Eqiupments_Branches" FromRole="Eqiupment" ToRole="Branch" />
-          <NavigationProperty Name="EqiupmentType" Relationship="DataLib.FK_Eqiupments_EqiupmentTypes" FromRole="Eqiupment" ToRole="EqiupmentType" />
-          <NavigationProperty Name="Room" Relationship="DataLib.FK_Eqiupments_Rooms" FromRole="Eqiupment" ToRole="Room" />
-          <NavigationProperty Name="RecordEquipments" Relationship="DataLib.FK_RecordEquipments_Eqiupments" FromRole="Eqiupment" ToRole="RecordEquipment" />
-        </EntityType>
-        <EntityType Name="EqiupmentType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="Code" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Eqiupments" Relationship="DataLib.FK_Eqiupments_EqiupmentTypes" FromRole="EqiupmentType" ToRole="Eqiupment" />
-        </EntityType>
-        <EntityType Name="RecordEquipment">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordId" Type="Int32" Nullable="false" />
-          <Property Name="EquipmentId" Type="Int32" Nullable="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
-          <Property Name="Duration" Type="Double" Nullable="false" />
-          <NavigationProperty Name="Eqiupment" Relationship="DataLib.FK_RecordEquipments_Eqiupments" FromRole="RecordEquipment" ToRole="Eqiupment" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordEquipments_Records" FromRole="RecordEquipment" ToRole="Record" />
-        </EntityType>
-        <Association Name="FK_Eqiupments_Branches">
-          <End Type="DataLib.Branch" Role="Branch" Multiplicity="0..1" />
-          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
+        <Association Name="FK_DefaultProtocols_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.DefaultProtocol" Role="DefaultProtocol" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Branch">
+            <Principal Role="Record">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Eqiupment">
-              <PropertyRef Name="BranchId" />
+            <Dependent Role="DefaultProtocol">
+              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Eqiupments_EqiupmentTypes">
-          <End Type="DataLib.EqiupmentType" Role="EqiupmentType" Multiplicity="1" />
-          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
+        <Association Name="FK_PersonDiagnoses_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.PersonDiagnos" Role="PersonDiagnos" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="EqiupmentType">
+            <Principal Role="Record">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Eqiupment">
-              <PropertyRef Name="EquipmentTypeId" />
+            <Dependent Role="PersonDiagnos">
+              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Eqiupments_Rooms">
-          <End Type="DataLib.Room" Role="Room" Multiplicity="0..1" />
-          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="*" />
+        <Association Name="FK_Records_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Room">
+            <Principal Role="Person">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Eqiupment">
-              <PropertyRef Name="RoomId" />
+            <Dependent Role="Record">
+              <PropertyRef Name="PersonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_RecordEquipments_Eqiupments">
-          <End Type="DataLib.Eqiupment" Role="Eqiupment" Multiplicity="1" />
-          <End Type="DataLib.RecordEquipment" Role="RecordEquipment" Multiplicity="*" />
+        <Association Name="FK_RecordContractItems_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
+          <End Type="DataLib.RecordContractItem" Role="RecordContractItem" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Eqiupment">
+            <Principal Role="RecordType">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="RecordEquipment">
-              <PropertyRef Name="EquipmentId" />
+            <Dependent Role="RecordContractItem">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordContractLimits_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
+          <End Type="DataLib.RecordContractLimit" Role="RecordContractLimit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordContractLimit">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordDocuments_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
+          <End Type="DataLib.RecordDocument" Role="RecordDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordDocument">
+              <PropertyRef Name="RecordId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7471,18 +7483,116 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="RecordTypeEditor">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Editor" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="HasDocuments" Type="Boolean" Nullable="false" />
-          <Property Name="HasDICOM" Type="Boolean" Nullable="false" />
-          <Property Name="UseEquipments" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordTypeEditor" ToRole="RecordType" />
-        </EntityType>
+        <Association Name="FK_RecordMembers_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
+          <End Type="DataLib.RecordMember" Role="RecordMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordMember">
+              <PropertyRef Name="RecordId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_RecordPeriods">
+          <End Type="DataLib.RecordPeriod" Role="RecordPeriod" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordPeriod">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="RecordPeriodId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Records">
+          <End Type="DataLib.Record" Role="Record" Multiplicity="0..1" />
+          <End Type="DataLib.Record" Role="Record1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Record">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Rooms">
+          <End Type="DataLib.Room" Role="Room" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Room">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="RoomId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Urgentlies">
+          <End Type="DataLib.Urgently" Role="Urgently" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Urgently">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="UrgentlyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Users">
+          <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="RemovedByUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Records_Visits">
+          <End Type="DataLib.Visit" Role="Visit" Multiplicity="1" />
+          <End Type="DataLib.Record" Role="Record" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Visit">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Record">
+              <PropertyRef Name="VisitId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordTypeCosts_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeCost">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RecordTypeEditors_RecordTypes">
           <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -7497,106 +7607,40 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="AnalyseResult">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordId" Type="Int32" Nullable="false" />
-          <Property Name="ParameterRecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="UnitId" Type="Int32" />
-          <Property Name="IsNormal" Type="Boolean" Nullable="false" />
-          <Property Name="IsAboveRef" Type="Boolean" Nullable="false" />
-          <Property Name="IsBelowRef" Type="Boolean" Nullable="false" />
-          <Property Name="Details" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Record" Relationship="DataLib.FK_AnalyseResults_Records" FromRole="AnalyseResult" ToRole="Record" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_AnalyseResults_RecordTypes" FromRole="AnalyseResult" ToRole="RecordType" />
-          <NavigationProperty Name="Unit" Relationship="DataLib.FK_AnalyseResults_Units" FromRole="AnalyseResult" ToRole="Unit" />
-        </EntityType>
-        <Association Name="FK_AnalyseResults_Records">
-          <End Type="DataLib.Record" Role="Record" Multiplicity="1" />
-          <End Type="DataLib.AnalyseResult" Role="AnalyseResult" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Record">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AnalyseResult">
-              <PropertyRef Name="RecordId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AnalyseResults_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.AnalyseResult" Role="AnalyseResult" Multiplicity="*" />
+        <Association Name="FK_RecordTypeRolePermissions_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RecordType">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AnalyseResult">
-              <PropertyRef Name="ParameterRecordTypeId" />
+            <Dependent Role="RecordTypeRolePermission">
+              <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Unit">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="OnlyForMedWare" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="AnalyseResults" Relationship="DataLib.FK_AnalyseResults_Units" FromRole="Unit" ToRole="AnalyseResult" />
-        </EntityType>
-        <Association Name="FK_AnalyseResults_Units">
-          <End Type="DataLib.Unit" Role="Unit" Multiplicity="0..1" />
-          <End Type="DataLib.AnalyseResult" Role="AnalyseResult" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Unit">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AnalyseResult">
-              <PropertyRef Name="UnitId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="AnalyseRefference">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="ParameterRecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="IsMale" Type="Boolean" Nullable="false" />
-          <Property Name="AgeFrom" Type="Int32" Nullable="false" />
-          <Property Name="AgeTo" Type="Int32" />
-          <Property Name="RefMin" Type="Double" Nullable="false" />
-          <Property Name="RefMax" Type="Double" Nullable="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" FromRole="AnalyseRefference" ToRole="RecordType" />
-          <NavigationProperty Name="RecordType1" Relationship="DataLib.FK_AnalyseRefferences_RecordTypes" FromRole="AnalyseRefference" ToRole="RecordType" />
-        </EntityType>
-        <Association Name="FK_AnalyseRefferences_ParameterRecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.AnalyseRefference" Role="AnalyseRefference" Multiplicity="*" />
+        <Association Name="FK_RecordTypes_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="0..1" />
+          <End Type="DataLib.RecordType" Role="RecordType1" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RecordType">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AnalyseRefference">
-              <PropertyRef Name="ParameterRecordTypeId" />
+            <Dependent Role="RecordType1">
+              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_AnalyseRefferences_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
-          <End Type="DataLib.AnalyseRefference" Role="AnalyseRefference" Multiplicity="*" />
+        <Association Name="FK_ScheduleItem_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="0..1" />
+          <End Type="DataLib.ScheduleItem" Role="ScheduleItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RecordType">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AnalyseRefference">
+            <Dependent Role="ScheduleItem">
               <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -7952,26 +7996,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PermissionLinks">
-            <EntityTypeMapping TypeName="DataLib.PermissionLink">
-              <MappingFragment StoreEntitySet="PermissionLinks">
-                <ScalarProperty Name="ChildId" ColumnName="ChildId" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Permissions">
-            <EntityTypeMapping TypeName="DataLib.Permission">
-              <MappingFragment StoreEntitySet="Permissions">
-                <ScalarProperty Name="ReadOnly" ColumnName="ReadOnly" />
-                <ScalarProperty Name="IsGroup" ColumnName="IsGroup" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PersonAddresses">
             <EntityTypeMapping TypeName="DataLib.PersonAddress">
               <MappingFragment StoreEntitySet="PersonAddresses">
@@ -8300,18 +8324,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="UserPermissions">
-            <EntityTypeMapping TypeName="DataLib.UserPermission">
-              <MappingFragment StoreEntitySet="UserPermissions">
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="IsGranted" ColumnName="IsGranted" />
-                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="DataLib.User">
               <MappingFragment StoreEntitySet="Users">
@@ -8597,83 +8609,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Records">
-            <EntityTypeMapping TypeName="DataLib.Record">
-              <MappingFragment StoreEntitySet="Records">
-                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
-                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
-                <ScalarProperty Name="ActualDateTime" ColumnName="ActualDateTime" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="MKB" ColumnName="MKB" />
-                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
-                <ScalarProperty Name="NumberTypeYear" ColumnName="NumberTypeYear" />
-                <ScalarProperty Name="NumberYear" ColumnName="NumberYear" />
-                <ScalarProperty Name="NumberType" ColumnName="NumberType" />
-                <ScalarProperty Name="Number" ColumnName="Number" />
-                <ScalarProperty Name="UrgentlyId" ColumnName="UrgentlyId" />
-                <ScalarProperty Name="RecordPeriodId" ColumnName="RecordPeriodId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
-                <ScalarProperty Name="VisitId" ColumnName="VisitId" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypes">
-            <EntityTypeMapping TypeName="DataLib.RecordType">
-              <MappingFragment StoreEntitySet="RecordTypes">
-                <ScalarProperty Name="Priority" ColumnName="Priority" />
-                <ScalarProperty Name="NumberType" ColumnName="NumberType" />
-                <ScalarProperty Name="Options" ColumnName="Options" />
-                <ScalarProperty Name="IsAnalyseParameter" ColumnName="IsAnalyseParameter" />
-                <ScalarProperty Name="IsAnalyse" ColumnName="IsAnalyse" />
-                <ScalarProperty Name="IsRecord" ColumnName="IsRecord" />
-                <ScalarProperty Name="MedProfileId" ColumnName="MedProfileId" />
-                <ScalarProperty Name="RecordTypeGroupId" ColumnName="RecordTypeGroupId" />
-                <ScalarProperty Name="Assignable" ColumnName="Assignable" />
-                <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
-                <ScalarProperty Name="Duration" ColumnName="Duration" />
-                <ScalarProperty Name="MinDuration" ColumnName="MinDuration" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Code" ColumnName="Code" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Assignments">
-            <EntityTypeMapping TypeName="DataLib.Assignment">
-              <MappingFragment StoreEntitySet="Assignments">
-                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
-                <ScalarProperty Name="Cost" ColumnName="Cost" />
-                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
-                <ScalarProperty Name="CreationDateTime" ColumnName="CreationDateTime" />
-                <ScalarProperty Name="IsTemporary" ColumnName="IsTemporary" />
-                <ScalarProperty Name="VisitId" ColumnName="VisitId" />
-                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
-                <ScalarProperty Name="Note" ColumnName="Note" />
-                <ScalarProperty Name="CancelDateTime" ColumnName="CancelDateTime" />
-                <ScalarProperty Name="CancelUserId" ColumnName="CancelUserId" />
-                <ScalarProperty Name="ParametersOptions" ColumnName="ParametersOptions" />
-                <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
-                <ScalarProperty Name="UrgentlyId" ColumnName="UrgentlyId" />
-                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
-                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
-                <ScalarProperty Name="AssignLpuId" ColumnName="AssignLpuId" />
-                <ScalarProperty Name="AssignUserId" ColumnName="AssignUserId" />
-                <ScalarProperty Name="Duration" ColumnName="Duration" />
-                <ScalarProperty Name="AssignDateTime" ColumnName="AssignDateTime" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Eqiupments">
             <EntityTypeMapping TypeName="DataLib.Eqiupment">
               <MappingFragment StoreEntitySet="Eqiupments">
@@ -8726,28 +8661,40 @@
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AnalyseResults">
-            <EntityTypeMapping TypeName="DataLib.AnalyseResult">
-              <MappingFragment StoreEntitySet="AnalyseResults">
-                <ScalarProperty Name="Details" ColumnName="Details" />
-                <ScalarProperty Name="IsBelowRef" ColumnName="IsBelowRef" />
-                <ScalarProperty Name="IsAboveRef" ColumnName="IsAboveRef" />
-                <ScalarProperty Name="IsNormal" ColumnName="IsNormal" />
-                <ScalarProperty Name="UnitId" ColumnName="UnitId" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
-                <ScalarProperty Name="ParameterRecordTypeId" ColumnName="ParameterRecordTypeId" />
-                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+          </EntitySetMapping>          
+          <EntitySetMapping Name="PermissionGroupMemberships">
+            <EntityTypeMapping TypeName="DataLib.PermissionGroupMembership">
+              <MappingFragment StoreEntitySet="PermissionGroupMemberships">
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Units">
-            <EntityTypeMapping TypeName="DataLib.Unit">
-              <MappingFragment StoreEntitySet="Units">
-                <ScalarProperty Name="OnlyForMedWare" ColumnName="OnlyForMedWare" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+          <EntitySetMapping Name="PermissionGroups">
+            <EntityTypeMapping TypeName="DataLib.PermissionGroup">
+              <MappingFragment StoreEntitySet="PermissionGroups">
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Permissions">
+            <EntityTypeMapping TypeName="DataLib.Permission">
+              <MappingFragment StoreEntitySet="Permissions">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserPermisionGroups">
+            <EntityTypeMapping TypeName="DataLib.UserPermisionGroup">
+              <MappingFragment StoreEntitySet="UserPermisionGroups">
+                <ScalarProperty Name="PermissionGroupId" ColumnName="PermissionGroupId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -8764,6 +8711,108 @@
                 <ScalarProperty Name="IsMale" ColumnName="IsMale" />
                 <ScalarProperty Name="ParameterRecordTypeId" ColumnName="ParameterRecordTypeId" />
                 <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AnalyseResults">
+            <EntityTypeMapping TypeName="DataLib.AnalyseResult">
+              <MappingFragment StoreEntitySet="AnalyseResults">
+                <ScalarProperty Name="Details" ColumnName="Details" />
+                <ScalarProperty Name="IsBelowRef" ColumnName="IsBelowRef" />
+                <ScalarProperty Name="IsAboveRef" ColumnName="IsAboveRef" />
+                <ScalarProperty Name="IsNormal" ColumnName="IsNormal" />
+                <ScalarProperty Name="UnitId" ColumnName="UnitId" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="ParameterRecordTypeId" ColumnName="ParameterRecordTypeId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Assignments">
+            <EntityTypeMapping TypeName="DataLib.Assignment">
+              <MappingFragment StoreEntitySet="Assignments">
+                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
+                <ScalarProperty Name="CreationDateTime" ColumnName="CreationDateTime" />
+                <ScalarProperty Name="IsTemporary" ColumnName="IsTemporary" />
+                <ScalarProperty Name="VisitId" ColumnName="VisitId" />
+                <ScalarProperty Name="RecordId" ColumnName="RecordId" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="CancelDateTime" ColumnName="CancelDateTime" />
+                <ScalarProperty Name="CancelUserId" ColumnName="CancelUserId" />
+                <ScalarProperty Name="ParametersOptions" ColumnName="ParametersOptions" />
+                <ScalarProperty Name="ExecutionPlaceId" ColumnName="ExecutionPlaceId" />
+                <ScalarProperty Name="UrgentlyId" ColumnName="UrgentlyId" />
+                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
+                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
+                <ScalarProperty Name="AssignLpuId" ColumnName="AssignLpuId" />
+                <ScalarProperty Name="AssignUserId" ColumnName="AssignUserId" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="AssignDateTime" ColumnName="AssignDateTime" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Records">
+            <EntityTypeMapping TypeName="DataLib.Record">
+              <MappingFragment StoreEntitySet="Records">
+                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
+                <ScalarProperty Name="BillingDateTime" ColumnName="BillingDateTime" />
+                <ScalarProperty Name="ActualDateTime" ColumnName="ActualDateTime" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="MKB" ColumnName="MKB" />
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
+                <ScalarProperty Name="NumberTypeYear" ColumnName="NumberTypeYear" />
+                <ScalarProperty Name="NumberYear" ColumnName="NumberYear" />
+                <ScalarProperty Name="NumberType" ColumnName="NumberType" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="UrgentlyId" ColumnName="UrgentlyId" />
+                <ScalarProperty Name="RecordPeriodId" ColumnName="RecordPeriodId" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
+                <ScalarProperty Name="RoomId" ColumnName="RoomId" />
+                <ScalarProperty Name="VisitId" ColumnName="VisitId" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordTypes">
+            <EntityTypeMapping TypeName="DataLib.RecordType">
+              <MappingFragment StoreEntitySet="RecordTypes">
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="NumberType" ColumnName="NumberType" />
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="IsAnalyseParameter" ColumnName="IsAnalyseParameter" />
+                <ScalarProperty Name="IsAnalyse" ColumnName="IsAnalyse" />
+                <ScalarProperty Name="IsRecord" ColumnName="IsRecord" />
+                <ScalarProperty Name="MedProfileId" ColumnName="MedProfileId" />
+                <ScalarProperty Name="RecordTypeGroupId" ColumnName="RecordTypeGroupId" />
+                <ScalarProperty Name="Assignable" ColumnName="Assignable" />
+                <ScalarProperty Name="DisplayOrder" ColumnName="DisplayOrder" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="MinDuration" ColumnName="MinDuration" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Units">
+            <EntityTypeMapping TypeName="DataLib.Unit">
+              <MappingFragment StoreEntitySet="Units">
+                <ScalarProperty Name="OnlyForMedWare" ColumnName="OnlyForMedWare" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

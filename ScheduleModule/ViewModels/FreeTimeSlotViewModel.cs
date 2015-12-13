@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using Core.Data;
 using Core.Misc;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -8,16 +9,24 @@ namespace ScheduleModule.ViewModels
 {
     public class FreeTimeSlotViewModel : BindableBase, ITimeInterval
     {
-        public FreeTimeSlotViewModel(DateTime startTime, DateTime endTime, int recordTypeId, int roomId)
+        public FreeTimeSlotViewModel(DateTime startTime, DateTime endTime, RecordType recordType, Room room)
         {
             if (startTime >= endTime)
             {
                 throw new ArgumentException("Start time must be less than end time");
             }
+            if (recordType == null)
+            {
+                throw new ArgumentNullException("recordType");
+            }
+            if (room == null)
+            {
+                throw new ArgumentNullException("room");
+            }
             StartTime = startTime;
             EndTime = endTime;
-            RecordTypeId = recordTypeId;
-            RoomId = roomId;
+            RecordType = recordType;
+            Room = room;
             RequestAssignmentCreationCommand = new DelegateCommand(RequestAssignmentCreation);
         }
 
@@ -25,9 +34,9 @@ namespace ScheduleModule.ViewModels
 
         public DateTime EndTime { get; private set; }
 
-        public int RecordTypeId { get; private set; }
+        public RecordType RecordType { get; private set; }
 
-        public int RoomId { get; private set; }
+        public Room Room { get; private set; }
 
         public ICommand RequestAssignmentCreationCommand { get; private set; }
 

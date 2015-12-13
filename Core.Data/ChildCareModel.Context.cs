@@ -53,8 +53,6 @@ namespace Core.Data
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<OuterDocumentType> OuterDocumentTypes { get; set; }
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
-        public virtual DbSet<PermissionLink> PermissionLinks { get; set; }
-        public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<PersonAddress> PersonAddresses { get; set; }
         public virtual DbSet<PersonDisability> PersonDisabilities { get; set; }
         public virtual DbSet<PersonEducation> PersonEducations { get; set; }
@@ -80,7 +78,6 @@ namespace Core.Data
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
-        public virtual DbSet<UserPermission> UserPermissions { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
         public virtual DbSet<VisitResult> VisitResults { get; set; }
@@ -103,15 +100,19 @@ namespace Core.Data
         public virtual DbSet<MKBGroup> MKBGroups { get; set; }
         public virtual DbSet<RelativeRelationship> RelativeRelationships { get; set; }
         public virtual DbSet<RelativeRelationshipConnection> RelativeRelationshipConnections { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
-        public virtual DbSet<RecordType> RecordTypes { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Eqiupment> Eqiupments { get; set; }
         public virtual DbSet<EqiupmentType> EqiupmentTypes { get; set; }
         public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
-        public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
-        public virtual DbSet<Unit> Units { get; set; }
+        public virtual DbSet<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
+        public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; }
+        public virtual DbSet<UserPermisionGroup> UserPermisionGroups { get; set; }
         public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
+        public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
+        public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<Unit> Units { get; set; }
     }
 }

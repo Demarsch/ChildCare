@@ -9,5 +9,9 @@ namespace Shared.Schedule.Services
         IEnumerable<ScheduleItem> GetRoomsWorkingTimeForDay(DateTime date);
 
         IEnumerable<ScheduleItem> GetRoomsWorkingTimeForWeek(DateTime date);
+
+        IEnumerable<Room> GetRooms();
+
+        IEnumerable<RecordType> GetRecordTypes();
     }
 }

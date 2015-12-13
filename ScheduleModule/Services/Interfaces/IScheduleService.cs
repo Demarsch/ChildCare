@@ -28,7 +28,7 @@ namespace ScheduleModule.Services
 
         Task UpdateAssignmentAsync(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId);
 
-        Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, int newRoomId);
+        Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, Room newRoom);
 
         IEnumerable<ScheduledAssignmentDTO> GetAssignments(int patientId);
 

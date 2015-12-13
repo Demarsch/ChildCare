@@ -2,6 +2,6 @@
 {
     public interface ISecurityService
     {
-        bool HasPrivilege(string privilegeName);
+        bool HasPermission(string privilegeName);
     }
 }
