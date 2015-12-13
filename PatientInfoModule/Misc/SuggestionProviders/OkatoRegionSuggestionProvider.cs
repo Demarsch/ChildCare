@@ -19,8 +19,8 @@ namespace PatientInfoModule.Misc
                 throw new ArgumentNullException("cacheService");
             }
             regions = cacheService.GetItems<Okato>()
-                .Where(x => x.CodeOKATO.EndsWith("000000000") || x.CodeOKATO.StartsWith("C"))
-                .ToArray();
+                                  .Where(x => x.CodeOKATO.EndsWith("000000000") || x.CodeOKATO.StartsWith("C"))
+                                  .ToArray();
         }
 
         public IEnumerable GetSuggestions(string filter)
@@ -30,7 +30,8 @@ namespace PatientInfoModule.Misc
             {
                 return new Okato[0];
             }
-            return regions.Where(x => x.FullName.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) != -1);
+            return regions.Where(x => x.FullName.IndexOf(filter, StringComparison.CurrentCultureIgnoreCase) != -1)
+                          .Take(AppConfiguration.SearchResultTakeTopCount);
         }
     }
 }

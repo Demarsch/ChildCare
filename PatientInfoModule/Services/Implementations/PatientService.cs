@@ -60,6 +60,7 @@ namespace PatientInfoModule.Services
                               .Where(x => x.GivenOrg.Contains(filter))
                               .Select(x => x.GivenOrg)
                               .Distinct()
+                              .Take(AppConfiguration.SearchResultTakeTopCount)
                               .ToArray();
             }
         }
@@ -77,6 +78,7 @@ namespace PatientInfoModule.Services
                               .Where(x => x.GivenOrg.Contains(filter))
                               .Select(x => x.GivenOrg)
                               .Distinct()
+                              .Take(AppConfiguration.SearchResultTakeTopCount)
                               .ToArray();
             }
         }
@@ -90,7 +92,8 @@ namespace PatientInfoModule.Services
             }
             var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             return cacheService.GetItems<InsuranceCompany>().Where(x => words.All(y => x.NameSMOK.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1
-                                                                                       || x.AddressF.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
+                                                                                       || x.AddressF.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
+                               .Take(AppConfiguration.SearchResultTakeTopCount);
         }
 
         public IEnumerable<Org> GetOrganizations(string filter)
@@ -104,6 +107,7 @@ namespace PatientInfoModule.Services
             using (var contex = contextProvider.CreateNewContext())
             {
                 return contex.Set<Org>().Where(x => words.All(y => x.Name.Contains(y) || x.Details.Contains(y)))
+                             .Take(AppConfiguration.SearchResultTakeTopCount)
                              .ToArray();
             }
         }
@@ -202,15 +206,15 @@ namespace PatientInfoModule.Services
                 return;
             }
             var photoId = await documentService.UploadDocumentAsync(new Document
-            {
-                FileData = data.NewPhoto,
-                Description = "фото",
-                DisplayName = "фото",
-                Extension = "jpg",
-                FileName = "фото",
-                FileSize = data.NewPhoto.Length,
-                UploadDate = DateTime.Now
-            });
+                                                                    {
+                                                                        FileData = data.NewPhoto,
+                                                                        Description = "фото",
+                                                                        DisplayName = "фото",
+                                                                        Extension = "jpg",
+                                                                        FileName = "фото",
+                                                                        FileSize = data.NewPhoto.Length,
+                                                                        UploadDate = DateTime.Now
+                                                                    });
             var currentPhotoId = data.CurrentPerson.PhotoId;
             result.Person.PhotoId = photoId;
             //If patient already had photo we need to delete it
@@ -611,7 +615,9 @@ namespace PatientInfoModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonStaff>(context.Set<RecordTypeRolePermission>()
-                                                               .Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.RecordTypeMemberRoleId == memberRoleId)
+                                                               .Where(
+                                                                      x =>
+                                                                      x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.RecordTypeMemberRoleId == memberRoleId)
                                                                .SelectMany(x => x.Permission.PermissionGroupMemberships)
                                                                .Select(x => x.PermissionGroup)
                                                                .SelectMany(x => x.UserPermisionGroups)

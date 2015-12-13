@@ -1,5 +1,8 @@
-﻿namespace Core.Data
+﻿using Core.Attributes;
+
+namespace Core.Data
 {
+    [NonCachable]
     public partial class Person
     {
         public static readonly string UnknownSnils = "отсутствует";

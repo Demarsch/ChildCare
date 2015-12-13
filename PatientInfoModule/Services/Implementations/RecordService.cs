@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
-using System.Data.Entity;
+using Core.Misc;
 
 namespace PatientInfoModule.Services
 {
-    public class RecordService: IRecordService
+    public class RecordService : IRecordService
     {
         private readonly IDbContextProvider contextProvider;
 
@@ -47,7 +48,8 @@ namespace PatientInfoModule.Services
         public IDisposableQueryable<RecordType> GetRecordTypesByName(string name)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim())), context);
+            return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim()))
+                                                              .Take(AppConfiguration.SearchResultTakeTopCount), context);
         }
 
         public IDisposableQueryable<FinancingSource> GetActiveFinancingSources()
@@ -77,7 +79,7 @@ namespace PatientInfoModule.Services
         public double GetRecordTypeCost(int recordTypeId, int financingSourceId, DateTime onDate, bool? isChild = null, bool isIncome = true)
         {
             var context = contextProvider.CreateNewContext();
-            double cost = 0.0;
+            var cost = 0.0;
             var recordCost = context.Set<RecordTypeCost>()
                                     .Where(x => x.RecordTypeId == recordTypeId && x.FinancingSourceId == financingSourceId &&
                                                 DbFunctions.TruncateTime(onDate) >= DbFunctions.TruncateTime(x.BeginDate) && DbFunctions.TruncateTime(onDate) < DbFunctions.TruncateTime(x.EndDate) &&
@@ -85,7 +87,9 @@ namespace PatientInfoModule.Services
                                     .OrderByDescending(x => x.InDateTime)
                                     .FirstOrDefault(x => (x.IsChild != null ? x.IsChild == isChild : true));
             if (recordCost != null)
+            {
                 cost = recordCost.FullPrice * recordCost.Profitability;
+            }
             return cost;
         }
     }

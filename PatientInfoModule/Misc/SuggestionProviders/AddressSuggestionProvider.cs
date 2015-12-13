@@ -127,7 +127,8 @@ namespace PatientInfoModule.Misc
                     return new Okato[0];
                 }
                 var words = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                return regionLocations[selectedRegion].Where(x => words.All(y => x.FullName.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
+                return regionLocations[selectedRegion].Where(x => words.All(y => x.FullName.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
+                                                      .Take(AppConfiguration.SearchResultTakeTopCount);
             }
         }
     }

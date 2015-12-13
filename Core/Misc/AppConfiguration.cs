@@ -9,5 +9,7 @@ namespace Core.Misc
         public static readonly TimeSpan PendingOperationDelay = TimeSpan.FromSeconds(1.5);
 
         public static readonly int UserInputSearchThreshold = 3;
+
+        public static readonly int SearchResultTakeTopCount = 10;
     }
 }
