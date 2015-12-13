@@ -139,15 +139,7 @@
 
             <DockPanel Grid.Row="1" LastChildFill="True" Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                 <charting:Chart Background="White" Title="Динамика изменения" Margin="0" Padding="0" Height="200"
-                                Visibility="{Binding ShowChart, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                    <charting:Chart.LegendStyle>
-                        <Style TargetType="datavis:Legend">
-                            <Setter Property="Width" Value="0" />
-                        </Style>
-                    </charting:Chart.LegendStyle>
-                    <charting:Chart.Axes>
-                        <charting:LinearAxis Orientation="Y" Title="Значение" ShowGridLines="False"/>
-                    </charting:Chart.Axes>
+                                Visibility="{Binding ShowChart, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">                                   
                     <charting:LineSeries ItemsSource="{Binding Path=RefMinData}" IndependentValuePath="Date" DependentValuePath="Value">
                         <charting:LineSeries.Template>
                             <ControlTemplate TargetType="charting:LineSeries">
