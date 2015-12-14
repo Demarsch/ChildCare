@@ -6,37 +6,36 @@ using Core.Wpf.Misc;
 
 namespace Core.Wpf.Behaviors
 {
-    public class StringProcessorBehavior : Behavior<TextBox>
+    public class InputHelperBehavior : Behavior<TextBox>
     {
-        public static readonly DependencyProperty StringProcessorProperty = DependencyProperty.Register("StringProcessor", typeof(IStringProcessor), typeof(StringProcessorBehavior), new PropertyMetadata(OnStringProcessorChanged));
+        public static readonly DependencyProperty InputHelperProperty = DependencyProperty.Register("InputHelper", typeof(IInputHelper), typeof(InputHelperBehavior), new PropertyMetadata(OnStringProcessorChanged));
 
         private static void OnStringProcessorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var behavior = (StringProcessorBehavior)d;
+            var behavior = (InputHelperBehavior)d;
             if (behavior.AssociatedObject != null)
             {
-                behavior.textIsChangedByStringProcessor = true;
-                behavior.AssociatedObject.Text = behavior.StringProcessorResolved.ProcessString(behavior.AssociatedObject.Text);
-                behavior.textIsChangedByStringProcessor = false;
+                behavior.textIsChangedByInputHelper = true;
+                behavior.AssociatedObject.Text = behavior.InputHelperResolved.ProcessInput(behavior.AssociatedObject.Text);
+                behavior.textIsChangedByInputHelper = false;
             }
         }
 
-        public IStringProcessor StringProcessor
+        public IInputHelper InputHelper
         {
-            get { return (IStringProcessor)GetValue(StringProcessorProperty); }
-            set { SetValue(StringProcessorProperty, value); }
+            get { return (IInputHelper)GetValue(InputHelperProperty); }
+            set { SetValue(InputHelperProperty, value); }
         }
 
-        private IStringProcessor StringProcessorResolved
+        private IInputHelper InputHelperResolved
         {
-            get { return StringProcessor ?? NoOpStringProcessor.Instance; }
+            get { return InputHelper ?? NoOpInputHelper.Instance; }
         }
 
-        private bool textIsChangedByStringProcessor;
+        private bool textIsChangedByInputHelper;
 
         protected override void OnAttached()
         {
-            AssociatedObject.PreviewTextInput += AssociatedObjectOnPreviewTextInput;
             AssociatedObject.TextChanged += AssociatedObjectOnTextChanged;
             CommandManager.AddPreviewExecutedHandler(AssociatedObject, OnPreviewTextCommandExecute);
             base.OnAttached();
@@ -52,26 +51,20 @@ namespace Core.Wpf.Behaviors
 
         private void AssociatedObjectOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
         {
-            if (textIsChangedByStringProcessor)
+            if (textIsChangedByInputHelper)
             {
                 return;
             }
-            textIsChangedByStringProcessor = true;
+            textIsChangedByInputHelper = true;
             var caretIndex = AssociatedObject.CaretIndex;
             var isAtTheEnd = caretIndex == AssociatedObject.Text.Length;
-            AssociatedObject.Text = StringProcessorResolved.ProcessString(AssociatedObject.Text);
+            AssociatedObject.Text = InputHelperResolved.ProcessInput(AssociatedObject.Text);
             AssociatedObject.CaretIndex = isAtTheEnd ? AssociatedObject.Text.Length : caretIndex;
-            textIsChangedByStringProcessor = false;
-        }
-
-        private void AssociatedObjectOnPreviewTextInput(object sender, TextCompositionEventArgs textCompositionEventArgs)
-        {
-            ;
+            textIsChangedByInputHelper = false;
         }
 
         protected override void OnDetaching()
         {
-            AssociatedObject.PreviewTextInput -= AssociatedObjectOnPreviewTextInput;
             AssociatedObject.TextChanged -= AssociatedObjectOnTextChanged;
             CommandManager.RemovePreviewExecutedHandler(AssociatedObject, OnPreviewTextCommandExecute);
             base.OnDetaching();

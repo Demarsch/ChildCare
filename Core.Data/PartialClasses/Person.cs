@@ -9,6 +9,10 @@ namespace Core.Data
 
         public static readonly string UnknownMedNumber = "отсутствует";
 
+        public const int FullSnilsLength = 14;
+
+        public const int FullMedNumberLength = 16;
+
         public static string DelimitizeSnils(string snils)
         {
             if (string.IsNullOrWhiteSpace(snils) || snils == UnknownSnils)
@@ -26,15 +30,6 @@ namespace Core.Data
             return snils;
         }
 
-        //ToDo: get photo from store
-        public string PhotoUri
-        {
-            get
-            {
-                return string.Empty;
-            }
-        }
-
         public string BirthYear
         {
             get
@@ -43,14 +38,9 @@ namespace Core.Data
             }
         }
 
-        public string DelimitizedSnils
-        {
-            get { return DelimitizeSnils(Snils); }
-        }
-
         public override string ToString()
         {
-            return this.FullName + ", " + this.BirthYear;
+            return FullName + ", " + BirthYear;
         }
     }
 }

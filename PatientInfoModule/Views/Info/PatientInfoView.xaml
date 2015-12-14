@@ -9,6 +9,8 @@
              xmlns:coreBehaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
              xmlns:views="clr-namespace:PatientInfoModule.Views"
              xmlns:misc="clr-namespace:PatientInfoModule.Misc"
+             xmlns:wpfMisc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
+             xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
              mc:Ignorable="d"
              d:DesignHeight="500"
              d:DesignWidth="1024"
@@ -33,7 +35,6 @@
             <DataTemplate DataType="{x:Type viewModels:SocialStatusCollectionViewModel}">
                 <views:SocialStatusCollectionView Width="450" />
             </DataTemplate>
-
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -202,11 +203,11 @@
                              MaxLength="14"
                              Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
-                            <coreBehaviors:StringProcessorBehavior>
-                                <coreBehaviors:StringProcessorBehavior.StringProcessor>
-                                    <misc:SnilsStringProcessor />
-                                </coreBehaviors:StringProcessorBehavior.StringProcessor>
-                            </coreBehaviors:StringProcessorBehavior>
+                            <coreBehaviors:InputHelperBehavior>
+                                <coreBehaviors:InputHelperBehavior.InputHelper>
+                                    <misc:SnilsInputHelper />
+                                </coreBehaviors:InputHelperBehavior.InputHelper>
+                            </coreBehaviors:InputHelperBehavior>
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock Text="ЕНП" />
@@ -215,11 +216,11 @@
                              MaxLength="16"
                              Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
-                            <coreBehaviors:StringProcessorBehavior>
-                                <coreBehaviors:StringProcessorBehavior.StringProcessor>
-                                    <misc:MedNumberStringProcessor />
-                                </coreBehaviors:StringProcessorBehavior.StringProcessor>
-                            </coreBehaviors:StringProcessorBehavior>
+                            <coreBehaviors:InputHelperBehavior>
+                                <coreBehaviors:InputHelperBehavior.InputHelper>
+                                    <wpfMisc:DigitsInputHelper MaxDigits="{x:Static data:Person.FullMedNumberLength}" />
+                                </coreBehaviors:InputHelperBehavior.InputHelper>
+                            </coreBehaviors:InputHelperBehavior>
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <StackPanel Orientation="Horizontal"

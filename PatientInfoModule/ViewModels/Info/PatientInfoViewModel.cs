@@ -27,10 +27,6 @@ namespace PatientInfoModule.ViewModels
 {
     public class PatientInfoViewModel : TrackableBindableBase, IActiveDataErrorInfo, IChangeTrackerMediator, IDisposable
     {
-        private const int FullSnilsLength = 14;
-
-        private const int FullMedNumberLength = 16;
-
         private readonly IPatientService patientService;
 
         private readonly ILog log;
@@ -1018,7 +1014,7 @@ namespace PatientInfoModule.ViewModels
             private void ValidateSnils()
             {
                 SetError(x => x.Snils,
-                         !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.Snils.Length != FullSnilsLength
+                         !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.Snils.Length != Person.FullSnilsLength
                              ? "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00"
                              : string.Empty);
             }
@@ -1026,7 +1022,7 @@ namespace PatientInfoModule.ViewModels
             private void ValidateMedNumber()
             {
                 SetError(x => x.MedNumber,
-                         !string.IsNullOrEmpty(AssociatedItem.MedNumber) && AssociatedItem.MedNumber.Length != FullMedNumberLength
+                         !string.IsNullOrEmpty(AssociatedItem.MedNumber) && AssociatedItem.MedNumber.Length != Person.FullMedNumberLength
                              ? "ЕМН должен либо быть пустым либо содержать ровно шестнадцать цифр"
                              : string.Empty);
             }
@@ -1076,104 +1072,6 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        //public bool Validate()
-        //{
-        //    isValidationRequested = true;
-        //    OnPropertyChanged(string.Empty);
-        //    return invalidProperties.Count == 0
-        //           & IdentityDocuments.Validate()
-        //           & InsuranceDocuments.Validate()
-        //           & Addresses.Validate()
-        //           & DisabilityDocuments.Validate()
-        //           & SocialStatuses.Validate();
-        //}
-
-        //public void CancelValidation()
-        //{
-        //    isValidationRequested = false;
-        //    OnPropertyChanged();
-        //    IdentityDocuments.CancelValidation();
-        //    InsuranceDocuments.CancelValidation();
-        //    Addresses.CancelValidation();
-        //    DisabilityDocuments.CancelValidation();
-        //}
-
-        //private bool isValidationRequested;
-
-        //private readonly HashSet<string> invalidProperties = new HashSet<string>();
-
-        //string IDataErrorInfo.this[string columnName]
-        //{
-        //    get
-        //    {
-        //        if (!isValidationRequested)
-        //        {
-        //            invalidProperties.Remove(columnName);
-        //            return string.Empty;
-        //        }
-        //        var result = string.Empty;
-        //        switch (columnName)
-        //        {
-        //            case "LastName":
-        //                result = string.IsNullOrWhiteSpace(LastName) ? "Фамилия не указана" : string.Empty;
-        //                break;
-        //            case "FirstName":
-        //                result = string.IsNullOrWhiteSpace(FirstName) ? "Имя не указано" : string.Empty;
-        //                break;
-        //            case "BirthDate":
-        //                result = !BirthDate.HasValue
-        //                             ? "Дата рождения не указана"
-        //                             : BirthDate.Value.Date > DateTime.Today
-        //                                   ? "Дата рождения не может быть в будущем"
-        //                                   : string.Empty;
-        //                break;
-        //            case "Snils":
-        //                result = string.IsNullOrEmpty(Snils) || Snils.Length == FullSnilsLength
-        //                             ? string.Empty
-        //                             : "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00";
-        //                break;
-        //            case "MedNumber":
-        //                result = string.IsNullOrEmpty(MedNumber) || MedNumber.Length == FullMedNumberLength
-        //                             ? string.Empty
-        //                             : "ЕМН должен либо быть пустым либо быть в формате 0000000000000000";
-        //                break;
-        //            case "IsIncorrectName":
-        //            case "IsNewName":
-        //                result = IsNameChanged && !IsNewName && !IsIncorrectName
-        //                             ? "Выберите причину смены Ф.И.О."
-        //                             : string.Empty;
-        //                break;
-        //            case "selectedPatientOrRelative":
-        //                result = IsNewName
-        //                             ? !NewNameStartDate.HasValue
-        //                                   ? "Укажите дату, с которой вступили силу изменения Ф.И.О."
-        //                                   : NewNameStartDate.Value > DateTime.Today
-        //                                         ? "Дата смены Ф.И.О. не может быть в будущем"
-        //                                         : string.Empty
-        //                             : string.Empty;
-        //                break;
-        //            case "NationalityId":
-        //                result = NationalityId == SpecialValues.NonExistingId ? "Укажите гражданство пациента" : string.Empty;
-        //                break;
-        //            case "HealthGroupId":
-        //                result = IsChild && HealthGroupId == SpecialValues.NonExistingId ? "Группа здоровья обязательна для лиц до 18 лет" : string.Empty;
-        //                break;
-        //            case "SelectedRelationship":
-        //                result = IsRelative && SelectedRelationship == null ? "Не указана родственная связь" : string.Empty;
-        //                break;
-        //        }
-        //        if (string.IsNullOrEmpty(result))
-        //        {
-        //            invalidProperties.Remove(columnName);
-        //        }
-        //        else
-        //        {
-        //            invalidProperties.Add(columnName);
-        //        }
-        //        return result;
-        //    }
-        //}
-
         #endregion
 
         private readonly IChangeTracker currentInstanceChangeTracker;
@@ -1199,11 +1097,6 @@ namespace PatientInfoModule.ViewModels
             public IEnumerable<HealthGroup> HealthGroups { get; set; }
 
             public IEnumerable<RelativeRelationship> Relationships { get; set; }
-        }
-
-        public void RaisePropertyChanged()
-        {
-            OnPropertyChanged(string.Empty);
         }
     }
 }

@@ -54,33 +54,59 @@ namespace PatientInfoModule.ViewModels
                 if (SetTrackedProperty(ref documentTypeId, value))
                 {
                     OnPropertyChanged(() => StringRepresentation);
-                    UpdateValidator();
+                    UpdateValidatorAndInputHelpers();
                 }
             }
         }
 
-        private void UpdateValidator()
+        private IInputHelper seriesInputHelper;
+
+        public IInputHelper SeriesInputHelper
+        {
+            get { return seriesInputHelper; }
+            private set { SetProperty(ref seriesInputHelper, value); }
+        }
+
+        private IInputHelper numberInputHelper;
+
+        public IInputHelper NumberInputHelper
+        {
+            get { return numberInputHelper; }
+            private set { SetProperty(ref numberInputHelper, value); }
+        }
+
+        private void UpdateValidatorAndInputHelpers()
         {
             var reValidate = validator.ValidationIsActive;
             var selectedDocumentType = cacheService.GetItemById<IdentityDocumentType>(DocumentTypeId.GetValueOrDefault(SpecialValues.NonExistingId));
             if (selectedDocumentType == null)
             {
+                SeriesInputHelper = null;
+                NumberInputHelper = null;
                 validator = new ValidationMediatorBase(this);
             }
             else if (selectedDocumentType.Options.HasOption(IdentityDocumentType.IsRussianPassportOption))
             {
+                SeriesInputHelper = new DigitsInputHelper(IdentityDocumentType.RussianPassportSeriesDigitCount);
+                NumberInputHelper = new DigitsInputHelper(IdentityDocumentType.RussianPassportNumberDigitCount);
                 validator = new RussianPassportValidationMediator(this);
             }
             else if (selectedDocumentType.Options.HasOption(IdentityDocumentType.IsRussianBirthCertificateOption))
             {
+                SeriesInputHelper = null;
+                NumberInputHelper = new DigitsInputHelper(IdentityDocumentType.RussianBirthCertificateNumberDigitCount);
                 validator = new RussianBirthCertificateValidationMediator(this);
             }
             else if (selectedDocumentType.Options.HasOption(IdentityDocumentType.IsRussianForeignPassportOption))
             {
+                SeriesInputHelper = new DigitsInputHelper(IdentityDocumentType.RussianForeignPassportSeriesDigitCount);
+                NumberInputHelper = new DigitsInputHelper(IdentityDocumentType.RussianForeignPassportNumberDigitCount);
                 validator = new RussianForeignPassportValidationMediator(this);
             }
             else
             {
+                SeriesInputHelper = null;
+                NumberInputHelper = null;
                 validator = new ValidationMediatorBase(this);
             }
             if (reValidate)

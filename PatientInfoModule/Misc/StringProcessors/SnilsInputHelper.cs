@@ -4,7 +4,7 @@ using Core.Wpf.Misc;
 
 namespace PatientInfoModule.Misc
 {
-    public class SnilsStringProcessor : IStringProcessor
+    public class SnilsInputHelper : IInputHelper
     {
         private const int FullSnilsLength = 14;
 
@@ -14,7 +14,7 @@ namespace PatientInfoModule.Misc
 
         private const int SpaceIndex = 11;
 
-        public string ProcessString(string input)
+        public string ProcessInput(string input)
         {
             input = new string(input.Where(char.IsDigit).ToArray());
             var properSnils = new StringBuilder();
