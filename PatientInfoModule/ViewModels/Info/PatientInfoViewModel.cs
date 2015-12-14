@@ -1026,7 +1026,7 @@ namespace PatientInfoModule.ViewModels
             private void ValidateMedNumber()
             {
                 SetError(x => x.MedNumber,
-                         !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.MedNumber.Length != FullMedNumberLength
+                         !string.IsNullOrEmpty(AssociatedItem.MedNumber) && AssociatedItem.MedNumber.Length != FullMedNumberLength
                              ? "ЕМН должен либо быть пустым либо содержать ровно шестнадцать цифр"
                              : string.Empty);
             }

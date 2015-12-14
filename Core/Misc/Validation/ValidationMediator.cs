@@ -12,7 +12,7 @@ namespace Core.Misc
 
         private readonly Dictionary<string, string> Errors = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        private bool ValidationIsActive { get; set; }
+        public bool ValidationIsActive { get; private set; }
 
         protected ValidationMediator(TItem associatedItem)
         {

@@ -6,8 +6,9 @@
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
+             xmlns:coreBehaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
              xmlns:views="clr-namespace:PatientInfoModule.Views"
+             xmlns:misc="clr-namespace:PatientInfoModule.Misc"
              mc:Ignorable="d"
              d:DesignHeight="500"
              d:DesignWidth="1024"
@@ -90,7 +91,7 @@
                          Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                          Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
                          MaxLength="100"
-                         behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                         />
                 <StackPanel Grid.Row="0"
                             Grid.Column="3"
                             Grid.RowSpan="4"
@@ -135,13 +136,13 @@
                                  IsChecked="{Binding IsIncorrectName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  IsTabStop="{Binding IsNameChanged}" 
-                                 behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                                 />
                     <RadioButton Content="Иная причина"
                                  Margin="5 5 25 5"
                                  IsChecked="{Binding IsNewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  IsTabStop="{Binding IsNameChanged}" 
-                                 behaviors:FocusAdvancement.AdvancesByEnterKey="True" />
+                                  />
                     <TextBlock Text="Новые данные вступают в силу с"
                                Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
                     <DatePicker HorizontalAlignment="Left"
@@ -149,7 +150,7 @@
                                 Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                 IsTabStop="{Binding IsNameChanged}"
-                                behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                                />
                 </StackPanel>
                 <TextBlock Grid.Row="1"
                            Grid.Column="1"
@@ -160,7 +161,7 @@
                          MaxLength="100"
                          Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                          Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" 
-                         behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                         />
                 <TextBlock Grid.Row="2"
                            Grid.Column="1"
                            Text="Отчество" />
@@ -169,7 +170,7 @@
                          HorizontalAlignment="Stretch"
                          MaxLength="100"
                          Text="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" 
-                         behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                         />
                 <TextBlock Grid.Row="3"
                            Grid.Column="1"
                            Text="Дата рождения" />
@@ -179,13 +180,11 @@
                             Orientation="Horizontal">
                     <DatePicker SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                 Margin="3 3 22 3"
-                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
-                                behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
                     <TextBlock Text="Пол" />
                     <ToggleButton Background="Transparent"
                                   IsChecked="{Binding IsMale}"
-                                  Width="90"
-                                  behaviors:FocusAdvancement.AdvancesByEnterKey="True">
+                                  Width="90">
                         <StackPanel Orientation="Horizontal"
                                     VerticalAlignment="Stretch">
                             <TextBlock
@@ -201,20 +200,26 @@
                     <TextBox Text="{Binding Snils, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                              Width="140"
                              MaxLength="14"
-                             Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
-                             behaviors:FocusAdvancement.AdvancesByEnterKey="True">
+                             Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
-                            <behaviors:SnilsInputHelperBehavior />
+                            <coreBehaviors:StringProcessorBehavior>
+                                <coreBehaviors:StringProcessorBehavior.StringProcessor>
+                                    <misc:SnilsStringProcessor />
+                                </coreBehaviors:StringProcessorBehavior.StringProcessor>
+                            </coreBehaviors:StringProcessorBehavior>
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock Text="ЕНП" />
                     <TextBox Text="{Binding MedNumber, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                              Width="140"
                              MaxLength="16"
-                             Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
-                             behaviors:FocusAdvancement.AdvancesByEnterKey="True">
+                             Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
-                            <behaviors:MedNumberInputHelperBehavior />
+                            <coreBehaviors:StringProcessorBehavior>
+                                <coreBehaviors:StringProcessorBehavior.StringProcessor>
+                                    <misc:MedNumberStringProcessor />
+                                </coreBehaviors:StringProcessorBehavior.StringProcessor>
+                            </coreBehaviors:StringProcessorBehavior>
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <StackPanel Orientation="Horizontal"
@@ -225,11 +230,9 @@
                                   SelectedItem="{Binding SelectedRelationship, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                   Width="100"
                                   Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                                  Margin="3 3 23 3"
-                                  behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                                  Margin="3 3 23 3"/>
                         <CheckBox Content="Является официальным представителем пациента"
-                                  IsChecked="{Binding IsRepresentative, UpdateSourceTrigger=PropertyChanged}" 
-                                  behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                                  IsChecked="{Binding IsRepresentative, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </StackPanel>
                 <TextBlock Grid.Row="4"
@@ -247,14 +250,12 @@
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0"
                              HorizontalAlignment="Stretch"
-                             Text="{Binding Phones, UpdateSourceTrigger=PropertyChanged}"
-                             behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                             Text="{Binding Phones, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBlock Grid.Column="1"
                                Text="Эл. почта" />
                     <TextBox Grid.Column="2"
                              HorizontalAlignment="Stretch"
-                             Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" 
-                             behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                             Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
             </Grid>
             <Grid DockPanel.Dock="Top"
@@ -276,23 +277,20 @@
                           Margin="3 3 22 3"
                           SelectedValue="{Binding NationalityId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                           Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                          HorizontalAlignment="Stretch" 
-                          behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                          HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="2"
                            Text="Образование" />
                 <ComboBox Grid.Column="3"
                           ItemsSource="{Binding Educations}"
                           SelectedValue="{Binding EducationId, UpdateSourceTrigger=PropertyChanged}"
-                          HorizontalAlignment="Stretch" 
-                          behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                          HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="4"
                            Text="Семейное положение" 
-                           behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                           />
                 <ComboBox Grid.Column="5"
                           ItemsSource="{Binding MaritalStatuses}"
                           SelectedValue="{Binding MaritalStatusId, UpdateSourceTrigger=PropertyChanged}"
-                          HorizontalAlignment="Stretch"
-                          behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                          HorizontalAlignment="Stretch"/>
                 <TextBlock Grid.Column="6"
                            Text="Группа здоровья"
                            Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
@@ -302,8 +300,7 @@
                           HorizontalAlignment="Stretch"
                           Margin="3 3 22 3"
                           Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                          Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" 
-                          behaviors:FocusAdvancement.AdvancesByEnterKey="True"/>
+                          Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
             </Grid>
             <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>

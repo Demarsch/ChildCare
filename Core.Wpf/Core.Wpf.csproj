@@ -98,10 +98,9 @@
     <Compile Include="Behaviors\DataContextPropagationBehavior.cs" />
     <Compile Include="Behaviors\FocusAdvancement.cs" />
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
-    <Compile Include="Behaviors\MedNumberInputHelperBehavior.cs" />
     <Compile Include="Behaviors\MouseWheelHorizontalScroll.cs" />
     <Compile Include="Behaviors\ScrollSynchronizer.cs" />
-    <Compile Include="Behaviors\SnilsInputHelperBehavior.cs" />
+    <Compile Include="Behaviors\StringProcessorBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Controls\TreeViewComboBox.xaml.cs">
       <DependentUpon>TreeViewComboBox.xaml</DependentUpon>
@@ -125,7 +124,9 @@
     <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\FileServiceActions.cs" />
     <Compile Include="Misc\FileServiceFilters.cs" />
+    <Compile Include="Misc\IStringProcessor.cs" />
     <Compile Include="Misc\KeyToCharTranslator.cs" />
+    <Compile Include="Misc\NoOpStringProcessor.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
     <Compile Include="Misc\TrackableBindableBase.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />

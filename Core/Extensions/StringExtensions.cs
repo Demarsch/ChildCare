@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Core.Extensions
@@ -101,6 +103,18 @@ namespace Core.Extensions
             var result = new StringBuilder(source);
             result[0] = char.ToUpper(result[0]);
             return result.ToString();
+        }
+
+        private static readonly HashSet<char> romanNumberLetters = new HashSet<char>(new[] { 'i', 'I', 'v', 'V', 'x', 'X', 'c', 'C', 'l', 'L', 'd', 'D', 'm', 'M' } );
+
+        public static bool IsRomanNumber(this string source)
+        {
+            return (source ?? string.Empty).All(romanNumberLetters.Contains);
+        }
+
+        public static bool HasOption(this string source, string option)
+        {
+            return (source ?? string.Empty).Contains(option);
         }
     }
 }

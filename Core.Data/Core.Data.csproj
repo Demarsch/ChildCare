@@ -141,6 +141,7 @@
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
     <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
     <Compile Include="Misc\IDisposableQueryable.cs" />
+    <Compile Include="PartialClasses\IdentityDocumentType.cs" />
     <Compile Include="PartialClasses\Permission.cs" />
     <Compile Include="PartialClasses\PermissionGroup.cs" />
     <Compile Include="PermissionGroup.cs">

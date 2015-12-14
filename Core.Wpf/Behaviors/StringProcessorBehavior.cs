@@ -1,20 +1,38 @@
-﻿using System.Linq;
-using System.Text;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interactivity;
+using Core.Wpf.Misc;
 
 namespace Core.Wpf.Behaviors
 {
-    public class SnilsInputHelperBehavior : Behavior<TextBox>
+    public class StringProcessorBehavior : Behavior<TextBox>
     {
-        private const int FullSnilsLength = 14;
+        public static readonly DependencyProperty StringProcessorProperty = DependencyProperty.Register("StringProcessor", typeof(IStringProcessor), typeof(StringProcessorBehavior), new PropertyMetadata(OnStringProcessorChanged));
 
-        private const int FirstDashIndex = 3;
+        private static void OnStringProcessorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (StringProcessorBehavior)d;
+            if (behavior.AssociatedObject != null)
+            {
+                behavior.textIsChangedByStringProcessor = true;
+                behavior.AssociatedObject.Text = behavior.StringProcessorResolved.ProcessString(behavior.AssociatedObject.Text);
+                behavior.textIsChangedByStringProcessor = false;
+            }
+        }
 
-        private const int SecondDashIndex = 7;
+        public IStringProcessor StringProcessor
+        {
+            get { return (IStringProcessor)GetValue(StringProcessorProperty); }
+            set { SetValue(StringProcessorProperty, value); }
+        }
 
-        private const int SpaceIndex = 11;
+        private IStringProcessor StringProcessorResolved
+        {
+            get { return StringProcessor ?? NoOpStringProcessor.Instance; }
+        }
+
+        private bool textIsChangedByStringProcessor;
 
         protected override void OnAttached()
         {
@@ -32,52 +50,23 @@ namespace Core.Wpf.Behaviors
             }
         }
 
-        private bool ignoreTextChanged;
-
         private void AssociatedObjectOnTextChanged(object sender, TextChangedEventArgs textChangedEventArgs)
         {
-            if (ignoreTextChanged)
+            if (textIsChangedByStringProcessor)
             {
                 return;
             }
-            var properSnils = new StringBuilder();
-            var snilsIndex = 0;
-            var textIndex = 0;
-            var text = AssociatedObject.Text.Where(char.IsDigit).ToArray();
-            while (textIndex < text.Length && snilsIndex < FullSnilsLength)
-            {
-                if (snilsIndex == SpaceIndex)
-                {
-                    properSnils.Append(' ');
-                    textIndex--;
-                }
-                else if (snilsIndex == FirstDashIndex || snilsIndex == SecondDashIndex)
-                {
-                    properSnils.Append('-');
-                    textIndex--;
-                }
-                else
-                {
-                    properSnils.Append(text[textIndex]);
-                }
-                textIndex++;
-                snilsIndex++;
-            }
-            ignoreTextChanged = true;
+            textIsChangedByStringProcessor = true;
             var caretIndex = AssociatedObject.CaretIndex;
             var isAtTheEnd = caretIndex == AssociatedObject.Text.Length;
-            AssociatedObject.Text = properSnils.ToString();
+            AssociatedObject.Text = StringProcessorResolved.ProcessString(AssociatedObject.Text);
             AssociatedObject.CaretIndex = isAtTheEnd ? AssociatedObject.Text.Length : caretIndex;
-            ignoreTextChanged = false;
+            textIsChangedByStringProcessor = false;
         }
 
         private void AssociatedObjectOnPreviewTextInput(object sender, TextCompositionEventArgs textCompositionEventArgs)
         {
-            if (textCompositionEventArgs.Text.Length > 0 && char.IsDigit(textCompositionEventArgs.Text[0]))
-            {
-                return;
-            }
-            textCompositionEventArgs.Handled = true;
+            ;
         }
 
         protected override void OnDetaching()

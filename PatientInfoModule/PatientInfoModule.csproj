@@ -120,6 +120,8 @@
     <Compile Include="Misc\Common.cs" />
     <Compile Include="Misc\ItemTemplateSelector.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
+    <Compile Include="Misc\StringProcessors\MedNumberStringProcessor.cs" />
+    <Compile Include="Misc\StringProcessors\SnilsStringProcessor.cs" />
     <Compile Include="Misc\SuggestionProviders\AddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\IAddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\DisabilityDocumentGivenOrgSuggestionProvider.cs" />

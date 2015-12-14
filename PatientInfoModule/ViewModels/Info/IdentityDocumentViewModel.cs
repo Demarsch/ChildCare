@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
+using Core.Extensions;
 using Core.Misc;
 using Core.Services;
 using Core.Wpf.Misc;
@@ -19,7 +20,7 @@ namespace PatientInfoModule.ViewModels
     {
         private readonly ICacheService cacheService;
 
-        private readonly ValidationMediator validator;
+        private ValidationMediatorBase validator;
 
         public IdentityDocumentViewModel(ICacheService cacheService)
         {
@@ -28,7 +29,7 @@ namespace PatientInfoModule.ViewModels
                 throw new ArgumentNullException("cacheService");
             }
             this.cacheService = cacheService;
-            validator = new ValidationMediator(this);
+            validator = new ValidationMediatorBase(this);
             DocumentTypes = cacheService.GetItems<IdentityDocumentType>();
             DeleteCommand = new DelegateCommand(Delete);
             ChangeTracker = new ChangeTrackerEx<IdentityDocumentViewModel>(this);
@@ -53,7 +54,38 @@ namespace PatientInfoModule.ViewModels
                 if (SetTrackedProperty(ref documentTypeId, value))
                 {
                     OnPropertyChanged(() => StringRepresentation);
+                    UpdateValidator();
                 }
+            }
+        }
+
+        private void UpdateValidator()
+        {
+            var reValidate = validator.ValidationIsActive;
+            var selectedDocumentType = cacheService.GetItemById<IdentityDocumentType>(DocumentTypeId.GetValueOrDefault(SpecialValues.NonExistingId));
+            if (selectedDocumentType == null)
+            {
+                validator = new ValidationMediatorBase(this);
+            }
+            else if (selectedDocumentType.Options.HasOption(IdentityDocumentType.IsRussianPassportOption))
+            {
+                validator = new RussianPassportValidationMediator(this);
+            }
+            else if (selectedDocumentType.Options.HasOption(IdentityDocumentType.IsRussianBirthCertificateOption))
+            {
+                validator = new RussianBirthCertificateValidationMediator(this);
+            }
+            else if (selectedDocumentType.Options.HasOption(IdentityDocumentType.IsRussianForeignPassportOption))
+            {
+                validator = new RussianForeignPassportValidationMediator(this);
+            }
+            else
+            {
+                validator = new ValidationMediatorBase(this);
+            }
+            if (reValidate)
+            {
+                validator.Validate();
             }
         }
 
@@ -355,9 +387,9 @@ namespace PatientInfoModule.ViewModels
             validator.CancelValidation();
         }
 
-        private class ValidationMediator : ValidationMediator<IdentityDocumentViewModel>
+        private class ValidationMediatorBase : ValidationMediator<IdentityDocumentViewModel>
         {
-            public ValidationMediator(IdentityDocumentViewModel associatedItem) : base(associatedItem)
+            public ValidationMediatorBase(IdentityDocumentViewModel associatedItem) : base(associatedItem)
             {
             }
 
@@ -394,28 +426,135 @@ namespace PatientInfoModule.ViewModels
                 ValidateGivenOrg();
             }
 
-            private void ValidateGivenOrg()
+            protected virtual void ValidateGivenOrg()
             {
                 var error = string.IsNullOrWhiteSpace(AssociatedItem.GivenOrg) && string.IsNullOrWhiteSpace(AssociatedItem.GivenOrgText) ? "Не указана выдавшая организация" : string.Empty;
                 SetError(x => x.GivenOrg, error);
                 SetError(x => x.GivenOrgText, error);
             }
 
-            private void ValidateFromDate()
+            protected virtual void ValidateFromDate()
             {
                 SetError(x => x.FromDate, AssociatedItem.FromDate == null ? "Не указана дата выдачи" : string.Empty);
             }
 
-            private void ValidateSeriesAndNumber()
+            protected virtual void ValidateSeriesAndNumber()
             {
                 var error = string.IsNullOrWhiteSpace(AssociatedItem.Series) && string.IsNullOrWhiteSpace(AssociatedItem.Number) ? "Серия и номер не могут быть пустыми одновременно" : string.Empty;
                 SetError(x => x.Series, error);
                 SetError(x => x.Number, error);
             }
 
-            private void ValidateDocumentType()
+            protected virtual void ValidateDocumentType()
             {
                 SetError(x => x.DocumentTypeId, AssociatedItem.DocumentTypeId == null ? "Не указан тип документа" : string.Empty);
+            }
+        }
+
+        private class RussianPassportValidationMediator : ValidationMediatorBase
+        {
+            public RussianPassportValidationMediator(IdentityDocumentViewModel associatedItem)
+                : base(associatedItem)
+            {
+            }
+
+            protected override void ValidateSeriesAndNumber()
+            {
+                ValidateSeries();
+                ValidateNumber();
+            }
+
+            private void ValidateNumber()
+            {
+                int number;
+                SetError(x => x.Number, string.IsNullOrEmpty(AssociatedItem.Number) || AssociatedItem.Number.Length != 6 || !int.TryParse(AssociatedItem.Number, out number)
+                                            ? "Номер паспорта РФ должен содержать ровно шесть цифр"
+                                            : string.Empty);
+            }
+
+            private void ValidateSeries()
+            {
+                int series;
+                SetError(x => x.Series, string.IsNullOrEmpty(AssociatedItem.Series) || AssociatedItem.Series.Length != 4 || !int.TryParse(AssociatedItem.Series, out series)
+                                            ? "Серия паспорта РФ должна содержать ровно четыре цифры"
+                                            : string.Empty);
+            }
+        }
+
+        private class RussianBirthCertificateValidationMediator : ValidationMediatorBase
+        {
+            public RussianBirthCertificateValidationMediator(IdentityDocumentViewModel associatedItem)
+                : base(associatedItem)
+            {
+            }
+
+            protected override void ValidateSeriesAndNumber()
+            {
+                ValidateSeries();
+                ValidateNumber();
+            }
+
+            private void ValidateNumber()
+            {
+                int number;
+                SetError(x => x.Number, string.IsNullOrEmpty(AssociatedItem.Number) || AssociatedItem.Number.Length != 6 || !int.TryParse(AssociatedItem.Number, out number)
+                                            ? "Номер свидетельства о рождении РФ должен содержать ровно шесть цифр"
+                                            : string.Empty);
+            }
+
+            private void ValidateSeries()
+            {
+                var error = "Формат ввода серии свидетельства о рождении: римские цифры (латиницей), дефис, две буквы кирилицей";
+                if (string.IsNullOrEmpty(AssociatedItem.Series))
+                {
+                    goto SetError;
+                }
+                var words = AssociatedItem.Series.Split('-');
+                if (words.Length != 2)
+                {
+                    goto SetError;
+                }
+                if (!words[0].IsRomanNumber())
+                {
+                    goto SetError;
+                }
+                if (words[1].Length != 2 || !words[1].All(CharExtensions.IsRussianLetter))
+                {
+                    goto SetError;
+                }
+                error = string.Empty;
+            SetError:
+                SetError(x => x.Series, error);
+            }
+        }
+
+        private class RussianForeignPassportValidationMediator : ValidationMediatorBase
+        {
+            public RussianForeignPassportValidationMediator(IdentityDocumentViewModel associatedItem)
+                : base(associatedItem)
+            {
+            }
+
+            protected override void ValidateSeriesAndNumber()
+            {
+                ValidateSeries();
+                ValidateNumber();
+            }
+
+            private void ValidateNumber()
+            {
+                int number;
+                SetError(x => x.Number, string.IsNullOrEmpty(AssociatedItem.Number) || AssociatedItem.Number.Length != 7 || !int.TryParse(AssociatedItem.Number, out number)
+                                            ? "Номер заграничного паспорта РФ должен содержать ровно семь цифр"
+                                            : string.Empty);
+            }
+
+            private void ValidateSeries()
+            {
+                int series;
+                SetError(x => x.Series, string.IsNullOrEmpty(AssociatedItem.Series) || AssociatedItem.Series.Length != 2 || !int.TryParse(AssociatedItem.Series, out series)
+                                            ? "Серия заграничного паспорта РФ должна содержать ровно две цифры"
+                                            : string.Empty);
             }
         }
 

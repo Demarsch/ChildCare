@@ -58,6 +58,7 @@
     <Compile Include="Expressions\SearchExpression.cs" />
     <Compile Include="Expressions\SearchExpressionProvider.cs" />
     <Compile Include="Extensions\CacheServiceExtensions.cs" />
+    <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ChangeTrackerExtensions.cs" />
