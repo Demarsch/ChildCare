@@ -1,48 +1,82 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Core.Wpf.Behaviors
 {
     public static class FocusAdvancement
     {
-        public static bool GetAdvancesByEnterKey(DependencyObject obj)
+        public static FocusAdvancementDirection GetFocusAdvancementDirection(DependencyObject obj)
         {
-            return (bool)obj.GetValue(AdvancesByEnterKeyProperty);
+            return (FocusAdvancementDirection)obj.GetValue(FocusAdvancementDirectionProperty);
         }
 
-        public static void SetAdvancesByEnterKey(DependencyObject obj, bool value)
+        public static void SetFocusAdvancementDirection(DependencyObject obj, FocusAdvancementDirection value)
         {
-            obj.SetValue(AdvancesByEnterKeyProperty, value);
+            obj.SetValue(FocusAdvancementDirectionProperty, value);
         }
 
-        public static readonly DependencyProperty AdvancesByEnterKeyProperty =
-            DependencyProperty.RegisterAttached("AdvancesByEnterKey", typeof(bool), typeof(FocusAdvancement), new UIPropertyMetadata(OnAdvancesByEnterKeyPropertyChanged));
+        public static readonly DependencyProperty FocusAdvancementDirectionProperty = DependencyProperty.RegisterAttached("FocusAdvancementDirection",
+                                                                                                                          typeof(FocusAdvancementDirection), 
+                                                                                                                          typeof(FocusAdvancement), 
+                                                                                                                          new UIPropertyMetadata(FocusAdvancementDirection.None, OnFocusAdvancementDirectionChanged));
 
-        private static void OnAdvancesByEnterKeyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnFocusAdvancementDirectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var element = d as UIElement;
             if (element == null)
             {
                 return;
             }
-            if ((bool)e.NewValue)
+            var newValue = (FocusAdvancementDirection)e.NewValue;
+            if (newValue == FocusAdvancementDirection.None)
             {
-                element.KeyDown += Keydown;
+                element.PreviewKeyDown -= PreviewKeyDown;
             }
             else
             {
-                element.KeyDown -= Keydown;
+                element.PreviewKeyDown -= PreviewKeyDown;
+                element.PreviewKeyDown += PreviewKeyDown;
             }
         }
 
-        private static void Keydown(object sender, KeyEventArgs e)
+        private static void PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key != Key.Enter)
+            var element = (UIElement)sender;
+            var focusAdvancementDirection = GetFocusAdvancementDirection(element);
+            var goNext = e.Key == Key.Enter && (focusAdvancementDirection == FocusAdvancementDirection.ForwardOnly || focusAdvancementDirection == FocusAdvancementDirection.Both);
+            if (goNext)
             {
+                e.Handled = true;
+                element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
                 return;
             }
-            var element = (UIElement)sender;
-            element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            var goPrevious = e.Key == Key.Back && (focusAdvancementDirection == FocusAdvancementDirection.BackwardOnly || focusAdvancementDirection == FocusAdvancementDirection.Both);
+            if (goPrevious)
+            {
+                var elementAllowsToGoBack = true;
+                if (element is TextBox)
+                {
+                    elementAllowsToGoBack = string.IsNullOrEmpty((element as TextBox).Text);
+                }
+                else if (element is DatePicker)
+                {
+                    elementAllowsToGoBack = string.IsNullOrEmpty((element as DatePicker).Text);
+                }
+                if (elementAllowsToGoBack)
+                {
+                    e.Handled = true;
+                    element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
+                }
+            }
         }
+    }
+
+    public enum FocusAdvancementDirection
+    {
+        None,
+        ForwardOnly,
+        BackwardOnly,
+        Both
     }
 }

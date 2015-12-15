@@ -8,6 +8,7 @@
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              xmlns:editors="http://wpfcontrols.com/"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
+             xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300"
              d:DesignWidth="450" 
@@ -82,7 +83,8 @@
                   HorizontalAlignment="Stretch"
                   ItemsSource="{Binding AddressTypes}"
                   SelectedValue="{Binding AddressTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                  behaviors:FocusAdvancement.FocusAdvancementDirection="ForwardOnly"/>
         <TextBlock Grid.Row="2"
                    Grid.Column="0"
                    Grid.ColumnSpan="2"
@@ -177,7 +179,8 @@
             <DatePicker SelectedDate="{Binding ToDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Margin="3 3 22 3"
                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                        IsEnabled="{Binding HasToDate}" />
+                        IsEnabled="{Binding HasToDate}"
+                        behaviors:FocusAdvancement.FocusAdvancementDirection="BackwardOnly"/>
         </StackPanel>
     </Grid>
 </UserControl>

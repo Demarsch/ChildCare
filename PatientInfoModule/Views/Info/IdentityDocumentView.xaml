@@ -69,7 +69,8 @@
                   HorizontalAlignment="Stretch"
                   ItemsSource="{Binding DocumentTypes}"
                   SelectedValue="{Binding DocumentTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
-                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                  behaviors:FocusAdvancement.FocusAdvancementDirection="ForwardOnly" />
         <TextBlock Grid.Row="2"
                    Grid.Column="0"
                    Text="Серия" />
@@ -125,7 +126,8 @@
             <DatePicker SelectedDate="{Binding ToDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Margin="3 3 22 3"
                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                        IsEnabled="{Binding HasToDate}" />
+                        IsEnabled="{Binding HasToDate}"
+                        behaviors:FocusAdvancement.FocusAdvancementDirection="BackwardOnly"/>
         </StackPanel>
     </Grid>
 </UserControl>

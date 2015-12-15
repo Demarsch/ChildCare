@@ -16,7 +16,12 @@ namespace Core.Wpf.Behaviors
             if (behavior.AssociatedObject != null)
             {
                 behavior.textIsChangedByInputHelper = true;
-                behavior.AssociatedObject.Text = behavior.InputHelperResolved.ProcessInput(behavior.AssociatedObject.Text);
+                var result = behavior.InputHelperResolved.ProcessInput(behavior.AssociatedObject.Text);
+                if (!result.InputCanBeContinued)
+                {
+                    behavior.GoToNextElementIfPossible();
+                }
+                behavior.AssociatedObject.Text = result.Output;
                 behavior.textIsChangedByInputHelper = false;
             }
         }
@@ -25,6 +30,14 @@ namespace Core.Wpf.Behaviors
         {
             get { return (IInputHelper)GetValue(InputHelperProperty); }
             set { SetValue(InputHelperProperty, value); }
+        }
+
+        public static readonly DependencyProperty GoToNextElementAfterInputCompletedProperty = DependencyProperty.Register("GoToNextElementAfterInputCompleted", typeof (bool), typeof (InputHelperBehavior), new PropertyMetadata(true));
+
+        public bool GoToNextElementAfterInputCompleted
+        {
+            get { return (bool)GetValue(GoToNextElementAfterInputCompletedProperty); }
+            set { SetValue(GoToNextElementAfterInputCompletedProperty, value); }
         }
 
         private IInputHelper InputHelperResolved
@@ -58,9 +71,22 @@ namespace Core.Wpf.Behaviors
             textIsChangedByInputHelper = true;
             var caretIndex = AssociatedObject.CaretIndex;
             var isAtTheEnd = caretIndex == AssociatedObject.Text.Length;
-            AssociatedObject.Text = InputHelperResolved.ProcessInput(AssociatedObject.Text);
+            var result = InputHelperResolved.ProcessInput(AssociatedObject.Text);
+            AssociatedObject.Text = result.Output;
+            if (!result.InputCanBeContinued)
+            {
+                GoToNextElementIfPossible();
+            }
             AssociatedObject.CaretIndex = isAtTheEnd ? AssociatedObject.Text.Length : caretIndex;
             textIsChangedByInputHelper = false;
+        }
+
+        private void GoToNextElementIfPossible()
+        {
+            if (AssociatedObject.IsKeyboardFocused && GoToNextElementAfterInputCompleted)
+            {
+                AssociatedObject.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            }
         }
 
         protected override void OnDetaching()

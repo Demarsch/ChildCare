@@ -13,7 +13,7 @@ namespace PatientInfoModule.Misc
 
         private const int SpaceIndex = 11;
 
-        public string ProcessInput(string input)
+        public InputHelperResult ProcessInput(string input)
         {
             input = new string(input.Where(char.IsDigit).ToArray());
             var properSnils = new StringBuilder();
@@ -38,7 +38,7 @@ namespace PatientInfoModule.Misc
                 textIndex++;
                 snilsIndex++;
             }
-            return properSnils.ToString();
+            return new InputHelperResult(properSnils.ToString(), properSnils.Length < Person.FullSnilsLength);
         }
     }
 }

@@ -4,9 +4,9 @@
     {
         public static readonly NoOpInputHelper Instance = new NoOpInputHelper();
 
-        public string ProcessInput(string input)
+        public InputHelperResult ProcessInput(string input)
         {
-            return input;
+            return new InputHelperResult(input, true);
         }
     }
 }

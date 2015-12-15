@@ -32,8 +32,8 @@
                         Value="23" />
                 <Setter Property="VerticalContentAlignment"
                         Value="Center" />
-                <Setter Property="behaviors:FocusAdvancement.AdvancesByEnterKey"
-                        Value="True" />
+                <Setter Property="behaviors:FocusAdvancement.FocusAdvancementDirection"
+                        Value="Both" />
             </Style>
             <Style TargetType="{x:Type DatePicker}">
                 <Setter Property="VerticalAlignment"
@@ -50,8 +50,8 @@
                         Value="0" />
                 <Setter Property="Margin"
                         Value="3" />
-                <Setter Property="behaviors:FocusAdvancement.AdvancesByEnterKey"
-                        Value="True" />
+                <Setter Property="behaviors:FocusAdvancement.FocusAdvancementDirection"
+                        Value="Both" />
             </Style>
             <Style TargetType="{x:Type ComboBox}">
                 <Setter Property="Margin"
@@ -62,8 +62,8 @@
                         Value="Name" />
                 <Setter Property="SelectedValuePath"
                         Value="Id" />
-                <Setter Property="behaviors:FocusAdvancement.AdvancesByEnterKey"
-                        Value="True" />
+                <Setter Property="behaviors:FocusAdvancement.FocusAdvancementDirection"
+                        Value="Both" />
             </Style>
             <Style TargetType="{x:Type RadioButton}">
                 <Setter Property="Margin"
@@ -72,8 +72,8 @@
                         Value="Center" />
                 <Setter Property="VerticalContentAlignment"
                         Value="Center" />
-                <Setter Property="behaviors:FocusAdvancement.AdvancesByEnterKey"
-                        Value="True" />
+                <Setter Property="behaviors:FocusAdvancement.FocusAdvancementDirection"
+                        Value="Both" />
             </Style>
             <Style TargetType="{x:Type ToggleButton}">
                 <Setter Property="Margin"

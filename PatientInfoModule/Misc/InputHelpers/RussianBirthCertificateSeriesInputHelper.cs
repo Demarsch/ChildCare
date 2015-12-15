@@ -7,7 +7,7 @@ namespace PatientInfoModule.Misc
 {
     public class RussianBirthCertificateSeriesInputHelper : IInputHelper
     {
-        public string ProcessInput(string input)
+        public InputHelperResult ProcessInput(string input)
         {
             input = input ?? string.Empty;
             input = input.Trim();
@@ -21,24 +21,23 @@ namespace PatientInfoModule.Misc
                                       .Take(2)
                                       .Select(char.ToUpper)
                                       .ToArray();
-            if (romanNumber.Length == 0)
+            if (romanNumber.Length != 0)
             {
-                return string.Empty;
-            }
-            result.Append(romanNumber);
-            if (hasDelimiter)
-            {
-                result.Append('-');
-            }
-            if (russianLetters.Length > 0)
-            {
-                if (!hasDelimiter)
+                result.Append(romanNumber);
+                if (hasDelimiter)
                 {
                     result.Append('-');
                 }
-                result.Append(russianLetters);
+                if (russianLetters.Length > 0)
+                {
+                    if (!hasDelimiter)
+                    {
+                        result.Append('-');
+                    }
+                    result.Append(russianLetters);
+                }
             }
-            return result.ToString();
+            return new InputHelperResult(result.ToString(), russianLetters.Length < 2);
         }
     }
 }

@@ -375,7 +375,25 @@ namespace PatientInfoModule.ViewModels
                 if (SetTrackedProperty(ref lastName, value))
                 {
                     UpdateNameIsChanged();
+                    TryPredictGenderByLastName();
                 }
+            }
+        }
+
+        private void TryPredictGenderByLastName()
+        {
+            var lastName = this.lastName ?? string.Empty;
+            if (lastName.EndsWith("ов", StringComparison.CurrentCultureIgnoreCase)
+                || lastName.EndsWith("ев", StringComparison.CurrentCultureIgnoreCase)
+                || lastName.EndsWith("ин", StringComparison.CurrentCultureIgnoreCase))
+            {
+                IsMale = true;
+            }
+            else if (lastName.EndsWith("ова", StringComparison.CurrentCultureIgnoreCase)
+                     || lastName.EndsWith("ева", StringComparison.CurrentCultureIgnoreCase)
+                     || lastName.EndsWith("ина", StringComparison.CurrentCultureIgnoreCase))
+            {
+                IsMale = false;
             }
         }
 
@@ -405,7 +423,21 @@ namespace PatientInfoModule.ViewModels
                 if (SetTrackedProperty(ref middleName, value))
                 {
                     UpdateNameIsChanged();
+                    TryPredictGenderByMiddleName();
                 }
+            }
+        }
+
+        private void TryPredictGenderByMiddleName()
+        {
+            var middleName = this.middleName ?? string.Empty;
+            if (middleName.EndsWith("вич", StringComparison.CurrentCultureIgnoreCase))
+            {
+                IsMale = true;
+            }
+            else if (middleName.EndsWith("вна", StringComparison.CurrentCultureIgnoreCase))
+            {
+                IsMale = false;
             }
         }
 

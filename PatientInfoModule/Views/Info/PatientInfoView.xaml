@@ -92,7 +92,7 @@
                          Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                          Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
                          MaxLength="100"
-                         />
+                         coreBehaviors:FocusAdvancement.FocusAdvancementDirection="ForwardOnly" />
                 <StackPanel Grid.Row="0"
                             Grid.Column="3"
                             Grid.RowSpan="4"
@@ -170,8 +170,7 @@
                          Grid.Column="2"
                          HorizontalAlignment="Stretch"
                          MaxLength="100"
-                         Text="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" 
-                         />
+                         Text="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock Grid.Row="3"
                            Grid.Column="1"
                            Text="Дата рождения" />
@@ -188,8 +187,7 @@
                                   Width="90">
                         <StackPanel Orientation="Horizontal"
                                     VerticalAlignment="Stretch">
-                            <TextBlock
-                                Text="{Binding IsMale, Converter={x:Static converters:GenderToTextConverter.Instance}}" />
+                            <TextBlock Text="{Binding IsMale, Converter={x:Static converters:GenderToTextConverter.Instance}}" />
                             <Image
                                 Source="{Binding IsMale, Converter={x:Static converters:GenderToImageConverter.Instance}}"
                                 Width="24"
@@ -286,8 +284,7 @@
                           SelectedValue="{Binding EducationId, UpdateSourceTrigger=PropertyChanged}"
                           HorizontalAlignment="Stretch" />
                 <TextBlock Grid.Column="4"
-                           Text="Семейное положение" 
-                           />
+                           Text="Семейное положение" />
                 <ComboBox Grid.Column="5"
                           ItemsSource="{Binding MaritalStatuses}"
                           SelectedValue="{Binding MaritalStatusId, UpdateSourceTrigger=PropertyChanged}"
@@ -301,7 +298,8 @@
                           HorizontalAlignment="Stretch"
                           Margin="3 3 22 3"
                           Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                          Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}" />
+                          Visibility="{Binding IsChild, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}"
+                          coreBehaviors:FocusAdvancement.FocusAdvancementDirection="BackwardOnly" />
             </Grid>
             <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>

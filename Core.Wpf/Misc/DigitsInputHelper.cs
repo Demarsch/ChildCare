@@ -29,7 +29,7 @@ namespace Core.Wpf.Misc
             }
         }
 
-        public string ProcessInput(string input)
+        public InputHelperResult ProcessInput(string input)
         {
             input = input ?? string.Empty;
             input = input.Trim();
@@ -37,7 +37,8 @@ namespace Core.Wpf.Misc
             {
                 input = input.Substring(0, Math.Min(input.Length, maxDigits));
             }
-            return new string(input.Where(char.IsDigit).ToArray());
+            var result = new string(input.Where(char.IsDigit).ToArray());
+            return new InputHelperResult(result, MaxDigits == 0 || result.Length < MaxDigits);
         }
     }
 }
