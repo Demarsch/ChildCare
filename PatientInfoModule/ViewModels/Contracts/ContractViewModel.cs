@@ -1,4 +1,5 @@
 ﻿using Core.Data;
+using Core.Wpf.Mvvm;
 using Prism.Mvvm;
 using System;
 
@@ -45,8 +46,8 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref contractEndDate, value); }
         }
 
-        private Person client;
-        public Person Client
+        private FieldValue client;
+        public FieldValue Client
         {
             get { return client; }
             set { SetProperty(ref client, value); }

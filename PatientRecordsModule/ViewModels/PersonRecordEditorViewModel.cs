@@ -1035,7 +1035,7 @@ namespace Shared.PatientRecords.ViewModels
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to load data from visit template with Id {0}");
+                logService.ErrorFormatEx(ex, "Failed to load data from visit template with Id");
                 //FailureMediator.Activate("Не удалость загрузить из шаблона случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadVisitTemplateDataFillingCommandWrapper, ex);
                 loadingIsCompleted = true;
             }

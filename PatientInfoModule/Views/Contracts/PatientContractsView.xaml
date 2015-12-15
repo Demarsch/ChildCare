@@ -30,6 +30,9 @@
                 <TextBlock Text="{Binding SectionName}" HorizontalAlignment="{Binding SectionAlignment}" FontWeight="Medium" Foreground="Green"/>
             </DockPanel>
         </DataTemplate>
+        <DataTemplate x:Key="ClientsAutoCompleteTemplate">
+            <TextBlock Text="{Binding Path=Field}" Margin="5" FontWeight="Bold" />
+        </DataTemplate>
         <DataTemplate x:Key="ContractItemDataTemplate">
             <Grid>
                 <Grid.RowDefinitions>
@@ -182,15 +185,17 @@
                             Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Заказчик" Margin="2"/>
-                        <editors:AutoCompleteTextBox Grid.Row="4" 
+                        <editors:AutoCompleteTextBox Name="autocomplete" Grid.Row="4" 
                                                 Grid.Column="1" 
                                                 Margin="2" 
                                                 Background="White" MinHeight="23"
                                                 Provider="{Binding PersonSuggestionProvider}"
+                                                DisplayMember="Field"
                                                 SelectedItem="{Binding SelectedClient, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                                 Watermark="Введите Ф.И.О. заказчика для поиска..."
-                                                Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}">
-                        </editors:AutoCompleteTextBox>   
+                                                Validation.ErrorTemplate="{DynamicResource ValidationTemplateRightIcon}" 
+                                                KeyDown="autocomplete_KeyDown" Loaded="autocomplete_Loaded"
+                                                ItemTemplate="{StaticResource ClientsAutoCompleteTemplate}"/>  
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Потребитель" Margin="2"/>
                         <TextBox Grid.Row="5" Grid.Column="1" Margin="2" HorizontalAlignment="Stretch" Height="23"

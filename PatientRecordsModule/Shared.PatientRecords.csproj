@@ -132,7 +132,7 @@
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
-    <Compile Include="Misc\Point.cs" />
+    <Compile Include="Misc\ChartPoint.cs" />
     <Compile Include="Misc\RecordTypeEditor.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseCreateViewModel.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseParameterViewModel.cs" />

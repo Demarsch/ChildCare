@@ -11,8 +11,9 @@
              xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
              xmlns:chartingprimitives="clr-namespace:System.Windows.Controls.DataVisualization.Charting.Primitives;assembly=System.Windows.Controls.DataVisualization.Toolkit">
 
-    <DataTemplate DataType="{x:Type viewModels:AnalyseProtocolViewModel}">
-        <!--Grid for edit protocol-->
+    <DataTemplate DataType="{x:Type viewModels:AnalyseProtocolViewModel}">           
+            
+            <!--Grid for edit protocol-->
         <Grid Margin="0,10,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -139,8 +140,11 @@
 
             <DockPanel Grid.Row="1" LastChildFill="True" Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                 <charting:Chart Background="White" Title="Динамика изменения" Margin="0" Padding="0" Height="200"
-                                Visibility="{Binding ShowChart, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">                                   
-                    <charting:LineSeries ItemsSource="{Binding Path=RefMinData}" IndependentValuePath="Date" DependentValuePath="Value">
+                                Visibility="{Binding ShowChart, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                    <!--<charting:Chart.Axes>
+                        <charting:DateTimeAxis Orientation="X" Interval="1" IntervalType="Days"/>
+                    </charting:Chart.Axes>-->
+                    <charting:LineSeries ItemsSource="{Binding Path=RefMinData}" IndependentValuePath="Date" DependentValuePath="Result">                        
                         <charting:LineSeries.Template>
                             <ControlTemplate TargetType="charting:LineSeries">
                                 <Canvas x:Name="PlotArea">
@@ -149,7 +153,8 @@
                             </ControlTemplate>
                         </charting:LineSeries.Template>
                     </charting:LineSeries>
-                    <charting:LineSeries ItemsSource="{Binding Path=RefMaxData}" IndependentValuePath="Date" DependentValuePath="Value">
+                        
+                    <charting:LineSeries ItemsSource="{Binding Path=RefMaxData}" IndependentValuePath="Date" DependentValuePath="Result">                        
                         <charting:LineSeries.Template>
                             <ControlTemplate TargetType="charting:LineSeries">
                                 <Canvas x:Name="PlotArea">
@@ -158,7 +163,31 @@
                             </ControlTemplate>
                         </charting:LineSeries.Template>
                     </charting:LineSeries>
-                    <charting:LineSeries ItemsSource="{Binding Path=ChartData}" IndependentValuePath="Date" DependentValuePath="Value">
+                    
+                    <charting:LineSeries ItemsSource="{Binding Path=ChartData}" IndependentValuePath="Date" DependentValuePath="Result" 
+                                         IsSelectionEnabled="True" SelectedItem="{Binding SelectedPoint, Mode=TwoWay}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="charting:DataPoint">
+                                <Setter Property="Background" Value="#0077CC" />
+                                <Setter Property="BorderBrush" Value="White"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                                <Setter Property="Width" Value="10" />
+                                <Setter Property="Height" Value="10" />
+                                <Setter Property="IsTabStop" Value="False"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="charting:LineDataPoint">
+                                            <Grid x:Name="Root" Opacity="1">
+                                                <ToolTipService.ToolTip>
+                                                    <ContentControl Content="{Binding Description}"/>                                                    
+                                                </ToolTipService.ToolTip>
+                                                <Ellipse StrokeThickness="{TemplateBinding BorderThickness}" Stroke="{TemplateBinding BorderBrush}" Fill="{TemplateBinding Background}"/>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
                         <charting:LineSeries.Template>
                             <ControlTemplate TargetType="charting:LineSeries">
                                 <Canvas x:Name="PlotArea">
@@ -167,6 +196,9 @@
                             </ControlTemplate>
                         </charting:LineSeries.Template>
                     </charting:LineSeries>
+                    
+                    <charting:AreaSeries ItemsSource="{Binding Path=ChartData}" IndependentValueBinding="{Binding Date}" DependentValueBinding="{Binding Result}"/>
+                    
                     <charting:Chart.Template>
                         <ControlTemplate TargetType="charting:Chart">
                             <Border Background="{TemplateBinding Background}"

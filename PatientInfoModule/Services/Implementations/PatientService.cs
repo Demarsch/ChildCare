@@ -10,6 +10,7 @@ using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
 using PatientInfoModule.Data;
+using Core.Wpf.Mvvm;
 
 namespace PatientInfoModule.Services
 {
@@ -591,10 +592,15 @@ namespace PatientInfoModule.Services
             filter = (filter ?? string.Empty).Trim();
             if (filter.Length < AppConfiguration.UserInputSearchThreshold)
             {
-                return new Person[0];
+                return new FieldValue[0];
             }
             var words = (filter.Contains(',') ? filter.Split(',')[0] : filter).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            return cacheService.GetItems<Person>().Where(x => words.All(y => x.FullName.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1));
+            using (var context = contextProvider.CreateNewContext())
+                return context.Set<Person>().AsNoTracking()
+                    .Select(x => new FieldValue() { Value = x.Id, Field = x.FullName + ", " + x.BirthDate.Year + " г.р." })
+                    .ToArray()
+                    .Where(x => words.All(y => x.Field.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
+                    .ToArray();
         }
 
         public Org GetOrganization(int orgId)

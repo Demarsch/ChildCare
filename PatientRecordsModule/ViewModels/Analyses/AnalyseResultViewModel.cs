@@ -53,7 +53,7 @@ namespace Shared.PatientRecords.ViewModels
                     if (parameterRecordType.AnalyseRefferences.Any())
                     {
                         double result = 0.0;
-                        if (double.TryParse(value, out result))
+                        if (double.TryParse(value.Replace('.',','), out result))
                         {
                             var reference = recordService.GetAnalyseReference(RecordTypeId, ParameterRecordTypeId, IsMale, Age, Date).FirstOrDefault();
                             if (reference != null)

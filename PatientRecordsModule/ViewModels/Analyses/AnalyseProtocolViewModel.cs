@@ -30,7 +30,6 @@ namespace Shared.PatientRecords.ViewModels
         private readonly IUserService userService;
         private readonly ICacheService cacheService;
         private readonly ILog logService;
-        private CancellationTokenSource currentToken;
         private int personId;
         private bool isMale = false;
         private int years = 0;
@@ -72,9 +71,9 @@ namespace Shared.PatientRecords.ViewModels
             AnalyseResults.BeforeCollectionChanged += OnBeforeDiagnosCollectionChanged;
             AnalyseResultsView = new ObservableCollectionEx<AnalyseResultViewModel>();
 
-            ChartData = new ObservableCollectionEx<Point>();
-            RefMinData = new ObservableCollectionEx<Point>();
-            RefMaxData = new ObservableCollectionEx<Point>();
+            ChartData = new ObservableCollectionEx<ChartPoint>();
+            RefMinData = new ObservableCollectionEx<ChartPoint>();
+            RefMaxData = new ObservableCollectionEx<ChartPoint>();
 
             currentInstanceChangeTracker = new ChangeTrackerEx<AnalyseProtocolViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker);
@@ -129,13 +128,18 @@ namespace Shared.PatientRecords.ViewModels
                     {
                         var analysesQuery = recordService.GetAnalyseResults(personId, value.RecordTypeId, value.ParameterRecordTypeId);
                         var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, Value = x.Value }).OrderBy(x => x.Date).ToArray();
-                        ChartData.AddRange(analysesSelect.Select(x => new Point(x.Date, double.Parse(x.Value))).ToArray());
+                        foreach (var item in analysesSelect)
+                        {
+                            double result;
+                            if (double.TryParse(item.Value, out result))
+                                ChartData.Add(new ChartPoint() { Date = item.Date, Result = result, Description = item.Date + " - " + result });
+                        }
 
-                        RefMinData.Add(new Point(analysesSelect.Min(x => x.Date), value.RefMin));
-                        RefMinData.Add(new Point(analysesSelect.Max(x => x.Date), value.RefMin));
+                        RefMinData.Add(new ChartPoint() { Date = ChartData.Min(x => x.Date), Result = value.RefMin });
+                        RefMinData.Add(new ChartPoint() { Date = ChartData.Max(x => x.Date), Result = value.RefMin });
 
-                        RefMaxData.Add(new Point(analysesSelect.Min(x => x.Date), value.RefMax));
-                        RefMaxData.Add(new Point(analysesSelect.Max(x => x.Date), value.RefMax));
+                        RefMaxData.Add(new ChartPoint() { Date = ChartData.Min(x => x.Date), Result = value.RefMax });
+                        RefMaxData.Add(new ChartPoint() { Date = ChartData.Max(x => x.Date), Result = value.RefMax });
 
                         SelectedParameter = value.ParameterName;
                         ShowChart = true;
@@ -174,9 +178,9 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
-        public ObservableCollectionEx<Point> ChartData { get; private set; }
-        public ObservableCollectionEx<Point> RefMinData { get; private set; }
-        public ObservableCollectionEx<Point> RefMaxData { get; private set; }
+        public ObservableCollectionEx<ChartPoint> ChartData { get; private set; }
+        public ObservableCollectionEx<ChartPoint> RefMinData { get; private set; }
+        public ObservableCollectionEx<ChartPoint> RefMaxData { get; private set; }
 
         #endregion
  
@@ -232,6 +236,7 @@ namespace Shared.PatientRecords.ViewModels
             if (visitId > 0) return;
             ChangeTracker.IsEnabled = false;
             AnalyseResults.Clear();
+            AnalyseResultsView.Clear();
             if (assignmentId > 0)
                 LoadAssignmentData(assignmentId);
             else if (recordId > 0)
@@ -261,7 +266,7 @@ namespace Shared.PatientRecords.ViewModels
             return resStr;
         }   
 
-        private async void LoadAssignmentData(int assignmentId)
+        private void LoadAssignmentData(int assignmentId)
         {           
             var assignment = recordService.GetAssignment(assignmentId).First();
             personId = assignment.PersonId;
@@ -269,10 +274,10 @@ namespace Shared.PatientRecords.ViewModels
             double days = assignment.AssignDateTime.Subtract(assignment.Person.BirthDate).TotalDays;
             years = (int)(days / 365);
             date = assignment.AssignDateTime;
-            await LoadAnalyseParameters(assignment.RecordTypeId);
+            LoadAnalyseParameters(assignment.RecordTypeId);
         }
 
-        private async void LoadRecordData(int recordId)
+        private void LoadRecordData(int recordId)
         {
             var record = recordService.GetRecord(recordId).First();
             personId = record.PersonId;
@@ -283,7 +288,7 @@ namespace Shared.PatientRecords.ViewModels
 
             if (record.AnalyseResults.Any())
             {
-                await LoadAnalyseParameters(record.RecordTypeId);
+                LoadAnalyseParameters(record.RecordTypeId);
                 FillAnalyseResults(record.AnalyseResults.Select(x => new AnalyseParameterDTO() 
                     { 
                         Id = x.Id, 
@@ -312,21 +317,12 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
         
-        private async Task<bool> LoadAnalyseParameters(int recordTypeId)
+        private bool LoadAnalyseParameters(int recordTypeId)
         {
             var parameters = recordService.GetRecordTypeById(recordTypeId).First().RecordTypes1;
             if (parameters.Any())
-            {
-                if (currentToken != null)
-                {
-                    currentToken.Cancel();
-                    currentToken.Dispose();
-                }
-                currentToken = new CancellationTokenSource();
-                var token = currentToken.Token;
-                var result = await Task.Factory.StartNew(() =>
-                    {
-                        return parameters.Select(x => new AnalyseResultViewModel(recordService, cacheService) 
+            {               
+                var result = parameters.Select(x => new AnalyseResultViewModel(recordService, cacheService) 
                             { 
                                 RecordTypeId = recordTypeId,
                                 IsMale = isMale,
@@ -345,7 +341,6 @@ namespace Shared.PatientRecords.ViewModels
                                         .Where(a => a.RecordTypeId == recordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
                                         .Select(a => a.RefMax).FirstOrDefault()
                             }).ToArray();
-                    }, token);
 
                 AnalyseResults.AddRange(result.OrderBy(x => x.Priority));
                 return true;
@@ -360,7 +355,6 @@ namespace Shared.PatientRecords.ViewModels
         private void LoadAnalyseResultView(int recordId)
         {
             var record = recordService.GetRecord(recordId).First();
-            AnalyseResultsView.Clear();
             AnalyseResultsView.AddRange(record.AnalyseResults
                     .Select(x => new AnalyseResultViewModel(recordService, cacheService)
                     {

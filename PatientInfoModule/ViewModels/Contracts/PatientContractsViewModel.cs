@@ -100,6 +100,8 @@ namespace PatientInfoModule.ViewModels
             NotificationInteractionRequest = new InteractionRequest<Notification>();
             AddContractRecordsInteractionRequest = new InteractionRequest<AddContractRecordsViewModel>();
 
+            PersonSuggestionProvider = new PersonSuggestionProvider(personService);
+
             ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
 
             contractItemsTracker = new CompositeChangeTracker(ChangeTracker);
@@ -264,14 +266,14 @@ namespace PatientInfoModule.ViewModels
                                 .OrderByDescending(x => x.ContractBeginDate)
                                 .ToArray();
                             }, token);
-               
+
                 Contracts = new ObservableCollectionEx<ContractViewModel>(
                         result.Select(x => new ContractViewModel()
-                        {                
+                        {
                             Id = x.Id,
                             ContractNumber = x.ContractNumber.ToSafeString(),
                             ContractName = x.ContractName,
-                            Client = x.Client,
+                            Client = new FieldValue() { Field = x.Client.FullName + ", " + x.Client.BirthYear, Value = x.Client.Id },
                             Consumer = x.Consumer.ToString(),
                             ContractCost = x.ContractCost,
                             ContractBeginDate = x.ContractBeginDate,
@@ -394,9 +396,8 @@ namespace PatientInfoModule.ViewModels
 
         #region Properties
 
-        private ISuggestionProvider personSuggestionProvider;
-        [Dependency(SuggestionProviderNames.Person)]
-        public ISuggestionProvider PersonSuggestionProvider
+        private PersonSuggestionProvider personSuggestionProvider;
+        public PersonSuggestionProvider PersonSuggestionProvider
         {
             get { return personSuggestionProvider; }
             set { SetProperty(ref personSuggestionProvider, value); }
@@ -516,8 +517,8 @@ namespace PatientInfoModule.ViewModels
             set { SetTrackedProperty(ref isCashless, value); }
         }
 
-        private Person selectedClient;
-        public Person SelectedClient
+        private FieldValue selectedClient;
+        public FieldValue SelectedClient
         {
             get { return selectedClient; }
             set
@@ -896,9 +897,9 @@ namespace PatientInfoModule.ViewModels
             contract.BeginDateTime = contractBeginDateTime;
             contract.EndDateTime = contractEndDateTime;
             contract.FinancingSourceId = selectedFinancingSourceId;
-            contract.ClientId = selectedClient.Id;
+            contract.ClientId = selectedClient.Value;
             contract.ConsumerId = patientId;
-            contract.ContractName = selectedClient.ShortName;
+            contract.ContractName = personService.GetPatientQuery(selectedClient.Value).First().ShortName;
             contract.PaymentTypeId = selectedPaymentTypeId;
             contract.TransactionNumber = string.Empty;
             contract.TransactionDate = string.Empty;
@@ -957,7 +958,7 @@ namespace PatientInfoModule.ViewModels
                     LoadContractItems();
                     SelectedContract.ContractNumber = contract.Number.ToSafeString();
                     SelectedContract.ContractName = contract.DisplayName;
-                    SelectedContract.Client = contract.Person;
+                    SelectedContract.Client = new FieldValue() { Field = contract.Person.FullName + ", " + contract.Person.BirthYear, Value = contract.Person.Id };
                     SelectedContract.ContractBeginDate = contract.BeginDateTime;
                     SelectedContract.ContractEndDate = contract.EndDateTime;
                     UpdateTotalSumRow();
@@ -984,7 +985,7 @@ namespace PatientInfoModule.ViewModels
                 FinancingSourceId = -1,
                 PaymentTypeId = recordService.GetPaymentTypes().First(x => x.Options.Contains(OptionValues.Cash)).Id,
                 RegistratorId = -1,
-                Client = patient
+                Client = new FieldValue() { Value = patient.Id, Field = patient.FullName + ", " + patient.BirthYear }
             });
             SelectedContract = contracts.First(x => x.Id == 0);
             UpdateChangeCommandsState();
