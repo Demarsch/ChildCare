@@ -150,8 +150,15 @@
                                 SelectedDate="{Binding NewNameStartDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                 Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                                IsTabStop="{Binding IsNameChanged}"
-                                />
+                                IsTabStop="{Binding IsNameChanged}">
+                        <i:Interaction.Behaviors>
+                            <coreBehaviors:TextBoxParentInputHelperBehavior>
+                                <coreBehaviors:TextBoxParentInputHelperBehavior.InputHelper>
+                                    <wpfMisc:ShortDateFormatInputHelper BlockInputCompletion="True" />
+                                </coreBehaviors:TextBoxParentInputHelperBehavior.InputHelper>
+                            </coreBehaviors:TextBoxParentInputHelperBehavior>
+                        </i:Interaction.Behaviors>
+                    </DatePicker>
                 </StackPanel>
                 <TextBlock Grid.Row="1"
                            Grid.Column="1"
@@ -180,7 +187,16 @@
                             Orientation="Horizontal">
                     <DatePicker SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                 Margin="3 3 22 3"
-                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+                                Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
+                                coreBehaviors:FocusAdvancement.FocusAdvancementDirection="Both">
+                        <i:Interaction.Behaviors>
+                            <coreBehaviors:TextBoxParentInputHelperBehavior>
+                                <coreBehaviors:TextBoxParentInputHelperBehavior.InputHelper>
+                                    <wpfMisc:ShortDateFormatInputHelper BlockInputCompletion="True" />
+                                </coreBehaviors:TextBoxParentInputHelperBehavior.InputHelper>
+                            </coreBehaviors:TextBoxParentInputHelperBehavior>
+                        </i:Interaction.Behaviors>
+                    </DatePicker>
                     <TextBlock Text="Пол" />
                     <ToggleButton Background="Transparent"
                                   IsChecked="{Binding IsMale}"
@@ -201,11 +217,11 @@
                              MaxLength="14"
                              Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
-                            <coreBehaviors:InputHelperBehavior>
-                                <coreBehaviors:InputHelperBehavior.InputHelper>
+                            <coreBehaviors:TextBoxInputHelperBehavior>
+                                <coreBehaviors:TextBoxInputHelperBehavior.InputHelper>
                                     <misc:SnilsInputHelper />
-                                </coreBehaviors:InputHelperBehavior.InputHelper>
-                            </coreBehaviors:InputHelperBehavior>
+                                </coreBehaviors:TextBoxInputHelperBehavior.InputHelper>
+                            </coreBehaviors:TextBoxInputHelperBehavior>
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <TextBlock Text="ЕНП" />
@@ -214,11 +230,11 @@
                              MaxLength="16"
                              Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
                         <i:Interaction.Behaviors>
-                            <coreBehaviors:InputHelperBehavior>
-                                <coreBehaviors:InputHelperBehavior.InputHelper>
+                            <coreBehaviors:TextBoxInputHelperBehavior>
+                                <coreBehaviors:TextBoxInputHelperBehavior.InputHelper>
                                     <wpfMisc:DigitsInputHelper MaxDigits="{x:Static data:Person.FullMedNumberLength}" />
-                                </coreBehaviors:InputHelperBehavior.InputHelper>
-                            </coreBehaviors:InputHelperBehavior>
+                                </coreBehaviors:TextBoxInputHelperBehavior.InputHelper>
+                            </coreBehaviors:TextBoxInputHelperBehavior>
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <StackPanel Orientation="Horizontal"

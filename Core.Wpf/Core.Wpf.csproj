@@ -100,7 +100,8 @@
     <Compile Include="Behaviors\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Behaviors\MouseWheelHorizontalScroll.cs" />
     <Compile Include="Behaviors\ScrollSynchronizer.cs" />
-    <Compile Include="Behaviors\InputHelperBehavior.cs" />
+    <Compile Include="Behaviors\TextBoxInputHelperBehavior.cs" />
+    <Compile Include="Behaviors\TextBoxParentInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
     <Compile Include="Controls\TreeViewComboBox.xaml.cs">
       <DependentUpon>TreeViewComboBox.xaml</DependentUpon>
@@ -122,12 +123,13 @@
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="MarkupExtensions\Int32Extension.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />
-    <Compile Include="Misc\DigitsInputHelper.cs" />
+    <Compile Include="Misc\InputHelpers\DigitsInputHelper.cs" />
     <Compile Include="Misc\FileServiceActions.cs" />
     <Compile Include="Misc\FileServiceFilters.cs" />
     <Compile Include="Misc\IInputHelper.cs" />
+    <Compile Include="Misc\InputHelpers\ShortDateFormatInputHelper.cs" />
     <Compile Include="Misc\KeyToCharTranslator.cs" />
-    <Compile Include="Misc\NoOpInputHelper.cs" />
+    <Compile Include="Misc\InputHelpers\NoOpInputHelper.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
     <Compile Include="Misc\TrackableBindableBase.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />

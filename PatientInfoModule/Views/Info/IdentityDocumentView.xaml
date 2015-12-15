@@ -80,7 +80,7 @@
                  Text="{Binding Series, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                  Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
             <i:Interaction.Behaviors>
-                <behaviors:InputHelperBehavior InputHelper="{Binding SeriesInputHelper}" />
+                <behaviors:TextBoxInputHelperBehavior InputHelper="{Binding SeriesInputHelper}" />
             </i:Interaction.Behaviors>
         </TextBox>
         <TextBlock Grid.Row="2"
@@ -92,7 +92,7 @@
                  Text="{Binding Number, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                  Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
             <i:Interaction.Behaviors>
-                <behaviors:InputHelperBehavior InputHelper="{Binding NumberInputHelper}" />
+                <behaviors:TextBoxInputHelperBehavior InputHelper="{Binding NumberInputHelper}" />
             </i:Interaction.Behaviors>
         </TextBox>
         <TextBlock Grid.Row="3"

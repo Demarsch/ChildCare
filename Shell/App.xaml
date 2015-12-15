@@ -50,6 +50,8 @@
                         Value="0" />
                 <Setter Property="Margin"
                         Value="3" />
+                <Setter Property="FocusVisualStyle"
+                        Value="{x:Null}" />
                 <Setter Property="behaviors:FocusAdvancement.FocusAdvancementDirection"
                         Value="Both" />
             </Style>

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interactivity;
@@ -6,13 +7,13 @@ using Core.Wpf.Misc;
 
 namespace Core.Wpf.Behaviors
 {
-    public class InputHelperBehavior : Behavior<TextBox>
+    public class TextBoxInputHelperBehavior : Behavior<TextBox>
     {
-        public static readonly DependencyProperty InputHelperProperty = DependencyProperty.Register("InputHelper", typeof(IInputHelper), typeof(InputHelperBehavior), new PropertyMetadata(OnStringProcessorChanged));
+        public static readonly DependencyProperty InputHelperProperty = DependencyProperty.Register("InputHelper", typeof(IInputHelper), typeof(TextBoxInputHelperBehavior), new PropertyMetadata(OnInputHelperChanged));
 
-        private static void OnStringProcessorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnInputHelperChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var behavior = (InputHelperBehavior)d;
+            var behavior = (TextBoxInputHelperBehavior)d;
             if (behavior.AssociatedObject != null)
             {
                 behavior.textIsChangedByInputHelper = true;
@@ -32,7 +33,7 @@ namespace Core.Wpf.Behaviors
             set { SetValue(InputHelperProperty, value); }
         }
 
-        public static readonly DependencyProperty GoToNextElementAfterInputCompletedProperty = DependencyProperty.Register("GoToNextElementAfterInputCompleted", typeof (bool), typeof (InputHelperBehavior), new PropertyMetadata(true));
+        public static readonly DependencyProperty GoToNextElementAfterInputCompletedProperty = DependencyProperty.Register("GoToNextElementAfterInputCompleted", typeof (bool), typeof (TextBoxInputHelperBehavior), new PropertyMetadata(true));
 
         public bool GoToNextElementAfterInputCompleted
         {

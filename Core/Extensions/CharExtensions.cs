@@ -19,5 +19,12 @@ namespace Core.Extensions
         {
             return RomanNumberLetters.Contains(source);
         }
+
+        private static readonly HashSet<char> DateSeparators = new HashSet<char>(new[] { '-', '.', ' ', '/', '\\' }); 
+
+        public static bool IsDateSeparator(this char source)
+        {
+            return DateSeparators.Contains(source);
+        }
     }
 }
