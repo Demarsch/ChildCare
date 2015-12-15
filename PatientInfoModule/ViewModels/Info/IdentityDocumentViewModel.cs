@@ -93,7 +93,7 @@ namespace PatientInfoModule.ViewModels
             }
             else if (selectedDocumentType.Options.HasOption(IdentityDocumentType.IsRussianBirthCertificateOption))
             {
-                SeriesInputHelper = null;
+                SeriesInputHelper = new RussianBirthCertificateSeriesInputHelper();
                 NumberInputHelper = new DigitsInputHelper(IdentityDocumentType.RussianBirthCertificateNumberDigitCount);
                 validator = new RussianBirthCertificateValidationMediator(this);
             }

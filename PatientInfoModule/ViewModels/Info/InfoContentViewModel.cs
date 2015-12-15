@@ -72,7 +72,6 @@ namespace PatientInfoModule.ViewModels
             changeTracker = new CompositeChangeTracker(patientInfo.ChangeTracker, new ObservableCollectionChangeTracker<PatientInfoViewModel>(Relatives));
             changeTracker.PropertyChanged += OnChangesTracked;
             selectedPatientOrRelative = patientInfo;
-            BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             createNewPatientCommand = new DelegateCommand(CreateNewPatient);
             saveChangesCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
@@ -86,8 +85,6 @@ namespace PatientInfoModule.ViewModels
         }
 
         private TaskCompletionSource<object> currentOperation;
-
-        public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
 
@@ -148,7 +145,6 @@ namespace PatientInfoModule.ViewModels
             try
             {
                 log.InfoFormat("Saving relatives data for patient with Id = {0}", currentPatientId == SpecialValues.NewId ? "(New patient)" : currentPatientId.ToString());
-                BusyMediator.Activate("Сохранение изменений...");
                 var isNewPatient = patientInfo.CurrentPerson.Id.IsNewOrNonExisting();
                 personToSave = patientInfo;
                 await patientInfo.SaveChangesAsync();
@@ -184,7 +180,6 @@ namespace PatientInfoModule.ViewModels
             }
             finally
             {
-                BusyMediator.Deactivate();
                 currentOperation.SetResult(null);
             }
         }
@@ -334,7 +329,6 @@ namespace PatientInfoModule.ViewModels
             currentOperation = new TaskCompletionSource<object>();
             try
             {
-                BusyMediator.Activate("Загрузка данных пациента...");
                 log.InfoFormat("Loading patient and relative info for patient with Id {0}...", targetPatientId);
                 ChangeTracker.IsEnabled = false;
                 patientIdBeingLoaded = targetPatientId;
@@ -357,7 +351,6 @@ namespace PatientInfoModule.ViewModels
             }
             finally
             {
-                BusyMediator.Deactivate();
                 currentOperation.SetResult(null);
             }
         }
@@ -369,7 +362,6 @@ namespace PatientInfoModule.ViewModels
             {
                 return;
             }
-            BusyMediator.Activate("Загрузка данных пациента...");
             log.InfoFormat("Loading relative list for patient with Id {0}...", patientId);
             var relatives = await patientService.GetRelativesAsync(patientId);
             var tasks = new List<Task>();

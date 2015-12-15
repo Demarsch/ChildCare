@@ -105,11 +105,9 @@ namespace Core.Extensions
             return result.ToString();
         }
 
-        private static readonly HashSet<char> romanNumberLetters = new HashSet<char>(new[] { 'i', 'I', 'v', 'V', 'x', 'X', 'c', 'C', 'l', 'L', 'd', 'D', 'm', 'M' } );
-
         public static bool IsRomanNumber(this string source)
         {
-            return (source ?? string.Empty).All(romanNumberLetters.Contains);
+            return (source ?? string.Empty).All(CharExtensions.IsRomanNumber);
         }
 
         public static bool HasOption(this string source, string option)

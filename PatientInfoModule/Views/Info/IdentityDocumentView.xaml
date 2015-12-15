@@ -9,7 +9,6 @@
              xmlns:editors="http://wpfcontrols.com/"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
-             xmlns:misc="clr-namespace:PatientInfoModule.Misc"
              mc:Ignorable="d" 
              d:DesignHeight="300"
              d:DesignWidth="450" 
