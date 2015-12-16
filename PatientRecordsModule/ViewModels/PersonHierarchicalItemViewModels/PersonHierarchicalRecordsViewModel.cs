@@ -19,10 +19,12 @@ using Core.Extensions;
 using System.Windows.Input;
 using Core.Wpf.Events;
 using Prism.Events;
+using System.Collections.Generic;
+using Shared.PatientRecords.Misc;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class PersonHierarchicalRecordsViewModel : BindableBase, IDisposable
+    public class PersonHierarchicalRecordsViewModel : BindableBase, IDisposable, IHierarchicalItem
     {
         #region Fields
         private readonly RecordDTO record;
@@ -61,6 +63,7 @@ namespace Shared.PatientRecords.ViewModels
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
             this.record = recordDTO;
+            this.Item = new PersonItem() { Id = recordDTO.Id, Type = ItemType.Record };
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             reloadPatientVisitsCommandWrapper = new CommandWrapper
@@ -84,16 +87,25 @@ namespace Shared.PatientRecords.ViewModels
 
         public bool IsCompleted { get { return record.IsCompleted == true; } }
 
-        private ObservableCollectionEx<object> nestedItems;
-        public ObservableCollectionEx<object> NestedItems
+        public DateTime ActualDateTime { get { return record.ActualDateTime; } }
+
+        private ObservableCollectionEx<IHierarchicalItem> childs;
+        public ObservableCollectionEx<IHierarchicalItem> Childs
         {
             get
             {
-                if (nestedItems == null)
+                if (childs == null)
                     LoadItemsAsync();
-                return nestedItems;
+                return childs;
             }
-            set { SetProperty(ref nestedItems, value); }
+            set { SetProperty(ref childs, value); }
+        }
+
+        private PersonItem item;
+        public PersonItem Item
+        {
+            get { return item; }
+            set { SetProperty(ref item, value); }
         }
 
         private bool isSelected;
@@ -123,9 +135,9 @@ namespace Shared.PatientRecords.ViewModels
         private async void LoadItemsAsync()
         {
             var loadingIsCompleted = false;
-            if (nestedItems == null)
-                NestedItems = new ObservableCollectionEx<object>();
-            NestedItems.Clear();
+            if (childs == null)
+                Childs = new ObservableCollectionEx<IHierarchicalItem>();
+            Childs.Clear();
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
             BusyMediator.Activate(string.Empty);
@@ -156,8 +168,10 @@ namespace Shared.PatientRecords.ViewModels
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
                 }).ToListAsync(token);
                 await Task.WhenAll(loadChildAssignmentsTask, loadChildRecordsTask);
-                NestedItems.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
-                NestedItems.AddRange(loadChildRecordsTask.Result.Select(x => new PersonHierarchicalRecordsViewModel(x, patientRecordsService, eventAggregator, logService)));
+                var resChilds = new List<IHierarchicalItem>();
+                resChilds.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
+                resChilds.AddRange(loadChildRecordsTask.Result.Select(x => new PersonHierarchicalRecordsViewModel(x, patientRecordsService, eventAggregator, logService)));
+                Childs.AddRange(resChilds.OrderBy(x => x.ActualDateTime));
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)

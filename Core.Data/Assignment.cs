@@ -20,10 +20,12 @@ namespace Core.Data
             this.Assignments1 = new HashSet<Assignment>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordDocuments = new HashSet<RecordDocument>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
-        public Nullable<int> ParentId { get; set; }
+        public Nullable<int> ParentAssignmentId { get; set; }
+        public Nullable<int> ParentRecordId { get; set; }
         public int RecordTypeId { get; set; }
         public int PersonId { get; set; }
         public System.DateTime AssignDateTime { get; set; }
@@ -54,7 +56,7 @@ namespace Core.Data
         public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
         public virtual Record Record { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        public virtual Record Record1 { get; set; }
         public virtual Room Room { get; set; }
         public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
@@ -65,5 +67,8 @@ namespace Core.Data
         public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Record> Records { get; set; }
+        public virtual RecordType RecordType { get; set; }
     }
 }

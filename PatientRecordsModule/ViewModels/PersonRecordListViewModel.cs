@@ -42,7 +42,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
         private readonly CommandWrapper addNewVisitInListVisitCommandWrapper;
         //private readonly ChangeTrackerEx<PersonRecordListViewModel> changeTracker;
-        
+
 
         private CancellationTokenSource currentOperationToken;
         private int? visitId;
@@ -86,7 +86,7 @@ namespace Shared.PatientRecords.ViewModels
                 CommandName = "Повторить",
             };
             addNewVisitInListVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => AddNewVisitToList(visitId)) };
-            RootItems = new ObservableCollectionEx<object>();
+            RootItems = new ObservableCollectionEx<IHierarchicalItem>();
             this.PersonId = SpecialValues.NonExistingId;
         }
         #endregion
@@ -100,7 +100,7 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref personId, value); }
         }
 
-        public ObservableCollectionEx<object> RootItems { get; set; }
+        public ObservableCollectionEx<IHierarchicalItem> RootItems { get; set; }
 
         private string ambNumber;
         public string AmbNumber
@@ -133,7 +133,7 @@ namespace Shared.PatientRecords.ViewModels
 
         #region Methods
 
-        private async void AddNewVisitToList(int? visitId)
+        public async void AddNewVisitToList(int? visitId)
         {
             FailureMediator.Deactivate();
             this.visitId = visitId;
@@ -162,7 +162,9 @@ namespace Shared.PatientRecords.ViewModels
                 }).FirstOrDefaultAsync(token);
                 saveSuccesfull = true;
                 this.visitId = 0;
-                RootItems.Add(new PersonHierarchicalVisitsViewModel(visitDTO, patientRecordsService, eventAggregator, logService));
+                var listToParent = await patientRecordsService.GetParentItems(new PersonItem() { Id = visitDTO.Id, Type = ItemType.Visit });
+                if (listToParent.Count > 0)
+                    InsertItemInRootItems(listToParent.ToList(), new PersonHierarchicalVisitsViewModel(visitDTO, patientRecordsService, eventAggregator, logService), RootItems);
             }
             catch (OperationCanceledException)
             {
@@ -181,6 +183,83 @@ namespace Shared.PatientRecords.ViewModels
 
                 }
             }
+        }
+
+        public async void AddNewRecordToList(int? recordId)
+        {
+            FailureMediator.Deactivate();
+            this.recordId = recordId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Additing new visit in records list with Id = {0} for person with Id = {1}", visitId, personId);
+            BusyMediator.Activate("Добавление нового случая в список пациенту...");
+            var saveSuccesfull = false;
+            var visitQuery = patientRecordsService.GetRecord(recordId.Value);
+            try
+            {
+                var recordDTO = await visitQuery.Select(x => new RecordDTO()
+                {
+                    Id = x.Id,
+                    ActualDateTime = x.ActualDateTime,
+                    RecordTypeName = x.RecordType.Name,
+                    BeginDateTime = x.BeginDateTime,
+                    EndDateTime = x.EndDateTime,
+                    IsCompleted = x.IsCompleted,
+                    FinSourceName = x.Visit != null ? x.Visit.FinancingSource.ShortName : string.Empty,
+                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                }).FirstOrDefaultAsync(token);
+                saveSuccesfull = true;
+                this.visitId = 0;
+                var listToParent = await patientRecordsService.GetParentItems(new PersonItem() { Id = recordDTO.Id, Type = ItemType.Record });
+                if (listToParent.Count > 0)
+                    InsertItemInRootItems(listToParent.ToList(), new PersonHierarchicalRecordsViewModel(recordDTO, patientRecordsService, eventAggregator, logService), RootItems);
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to add new visit in records list with Id = {0} for person with Id = {1}", visitId, personId);
+                FailureMediator.Activate("Не удалось добавить новый случай в список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", addNewVisitInListVisitCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
+        }
+
+        private void InsertItemInRootItems(List<PersonItem> listToParent, IHierarchicalItem item, ObservableCollectionEx<IHierarchicalItem> curLevelItems, int curParentIndex = 0)
+        {
+            IHierarchicalItem curItem = null;
+            for (int i = 0; i < curLevelItems.Count; i++)
+            {
+                curItem = curLevelItems[i];
+                if (curParentIndex == listToParent.Count - 1)
+                {
+                    if (curItem.ActualDateTime >= item.ActualDateTime)
+                    {
+                        curLevelItems.Insert(i, item);
+                        item.IsSelected = true;
+                        break;
+                    }
+                }
+                else
+                    if (curItem.Item == listToParent[curParentIndex])
+                    {
+                        InsertItemInRootItems(listToParent, item, curItem.Childs, ++curParentIndex);
+                    }
+            }
+
         }
 
         public void Dispose()
@@ -211,7 +290,7 @@ namespace Shared.PatientRecords.ViewModels
             try
             {
                 patientQuery = patientRecordsService.GetPersonQuery(personId);
-                var task = Task<List<object>>.Factory.StartNew(LoadRootItems);
+                var task = Task<List<IHierarchicalItem>>.Factory.StartNew(LoadRootItems);
                 await task;
                 RootItems.AddRange(task.Result);
                 AmbNumber = patientQuery.FirstOrDefault().AmbNumberString;
@@ -242,9 +321,9 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
-        private List<object> LoadRootItems()
+        private List<IHierarchicalItem> LoadRootItems()
         {
-            List<object> resList = new List<object>();
+            List<IHierarchicalItem> resList = new List<IHierarchicalItem>();
             var assignmentsViewModels = patientRecordsService.GetPersonRootAssignmentsQuery(PersonId)
                 .Select(x => new AssignmentDTO()
                 {
@@ -271,7 +350,7 @@ namespace Shared.PatientRecords.ViewModels
                 .Select(x => new PersonHierarchicalVisitsViewModel(x, patientRecordsService, eventAggregator, logService));
             resList.AddRange(assignmentsViewModels);
             resList.AddRange(visitsViewModels);
-            return resList.ToList();
+            return resList.OrderBy(x => x.ActualDateTime).ToList();
         }
 
         #endregion

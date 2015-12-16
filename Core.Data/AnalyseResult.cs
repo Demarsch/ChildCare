@@ -24,8 +24,8 @@ namespace Core.Data
         public bool IsBelowRef { get; set; }
         public string Details { get; set; }
     
+        public virtual Unit Unit { get; set; }
         public virtual Record Record { get; set; }
         public virtual RecordType RecordType { get; set; }
-        public virtual Unit Unit { get; set; }
     }
 }

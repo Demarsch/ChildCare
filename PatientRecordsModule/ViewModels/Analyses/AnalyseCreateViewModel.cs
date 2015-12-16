@@ -288,7 +288,8 @@ namespace Shared.PatientRecords.ViewModels
             try
             {
                 var analyseAssignment = new Assignment();
-                analyseAssignment.ParentId = null;
+                analyseAssignment.ParentAssignmentId = null;
+                analyseAssignment.ParentRecordId = null;
                 analyseAssignment.RecordTypeId = SelectedAnalyseId;
                 analyseAssignment.PersonId = personId;
                 analyseAssignment.AssignDateTime = AssignDateTime;

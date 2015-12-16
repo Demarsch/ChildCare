@@ -931,7 +931,7 @@ namespace Shared.PatientRecords.ViewModels
                     ParametersView = !string.IsNullOrEmpty(data.Parameters)
                                          ? data.Parameters.Split('|').Select(x => patientRecordsService.GetRecordTypeById(int.Parse(x)).First().Name).Aggregate((x, y) => x + "; " + y)
                                          : defValue;
-                    BrigadeView = Brigade.Any() ? Brigade.Select(x => x.RoleName + ": " + x.StaffName + " " + x.PersonName).Aggregate((x, y) => x + "; " + y) : defValue;
+                    BrigadeView = Brigade.Any(x => x.PersonStaffId > 0) ? Brigade.Where(x => x.PersonStaffId > 0).Select(x => x.RoleName + ": " + x.StaffName + " " + x.PersonName).Aggregate((x, y) => x + "; " + y) : defValue;
                     IsAnalyse = data.IsAnalyse;
                     IsAssignment = data.IsAssignment;
                 }

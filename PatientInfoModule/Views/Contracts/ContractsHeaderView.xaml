@@ -26,13 +26,13 @@
             <fluent:DropDownButton.Items>
                 <Button Name="btnPrintContract" Command="{Binding PrintContractCommand}" BorderThickness="0" HorizontalContentAlignment="Left" Background="White">
                     <StackPanel Orientation="Horizontal" >
-                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/FileUnknown48x48.png" Stretch="Uniform" Height="24" Width="24"/>
+                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png" Stretch="Uniform" Height="24" Width="24"/>
                         <TextBlock Text="Договор" Margin="5"/>
                     </StackPanel>
                 </Button>
                 <Button Name="btnPrintAppendix" Command="{Binding PrintAppendixCommand}" BorderThickness="0" HorizontalContentAlignment="Left" Background="White">
                     <StackPanel Orientation="Horizontal" >
-                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/FileUnknown48x48.png" Stretch="Uniform" Height="24" Width="24"/>
+                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png" Stretch="Uniform" Height="24" Width="24"/>
                         <TextBlock Text="Доп. соглашение" Margin="5"/>
                     </StackPanel>
                 </Button>

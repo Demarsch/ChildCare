@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    <HierarchicalDataTemplate DataType="{x:Type viewModels:PersonHierarchicalAssignmentsViewModel}" ItemsSource="{Binding NestedItems}">
+    <HierarchicalDataTemplate DataType="{x:Type viewModels:PersonHierarchicalAssignmentsViewModel}" ItemsSource="{Binding Childs}">
         
         <Border BorderBrush="Black" BorderThickness="0.5" Background="#FFD5DFEA" CornerRadius="4">            
             <Grid HorizontalAlignment="Stretch">

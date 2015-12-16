@@ -11,6 +11,7 @@ using Core.Data.Services;
 using Core.Misc;
 using Core.Services;
 using Shared.PatientRecords.DTO;
+using Shared.PatientRecords.Misc;
 
 namespace Shared.PatientRecords.Services
 {
@@ -86,14 +87,20 @@ namespace Shared.PatientRecords.Services
         public IDisposableQueryable<Record> GetRecordsChildRecordsQuery(int recordId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.ParentId == recordId && x.RemovedByUserId == null), context);
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.ParentRecordId == recordId && x.RemovedByUserId == null), context);
         }
 
 
         public IDisposableQueryable<Assignment> GetAssignmentsChildAssignmentsQuery(int assignmentId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.ParentId == assignmentId && x.RemovedByUserId == null), context);
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().AsNoTracking().Where(x => x.ParentAssignmentId == assignmentId && x.RemovedByUserId == null), context);
+        }
+
+        public IDisposableQueryable<Record> GetAssignmentsChildRecordsQuery(int assignmentId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Record>(context.Set<Record>().AsNoTracking().Where(x => x.ParentAssignmentId == assignmentId && x.RemovedByUserId == null), context);
         }
 
 
@@ -496,7 +503,8 @@ namespace Shared.PatientRecords.Services
             {
                 var savedAssignment = new Assignment();
                 context.Entry(savedAssignment).State = EntityState.Added;
-                savedAssignment.ParentId = assignment.ParentId;
+                savedAssignment.ParentAssignmentId = assignment.ParentAssignmentId;
+                savedAssignment.ParentRecordId = assignment.ParentRecordId;
                 savedAssignment.RecordTypeId = assignment.RecordTypeId;
                 savedAssignment.PersonId = assignment.PersonId;
                 savedAssignment.AssignDateTime = assignment.AssignDateTime;
@@ -564,7 +572,7 @@ namespace Shared.PatientRecords.Services
         }
 
         public int[] SaveAnalyseResult(int recordId, AnalyseResult[] analyseResults)
-        {            
+        {
             using (var context = contextProvider.CreateNewContext())
             {
                 var old = context.Set<AnalyseResult>().Where(x => x.RecordId == recordId).ToDictionary(x => x.Id);
@@ -608,12 +616,12 @@ namespace Shared.PatientRecords.Services
                 }
             }
         }
-        
+
         public IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool isMale, int age, DateTime date)
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<AnalyseRefference>(context.Set<AnalyseRefference>()
-                .Where(x => x.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId && x.IsMale == isMale && 
+                .Where(x => x.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId && x.IsMale == isMale &&
                             x.AgeFrom <= age && x.AgeTo >= age && x.BeginDateTime <= date && x.EndDateTime > date), context);
         }
 
@@ -623,6 +631,77 @@ namespace Shared.PatientRecords.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<AnalyseResult>(context.Set<AnalyseResult>()
                         .Where(x => x.Record.PersonId == personId && x.Record.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId), context);
+        }
+
+
+        public async Task<ICollection<PersonItem>> GetParentItems(PersonItem item)
+        {
+            List<PersonItem> parentItems = new List<PersonItem>();
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var curItem = item;
+                while (curItem != null)
+                {
+                    parentItems.Add(curItem);
+                    switch (curItem.Type)
+                    {
+                        case ItemType.Visit:
+                            curItem = null;
+                            break;
+                        case ItemType.Record:
+                            var record = await context.Set<Record>().Where(x => x.Id == curItem.Id).Select(x => new { x.Id, x.ParentRecordId, x.ParentAssignmentId, x.VisitId }).FirstOrDefaultAsync();
+                            if (record.ParentRecordId.HasValue)
+                                curItem = new PersonItem()
+                                {
+                                    Id = record.ParentRecordId.Value,
+                                    Type = ItemType.Record
+                                };
+                            else
+                                if (record.ParentAssignmentId.HasValue)
+                                    curItem = new PersonItem()
+                                    {
+                                        Id = record.ParentAssignmentId.Value,
+                                        Type = ItemType.Assignment
+                                    };
+                                else
+                                    curItem = new PersonItem()
+                                    {
+                                        Id = record.VisitId,
+                                        Type = ItemType.Visit
+                                    };
+                            break;
+                        case ItemType.Assignment:
+                            var assignment = await context.Set<Assignment>().Where(x => x.Id == curItem.Id).Select(x => new { x.Id, x.ParentRecordId, x.ParentAssignmentId, x.VisitId }).FirstOrDefaultAsync();
+                            if (assignment.ParentRecordId.HasValue)
+                                curItem = new PersonItem()
+                                {
+                                    Id = assignment.ParentRecordId.Value,
+                                    Type = ItemType.Record
+                                };
+                            else
+                                if (assignment.ParentAssignmentId.HasValue)
+                                    curItem = new PersonItem()
+                                    {
+                                        Id = assignment.ParentAssignmentId.Value,
+                                        Type = ItemType.Assignment
+                                    };
+                                else
+                                    if (assignment.VisitId.HasValue)
+                                        curItem = new PersonItem()
+                                        {
+                                            Id = assignment.VisitId.Value,
+                                            Type = ItemType.Visit
+                                        };
+                                    else
+                                        curItem = null;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            parentItems.Reverse();
+            return parentItems;
         }
     }
 }

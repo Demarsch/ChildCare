@@ -1,6 +1,7 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
 using Shared.PatientRecords.DTO;
+using Shared.PatientRecords.Misc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ namespace Shared.PatientRecords.Services
 
         IDisposableQueryable<Assignment> GetAssignmentsChildAssignmentsQuery(int assignmentId);
 
+        IDisposableQueryable<Record> GetAssignmentsChildRecordsQuery(int assignmentId);
+
         IDisposableQueryable<VisitTemplate> GetActualVisitTemplates(DateTime onDate);
 
         IDisposableQueryable<VisitTemplate> GetVisitTemplate(int visitTemplateId);
@@ -51,6 +54,8 @@ namespace Shared.PatientRecords.Services
         IDisposableQueryable<Visit> GetVisit(int visitId);
 
         IDisposableQueryable<Record> GetRecord(int recordId);
+
+        Task<ICollection<PersonItem>> GetParentItems(PersonItem item);
 
         Task<bool> IsBrigadeCompleted(int recordId);
 

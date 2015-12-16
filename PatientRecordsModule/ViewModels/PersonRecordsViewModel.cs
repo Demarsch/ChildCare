@@ -244,7 +244,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { });
+            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { personRecordListViewModel.AddNewVisitToList(vm.VisitId); });
         }
 
         public ICommand EditVisitCommand { get { return editVisitCommand; } }

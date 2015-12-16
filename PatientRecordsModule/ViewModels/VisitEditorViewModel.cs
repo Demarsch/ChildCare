@@ -266,7 +266,7 @@ namespace Shared.PatientRecords.ViewModels
                 if (saveSuccesfull)
                 {
                     ChangeTracker.AcceptChanges();
-                    ChangeTracker.IsEnabled = true;
+                    /////ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
                     HostWindow.Close();
 
@@ -312,7 +312,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private bool CanSaveChanges()
         {
-            return ChangeTracker.HasChanges;
+            return true;/////ChangeTracker.HasChanges;
         }
 
         private async void LoadVisitDataAsync(int visitId)
@@ -350,7 +350,7 @@ namespace Shared.PatientRecords.ViewModels
                 await LoadFieldsByVisitTemplateAsync(visit.VisitTemplateId);
                 SelectedLPUId = visit.SentLPUId;
                 Note = visit.Note;
-                ChangeTracker.IsEnabled = true;
+                /////ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
