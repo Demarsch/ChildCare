@@ -30,14 +30,17 @@ namespace Shared.PatientRecords.ViewModels
         private readonly IUserService userService;
         private readonly ICacheService cacheService;
         private readonly ILog logService;
+        private readonly IDialogServiceAsync dialogService;
         private int personId;
         private bool isMale = false;
         private int years = 0;
         private DateTime date = DateTime.Now;
         private readonly IChangeTracker currentInstanceChangeTracker;
-        
+        private readonly Func<AnalyseRefferenceCollectionViewModel> refferencesViewModelFactory;
+
         #region Constructors
-        public AnalyseProtocolViewModel(IPatientRecordsService recordService, ILog logService, IDialogService messageService, IUserService userService, ICacheService cacheService)
+        public AnalyseProtocolViewModel(IPatientRecordsService recordService, ILog logService, IDialogService messageService, IDialogServiceAsync dialogService, 
+            IUserService userService, ICacheService cacheService, Func<AnalyseRefferenceCollectionViewModel> refferencesViewModelFactory)
         {
             if (logService == null)
             {
@@ -51,6 +54,10 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("messageService");
             }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }
             if (userService == null)
             {
                 throw new ArgumentNullException("userService");
@@ -59,11 +66,17 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("cacheService");
             }
+            if (refferencesViewModelFactory == null)
+            {
+                throw new ArgumentNullException("refferencesViewModelFactory");
+            }
             this.recordService = recordService;
             this.cacheService = cacheService;
             this.messageService = messageService;
             this.userService = userService;
             this.logService = logService;
+            this.dialogService = dialogService;
+            this.refferencesViewModelFactory = refferencesViewModelFactory;
 
             CurrentMode = ProtocolMode.View;
 
@@ -74,6 +87,8 @@ namespace Shared.PatientRecords.ViewModels
             ChartData = new ObservableCollectionEx<ChartPoint>();
             RefMinData = new ObservableCollectionEx<ChartPoint>();
             RefMaxData = new ObservableCollectionEx<ChartPoint>();
+
+            setAnalyseRefferencesCommand = new DelegateCommand(SetAnalyseRefferences);
 
             currentInstanceChangeTracker = new ChangeTrackerEx<AnalyseProtocolViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker);
@@ -116,37 +131,11 @@ namespace Shared.PatientRecords.ViewModels
         {
             get { return selectedAnalyseResultView; }
             set 
-            { 
+            {
                 if (SetProperty(ref selectedAnalyseResultView, value) && value != null)
-                {
-                    ChartData.Clear();
-                    RefMinData.Clear();
-                    RefMaxData.Clear();
-                    if (value.RefMax == 0.0 && value.RefMin == 0.0)
-                        ShowChart = false;
-                    else
-                    {
-                        var analysesQuery = recordService.GetAnalyseResults(personId, value.RecordTypeId, value.ParameterRecordTypeId);
-                        var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, Value = x.Value }).OrderBy(x => x.Date).ToArray();
-                        foreach (var item in analysesSelect)
-                        {
-                            double result;
-                            if (double.TryParse(item.Value, out result))
-                                ChartData.Add(new ChartPoint() { Date = item.Date, Result = result, Description = item.Date + " - " + result });
-                        }
-
-                        RefMinData.Add(new ChartPoint() { Date = ChartData.Min(x => x.Date), Result = value.RefMin });
-                        RefMinData.Add(new ChartPoint() { Date = ChartData.Max(x => x.Date), Result = value.RefMin });
-
-                        RefMaxData.Add(new ChartPoint() { Date = ChartData.Min(x => x.Date), Result = value.RefMax });
-                        RefMaxData.Add(new ChartPoint() { Date = ChartData.Max(x => x.Date), Result = value.RefMax });
-
-                        SelectedParameter = value.ParameterName;
-                        ShowChart = true;
-                    }
-                }
+                    DrawChart(value);
             }
-        }
+        }        
 
         private string selectedParameter;
         public string SelectedParameter
@@ -181,6 +170,9 @@ namespace Shared.PatientRecords.ViewModels
         public ObservableCollectionEx<ChartPoint> ChartData { get; private set; }
         public ObservableCollectionEx<ChartPoint> RefMinData { get; private set; }
         public ObservableCollectionEx<ChartPoint> RefMaxData { get; private set; }
+
+        private readonly DelegateCommand setAnalyseRefferencesCommand;
+        public ICommand SetAnalyseRefferencesCommand { get { return setAnalyseRefferencesCommand; } }
 
         #endregion
  
@@ -235,8 +227,6 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (visitId > 0) return;
             ChangeTracker.IsEnabled = false;
-            AnalyseResults.Clear();
-            AnalyseResultsView.Clear();
             if (assignmentId > 0)
                 LoadAssignmentData(assignmentId);
             else if (recordId > 0)
@@ -355,6 +345,7 @@ namespace Shared.PatientRecords.ViewModels
         private void LoadAnalyseResultView(int recordId)
         {
             var record = recordService.GetRecord(recordId).First();
+            AnalyseResultsView.Clear();
             AnalyseResultsView.AddRange(record.AnalyseResults
                     .Select(x => new AnalyseResultViewModel(recordService, cacheService)
                     {
@@ -379,6 +370,50 @@ namespace Shared.PatientRecords.ViewModels
                 SelectedAnalyseResultView = AnalyseResultsView.First();
             else
                 ShowChart = false;
+        }
+
+        private void DrawChart(AnalyseResultViewModel analyseResult)
+        {
+            ChartData.Clear();
+            RefMinData.Clear();
+            RefMaxData.Clear();
+            if (analyseResult.RefMax == 0.0 && analyseResult.RefMin == 0.0)
+                ShowChart = false;
+            else
+            {
+                var analysesQuery = recordService.GetAnalyseResults(personId, analyseResult.RecordTypeId, analyseResult.ParameterRecordTypeId);
+                var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, Value = x.Value, Unit = (x.UnitId.HasValue ? " " + x.Unit.ShortName : string.Empty) }).OrderBy(x => x.Date).ToArray();
+                var dates = new List<DateTime>();
+                foreach (var item in analysesSelect.OrderBy(x => x.Date))
+                {
+                    double result;
+                    if (double.TryParse(item.Value, out result))
+                    {
+                        ChartData.Add(new ChartPoint() { ValueX = item.Date.ToShortDateString(), ValueY = result, Description = item.Date.ToString("dd.MM.yyyy HH:mm") + "\r\n" + result + item.Unit });
+                        dates.Add(item.Date);
+                    }
+                }
+
+                RefMinData.Add(new ChartPoint() { ValueX = dates.Min(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMin });
+                RefMinData.Add(new ChartPoint() { ValueX = dates.Max(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMin });
+
+                RefMaxData.Add(new ChartPoint() { ValueX = dates.Min(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMax });
+                RefMaxData.Add(new ChartPoint() { ValueX = dates.Max(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMax });
+
+                SelectedParameter = analyseResult.ParameterName;
+                ShowChart = true;
+            }
+        }
+
+        private async void SetAnalyseRefferences()
+        {
+            var refferencesViewModel = refferencesViewModelFactory();
+            refferencesViewModel.Initialize(SelectedAnalyseResult.RecordTypeId, SelectedAnalyseResult.ParameterRecordTypeId);
+            var result = await dialogService.ShowDialogAsync(refferencesViewModel);
+            if (refferencesViewModel.SaveIsSuccessful)
+            {
+
+            }
         }
 
         public void Dispose()

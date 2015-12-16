@@ -71,6 +71,37 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding ElementName=analyseResultsEditor, Path=DataContext.SetAnalyseRefferencesCommand}"
+                                    CommandParameter="{Binding}" Content="..." MinWidth="20">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="OverridesDefaultStyle" Value="True" />
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="Foreground" Value="Black" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Grid Background="{TemplateBinding Background}">
+                                                            <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="Foreground" Value="Transparent"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Примечания" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -139,37 +170,15 @@
             </DataGrid>
 
             <DockPanel Grid.Row="1" LastChildFill="True" Visibility="{Binding IsViewMode, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                <charting:Chart Background="White" Title="Динамика изменения" Margin="0" Padding="0" Height="200"
+                <charting:Chart Title="Динамика изменения" Margin="0" Padding="0" Height="200"
                                 Visibility="{Binding ShowChart, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                    <!--<charting:Chart.Axes>
-                        <charting:DateTimeAxis Orientation="X" Interval="1" IntervalType="Days"/>
-                    </charting:Chart.Axes>-->
-                    <charting:LineSeries ItemsSource="{Binding Path=RefMinData}" IndependentValuePath="Date" DependentValuePath="Result">                        
-                        <charting:LineSeries.Template>
-                            <ControlTemplate TargetType="charting:LineSeries">
-                                <Canvas x:Name="PlotArea">
-                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Blue" Style="{TemplateBinding PolylineStyle}" />
-                                </Canvas>
-                            </ControlTemplate>
-                        </charting:LineSeries.Template>
-                    </charting:LineSeries>
-                        
-                    <charting:LineSeries ItemsSource="{Binding Path=RefMaxData}" IndependentValuePath="Date" DependentValuePath="Result">                        
-                        <charting:LineSeries.Template>
-                            <ControlTemplate TargetType="charting:LineSeries">
-                                <Canvas x:Name="PlotArea">
-                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Red" Style="{TemplateBinding PolylineStyle}" />
-                                </Canvas>
-                            </ControlTemplate>
-                        </charting:LineSeries.Template>
-                    </charting:LineSeries>
-                    
-                    <charting:LineSeries ItemsSource="{Binding Path=ChartData}" IndependentValuePath="Date" DependentValuePath="Result" 
+                   
+                    <charting:LineSeries ItemsSource="{Binding Path=ChartData}" IndependentValuePath="ValueX" DependentValuePath="ValueY" 
                                          IsSelectionEnabled="True" SelectedItem="{Binding SelectedPoint, Mode=TwoWay}">
                         <charting:LineSeries.DataPointStyle>
                             <Style TargetType="charting:DataPoint">
-                                <Setter Property="Background" Value="#0077CC" />
-                                <Setter Property="BorderBrush" Value="White"/>
+                                <Setter Property="Background" Value="Pink" />
+                                <Setter Property="BorderBrush" Value="Black"/>
                                 <Setter Property="BorderThickness" Value="2"/>
                                 <Setter Property="Width" Value="10" />
                                 <Setter Property="Height" Value="10" />
@@ -196,8 +205,44 @@
                             </ControlTemplate>
                         </charting:LineSeries.Template>
                     </charting:LineSeries>
-                    
-                    <charting:AreaSeries ItemsSource="{Binding Path=ChartData}" IndependentValueBinding="{Binding Date}" DependentValueBinding="{Binding Result}"/>
+
+                    <charting:AreaSeries ItemsSource="{Binding Path=ChartData}" IndependentValueBinding="{Binding ValueX}" DependentValueBinding="{Binding ValueY}">
+                        <!--<charting:AreaSeries.Style>
+                            <Style TargetType="charting:AreaSeries">
+                                <Setter Property="IsTabStop" Value="False"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="charting:AreaSeries">
+                                            <Canvas x:Name="PlotArea">
+                                                <Path Data="{TemplateBinding Geometry}" Fill="LightYellow"/>
+                                            </Canvas>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </charting:AreaSeries.Style>-->
+                    </charting:AreaSeries>
+
+                    <charting:LineSeries ItemsSource="{Binding Path=RefMinData}" IndependentValuePath="ValueX" DependentValuePath="ValueY">
+                        <charting:LineSeries.Template>
+                            <ControlTemplate TargetType="charting:LineSeries">
+                                <Canvas x:Name="PlotArea">
+                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Blue" Style="{TemplateBinding PolylineStyle}" />
+                                </Canvas>
+                            </ControlTemplate>
+                        </charting:LineSeries.Template>
+                    </charting:LineSeries>
+
+                    <charting:LineSeries ItemsSource="{Binding Path=RefMaxData}" IndependentValuePath="ValueX" DependentValuePath="ValueY">
+                        <charting:LineSeries.Template>
+                            <ControlTemplate TargetType="charting:LineSeries">
+                                <Canvas x:Name="PlotArea">
+                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Red" Style="{TemplateBinding PolylineStyle}" />
+                                </Canvas>
+                            </ControlTemplate>
+                        </charting:LineSeries.Template>
+                    </charting:LineSeries>
+
                     
                     <charting:Chart.Template>
                         <ControlTemplate TargetType="charting:Chart">
@@ -216,7 +261,7 @@
                                     </StackPanel>
 
                                     <chartingprimitives:EdgePanel x:Name="ChartArea" Style="{TemplateBinding ChartAreaStyle}">
-                                        <Grid Canvas.ZIndex="-1" Style="{TemplateBinding PlotAreaStyle}" />
+                                        <Grid Canvas.ZIndex="-1" Style="{TemplateBinding PlotAreaStyle}"/>
                                         <Border Canvas.ZIndex="10" BorderThickness="0" />
                                     </chartingprimitives:EdgePanel>
                                 </DockPanel>

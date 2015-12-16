@@ -131,6 +131,7 @@
     <Compile Include="DTOs\CommonRecordAssignmentDTO.cs" />
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\PersonItem.cs" />
+    <Compile Include="ViewModels\Analyses\AnalyseRefferenceCollectionViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalItemViewModels\IHierarchicalItem.cs" />
     <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
     <Compile Include="Misc\ParameterNames.cs" />

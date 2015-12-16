@@ -15,18 +15,18 @@ namespace Shared.PatientRecords.Misc
 
         }
 
-        private double result;
-        public double Result
+        private double valueY;
+        public double ValueY
         {
-            get { return result; }
-            set { SetProperty(ref result, value); }
+            get { return valueY; }
+            set { SetProperty(ref valueY, value); }
         }
 
-        private DateTime date;
-        public DateTime Date
+        private string valueX;
+        public string ValueX
         {
-            get { return date; }
-            set { SetProperty(ref date, value); }
+            get { return valueX; }
+            set { SetProperty(ref valueX, value); }
         }
 
         private string description;
