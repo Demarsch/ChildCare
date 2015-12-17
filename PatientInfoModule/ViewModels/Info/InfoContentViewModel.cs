@@ -14,12 +14,14 @@ using Core.Misc;
 using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
+using Core.Wpf.Services;
 using log4net;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
+using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -33,12 +35,18 @@ namespace PatientInfoModule.ViewModels
 
         private readonly PatientInfoViewModel patientInfo;
 
+        private readonly IRegionManager regionManager;
+
+        private readonly IViewNameResolver viewNameResolver;
+
         private readonly Func<PatientInfoViewModel> relativeInfoFactory;
 
         public InfoContentViewModel(IPatientService patientService,
                                     IEventAggregator eventAggregator,
                                     ILog log,
                                     PatientInfoViewModel patientInfo,
+                                    IRegionManager regionManager,
+                                    IViewNameResolver viewNameResolver,
                                     Func<PatientInfoViewModel> relativeInfoFactory)
         {
             if (patientService == null)
@@ -61,10 +69,20 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("relativeInfoFactory");
             }
+            if (regionManager == null)
+            {
+                throw new ArgumentNullException("regionManager");
+            }
+            if (viewNameResolver == null)
+            {
+                throw new ArgumentNullException("viewNameResolver");
+            }
             this.patientService = patientService;
             this.eventAggregator = eventAggregator;
             this.log = log;
             this.patientInfo = patientInfo;
+            this.regionManager = regionManager;
+            this.viewNameResolver = viewNameResolver;
             this.relativeInfoFactory = relativeInfoFactory;
             currentPatientId = SpecialValues.NonExistingId;
             Relatives = new ObservableCollectionEx<PatientInfoViewModel>();
@@ -74,7 +92,7 @@ namespace PatientInfoModule.ViewModels
             selectedPatientOrRelative = patientInfo;
             FailureMediator = new FailureMediator();
             createNewPatientCommand = new DelegateCommand(CreateNewPatient);
-            saveChangesCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
+            saveChangesCommand = new DelegateCommand(async () => await SaveChangesAsync(), CanSaveChanges);
             cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
             addRelativeCommand = new DelegateCommand(AddRelative, CanAddRelative);
             goBackToPatientCommand = new DelegateCommand(GoBackToPatient, CanGoBackToPatient);
@@ -82,6 +100,15 @@ namespace PatientInfoModule.ViewModels
             loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientAndRelativesAsync(patientIdBeingLoaded)) };
             currentOperation = new TaskCompletionSource<object>();
             currentOperation.SetResult(null);
+            eventAggregator.GetEvent<BeforeSelectionChangedEvent<Person>>().Subscribe(OnBeforePatientSelected);
+        }
+
+        private void OnBeforePatientSelected(BeforeSelectionChangedEventData data)
+        {
+            if (currentPatientId == SpecialValues.NewId || ChangeTracker.HasChanges)
+            {
+                data.AddActionToPerform(async () => await SaveChangesAsync(), () => regionManager.RequestNavigate(RegionNames.ModuleList, viewNameResolver.Resolve<InfoHeaderViewModel>()));
+            }
         }
 
         private TaskCompletionSource<object> currentOperation;
@@ -124,7 +151,7 @@ namespace PatientInfoModule.ViewModels
 
         private void CreateNewPatient()
         {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(SpecialValues.NewId);
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(SpecialValues.NewId);
         }
 
         public ICommand SaveChangesCommand
@@ -132,13 +159,13 @@ namespace PatientInfoModule.ViewModels
             get { return saveChangesCommand; }
         }
 
-        private async void SaveChangesAsync()
+        private async Task<bool> SaveChangesAsync()
         {
             await currentOperation.Task;
             FailureMediator.Deactivate();
             if (!Validate())
             {
-                return;
+                return false;
             }
             currentOperation = new TaskCompletionSource<object>();
             PatientInfoViewModel personToSave = null;
@@ -151,7 +178,7 @@ namespace PatientInfoModule.ViewModels
                 if (isNewPatient)
                 {
                     currentPatientId = patientInfo.CurrentPerson.Id;
-                    eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(currentPatientId);
+                    eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
                 }
                 foreach (var relative in Relatives.Where(x => x.CurrentPerson.Id.IsNewOrNonExisting() || x.ChangeTracker.HasChanges))
                 {
@@ -163,10 +190,11 @@ namespace PatientInfoModule.ViewModels
                 ChangeTracker.AcceptChanges();
                 ChangeTracker.IsEnabled = true;
                 UpdateCommandsState();
+                return true;
             }
             catch (OperationCanceledException)
             {
-                //Nothing to do as it means that we somehow cancelled save operation
+                return true;
             }
             catch (Exception ex)
             {
@@ -177,6 +205,7 @@ namespace PatientInfoModule.ViewModels
                                          ex,
                                          true);
                 SelectedPatientOrRelative = personToSave;
+                return false;
             }
             finally
             {
@@ -434,6 +463,7 @@ namespace PatientInfoModule.ViewModels
         {
             ChangeTracker.Dispose();
             Relatives.BeforeCollectionChanged -= RelativesOnBeforeCollectionChanged;
+            eventAggregator.GetEvent<BeforeSelectionChangedEvent<Person>>().Unsubscribe(OnBeforePatientSelected);
         }
     }
 }

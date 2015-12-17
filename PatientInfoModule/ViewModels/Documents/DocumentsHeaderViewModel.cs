@@ -67,7 +67,7 @@ namespace PatientInfoModule.ViewModels
 
         private void SubscribeToEvents()
         {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelected);
         }
 
         private void OnPatientSelected(int patientId)
@@ -83,7 +83,7 @@ namespace PatientInfoModule.ViewModels
 
         private void UnsubscriveFromEvents()
         {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Unsubscribe(OnPatientSelected);
         }
 
         private void ActivatePersonDocuments()

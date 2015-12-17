@@ -55,12 +55,12 @@ namespace ScheduleModule.ViewModels
 
         private void SubscribeToEvents()
         {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelected);
         }
 
         private void UnsubscriveFromEvents()
         {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Unsubscribe(OnPatientSelected);
         }
 
         public ScheduleContentViewModel ScheduleContentViewModel { get; private set; }

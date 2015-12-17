@@ -114,7 +114,7 @@ namespace PatientInfoModule
                                            BorderBrush = Brushes.Blue,
                                            Header = PatientIsNotSelected
                                        });
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelectedAsync, true);
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelectedAsync, true);
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<InfoHeaderView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<DocumentsHeaderView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<ContractsHeaderView>());

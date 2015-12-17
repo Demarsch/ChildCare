@@ -114,7 +114,7 @@ namespace Shared.PatientRecords.ViewModels
             set
             {
                 if (SetProperty(ref isSelected, value) && value)
-                    eventAggregator.GetEvent<SelectionEvent<Visit>>().Publish(this.Id);
+                    eventAggregator.GetEvent<SelectionChangedEvent<Visit>>().Publish(this.Id);
             }
         }
 

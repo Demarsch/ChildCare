@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Extensions;
 using Core.Misc;
 using Core.Services;
@@ -12,6 +13,7 @@ using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
+using Core.Wpf.ViewModels;
 using log4net;
 using PatientSearchModule.Misc;
 using PatientSearchModule.Model;
@@ -19,6 +21,7 @@ using PatientSearchModule.Services;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
+using Shell.Shared;
 
 namespace PatientSearchModule.ViewModels
 {
@@ -36,12 +39,15 @@ namespace PatientSearchModule.ViewModels
         
         private readonly IFileService fileService;
 
+        private readonly IDialogServiceAsync dialogService;
+
         public PatientSearchViewModel(IPatientSearchService patientSearchService,
                                       ILog log,
                                       ICacheService cacheService,
                                       IUserInputNormalizer userInputNormalizer,
                                       IEventAggregator eventAggregator,
-                                      IFileService fileService)
+                                      IFileService fileService,
+                                      IDialogServiceAsync dialogService)
         {
             if (patientSearchService == null)
             {
@@ -67,9 +73,14 @@ namespace PatientSearchModule.ViewModels
             {
                 throw new ArgumentNullException("fileService");
             }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }
             this.userInputNormalizer = userInputNormalizer;
             this.eventAggregator = eventAggregator;
             this.fileService = fileService;
+            this.dialogService = dialogService;
             this.cacheService = cacheService;
             this.userInputNormalizer = userInputNormalizer;
             this.log = log;
@@ -85,7 +96,12 @@ namespace PatientSearchModule.ViewModels
                                                CommandName = "Повторный поиск",
                                                CommandParameter = false
                                            };
+            SelectPatientCommand = new DelegateCommand<int?>(SelectPatientAsync);
+            currentOperation = new TaskCompletionSource<object>();
+            currentOperation.SetResult(null);
         }
+
+        private TaskCompletionSource<object> currentOperation;
 
         public ObservableCollectionEx<FoundPatientViewModel> Patients { get; private set; }
 
@@ -119,22 +135,51 @@ namespace PatientSearchModule.ViewModels
 
         private readonly CommandWrapper searchPatientsCommandWrapper;
 
-        public ICommand SearchPatientsCommand { get; private set; }
+        public ICommand SelectPatientCommand { get; private set; }
 
-        private FoundPatientViewModel selectedPatient;
-
-        public FoundPatientViewModel SelectedPatient
+        private async void SelectPatientAsync(int? patientId)
         {
-            get { return selectedPatient; }
-            set
+            await currentOperation.Task;
+            var realPatientId = patientId.GetValueOrDefault(SpecialValues.NonExistingId);
+            var eventData = new BeforeSelectionChangedEventData(realPatientId);
+            eventAggregator.GetEvent<BeforeSelectionChangedEvent<Person>>().Publish(eventData);
+            if (eventData.IsCancelled)
             {
-                SetProperty(ref selectedPatient, value);
-                if (value != null)
+                return;
+            }
+            if (eventData.ActionsToPerform.Any())
+            {
+                var confirmation = new ConfirmationDialogViewModel
                 {
-                    eventAggregator.GetEvent<SelectionEvent<Person>>().Publish(value.Id);
+                    CancelButtonText = "Отменить изменения",
+                    ConfirmButtonText = "Сохранить изменения",
+                    Question = "Данные текущего пациента изменились. Сохранить эти изменения?",
+                    Title = "Подтверждение"
+                };
+                var result = await dialogService.ShowDialogAsync(confirmation);
+                if (result == null)
+                {
+                    return;
+                }
+                if (result == true)
+                {
+                    currentOperation = new TaskCompletionSource<object>();
+                    var runningActions = eventData.ActionsToPerform.Select(x => new { ActionResult = x.Action(), x.OnFail }).ToArray();
+                    await Task.WhenAll(runningActions.Select(x => x.ActionResult));
+                    var firstFailedAction = runningActions.FirstOrDefault(x => !x.ActionResult.Result);
+                    if (firstFailedAction != null)
+                    {
+                        firstFailedAction.OnFail();
+                        currentOperation.SetResult(null);
+                        return;
+                    }
+                    currentOperation.SetResult(null);
                 }
             }
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(realPatientId);
         }
+
+        public ICommand SearchPatientsCommand { get; private set; }
 
         private void SearchPatients(bool? useDelay)
         {

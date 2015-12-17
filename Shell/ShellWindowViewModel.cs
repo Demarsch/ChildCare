@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Services;
@@ -20,6 +21,8 @@ namespace Shell
         private readonly IEnvironment environment;
 
         private readonly ILog log;
+
+        private readonly IList<IDisposable> disposables;
 
         public ShellWindowViewModel(IDbContextProvider contextProvider, IEventAggregator eventAggregator, IEnvironment environment, ILog log)
         {
@@ -43,6 +46,7 @@ namespace Shell
             this.eventAggregator = eventAggregator;
             this.environment = environment;
             this.log = log;
+            disposables = new List<IDisposable>();
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             SubscribeToEvents();
@@ -106,7 +110,13 @@ namespace Shell
 
         private void SubscribeToEvents()
         {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Subscribe(OnPatientSelected);
+            disposables.Add(eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelected));
+            disposables.Add(eventAggregator.GetEvent<MainMenuCloseRequestedEvent>().Subscribe(OnMainMenuCloseRequested));
+        }
+
+        private void OnMainMenuCloseRequested(object obj)
+        {
+            IsMenuOpen = false;
         }
 
         private void OnPatientSelected(int patientId)
@@ -114,14 +124,12 @@ namespace Shell
             IsMenuOpen = false;
         }
 
-        private void UnsubscribeFromEvents()
-        {
-            eventAggregator.GetEvent<SelectionEvent<Person>>().Unsubscribe(OnPatientSelected);
-        }
-
         public void Dispose()
         {
-            UnsubscribeFromEvents();
+            foreach (var disposable in disposables)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

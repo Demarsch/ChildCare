@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.Unity;
+﻿using System.Windows.Input;
+using Microsoft.Practices.Unity;
 using PatientSearchModule.ViewModels;
 
 namespace PatientSearchModule.Views

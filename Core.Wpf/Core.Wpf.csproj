@@ -119,9 +119,12 @@
     <Compile Include="Converters\GenderToTextConverter.cs" />
     <Compile Include="Converters\ProportionConverter.cs" />
     <Compile Include="Converters\ToStringConverter.cs" />
-    <Compile Include="Events\SelectionEvent.cs" />
+    <Compile Include="Events\BeforeSelectionChangedEvent.cs" />
+    <Compile Include="Events\MainMenuCloseRequestedEvent.cs" />
+    <Compile Include="Events\SelectionChangedEvent.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="MarkupExtensions\Int32Extension.cs" />
+    <Compile Include="Misc\BeforeSelectionChangedEventData.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\InputHelpers\DigitsInputHelper.cs" />
     <Compile Include="Misc\FileServiceActions.cs" />

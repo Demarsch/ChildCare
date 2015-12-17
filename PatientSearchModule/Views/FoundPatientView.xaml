@@ -23,11 +23,14 @@
                 <converters:PatientGenderToImageSourceConverter x:Key="genderToImageSourceConverter" />
             </ResourceDictionary>
         </DataTemplate.Resources>
-        <Border BorderBrush="DimGray"
+        <Button BorderBrush="DimGray"
+                Background="White"
                 BorderThickness="2"
-                CornerRadius="1"
                 Margin="0 2 0 2"
-                HorizontalAlignment="Stretch">
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Left"
+                Command="{Binding DataContext.SelectPatientCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                CommandParameter="{Binding Id}">
             <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -107,6 +110,6 @@
                     </TextBlock>
                 </StackPanel>
             </Grid>
-        </Border>
+        </Button>
     </DataTemplate>
 </ResourceDictionary>
