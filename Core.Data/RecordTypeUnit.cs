@@ -12,18 +12,13 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class AnalyseRefference
+    public partial class RecordTypeUnit
     {
         public int Id { get; set; }
         public int RecordTypeId { get; set; }
-        public int ParameterRecordTypeId { get; set; }
-        public bool IsMale { get; set; }
-        public int AgeFrom { get; set; }
-        public Nullable<int> AgeTo { get; set; }
-        public double RefMin { get; set; }
-        public double RefMax { get; set; }
+        public int UnitId { get; set; }
     
         public virtual RecordType RecordType { get; set; }
-        public virtual RecordType RecordType1 { get; set; }
+        public virtual Unit Unit { get; set; }
     }
 }

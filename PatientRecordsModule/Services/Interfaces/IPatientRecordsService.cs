@@ -105,7 +105,7 @@ namespace Shared.PatientRecords.Services
 
         int[] SaveAnalyseResult(int recordId, AnalyseResult[] analyseResults);
 
-        IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool isMale, int age, DateTime date);
+        IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool? isMale = null, int age = -1);
 
         IDisposableQueryable<AnalyseResult> GetAnalyseResults(int personId, int recordTypeId, int parameterRecordTypeId);
     }

@@ -18,13 +18,11 @@ namespace Core.Data
         public int RecordId { get; set; }
         public int ParameterRecordTypeId { get; set; }
         public string Value { get; set; }
-        public Nullable<int> UnitId { get; set; }
         public bool IsNormal { get; set; }
         public bool IsAboveRef { get; set; }
         public bool IsBelowRef { get; set; }
         public string Details { get; set; }
     
-        public virtual Unit Unit { get; set; }
         public virtual Record Record { get; set; }
         public virtual RecordType RecordType { get; set; }
     }

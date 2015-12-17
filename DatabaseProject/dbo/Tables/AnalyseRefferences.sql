@@ -7,12 +7,12 @@
     [AgeTo]                 INT        NULL,
     [RefMin]                FLOAT (53) CONSTRAINT [DF_AnalyseRefferences_RefMin] DEFAULT ((0)) NOT NULL,
     [RefMax]                FLOAT (53) CONSTRAINT [DF_AnalyseRefferences_RefMax] DEFAULT ((0)) NOT NULL,
-    [BeginDateTime]         DATETIME   NOT NULL,
-    [EndDateTime]           DATETIME   NULL,
     CONSTRAINT [PK_AnalyseRefferences] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_AnalyseRefferences_ParameterRecordTypes] FOREIGN KEY ([ParameterRecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]),
     CONSTRAINT [FK_AnalyseRefferences_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id])
 );
+
+
 
 
 

@@ -154,5 +154,6 @@
     <Build Include="dbo\Tables\UserPermisionGroups.sql" />
     <Build Include="dbo\Tables\PermissionGroups.sql" />
     <Build Include="dbo\Tables\PermissionGroupMemberships.sql" />
+    <Build Include="dbo\Tables\RecordTypeUnits.sql" />
   </ItemGroup>
 </Project>

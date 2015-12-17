@@ -24,8 +24,8 @@ namespace Core.Data
             this.RecordDocuments = new HashSet<RecordDocument>();
             this.RecordMembers = new HashSet<RecordMember>();
             this.Records1 = new HashSet<Record>();
-            this.AnalyseResults = new HashSet<AnalyseResult>();
             this.RecordEquipments = new HashSet<RecordEquipment>();
+            this.AnalyseResults = new HashSet<AnalyseResult>();
         }
     
         public int Id { get; set; }
@@ -72,9 +72,9 @@ namespace Core.Data
         public virtual User User { get; set; }
         public virtual Visit Visit { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordEquipment> RecordEquipments { get; set; }
         public virtual RecordType RecordType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
     }
 }

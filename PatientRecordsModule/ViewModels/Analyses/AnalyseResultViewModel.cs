@@ -18,19 +18,10 @@ namespace Shared.PatientRecords.ViewModels
     {
         public IChangeTracker ChangeTracker { get; private set; }
         private IPatientRecordsService recordService;
-        private ICacheService cacheService;
 
-        public AnalyseResultViewModel(IPatientRecordsService recordService, ICacheService cacheService)
+        public AnalyseResultViewModel(IPatientRecordsService recordService)
         {
             this.recordService = recordService;
-            this.cacheService = cacheService;
-
-            var unitsQuery = cacheService.GetItems<Unit>().Where(x => !x.OnlyForMedWare).Select(x => new { x.Id, x.ShortName }).ToArray();
-            Units = new ObservableCollectionEx<FieldValue>();
-            Units.Add(new FieldValue() { Value = SpecialValues.NonExistingId, Field = "- отсутствует -" });
-            Units.AddRange(unitsQuery.Select(x => new FieldValue() { Value = x.Id, Field = x.ShortName }));
-            SelectedUnitId = SpecialValues.NonExistingId;
-
             ChangeTracker = new ChangeTrackerEx<AnalyseResultViewModel>(this);
         }
 
@@ -55,7 +46,7 @@ namespace Shared.PatientRecords.ViewModels
                         double result = 0.0;
                         if (double.TryParse(value.Replace('.',','), out result))
                         {
-                            var reference = recordService.GetAnalyseReference(RecordTypeId, ParameterRecordTypeId, IsMale, Age, Date).FirstOrDefault();
+                            var reference = recordService.GetAnalyseReference(RecordTypeId, ParameterRecordTypeId, IsMale, Age).FirstOrDefault();
                             if (reference != null)
                             {                                
                                 if (result < reference.RefMin)
@@ -106,27 +97,13 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref priority, value); }
         }
 
-        private ObservableCollectionEx<FieldValue> units;
-        public ObservableCollectionEx<FieldValue> Units
+        private string unitName;
+        public string UnitName
         {
-            get { return units; }
-            set { SetProperty(ref units, value); }
+            get { return unitName; }
+            set { SetTrackedProperty(ref unitName, value); }
         }
-
-        private int selectedUnitId;
-        public int SelectedUnitId
-        {
-            get { return selectedUnitId; }
-            set { SetTrackedProperty(ref selectedUnitId, value); }
-        }
-
-        private string unitView;
-        public string UnitView
-        {
-            get { return unitView; }
-            set { SetTrackedProperty(ref unitView, value); }
-        }
-
+      
         private string details;
         public string Details
         {
