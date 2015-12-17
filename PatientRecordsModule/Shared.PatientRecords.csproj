@@ -132,6 +132,7 @@
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\PersonItem.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseRefferenceCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Analyses\AnalyseRefferenceViewModel.cs" />
     <Compile Include="ViewModels\PersonHierarchicalItemViewModels\IHierarchicalItem.cs" />
     <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
@@ -234,6 +235,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Analyses\AnalyseRefferencesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

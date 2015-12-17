@@ -159,6 +159,9 @@
     <Compile Include="RecordType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RecordTypeUnit.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Services\Interfaces\IEnvironment.cs" />
     <Compile Include="Misc\OptionValues.cs" />
     <Compile Include="Misc\SpecialValues.cs" />

@@ -107,12 +107,13 @@ namespace Core.Data
         public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<UserPermisionGroup> UserPermisionGroups { get; set; }
-        public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
-        public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
+        public virtual DbSet<RecordTypeUnit> RecordTypeUnits { get; set; }
+        public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
     }
 }

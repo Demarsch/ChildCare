@@ -17,7 +17,7 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Unit()
         {
-            this.AnalyseResults = new HashSet<AnalyseResult>();
+            this.RecordTypeUnits = new HashSet<RecordTypeUnit>();
         }
     
         public int Id { get; set; }
@@ -26,6 +26,6 @@ namespace Core.Data
         public bool OnlyForMedWare { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
+        public virtual ICollection<RecordTypeUnit> RecordTypeUnits { get; set; }
     }
 }

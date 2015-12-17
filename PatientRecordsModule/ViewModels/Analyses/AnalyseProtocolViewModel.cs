@@ -149,8 +149,8 @@ namespace Shared.PatientRecords.ViewModels
         {
             get { return showChart; }
             set { SetProperty(ref showChart, value); }
-
         }
+
         public bool IsEditMode
         {
             get 
@@ -205,7 +205,6 @@ namespace Shared.PatientRecords.ViewModels
                                             Id = x.Id,
                                             ParameterRecordTypeId = x.ParameterRecordTypeId,
                                             Value = x.ResultText,
-                                            UnitId = !SpecialValues.IsNewOrNonExisting(x.SelectedUnitId) ? x.SelectedUnitId : (int?)null,
                                             IsNormal = x.IsNormal,
                                             IsBelowRef = x.IsBelow,
                                             IsAboveRef = x.IsAbove,
@@ -263,7 +262,6 @@ namespace Shared.PatientRecords.ViewModels
             isMale = assignment.Person.IsMale;
             double days = assignment.AssignDateTime.Subtract(assignment.Person.BirthDate).TotalDays;
             years = (int)(days / 365);
-            date = assignment.AssignDateTime;
             LoadAnalyseParameters(assignment.RecordTypeId);
         }
 
@@ -274,7 +272,6 @@ namespace Shared.PatientRecords.ViewModels
             isMale = record.Person.IsMale;
             double days = record.ActualDateTime.Subtract(record.Person.BirthDate).TotalDays;
             years = (int)(days / 365);
-            date = record.ActualDateTime;
 
             if (record.AnalyseResults.Any())
             {
@@ -284,7 +281,7 @@ namespace Shared.PatientRecords.ViewModels
                         Id = x.Id, 
                         ParameterRecordTypeId = x.ParameterRecordTypeId, 
                         Name = x.RecordType.Name, 
-                        UnitId = x.UnitId, 
+                        UnitName = x.RecordType.RecordTypeUnits.Any() ? x.RecordType.RecordTypeUnits.First().Unit.ShortName : string.Empty, 
                         Result = x.Value,
                         Details = x.Details
                     }).ToArray());
@@ -301,7 +298,7 @@ namespace Shared.PatientRecords.ViewModels
                 {
                     result.Id = item.Id;
                     result.ResultText = item.Result;
-                    result.SelectedUnitId = item.UnitId.HasValue ? item.UnitId.Value : SpecialValues.NonExistingId;
+                    result.UnitName = item.UnitName;
                     result.Details = item.Details;
                 }
             }
@@ -312,23 +309,22 @@ namespace Shared.PatientRecords.ViewModels
             var parameters = recordService.GetRecordTypeById(recordTypeId).First().RecordTypes1;
             if (parameters.Any())
             {               
-                var result = parameters.Select(x => new AnalyseResultViewModel(recordService, cacheService) 
+                var result = parameters.Select(x => new AnalyseResultViewModel(recordService) 
                             { 
                                 RecordTypeId = recordTypeId,
                                 IsMale = isMale,
                                 Age = years,
-                                Date = date,
                                 ParameterRecordTypeId = x.Id,
                                 ParameterName = x.Name,
                                 Priority = x.Priority,
                                 ResultText = string.Empty,
-                                SelectedUnitId = SpecialValues.NonExistingId,
+                                UnitName = x.RecordTypeUnits.Any() ? x.RecordTypeUnits.First().Unit.ShortName : string.Empty,
                                 Details = string.Empty,
                                 RefMin = x.AnalyseRefferences
-                                        .Where(a => a.RecordTypeId == recordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                        .Where(a => a.RecordTypeId == recordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
                                         .Select(a => a.RefMin).FirstOrDefault(),
                                 RefMax = x.AnalyseRefferences
-                                        .Where(a => a.RecordTypeId == recordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                        .Where(a => a.RecordTypeId == recordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
                                         .Select(a => a.RefMax).FirstOrDefault()
                             }).ToArray();
 
@@ -347,7 +343,7 @@ namespace Shared.PatientRecords.ViewModels
             var record = recordService.GetRecord(recordId).First();
             AnalyseResultsView.Clear();
             AnalyseResultsView.AddRange(record.AnalyseResults
-                    .Select(x => new AnalyseResultViewModel(recordService, cacheService)
+                    .Select(x => new AnalyseResultViewModel(recordService)
                     {
                         RecordTypeId = record.RecordTypeId,
                         IsMale = isMale,
@@ -357,13 +353,13 @@ namespace Shared.PatientRecords.ViewModels
                         ParameterName = x.RecordType.Name,
                         Priority = x.RecordType.Priority,
                         ResultText = x.Value,
-                        UnitView = x.UnitId.HasValue ? x.Unit.ShortName : string.Empty,
+                        UnitName = x.RecordType.RecordTypeUnits.Any() ? x.RecordType.RecordTypeUnits.First().Unit.ShortName : string.Empty,
                         Details = x.Details,
                         RefMin = x.RecordType.AnalyseRefferences
-                                        .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                        .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
                                         .Select(a => a.RefMin).FirstOrDefault(),
                         RefMax = x.RecordType.AnalyseRefferences
-                                .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years && a.BeginDateTime <= date && a.EndDateTime > date)
+                                .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
                                 .Select(a => a.RefMax).FirstOrDefault()
                     }).ToArray().OrderBy(x => x.Priority));
             if (AnalyseResultsView.Any())
@@ -382,7 +378,10 @@ namespace Shared.PatientRecords.ViewModels
             else
             {
                 var analysesQuery = recordService.GetAnalyseResults(personId, analyseResult.RecordTypeId, analyseResult.ParameterRecordTypeId);
-                var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, Value = x.Value, Unit = (x.UnitId.HasValue ? " " + x.Unit.ShortName : string.Empty) }).OrderBy(x => x.Date).ToArray();
+                var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, 
+                                                                     Value = x.Value, 
+                                                                     Unit = (x.RecordType.RecordTypeUnits.Any() ? " " + x.RecordType.RecordTypeUnits.FirstOrDefault().Unit.ShortName : string.Empty)
+                                                                   }).OrderBy(x => x.Date).ToArray();
                 var dates = new List<DateTime>();
                 foreach (var item in analysesSelect.OrderBy(x => x.Date))
                 {

@@ -16,6 +16,7 @@ using log4net;
 using Prism.Commands;
 using Prism.Mvvm;
 using Shared.PatientRecords.Services;
+using System.Threading.Tasks;
 
 namespace Shared.PatientRecords.ViewModels
 {
@@ -284,7 +285,7 @@ namespace Shared.PatientRecords.ViewModels
             }
             currentSavingToken = new CancellationTokenSource();
             var token = currentSavingToken.Token;
-            var saveSuccesfull = false;
+            AssignIsSuccessful = false;
             try
             {
                 var analyseAssignment = new Assignment();
@@ -315,7 +316,8 @@ namespace Shared.PatientRecords.ViewModels
                 var exception = string.Empty;
                 var createdAnalyseId = await recordService.CreateAnalyseAssignmentAsync(analyseAssignment, token);
                 AssignedAnalyses.Add(new KeyValuePair<int, int?>(createdAnalyseId, analyseAssignment.VisitId));
-                saveSuccesfull = true;
+                messageService.ShowInformation("Назначение прошло успешно.");
+                AssignIsSuccessful = true;
             }
             catch (OperationCanceledException)
             {
@@ -328,11 +330,7 @@ namespace Shared.PatientRecords.ViewModels
             }
             finally
             {
-                BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-                    messageService.ShowInformation("Назначение прошло успешно.");
-                }
+                BusyMediator.Deactivate();                
             }
         }
 
@@ -502,7 +500,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
 
-        public bool AssignIsSuccessful = false;
+        public bool AssignIsSuccessful;
 
         private void Close(bool? validate)
         {
@@ -512,7 +510,6 @@ namespace Shared.PatientRecords.ViewModels
                 if (IsValid)
                 {
                     CreateAnalyseAssignment();
-                    AssignIsSuccessful = true;
                 }
                 else
                 {

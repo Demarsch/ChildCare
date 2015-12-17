@@ -597,7 +597,6 @@ namespace Shared.PatientRecords.Services
                     {
                         result.Old.ParameterRecordTypeId = result.New.ParameterRecordTypeId;
                         result.Old.Value = result.New.Value;
-                        result.Old.UnitId = result.New.UnitId;
                         result.Old.IsNormal = result.New.IsNormal;
                         result.Old.IsAboveRef = result.New.IsAboveRef;
                         result.Old.IsBelowRef = result.New.IsBelowRef;
@@ -617,12 +616,13 @@ namespace Shared.PatientRecords.Services
             }
         }
 
-        public IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool isMale, int age, DateTime date)
+        public IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool? isMale = null, int age = -1)
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<AnalyseRefference>(context.Set<AnalyseRefference>()
-                .Where(x => x.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId && x.IsMale == isMale &&
-                            x.AgeFrom <= age && x.AgeTo >= age && x.BeginDateTime <= date && x.EndDateTime > date), context);
+                .Where(x => x.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId && 
+                    (isMale.HasValue ? x.IsMale == isMale : true) &&
+                    (age != -1 ? x.AgeFrom <= age && x.AgeTo >= age : true)), context);
         }
 
 

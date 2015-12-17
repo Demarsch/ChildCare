@@ -56,11 +56,7 @@
                     <DataGridTemplateColumn Header="Ед. измерения" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <ComboBox HorizontalAlignment="Stretch"
-                                            SelectedValuePath="Value" 
-                                            DisplayMemberPath="Field" 
-                                            SelectedValue="{Binding SelectedUnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            ItemsSource="{Binding Units}" Margin="5,0" FontSize="13"/>
+                                <TextBlock Text="{Binding UnitName}" HorizontalAlignment="Stretch" TextAlignment="Center" Margin="5,0" FontSize="13"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -71,7 +67,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn Header="Ред." Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Command="{Binding ElementName=analyseResultsEditor, Path=DataContext.SetAnalyseRefferencesCommand}"
@@ -148,7 +144,7 @@
                     <DataGridTemplateColumn Header="Ед. измерения" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding UnitView}" FontSize="13" Margin="5"/>
+                                <TextBlock Text="{Binding UnitName}" FontSize="13" Margin="5"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -206,8 +202,8 @@
                         </charting:LineSeries.Template>
                     </charting:LineSeries>
 
-                    <charting:AreaSeries ItemsSource="{Binding Path=ChartData}" IndependentValueBinding="{Binding ValueX}" DependentValueBinding="{Binding ValueY}">
-                        <!--<charting:AreaSeries.Style>
+                    <!--<charting:AreaSeries ItemsSource="{Binding Path=ChartData}" IndependentValueBinding="{Binding ValueX}" DependentValueBinding="{Binding ValueY}">
+                        <charting:AreaSeries.Style>
                             <Style TargetType="charting:AreaSeries">
                                 <Setter Property="IsTabStop" Value="False"/>
                                 <Setter Property="Template">
@@ -220,14 +216,14 @@
                                     </Setter.Value>
                                 </Setter>
                             </Style>
-                        </charting:AreaSeries.Style>-->
-                    </charting:AreaSeries>
+                        </charting:AreaSeries.Style>
+                    </charting:AreaSeries>-->
 
                     <charting:LineSeries ItemsSource="{Binding Path=RefMinData}" IndependentValuePath="ValueX" DependentValuePath="ValueY">
                         <charting:LineSeries.Template>
                             <ControlTemplate TargetType="charting:LineSeries">
                                 <Canvas x:Name="PlotArea">
-                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Blue" Style="{TemplateBinding PolylineStyle}" />
+                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="#FF417FEC" Style="{TemplateBinding PolylineStyle}" />
                                 </Canvas>
                             </ControlTemplate>
                         </charting:LineSeries.Template>
@@ -237,7 +233,7 @@
                         <charting:LineSeries.Template>
                             <ControlTemplate TargetType="charting:LineSeries">
                                 <Canvas x:Name="PlotArea">
-                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="Red" Style="{TemplateBinding PolylineStyle}" />
+                                    <Polyline x:Name="polyline" Points="{TemplateBinding Points}" Stroke="#FFDC3C3C" Style="{TemplateBinding PolylineStyle}" Fill="{x:Null}" />
                                 </Canvas>
                             </ControlTemplate>
                         </charting:LineSeries.Template>
@@ -254,9 +250,9 @@
                                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                         <Separator Background="Green" BorderBrush="Green" BorderThickness="6" Width="20" Margin="50,2,2,2"/>
                                         <TextBlock Text="{Binding SelectedParameter}" TextAlignment="Center" FontSize="13" FontWeight="Medium"/>
-                                        <Separator Background="Red" BorderBrush="Red" BorderThickness="6" Width="20" Margin="20,2,2,2"/>
+                                        <Separator Background="#FFDC3C3C" BorderBrush="#FFDC3C3C" BorderThickness="6" Width="20" Margin="20,2,2,2"/>
                                         <TextBlock Text="Макс. референсный предел" TextAlignment="Center" FontSize="13" FontWeight="Medium"/>
-                                        <Separator Background="Blue" BorderBrush="Blue" BorderThickness="6" Width="20" Margin="20,2,2,2"/>
+                                        <Separator Background="#FF417FEC" BorderBrush="#FF417FEC" BorderThickness="6" Width="20" Margin="20,2,2,2"/>
                                         <TextBlock Text="Мин. референсный предел" TextAlignment="Center" FontSize="13" FontWeight="Medium"/>
                                     </StackPanel>
 
