@@ -10,6 +10,8 @@ namespace Shared.PatientRecords.DTO
         public string Name { get; set; }
         public string UnitName { get; set; }
         public string Result { get; set; }
+        public double? RefMin { get; set; }
+        public double? RefMax { get; set; }
         public string Details { get; set; }
         public Color Background { get; set; }
     }

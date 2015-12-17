@@ -1,5 +1,14 @@
-﻿using Core.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Windows.Navigation;
+using Core.Data;
+using Core.Data.Classes;
 using Core.Data.Misc;
+using Core.Data.Services;
+using Core.Extensions;
 using Core.Services;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
@@ -7,18 +16,12 @@ using log4net;
 using Prism.Commands;
 using Prism.Mvvm;
 using Shared.PatientRecords.Services;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Navigation;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class AnalyseRefferenceCollectionViewModel : BindableBase, IDisposable, IDialogViewModel, IDataErrorInfo
+    public class AnalyseRefferenceCollectionViewModel : BindableBase, IDisposable, IDialogViewModel
     {
         private readonly IPatientRecordsService recordService;
         private readonly ILog logService;
@@ -26,6 +29,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly ICacheService cacheService;
         private int recordTypeId;
         public BusyMediator BusyMediator { get; set; }
+        private CancellationTokenSource currentSavingToken;
 
         public AnalyseRefferenceCollectionViewModel(IPatientRecordsService recordService, IDialogService messageService, ICacheService cacheService, ILog logService)
         {
@@ -54,16 +58,30 @@ namespace Shared.PatientRecords.ViewModels
         
             addRefferenceCommand = new DelegateCommand(AddRefference);
             removeRefferenceCommand = new DelegateCommand(RemoveRefference);
+
+            Refferences = new ObservableCollectionEx<AnalyseRefferenceViewModel>();
         }
 
         private void AddRefference()
         {
-            
+            Refferences.Add(new AnalyseRefferenceViewModel()
+                {
+                    SelectedGenderId = 1,
+                    AgeFrom = 0,
+                    AgeTo = 99
+                });
         }
 
         private void RemoveRefference()
         {
-            
+            if (SelectedRefference != null)
+            {
+                if (SelectedRefference.Id != 0)
+                    recordService.DeleteAnalyseRefference(SelectedRefference.Id);
+                Refferences.Remove(selectedRefference);
+                if (Refferences.Any())
+                    SelectedRefference = Refferences.First();
+            }
         }
 
         internal void Initialize(int recordTypeId, int parameterRecordTypeId)
@@ -79,13 +97,15 @@ namespace Shared.PatientRecords.ViewModels
             {
                 var refs = referencesQuery.Select(x => new AnalyseRefferenceViewModel()
                     {
+                        Id = x.Id,
                         SelectedGenderId = x.IsMale ? 1 : 0,
                         AgeFrom = x.AgeFrom,
                         AgeTo = x.AgeTo,
                         RefMin = x.RefMin,
                         RefMax = x.RefMax
                     }).ToArray();
-                Refferences = new ObservableCollectionEx<AnalyseRefferenceViewModel>(refs);
+                Refferences.Clear();
+                Refferences.AddRange(refs);
             }           
         }
 
@@ -100,21 +120,86 @@ namespace Shared.PatientRecords.ViewModels
                     Parameters = new ObservableCollectionEx<FieldValue>();
                     Parameters.AddRange(parametersQuery.Select(x => new FieldValue() { Value = x.Id, Field = x.ShortName }));
                     SelectedParameterId = parameterRecordTypeId;
+
+                    var unitsQuery = cacheService.GetItems<Unit>().Where(x => !x.OnlyForMedWare).Select(x => new { x.Id, x.ShortName }).ToArray();
+                    Units = new ObservableCollectionEx<FieldValue>();
+                    Units.Add(new FieldValue() { Value = SpecialValues.NonExistingId, Field = "- отсутствует -" });
+                    Units.AddRange(unitsQuery.Select(x => new FieldValue() { Value = x.Id, Field = x.ShortName }));
+                    var parameterRecordType = recordService.GetRecordTypeById(parameterRecordTypeId).First();
+                    SelectedUnitId = parameterRecordType.RecordTypeUnits.Any() ? parameterRecordType.RecordTypeUnits.FirstOrDefault().UnitId : SpecialValues.NonExistingId;
                 }
             }
-
-            var unitsQuery = cacheService.GetItems<Unit>().Where(x => !x.OnlyForMedWare).Select(x => new { x.Id, x.ShortName }).ToArray();
-            Units = new ObservableCollectionEx<FieldValue>();
-            Units.Add(new FieldValue() { Value = SpecialValues.NonExistingId, Field = "- отсутствует -" });
-            Units.AddRange(unitsQuery.Select(x => new FieldValue() { Value = x.Id, Field = x.ShortName }));
-            SelectedUnitId = type.RecordTypeUnits.Any() ? type.RecordTypeUnits.FirstOrDefault().UnitId : SpecialValues.NonExistingId;
         }
 
-        private void SaveAnalyseRefferences()
+        private bool AllowSave()
         {
+            if (Refferences.Any(x => x.RefMax == 0 && x.RefMin == 0))
+            {
+                messageService.ShowWarning("В одном или нескольких референсных интервалов не указаны минимальные и максимальные значения.");
+                return false;
+            }
+            if (Refferences.Any(x => x.RefMax < x.RefMin))
+            {
+                messageService.ShowWarning("Минимальное значение референса не может быть больше максимального.");
+                return false;
+            }
+            return true;
+        }
+
+        private async void SaveAnalyseRefferences()
+        {
+            BusyMediator.Activate("Сохранение референсных интервалов...");
+            logService.Info("Create analyse ...");
+            if (currentSavingToken != null)
+            {
+                currentSavingToken.Cancel();
+                currentSavingToken.Dispose();
+            }
+            currentSavingToken = new CancellationTokenSource();
+            var token = currentSavingToken.Token;
             SaveIsSuccessful = false;
+            try
+            {
+                foreach (var item in Refferences)
+                {
+                    var refference = recordService.GetAnalyseReferenceById(item.Id).FirstOrDefault();
+                    if (refference == null)
+                        refference = new AnalyseRefference();
 
+                    refference.RecordTypeId = this.recordTypeId;
+                    refference.ParameterRecordTypeId = SelectedParameterId;
+                    refference.IsMale = item.SelectedGenderId == 1;
+                    refference.AgeFrom = item.AgeFrom;
+                    refference.AgeTo = item.AgeTo;
+                    refference.RefMin = item.RefMin;
+                    refference.RefMax = item.RefMax;
+                    item.Id = await recordService.SaveAnalyseRefference(refference, token);                    
+                }
 
+                if (!SpecialValues.IsNewOrNonExisting(SelectedUnitId))
+                {
+                    var recordTypeUnit = recordService.GetRecordTypeUnit(SelectedParameterId, SelectedUnitId).FirstOrDefault();
+                    if (recordTypeUnit == null)
+                        recordTypeUnit = new RecordTypeUnit();
+                    recordTypeUnit.RecordTypeId = SelectedParameterId;
+                    recordTypeUnit.UnitId = SelectedUnitId;
+                    int savedUnitId = await recordService.SaveRecordTypeUnit(recordTypeUnit, token);
+                }
+                SaveIsSuccessful = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to save refferences for parameter with Id = {0}", selectedParameterId);
+                messageService.ShowError("Ошибка сохранения референсного интервала.");
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
         }
 
         #region Properties
@@ -150,6 +235,13 @@ namespace Shared.PatientRecords.ViewModels
 
         public ObservableCollectionEx<AnalyseRefferenceViewModel> Refferences { get; set; }
 
+        private AnalyseRefferenceViewModel selectedRefference;
+        public AnalyseRefferenceViewModel SelectedRefference
+        {
+            get { return selectedRefference; }
+            set { SetProperty(ref selectedRefference, value); }
+
+        }
         private readonly DelegateCommand addRefferenceCommand;
         public ICommand AddRefferenceCommand
         {
@@ -178,7 +270,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public string CancelButtonText
         {
-            get { return "Отмена"; }
+            get { return "Закрыть"; }
         }
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
@@ -186,25 +278,18 @@ namespace Shared.PatientRecords.ViewModels
         public bool SaveIsSuccessful;
 
         private void Close(bool? validate)
-        {
-            saveWasRequested = true;
+        {           
             if (validate == true)
             {
-                if (IsValid)
-                {
+                if (AllowSave())
                     SaveAnalyseRefferences();
-                }
-                else
-                {
-                    messageService.ShowWarning("Проверьте правильность заполнения полей.");
-                }
             }
             else
             {
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
             }
         }
-
+      
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
 
         protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
@@ -220,56 +305,6 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-        }
-
-        #region IDataError
-
-        private bool saveWasRequested;
-
-        private readonly HashSet<string> invalidProperties = new HashSet<string>();
-
-        private bool IsValid
-        {
-            get
-            {
-                saveWasRequested = true;
-                OnPropertyChanged(string.Empty);
-                return invalidProperties.Count < 1;
-            }
-        }
-
-        string IDataErrorInfo.Error
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public string this[string columnName]
-        {
-            get
-            {
-                if (!saveWasRequested)
-                {
-                    invalidProperties.Remove(columnName);
-                    return string.Empty;
-                }
-                var result = string.Empty;
-                if (columnName == "SelectedAnalyseId")
-                {
-                    //result = selectedAnalyseId.IsNewOrNonExisting() ? "Укажите наименование исследования" : string.Empty;
-                }                
-
-                if (string.IsNullOrEmpty(result))
-                {
-                    invalidProperties.Remove(columnName);
-                }
-                else
-                {
-                    invalidProperties.Add(columnName);
-                }
-                return result;
-            }
-        }
-
-        #endregion
+        }   
     }
 }

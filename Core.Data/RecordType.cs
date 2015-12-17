@@ -26,10 +26,10 @@ namespace Core.Data
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
             this.RecordTypes1 = new HashSet<RecordType>();
             this.ScheduleItems = new HashSet<ScheduleItem>();
-            this.AnalyseResults = new HashSet<AnalyseResult>();
             this.RecordTypeUnits = new HashSet<RecordTypeUnit>();
             this.AnalyseRefferences = new HashSet<AnalyseRefference>();
             this.AnalyseRefferences1 = new HashSet<AnalyseRefference>();
+            this.AnalyseResults = new HashSet<AnalyseResult>();
         }
     
         public int Id { get; set; }
@@ -70,12 +70,12 @@ namespace Core.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RecordTypeUnit> RecordTypeUnits { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AnalyseRefference> AnalyseRefferences { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AnalyseRefference> AnalyseRefferences1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
     }
 }

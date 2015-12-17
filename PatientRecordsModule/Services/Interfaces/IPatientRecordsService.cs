@@ -107,6 +107,18 @@ namespace Shared.PatientRecords.Services
 
         IDisposableQueryable<AnalyseRefference> GetAnalyseReference(int recordTypeId, int parameterRecordTypeId, bool? isMale = null, int age = -1);
 
+        IDisposableQueryable<AnalyseRefference> GetAnalyseReferenceById(int id);
+
         IDisposableQueryable<AnalyseResult> GetAnalyseResults(int personId, int recordTypeId, int parameterRecordTypeId);
+
+        void DeleteAnalyseRefference(int refferenceId);
+
+        Task<int> SaveAnalyseRefference(AnalyseRefference refference, CancellationToken token);
+
+        IDisposableQueryable<Unit> GetUnitById(int id);
+
+        IDisposableQueryable<RecordTypeUnit> GetRecordTypeUnit(int recordTypeId, int unitId = -1);
+
+        Task<int> SaveRecordTypeUnit(RecordTypeUnit recordTypeUnit, CancellationToken token);
     }
 }

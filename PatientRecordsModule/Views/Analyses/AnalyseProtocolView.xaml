@@ -144,7 +144,7 @@
                     <DataGridTemplateColumn Header="Ед. измерения" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding UnitName}" FontSize="13" Margin="5"/>
+                                <TextBlock Text="{Binding UnitName}" FontSize="13" Margin="5" TextAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

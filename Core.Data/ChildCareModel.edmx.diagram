@@ -244,15 +244,15 @@
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
-        <EntityTypeShape EntityType="DataLib.AnalyseResult" Width="1.5" PointX="22.875" PointY="66.625" />
         <EntityTypeShape EntityType="DataLib.RecordTypeUnit" Width="1.5" PointX="28.5" PointY="51" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_Records" />
-        <AssociationConnector Association="DataLib.FK_AnalyseResults_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeUnits_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeUnits_Units" />
-        <EntityTypeShape EntityType="DataLib.AnalyseRefference" Width="1.5" PointX="3.25" PointY="33.5" />
+        <EntityTypeShape EntityType="DataLib.AnalyseRefference" Width="1.5" PointX="3" PointY="33.5" />
+        <EntityTypeShape EntityType="DataLib.AnalyseResult" Width="1.5" PointX="22.875" PointY="66.375" />
         <AssociationConnector Association="DataLib.FK_AnalyseRefferences_ParameterRecordTypes" />
         <AssociationConnector Association="DataLib.FK_AnalyseRefferences_RecordTypes" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_Records" />
+        <AssociationConnector Association="DataLib.FK_AnalyseResults_RecordTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -177,24 +177,24 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref date, value); }
         }
 
-        private double refMin;
-        public double RefMin
+        private double? refMin;
+        public double? RefMin
         {
             get { return refMin; }
             set
             {
-                if (SetProperty(ref refMin, value))
+                if (SetTrackedProperty(ref refMin, value))
                     OnPropertyChanged(() => ResultReference);
             }
         }
 
-        private double refMax;
-        public double RefMax
+        private double? refMax;
+        public double? RefMax
         {
             get { return refMax; }
             set 
             {
-                if (SetProperty(ref refMax, value))
+                if (SetTrackedProperty(ref refMax, value))
                     OnPropertyChanged(() => ResultReference);
             }
         }

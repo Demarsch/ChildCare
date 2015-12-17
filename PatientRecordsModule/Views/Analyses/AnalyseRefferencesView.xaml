@@ -15,7 +15,7 @@
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </DataTemplate.Resources>
-        <Grid ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <Grid ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="400">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -53,7 +53,7 @@
                     <Hyperlink Command="{Binding RemoveRefferenceCommand}">Удалить</Hyperlink>
             </TextBlock>           
                       
-            <DataGrid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="analyseRefferences" 
+            <DataGrid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="analyseRefferences" Margin="5,2"
                         RowHeaderWidth="0" GridLinesVisibility="None" AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
                         ItemsSource="{Binding Refferences}" 
                         SelectedItem="{Binding SelectedRefference, Mode=TwoWay}">
@@ -76,7 +76,7 @@
                                 <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" 
                                       SelectedValuePath="Value" 
                                       DisplayMemberPath="Field" 
-                                      SelectedValue="{Binding SelectedGenderId}" 
+                                      SelectedValue="{Binding SelectedGenderId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       ItemsSource="{Binding Genders}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -84,28 +84,28 @@
                     <DataGridTemplateColumn Header="Возраст от" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding AgeFrom}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
+                                <TextBox Text="{Binding AgeFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Возраст до" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding AgeTo}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
+                                <TextBox Text="{Binding AgeTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Мин. референс" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding MinRef}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
+                                <TextBox Text="{Binding RefMin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTemplateColumn Header="Макс. референс" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding MaxRef}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
+                                <TextBox Text="{Binding RefMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="5,0" FontSize="13" TextAlignment="Center" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

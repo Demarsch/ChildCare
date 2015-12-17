@@ -28,6 +28,13 @@ namespace Shared.PatientRecords.ViewModels
 
         #region Properties
 
+        private int id;
+        public int Id
+        {
+            get { return id; }
+            set { SetProperty(ref id, value); }
+
+        }
         public ObservableCollectionEx<FieldValue> Genders { get; private set; }
 
         private int selectedGenderId;

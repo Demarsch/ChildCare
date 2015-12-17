@@ -18,6 +18,8 @@ namespace Core.Data
         public int RecordId { get; set; }
         public int ParameterRecordTypeId { get; set; }
         public string Value { get; set; }
+        public Nullable<double> MinRef { get; set; }
+        public Nullable<double> MaxRef { get; set; }
         public bool IsNormal { get; set; }
         public bool IsAboveRef { get; set; }
         public bool IsBelowRef { get; set; }

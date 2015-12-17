@@ -597,6 +597,8 @@ namespace Shared.PatientRecords.Services
                     {
                         result.Old.ParameterRecordTypeId = result.New.ParameterRecordTypeId;
                         result.Old.Value = result.New.Value;
+                        result.Old.MinRef = result.New.MinRef;
+                        result.Old.MaxRef = result.New.MaxRef;
                         result.Old.IsNormal = result.New.IsNormal;
                         result.Old.IsAboveRef = result.New.IsAboveRef;
                         result.Old.IsBelowRef = result.New.IsBelowRef;
@@ -702,6 +704,86 @@ namespace Shared.PatientRecords.Services
             }
             parentItems.Reverse();
             return parentItems;
+        }
+
+
+        public void DeleteAnalyseRefference(int refferenceId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var refference = context.Set<AnalyseRefference>().FirstOrDefault(x => x.Id == refferenceId);
+                if (refference == null) return;
+                context.Entry(refference).State = EntityState.Deleted;
+                context.SaveChanges();
+            }
+        }
+
+        public IDisposableQueryable<AnalyseRefference> GetAnalyseReferenceById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<AnalyseRefference>(context.Set<AnalyseRefference>().Where(x => x.Id == id), context); 
+        }
+
+
+        public async Task<int> SaveAnalyseRefference(AnalyseRefference refference, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var savedRefference = refference.Id == SpecialValues.NewId ? new AnalyseRefference() : context.Set<AnalyseRefference>().First(x => x.Id == refference.Id);
+                savedRefference.RecordTypeId = refference.RecordTypeId;
+                savedRefference.ParameterRecordTypeId = refference.ParameterRecordTypeId;
+                savedRefference.IsMale = refference.IsMale;
+                savedRefference.AgeFrom = refference.AgeFrom;
+                savedRefference.AgeTo = refference.AgeTo;
+                savedRefference.RefMin = refference.RefMin;
+                savedRefference.RefMax = refference.RefMax;
+                context.Entry<AnalyseRefference>(savedRefference).State = savedRefference.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+                
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return savedRefference.Id;
+            }
+        }
+
+        public IDisposableQueryable<Unit> GetUnitById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Unit>(context.Set<Unit>().Where(x => x.Id == id), context);            
+        }
+
+        public IDisposableQueryable<RecordTypeUnit> GetRecordTypeUnit(int recordTypeId, int unitId = -1)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordTypeUnit>(context.Set<RecordTypeUnit>().Where(x => x.RecordTypeId == recordTypeId && (unitId != -1 ? x.UnitId == x.UnitId : true)), context);             
+        }
+
+        public async Task<int> SaveRecordTypeUnit(RecordTypeUnit recordTypeUnit, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var savedRecordTypeUnit = recordTypeUnit.Id == SpecialValues.NewId ? new RecordTypeUnit() : context.Set<RecordTypeUnit>().First(x => x.Id == recordTypeUnit.Id);
+                savedRecordTypeUnit.RecordTypeId = recordTypeUnit.RecordTypeId;
+                savedRecordTypeUnit.UnitId = recordTypeUnit.UnitId;
+                context.Entry<RecordTypeUnit>(savedRecordTypeUnit).State = savedRecordTypeUnit.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return savedRecordTypeUnit.Id;
+            }
         }
     }
 }

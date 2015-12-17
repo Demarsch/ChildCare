@@ -205,6 +205,8 @@ namespace Shared.PatientRecords.ViewModels
                                             Id = x.Id,
                                             ParameterRecordTypeId = x.ParameterRecordTypeId,
                                             Value = x.ResultText,
+                                            MinRef = x.RefMin,
+                                            MaxRef = x.RefMax,
                                             IsNormal = x.IsNormal,
                                             IsBelowRef = x.IsBelow,
                                             IsAboveRef = x.IsAbove,
@@ -283,6 +285,12 @@ namespace Shared.PatientRecords.ViewModels
                         Name = x.RecordType.Name, 
                         UnitName = x.RecordType.RecordTypeUnits.Any() ? x.RecordType.RecordTypeUnits.First().Unit.ShortName : string.Empty, 
                         Result = x.Value,
+                        RefMin = x.MinRef.HasValue ? x.MinRef.Value : x.RecordType.AnalyseRefferences
+                                        .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
+                                        .Select(a => a.RefMin).FirstOrDefault(),
+                        RefMax = x.MaxRef.HasValue ? x.MaxRef.Value : x.RecordType.AnalyseRefferences
+                                        .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
+                                        .Select(a => a.RefMax).FirstOrDefault(),
                         Details = x.Details
                     }).ToArray());
                 LoadAnalyseResultView(record.Id);
@@ -299,6 +307,8 @@ namespace Shared.PatientRecords.ViewModels
                     result.Id = item.Id;
                     result.ResultText = item.Result;
                     result.UnitName = item.UnitName;
+                    result.RefMin = item.RefMin;
+                    result.RefMax = item.RefMax;
                     result.Details = item.Details;
                 }
             }
@@ -308,7 +318,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             var parameters = recordService.GetRecordTypeById(recordTypeId).First().RecordTypes1;
             if (parameters.Any())
-            {               
+            {  
                 var result = parameters.Select(x => new AnalyseResultViewModel(recordService) 
                             { 
                                 RecordTypeId = recordTypeId,
@@ -355,12 +365,8 @@ namespace Shared.PatientRecords.ViewModels
                         ResultText = x.Value,
                         UnitName = x.RecordType.RecordTypeUnits.Any() ? x.RecordType.RecordTypeUnits.First().Unit.ShortName : string.Empty,
                         Details = x.Details,
-                        RefMin = x.RecordType.AnalyseRefferences
-                                        .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
-                                        .Select(a => a.RefMin).FirstOrDefault(),
-                        RefMax = x.RecordType.AnalyseRefferences
-                                .Where(a => a.RecordTypeId == record.RecordTypeId && a.IsMale == isMale && a.AgeFrom <= years && a.AgeTo >= years)
-                                .Select(a => a.RefMax).FirstOrDefault()
+                        RefMin = x.MinRef,
+                        RefMax = x.MaxRef
                     }).ToArray().OrderBy(x => x.Priority));
             if (AnalyseResultsView.Any())
                 SelectedAnalyseResultView = AnalyseResultsView.First();
@@ -373,35 +379,34 @@ namespace Shared.PatientRecords.ViewModels
             ChartData.Clear();
             RefMinData.Clear();
             RefMaxData.Clear();
-            if (analyseResult.RefMax == 0.0 && analyseResult.RefMin == 0.0)
-                ShowChart = false;
-            else
+            
+            var analysesQuery = recordService.GetAnalyseResults(personId, analyseResult.RecordTypeId, analyseResult.ParameterRecordTypeId);
+            var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, 
+                                                                    Value = x.Value, 
+                                                                    Unit = (x.RecordType.RecordTypeUnits.Any() ? " " + x.RecordType.RecordTypeUnits.FirstOrDefault().Unit.ShortName : string.Empty)
+                                                                }).OrderBy(x => x.Date).ToArray();
+            var dates = new List<DateTime>();
+            foreach (var item in analysesSelect)
             {
-                var analysesQuery = recordService.GetAnalyseResults(personId, analyseResult.RecordTypeId, analyseResult.ParameterRecordTypeId);
-                var analysesSelect = analysesQuery.Select(x => new { Date = x.Record.ActualDateTime, 
-                                                                     Value = x.Value, 
-                                                                     Unit = (x.RecordType.RecordTypeUnits.Any() ? " " + x.RecordType.RecordTypeUnits.FirstOrDefault().Unit.ShortName : string.Empty)
-                                                                   }).OrderBy(x => x.Date).ToArray();
-                var dates = new List<DateTime>();
-                foreach (var item in analysesSelect.OrderBy(x => x.Date))
+                double result;
+                if (double.TryParse(item.Value, out result))
                 {
-                    double result;
-                    if (double.TryParse(item.Value, out result))
-                    {
-                        ChartData.Add(new ChartPoint() { ValueX = item.Date.ToShortDateString(), ValueY = result, Description = item.Date.ToString("dd.MM.yyyy HH:mm") + "\r\n" + result + item.Unit });
-                        dates.Add(item.Date);
-                    }
+                    ChartData.Add(new ChartPoint() { ValueX = item.Date.ToShortDateString(), ValueY = result, Description = item.Date.ToString("dd.MM.yyyy HH:mm") + "\r\n" + result + item.Unit });
+                    dates.Add(item.Date);
                 }
-
-                RefMinData.Add(new ChartPoint() { ValueX = dates.Min(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMin });
-                RefMinData.Add(new ChartPoint() { ValueX = dates.Max(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMin });
-
-                RefMaxData.Add(new ChartPoint() { ValueX = dates.Min(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMax });
-                RefMaxData.Add(new ChartPoint() { ValueX = dates.Max(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMax });
-
-                SelectedParameter = analyseResult.ParameterName;
-                ShowChart = true;
             }
+
+            if (analyseResult.RefMax.HasValue && analyseResult.RefMin.HasValue && ChartData.Count > 1)
+            {                
+                RefMinData.Add(new ChartPoint() { ValueX = dates.Min(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMin.Value });
+                RefMinData.Add(new ChartPoint() { ValueX = dates.Max(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMin.Value });
+
+                RefMaxData.Add(new ChartPoint() { ValueX = dates.Min(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMax.Value });
+                RefMaxData.Add(new ChartPoint() { ValueX = dates.Max(x => x.Date).ToShortDateString(), ValueY = analyseResult.RefMax.Value });
+            }
+
+            SelectedParameter = analyseResult.ParameterName;
+            ShowChart = true;            
         }
 
         private async void SetAnalyseRefferences()
@@ -411,7 +416,28 @@ namespace Shared.PatientRecords.ViewModels
             var result = await dialogService.ShowDialogAsync(refferencesViewModel);
             if (refferencesViewModel.SaveIsSuccessful)
             {
-
+                foreach (var item in AnalyseResults)
+                {
+                    var itemView = AnalyseResultsView.FirstOrDefault(x => x.ParameterRecordTypeId == item.ParameterRecordTypeId);
+                    var recTypeUnit = recordService.GetRecordTypeUnit(item.ParameterRecordTypeId).FirstOrDefault();
+                    if (recTypeUnit != null)
+                    {
+                        item.UnitName = recTypeUnit.Unit.ShortName;
+                        if (itemView != null)
+                            itemView.UnitName = recTypeUnit.Unit.ShortName;
+                    }
+                    var refs = recordService.GetAnalyseReference(item.RecordTypeId, item.ParameterRecordTypeId, isMale, years);
+                    if (refs.Any())
+                    {
+                        item.RefMin = refs.First().RefMin;
+                        item.RefMax = refs.First().RefMax;
+                        if (itemView != null)
+                        {
+                            itemView.RefMin = refs.First().RefMin;
+                            itemView.RefMax = refs.First().RefMax;
+                        }
+                    }
+                }                
             }
         }
 

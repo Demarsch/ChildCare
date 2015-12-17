@@ -3,6 +3,8 @@
     [RecordId]              INT           NOT NULL,
     [ParameterRecordTypeId] INT           NOT NULL,
     [Value]                 VARCHAR (100) CONSTRAINT [DF_AnalyseResults_Value] DEFAULT ('') NOT NULL,
+    [MinRef]                FLOAT (53)    NULL,
+    [MaxRef]                FLOAT (53)    NULL,
     [IsNormal]              BIT           CONSTRAINT [DF_AnalyseResults_IsNormal] DEFAULT ((0)) NOT NULL,
     [IsAboveRef]            BIT           CONSTRAINT [DF_AnalyseResults_IsAbove] DEFAULT ((0)) NOT NULL,
     [IsBelowRef]            BIT           CONSTRAINT [DF_AnalyseResults_IsBelow] DEFAULT ((0)) NOT NULL,
@@ -11,6 +13,8 @@
     CONSTRAINT [FK_AnalyseResults_Records] FOREIGN KEY ([RecordId]) REFERENCES [dbo].[Records] ([Id]),
     CONSTRAINT [FK_AnalyseResults_RecordTypes] FOREIGN KEY ([ParameterRecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id])
 );
+
+
 
 
 
