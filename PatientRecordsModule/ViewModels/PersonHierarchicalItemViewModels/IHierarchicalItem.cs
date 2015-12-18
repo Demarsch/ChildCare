@@ -15,6 +15,8 @@ namespace Shared.PatientRecords.ViewModels
 
         bool IsSelected { get; set; }
 
+        bool IsExpanded { get; set; }
+
         PersonItem Item { get; }
 
         ObservableCollectionEx<IHierarchicalItem> Childs { get; }

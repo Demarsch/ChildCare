@@ -167,6 +167,7 @@
     <Compile Include="ViewModels\Diagnoses\MKBTreeViewModel.cs" />
     <Compile Include="ViewModels\Diagnoses\ComplicationViewModel.cs" />
     <Compile Include="ViewModels\Diagnoses\MKBViewModel.cs" />
+    <Compile Include="ViewModels\RecordCreateViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentsCollectionViewModel.cs" />
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentViewModel.cs" />
     <Compile Include="ViewModels\RecordTypesProtocolViewModels\DefaultProtocolViewModel.cs" />
@@ -267,6 +268,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RecordTypesProtocols\DefaultProtocolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RecordCreateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

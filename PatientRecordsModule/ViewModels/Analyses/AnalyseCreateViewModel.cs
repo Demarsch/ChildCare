@@ -40,9 +40,9 @@ namespace Shared.PatientRecords.ViewModels
 
         private int personId;
 
-        private int assignmentId;
-
         private int recordId;
+
+        private int assignmentId;
 
         private int visitId;
 
@@ -330,7 +330,7 @@ namespace Shared.PatientRecords.ViewModels
             }
             finally
             {
-                BusyMediator.Deactivate();                
+                BusyMediator.Deactivate();
             }
         }
 

@@ -39,6 +39,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly DelegateCommand<int?> editVisitCommand;
         private readonly DelegateCommand<int?> deleteVisitCommand;
         private readonly DelegateCommand<int?> completeVisitCommand;
+        private readonly DelegateCommand createRecordCommand;
         private readonly DelegateCommand<int?> completeRecordCommand;
         private readonly DelegateCommand<int?> inProgressRecordCommand;
         private readonly DelegateCommand<int?> returnToActiveVisitCommand;
@@ -52,6 +53,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly Func<VisitEditorViewModel> visitEditorViewModelFactory;
         private readonly Func<VisitCloseViewModel> visitCloseViewModelFactory;
         private readonly Func<AnalyseCreateViewModel> analyseCreateViewModelFactory;
+        private readonly Func<RecordCreateViewModel> recordCreateViewModelFactory;
 
         private readonly PersonRecordEditorViewModel personRecordEditorViewModel;
         private readonly PersonRecordListViewModel personRecordListViewModel;
@@ -64,7 +66,7 @@ namespace Shared.PatientRecords.ViewModels
         #region  Constructors
         public PersonRecordsViewModel(IPatientRecordsService patientRecordsService, IDialogService messageService, IDialogServiceAsync dialogServiceAsync, IEventAggregator eventAggregator, ILog logService,
             PersonRecordEditorViewModel personRecordEditorViewModel, PersonRecordListViewModel personRecordListViewModel,
-            Func<VisitEditorViewModel> visitEditorViewModelFactory, Func<VisitCloseViewModel> visitCloseViewModelFactory, Func<AnalyseCreateViewModel> analyseCreateViewModelFactory)
+            Func<VisitEditorViewModel> visitEditorViewModelFactory, Func<VisitCloseViewModel> visitCloseViewModelFactory, Func<AnalyseCreateViewModel> analyseCreateViewModelFactory, Func<RecordCreateViewModel> recordCreateViewModelFactory)
         {
             if (patientRecordsService == null)
             {
@@ -105,7 +107,11 @@ namespace Shared.PatientRecords.ViewModels
             if (personRecordListViewModel == null)
             {
                 throw new ArgumentNullException("personRecordListViewModel");
+            } if (recordCreateViewModelFactory == null)
+            {
+                throw new ArgumentNullException("recordCreateViewModelFactory");
             }
+            this.recordCreateViewModelFactory = recordCreateViewModelFactory;
             this.personRecordEditorViewModel = personRecordEditorViewModel;
             this.personRecordEditorViewModel.PropertyChanged += personRecordEditorViewModel_PropertyChanged;
             this.personRecordListViewModel = personRecordListViewModel;
@@ -123,6 +129,7 @@ namespace Shared.PatientRecords.ViewModels
             editVisitCommand = new DelegateCommand<int?>(EditVisit);
             deleteVisitCommand = new DelegateCommand<int?>(DeleteVisitAsync);
             completeVisitCommand = new DelegateCommand<int?>(CompleteVisitAsync);
+            createRecordCommand = new DelegateCommand(CreateRecord);
             completeRecordCommand = new DelegateCommand<int?>(CompleteRecordAsync);
             inProgressRecordCommand = new DelegateCommand<int?>(InProgressRecord);
             returnToActiveVisitCommand = new DelegateCommand<int?>(ReturnToActiveVisit);
@@ -151,7 +158,6 @@ namespace Shared.PatientRecords.ViewModels
             get { return personId; }
             set { SetProperty(ref personId, value); }
         }
-
 
         public BusyMediator BusyMediator { get; set; }
 
@@ -271,6 +277,25 @@ namespace Shared.PatientRecords.ViewModels
             var visitCloseViewModel = visitCloseViewModelFactory();
             visitCloseViewModel.IntializeCreation(visitId.Value, "Завершить случай");
             VisitCloseInteractionRequest.Raise(visitCloseViewModel, (vm) => {/* UpdateVisit(vm.VisitId);*/ });
+        }
+
+        public ICommand CreateRecordCommand { get { return createRecordCommand; } }
+        private async void CreateRecord()
+        {
+            if (SpecialValues.IsNewOrNonExisting(this.PersonId))
+            {
+                messageService.ShowError("Не выбран пациент");
+                return;
+            }
+            var recordCreateViewModel = recordCreateViewModelFactory();
+            recordCreateViewModel.Initialize(this.PersonId);
+            var result = await dialogServiceAsync.ShowDialogAsync(recordCreateViewModel);
+            if (recordCreateViewModel.AssignIsSuccessful)
+            {
+                //LoadRootItemsAsync(this.personId);
+                //foreach (var assignment in viewModel.AssignedAnalyses)
+                //    AddAssignmentToPatientRecords(assignment.Key, assignment.Value);      
+            }
         }
 
         public ICommand CompleteRecordCommand { get { return completeRecordCommand; } }
@@ -504,9 +529,10 @@ namespace Shared.PatientRecords.ViewModels
             var result = await dialogServiceAsync.ShowDialogAsync(analyseCreateViewModel);
             if (analyseCreateViewModel.AssignIsSuccessful)
             {
-                //LoadRootItemsAsync(this.personId);
-                //foreach (var assignment in viewModel.AssignedAnalyses)
-                //    AddAssignmentToPatientRecords(assignment.Key, assignment.Value);      
+                foreach (var assignAnalise in analyseCreateViewModel.AssignedAnalyses)
+                {
+                    personRecordListViewModel.AddNewAssignmentToList(assignAnalise.Key);
+                }
             }
         }
 

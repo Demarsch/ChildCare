@@ -17,6 +17,11 @@ namespace Shared.PatientRecords.Misc
             if (personItem2 == null) return false;
             return this.Id == personItem2.Id && this.Type == personItem2.Type;
         }
+
+        public override int GetHashCode()
+        {
+            return (int)this.Type * 10000000 + this.Id;
+        }
     }
 
     public enum ItemType

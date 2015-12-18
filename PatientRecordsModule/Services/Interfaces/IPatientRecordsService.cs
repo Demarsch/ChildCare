@@ -79,6 +79,8 @@ namespace Shared.PatientRecords.Services
 
         Task<int> SaveVisitAsync(int visitId, int personId, DateTime beginDateTime, int recordContractId, int financingSourceId, int urgentlyId, int visitTemplateId, int executionPlaceId, int sentLPUId, string note, CancellationToken token);
 
+        Task<int> CreateUrgentRecord(int personId, int recordTypeId, int roomId, CancellationToken token);
+
         Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token);
 
         Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime? endDateTime, List<RecordMember> brigade, int assignmentId, CancellationToken token);
@@ -92,6 +94,8 @@ namespace Shared.PatientRecords.Services
         void InProgressRecordAsync(int recordId, CancellationToken token);
 
         IDisposableQueryable<RecordType> GetRecordTypes(bool isAnalyse = false);
+
+        IEnumerable<RecordType> GetRecordTypesToAssign();
 
         IDisposableQueryable<RecordType> GetChildRecordTypesQuery(int recordTypeId);
 

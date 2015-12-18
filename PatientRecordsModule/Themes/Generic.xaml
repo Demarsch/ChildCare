@@ -4,7 +4,8 @@
         <ResourceDictionary Source="../Views/PersonHierarchicalAssignmentsView.xaml" />
         <ResourceDictionary Source="../Views/PersonHierarchicalRecordsView.xaml" />
         <ResourceDictionary Source="../Views/PersonHierarchicalVisitsView.xaml" />
-
+        <ResourceDictionary Source="../Views/RecordCreateView.xaml" />
+        
         <ResourceDictionary Source="../Views/RecordTypesProtocols/DefaultProtocolView.xaml" />
         <ResourceDictionary Source="../Views/Diagnoses/MKBTreeView.xaml" />
         <ResourceDictionary Source="../Views/Diagnoses/ComplicationsTreeView.xaml" />

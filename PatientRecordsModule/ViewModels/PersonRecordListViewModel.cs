@@ -41,12 +41,15 @@ namespace Shared.PatientRecords.ViewModels
         private readonly IUserService userService;
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
         private readonly CommandWrapper addNewVisitInListVisitCommandWrapper;
+        private readonly CommandWrapper addNewAssignmentInListVisitCommandWrapper;
+        private readonly CommandWrapper addNewRecordInListVisitCommandWrapper;
         //private readonly ChangeTrackerEx<PersonRecordListViewModel> changeTracker;
 
 
         private CancellationTokenSource currentOperationToken;
         private int? visitId;
         private int? recordId;
+        private int? assignmentId;
         #endregion
 
         #region  Constructors
@@ -86,6 +89,8 @@ namespace Shared.PatientRecords.ViewModels
                 CommandName = "Повторить",
             };
             addNewVisitInListVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => AddNewVisitToList(visitId)) };
+            addNewAssignmentInListVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => AddNewAssignmentToList(assignmentId)) };
+            addNewRecordInListVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => AddNewRecordToList(recordId)) };
             RootItems = new ObservableCollectionEx<IHierarchicalItem>();
             this.PersonId = SpecialValues.NonExistingId;
         }
@@ -132,6 +137,56 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region Methods
+
+        public async void AddNewAssignmentToList(int? assignmentId)
+        {
+            FailureMediator.Deactivate();
+            this.assignmentId = assignmentId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Additing new assignment in records list with Id = {0} for person with Id = {1}", assignmentId, personId);
+            BusyMediator.Activate("Добавление нового назначения в список пациенту...");
+            var saveSuccesfull = false;
+            var assignmentQuery = patientRecordsService.GetAssignment(assignmentId.Value);
+            try
+            {
+                var assignmentDTO = await assignmentQuery.Select(x => new AssignmentDTO()
+                {
+                    Id = x.Id,
+                    ActualDateTime = x.AssignDateTime,
+                    FinancingSourceName = x.FinancingSource.Name,
+                    RecordTypeName = x.RecordType.ShortName != string.Empty ? x.RecordType.ShortName : x.RecordType.Name,
+                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                }).FirstOrDefaultAsync(token);
+                saveSuccesfull = true;
+                this.assignmentId = 0;
+                var listToParent = await patientRecordsService.GetParentItems(new PersonItem() { Id = assignmentDTO.Id, Type = ItemType.Assignment });
+                if (listToParent.Count > 0)
+                    InsertItemInRootItems(listToParent.ToList(), new PersonHierarchicalAssignmentsViewModel(assignmentDTO, patientRecordsService, eventAggregator, logService), RootItems);
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to add new assignment in records list with Id = {0} for person with Id = {1}", assignmentId, personId);
+                FailureMediator.Activate("Не удалось добавить новое назначение в список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", addNewAssignmentInListVisitCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
+        }
 
         public async void AddNewVisitToList(int? visitId)
         {
@@ -196,7 +251,7 @@ namespace Shared.PatientRecords.ViewModels
             }
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
-            logService.InfoFormat("Additing new visit in records list with Id = {0} for person with Id = {1}", visitId, personId);
+            logService.InfoFormat("Additing new visit in records list with Id = {0} for person with Id = {1}", recordId, personId);
             BusyMediator.Activate("Добавление нового случая в список пациенту...");
             var saveSuccesfull = false;
             var visitQuery = patientRecordsService.GetRecord(recordId.Value);
@@ -214,7 +269,7 @@ namespace Shared.PatientRecords.ViewModels
                     RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
                 }).FirstOrDefaultAsync(token);
                 saveSuccesfull = true;
-                this.visitId = 0;
+                this.recordId = 0;
                 var listToParent = await patientRecordsService.GetParentItems(new PersonItem() { Id = recordDTO.Id, Type = ItemType.Record });
                 if (listToParent.Count > 0)
                     InsertItemInRootItems(listToParent.ToList(), new PersonHierarchicalRecordsViewModel(recordDTO, patientRecordsService, eventAggregator, logService), RootItems);
@@ -225,8 +280,8 @@ namespace Shared.PatientRecords.ViewModels
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to add new visit in records list with Id = {0} for person with Id = {1}", visitId, personId);
-                FailureMediator.Activate("Не удалось добавить новый случай в список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", addNewVisitInListVisitCommandWrapper, ex);
+                logService.ErrorFormatEx(ex, "Failed to add new visit in records list with Id = {0} for person with Id = {1}", recordId, personId);
+                FailureMediator.Activate("Не удалось добавить новый случай в список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", addNewRecordInListVisitCommandWrapper, ex);
             }
             finally
             {
@@ -241,23 +296,44 @@ namespace Shared.PatientRecords.ViewModels
         private void InsertItemInRootItems(List<PersonItem> listToParent, IHierarchicalItem item, ObservableCollectionEx<IHierarchicalItem> curLevelItems, int curParentIndex = 0)
         {
             IHierarchicalItem curItem = null;
-            for (int i = 0; i < curLevelItems.Count; i++)
+            var isAdded = false;
+            if (curLevelItems.Count > 0)
             {
-                curItem = curLevelItems[i];
-                if (curParentIndex == listToParent.Count - 1)
+                for (int i = 0; i < curLevelItems.Count; i++)
                 {
-                    if (curItem.ActualDateTime >= item.ActualDateTime)
+                    curItem = curLevelItems[i];
+                    if (curParentIndex == listToParent.Count - 1)
                     {
-                        curLevelItems.Insert(i, item);
-                        item.IsSelected = true;
-                        break;
+                        if (curItem.ActualDateTime >= item.ActualDateTime)
+                        {
+                            curLevelItems.Insert(i, item);
+                            item.IsSelected = true;
+                            isAdded = true;
+                            return;
+                        }
                     }
+                    else
+                        if (curItem.Item.Equals(listToParent[curParentIndex]))
+                        {
+                            curItem.IsExpanded = true;
+                            InsertItemInRootItems(listToParent, item, curItem.Childs, ++curParentIndex);
+                            isAdded = true;
+                        }
                 }
-                else
-                    if (curItem.Item == listToParent[curParentIndex])
-                    {
-                        InsertItemInRootItems(listToParent, item, curItem.Childs, ++curParentIndex);
-                    }
+                if ((curParentIndex == listToParent.Count - 1) && !isAdded)
+                {
+                    curLevelItems.Add(item);
+                    item.IsSelected = true;
+                    isAdded = true;
+                    return;
+                }
+            }
+            else
+            {
+                curLevelItems.Add(item);
+                item.IsSelected = true;
+                //if (curParentIndex != listToParent.Count - 1)
+                //    InsertItemInRootItems(listToParent, item, curItem.Childs, ++curParentIndex);
             }
 
         }

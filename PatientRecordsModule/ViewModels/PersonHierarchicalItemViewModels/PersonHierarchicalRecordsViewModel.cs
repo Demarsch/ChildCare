@@ -119,6 +119,13 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
+        private bool isExpanded;
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { SetProperty(ref isExpanded, value); }
+        }
+
         public FailureMediator FailureMediator { get; private set; }
 
         public BusyMediator BusyMediator { get; set; }

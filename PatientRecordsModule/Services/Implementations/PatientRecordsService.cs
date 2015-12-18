@@ -622,7 +622,7 @@ namespace Shared.PatientRecords.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<AnalyseRefference>(context.Set<AnalyseRefference>()
-                .Where(x => x.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId && 
+                .Where(x => x.RecordTypeId == recordTypeId && x.ParameterRecordTypeId == parameterRecordTypeId &&
                     (isMale.HasValue ? x.IsMale == isMale : true) &&
                     (age != -1 ? x.AgeFrom <= age && x.AgeTo >= age : true)), context);
         }
@@ -721,7 +721,7 @@ namespace Shared.PatientRecords.Services
         public IDisposableQueryable<AnalyseRefference> GetAnalyseReferenceById(int id)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<AnalyseRefference>(context.Set<AnalyseRefference>().Where(x => x.Id == id), context); 
+            return new DisposableQueryable<AnalyseRefference>(context.Set<AnalyseRefference>().Where(x => x.Id == id), context);
         }
 
 
@@ -742,7 +742,7 @@ namespace Shared.PatientRecords.Services
                 savedRefference.RefMin = refference.RefMin;
                 savedRefference.RefMax = refference.RefMax;
                 context.Entry<AnalyseRefference>(savedRefference).State = savedRefference.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
-                
+
                 if (token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(token);
@@ -755,13 +755,13 @@ namespace Shared.PatientRecords.Services
         public IDisposableQueryable<Unit> GetUnitById(int id)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Unit>(context.Set<Unit>().Where(x => x.Id == id), context);            
+            return new DisposableQueryable<Unit>(context.Set<Unit>().Where(x => x.Id == id), context);
         }
 
         public IDisposableQueryable<RecordTypeUnit> GetRecordTypeUnit(int recordTypeId, int unitId = -1)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<RecordTypeUnit>(context.Set<RecordTypeUnit>().Where(x => x.RecordTypeId == recordTypeId && (unitId != -1 ? x.UnitId == x.UnitId : true)), context);             
+            return new DisposableQueryable<RecordTypeUnit>(context.Set<RecordTypeUnit>().Where(x => x.RecordTypeId == recordTypeId && (unitId != -1 ? x.UnitId == x.UnitId : true)), context);
         }
 
         public async Task<int> SaveRecordTypeUnit(RecordTypeUnit recordTypeUnit, CancellationToken token)
@@ -783,6 +783,61 @@ namespace Shared.PatientRecords.Services
                 }
                 await context.SaveChangesAsync(token);
                 return savedRecordTypeUnit.Id;
+            }
+        }
+
+
+        public IEnumerable<RecordType> GetRecordTypesToAssign()
+        {
+            return cacheService.GetItems<RecordType>().Where(x => x.ParentId == null && x.IsRecord)
+                .Select(CopyRecordType)
+                .Where(x => x != null)
+                .ToArray();
+        }
+
+        private RecordType CopyRecordType(RecordType recordType)
+        {
+            if (recordType.Assignable == null)
+            {
+                return null;
+            }
+            var result = new RecordType { Id = recordType.Id, Name = recordType.Name, Assignable = recordType.Assignable };
+            var children = recordType.RecordTypes1.Select(CopyRecordType).Where(x => x != null).ToList();
+            if (children.Count == 0 && result.Assignable != true)
+            {
+                return null;
+            }
+            result.RecordTypes1 = children.Count == 0 ? null : children;
+            foreach (var childRecortType in children)
+            {
+                childRecortType.RecordType1 = result;
+            }
+            return result;
+        }
+
+
+        public async Task<int> CreateUrgentRecord(int personId, int recordTypeId, int roomId, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var record = new Record()
+                {
+                    PersonId = personId,
+                    RecordTypeId = recordTypeId,
+                    RoomId = roomId,
+                    UrgentlyId = 2,
+                };
+                context.Entry<Record>(record).State = EntityState.Added;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return record.Id;
             }
         }
     }

@@ -6,12 +6,14 @@
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels"
                       xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                      xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
+                      xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:PersonRecordsHeaderViewModel}">
     <fluent:RibbonTabItem.Resources>
-        <ResourceDictionary>            
+        <ResourceDictionary>
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="Margin" Value="5,0" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
@@ -87,14 +89,14 @@
             <fluent:Button.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:CommandMultiValueConverter.Instance}">
                     <Binding Path="AssignmentId"/>
-                    <Binding Path="RecordId"/>                    
+                    <Binding Path="RecordId"/>
                     <Binding Path="VisitId"/>
                 </MultiBinding>
             </fluent:Button.CommandParameter>
         </fluent:Button>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Услуги">
-        <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png"/>
+        <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png" Command="{Binding CreateRecordCommand}"/>
         <StackPanel Orientation="Horizontal">
             <fluent:Button Header="Завершить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordCompleted48x48.png" 
                            Command="{Binding CompleteRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeCompleted, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
@@ -120,7 +122,7 @@
         <!--<fluent:Button x:Name="btnMarkDICOM" Command="{Binding MarkDICOMCommand}" 
                        Header="Отметить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Mark48x48.png" />-->
     </fluent:RibbonGroupBox>
-    
+
     <fluent:RibbonGroupBox Header="Изменения">
         <fluent:Button Header="Печать"
                        SizeDefinition="Large"
@@ -134,5 +136,5 @@
         <fluent:Button Header="Закрыть"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" Command="{Binding ShowInViewModeCommand}"  IsEnabled="{Binding IsEditModeActive}"/>
-    </fluent:RibbonGroupBox>    
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

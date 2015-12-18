@@ -23,6 +23,7 @@ using Core.Extensions;
 using Shared.PatientRecords.DTO;
 using Microsoft.Practices.Unity;
 using Core.Wpf.Misc;
+using System.Collections.Generic;
 
 namespace Shared.PatientRecords.ViewModels
 {
@@ -93,6 +94,7 @@ namespace Shared.PatientRecords.ViewModels
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.container = container;
+
             reloadPatientVisitCompletedCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitCompletedAsync(VisitId)) };
             reloadPatientRecordCompletedCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadRecordCompletedAsync(VisitId)) };
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
@@ -507,6 +509,8 @@ namespace Shared.PatientRecords.ViewModels
         public ICommand CompleteVisitCommand { get { return personRecordsViewModel.CompleteVisitCommand; } }
 
         public ICommand ReturnToActiveVisitCommand { get { return personRecordsViewModel.ReturnToActiveVisitCommand; } }
+
+        public ICommand CreateRecordCommand { get { return personRecordsViewModel.CreateRecordCommand; } }
 
         public ICommand CompleteRecordCommand { get { return personRecordsViewModel.CompleteRecordCommand; } }
 

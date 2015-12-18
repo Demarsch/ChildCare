@@ -87,6 +87,13 @@ namespace Shared.PatientRecords.ViewModels
 
         public DateTime ActualDateTime { get { return assignment.ActualDateTime; } }
 
+        private bool isExpanded;
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { SetProperty(ref isExpanded, value); }
+        }
+
         private bool isSelected;
         public bool IsSelected
         {
