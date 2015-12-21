@@ -57,7 +57,7 @@
                              Value="{Binding AssignDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Источник финанс." Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" 
+            <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" IsEnabled="{Binding IsVisitSelected}"
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedFinSourceId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
@@ -73,7 +73,7 @@
                       ItemsSource="{Binding Urgentlies}" />
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Место выполнения" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" 
+            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" IsEnabled="{Binding IsVisitSelected}"
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedExecutionPlaceId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"

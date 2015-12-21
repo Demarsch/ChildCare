@@ -109,6 +109,7 @@ namespace Shared.PatientRecords.ViewModels
             Urgentlies.Clear();
             Analyses.Clear();
             AssignedAnalyses.Clear();
+            assignWasRequested = false;
             BusyMediator.Activate("Загрузка данных...");
             logService.Info("Loading data sources for create analyse...");
             IDisposableQueryable<Visit> visitQuery = null;
@@ -186,7 +187,7 @@ namespace Shared.PatientRecords.ViewModels
                     SelectedExecutionPlaceId = SpecialValues.NonExistingId;
                     AnalyseDetails = string.Empty;
                 }
-                AssignDateTime = DateTime.Now;
+                AssignDateTime = DateTime.Now;                
                 logService.InfoFormat("Data sources for create analyse are successfully loaded");
             }
             catch (Exception ex)
@@ -389,6 +390,7 @@ namespace Shared.PatientRecords.ViewModels
                 if (SetProperty(ref selectedVisitId, value))
                 {
                     LoadVisitRelatedData(value);
+                    IsVisitSelected = SpecialValues.IsNewOrNonExisting(value);
                 }
             }
         }
@@ -479,6 +481,14 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref analyseDetails, value); }
         }
 
+        private bool isVisitSelected;
+
+        public bool IsVisitSelected
+        {
+            get { return isVisitSelected; }
+            set { SetProperty(ref isVisitSelected, value); }
+        }
+
         #endregion
 
         #region IDialogViewModel
@@ -495,7 +505,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public string CancelButtonText
         {
-            get { return "Отмена"; }
+            get { return "Закрыть"; }
         }
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
