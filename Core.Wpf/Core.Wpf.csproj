@@ -112,6 +112,7 @@
     <Compile Include="Converters\CompletedToColorConverter.cs" />
     <Compile Include="Converters\BoolToWindowStateConverter.cs" />
     <Compile Include="Converters\CommandMultiValueConverter.cs" />
+    <Compile Include="Converters\NegationConverter.cs" />
     <Compile Include="Converters\ReversedBoolConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />
     <Compile Include="Mvvm\Mediators\FailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />
+    <Compile Include="Mvvm\Mediators\NotificationMediator.cs" />
     <Compile Include="ViewModels\ConfirmationDialogViewModel.cs" />
     <Compile Include="Mvvm\Misc\FieldValue.cs" />
     <Compile Include="Mvvm\Misc\IDialogViewModel.cs" />

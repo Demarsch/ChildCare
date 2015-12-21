@@ -4,7 +4,8 @@
                     xmlns:converters="clr-namespace:Core.Wpf.Converters"
                     xmlns:misc="clr-namespace:Core.Wpf.Misc"
                     xmlns:gif="http://wpfanimatedgif.codeplex.com"
-                    xmlns:fluent="urn:fluent-ribbon">
+                    xmlns:fluent="urn:fluent-ribbon"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/ConfirmationDialogView.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -25,24 +26,24 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <AdornedElementPlaceholder Grid.Column="0" 
+            <AdornedElementPlaceholder Grid.Column="0"
                                        x:Name="placeholder" />
-            <Image Grid.Column="1" 
-                   VerticalAlignment="Center" 
-                   HorizontalAlignment="Right" 
-                   Width="16" 
-                   Height="16" 
+            <Image Grid.Column="1"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right"
+                   Width="16"
+                   Height="16"
                    Source="pack://application:,,,/Core;Component/Resources/Images/Error16x16.png"
                    ToolTip="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"
-                   Margin="5 0 0 0" 
+                   Margin="5 0 0 0"
                    x:Name="image">
                 <Image.Triggers>
                     <EventTrigger RoutedEvent="Control.Loaded">
                         <BeginStoryboard>
-                            <Storyboard TargetName="image" 
+                            <Storyboard TargetName="image"
                                         TargetProperty="Opacity">
                                 <DoubleAnimation From="0"
-                                                 To="1" 
+                                                 To="1"
                                                  Duration="0:0:0.4" />
                             </Storyboard>
                         </BeginStoryboard>
@@ -54,12 +55,12 @@
     <!--Validation template where icon is placed on top of the validated control-->
     <ControlTemplate x:Key="ValidationTemplateRightIcon">
         <Grid>
-           <AdornedElementPlaceholder Grid.Column="0" 
+            <AdornedElementPlaceholder Grid.Column="0"
                                        x:Name="placeholder" />
-            <Image VerticalAlignment="Center" 
-                   HorizontalAlignment="Right" 
-                   Width="16" 
-                   Height="16" 
+            <Image VerticalAlignment="Center"
+                   HorizontalAlignment="Right"
+                   Width="16"
+                   Height="16"
                    Source="pack://application:,,,/Core;Component/Resources/Images/Error16x16.png"
                    ToolTip="{Binding ElementName=placeholder, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}"
                    Margin="0 0 5 0"
@@ -67,10 +68,10 @@
                 <Image.Triggers>
                     <EventTrigger RoutedEvent="Control.Loaded">
                         <BeginStoryboard>
-                            <Storyboard TargetName="image" 
+                            <Storyboard TargetName="image"
                                         TargetProperty="Opacity">
                                 <DoubleAnimation From="0"
-                                                 To="1" 
+                                                 To="1"
                                                  Duration="0:0:0.4" />
                             </Storyboard>
                         </BeginStoryboard>
@@ -89,7 +90,7 @@
                   Stroke="Black"
                   StrokeThickness="2"
                   Margin="4"
-                  Name="cross"/>
+                  Name="cross" />
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver"
@@ -108,16 +109,16 @@
     </ControlTemplate>
     <!--ListBoxItem-->
     <Style TargetType="ListBoxItem">
-        <Setter Property="Padding" 
+        <Setter Property="Padding"
                 Value="3" />
-        <Setter Property="HorizontalContentAlignment" 
+        <Setter Property="HorizontalContentAlignment"
                 Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" 
+        <Setter Property="VerticalContentAlignment"
                 Value="Stretch" />
-        <Setter Property="Background" 
+        <Setter Property="Background"
                 Value="Transparent" />
-        <Setter Property="BorderThickness" 
-                Value="1"/>
+        <Setter Property="BorderThickness"
+                Value="1" />
         <Setter Property="FocusVisualStyle"
                 Value="{x:Null}" />
         <Setter Property="Template">
@@ -129,12 +130,18 @@
                                 <VisualState x:Name="Normal" />
                                 <VisualState x:Name="MouseOver">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="fillColor" Storyboard.TargetProperty="Opacity" Duration="0" To=".35"/>
+                                        <DoubleAnimation Storyboard.TargetName="fillColor"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         Duration="0"
+                                                         To=".35" />
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Disabled">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="contentPresenter" Storyboard.TargetProperty="Opacity" Duration="0" To=".55" />
+                                        <DoubleAnimation Storyboard.TargetName="contentPresenter"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         Duration="0"
+                                                         To=".55" />
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -142,14 +149,19 @@
                                 <VisualState x:Name="Unselected" />
                                 <VisualState x:Name="Selected">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="fillColor2" Storyboard.TargetProperty="Opacity" Duration="0" To=".75"/>
+                                        <DoubleAnimation Storyboard.TargetName="fillColor2"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         Duration="0"
+                                                         To=".75" />
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="FocusStates">
                                 <VisualState x:Name="Focused">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="Visibility" Duration="0">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="FocusVisualElement"
+                                                                       Storyboard.TargetProperty="Visibility"
+                                                                       Duration="0">
                                             <DiscreteObjectKeyFrame KeyTime="0">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Visible</Visibility>
@@ -158,18 +170,32 @@
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
-                                <VisualState x:Name="Unfocused"/>
+                                <VisualState x:Name="Unfocused" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Rectangle x:Name="fillColor" Opacity="0" Fill="{x:Static SystemColors.ControlBrush}" IsHitTestVisible="False" RadiusX="1" RadiusY="1"/>
-                        <Rectangle x:Name="fillColor2" Opacity="0" Fill="{x:Static SystemColors.HighlightBrush}" IsHitTestVisible="False" RadiusX="1" RadiusY="1"/>
-                        <ContentPresenter
-                              x:Name="contentPresenter"
-                              Content="{TemplateBinding Content}"
-                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              Margin="{TemplateBinding Padding}"/>
-                        <Rectangle x:Name="FocusVisualElement" Stroke="#FF6DBDD1" StrokeThickness="1" Visibility="Collapsed" RadiusX="1" RadiusY="1" />
+                        <Rectangle x:Name="fillColor"
+                                   Opacity="0"
+                                   Fill="{x:Static SystemColors.ControlBrush}"
+                                   IsHitTestVisible="False"
+                                   RadiusX="1"
+                                   RadiusY="1" />
+                        <Rectangle x:Name="fillColor2"
+                                   Opacity="0"
+                                   Fill="{x:Static SystemColors.HighlightBrush}"
+                                   IsHitTestVisible="False"
+                                   RadiusX="1"
+                                   RadiusY="1" />
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}" />
+                        <Rectangle x:Name="FocusVisualElement"
+                                   Stroke="#FF6DBDD1"
+                                   StrokeThickness="1"
+                                   Visibility="Collapsed"
+                                   RadiusX="1"
+                                   RadiusY="1" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -240,7 +266,7 @@
                                           To="Показать детали" />
             </converters:Converter>
             <converters:ProportionConverter x:Key="WidthProportionConverter"
-                                            MultiplyBy="0.5"/>
+                                            MultiplyBy="0.5" />
         </DataTemplate.Resources>
         <Border HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -259,7 +285,7 @@
                     Name="innerBorder">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
@@ -268,8 +294,8 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <ContentControl Grid.Row="0"
-                               Grid.Column="0"
-                               Content="{Binding Message}" />
+                                    Grid.Column="0"
+                                    Content="{Binding Message}" />
                     <Button Grid.Row="0"
                             Grid.Column="1"
                             Margin="5"
@@ -295,13 +321,14 @@
                             <DockPanel LastChildFill="False"
                                        HorizontalAlignment="Stretch"
                                        Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}}">
-                                <TextBlock Text="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}, Converter={StaticResource IsExpandedToTextConverter}}"
-                                           DockPanel.Dock="Left"/>
-                                <Button Content="Копировать в буфер обмена" 
+                                <TextBlock
+                                    Text="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}, Converter={StaticResource IsExpandedToTextConverter}}"
+                                    DockPanel.Dock="Left" />
+                                <Button Content="Копировать в буфер обмена"
                                         DockPanel.Dock="Right"
                                         Command="{Binding CopyToClipboardCommand}"
                                         Margin="0 0 30 0"
-                                        Visibility="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                                        Visibility="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Expander}}, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
                             </DockPanel>
                         </Expander.Header>
                         <TextBox HorizontalAlignment="Stretch"
@@ -333,6 +360,85 @@
                                     TargetProperty="Opacity">
                             <DoubleAnimation To="0"
                                              Duration="{StaticResource AnimationDuration}" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+    <!--NotificationMediator-->
+    <DataTemplate DataType="{x:Type mvvm:NotificationMediator}">
+        <DataTemplate.Resources>
+            <converters:ProportionConverter x:Key="windowWidthToBorderWidthConverter"
+                                            MultiplyBy="0.15" />
+        </DataTemplate.Resources>
+        <Border Opacity="0"
+                BorderBrush="Black"
+                BorderThickness="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Name="externalBorder"
+                MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Converter={StaticResource windowWidthToBorderWidthConverter}}">
+            <Border.Background>
+                <SolidColorBrush Color="White" />
+            </Border.Background>
+            <Border.RenderTransform>
+                <TranslateTransform Y="{Binding ActualHeight, ElementName=externalBorder}" />
+            </Border.RenderTransform>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseEnter">
+                    <i:InvokeCommandAction Command="{Binding StopTimerCommand, Mode=OneTime}" />
+                </i:EventTrigger>
+                <i:EventTrigger EventName="MouseLeave">
+                    <i:InvokeCommandAction Command="{Binding ResumeTimerCommand, Mode=OneTime}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ContentControl Grid.Column="1"
+                                Content="{Binding NotificationContent}" />
+                <Button Grid.Column="3"
+                        Margin="2"
+                        Template="{StaticResource CloseButtonTemplate}"
+                        Command="{Binding DeactivateCommand, Mode=OneTime}"
+                        VerticalAlignment="Top" />
+            </Grid>
+        </Border>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsActive}"
+                         Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetName="externalBorder">
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             Duration="{StaticResource AnimationDuration}" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Y"
+                                             To="0"
+                                             Duration="{StaticResource AnimationDuration}"/>
+                            <ColorAnimation Storyboard.TargetProperty="Background.Color"
+                                            To="Yellow"
+                                            Duration="{StaticResource AnimationDuration}"
+                                            AutoReverse="True">
+                                <ColorAnimation.EasingFunction>
+                                    <BounceEase EasingMode="EaseOut" />
+                                </ColorAnimation.EasingFunction>
+                            </ColorAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard TargetName="externalBorder">
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             Duration="{StaticResource AnimationDuration}" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Y"
+                                             Duration="{StaticResource AnimationDuration}"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </DataTrigger.ExitActions>

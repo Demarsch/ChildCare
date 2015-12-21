@@ -133,6 +133,7 @@ namespace PatientInfoModule.ViewModels
             ChangeTracker = changeTracker;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            NotificationMediator = new NotificationMediator();
             //We need to have copy of relationship list for every relative
             Relationships = cacheService.GetItems<RelativeRelationship>().ToArray();
             CollectionViewSource.GetDefaultView(Relationships).Filter = FilterRelationshipByGender;
@@ -270,6 +271,8 @@ namespace PatientInfoModule.ViewModels
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
+
+        public NotificationMediator NotificationMediator { get; private set; }
 
         private PersonName currentName;
 
@@ -754,6 +757,7 @@ namespace PatientInfoModule.ViewModels
                 ChangeTracker.AcceptChanges();
                 ChangeTracker.IsEnabled = true;
                 UpdateNameIsChanged();
+                NotificationMediator.Activate("Изменения сохранены", TimeSpan.FromSeconds(2.0));
             }
             catch (OperationCanceledException)
             {

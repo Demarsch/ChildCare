@@ -37,7 +37,7 @@
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid ClipToBounds="True">
         <DockPanel LastChildFill="True"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch">
@@ -542,6 +542,10 @@
         <ContentControl Content="{Binding BusyMediator}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding NotificationMediator}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalAlignment="Bottom" />
         <TextBlock IsHitTestVisible="False"
                    Opacity="0.2"
                    Foreground="Black"
