@@ -11,6 +11,7 @@ using Core.Misc;
 using Core.Services;
 using PatientInfoModule.Data;
 using Core.Wpf.Mvvm;
+using PatientInfoModule.Misc;
 
 namespace PatientInfoModule.Services
 {
@@ -172,6 +173,32 @@ namespace PatientInfoModule.Services
             {
                 context.Configuration.ProxyCreationEnabled = false;
                 return await context.Set<PersonRelative>().Where(x => x.PersonId == patientId).ToArrayAsync();
+            }
+        }
+
+        public async Task<Person> CheckIfSimilarPatientExistsAsync(DuplicatePersonCheckParameters param)
+        {
+            if (param == null
+                || string.IsNullOrWhiteSpace(param.LastName)
+                || string.IsNullOrWhiteSpace(param.FirstName)
+                || param.BirthDate == null)
+            {
+                return null;
+            }
+            using (var context = contextProvider.CreateLightweightContext())
+            {
+                if (!string.IsNullOrEmpty(param.Snils) && param.Snils.Length == Person.FullSnilsLength)
+                {
+                    return await context.Set<Person>().FirstOrDefaultAsync(x => x.Id != param.Id && x.Snils == param.Snils);
+                }
+                return await context.Set<PersonName>().Where(x => x.PersonId != param.Id
+                                                                  && x.Person.BirthDate == param.BirthDate.Value
+                                                                  && x.LastName == param.LastName
+                                                                  && x.FirstName == param.FirstName
+                                                                  && x.MiddleName == param.MiddleName)
+                    .Select(x => x.Person)
+                    .FirstOrDefaultAsync();
+
             }
         }
 
@@ -565,7 +592,7 @@ namespace PatientInfoModule.Services
                 data.CurrentName.MiddleName = data.NewName.MiddleName;
                 context.Entry(data.CurrentName).State = EntityState.Modified;
             }
-                //We should create new name whether because of real name change or because of new person
+            //We should create new name whether because of real name change or because of new person
             else if (data.IsNewName)
             {
                 context.Entry(data.NewName).State = EntityState.Added;

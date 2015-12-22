@@ -4,10 +4,10 @@
                     xmlns:converters="clr-namespace:Core.Wpf.Converters"
                     xmlns:misc="clr-namespace:Core.Wpf.Misc"
                     xmlns:gif="http://wpfanimatedgif.codeplex.com"
-                    xmlns:fluent="urn:fluent-ribbon"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/ConfirmationDialogView.xaml" />
+        <ResourceDictionary Source="../Views/ActionRequiringNotificationView.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <Duration x:Key="AnimationDuration">0:0:1</Duration>
     <!--Default styles-->
@@ -426,7 +426,7 @@
                                             Duration="{StaticResource AnimationDuration}"
                                             AutoReverse="True">
                                 <ColorAnimation.EasingFunction>
-                                    <BounceEase EasingMode="EaseOut" />
+                                    <ElasticEase EasingMode="EaseInOut" />
                                 </ColorAnimation.EasingFunction>
                             </ColorAnimation>
                         </Storyboard>

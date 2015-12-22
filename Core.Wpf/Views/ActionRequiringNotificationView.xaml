@@ -1,0 +1,46 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:Core.Wpf.ViewModels"
+                    xmlns:misc="clr-namespace:Core.Wpf.Misc"
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters">
+    <DataTemplate DataType="{x:Type viewModels:ActionRequiringNotificationViewModel}">
+        <DataTemplate.Resources>
+            <converters:ProportionConverter x:Key="minWidthConverter"
+                                            MultiplyBy="0.15" />
+            <converters:ProportionConverter x:Key="maxWidthConverter"
+                                            MultiplyBy="0.5" />
+        </DataTemplate.Resources>
+        <StackPanel Grid.IsSharedSizeScope="True"
+                    Orientation="Horizontal"
+                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Converter={StaticResource minWidthConverter}}"
+                    MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Converter={StaticResource maxWidthConverter}}">
+            <TextBlock VerticalAlignment="Center"
+                       Text="{Binding Message}"
+                       TextWrapping="Wrap" />
+            <ItemsControl ItemsSource="{Binding Actions}"
+                          VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type misc:CommandWrapper}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"
+                                                  SharedSizeGroup="ButtonWidth" />
+                            </Grid.ColumnDefinitions>
+                            <Button Content="{Binding CommandName, Mode=OneTime}"
+                                    Padding="3"
+                                    Margin="3"
+                                    HorizontalAlignment="Stretch"
+                                    Command="{Binding Command, Mode=OneTime}"
+                                    CommandParameter="{Binding CommandParameter}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

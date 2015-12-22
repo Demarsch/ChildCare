@@ -295,6 +295,10 @@ namespace PatientInfoModule.ViewModels
                 {
                     oldItem.PropertyChanged -= OnRelativeIsRepresentiveChanged;
                     changeTracker.RemoveTracker(oldItem.ChangeTracker);
+                    oldItem.CurrentPatientHasRelativeCheckRequired -= OnCurrentPatientHasRelativeCheckRequired;
+                    oldItem.RelativeNavigationRequested -= OnRelativeNavigationRequested;
+                    oldItem.RelativeRemoveRequested -= OnRelativeRemoveRequested;
+                    oldItem.Dispose();
                 }
             }
             if (e.NewItems != null)
@@ -303,8 +307,34 @@ namespace PatientInfoModule.ViewModels
                 {
                     newItem.PropertyChanged += OnRelativeIsRepresentiveChanged;
                     changeTracker.AddTracker(newItem.ChangeTracker);
+                    newItem.CurrentPatientHasRelativeCheckRequired += OnCurrentPatientHasRelativeCheckRequired;
+                    newItem.RelativeNavigationRequested += OnRelativeNavigationRequested;
+                    newItem.RelativeRemoveRequested += OnRelativeRemoveRequested;
                 }
             }
+        }
+
+        private void OnRelativeRemoveRequested(object sender, EventArgs eventArgs)
+        {
+            Relatives.Remove((PatientInfoViewModel)sender);
+        }
+
+        private void OnRelativeNavigationRequested(object sender, DataEventArgs<int> e)
+        {
+            var relative = Relatives.FirstOrDefault(x => x.CurrentPerson != null
+                                                         && !x.CurrentPerson.Id.IsNewOrNonExisting()
+                                                         && x.CurrentPerson.Id == e.Value);
+            if (relative != null)
+            {
+                SelectedPatientOrRelative = relative;
+            }
+        }
+
+        private void OnCurrentPatientHasRelativeCheckRequired(object sender, CurrentPatientHasRelativeCheckEventArgs e)
+        {
+            e.HasThisRelative = Relatives.Any(x => x.CurrentPerson != null 
+                                              && !x.CurrentPerson.Id.IsNewOrNonExisting() 
+                                              && x.CurrentPerson.Id == e.RelativeId);
         }
 
         private void OnRelativeIsRepresentiveChanged(object sender, PropertyChangedEventArgs e)

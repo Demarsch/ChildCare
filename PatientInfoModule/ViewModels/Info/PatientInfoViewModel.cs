@@ -2,25 +2,31 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Extensions;
 using Core.Misc;
 using Core.Services;
+using Core.Wpf.Events;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
+using Core.Wpf.ViewModels;
 using log4net;
 using PatientInfoModule.Data;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
+using Prism.Events;
 using Shared.Patient.ViewModels;
 
 namespace PatientInfoModule.ViewModels
@@ -39,6 +45,8 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IFileService fileService;
 
+        private readonly IEventAggregator eventAggregator;
+
         private readonly IAddressSuggestionProvider addressSuggestionProvider;
 
         private readonly ValidationMediator validator;
@@ -49,6 +57,7 @@ namespace PatientInfoModule.ViewModels
                                     IDialogServiceAsync dialogService,
                                     IDocumentService documentService,
                                     IFileService fileService,
+                                    IEventAggregator eventAggregator,
                                     IAddressSuggestionProvider addressSuggestionProvider,
                                     IdentityDocumentCollectionViewModel identityDocumentCollectionViewModel,
                                     InsuranceDocumentCollectionViewModel insuranceDocumentCollectionViewModel,
@@ -108,6 +117,7 @@ namespace PatientInfoModule.ViewModels
             this.dialogService = dialogService;
             this.documentService = documentService;
             this.fileService = fileService;
+            this.eventAggregator = eventAggregator;
             this.addressSuggestionProvider = addressSuggestionProvider;
             IdentityDocuments = identityDocumentCollectionViewModel;
             InsuranceDocuments = insuranceDocumentCollectionViewModel;
@@ -140,6 +150,10 @@ namespace PatientInfoModule.ViewModels
             ActivateChildContentCommand = new DelegateCommand<object>(ActivateChildContent);
             reloadPatientDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientInfoAsync(patientIdBeingLoaded)) };
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await EnsureDataSourceLoaded()) };
+            requestLoadSimilarPatientNotification = new ActionRequiringNotificationViewModel();
+            requestLoadSimilarPatientNotification.Actions.Add(new CommandWrapper { Command = new DelegateCommand(LoadSimilarPatientAsync), CommandName = "Загрузить данные" });
+            requestNavigationToRelativeNotification = new ActionRequiringNotificationViewModel { Message = "У текущего пациента уже есть этот родственник. Открыть его данные?" };
+            requestNavigationToRelativeNotification.Actions.Add(new CommandWrapper { Command = new DelegateCommand(RequestNavigationToRelative), CommandName = "Открыть" }); 
             currentOperation = new TaskCompletionSource<object>();
             currentOperation.SetResult(null);
         }
@@ -379,6 +393,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     UpdateNameIsChanged();
                     TryPredictGenderByLastName();
+                    CheckForDuplicatePersonAsync(CreateDuplicateCheckParameters());
                 }
             }
         }
@@ -411,6 +426,7 @@ namespace PatientInfoModule.ViewModels
                 if (SetTrackedProperty(ref firstName, value))
                 {
                     UpdateNameIsChanged();
+                    CheckForDuplicatePersonAsync(CreateDuplicateCheckParameters());
                 }
             }
         }
@@ -427,6 +443,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     UpdateNameIsChanged();
                     TryPredictGenderByMiddleName();
+                    CheckForDuplicatePersonAsync(CreateDuplicateCheckParameters());
                 }
             }
         }
@@ -462,6 +479,7 @@ namespace PatientInfoModule.ViewModels
                         HealthGroupId = SpecialValues.NonExistingId;
                     }
                     OnPropertyChanged(() => IsChild);
+                    CheckForDuplicatePersonAsync(CreateDuplicateCheckParameters());
                 }
             }
         }
@@ -476,7 +494,13 @@ namespace PatientInfoModule.ViewModels
         public string Snils
         {
             get { return snils; }
-            set { SetTrackedProperty(ref snils, value); }
+            set
+            {
+                if (SetTrackedProperty(ref snils, value))
+                {
+                    CheckForDuplicatePersonAsync(CreateDuplicateCheckParameters());
+                }
+            }
         }
 
         private string medNumber;
@@ -622,6 +646,129 @@ namespace PatientInfoModule.ViewModels
             set { SetTrackedProperty(ref photoSource, value); }
         }
 
+        private readonly ActionRequiringNotificationViewModel requestLoadSimilarPatientNotification;
+
+        private readonly ActionRequiringNotificationViewModel requestNavigationToRelativeNotification;
+
+        private Person similarPatient;
+
+        private async void LoadSimilarPatientAsync()
+        {
+            NotificationMediator.Deactivate();
+            if (similarPatient == null || similarPatient.Id.IsNewOrNonExisting())
+            {
+                return;
+            }
+            if (IsRelative)
+            {
+                if (similarPatient.Id == personRelative.PersonId)
+                {
+                    NotificationMediator.Activate("Пациент не может быть родственником самого себя", NotificationMediator.DefaultHideTime);
+                    return;
+                }
+                var args = new CurrentPatientHasRelativeCheckEventArgs(similarPatient.Id);
+                OnCurrentPatientHasRelativeCheckRequired(args);
+                if (args.HasThisRelative)
+                {
+                    NotificationMediator.Activate(requestNavigationToRelativeNotification);
+                }
+                else
+                {
+                    await LoadPatientInfoAsync(similarPatient.Id);
+                }
+            }
+            else
+            {
+                eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(similarPatient.Id);
+            }
+        }
+
+        public event EventHandler<DataEventArgs<int>> RelativeNavigationRequested;
+
+        protected virtual void OnRelativeNavigationRequested(int relativeId)
+        {
+            var handler = RelativeNavigationRequested;
+            if (handler != null)
+            {
+                handler(this, new DataEventArgs<int>(relativeId));
+            }
+        }
+
+        public event EventHandler RelativeRemoveRequested;
+
+        protected virtual void OnRelativeRemoveRequested()
+        {
+            var handler = RelativeRemoveRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        public event EventHandler<CurrentPatientHasRelativeCheckEventArgs> CurrentPatientHasRelativeCheckRequired;
+
+        protected virtual void OnCurrentPatientHasRelativeCheckRequired(CurrentPatientHasRelativeCheckEventArgs e)
+        {
+            var handler = CurrentPatientHasRelativeCheckRequired;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private DuplicatePersonCheckParameters CreateDuplicateCheckParameters()
+        {
+            return new DuplicatePersonCheckParameters
+            {
+                Id = currentPerson == null ? SpecialValues.NewId : currentPerson.Id,
+                LastName = LastName.Trim(),
+                FirstName = FirstName.Trim(),
+                MiddleName = MiddleName.Trim(),
+                BirthDate = BirthDate,
+                Snils = Snils
+            };
+        }
+
+        private void RequestNavigationToRelative()
+        {
+            NotificationMediator.Deactivate();
+            OnRelativeNavigationRequested(similarPatient.Id);
+            if (currentPerson == null || currentPerson.Id.IsNewOrNonExisting())
+            {
+                OnRelativeRemoveRequested();
+            }
+            else
+            {
+                CancelChanges();
+            }
+        }
+
+        private async void CheckForDuplicatePersonAsync(DuplicatePersonCheckParameters param)
+        {
+            NotificationMediator.Deactivate();
+            await Task.Delay(TimeSpan.FromSeconds(2.0));
+            var currentParam = CreateDuplicateCheckParameters();
+            if (!currentParam.Equals(param))
+            {
+                return;
+            }
+            var patient = await patientService.CheckIfSimilarPatientExistsAsync(param);
+            currentParam = CreateDuplicateCheckParameters();
+            if (!currentParam.Equals(param))
+            {
+                return;
+            }
+            similarPatient = patient;
+            if (similarPatient == null)
+            {
+                return;
+            }
+            requestLoadSimilarPatientNotification.Message = similarPatient.Snils == Snils && !string.IsNullOrEmpty(Snils)
+                ? "В базе данных уже есть другой пациент с таким СНИЛС. Возможно это тот же самый пациент. Загрузить его данные вместо текущих?" 
+                : "В базе данных уже есть другой пациент с тикими Ф.И.О. и датой рождения. Загрузить его данные вместо текущих?";
+            NotificationMediator.Activate(requestLoadSimilarPatientNotification);
+        }
+
         #endregion
 
         public ICommand TakePhotoCommand { get; set; }
@@ -757,7 +904,7 @@ namespace PatientInfoModule.ViewModels
                 ChangeTracker.AcceptChanges();
                 ChangeTracker.IsEnabled = true;
                 UpdateNameIsChanged();
-                NotificationMediator.Activate("Изменения сохранены", TimeSpan.FromSeconds(2.0));
+                NotificationMediator.Activate("Изменения сохранены", NotificationMediator.DefaultHideTime);
             }
             catch (OperationCanceledException)
             {
@@ -906,20 +1053,21 @@ namespace PatientInfoModule.ViewModels
             Addresses.Model = currentAddresses = null;
             DisabilityDocuments.Model = currentDisabilityDocuments = null;
             SocialStatuses.Model = currentSocialStatuses = null;
-            LastName = string.Empty;
-            FirstName = string.Empty;
-            MiddleName = string.Empty;
-            BirthDate = null;
-            Snils = string.Empty;
-            MedNumber = string.Empty;
-            IsMale = true;
-            Phones = string.Empty;
-            Email = string.Empty;
-            NationalityId = SpecialValues.NonExistingId;
-            MaritalStatusId = SpecialValues.NonExistingId;
-            EducationId = SpecialValues.NonExistingId;
-            HealthGroupId = SpecialValues.NonExistingId;
-            PhotoSource = null;
+            lastName = string.Empty;
+            firstName = string.Empty;
+            middleName = string.Empty;
+            birthDate = null;
+            snils = string.Empty;
+            medNumber = string.Empty;
+            isMale = true;
+            phones = string.Empty;
+            email = string.Empty;
+            nationalityId = SpecialValues.NonExistingId;
+            maritalStatusId = SpecialValues.NonExistingId;
+            educationId = SpecialValues.NonExistingId;
+            healthGroupId = SpecialValues.NonExistingId;
+            photoSource = null;
+            OnPropertyChanged(string.Empty);
         }
 
         #region Implementation IDataErrorInfo

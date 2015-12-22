@@ -6,6 +6,7 @@ using Core.Data.Misc;
 using System;
 using PatientInfoModule.Data;
 using System.Collections;
+using PatientInfoModule.Misc;
 
 namespace PatientInfoModule.Services
 {
@@ -50,5 +51,7 @@ namespace PatientInfoModule.Services
         RelativeRelationship GetSymmetricalRelationship(RelativeRelationship relationship, bool symmetricalRelationshipIsMale);
 
         Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId);
+
+        Task<Person> CheckIfSimilarPatientExistsAsync(DuplicatePersonCheckParameters param);
     }
 }

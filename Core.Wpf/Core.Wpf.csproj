@@ -171,6 +171,7 @@
     <Compile Include="Services\Implementations\WindowsDialogService.cs" />
     <Compile Include="Services\Interfaces\IDialogService.cs" />
     <Compile Include="Services\Interfaces\IViewNameResolver.cs" />
+    <Compile Include="ViewModels\ActionRequiringNotificationViewModel.cs" />
     <Compile Include="Views\ChildDialogWindow.xaml.cs">
       <DependentUpon>ChildDialogWindow.xaml</DependentUpon>
     </Compile>
@@ -195,6 +196,10 @@
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ActionRequiringNotificationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ConfirmationDialogView.xaml">
       <Generator>MSBuild:Compile</Generator>

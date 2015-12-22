@@ -136,6 +136,7 @@
     <Compile Include="FinancingSource.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Misc\DbContextProviderExtensions.cs" />
     <Compile Include="Misc\DisposableQueryable.cs" />
     <Compile Include="Misc\EmptyDbAsyncEnumerable.cs" />
     <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
