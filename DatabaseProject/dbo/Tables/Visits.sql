@@ -7,7 +7,7 @@
     [UrgentlyId]        INT           NOT NULL,
     [FinancingSourceId] INT           NOT NULL,
     [ContractId]        INT           NOT NULL,
-    [SentLPUId]         INT           NOT NULL,
+    [SentLPUId]         INT           NULL,
     [OKATO]             VARCHAR (14)  CONSTRAINT [DF_Visits_OKATO] DEFAULT ('') NOT NULL,
     [MKB]               VARCHAR (10)  CONSTRAINT [DF_Visits_MKB] DEFAULT ('') NOT NULL,
     [VisitResultId]     INT           NULL,
@@ -41,4 +41,10 @@
 
 
 
+
+
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'null is contact by itself', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'Visits', @level2type = N'COLUMN', @level2name = N'SentLPUId';
 
