@@ -264,7 +264,7 @@ namespace Shared.PatientRecords.ViewModels
                 SelectedVisitId = SpecialValues.NonExistingId;
                 SelectedFinSourceId = SpecialValues.NonExistingId;
                 var urg = recordService.GetActualUrgentlies(DateTime.Now);
-                SelectedUrgentlyId = urg.Any(x => x.IsDefalut) ? urg.First(x => x.IsDefalut).Id : SpecialValues.NonExistingId;
+                SelectedUrgentlyId = urg.Any(x => x.IsDefault) ? urg.First(x => x.IsDefault).Id : SpecialValues.NonExistingId;
                 SelectedExecutionPlaceId = SpecialValues.NonExistingId;
                 AnalyseDetails = string.Empty;
             }

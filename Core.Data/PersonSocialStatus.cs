@@ -22,8 +22,8 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual Org Org { get; set; }
         public virtual Person Person { get; set; }
         public virtual SocialStatusType SocialStatusType { get; set; }
+        public virtual Org Org { get; set; }
     }
 }

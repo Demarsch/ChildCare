@@ -50,7 +50,6 @@ namespace Core.Data
         public virtual FinancingSource FinancingSource { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
-        public virtual Org Org { get; set; }
         public virtual PaymentType PaymentType { get; set; }
         public virtual Person Person { get; set; }
         public virtual Person Person1 { get; set; }
@@ -65,5 +64,6 @@ namespace Core.Data
         public virtual ICollection<Visit> Visits { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VisitTemplate> VisitTemplates { get; set; }
+        public virtual Org Org { get; set; }
     }
 }

@@ -49,7 +49,6 @@ namespace Core.Data
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public virtual DbSet<MedicalHelpType> MedicalHelpTypes { get; set; }
         public virtual DbSet<Okato> Okatos { get; set; }
-        public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<OuterDocumentType> OuterDocumentTypes { get; set; }
         public virtual DbSet<PaymentType> PaymentTypes { get; set; }
         public virtual DbSet<PersonAddress> PersonAddresses { get; set; }
@@ -81,7 +80,6 @@ namespace Core.Data
         public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
         public virtual DbSet<VisitResult> VisitResults { get; set; }
         public virtual DbSet<Visit> Visits { get; set; }
-        public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
         public virtual DbSet<RecordDocument> RecordDocuments { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
@@ -93,7 +91,6 @@ namespace Core.Data
         public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
-        public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DefaultProtocol> DefaultProtocols { get; set; }
         public virtual DbSet<MKB> MKBs { get; set; }
         public virtual DbSet<MKBGroup> MKBGroups { get; set; }
@@ -115,5 +112,8 @@ namespace Core.Data
         public virtual DbSet<RecordTypeUnit> RecordTypeUnits { get; set; }
         public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
         public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
+        public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
+        public virtual DbSet<Org> Orgs { get; set; }
+        public virtual DbSet<Urgently> Urgentlies { get; set; }
     }
 }

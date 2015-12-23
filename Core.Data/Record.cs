@@ -68,7 +68,6 @@ namespace Core.Data
         public virtual ICollection<Record> Records1 { get; set; }
         public virtual Record Record1 { get; set; }
         public virtual Room Room { get; set; }
-        public virtual Urgently Urgently { get; set; }
         public virtual User User { get; set; }
         public virtual Visit Visit { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -76,5 +75,6 @@ namespace Core.Data
         public virtual RecordType RecordType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
+        public virtual Urgently Urgently { get; set; }
     }
 }

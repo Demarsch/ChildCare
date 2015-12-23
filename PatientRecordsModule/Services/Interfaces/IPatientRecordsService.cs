@@ -33,6 +33,7 @@ namespace Shared.PatientRecords.Services
         IDisposableQueryable<Record> GetAssignmentsChildRecordsQuery(int assignmentId);
 
         IDisposableQueryable<VisitTemplate> GetActualVisitTemplates(DateTime onDate);
+        IEnumerable<VisitTemplate> GetCashedVisitTemplates(object onDate);
 
         IDisposableQueryable<VisitTemplate> GetVisitTemplate(int visitTemplateId);
 
@@ -55,7 +56,7 @@ namespace Shared.PatientRecords.Services
 
         IDisposableQueryable<Record> GetRecord(int recordId);
 
-        Task<ICollection<PersonItem>> GetParentItems(PersonItem item);
+        Task<ICollection<PersonRecItem>> GetParentItems(PersonRecItem item);
 
         Task<bool> IsBrigadeCompleted(int recordId);
 
@@ -64,6 +65,7 @@ namespace Shared.PatientRecords.Services
         IDisposableQueryable<Urgently> GetActualUrgentlies(DateTime onDate);
 
         IDisposableQueryable<Room> GetRooms(DateTime onDate);
+        IEnumerable<Room> GetCashedRooms(object onDate);
 
         IDisposableQueryable<RecordPeriod> GetActualRecordPeriods(int executionPlaceId, DateTime onDate);
 
@@ -79,7 +81,9 @@ namespace Shared.PatientRecords.Services
 
         Task<int> SaveVisitAsync(int visitId, int personId, DateTime beginDateTime, int recordContractId, int financingSourceId, int urgentlyId, int visitTemplateId, int executionPlaceId, int sentLPUId, string note, CancellationToken token);
 
-        Task<int> CreateUrgentRecord(int personId, int recordTypeId, int roomId, CancellationToken token);
+        Task<int> CreateUrgentRecordInExistingVisit(int personId, int visitId, int recordTypeId, int roomId, DateTime toDate, CancellationToken token);
+
+        Task<int> CreateUrgentRecord(int personId, int visitTemplateId, int recordTypeId, int roomId, DateTime toDate, CancellationToken token);
 
         Task<int> CloseVisitAsync(int visitId, DateTime endDateTime, string MKB, int VisitOutcomeId, int VisitResultId, CancellationToken token);
 

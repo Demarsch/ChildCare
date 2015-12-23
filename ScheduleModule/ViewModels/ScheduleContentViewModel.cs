@@ -499,7 +499,7 @@ namespace ScheduleModule.ViewModels
                 FailureMediator.Activate("В базе данных отсутствует информация о доступных источниках финансирования. Обратитесь в службу поддержки", true);
                 return null;
             }
-            var plannedUrgency = cacheService.GetItems<Urgently>().FirstOrDefault(x => x.IsDefalut);
+            var plannedUrgency = cacheService.GetItems<Urgently>().FirstOrDefault(x => x.IsDefault);
             if (plannedUrgency == null)
             {
                 FailureMediator.Activate("В базе данных отсутсвует информация о плановой срочности назначения. Обратитесь в службу поддержки", true);

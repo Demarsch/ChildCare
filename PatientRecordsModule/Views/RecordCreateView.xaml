@@ -7,19 +7,24 @@
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels"
              xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
-             xmlns:data="clr-namespace:Core.Data;assembly=Core.Data">
+             xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
+             xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit">
 
     <DataTemplate DataType="{x:Type viewModels:RecordCreateViewModel}">
         <DataTemplate.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
                     <ResourceDictionary Source="pack://application:,,,/Shared.PatientRecords;Component/Themes/Generic.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/Shared.DataTemplates;Component/Core.Data.xaml" />
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </DataTemplate.Resources>
-        <Grid MinHeight="550" MinWidth="450" MaxHeight="550" MaxWidth="450" 
-              ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <Grid Width="500">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -29,25 +34,49 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Услуга" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <controls:TreeViewComboBox Grid.Row="0"
+            <CheckBox Grid.Row="0" Grid.Column="0" Content="Создать новый случай" IsChecked="{Binding NeedCreateNewVisit}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Случай" FontWeight="Medium" VerticalAlignment="Center" 
+                       Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:TrueToCollapsedConverter.Instance}}"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
+                      SelectedValuePath="Id" 
+                      DisplayMemberPath="Name" 
+                      SelectedItem="{Binding SelectedVisit, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
+                      ItemsSource="{Binding Visits}" 
+                      Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:TrueToCollapsedConverter.Instance}}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Шаблон случая" FontWeight="Medium" VerticalAlignment="Center" 
+                       Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
+                      SelectedValuePath="Id" 
+                      DisplayMemberPath="Name" 
+                      SelectedItem="{Binding SelectedVisitTemplate, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
+                      ItemsSource="{Binding VisitTemplates}" 
+                      Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Услуга" FontWeight="Medium" VerticalAlignment="Center" />
+            <controls:TreeViewComboBox Grid.Row="3"
                                        Grid.Column="1"
+                                       Margin="0,0,20,0"
                                        ItemsSource="{Binding RecordTypes}"
                                        SelectedItem="{Binding SelectedRecordType}"
                                        DisplayMemberPath="Name"
-                                       Width="300" 
                                        ItemTemplate="{StaticResource NonAssignableTypesGrayedOut}"
                                        SelectionPredicate="{x:Static data:RecordType.AssignableRecordTypeSelectorPredicate}"
                                        FilterPredicate="{x:Static data:RecordType.AssignableRecordTypeFilterPredicate}"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Кабинет" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" 
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Дата/время услуги:"/>
+            <extToolkit:DateTimePicker Grid.Row="4" Grid.Column="1" Margin="2" HorizontalAlignment="Left" Width="165" Value="{Binding Date}" Format="Custom" FormatString="dd MMMM yyyy HH:mm"/>
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Кабинет" FontWeight="Medium" VerticalAlignment="Center" />
+            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
                       SelectedValuePath="Id" 
                       DisplayMemberPath="Name" 
-                      SelectedValue="{Binding SelectedRoomId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" 
+                      SelectedItem="{Binding SelectedRoom, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       ItemsSource="{Binding Rooms}" />
-
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="8" Grid.ColumnSpan="2" />
         </Grid>
     </DataTemplate>

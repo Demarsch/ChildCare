@@ -9,7 +9,7 @@ namespace Core.Wpf.Mvvm
 {
     public class NotificationMediator : BindableBase, IMediator
     {
-        public static readonly TimeSpan DefaultHideTime = TimeSpan.FromSeconds(2.0);
+        public static readonly TimeSpan DefaultHideTime = TimeSpan.FromSeconds(5.0);
 
         public NotificationMediator()
         {

@@ -33,6 +33,8 @@
 
         public readonly static string ChangeRecordParentVisit = "Изменить родительский случай";
 
+        public readonly static string UseCompletedVisit = "Использовать закрытые случаи";
+
         public readonly static string ChangeRecordRoom = "Изменить кабинет услуги";
     }
 }

@@ -63,7 +63,7 @@ namespace Shared.PatientRecords.ViewModels
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
             this.assignment = assignment;
-            this.Item = new PersonItem() { Id = assignment.Id, Type = ItemType.Assignment };
+            this.Item = new PersonRecItem() { Id = assignment.Id, Type = ItemType.Assignment };
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             reloadPatientVisitsCommandWrapper = new CommandWrapper
@@ -105,8 +105,8 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
-        private PersonItem item;
-        public PersonItem Item
+        private PersonRecItem item;
+        public PersonRecItem Item
         {
             get { return item; }
             set { SetProperty(ref item, value); }

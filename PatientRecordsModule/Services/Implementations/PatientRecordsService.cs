@@ -110,6 +110,14 @@ namespace Shared.PatientRecords.Services
             return new DisposableQueryable<VisitTemplate>(context.Set<VisitTemplate>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
         }
 
+        public IEnumerable<VisitTemplate> GetCashedVisitTemplates(object onDate)
+        {
+            DateTime? date = onDate as DateTime?;
+            if (date == null)
+                return null;
+            return cacheService.GetItems<VisitTemplate>().Where(x => date >= x.BeginDateTime && date < x.EndDateTime).ToArray();
+        }
+
 
         public IDisposableQueryable<RecordContract> GetActualRecordContracts(DateTime onDate)
         {
@@ -388,6 +396,14 @@ namespace Shared.PatientRecords.Services
             return new DisposableQueryable<Room>(context.Set<Room>().AsNoTracking().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
         }
 
+        public IEnumerable<Room> GetCashedRooms(object onDate)
+        {
+            DateTime? date = onDate as DateTime?;
+            if (date == null)
+                return null;
+            return cacheService.GetItems<Room>().Where(x => date >= x.BeginDateTime && date < x.EndDateTime).ToArray();
+        }
+
         public async Task<int> SaveRecordCommonDataAsync(int recordId, int recordTypeId, int personId, int visitId, int roomId, int periodId, int urgentlyId, DateTime beginDateTime, DateTime? endDateTime,
             List<RecordMember> brigade, int assignmentId, CancellationToken token)
         {
@@ -636,9 +652,9 @@ namespace Shared.PatientRecords.Services
         }
 
 
-        public async Task<ICollection<PersonItem>> GetParentItems(PersonItem item)
+        public async Task<ICollection<PersonRecItem>> GetParentItems(PersonRecItem item)
         {
-            List<PersonItem> parentItems = new List<PersonItem>();
+            List<PersonRecItem> parentItems = new List<PersonRecItem>();
             using (var context = contextProvider.CreateNewContext())
             {
                 var curItem = item;
@@ -653,20 +669,20 @@ namespace Shared.PatientRecords.Services
                         case ItemType.Record:
                             var record = await context.Set<Record>().Where(x => x.Id == curItem.Id).Select(x => new { x.Id, x.ParentRecordId, x.ParentAssignmentId, x.VisitId }).FirstOrDefaultAsync();
                             if (record.ParentRecordId.HasValue)
-                                curItem = new PersonItem()
+                                curItem = new PersonRecItem()
                                 {
                                     Id = record.ParentRecordId.Value,
                                     Type = ItemType.Record
                                 };
                             else
                                 if (record.ParentAssignmentId.HasValue)
-                                    curItem = new PersonItem()
+                                    curItem = new PersonRecItem()
                                     {
                                         Id = record.ParentAssignmentId.Value,
                                         Type = ItemType.Assignment
                                     };
                                 else
-                                    curItem = new PersonItem()
+                                    curItem = new PersonRecItem()
                                     {
                                         Id = record.VisitId,
                                         Type = ItemType.Visit
@@ -675,21 +691,21 @@ namespace Shared.PatientRecords.Services
                         case ItemType.Assignment:
                             var assignment = await context.Set<Assignment>().Where(x => x.Id == curItem.Id).Select(x => new { x.Id, x.ParentRecordId, x.ParentAssignmentId, x.VisitId }).FirstOrDefaultAsync();
                             if (assignment.ParentRecordId.HasValue)
-                                curItem = new PersonItem()
+                                curItem = new PersonRecItem()
                                 {
                                     Id = assignment.ParentRecordId.Value,
                                     Type = ItemType.Record
                                 };
                             else
                                 if (assignment.ParentAssignmentId.HasValue)
-                                    curItem = new PersonItem()
+                                    curItem = new PersonRecItem()
                                     {
                                         Id = assignment.ParentAssignmentId.Value,
                                         Type = ItemType.Assignment
                                     };
                                 else
                                     if (assignment.VisitId.HasValue)
-                                        curItem = new PersonItem()
+                                        curItem = new PersonRecItem()
                                         {
                                             Id = assignment.VisitId.Value,
                                             Type = ItemType.Visit
@@ -816,7 +832,7 @@ namespace Shared.PatientRecords.Services
         }
 
 
-        public async Task<int> CreateUrgentRecord(int personId, int recordTypeId, int roomId, CancellationToken token)
+        public async Task<int> CreateUrgentRecordInExistingVisit(int personId, int visitId, int recordTypeId, int roomId, DateTime toDate, CancellationToken token)
         {
             if (token.IsCancellationRequested)
             {
@@ -824,13 +840,93 @@ namespace Shared.PatientRecords.Services
             }
             using (var context = contextProvider.CreateNewContext())
             {
+                var urgently = cacheService.GetItems<Urgently>().FirstOrDefault(x => x.IsUrgently && toDate >= x.BeginDateTime && toDate < x.EndDateTime);
+                if (urgently == null) return 0;
+                var executionPlaceItem = context.Set<Visit>().Where(x => x.Id == visitId).Select(x => new { x.ExecutionPlaceId }).FirstOrDefault();
+                if (executionPlaceItem == null) return 0;
+                var recordPeriodDefault = cacheService.GetItems<RecordPeriod>().FirstOrDefault(x => executionPlaceItem.ExecutionPlaceId == x.ExecutionPlaceId && x.IsDefault && toDate >= x.BeginDateTime && toDate < x.EndDateTime);
+                if (recordPeriodDefault == null) return 0;
+                var recordType = context.Set<RecordType>().Where(x => x.Id == recordTypeId).Select(x => new { x.NumberType }).FirstOrDefault();
+                if (recordType == null) return 0;
                 var record = new Record()
                 {
                     PersonId = personId,
+                    VisitId = visitId,
                     RecordTypeId = recordTypeId,
                     RoomId = roomId,
-                    UrgentlyId = 2,
+                    BeginDateTime = toDate,
+                    ActualDateTime = toDate,
+                    UrgentlyId = urgently.Id,
+                    MKB = string.Empty,
+                    RecordPeriodId = recordPeriodDefault.Id,
+                    NumberYear = toDate.Year,
+                    NumberType = recordType.NumberType
                 };
+                var number = context.Set<Record>().Any(x => x.NumberType == record.NumberType && x.NumberYear == record.NumberYear)
+                                 ? context.Set<Record>().Where(x => x.NumberType == record.NumberType && x.NumberYear == record.NumberYear).Max(x => x.Number) + 1
+                                 : 1;
+                record.Number = number;
+                context.Entry<Record>(record).State = EntityState.Added;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+                return record.Id;
+            }
+        }
+
+        public async Task<int> CreateUrgentRecord(int personId, int visitTemplateId, int recordTypeId, int roomId, DateTime toDate, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var visitTemplate = cacheService.GetItems<VisitTemplate>().FirstOrDefault(x => x.Id == visitTemplateId);
+                var urgently = cacheService.GetItems<Urgently>().FirstOrDefault(x => x.IsUrgently && toDate >= x.BeginDateTime && toDate < x.EndDateTime);
+                if (visitTemplate == null || visitTemplate.ContractId == null || visitTemplate.ExecutionPlaceId == null || visitTemplate.FinancingSourceId == null || visitTemplate.UrgentlyId == null || urgently == null)
+                    return 0;
+                var recordPeriodDefault = cacheService.GetItems<RecordPeriod>().FirstOrDefault(x => visitTemplate.ExecutionPlaceId == x.ExecutionPlaceId && x.IsDefault && toDate >= x.BeginDateTime && toDate < x.EndDateTime);
+                if (recordPeriodDefault == null) return 0;
+                var newVisit = new Visit()
+                {
+                    PersonId = personId,
+                    VisitTemplateId = visitTemplateId,
+                    BeginDateTime = toDate,
+                    ContractId = visitTemplate.ContractId.Value,
+                    UrgentlyId = visitTemplate.UrgentlyId.Value,
+                    ExecutionPlaceId = visitTemplate.ExecutionPlaceId.Value,
+                    FinancingSourceId = visitTemplate.FinancingSourceId.Value,
+                    IsCompleted = false,
+                    MKB = string.Empty,
+                    Note = string.Empty,
+                    OKATO = string.Empty,
+                    Org = null,
+                    TotalCost = 0.0
+                };
+                context.Entry<Visit>(newVisit).State = EntityState.Added;
+                var recordType = context.Set<RecordType>().Where(x => x.Id == recordTypeId).Select(x => new { x.NumberType }).FirstOrDefault();
+                if (recordType == null) return 0;
+                var record = new Record()
+                {
+                    PersonId = personId,
+                    Visit = newVisit,
+                    RecordTypeId = recordTypeId,
+                    RoomId = roomId,
+                    BeginDateTime = toDate,
+                    ActualDateTime = toDate,
+                    UrgentlyId = urgently.Id,
+                    MKB = string.Empty,
+                    RecordPeriodId = recordPeriodDefault.Id,
+                    NumberYear = toDate.Year,
+                    NumberType = recordType.NumberType
+                };
+                var number = context.Set<Record>().Any(x => x.NumberType == record.NumberType && x.NumberYear == record.NumberYear)
+                                 ? context.Set<Record>().Where(x => x.NumberType == record.NumberType && x.NumberYear == record.NumberYear).Max(x => x.Number) + 1
+                                 : 1;
+                record.Number = number;
                 context.Entry<Record>(record).State = EntityState.Added;
                 if (token.IsCancellationRequested)
                 {

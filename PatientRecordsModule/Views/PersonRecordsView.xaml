@@ -33,6 +33,7 @@
         </DockPanel>
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding NotificationMediator}" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Stretch" VerticalAlignment="Bottom" />
         <ContentControl Content="{Binding CriticalFailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

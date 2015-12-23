@@ -145,7 +145,7 @@ namespace Shared.PatientRecords.ViewModels
 
             FailureMediator = new FailureMediator();
             BusyMediator = new BusyMediator();
-
+            NotificationMediator = new NotificationMediator();
             SubscribeToEvents();
         }
         #endregion
@@ -162,6 +162,8 @@ namespace Shared.PatientRecords.ViewModels
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
+
+        public NotificationMediator NotificationMediator { get; private set; }
 
         public InteractionRequest<VisitEditorViewModel> VisitEditorInteractionRequest { get; private set; }
 
@@ -250,7 +252,11 @@ namespace Shared.PatientRecords.ViewModels
         {
             var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { personRecordListViewModel.AddNewVisitToList(vm.VisitId); });
+            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) =>
+            {
+                personRecordListViewModel.AddNewVisitToList(vm.VisitId);
+                NotificationMediator.Activate("Случай успешно создан", NotificationMediator.DefaultHideTime);
+            });
         }
 
         public ICommand EditVisitCommand { get { return editVisitCommand; } }
@@ -292,9 +298,8 @@ namespace Shared.PatientRecords.ViewModels
             var result = await dialogServiceAsync.ShowDialogAsync(recordCreateViewModel);
             if (recordCreateViewModel.AssignIsSuccessful)
             {
-                //LoadRootItemsAsync(this.personId);
-                //foreach (var assignment in viewModel.AssignedAnalyses)
-                //    AddAssignmentToPatientRecords(assignment.Key, assignment.Value);      
+                NotificationMediator.Activate("Услуга успешно создана", NotificationMediator.DefaultHideTime);
+                personRecordListViewModel.AddNewRecordToList(recordCreateViewModel.RecordId);
             }
         }
 

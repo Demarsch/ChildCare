@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace Shared.PatientRecords.Misc
 {
-    public class PersonItem
+    public class PersonRecItem
     {
         public int Id { get; set; }
         public ItemType Type { get; set; }
 
+        public DateTime ActualDatetime { get; set; }
+
         public override bool Equals(object obj)
         {
-            var personItem2 = obj as PersonItem;
+            var personItem2 = obj as PersonRecItem;
             if (personItem2 == null) return false;
             return this.Id == personItem2.Id && this.Type == personItem2.Type;
         }

@@ -112,6 +112,15 @@
     <Compile Include="Complication.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Country.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DBSetting.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Decision.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DefaultProtocol.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -124,6 +133,15 @@
     <Compile Include="DiagnosType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DisabilityType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Document.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Education.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Eqiupment.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
@@ -134,108 +152,6 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="FinancingSource.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Misc\DbContextProviderExtensions.cs" />
-    <Compile Include="Misc\DisposableQueryable.cs" />
-    <Compile Include="Misc\EmptyDbAsyncEnumerable.cs" />
-    <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
-    <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
-    <Compile Include="Misc\IDisposableQueryable.cs" />
-    <Compile Include="PartialClasses\IdentityDocumentType.cs" />
-    <Compile Include="PartialClasses\Permission.cs" />
-    <Compile Include="PartialClasses\PermissionGroup.cs" />
-    <Compile Include="PermissionGroup.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="PermissionGroupMembership.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Record.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordEquipment.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordType.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordTypeUnit.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Services\Interfaces\IEnvironment.cs" />
-    <Compile Include="Misc\OptionValues.cs" />
-    <Compile Include="Misc\SpecialValues.cs" />
-    <Compile Include="MKB.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="MKBGroup.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Org.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="PartialClasses\ExecutionPlace.cs" />
-    <Compile Include="PartialClasses\InsuranceDocument.cs" />
-    <Compile Include="PartialClasses\Complication.cs" />
-    <Compile Include="PartialClasses\MKB.cs" />
-    <Compile Include="PartialClasses\Okato.cs" />
-    <Compile Include="PartialClasses\Org.cs" />
-    <Compile Include="PartialClasses\PersonAddress.cs" />
-    <Compile Include="PartialClasses\PersonDisability.cs" />
-    <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
-    <Compile Include="PartialClasses\PersonName.cs" />
-    <Compile Include="PartialClasses\PersonSocialStatus.cs" />
-    <Compile Include="PartialClasses\RecordContract.cs" />
-    <Compile Include="PartialClasses\RecordType.cs" />
-    <Compile Include="PartialClasses\RelativeRelationship.cs" />
-    <Compile Include="PartialClasses\Urgently.cs" />
-    <Compile Include="PersonDiagnos.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordContract.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordDocument.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordMember.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordPeriod.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordTypeEditor.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RecordTypeRolePermission.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RelativeRelationshipConnection.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ReportTemplate.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Services\Implementations\ADUserSystemInfoService.cs" />
-    <Compile Include="Services\Implementations\DbContextCacheService.cs" />
-    <Compile Include="Services\Implementations\DbContextProvider.cs" />
-    <Compile Include="Country.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DBSetting.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Decision.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DisabilityType.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Document.cs">
-      <DependentUpon>ChildCareModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Education.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="HealthGroup.cs">
@@ -253,39 +169,55 @@
     <Compile Include="InsuranceDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Services\Implementations\DbEnvironment.cs" />
-    <Compile Include="Services\Implementations\DbSecurityService.cs" />
-    <Compile Include="Services\Implementations\RecordTypesTree.cs" />
-    <Compile Include="Services\Implementations\UserService.cs" />
-    <Compile Include="Services\Interfaces\IDbContextProvider.cs" />
     <Compile Include="MaritalStatus.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="MedicalHelpType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Misc\DbContextProviderExtensions.cs" />
+    <Compile Include="Misc\DisposableQueryable.cs" />
+    <Compile Include="Misc\EmptyDbAsyncEnumerable.cs" />
+    <Compile Include="Misc\EmptyDbAsyncEnumerator.cs" />
+    <Compile Include="Misc\EmptyDbAsyncQueryProvider.cs" />
+    <Compile Include="Misc\IDisposableQueryable.cs" />
+    <Compile Include="MKB.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MKBGroup.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Okato.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Org.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="OuterDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="PartialClasses\DBSetting.cs" />
-    <Compile Include="PartialClasses\InsuranceCompany.cs" />
-    <Compile Include="PartialClasses\Person.cs" />
-    <Compile Include="PartialClasses\PersonStaff.cs" />
-    <Compile Include="PartialClasses\PersonTalon.cs" />
-    <Compile Include="PartialClasses\ScheduleItem.cs" />
+    <Compile Include="PartialClasses\IdentityDocumentType.cs" />
+    <Compile Include="PartialClasses\Permission.cs" />
+    <Compile Include="PartialClasses\PermissionGroup.cs" />
     <Compile Include="PaymentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Permission.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PermissionGroup.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PermissionGroupMembership.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Person.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonAddress.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PersonDiagnos.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="PersonDisability.cs">
@@ -324,20 +256,55 @@
     <Compile Include="PersonTalon.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Record.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordContract.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RecordContractItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordContractLimit.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RecordDocument.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordEquipment.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordMember.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordPeriod.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordType.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RecordTypeCost.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordTypeEditor.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RecordTypeRole.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RecordTypeRolePermission.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RecordTypeUnit.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RelativeRelationship.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RelativeRelationshipConnection.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReportTemplate.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Room.cs">
@@ -346,6 +313,39 @@
     <Compile Include="ScheduleItem.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\Interfaces\IEnvironment.cs" />
+    <Compile Include="Misc\OptionValues.cs" />
+    <Compile Include="Misc\SpecialValues.cs" />
+    <Compile Include="PartialClasses\ExecutionPlace.cs" />
+    <Compile Include="PartialClasses\InsuranceDocument.cs" />
+    <Compile Include="PartialClasses\Complication.cs" />
+    <Compile Include="PartialClasses\MKB.cs" />
+    <Compile Include="PartialClasses\Okato.cs" />
+    <Compile Include="PartialClasses\Org.cs" />
+    <Compile Include="PartialClasses\PersonAddress.cs" />
+    <Compile Include="PartialClasses\PersonDisability.cs" />
+    <Compile Include="PartialClasses\PersonIdentityDocument.cs" />
+    <Compile Include="PartialClasses\PersonName.cs" />
+    <Compile Include="PartialClasses\PersonSocialStatus.cs" />
+    <Compile Include="PartialClasses\RecordContract.cs" />
+    <Compile Include="PartialClasses\RecordType.cs" />
+    <Compile Include="PartialClasses\RelativeRelationship.cs" />
+    <Compile Include="PartialClasses\Urgently.cs" />
+    <Compile Include="Services\Implementations\ADUserSystemInfoService.cs" />
+    <Compile Include="Services\Implementations\DbContextCacheService.cs" />
+    <Compile Include="Services\Implementations\DbContextProvider.cs" />
+    <Compile Include="Services\Implementations\DbEnvironment.cs" />
+    <Compile Include="Services\Implementations\DbSecurityService.cs" />
+    <Compile Include="Services\Implementations\RecordTypesTree.cs" />
+    <Compile Include="Services\Implementations\UserService.cs" />
+    <Compile Include="Services\Interfaces\IDbContextProvider.cs" />
+    <Compile Include="PartialClasses\DBSetting.cs" />
+    <Compile Include="PartialClasses\InsuranceCompany.cs" />
+    <Compile Include="PartialClasses\Person.cs" />
+    <Compile Include="PartialClasses\PersonStaff.cs" />
+    <Compile Include="PartialClasses\PersonTalon.cs" />
+    <Compile Include="PartialClasses\ScheduleItem.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IRecordTypeTree.cs" />
     <Compile Include="Services\Interfaces\IUserService.cs" />
     <Compile Include="Services\Interfaces\IUserSystemInfoService.cs" />
