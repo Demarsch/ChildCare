@@ -35,6 +35,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private readonly ILog logService;
 
+        private bool needLoadChilds = true;
 
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
 
@@ -63,6 +64,7 @@ namespace Shared.PatientRecords.ViewModels
             this.eventAggregator = eventAggregator;
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
+            needLoadChilds = true;
             this.visit = visitDTO;
             this.Item = new PersonRecItem() { Id = visitDTO.Id, Type = ItemType.Visit };
             BusyMediator = new BusyMediator();
@@ -93,7 +95,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             get
             {
-                if (childs == null)
+                if (needLoadChilds)
                     LoadItemsAsync();
                 return childs;
             }
@@ -114,7 +116,9 @@ namespace Shared.PatientRecords.ViewModels
             set
             {
                 if (SetProperty(ref isSelected, value) && value)
+                {
                     eventAggregator.GetEvent<SelectionChangedEvent<Visit>>().Publish(this.Id);
+                }
             }
         }
 
@@ -124,6 +128,8 @@ namespace Shared.PatientRecords.ViewModels
             get { return isExpanded; }
             set { SetProperty(ref isExpanded, value); }
         }
+
+        public PersonRecordEditorViewModel PersonRecordEditorViewModel { get; private set; }
 
         public FailureMediator FailureMediator { get; private set; }
 
@@ -140,6 +146,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private async void LoadItemsAsync()
         {
+            needLoadChilds = false;
             var loadingIsCompleted = false;
             if (childs == null)
                 Childs = new ObservableCollectionEx<IHierarchicalItem>();
@@ -206,6 +213,7 @@ namespace Shared.PatientRecords.ViewModels
                     childRecordsQuery.Dispose();
                 }
             }
+            return;
         }
         #endregion
     }

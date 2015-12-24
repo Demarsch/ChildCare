@@ -276,7 +276,6 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
-
         private async void InsertItemInTree(List<PersonRecItem> listToParent, ObservableCollectionEx<IHierarchicalItem> curLevelItems, int curParentIndex = 0)
         {
             IHierarchicalItem curTreeItem = null;
@@ -290,9 +289,16 @@ namespace Shared.PatientRecords.ViewModels
                     indexToAdd = i;
                 if (curTreeItem.Item.Equals(curItem))
                 {
-                    curTreeItem.IsExpanded = true;
+                    if (listToParent.Count - 1 == curParentIndex)
+                    {
+                        curTreeItem.IsSelected = true;
+                    }
+                    else
+                    {
+                        curTreeItem.IsExpanded = true;
+                        InsertItemInTree(listToParent, curTreeItem.Childs, ++curParentIndex);
+                    }
                     isExpanded = true;
-                    InsertItemInTree(listToParent, curTreeItem.Childs, ++curParentIndex);
                     return;
                 }
             }
@@ -312,11 +318,174 @@ namespace Shared.PatientRecords.ViewModels
                     }
                     else
                     {
-                        isExpanded = true;
+                        itemToAdd.IsExpanded = true;
+                        InsertItemInTree(listToParent, itemToAdd.Childs, ++curParentIndex);
                     }
                 }
             }
         }
+
+        public async void DeleteAssignmentFromList(int? assignmentId)
+        {
+            FailureMediator.Deactivate();
+            this.assignmentId = assignmentId.ToInt();
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Deleting assignment from records list with Id = {0} for person with Id = {1}", this.assignmentId, personId);
+            BusyMediator.Activate("Удаление назначения из списока пациента...");
+            var saveSuccesfull = false;
+            var assignmentQuery = patientRecordsService.GetAssignment(this.assignmentId);
+            try
+            {
+                var assignDateTime = await assignmentQuery.Select(x => x.AssignDateTime).FirstOrDefaultAsync();
+                var listToParent = await patientRecordsService.GetParentItems(new PersonRecItem() { Id = this.assignmentId, Type = ItemType.Assignment, ActualDatetime = assignDateTime });
+                if (listToParent.Count > 0)
+                    DeleteItemFromTree(listToParent.ToList(), RootItems);
+                this.assignmentId = 0;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to delete assignment from records list with Id = {0} for person with Id = {1}", this.assignmentId, personId);
+                FailureMediator.Activate("Не удалось удалить новое назначение из список пациенту. Попробуйте еще раз или обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                if (assignmentQuery != null)
+                {
+                    assignmentQuery.Dispose();
+                }
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
+        }
+
+        public async void DeleteVisitFromList(int? visitId)
+        {
+            FailureMediator.Deactivate();
+            this.visitId = visitId.ToInt();
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Delete visit from records list with Id = {0} for person with Id = {1}", this.visitId, personId);
+            BusyMediator.Activate("Удаление случая из списока пациента...");
+            var saveSuccesfull = false;
+            var visitQuery = patientRecordsService.GetVisit(this.visitId);
+            try
+            {
+                var beginDateTime = await visitQuery.Select(x => x.BeginDateTime).FirstOrDefaultAsync();
+                var listToParent = await patientRecordsService.GetParentItems(new PersonRecItem() { Id = this.visitId, Type = ItemType.Visit, ActualDatetime = beginDateTime });
+                if (listToParent.Count > 0)
+                    DeleteItemFromTree(listToParent.ToList(), RootItems);
+                this.visitId = 0;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to delete visit from records list with Id = {0} for person with Id = {1}", this.visitId, personId);
+                FailureMediator.Activate("Не удалось удалить случай из списока пациентов. Попробуйте еще раз или обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                if (visitQuery != null)
+                {
+                    visitQuery.Dispose();
+                }
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
+        }
+
+        public async void DeleteRecordFromList(int? recordId)
+        {
+            FailureMediator.Deactivate();
+            this.recordId = recordId.ToInt();
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Delete record from records list with Id = {0} for person with Id = {1}", this.recordId, personId);
+            BusyMediator.Activate("Удаление услуги из списока пациента...");
+            var saveSuccesfull = false;
+            var recordQuery = patientRecordsService.GetRecord(this.recordId);
+            try
+            {
+                var actualDateTime = await recordQuery.Select(x => x.ActualDateTime).FirstOrDefaultAsync();
+                var listToParent = await patientRecordsService.GetParentItems(new PersonRecItem() { Id = this.recordId, Type = ItemType.Record, ActualDatetime = actualDateTime });
+                if (listToParent.Count > 0)
+                    DeleteItemFromTree(listToParent.ToList(), RootItems);
+                this.recordId = 0;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to delete record from records list with Id = {0} for person with Id = {1}", this.recordId, personId);
+                FailureMediator.Activate("Не удалось удалить услугу из списока пациента. Попробуйте еще раз или обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                if (recordQuery != null)
+                {
+                    recordQuery.Dispose();
+                }
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
+        }
+
+        private void DeleteItemFromTree(List<PersonRecItem> listToParent, ObservableCollectionEx<IHierarchicalItem> curLevelItems, int curParentIndex = 0)
+        {
+            IHierarchicalItem curTreeItem = null;
+            PersonRecItem curItem = listToParent[curParentIndex];
+            for (int i = 0; i < curLevelItems.Count; i++)
+            {
+                curTreeItem = curLevelItems[i];
+                if (curTreeItem.Item.Equals(curItem))
+                {
+                    if (listToParent.Count - 1 == curParentIndex)
+                    {
+                        curLevelItems.Remove(curTreeItem);
+                        return;
+                    }
+                    else
+                    {
+                        curTreeItem.IsExpanded = true;
+                        DeleteItemFromTree(listToParent, curTreeItem.Childs, ++curParentIndex);
+                    }
+                }
+            }
+        }
+
 
         private async Task<IHierarchicalItem> GetHierarchicalItem(PersonRecItem item)
         {
@@ -345,7 +514,7 @@ namespace Shared.PatientRecords.ViewModels
                             EndDateTime = x.EndDateTime,
                             ActualDateTime = x.BeginDateTime,
                             FinSource = x.FinancingSource.Name,
-                            Name = x.VisitTemplate.ShortName,
+                            Name = x.VisitTemplate.Name,
                             IsCompleted = x.IsCompleted
                         }).FirstOrDefaultAsync(token);
 

@@ -126,6 +126,8 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref isExpanded, value); }
         }
 
+        public PersonRecordEditorViewModel PersonRecordEditorViewModel { get; private set; }
+
         public FailureMediator FailureMediator { get; private set; }
 
         public BusyMediator BusyMediator { get; set; }

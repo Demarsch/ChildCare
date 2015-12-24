@@ -667,7 +667,14 @@ namespace Shared.PatientRecords.Services
                             curItem = null;
                             break;
                         case ItemType.Record:
-                            var record = await context.Set<Record>().Where(x => x.Id == curItem.Id).Select(x => new { x.Id, x.ParentRecordId, x.ParentAssignmentId, x.VisitId }).FirstOrDefaultAsync();
+                            var record = await context.Set<Record>().Where(x => x.Id == curItem.Id).Select(x => new
+                            {
+                                x.Id,
+                                x.ParentRecordId,
+                                x.ParentAssignmentId,
+                                x.VisitId,
+                                ActualDateTime = x.ParentRecordId.HasValue ? x.Record1.ActualDateTime : x.ParentAssignmentId.HasValue ? x.Assignment.AssignDateTime : x.Visit.BeginDateTime
+                            }).FirstOrDefaultAsync();
                             if (record.ParentRecordId.HasValue)
                                 curItem = new PersonRecItem()
                                 {
@@ -689,7 +696,14 @@ namespace Shared.PatientRecords.Services
                                     };
                             break;
                         case ItemType.Assignment:
-                            var assignment = await context.Set<Assignment>().Where(x => x.Id == curItem.Id).Select(x => new { x.Id, x.ParentRecordId, x.ParentAssignmentId, x.VisitId }).FirstOrDefaultAsync();
+                            var assignment = await context.Set<Assignment>().Where(x => x.Id == curItem.Id).Select(x => new
+                            {
+                                x.Id,
+                                x.ParentRecordId,
+                                x.ParentAssignmentId,
+                                x.VisitId,
+                                ActualDateTime = x.ParentRecordId.HasValue ? x.Record1.ActualDateTime : x.ParentAssignmentId.HasValue ? x.Assignment1.AssignDateTime : x.Visit.BeginDateTime
+                            }).FirstOrDefaultAsync();
                             if (assignment.ParentRecordId.HasValue)
                                 curItem = new PersonRecItem()
                                 {

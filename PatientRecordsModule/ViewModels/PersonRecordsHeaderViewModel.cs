@@ -510,6 +510,8 @@ namespace Shared.PatientRecords.ViewModels
 
         public ICommand ReturnToActiveVisitCommand { get { return personRecordsViewModel.ReturnToActiveVisitCommand; } }
 
+        public ICommand DeleteVisitCommand { get { return personRecordsViewModel.DeleteVisitCommand; } }
+
         public ICommand CreateRecordCommand { get { return personRecordsViewModel.CreateRecordCommand; } }
 
         public ICommand CompleteRecordCommand { get { return personRecordsViewModel.CompleteRecordCommand; } }

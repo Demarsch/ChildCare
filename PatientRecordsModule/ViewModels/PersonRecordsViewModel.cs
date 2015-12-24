@@ -285,6 +285,91 @@ namespace Shared.PatientRecords.ViewModels
             VisitCloseInteractionRequest.Raise(visitCloseViewModel, (vm) => {/* UpdateVisit(vm.VisitId);*/ });
         }
 
+
+        public ICommand ReturnToActiveVisitCommand { get { return returnToActiveVisitCommand; } }
+        private void ReturnToActiveVisit(int? visitId)
+        {
+            if (visitId < 1) return;
+            FailureMediator.Deactivate();
+            this.visitId = visitId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Uncompleting visit with Id = {0} for person with Id = {1}", visitId, personId);
+            BusyMediator.Activate("Открытие случая...");
+            var saveSuccesfull = false;
+            try
+            {
+                patientRecordsService.ReturnToActiveVisitAsync(visitId.Value, token);
+                saveSuccesfull = true;
+                this.visitId = 0;
+                //UpdateVisit(visitId);
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to uncomplete visit with Id = {0} for person with Id = {1}", visitId, personId);
+                FailureMediator.Activate("Не удалось открыть случай. Попробуйте еще раз или обратитесь в службу поддержки", completeVisitCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+
+                }
+            }
+        }
+
+        public ICommand DeleteVisitCommand { get { return deleteVisitCommand; } }
+        private void DeleteVisitAsync(int? visitId)
+        {
+            FailureMediator.Deactivate();
+            this.visitId = visitId;
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Deleting visit with Id = {0} for person with Id = {1}", visitId, personId);
+            BusyMediator.Activate("Удаление случая...");
+            var saveSuccesfull = false;
+            try
+            {
+                patientRecordsService.DeleteVisitAsync(visitId.Value, 1, token);
+                saveSuccesfull = true;
+                this.visitId = 0;
+                //DeleteVisitFromList(visitId);
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to delete visit with Id = {0} for person with Id = {1}", visitId, personId);
+                FailureMediator.Activate("Не удалось удалить случай. Попробуйте еще раз или обратитесь в службу поддержки", deleteVisitCommandWrapper, ex);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (saveSuccesfull)
+                {
+                    personRecordListViewModel.DeleteVisitFromList(visitId);
+                    NotificationMediator.Activate("Случай успешно удален", NotificationMediator.DefaultHideTime);
+                }
+            }
+        }
+
         public ICommand CreateRecordCommand { get { return createRecordCommand; } }
         private async void CreateRecord()
         {
@@ -429,88 +514,6 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
-        public ICommand ReturnToActiveVisitCommand { get { return returnToActiveVisitCommand; } }
-        private void ReturnToActiveVisit(int? visitId)
-        {
-            if (visitId < 1) return;
-            FailureMediator.Deactivate();
-            this.visitId = visitId;
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            logService.InfoFormat("Uncompleting visit with Id = {0} for person with Id = {1}", visitId, personId);
-            BusyMediator.Activate("Открытие случая...");
-            var saveSuccesfull = false;
-            try
-            {
-                patientRecordsService.ReturnToActiveVisitAsync(visitId.Value, token);
-                saveSuccesfull = true;
-                this.visitId = 0;
-                //UpdateVisit(visitId);
-            }
-            catch (OperationCanceledException)
-            {
-                //Nothing to do as it means that we somehow cancelled save operation
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to uncomplete visit with Id = {0} for person with Id = {1}", visitId, personId);
-                FailureMediator.Activate("Не удалось открыть случай. Попробуйте еще раз или обратитесь в службу поддержки", completeVisitCommandWrapper, ex);
-            }
-            finally
-            {
-                BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-
-                }
-            }
-        }
-
-        public ICommand DeleteVisitCommand { get { return deleteVisitCommand; } }
-        private void DeleteVisitAsync(int? visitId)
-        {
-            FailureMediator.Deactivate();
-            this.visitId = visitId;
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
-            logService.InfoFormat("Deleting visit with Id = {0} for person with Id = {1}", visitId, personId);
-            BusyMediator.Activate("Удаление случая...");
-            var saveSuccesfull = false;
-            try
-            {
-                patientRecordsService.DeleteVisitAsync(visitId.Value, 1, token);
-                saveSuccesfull = true;
-                this.visitId = 0;
-                //DeleteVisitFromList(visitId);
-            }
-            catch (OperationCanceledException)
-            {
-                //Nothing to do as it means that we somehow cancelled save operation
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to delete visit with Id = {0} for person with Id = {1}", visitId, personId);
-                FailureMediator.Activate("Не удалось удалить случай. Попробуйте еще раз или обратитесь в службу поддержки", deleteVisitCommandWrapper, ex);
-            }
-            finally
-            {
-                BusyMediator.Deactivate();
-                if (saveSuccesfull)
-                {
-
-                }
-            }
-        }
 
         public ICommand CreateAnalyseCommand { get { return сreateAnalyseCommand; } }
         private async void СreateAnalyse(object parameter)

@@ -124,6 +124,8 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref childs, value); }
         }
 
+        public PersonRecordEditorViewModel PersonRecordEditorViewModel { get; private set; }
+
         public FailureMediator FailureMediator { get; private set; }
 
         public BusyMediator BusyMediator { get; set; }

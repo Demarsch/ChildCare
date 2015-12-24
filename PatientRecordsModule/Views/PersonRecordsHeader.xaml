@@ -78,7 +78,7 @@
             <fluent:Button Header="Изменить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitEdit48x48.png" 
                            Command="{Binding EditVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
             <fluent:Button Header="Удалить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitRemove48x48.png" 
-                           Command="{Binding RemoveVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
+                           Command="{Binding DeleteVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
         </StackPanel>
         <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
     </fluent:RibbonGroupBox>
