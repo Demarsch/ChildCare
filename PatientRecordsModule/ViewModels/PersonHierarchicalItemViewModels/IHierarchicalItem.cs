@@ -19,8 +19,10 @@ namespace Shared.PatientRecords.ViewModels
 
         PersonRecItem Item { get; }
 
-        PersonRecordEditorViewModel PersonRecordEditorViewModel { get; }
+        IPersonRecordEditor PersonRecordEditorViewModel { get; }
 
         ObservableCollectionEx<IHierarchicalItem> Childs { get; }
+
+        void Initialize(PersonRecItem item);
     }
 }

@@ -25,35 +25,27 @@ using Shared.PatientRecords.Services;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class PersonRecordEditorViewModel : TrackableBindableBase, IDisposable, IDataErrorInfo, IChangeTrackerMediator
+    public class PersonRecordEditorViewModel : TrackableBindableBase, IDisposable, IDataErrorInfo, IChangeTrackerMediator, IPersonRecordEditor
     {
         #region Fields
 
         private readonly IPatientRecordsService patientRecordsService;
-
         private readonly ILog logService;
-
         private readonly IRecordTypeEditorResolver recordTypeEditorResolver;
-
         private readonly IUserService userService;
-
         private readonly IEventAggregator eventAggregator;
-
         private readonly ISecurityService securityService;
 
         private readonly CommandWrapper reloadRecordBrigadeCommandWrapper;
-
         private readonly CommandWrapper reloadDataSourceCommandWrapper;
-
         private readonly CommandWrapper reloadRecordCommonDataCommandWrapper;
-
         private readonly CommandWrapper saveChangesCommandWrapper;
 
         private CancellationTokenSource currentOperationToken;
 
         private int recordTypeId;
 
-        private DateTime onDate = DateTime.MaxValue;
+        private DateTime onDate = SpecialValues.MaxDate;
 
         private int personId;
 
@@ -583,7 +575,7 @@ namespace Shared.PatientRecords.ViewModels
             SetRVAIds(visitId, 0, 0);
         }
 
-        private void SetRVAIds(int visitId, int assignmentId, int recordId)
+        public void SetRVAIds(int visitId, int assignmentId, int recordId)
         {
             VisitId = visitId;
             AssignmentId = assignmentId;

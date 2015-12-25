@@ -23,6 +23,7 @@ using System.Windows;
 using WpfControls.Editors;
 using Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels;
 using Shared.PatientRecords.Views.RecordTypesProtocolViewModels;
+using Shared.PatientRecords.ViewModels.PersonHierarchicalItemViewModels;
 
 namespace Shared.PatientRecords
 {
@@ -99,10 +100,10 @@ namespace Shared.PatientRecords
         {
             container.RegisterType<PersonRecordsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonRecordListViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonRecordEditorViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonHierarchicalAssignmentsViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonHierarchicalVisitsViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonHierarchicalRecordsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonRecordEditorViewModel>(new TransientLifetimeManager());
+            container.RegisterType<PersonHierarchicalAssignmentsViewModel>(new TransientLifetimeManager());
+            container.RegisterType<PersonHierarchicalVisitsViewModel>(new TransientLifetimeManager());
+            container.RegisterType<PersonHierarchicalRecordsViewModel>(new TransientLifetimeManager());
             container.RegisterType<VisitEditorViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<VisitCloseViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordCreateViewModel>(new ContainerControlledLifetimeManager());
@@ -152,6 +153,8 @@ namespace Shared.PatientRecords
 
         private void RegisterServices()
         {
+            container.RegisterType<IHierarchicalRepository, HierarchicalRepository>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IPersonRecordEditor, PersonRecordEditorViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPatientRecordsService, PatientRecordsService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDiagnosService, DiagnosService>(new ContainerControlledLifetimeManager());

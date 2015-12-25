@@ -159,6 +159,13 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref personId, value); }
         }
 
+        private IPersonRecordEditor selectedItemEditor;
+        public IPersonRecordEditor SelectedItemEditor
+        {
+            get { return selectedItemEditor; }
+            set { SetProperty(ref selectedItemEditor, value); }
+        }
+
         public BusyMediator BusyMediator { get; set; }
 
         public FailureMediator FailureMediator { get; private set; }
@@ -212,6 +219,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private void SubscribeToEvents()
         {
+            eventAggregator.GetEvent<PubSubEvent<IPersonRecordEditor>>().Subscribe(OnEditorSelected);
             eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelected);
         }
 
@@ -219,6 +227,11 @@ namespace Shared.PatientRecords.ViewModels
         {
             this.PersonId = personId;
             personRecordListViewModel.LoadRootItemsAsync(this.PersonId);
+        }
+
+        private void OnEditorSelected(IPersonRecordEditor personRecordEditor)
+        {
+            SelectedItemEditor = personRecordEditor;
         }
 
         private void UnsubscriveFromEvents()
@@ -366,7 +379,7 @@ namespace Shared.PatientRecords.ViewModels
                 {
                     personRecordListViewModel.DeleteVisitFromList(visitId);
                     NotificationMediator.Activate("Случай успешно удален", NotificationMediator.DefaultHideTime);
-                }
+                };
             }
         }
 

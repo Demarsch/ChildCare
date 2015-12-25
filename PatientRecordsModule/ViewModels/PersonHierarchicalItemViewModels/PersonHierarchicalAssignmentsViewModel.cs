@@ -21,32 +21,29 @@ using Prism.Events;
 using Core.Wpf.Events;
 using System.Collections.Generic;
 using Shared.PatientRecords.Misc;
+using Shared.PatientRecords.ViewModels.PersonHierarchicalItemViewModels;
 
 namespace Shared.PatientRecords.ViewModels
 {
     public class PersonHierarchicalAssignmentsViewModel : BindableBase, IDisposable, IHierarchicalItem
     {
         #region Fields
-        private readonly AssignmentDTO assignment;
 
         private readonly IPatientRecordsService patientRecordsService;
-
         private readonly IEventAggregator eventAggregator;
-
         private readonly ILog logService;
+        private readonly IHierarchicalRepository childItemViewModelRepository;
 
-        private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
+        private readonly CommandWrapper reloadChildsForAssignmentCommandWrapper;
+        private readonly CommandWrapper initializetAssignmentCommandWrapper;
+
 
         private CancellationTokenSource currentLoadingToken;
         #endregion
 
         #region Constructors
-        public PersonHierarchicalAssignmentsViewModel(AssignmentDTO assignment, IPatientRecordsService patientRecordsService, IEventAggregator eventAggregator, ILog logService)
+        public PersonHierarchicalAssignmentsViewModel(IPatientRecordsService patientRecordsService, IEventAggregator eventAggregator, ILog logService, IHierarchicalRepository childItemViewModelRepository)
         {
-            if (assignment == null)
-            {
-                throw new ArgumentNullException("assignment");
-            }
             if (patientRecordsService == null)
             {
                 throw new ArgumentNullException("patientRecordsService");
@@ -59,49 +56,76 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("eventAggregator");
             }
+            if (childItemViewModelRepository == null)
+            {
+                throw new ArgumentNullException("childItemViewModelRepository");
+            }
+            this.childItemViewModelRepository = childItemViewModelRepository;
             this.eventAggregator = eventAggregator;
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
-            this.assignment = assignment;
-            this.Item = new PersonRecItem() { Id = assignment.Id, Type = ItemType.Assignment };
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            reloadPatientVisitsCommandWrapper = new CommandWrapper
+            reloadChildsForAssignmentCommandWrapper = new CommandWrapper
             {
                 Command = new DelegateCommand(() => LoadItemsAsync()),
+                CommandName = "Повторить",
+            };
+            initializetAssignmentCommandWrapper = new CommandWrapper
+            {
+                Command = new DelegateCommand<PersonRecItem>((x) => Initialize(x)),
+                CommandParameter = Item,
                 CommandName = "Повторить",
             };
         }
         #endregion
 
         #region Properties
-        public int Id { get { return assignment.Id; } }
 
-        public string AssignDateTime { get { return assignment.ActualDateTime.ToString("dd.MM.yyyy HH:mm"); } }
+        private DateTime actualDateTime;
+        public DateTime ActualDateTime
+        {
+            get { return actualDateTime; }
+            set { SetProperty(ref actualDateTime, value); }
+        }
 
-        public string RecordTypeName { get { return assignment.RecordTypeName; } }
+        private string recordTypeName = string.Empty;
+        public string RecordTypeName
+        {
+            get { return recordTypeName; }
+            set { SetProperty(ref recordTypeName, value); }
+        }
 
-        public string RoomName { get { return assignment.RoomName; } }
+        private string roomName = string.Empty;
+        public string RoomName
+        {
+            get { return roomName; }
+            set { SetProperty(ref roomName, value); }
+        }
 
-        public string FinSource { get { return assignment.FinancingSourceName; } }
+        private string finSource = string.Empty;
+        public string FinSource
+        {
+            get { return finSource; }
+            set { SetProperty(ref finSource, value); }
+        }
 
-        public DateTime ActualDateTime { get { return assignment.ActualDateTime; } }
-
-        private bool isExpanded;
+        private bool isExpanded = false;
         public bool IsExpanded
         {
             get { return isExpanded; }
             set { SetProperty(ref isExpanded, value); }
         }
 
-        private bool isSelected;
+        private bool isSelected = false;
         public bool IsSelected
         {
             get { return isSelected; }
             set
             {
-                if (SetProperty(ref isSelected, value) && value)
-                    eventAggregator.GetEvent<SelectionChangedEvent<Assignment>>().Publish(this.Id);
+                SetProperty(ref isSelected, value);
+                //    if ( && value)
+                //        eventAggregator.GetEvent<SelectionChangedEvent<Assignment>>().Publish(this.Id);
             }
         }
 
@@ -124,7 +148,7 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref childs, value); }
         }
 
-        public PersonRecordEditorViewModel PersonRecordEditorViewModel { get; private set; }
+        public IPersonRecordEditor PersonRecordEditorViewModel { get; private set; }
 
         public FailureMediator FailureMediator { get; private set; }
 
@@ -135,7 +159,65 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-            reloadPatientVisitsCommandWrapper.Dispose();
+            reloadChildsForAssignmentCommandWrapper.Dispose();
+            initializetAssignmentCommandWrapper.Dispose();
+        }
+
+        public async void Initialize(PersonRecItem item)
+        {
+            childs = null;
+            Item = item;
+            ActualDateTime = SpecialValues.MinDate;
+            FinSource = string.Empty;
+            RecordTypeName = string.Empty;
+            RoomName = string.Empty;
+
+            var loadingIsCompleted = false;
+            currentLoadingToken = new CancellationTokenSource();
+            var token = currentLoadingToken.Token;
+            BusyMediator.Activate(string.Empty);
+            logService.InfoFormat("Loading assignment hierarchical item for assignment with Id {0}...", Item.Id);
+            IDisposableQueryable<Assignment> assignmentQuery = null;
+            try
+            {
+                assignmentQuery = patientRecordsService.GetAssignment(Item.Id);
+                var assignment = await assignmentQuery.Select(x => new
+                {
+                    ActualDateTime = x.AssignDateTime,
+                    FinancingSourceName = x.FinancingSource.Name,
+                    RecordTypeName = x.RecordType.ShortName != string.Empty ? x.RecordType.ShortName : x.RecordType.Name,
+                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                }).FirstOrDefaultAsync(token);
+
+                ActualDateTime = assignment.ActualDateTime;
+                FinSource = assignment.FinancingSourceName;
+                RecordTypeName = assignment.RecordTypeName;
+                RoomName = assignment.RoomName;
+
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load assignment hierarchical item for assignment with Id {0}", Item.Id);
+                FailureMediator.Activate("Не удалость загрузить данные назначения. Попробуйте еще раз или обратитесь в службу поддержки", initializetAssignmentCommandWrapper, ex, true);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (assignmentQuery != null)
+                {
+                    assignmentQuery.Dispose();
+                }
+            }
         }
 
         private async void LoadItemsAsync()
@@ -147,37 +229,28 @@ namespace Shared.PatientRecords.ViewModels
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
             BusyMediator.Activate(string.Empty);
-            logService.InfoFormat("Loading child items for assignment with Id {0}...", assignment.Id);
+            logService.InfoFormat("Loading child items for assignment with Id {0}...", Item.Id);
             IDisposableQueryable<Assignment> childAssignmentsQuery = null;
             IDisposableQueryable<Record> childRecordsQuery = null;
             try
             {
-                childAssignmentsQuery = patientRecordsService.GetAssignmentsChildAssignmentsQuery(assignment.Id);
-                childRecordsQuery = patientRecordsService.GetAssignmentsChildRecordsQuery(assignment.Id);
-                var loadChildAssignmentsTask = childAssignmentsQuery.Select(x => new AssignmentDTO()
+                childAssignmentsQuery = patientRecordsService.GetAssignmentsChildAssignmentsQuery(Item.Id);
+                childRecordsQuery = patientRecordsService.GetAssignmentsChildRecordsQuery(Item.Id);
+                var loadChildAssignmentsTask = childAssignmentsQuery.Select(x => new PersonRecItem
                 {
                     Id = x.Id,
-                    ActualDateTime = x.AssignDateTime,
-                    FinancingSourceName = x.FinancingSource.Name,
-                    RecordTypeName = x.RecordType.ShortName != string.Empty ? x.RecordType.ShortName : x.RecordType.Name,
-                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                    ActualDatetime = x.AssignDateTime,
+                    Type = ItemType.Assignment
                 }).ToListAsync(token);
-                var loadChildRecordsTask = childRecordsQuery.Select(x => new RecordDTO()
+                var loadChildRecordsTask = childRecordsQuery.Select(x => new PersonRecItem
                 {
                     Id = x.Id,
-                    ActualDateTime = x.ActualDateTime,
-                    RecordTypeName = x.RecordType.Name,
-                    BeginDateTime = x.BeginDateTime,
-                    EndDateTime = x.EndDateTime,
-                    IsCompleted = x.IsCompleted,
-                    FinSourceName = "ист. фин.",
-                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
+                    ActualDatetime = x.ActualDateTime,
+                    Type = ItemType.Record
                 }).ToListAsync(token);
                 await Task.WhenAll(loadChildAssignmentsTask, loadChildRecordsTask);
-                var resChilds = new List<IHierarchicalItem>();
-                resChilds.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
-                resChilds.AddRange(loadChildRecordsTask.Result.Select(x => new PersonHierarchicalRecordsViewModel(x, patientRecordsService, eventAggregator, logService)));
-                Childs.AddRange(resChilds.OrderBy(x => x.ActualDateTime));
+                var resChilds = loadChildAssignmentsTask.Result.Union(loadChildRecordsTask.Result).OrderBy(x => x.ActualDatetime);
+                Childs.AddRange(resChilds.Select(x => childItemViewModelRepository.GetHierarchicalItem(x)));
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -186,8 +259,8 @@ namespace Shared.PatientRecords.ViewModels
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to load child items for assignment with Id {0}", assignment.Id);
-                FailureMediator.Activate("Не удалость загрузить вложенные элементы назначения. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
+                logService.ErrorFormatEx(ex, "Failed to load child items for assignment with Id {0}", Item.Id);
+                FailureMediator.Activate("Не удалость загрузить вложенные элементы назначения. Попробуйте еще раз или обратитесь в службу поддержки", reloadChildsForAssignmentCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
             finally

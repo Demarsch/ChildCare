@@ -133,6 +133,9 @@
     <Compile Include="Misc\PersonItem.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseRefferenceCollectionViewModel.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseRefferenceViewModel.cs" />
+    <Compile Include="ViewModels\IPersonRecordEditor.cs" />
+    <Compile Include="ViewModels\PersonHierarchicalItemViewModels\HierarchicalRepository.cs" />
+    <Compile Include="ViewModels\PersonHierarchicalItemViewModels\IHierarchicalRepository.cs" />
     <Compile Include="ViewModels\PersonHierarchicalItemViewModels\IHierarchicalItem.cs" />
     <Compile Include="Misc\IRecordTypeEditorResolver.cs" />
     <Compile Include="Misc\ParameterNames.cs" />

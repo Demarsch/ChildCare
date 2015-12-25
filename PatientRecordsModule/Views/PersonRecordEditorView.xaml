@@ -14,6 +14,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
                 <ResourceDictionary>
+                    
                     <DataTemplate x:Key="BrigadeItemTemplate">
                         <StackPanel>
                             <Image Source="pack://application:,,,/Core;Component/Resources/Images/Man48x48.png" Height="48" Width="48"/>
@@ -57,7 +58,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>           
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0"
@@ -210,7 +211,7 @@
             <TextBlock Grid.Row="11" Grid.Column="0"  Text="Примечание:" FontWeight="Medium"  Margin="5,2" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
             <TextBlock Grid.Row="11" Grid.Column="1"  Text="{Binding VisitNoteView}" FontSize="13" Margin="10,2" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
         </Grid>
-        
+
         <ContentControl Grid.Row="3" Content="{Binding ProtocolEditor}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                         Visibility="{Binding ShowProtocol, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}"/>
 

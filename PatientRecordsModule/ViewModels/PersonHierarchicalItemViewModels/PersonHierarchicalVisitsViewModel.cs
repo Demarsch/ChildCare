@@ -21,33 +21,31 @@ using Core.Misc;
 using Core.Wpf.Events;
 using Prism.Events;
 using Shared.PatientRecords.Misc;
+using Shared.PatientRecords.ViewModels.PersonHierarchicalItemViewModels;
 
 namespace Shared.PatientRecords.ViewModels
 {
     public class PersonHierarchicalVisitsViewModel : BindableBase, IDisposable, IHierarchicalItem
     {
         #region Fields
-        private readonly VisitDTO visit;
 
         private readonly IPatientRecordsService patientRecordsService;
-
         private readonly IEventAggregator eventAggregator;
-
         private readonly ILog logService;
-
-        private bool needLoadChilds = true;
+        private readonly IHierarchicalRepository childItemViewModelRepository;
 
         private readonly CommandWrapper reloadPatientVisitsCommandWrapper;
+        private readonly CommandWrapper initializetAssignmentCommandWrapper;
 
         private CancellationTokenSource currentLoadingToken;
         #endregion
 
         #region Constructors
-        public PersonHierarchicalVisitsViewModel(VisitDTO visitDTO, IPatientRecordsService patientRecordsService, IEventAggregator eventAggregator, ILog logService)
+        public PersonHierarchicalVisitsViewModel(VisitDTO visitDTO, IPatientRecordsService patientRecordsService, IEventAggregator eventAggregator, ILog logService, IHierarchicalRepository childItemViewModelRepository)
         {
-            if (visitDTO == null)
+            if (childItemViewModelRepository == null)
             {
-                throw new ArgumentNullException("visitDTO");
+                throw new ArgumentNullException("childItemViewModelRepository");
             }
             if (patientRecordsService == null)
             {
@@ -64,9 +62,7 @@ namespace Shared.PatientRecords.ViewModels
             this.eventAggregator = eventAggregator;
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
-            needLoadChilds = true;
-            this.visit = visitDTO;
-            this.Item = new PersonRecItem() { Id = visitDTO.Id, Type = ItemType.Visit };
+            this.childItemViewModelRepository = childItemViewModelRepository;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             reloadPatientVisitsCommandWrapper = new CommandWrapper
@@ -74,28 +70,58 @@ namespace Shared.PatientRecords.ViewModels
                 Command = new DelegateCommand(() => LoadItemsAsync()),
                 CommandName = "Повторить",
             };
+            initializetAssignmentCommandWrapper = new CommandWrapper
+            {
+                Command = new DelegateCommand<PersonRecItem>((x) => Initialize(x)),
+                CommandParameter = Item,
+                CommandName = "Повторить",
+            };
         }
         #endregion
 
         #region Properties
-        public int Id { get { return visit.Id; } }
+        //visit.BeginDateTime.ToString("dd.MM.yyyy") + " - " + (visit.EndDateTime.HasValue ? visit.EndDateTime.Value.ToString("dd.MM.yyyy") : "..."); 
+        private DateTime actualDateTime;
+        public DateTime ActualDateTime
+        {
+            get { return actualDateTime; }
+            set { SetProperty(ref actualDateTime, value); }
+        }
 
-        public string DateTimePeriod { get { return visit.BeginDateTime.ToString("dd.MM.yyyy") + " - " + (visit.EndDateTime.HasValue ? visit.EndDateTime.Value.ToString("dd.MM.yyyy") : "..."); } }
+        private string dateTimePeriod = string.Empty;
+        public string DateTimePeriod
+        {
+            get { return dateTimePeriod; }
+            set { SetProperty(ref dateTimePeriod, value); }
+        }
 
-        public string Name { get { return visit.Name; } }
+        private string name = string.Empty;
+        public string Name
+        {
+            get { return name; }
+            set { SetProperty(ref name, value); }
+        }
 
-        public string FinSource { get { return visit.FinSource; } }
+        private string finSource = string.Empty;
+        public string FinSource
+        {
+            get { return finSource; }
+            set { SetProperty(ref finSource, value); }
+        }
 
-        public bool IsCompleted { get { return visit.IsCompleted == true; } }
-
-        public DateTime ActualDateTime { get { return visit.ActualDateTime; } }
+        private bool isCompleted = false;
+        public bool IsCompleted
+        {
+            get { return isCompleted; }
+            set { SetProperty(ref isCompleted, value); }
+        }
 
         private ObservableCollectionEx<IHierarchicalItem> childs;
         public ObservableCollectionEx<IHierarchicalItem> Childs
         {
             get
             {
-                if (needLoadChilds)
+                if (childs == null)
                     LoadItemsAsync();
                 return childs;
             }
@@ -115,10 +141,11 @@ namespace Shared.PatientRecords.ViewModels
             get { return isSelected; }
             set
             {
-                if (SetProperty(ref isSelected, value) && value)
-                {
-                    eventAggregator.GetEvent<SelectionChangedEvent<Visit>>().Publish(this.Id);
-                }
+                SetProperty(ref isSelected, value);
+                //if (SetProperty(ref isSelected, value) && value)
+                //{
+                //    eventAggregator.GetEvent<SelectionChangedEvent<Visit>>().Publish(this.Id);
+                //}
             }
         }
 
@@ -129,7 +156,7 @@ namespace Shared.PatientRecords.ViewModels
             set { SetProperty(ref isExpanded, value); }
         }
 
-        public PersonRecordEditorViewModel PersonRecordEditorViewModel { get; private set; }
+        public IPersonRecordEditor PersonRecordEditorViewModel { get; private set; }
 
         public FailureMediator FailureMediator { get; private set; }
 
@@ -142,49 +169,40 @@ namespace Shared.PatientRecords.ViewModels
         public void Dispose()
         {
             reloadPatientVisitsCommandWrapper.Dispose();
+            initializetAssignmentCommandWrapper.Dispose();
         }
 
-        private async void LoadItemsAsync()
+        public async void Initialize(PersonRecItem item)
         {
-            needLoadChilds = false;
+            childs = null;
+            Item = item;
+            ActualDateTime = SpecialValues.MinDate;
+            FinSource = string.Empty;
+            Name = string.Empty;
+
             var loadingIsCompleted = false;
-            if (childs == null)
-                Childs = new ObservableCollectionEx<IHierarchicalItem>();
-            Childs.Clear();
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
             BusyMediator.Activate(string.Empty);
-            logService.InfoFormat("Loading child items for visit with Id {0}...", visit.Id);
-            IDisposableQueryable<Assignment> childAssignmentsQuery = null;
-            IDisposableQueryable<Record> childRecordsQuery = null;
+            logService.InfoFormat("Loading visit hierarchical item for visit with Id {0}...", Item.Id);
+            IDisposableQueryable<Visit> visitQuery = null;
             try
             {
-                childAssignmentsQuery = patientRecordsService.GetVisitsChildAssignmentsQuery(visit.Id);
-                childRecordsQuery = patientRecordsService.GetVisitsChildRecordsQuery(visit.Id);
-                var loadChildAssignmentsTask = childAssignmentsQuery.Select(x => new AssignmentDTO()
-                    {
-                        Id = x.Id,
-                        ActualDateTime = x.AssignDateTime,
-                        FinancingSourceName = x.FinancingSource.Name,
-                        RecordTypeName = x.RecordType.Name,
-                        RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
-                    }).ToListAsync(token);
-                var loadChildRecordsTask = childRecordsQuery.Select(x => new RecordDTO()
+                visitQuery = patientRecordsService.GetVisit(Item.Id);
+                var visit = await visitQuery.Select(x => new
                 {
-                    Id = x.Id,
-                    ActualDateTime = x.ActualDateTime,
-                    RecordTypeName = x.RecordType.Name,
-                    BeginDateTime = x.BeginDateTime,
-                    EndDateTime = x.EndDateTime,
-                    IsCompleted = x.IsCompleted,
-                    FinSourceName = x.Visit != null ? x.Visit.FinancingSource.ShortName : string.Empty,
-                    RoomName = (x.Room.Number != string.Empty ? x.Room.Number + " - " : string.Empty) + x.Room.Name,
-                }).ToListAsync(token);
-                await Task.WhenAll(loadChildAssignmentsTask, loadChildRecordsTask);
-                var resChilds = new List<IHierarchicalItem>();
-                resChilds.AddRange(loadChildAssignmentsTask.Result.Select(x => new PersonHierarchicalAssignmentsViewModel(x, patientRecordsService, eventAggregator, logService)));
-                resChilds.AddRange(loadChildRecordsTask.Result.Select(x => new PersonHierarchicalRecordsViewModel(x, patientRecordsService, eventAggregator, logService)));
-                Childs.AddRange(resChilds.OrderBy(x => x.ActualDateTime));
+                    x.BeginDateTime,
+                    x.EndDateTime,
+                    ActualDateTime = x.BeginDateTime,
+                    FinancingSourceName = x.FinancingSource.Name,
+                    Name = x.VisitTemplate.Name,
+                }).FirstOrDefaultAsync(token);
+
+                ActualDateTime = visit.ActualDateTime;
+                DateTimePeriod = visit.BeginDateTime.ToString("dd.MM.yyyy") + " - " + (visit.EndDateTime.HasValue ? visit.EndDateTime.Value.ToString("dd.MM.yyyy") : "...");
+                FinSource = visit.FinancingSourceName;
+                Name = visit.Name;
+
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -193,7 +211,64 @@ namespace Shared.PatientRecords.ViewModels
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to load child items for visit with Id {0}", visit.Id);
+                logService.ErrorFormatEx(ex, "Failed to load visit hierarchical item for visit with Id {0}", Item.Id);
+                FailureMediator.Activate("Не удалость загрузить данные случая. Попробуйте еще раз или обратитесь в службу поддержки", initializetAssignmentCommandWrapper, ex, true);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                CommandManager.InvalidateRequerySuggested();
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (visitQuery != null)
+                {
+                    visitQuery.Dispose();
+                }
+            }
+        }
+
+        private async void LoadItemsAsync()
+        {
+            var loadingIsCompleted = false;
+            if (childs == null)
+                Childs = new ObservableCollectionEx<IHierarchicalItem>();
+            Childs.Clear();
+            currentLoadingToken = new CancellationTokenSource();
+            var token = currentLoadingToken.Token;
+            BusyMediator.Activate(string.Empty);
+            logService.InfoFormat("Loading child items for visit with Id {0}...", Item.Id);
+            IDisposableQueryable<Assignment> childAssignmentsQuery = null;
+            IDisposableQueryable<Record> childRecordsQuery = null;
+            try
+            {
+                childAssignmentsQuery = patientRecordsService.GetVisitsChildAssignmentsQuery(Item.Id);
+                childRecordsQuery = patientRecordsService.GetVisitsChildRecordsQuery(Item.Id);
+                var loadChildAssignmentsTask = childAssignmentsQuery.Select(x => new PersonRecItem
+                    {
+                        Id = x.Id,
+                        ActualDatetime = x.AssignDateTime,
+                        Type = ItemType.Assignment
+                    }).ToListAsync(token);
+                var loadChildRecordsTask = childRecordsQuery.Select(x => new PersonRecItem
+                {
+                    Id = x.Id,
+                    ActualDatetime = x.ActualDateTime,
+                    Type = ItemType.Record
+                }).ToListAsync(token);
+                await Task.WhenAll(loadChildAssignmentsTask, loadChildRecordsTask);
+                var resChilds = loadChildAssignmentsTask.Result.Union(loadChildRecordsTask.Result).OrderBy(x => x.ActualDatetime);
+                Childs.AddRange(resChilds.Select(x => childItemViewModelRepository.GetHierarchicalItem(x)));
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load child items for visit with Id {0}", Item.Id);
                 FailureMediator.Activate("Не удалость загрузить вложенные элементы случая. Попробуйте еще раз или обратитесь в службу поддержки", reloadPatientVisitsCommandWrapper, ex);
                 loadingIsCompleted = true;
             }

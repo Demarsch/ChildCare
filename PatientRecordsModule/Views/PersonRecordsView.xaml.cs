@@ -41,11 +41,11 @@ namespace Shared.PatientRecords.Views
             set { personRecordList.DataContext = value; }
         }
 
-        [Dependency]
-        public PersonRecordEditorViewModel PersonRecordEditorViewModel
-        {
-            get { return personRecordEditor.DataContext as PersonRecordEditorViewModel; }
-            set { personRecordEditor.DataContext = value; }
-        }
+        //[Dependency]
+        //public PersonRecordEditorViewModel PersonRecordEditorViewModel
+        //{
+        //    get { return personRecordEditor.DataContext as PersonRecordEditorViewModel; }
+        //    set { personRecordEditor.DataContext = value; }
+        //}
     }
 }

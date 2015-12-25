@@ -29,7 +29,7 @@
     <Grid>
         <DockPanel LastChildFill="True">
             <views:PersonRecordListView x:Name="personRecordList" DockPanel.Dock="Left"/>
-            <views:PersonRecordEditorView x:Name="personRecordEditor" Margin="1"/>
+            <ContentControl Content="{Binding SelectedItemEditor}" Margin="1"/>
         </DockPanel>
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
