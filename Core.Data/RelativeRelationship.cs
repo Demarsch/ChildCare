@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RelativeRelationship
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RelativeRelationship()
         {
             this.PersonRelatives = new HashSet<PersonRelative>();
@@ -26,11 +26,29 @@ namespace Core.Data
         public string Name { get; set; }
         public Nullable<bool> MustBeMale { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonRelative> PersonRelatives { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections1 { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonRelative> personRelatives;
+    
+    	public virtual ICollection<PersonRelative> PersonRelatives
+    	{
+     		get { return personRelatives; }
+     		set { personRelatives = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RelativeRelationshipConnection> relativeRelationshipConnections;
+    
+    	public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections
+    	{
+     		get { return relativeRelationshipConnections; }
+     		set { relativeRelationshipConnections = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RelativeRelationshipConnection> relativeRelationshipConnections1;
+    
+    	public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections1
+    	{
+     		get { return relativeRelationshipConnections1; }
+     		set { relativeRelationshipConnections1 = value; }
+    	}
     }
 }

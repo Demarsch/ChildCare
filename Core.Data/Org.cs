@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Org
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Org()
         {
             this.Assignments = new HashSet<Assignment>();
@@ -29,13 +29,37 @@ namespace Core.Data
         public bool IsLpu { get; set; }
         public bool UseInContract { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonSocialStatus> personSocialStatuses;
+    
+    	public virtual ICollection<PersonSocialStatus> PersonSocialStatuses
+    	{
+     		get { return personSocialStatuses; }
+     		set { personSocialStatuses = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContract> recordContracts;
+    
+    	public virtual ICollection<RecordContract> RecordContracts
+    	{
+     		get { return recordContracts; }
+     		set { recordContracts = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
     }
 }

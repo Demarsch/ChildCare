@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class OuterDocumentType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public OuterDocumentType()
         {
             this.OuterDocumentTypes1 = new HashSet<OuterDocumentType>();
@@ -28,10 +28,29 @@ namespace Core.Data
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OuterDocumentType> OuterDocumentTypes1 { get; set; }
-        public virtual OuterDocumentType OuterDocumentType1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
+        [NonSerialized]
+    	private ICollection<OuterDocumentType> outerDocumentTypes1;
+    
+    	public virtual ICollection<OuterDocumentType> OuterDocumentTypes1
+    	{
+     		get { return outerDocumentTypes1; }
+     		set { outerDocumentTypes1 = value; }
+    	}
+        [NonSerialized]
+    	private OuterDocumentType outerDocumentType1;
+    
+    	public virtual OuterDocumentType OuterDocumentType1
+    	{
+     		get { return outerDocumentType1; }
+     		set { outerDocumentType1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonOuterDocument> personOuterDocuments;
+    
+    	public virtual ICollection<PersonOuterDocument> PersonOuterDocuments
+    	{
+     		get { return personOuterDocuments; }
+     		set { personOuterDocuments = value; }
+    	}
     }
 }

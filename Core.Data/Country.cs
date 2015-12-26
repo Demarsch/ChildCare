@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Country
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Country()
         {
             this.PersonNationalities = new HashSet<PersonNationality>();
@@ -26,7 +26,13 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonNationality> personNationalities;
+    
+    	public virtual ICollection<PersonNationality> PersonNationalities
+    	{
+     		get { return personNationalities; }
+     		set { personNationalities = value; }
+    	}
     }
 }

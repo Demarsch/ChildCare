@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PaymentType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PaymentType()
         {
             this.RecordContracts = new HashSet<RecordContract>();
@@ -24,7 +24,13 @@ namespace Core.Data
         public string Name { get; set; }
         public string Options { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
+        [NonSerialized]
+    	private ICollection<RecordContract> recordContracts;
+    
+    	public virtual ICollection<RecordContract> RecordContracts
+    	{
+     		get { return recordContracts; }
+     		set { recordContracts = value; }
+    	}
     }
 }

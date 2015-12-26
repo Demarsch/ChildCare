@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Room
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Room()
         {
             this.ScheduleItems = new HashSet<ScheduleItem>();
@@ -30,13 +30,37 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
         public string Options { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Eqiupment> Eqiupments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
+        [NonSerialized]
+    	private ICollection<ScheduleItem> scheduleItems;
+    
+    	public virtual ICollection<ScheduleItem> ScheduleItems
+    	{
+     		get { return scheduleItems; }
+     		set { scheduleItems = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Eqiupment> eqiupments;
+    
+    	public virtual ICollection<Eqiupment> Eqiupments
+    	{
+     		get { return eqiupments; }
+     		set { eqiupments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
     }
 }

@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Visit
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Visit()
         {
             this.Assignments = new HashSet<Assignment>();
@@ -40,19 +40,101 @@ namespace Core.Data
         public int ExecutionPlaceId { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
     
-        public virtual FinancingSource FinancingSource { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
-        public virtual User User { get; set; }
-        public virtual VisitOutcome VisitOutcome { get; set; }
-        public virtual VisitResult VisitResult { get; set; }
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
-        public virtual VisitTemplate VisitTemplate { get; set; }
-        public virtual Org Org { get; set; }
-        public virtual Urgently Urgently { get; set; }
+        [NonSerialized]
+    	private FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private RecordContract recordContract;
+    
+    	public virtual RecordContract RecordContract
+    	{
+     		get { return recordContract; }
+     		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	private User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
+    	}
+        [NonSerialized]
+    	private VisitOutcome visitOutcome;
+    
+    	public virtual VisitOutcome VisitOutcome
+    	{
+     		get { return visitOutcome; }
+     		set { visitOutcome = value; }
+    	}
+        [NonSerialized]
+    	private VisitResult visitResult;
+    
+    	public virtual VisitResult VisitResult
+    	{
+     		get { return visitResult; }
+     		set { visitResult = value; }
+    	}
+        [NonSerialized]
+    	private ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
+        [NonSerialized]
+    	private VisitTemplate visitTemplate;
+    
+    	public virtual VisitTemplate VisitTemplate
+    	{
+     		get { return visitTemplate; }
+     		set { visitTemplate = value; }
+    	}
+        [NonSerialized]
+    	private Org org;
+    
+    	public virtual Org Org
+    	{
+     		get { return org; }
+     		set { org = value; }
+    	}
+        [NonSerialized]
+    	private Urgently urgently;
+    
+    	public virtual Urgently Urgently
+    	{
+     		get { return urgently; }
+     		set { urgently = value; }
+    	}
     }
 }

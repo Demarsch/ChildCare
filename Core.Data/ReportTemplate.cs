@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class ReportTemplate
     {
         public int Id { get; set; }

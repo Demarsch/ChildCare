@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordTypeRole
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordTypeRole()
         {
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
@@ -25,7 +25,13 @@ namespace Core.Data
         public string ShortName { get; set; }
         public string Options { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
+        [NonSerialized]
+    	private ICollection<RecordTypeRolePermission> recordTypeRolePermissions;
+    
+    	public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions
+    	{
+     		get { return recordTypeRolePermissions; }
+     		set { recordTypeRolePermissions = value; }
+    	}
     }
 }

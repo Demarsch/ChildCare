@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Diagnosis
     {
         public int Id { get; set; }
@@ -25,9 +26,37 @@ namespace Core.Data
         public System.DateTime InDateTime { get; set; }
         public int InPersonId { get; set; }
     
-        public virtual Complication Complication { get; set; }
-        public virtual DiagnosLevel DiagnosLevel { get; set; }
-        public virtual PersonDiagnos PersonDiagnos { get; set; }
-        public virtual Person Person { get; set; }
+        [NonSerialized]
+    	private Complication complication;
+    
+    	public virtual Complication Complication
+    	{
+     		get { return complication; }
+     		set { complication = value; }
+    	}
+        [NonSerialized]
+    	private DiagnosLevel diagnosLevel;
+    
+    	public virtual DiagnosLevel DiagnosLevel
+    	{
+     		get { return diagnosLevel; }
+     		set { diagnosLevel = value; }
+    	}
+        [NonSerialized]
+    	private PersonDiagnos personDiagnos;
+    
+    	public virtual PersonDiagnos PersonDiagnos
+    	{
+     		get { return personDiagnos; }
+     		set { personDiagnos = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
     }
 }

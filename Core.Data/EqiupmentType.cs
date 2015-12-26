@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class EqiupmentType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public EqiupmentType()
         {
             this.Eqiupments = new HashSet<Eqiupment>();
@@ -24,7 +24,13 @@ namespace Core.Data
         public string Name { get; set; }
         public int Code { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Eqiupment> Eqiupments { get; set; }
+        [NonSerialized]
+    	private ICollection<Eqiupment> eqiupments;
+    
+    	public virtual ICollection<Eqiupment> Eqiupments
+    	{
+     		get { return eqiupments; }
+     		set { eqiupments = value; }
+    	}
     }
 }

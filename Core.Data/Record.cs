@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Record
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Record()
         {
             this.Assignments = new HashSet<Assignment>();
@@ -49,32 +49,149 @@ namespace Core.Data
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments1 { get; set; }
-        public virtual Assignment Assignment { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DefaultProtocol> DefaultProtocols { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }
-        public virtual Person Person { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordMember> RecordMembers { get; set; }
-        public virtual RecordPeriod RecordPeriod { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records1 { get; set; }
-        public virtual Record Record1 { get; set; }
-        public virtual Room Room { get; set; }
-        public virtual User User { get; set; }
-        public virtual Visit Visit { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordEquipment> RecordEquipments { get; set; }
-        public virtual RecordType RecordType { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
-        public virtual Urgently Urgently { get; set; }
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments1;
+    
+    	public virtual ICollection<Assignment> Assignments1
+    	{
+     		get { return assignments1; }
+     		set { assignments1 = value; }
+    	}
+        [NonSerialized]
+    	private Assignment assignment;
+    
+    	public virtual Assignment Assignment
+    	{
+     		get { return assignment; }
+     		set { assignment = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<DefaultProtocol> defaultProtocols;
+    
+    	public virtual ICollection<DefaultProtocol> DefaultProtocols
+    	{
+     		get { return defaultProtocols; }
+     		set { defaultProtocols = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonDiagnos> personDiagnoses;
+    
+    	public virtual ICollection<PersonDiagnos> PersonDiagnoses
+    	{
+     		get { return personDiagnoses; }
+     		set { personDiagnoses = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordDocument> recordDocuments;
+    
+    	public virtual ICollection<RecordDocument> RecordDocuments
+    	{
+     		get { return recordDocuments; }
+     		set { recordDocuments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordMember> recordMembers;
+    
+    	public virtual ICollection<RecordMember> RecordMembers
+    	{
+     		get { return recordMembers; }
+     		set { recordMembers = value; }
+    	}
+        [NonSerialized]
+    	private RecordPeriod recordPeriod;
+    
+    	public virtual RecordPeriod RecordPeriod
+    	{
+     		get { return recordPeriod; }
+     		set { recordPeriod = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records1;
+    
+    	public virtual ICollection<Record> Records1
+    	{
+     		get { return records1; }
+     		set { records1 = value; }
+    	}
+        [NonSerialized]
+    	private Record record1;
+    
+    	public virtual Record Record1
+    	{
+     		get { return record1; }
+     		set { record1 = value; }
+    	}
+        [NonSerialized]
+    	private Room room;
+    
+    	public virtual Room Room
+    	{
+     		get { return room; }
+     		set { room = value; }
+    	}
+        [NonSerialized]
+    	private User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
+    	}
+        [NonSerialized]
+    	private Visit visit;
+    
+    	public virtual Visit Visit
+    	{
+     		get { return visit; }
+     		set { visit = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordEquipment> recordEquipments;
+    
+    	public virtual ICollection<RecordEquipment> RecordEquipments
+    	{
+     		get { return recordEquipments; }
+     		set { recordEquipments = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<AnalyseResult> analyseResults;
+    
+    	public virtual ICollection<AnalyseResult> AnalyseResults
+    	{
+     		get { return analyseResults; }
+     		set { analyseResults = value; }
+    	}
+        [NonSerialized]
+    	private Urgently urgently;
+    
+    	public virtual Urgently Urgently
+    	{
+     		get { return urgently; }
+     		set { urgently = value; }
+    	}
     }
 }

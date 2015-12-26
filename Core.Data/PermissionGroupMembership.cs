@@ -12,13 +12,28 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PermissionGroupMembership
     {
         public int Id { get; set; }
         public int PermissionId { get; set; }
         public int GroupId { get; set; }
     
-        public virtual PermissionGroup PermissionGroup { get; set; }
-        public virtual Permission Permission { get; set; }
+        [NonSerialized]
+    	private PermissionGroup permissionGroup;
+    
+    	public virtual PermissionGroup PermissionGroup
+    	{
+     		get { return permissionGroup; }
+     		set { permissionGroup = value; }
+    	}
+        [NonSerialized]
+    	private Permission permission;
+    
+    	public virtual Permission Permission
+    	{
+     		get { return permission; }
+     		set { permission = value; }
+    	}
     }
 }

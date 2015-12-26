@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class SocialStatusType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SocialStatusType()
         {
             this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
@@ -26,7 +26,13 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
         public bool NeedPlace { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonSocialStatus> personSocialStatuses;
+    
+    	public virtual ICollection<PersonSocialStatus> PersonSocialStatuses
+    	{
+     		get { return personSocialStatuses; }
+     		set { personSocialStatuses = value; }
+    	}
     }
 }

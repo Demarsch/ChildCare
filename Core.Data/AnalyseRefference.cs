@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class AnalyseRefference
     {
         public int Id { get; set; }
@@ -23,7 +24,21 @@ namespace Core.Data
         public double RefMin { get; set; }
         public double RefMax { get; set; }
     
-        public virtual RecordType RecordType { get; set; }
-        public virtual RecordType RecordType1 { get; set; }
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType1;
+    
+    	public virtual RecordType RecordType1
+    	{
+     		get { return recordType1; }
+     		set { recordType1 = value; }
+    	}
     }
 }

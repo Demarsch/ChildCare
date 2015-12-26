@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonAddress
     {
         public int Id { get; set; }
@@ -25,8 +26,29 @@ namespace Core.Data
         public string Building { get; set; }
         public string Apartment { get; set; }
     
-        public virtual AddressType AddressType { get; set; }
-        public virtual Okato Okato { get; set; }
-        public virtual Person Person { get; set; }
+        [NonSerialized]
+    	private AddressType addressType;
+    
+    	public virtual AddressType AddressType
+    	{
+     		get { return addressType; }
+     		set { addressType = value; }
+    	}
+        [NonSerialized]
+    	private Okato okato;
+    
+    	public virtual Okato Okato
+    	{
+     		get { return okato; }
+     		set { okato = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
     }
 }

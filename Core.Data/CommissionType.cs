@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class CommissionType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommissionType()
         {
             this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
@@ -29,13 +29,37 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionMember> CommissionMembers { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionQuestion> CommissionQuestions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionSource> CommissionSources { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    
+    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
+    	{
+     		get { return commissionDecisionsLinks; }
+     		set { commissionDecisionsLinks = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<CommissionMember> commissionMembers;
+    
+    	public virtual ICollection<CommissionMember> CommissionMembers
+    	{
+     		get { return commissionMembers; }
+     		set { commissionMembers = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<CommissionQuestion> commissionQuestions;
+    
+    	public virtual ICollection<CommissionQuestion> CommissionQuestions
+    	{
+     		get { return commissionQuestions; }
+     		set { commissionQuestions = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<CommissionSource> commissionSources;
+    
+    	public virtual ICollection<CommissionSource> CommissionSources
+    	{
+     		get { return commissionSources; }
+     		set { commissionSources = value; }
+    	}
     }
 }

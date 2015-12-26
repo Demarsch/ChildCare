@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Education
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Education()
         {
             this.PersonEducations = new HashSet<PersonEducation>();
@@ -23,7 +23,13 @@ namespace Core.Data
         public int Id { get; set; }
         public string Name { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonEducation> PersonEducations { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonEducation> personEducations;
+    
+    	public virtual ICollection<PersonEducation> PersonEducations
+    	{
+     		get { return personEducations; }
+     		set { personEducations = value; }
+    	}
     }
 }

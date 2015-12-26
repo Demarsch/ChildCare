@@ -24,6 +24,7 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
     BeginNamespace(code);
 #>
 <#=codeStringGenerator.UsingDirectives(inHeader: false)#>
+[Serializable]
 <#=codeStringGenerator.EntityClassOpening(entity)#>
 {
 <#
@@ -34,7 +35,6 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
     if (propertiesWithDefaultValues.Any() || collectionNavigationProperties.Any() || complexProperties.Any())
     {
 #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
     public <#=code.Escape(entity)#>()
     {
 <#
@@ -99,7 +99,6 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
             if (navigationProperty.ToEndMember.RelationshipMultiplicity == RelationshipMultiplicity.Many)
             {
 #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 <#
             }
 #>
@@ -298,10 +297,12 @@ public class CodeStringGenerator
         var endType = _typeMapper.GetTypeName(navProp.ToEndMember.GetEntityType());
         return string.Format(
             CultureInfo.InvariantCulture,
-            "{0} {1} {2} {{ {3}get; {4}set; }}",
+            "[NonSerialized]{2}\tprivate {0} {1};{2}{2}\t{3} {0} {4}{2}\t{{{2} {5}\t\tget {{ return {1}; }}{2} {6}\t\tset {{ {1} = value; }}{2}\t}}",
+			 navProp.ToEndMember.RelationshipMultiplicity == RelationshipMultiplicity.Many ? ("ICollection<" + endType + ">") : endType,
+			 _code.Escape(navProp).Substring(0, 1).ToLower() + _code.Escape(navProp).Substring(1),
+			 Environment.NewLine,
             AccessibilityAndVirtual(Accessibility.ForNavigationProperty(navProp)),
-            navProp.ToEndMember.RelationshipMultiplicity == RelationshipMultiplicity.Many ? ("ICollection<" + endType + ">") : endType,
-            _code.Escape(navProp),
+		   _code.Escape(navProp),
             _code.SpaceAfter(Accessibility.ForGetter(navProp)),
             _code.SpaceAfter(Accessibility.ForSetter(navProp)));
     }

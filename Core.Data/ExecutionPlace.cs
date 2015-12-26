@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class ExecutionPlace
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ExecutionPlace()
         {
             this.RecordPeriods = new HashSet<RecordPeriod>();
@@ -32,17 +32,53 @@ namespace Core.Data
         public bool IsActive { get; set; }
         public string Options { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordPeriod> RecordPeriods { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<VisitOutcome> VisitOutcomes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<VisitResult> VisitResults { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<VisitTemplate> VisitTemplates { get; set; }
+        [NonSerialized]
+    	private ICollection<RecordPeriod> recordPeriods;
+    
+    	public virtual ICollection<RecordPeriod> RecordPeriods
+    	{
+     		get { return recordPeriods; }
+     		set { recordPeriods = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<VisitOutcome> visitOutcomes;
+    
+    	public virtual ICollection<VisitOutcome> VisitOutcomes
+    	{
+     		get { return visitOutcomes; }
+     		set { visitOutcomes = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<VisitResult> visitResults;
+    
+    	public virtual ICollection<VisitResult> VisitResults
+    	{
+     		get { return visitResults; }
+     		set { visitResults = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<VisitTemplate> visitTemplates;
+    
+    	public virtual ICollection<VisitTemplate> VisitTemplates
+    	{
+     		get { return visitTemplates; }
+     		set { visitTemplates = value; }
+    	}
     }
 }

@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonTalon
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PersonTalon()
         {
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
@@ -29,10 +29,37 @@ namespace Core.Data
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public string Address { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual MedicalHelpType MedicalHelpType { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	private MedicalHelpType medicalHelpType;
+    
+    	public virtual MedicalHelpType MedicalHelpType
+    	{
+     		get { return medicalHelpType; }
+     		set { medicalHelpType = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private RecordContract recordContract;
+    
+    	public virtual RecordContract RecordContract
+    	{
+     		get { return recordContract; }
+     		set { recordContract = value; }
+    	}
     }
 }

@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Okato
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Okato()
         {
             this.PersonAddresses = new HashSet<PersonAddress>();
@@ -27,7 +27,13 @@ namespace Core.Data
         public string CodeOKTMO { get; set; }
         public string RegionCode { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonAddress> PersonAddresses { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonAddress> personAddresses;
+    
+    	public virtual ICollection<PersonAddress> PersonAddresses
+    	{
+     		get { return personAddresses; }
+     		set { personAddresses = value; }
+    	}
     }
 }

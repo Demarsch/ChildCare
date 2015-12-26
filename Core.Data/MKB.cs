@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class MKB
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MKB()
         {
             this.MKB1 = new HashSet<MKB>();
@@ -26,9 +26,29 @@ namespace Core.Data
         public string Code { get; set; }
         public string Name { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MKB> MKB1 { get; set; }
-        public virtual MKB MKB2 { get; set; }
-        public virtual MKBGroup MKBGroup { get; set; }
+        [NonSerialized]
+    	private ICollection<MKB> mKB1;
+    
+    	public virtual ICollection<MKB> MKB1
+    	{
+     		get { return mKB1; }
+     		set { mKB1 = value; }
+    	}
+        [NonSerialized]
+    	private MKB mKB2;
+    
+    	public virtual MKB MKB2
+    	{
+     		get { return mKB2; }
+     		set { mKB2 = value; }
+    	}
+        [NonSerialized]
+    	private MKBGroup mKBGroup;
+    
+    	public virtual MKBGroup MKBGroup
+    	{
+     		get { return mKBGroup; }
+     		set { mKBGroup = value; }
+    	}
     }
 }

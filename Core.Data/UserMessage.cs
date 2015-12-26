@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class UserMessage
     {
         public int Id { get; set; }
@@ -24,8 +25,29 @@ namespace Core.Data
         public int MessageData { get; set; }
         public int UserMessageTypeId { get; set; }
     
-        public virtual User User { get; set; }
-        public virtual User User1 { get; set; }
-        public virtual UserMessageType UserMessageType { get; set; }
+        [NonSerialized]
+    	private User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
+    	}
+        [NonSerialized]
+    	private User user1;
+    
+    	public virtual User User1
+    	{
+     		get { return user1; }
+     		set { user1 = value; }
+    	}
+        [NonSerialized]
+    	private UserMessageType userMessageType;
+    
+    	public virtual UserMessageType UserMessageType
+    	{
+     		get { return userMessageType; }
+     		set { userMessageType = value; }
+    	}
     }
 }

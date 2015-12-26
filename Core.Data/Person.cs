@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Person
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Person()
         {
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
@@ -61,54 +61,205 @@ namespace Core.Data
         public int PersonHospListHashCode { get; set; }
         public int RadiationListHashCode { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual Document Document { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonAddress> PersonAddresses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonDisability> PersonDisabilities { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonEducation> PersonEducations { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonHealthGroup> PersonHealthGroups { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonMaritalStatus> PersonMaritalStatuses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonName> PersonNames { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonNationality> PersonNationalities { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonRelative> PersonRelatives { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonRelative> PersonRelatives1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonSocialStatus> PersonSocialStatuses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonTalon> PersonTalons { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<User> Users { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Diagnosis> Diagnoses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonDiagnos> PersonDiagnoses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	private Document document;
+    
+    	public virtual Document Document
+    	{
+     		get { return document; }
+     		set { document = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<InsuranceDocument> insuranceDocuments;
+    
+    	public virtual ICollection<InsuranceDocument> InsuranceDocuments
+    	{
+     		get { return insuranceDocuments; }
+     		set { insuranceDocuments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonAddress> personAddresses;
+    
+    	public virtual ICollection<PersonAddress> PersonAddresses
+    	{
+     		get { return personAddresses; }
+     		set { personAddresses = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonDisability> personDisabilities;
+    
+    	public virtual ICollection<PersonDisability> PersonDisabilities
+    	{
+     		get { return personDisabilities; }
+     		set { personDisabilities = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonEducation> personEducations;
+    
+    	public virtual ICollection<PersonEducation> PersonEducations
+    	{
+     		get { return personEducations; }
+     		set { personEducations = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonHealthGroup> personHealthGroups;
+    
+    	public virtual ICollection<PersonHealthGroup> PersonHealthGroups
+    	{
+     		get { return personHealthGroups; }
+     		set { personHealthGroups = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonIdentityDocument> personIdentityDocuments;
+    
+    	public virtual ICollection<PersonIdentityDocument> PersonIdentityDocuments
+    	{
+     		get { return personIdentityDocuments; }
+     		set { personIdentityDocuments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonMaritalStatus> personMaritalStatuses;
+    
+    	public virtual ICollection<PersonMaritalStatus> PersonMaritalStatuses
+    	{
+     		get { return personMaritalStatuses; }
+     		set { personMaritalStatuses = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonName> personNames;
+    
+    	public virtual ICollection<PersonName> PersonNames
+    	{
+     		get { return personNames; }
+     		set { personNames = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonNationality> personNationalities;
+    
+    	public virtual ICollection<PersonNationality> PersonNationalities
+    	{
+     		get { return personNationalities; }
+     		set { personNationalities = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonOuterDocument> personOuterDocuments;
+    
+    	public virtual ICollection<PersonOuterDocument> PersonOuterDocuments
+    	{
+     		get { return personOuterDocuments; }
+     		set { personOuterDocuments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonRelative> personRelatives;
+    
+    	public virtual ICollection<PersonRelative> PersonRelatives
+    	{
+     		get { return personRelatives; }
+     		set { personRelatives = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonRelative> personRelatives1;
+    
+    	public virtual ICollection<PersonRelative> PersonRelatives1
+    	{
+     		get { return personRelatives1; }
+     		set { personRelatives1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonSocialStatus> personSocialStatuses;
+    
+    	public virtual ICollection<PersonSocialStatus> PersonSocialStatuses
+    	{
+     		get { return personSocialStatuses; }
+     		set { personSocialStatuses = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonStaff> personStaffs;
+    
+    	public virtual ICollection<PersonStaff> PersonStaffs
+    	{
+     		get { return personStaffs; }
+     		set { personStaffs = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonTalon> personTalons;
+    
+    	public virtual ICollection<PersonTalon> PersonTalons
+    	{
+     		get { return personTalons; }
+     		set { personTalons = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContract> recordContracts;
+    
+    	public virtual ICollection<RecordContract> RecordContracts
+    	{
+     		get { return recordContracts; }
+     		set { recordContracts = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContract> recordContracts1;
+    
+    	public virtual ICollection<RecordContract> RecordContracts1
+    	{
+     		get { return recordContracts1; }
+     		set { recordContracts1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<User> users;
+    
+    	public virtual ICollection<User> Users
+    	{
+     		get { return users; }
+     		set { users = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Diagnosis> diagnoses;
+    
+    	public virtual ICollection<Diagnosis> Diagnoses
+    	{
+     		get { return diagnoses; }
+     		set { diagnoses = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonDiagnos> personDiagnoses;
+    
+    	public virtual ICollection<PersonDiagnos> PersonDiagnoses
+    	{
+     		get { return personDiagnoses; }
+     		set { personDiagnoses = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
     }
 }

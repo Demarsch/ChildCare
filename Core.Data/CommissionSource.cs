@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class CommissionSource
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommissionSource()
         {
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
@@ -27,8 +27,21 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual CommissionType CommissionType { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	private CommissionType commissionType;
+    
+    	public virtual CommissionType CommissionType
+    	{
+     		get { return commissionType; }
+     		set { commissionType = value; }
+    	}
     }
 }

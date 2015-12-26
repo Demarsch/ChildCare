@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class IdentityDocumentType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public IdentityDocumentType()
         {
             this.PersonIdentityDocuments = new HashSet<PersonIdentityDocument>();
@@ -24,7 +24,13 @@ namespace Core.Data
         public string Name { get; set; }
         public string Options { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonIdentityDocument> PersonIdentityDocuments { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonIdentityDocument> personIdentityDocuments;
+    
+    	public virtual ICollection<PersonIdentityDocument> PersonIdentityDocuments
+    	{
+     		get { return personIdentityDocuments; }
+     		set { personIdentityDocuments = value; }
+    	}
     }
 }

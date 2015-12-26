@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class User
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public User()
         {
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
@@ -34,24 +34,85 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public Nullable<System.DateTime> EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual Person Person { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserMessage> UserMessages { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserMessage> UserMessages1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserPermisionGroup> UserPermisionGroups { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments2 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<UserMessage> userMessages;
+    
+    	public virtual ICollection<UserMessage> UserMessages
+    	{
+     		get { return userMessages; }
+     		set { userMessages = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<UserMessage> userMessages1;
+    
+    	public virtual ICollection<UserMessage> UserMessages1
+    	{
+     		get { return userMessages1; }
+     		set { userMessages1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<UserPermisionGroup> userPermisionGroups;
+    
+    	public virtual ICollection<UserPermisionGroup> UserPermisionGroups
+    	{
+     		get { return userPermisionGroups; }
+     		set { userPermisionGroups = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments1;
+    
+    	public virtual ICollection<Assignment> Assignments1
+    	{
+     		get { return assignments1; }
+     		set { assignments1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments2;
+    
+    	public virtual ICollection<Assignment> Assignments2
+    	{
+     		get { return assignments2; }
+     		set { assignments2 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
     }
 }

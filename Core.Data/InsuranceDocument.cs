@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class InsuranceDocument
     {
         public int Id { get; set; }
@@ -24,8 +25,29 @@ namespace Core.Data
         public System.DateTime EndDate { get; set; }
         public Nullable<System.DateTime> DeleteDateTime { get; set; }
     
-        public virtual InsuranceCompany InsuranceCompany { get; set; }
-        public virtual InsuranceDocumentType InsuranceDocumentType { get; set; }
-        public virtual Person Person { get; set; }
+        [NonSerialized]
+    	private InsuranceCompany insuranceCompany;
+    
+    	public virtual InsuranceCompany InsuranceCompany
+    	{
+     		get { return insuranceCompany; }
+     		set { insuranceCompany = value; }
+    	}
+        [NonSerialized]
+    	private InsuranceDocumentType insuranceDocumentType;
+    
+    	public virtual InsuranceDocumentType InsuranceDocumentType
+    	{
+     		get { return insuranceDocumentType; }
+     		set { insuranceDocumentType = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
     }
 }

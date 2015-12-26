@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class VisitResult
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public VisitResult()
         {
             this.Visits = new HashSet<Visit>();
@@ -27,8 +27,21 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
+        [NonSerialized]
+    	private ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
+    	}
     }
 }

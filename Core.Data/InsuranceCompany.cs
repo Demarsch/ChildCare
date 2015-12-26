@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class InsuranceCompany
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public InsuranceCompany()
         {
             this.InsuranceDocuments = new HashSet<InsuranceDocument>();
@@ -38,7 +38,13 @@ namespace Core.Data
         public string SmoCode { get; set; }
         public string OKATO { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<InsuranceDocument> InsuranceDocuments { get; set; }
+        [NonSerialized]
+    	private ICollection<InsuranceDocument> insuranceDocuments;
+    
+    	public virtual ICollection<InsuranceDocument> InsuranceDocuments
+    	{
+     		get { return insuranceDocuments; }
+     		set { insuranceDocuments = value; }
+    	}
     }
 }

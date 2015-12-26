@@ -36,7 +36,6 @@ namespace Core.Data
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<DBSetting> DBSettings { get; set; }
         public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
@@ -115,5 +114,6 @@ namespace Core.Data
         public virtual DbSet<VisitTemplate> VisitTemplates { get; set; }
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<Urgently> Urgentlies { get; set; }
+        public virtual DbSet<DBSetting> DBSettings { get; set; }
     }
 }

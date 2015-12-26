@@ -12,13 +12,28 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RelativeRelationshipConnection
     {
         public int Id { get; set; }
         public int ParentRelationshipId { get; set; }
         public int ChildRelationshipId { get; set; }
     
-        public virtual RelativeRelationship RelativeRelationship { get; set; }
-        public virtual RelativeRelationship RelativeRelationship1 { get; set; }
+        [NonSerialized]
+    	private RelativeRelationship relativeRelationship;
+    
+    	public virtual RelativeRelationship RelativeRelationship
+    	{
+     		get { return relativeRelationship; }
+     		set { relativeRelationship = value; }
+    	}
+        [NonSerialized]
+    	private RelativeRelationship relativeRelationship1;
+    
+    	public virtual RelativeRelationship RelativeRelationship1
+    	{
+     		get { return relativeRelationship1; }
+     		set { relativeRelationship1 = value; }
+    	}
     }
 }

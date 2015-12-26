@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Decision
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Decision()
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
@@ -29,12 +29,37 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Decision> Decisions1 { get; set; }
-        public virtual Decision Decision1 { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    
+    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
+    	{
+     		get { return commissionDecisionsLinks; }
+     		set { commissionDecisionsLinks = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Decision> decisions1;
+    
+    	public virtual ICollection<Decision> Decisions1
+    	{
+     		get { return decisions1; }
+     		set { decisions1 = value; }
+    	}
+        [NonSerialized]
+    	private Decision decision1;
+    
+    	public virtual Decision Decision1
+    	{
+     		get { return decision1; }
+     		set { decision1 = value; }
+    	}
     }
 }

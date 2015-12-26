@@ -12,13 +12,28 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordTypeUnit
     {
         public int Id { get; set; }
         public int RecordTypeId { get; set; }
         public int UnitId { get; set; }
     
-        public virtual RecordType RecordType { get; set; }
-        public virtual Unit Unit { get; set; }
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
+        [NonSerialized]
+    	private Unit unit;
+    
+    	public virtual Unit Unit
+    	{
+     		get { return unit; }
+     		set { unit = value; }
+    	}
     }
 }

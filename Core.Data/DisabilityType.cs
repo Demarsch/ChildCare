@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class DisabilityType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DisabilityType()
         {
             this.PersonDisabilities = new HashSet<PersonDisability>();
@@ -25,7 +25,13 @@ namespace Core.Data
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonDisability> PersonDisabilities { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonDisability> personDisabilities;
+    
+    	public virtual ICollection<PersonDisability> PersonDisabilities
+    	{
+     		get { return personDisabilities; }
+     		set { personDisabilities = value; }
+    	}
     }
 }

@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordDocument
     {
         public int Id { get; set; }
@@ -19,8 +20,29 @@ namespace Core.Data
         public Nullable<int> RecordId { get; set; }
         public int DocumentId { get; set; }
     
-        public virtual Document Document { get; set; }
-        public virtual Assignment Assignment { get; set; }
-        public virtual Record Record { get; set; }
+        [NonSerialized]
+    	private Document document;
+    
+    	public virtual Document Document
+    	{
+     		get { return document; }
+     		set { document = value; }
+    	}
+        [NonSerialized]
+    	private Assignment assignment;
+    
+    	public virtual Assignment Assignment
+    	{
+     		get { return assignment; }
+     		set { assignment = value; }
+    	}
+        [NonSerialized]
+    	private Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
     }
 }

@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonNationality
     {
         public int Id { get; set; }
@@ -20,7 +21,21 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual Country Country { get; set; }
-        public virtual Person Person { get; set; }
+        [NonSerialized]
+    	private Country country;
+    
+    	public virtual Country Country
+    	{
+     		get { return country; }
+     		set { country = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
     }
 }

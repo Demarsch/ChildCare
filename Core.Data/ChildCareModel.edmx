@@ -3745,7 +3745,6 @@
           <EntitySet Name="CommissionSources" EntityType="DataLib.CommissionSource" />
           <EntitySet Name="CommissionTypes" EntityType="DataLib.CommissionType" />
           <EntitySet Name="Countries" EntityType="DataLib.Country" />
-          <EntitySet Name="DBSettings" EntityType="DataLib.DBSetting" />
           <EntitySet Name="Decisions" EntityType="DataLib.Decision" />
           <EntitySet Name="DisabilityTypes" EntityType="DataLib.DisabilityType" />
           <EntitySet Name="Documents" EntityType="DataLib.Document" />
@@ -4456,6 +4455,7 @@
             <End Role="Urgently" EntitySet="Urgentlies" />
             <End Role="VisitTemplate" EntitySet="VisitTemplates" />
           </AssociationSet>
+          <EntitySet Name="DBSettings" EntityType="DataLib.DBSetting" />
           </EntityContainer>
         <EntityType Name="AddressType">
           <Key>
@@ -4628,19 +4628,6 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Countries" FromRole="Country" ToRole="PersonNationality" />
-        </EntityType>
-        <EntityType Name="DBSetting">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <EntityType Name="Decision">
           <Key>
@@ -7771,6 +7758,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="DBSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7921,20 +7921,6 @@
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="IsDefaultNationality" ColumnName="IsDefaultNationality" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="DBSettings">
-            <EntityTypeMapping TypeName="DataLib.DBSetting">
-              <MappingFragment StoreEntitySet="DBSettings">
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="Comment" ColumnName="Comment" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -8950,6 +8936,20 @@
                 <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
                 <ScalarProperty Name="PrintName" ColumnName="PrintName" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DBSettings">
+            <EntityTypeMapping TypeName="DataLib.DBSetting">
+              <MappingFragment StoreEntitySet="DBSettings">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

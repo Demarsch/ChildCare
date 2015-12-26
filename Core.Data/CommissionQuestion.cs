@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class CommissionQuestion
     {
         public int Id { get; set; }
@@ -21,6 +22,13 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual CommissionType CommissionType { get; set; }
+        [NonSerialized]
+    	private CommissionType commissionType;
+    
+    	public virtual CommissionType CommissionType
+    	{
+     		get { return commissionType; }
+     		set { commissionType = value; }
+    	}
     }
 }

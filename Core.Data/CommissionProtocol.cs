@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class CommissionProtocol
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommissionProtocol()
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
@@ -44,13 +44,61 @@ namespace Core.Data
         public string Address { get; set; }
         public string Diagnos { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
-        public virtual CommissionSource CommissionSource { get; set; }
-        public virtual MedicalHelpType MedicalHelpType { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual PersonTalon PersonTalon { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
-        public virtual User User { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
+        [NonSerialized]
+    	private CommissionSource commissionSource;
+    
+    	public virtual CommissionSource CommissionSource
+    	{
+     		get { return commissionSource; }
+     		set { commissionSource = value; }
+    	}
+        [NonSerialized]
+    	private MedicalHelpType medicalHelpType;
+    
+    	public virtual MedicalHelpType MedicalHelpType
+    	{
+     		get { return medicalHelpType; }
+     		set { medicalHelpType = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private PersonTalon personTalon;
+    
+    	public virtual PersonTalon PersonTalon
+    	{
+     		get { return personTalon; }
+     		set { personTalon = value; }
+    	}
+        [NonSerialized]
+    	private RecordContract recordContract;
+    
+    	public virtual RecordContract RecordContract
+    	{
+     		get { return recordContract; }
+     		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	private User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
+    	}
     }
 }

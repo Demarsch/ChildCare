@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PermissionGroup
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PermissionGroup()
         {
             this.PermissionGroupMemberships = new HashSet<PermissionGroupMembership>();
@@ -27,12 +27,37 @@ namespace Core.Data
         public string Name { get; set; }
         public string Description { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PermissionGroup> PermissionGroups1 { get; set; }
-        public virtual PermissionGroup PermissionGroup1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserPermisionGroup> UserPermisionGroups { get; set; }
+        [NonSerialized]
+    	private ICollection<PermissionGroupMembership> permissionGroupMemberships;
+    
+    	public virtual ICollection<PermissionGroupMembership> PermissionGroupMemberships
+    	{
+     		get { return permissionGroupMemberships; }
+     		set { permissionGroupMemberships = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PermissionGroup> permissionGroups1;
+    
+    	public virtual ICollection<PermissionGroup> PermissionGroups1
+    	{
+     		get { return permissionGroups1; }
+     		set { permissionGroups1 = value; }
+    	}
+        [NonSerialized]
+    	private PermissionGroup permissionGroup1;
+    
+    	public virtual PermissionGroup PermissionGroup1
+    	{
+     		get { return permissionGroup1; }
+     		set { permissionGroup1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<UserPermisionGroup> userPermisionGroups;
+    
+    	public virtual ICollection<UserPermisionGroup> UserPermisionGroups
+    	{
+     		get { return userPermisionGroups; }
+     		set { userPermisionGroups = value; }
+    	}
     }
 }

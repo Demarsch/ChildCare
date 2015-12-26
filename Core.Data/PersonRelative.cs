@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonRelative
     {
         public int Id { get; set; }
@@ -20,8 +21,29 @@ namespace Core.Data
         public int RelativeRelationshipId { get; set; }
         public bool IsRepresentative { get; set; }
     
-        public virtual Person Person { get; set; }
-        public virtual Person Person1 { get; set; }
-        public virtual RelativeRelationship RelativeRelationship { get; set; }
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private Person person1;
+    
+    	public virtual Person Person1
+    	{
+     		get { return person1; }
+     		set { person1 = value; }
+    	}
+        [NonSerialized]
+    	private RelativeRelationship relativeRelationship;
+    
+    	public virtual RelativeRelationship RelativeRelationship
+    	{
+     		get { return relativeRelationship; }
+     		set { relativeRelationship = value; }
+    	}
     }
 }

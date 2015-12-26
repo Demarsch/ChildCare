@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Staff
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Staff()
         {
             this.PersonStaffs = new HashSet<PersonStaff>();
@@ -26,7 +26,13 @@ namespace Core.Data
         public string ShortName { get; set; }
         public bool IsSenior { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonStaff> personStaffs;
+    
+    	public virtual ICollection<PersonStaff> PersonStaffs
+    	{
+     		get { return personStaffs; }
+     		set { personStaffs = value; }
+    	}
     }
 }

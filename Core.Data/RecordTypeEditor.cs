@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordTypeEditor
     {
         public int Id { get; set; }
@@ -21,6 +22,13 @@ namespace Core.Data
         public bool HasDICOM { get; set; }
         public bool UseEquipments { get; set; }
     
-        public virtual RecordType RecordType { get; set; }
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
     }
 }

@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Permission
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Permission()
         {
             this.PermissionGroupMemberships = new HashSet<PermissionGroupMembership>();
@@ -25,9 +25,21 @@ namespace Core.Data
         public string Name { get; set; }
         public string Description { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
+        [NonSerialized]
+    	private ICollection<PermissionGroupMembership> permissionGroupMemberships;
+    
+    	public virtual ICollection<PermissionGroupMembership> PermissionGroupMemberships
+    	{
+     		get { return permissionGroupMemberships; }
+     		set { permissionGroupMemberships = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordTypeRolePermission> recordTypeRolePermissions;
+    
+    	public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions
+    	{
+     		get { return recordTypeRolePermissions; }
+     		set { recordTypeRolePermissions = value; }
+    	}
     }
 }

@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class FinancingSource
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public FinancingSource()
         {
             this.RecordContracts = new HashSet<RecordContract>();
@@ -30,15 +30,45 @@ namespace Core.Data
         public bool IsActive { get; set; }
         public bool IsOrgContract { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeCost> RecordTypeCosts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<VisitTemplate> VisitTemplates { get; set; }
+        [NonSerialized]
+    	private ICollection<RecordContract> recordContracts;
+    
+    	public virtual ICollection<RecordContract> RecordContracts
+    	{
+     		get { return recordContracts; }
+     		set { recordContracts = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordTypeCost> recordTypeCosts;
+    
+    	public virtual ICollection<RecordTypeCost> RecordTypeCosts
+    	{
+     		get { return recordTypeCosts; }
+     		set { recordTypeCosts = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<VisitTemplate> visitTemplates;
+    
+    	public virtual ICollection<VisitTemplate> VisitTemplates
+    	{
+     		get { return visitTemplates; }
+     		set { visitTemplates = value; }
+    	}
     }
 }

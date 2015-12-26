@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonDisability
     {
         public int Id { get; set; }
@@ -23,7 +24,21 @@ namespace Core.Data
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
-        public virtual DisabilityType DisabilityType { get; set; }
-        public virtual Person Person { get; set; }
+        [NonSerialized]
+    	private DisabilityType disabilityType;
+    
+    	public virtual DisabilityType DisabilityType
+    	{
+     		get { return disabilityType; }
+     		set { disabilityType = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
     }
 }

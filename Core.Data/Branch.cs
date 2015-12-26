@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Branch
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Branch()
         {
             this.Branches1 = new HashSet<Branch>();
@@ -29,12 +29,37 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Branch> Branches1 { get; set; }
-        public virtual Branch Branch1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonStaff> PersonStaffs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Eqiupment> Eqiupments { get; set; }
+        [NonSerialized]
+    	private ICollection<Branch> branches1;
+    
+    	public virtual ICollection<Branch> Branches1
+    	{
+     		get { return branches1; }
+     		set { branches1 = value; }
+    	}
+        [NonSerialized]
+    	private Branch branch1;
+    
+    	public virtual Branch Branch1
+    	{
+     		get { return branch1; }
+     		set { branch1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonStaff> personStaffs;
+    
+    	public virtual ICollection<PersonStaff> PersonStaffs
+    	{
+     		get { return personStaffs; }
+     		set { personStaffs = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Eqiupment> eqiupments;
+    
+    	public virtual ICollection<Eqiupment> Eqiupments
+    	{
+     		get { return eqiupments; }
+     		set { eqiupments = value; }
+    	}
     }
 }

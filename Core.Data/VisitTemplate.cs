@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class VisitTemplate
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public VisitTemplate()
         {
             this.Visits = new HashSet<Visit>();
@@ -30,11 +30,45 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
-        public virtual FinancingSource FinancingSource { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
-        public virtual Urgently Urgently { get; set; }
+        [NonSerialized]
+    	private ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
+    	}
+        [NonSerialized]
+    	private FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	private RecordContract recordContract;
+    
+    	public virtual RecordContract RecordContract
+    	{
+     		get { return recordContract; }
+     		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
+        [NonSerialized]
+    	private Urgently urgently;
+    
+    	public virtual Urgently Urgently
+    	{
+     		get { return urgently; }
+     		set { urgently = value; }
+    	}
     }
 }

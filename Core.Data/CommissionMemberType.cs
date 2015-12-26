@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class CommissionMemberType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommissionMemberType()
         {
             this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
@@ -28,9 +28,21 @@ namespace Core.Data
         public bool IsSecretary { get; set; }
         public bool IsMember { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionMember> CommissionMembers { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    
+    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
+    	{
+     		get { return commissionDecisionsLinks; }
+     		set { commissionDecisionsLinks = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<CommissionMember> commissionMembers;
+    
+    	public virtual ICollection<CommissionMember> CommissionMembers
+    	{
+     		get { return commissionMembers; }
+     		set { commissionMembers = value; }
+    	}
     }
 }

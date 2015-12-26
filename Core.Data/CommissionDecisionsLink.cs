@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class CommissionDecisionsLink
     {
         public int Id { get; set; }
@@ -21,8 +22,29 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual CommissionMemberType CommissionMemberType { get; set; }
-        public virtual CommissionType CommissionType { get; set; }
-        public virtual Decision Decision { get; set; }
+        [NonSerialized]
+    	private CommissionMemberType commissionMemberType;
+    
+    	public virtual CommissionMemberType CommissionMemberType
+    	{
+     		get { return commissionMemberType; }
+     		set { commissionMemberType = value; }
+    	}
+        [NonSerialized]
+    	private CommissionType commissionType;
+    
+    	public virtual CommissionType CommissionType
+    	{
+     		get { return commissionType; }
+     		set { commissionType = value; }
+    	}
+        [NonSerialized]
+    	private Decision decision;
+    
+    	public virtual Decision Decision
+    	{
+     		get { return decision; }
+     		set { decision = value; }
+    	}
     }
 }

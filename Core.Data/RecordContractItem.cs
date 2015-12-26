@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordContractItem
     {
         public int Id { get; set; }
@@ -25,9 +26,37 @@ namespace Core.Data
         public int InUserId { get; set; }
         public System.DateTime InDateTime { get; set; }
     
-        public virtual PersonStaff PersonStaff { get; set; }
-        public virtual RecordContract RecordContract { get; set; }
-        public virtual Assignment Assignment { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        [NonSerialized]
+    	private PersonStaff personStaff;
+    
+    	public virtual PersonStaff PersonStaff
+    	{
+     		get { return personStaff; }
+     		set { personStaff = value; }
+    	}
+        [NonSerialized]
+    	private RecordContract recordContract;
+    
+    	public virtual RecordContract RecordContract
+    	{
+     		get { return recordContract; }
+     		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	private Assignment assignment;
+    
+    	public virtual Assignment Assignment
+    	{
+     		get { return assignment; }
+     		set { assignment = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
     }
 }

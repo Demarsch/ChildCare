@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Unit
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Unit()
         {
             this.RecordTypeUnits = new HashSet<RecordTypeUnit>();
@@ -25,7 +25,13 @@ namespace Core.Data
         public string ShortName { get; set; }
         public bool OnlyForMedWare { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeUnit> RecordTypeUnits { get; set; }
+        [NonSerialized]
+    	private ICollection<RecordTypeUnit> recordTypeUnits;
+    
+    	public virtual ICollection<RecordTypeUnit> RecordTypeUnits
+    	{
+     		get { return recordTypeUnits; }
+     		set { recordTypeUnits = value; }
+    	}
     }
 }

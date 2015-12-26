@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordPeriod
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordPeriod()
         {
             this.Records = new HashSet<Record>();
@@ -29,8 +29,21 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
+        [NonSerialized]
+    	private ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
     }
 }

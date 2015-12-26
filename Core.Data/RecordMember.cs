@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordMember
     {
         public int Id { get; set; }
@@ -20,8 +21,29 @@ namespace Core.Data
         public int RecordTypeRolePermissionId { get; set; }
         public bool IsActive { get; set; }
     
-        public virtual PersonStaff PersonStaff { get; set; }
-        public virtual RecordTypeRolePermission RecordTypeRolePermission { get; set; }
-        public virtual Record Record { get; set; }
+        [NonSerialized]
+    	private PersonStaff personStaff;
+    
+    	public virtual PersonStaff PersonStaff
+    	{
+     		get { return personStaff; }
+     		set { personStaff = value; }
+    	}
+        [NonSerialized]
+    	private RecordTypeRolePermission recordTypeRolePermission;
+    
+    	public virtual RecordTypeRolePermission RecordTypeRolePermission
+    	{
+     		get { return recordTypeRolePermission; }
+     		set { recordTypeRolePermission = value; }
+    	}
+        [NonSerialized]
+    	private Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
     }
 }

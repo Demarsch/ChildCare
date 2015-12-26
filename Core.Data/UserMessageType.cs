@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class UserMessageType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserMessageType()
         {
             this.UserMessages = new HashSet<UserMessage>();
@@ -24,7 +24,13 @@ namespace Core.Data
         public string Name { get; set; }
         public string ShortName { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserMessage> UserMessages { get; set; }
+        [NonSerialized]
+    	private ICollection<UserMessage> userMessages;
+    
+    	public virtual ICollection<UserMessage> UserMessages
+    	{
+     		get { return userMessages; }
+     		set { userMessages = value; }
+    	}
     }
 }

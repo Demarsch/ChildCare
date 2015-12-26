@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordTypeRolePermission
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordTypeRolePermission()
         {
             this.RecordMembers = new HashSet<RecordMember>();
@@ -29,10 +29,37 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual RecordTypeRole RecordTypeRole { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordMember> RecordMembers { get; set; }
-        public virtual Permission Permission { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        [NonSerialized]
+    	private RecordTypeRole recordTypeRole;
+    
+    	public virtual RecordTypeRole RecordTypeRole
+    	{
+     		get { return recordTypeRole; }
+     		set { recordTypeRole = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordMember> recordMembers;
+    
+    	public virtual ICollection<RecordMember> RecordMembers
+    	{
+     		get { return recordMembers; }
+     		set { recordMembers = value; }
+    	}
+        [NonSerialized]
+    	private Permission permission;
+    
+    	public virtual Permission Permission
+    	{
+     		get { return permission; }
+     		set { permission = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
     }
 }

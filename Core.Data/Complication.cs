@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Complication
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Complication()
         {
             this.Complications1 = new HashSet<Complication>();
@@ -27,10 +27,29 @@ namespace Core.Data
         public string DisplayName { get; set; }
         public string Options { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Complication> Complications1 { get; set; }
-        public virtual Complication Complication1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Diagnosis> Diagnoses { get; set; }
+        [NonSerialized]
+    	private ICollection<Complication> complications1;
+    
+    	public virtual ICollection<Complication> Complications1
+    	{
+     		get { return complications1; }
+     		set { complications1 = value; }
+    	}
+        [NonSerialized]
+    	private Complication complication1;
+    
+    	public virtual Complication Complication1
+    	{
+     		get { return complication1; }
+     		set { complication1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Diagnosis> diagnoses;
+    
+    	public virtual ICollection<Diagnosis> Diagnoses
+    	{
+     		get { return diagnoses; }
+     		set { diagnoses = value; }
+    	}
     }
 }

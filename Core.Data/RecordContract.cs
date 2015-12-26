@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordContract
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordContract()
         {
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
@@ -45,25 +45,109 @@ namespace Core.Data
         public System.DateTime InDateTime { get; set; }
         public int InUserId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionProtocol> CommissionProtocols { get; set; }
-        public virtual FinancingSource FinancingSource { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MedicalHelpType> MedicalHelpTypes { get; set; }
-        public virtual PaymentType PaymentType { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual Person Person1 { get; set; }
-        public virtual PersonStaff PersonStaff { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonTalon> PersonTalons { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Visit> Visits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<VisitTemplate> VisitTemplates { get; set; }
-        public virtual Org Org { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	private FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<MedicalHelpType> medicalHelpTypes;
+    
+    	public virtual ICollection<MedicalHelpType> MedicalHelpTypes
+    	{
+     		get { return medicalHelpTypes; }
+     		set { medicalHelpTypes = value; }
+    	}
+        [NonSerialized]
+    	private PaymentType paymentType;
+    
+    	public virtual PaymentType PaymentType
+    	{
+     		get { return paymentType; }
+     		set { paymentType = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private Person person1;
+    
+    	public virtual Person Person1
+    	{
+     		get { return person1; }
+     		set { person1 = value; }
+    	}
+        [NonSerialized]
+    	private PersonStaff personStaff;
+    
+    	public virtual PersonStaff PersonStaff
+    	{
+     		get { return personStaff; }
+     		set { personStaff = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<PersonTalon> personTalons;
+    
+    	public virtual ICollection<PersonTalon> PersonTalons
+    	{
+     		get { return personTalons; }
+     		set { personTalons = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContractItem> recordContractItems;
+    
+    	public virtual ICollection<RecordContractItem> RecordContractItems
+    	{
+     		get { return recordContractItems; }
+     		set { recordContractItems = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContractLimit> recordContractLimits;
+    
+    	public virtual ICollection<RecordContractLimit> RecordContractLimits
+    	{
+     		get { return recordContractLimits; }
+     		set { recordContractLimits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<VisitTemplate> visitTemplates;
+    
+    	public virtual ICollection<VisitTemplate> VisitTemplates
+    	{
+     		get { return visitTemplates; }
+     		set { visitTemplates = value; }
+    	}
+        [NonSerialized]
+    	private Org org;
+    
+    	public virtual Org Org
+    	{
+     		get { return org; }
+     		set { org = value; }
+    	}
     }
 }

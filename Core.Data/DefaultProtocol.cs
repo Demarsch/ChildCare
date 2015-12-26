@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class DefaultProtocol
     {
         public int Id { get; set; }
@@ -19,6 +20,13 @@ namespace Core.Data
         public string Description { get; set; }
         public string Conclusion { get; set; }
     
-        public virtual Record Record { get; set; }
+        [NonSerialized]
+    	private Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
     }
 }

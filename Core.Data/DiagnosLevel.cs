@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class DiagnosLevel
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DiagnosLevel()
         {
             this.Diagnoses = new HashSet<Diagnosis>();
@@ -28,7 +28,13 @@ namespace Core.Data
         public bool HasMKB { get; set; }
         public bool IsComplication { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Diagnosis> Diagnoses { get; set; }
+        [NonSerialized]
+    	private ICollection<Diagnosis> diagnoses;
+    
+    	public virtual ICollection<Diagnosis> Diagnoses
+    	{
+     		get { return diagnoses; }
+     		set { diagnoses = value; }
+    	}
     }
 }

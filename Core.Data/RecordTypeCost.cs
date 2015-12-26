@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordTypeCost
     {
         public int Id { get; set; }
@@ -30,7 +31,21 @@ namespace Core.Data
         public System.DateTime InDateTime { get; set; }
         public string InUserLogin { get; set; }
     
-        public virtual FinancingSource FinancingSource { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        [NonSerialized]
+    	private FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
     }
 }

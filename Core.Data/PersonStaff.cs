@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonStaff
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PersonStaff()
         {
             this.CommissionMembers = new HashSet<CommissionMember>();
@@ -30,16 +30,61 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual Branch Branch { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionMember> CommissionMembers { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual Staff Staff { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContract> RecordContracts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordMember> RecordMembers { get; set; }
+        [NonSerialized]
+    	private Branch branch;
+    
+    	public virtual Branch Branch
+    	{
+     		get { return branch; }
+     		set { branch = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<CommissionMember> commissionMembers;
+    
+    	public virtual ICollection<CommissionMember> CommissionMembers
+    	{
+     		get { return commissionMembers; }
+     		set { commissionMembers = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private Staff staff;
+    
+    	public virtual Staff Staff
+    	{
+     		get { return staff; }
+     		set { staff = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContractItem> recordContractItems;
+    
+    	public virtual ICollection<RecordContractItem> RecordContractItems
+    	{
+     		get { return recordContractItems; }
+     		set { recordContractItems = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContract> recordContracts;
+    
+    	public virtual ICollection<RecordContract> RecordContracts
+    	{
+     		get { return recordContracts; }
+     		set { recordContracts = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordMember> recordMembers;
+    
+    	public virtual ICollection<RecordMember> RecordMembers
+    	{
+     		get { return recordMembers; }
+     		set { recordMembers = value; }
+    	}
     }
 }

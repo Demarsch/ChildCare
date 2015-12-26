@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordContractLimit
     {
         public int Id { get; set; }
@@ -19,7 +20,21 @@ namespace Core.Data
         public int RecordTypeId { get; set; }
         public int Count { get; set; }
     
-        public virtual RecordContract RecordContract { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        [NonSerialized]
+    	private RecordContract recordContract;
+    
+    	public virtual RecordContract RecordContract
+    	{
+     		get { return recordContract; }
+     		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
     }
 }

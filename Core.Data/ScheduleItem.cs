@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class ScheduleItem
     {
         public int Id { get; set; }
@@ -23,7 +24,21 @@ namespace Core.Data
         public System.TimeSpan StartTime { get; set; }
         public System.TimeSpan EndTime { get; set; }
     
-        public virtual Room Room { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        [NonSerialized]
+    	private Room room;
+    
+    	public virtual Room Room
+    	{
+     		get { return room; }
+     		set { room = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
     }
 }

@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class AnalyseResult
     {
         public int Id { get; set; }
@@ -25,7 +26,21 @@ namespace Core.Data
         public bool IsBelowRef { get; set; }
         public string Details { get; set; }
     
-        public virtual Record Record { get; set; }
-        public virtual RecordType RecordType { get; set; }
+        [NonSerialized]
+    	private Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
     }
 }

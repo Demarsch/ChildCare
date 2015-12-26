@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class CommissionMember
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CommissionMember()
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
@@ -28,12 +28,45 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionDecision> CommissionDecisions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CommissionDecision> CommissionDecisions1 { get; set; }
-        public virtual CommissionMemberType CommissionMemberType { get; set; }
-        public virtual CommissionType CommissionType { get; set; }
-        public virtual PersonStaff PersonStaff { get; set; }
+        [NonSerialized]
+    	private ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<CommissionDecision> commissionDecisions1;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions1
+    	{
+     		get { return commissionDecisions1; }
+     		set { commissionDecisions1 = value; }
+    	}
+        [NonSerialized]
+    	private CommissionMemberType commissionMemberType;
+    
+    	public virtual CommissionMemberType CommissionMemberType
+    	{
+     		get { return commissionMemberType; }
+     		set { commissionMemberType = value; }
+    	}
+        [NonSerialized]
+    	private CommissionType commissionType;
+    
+    	public virtual CommissionType CommissionType
+    	{
+     		get { return commissionType; }
+     		set { commissionType = value; }
+    	}
+        [NonSerialized]
+    	private PersonStaff personStaff;
+    
+    	public virtual PersonStaff PersonStaff
+    	{
+     		get { return personStaff; }
+     		set { personStaff = value; }
+    	}
     }
 }

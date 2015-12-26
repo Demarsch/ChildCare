@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonSocialStatus
     {
         public int Id { get; set; }
@@ -22,8 +23,29 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        public virtual Person Person { get; set; }
-        public virtual SocialStatusType SocialStatusType { get; set; }
-        public virtual Org Org { get; set; }
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private SocialStatusType socialStatusType;
+    
+    	public virtual SocialStatusType SocialStatusType
+    	{
+     		get { return socialStatusType; }
+     		set { socialStatusType = value; }
+    	}
+        [NonSerialized]
+    	private Org org;
+    
+    	public virtual Org Org
+    	{
+     		get { return org; }
+     		set { org = value; }
+    	}
     }
 }

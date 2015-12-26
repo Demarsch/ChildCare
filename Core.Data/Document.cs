@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Document
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Document()
         {
             this.PersonOuterDocuments = new HashSet<PersonOuterDocument>();
@@ -32,11 +32,29 @@ namespace Core.Data
         public string Description { get; set; }
         public Nullable<System.DateTime> DocumentFromDate { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PersonOuterDocument> PersonOuterDocuments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Person> Persons { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
+        [NonSerialized]
+    	private ICollection<PersonOuterDocument> personOuterDocuments;
+    
+    	public virtual ICollection<PersonOuterDocument> PersonOuterDocuments
+    	{
+     		get { return personOuterDocuments; }
+     		set { personOuterDocuments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Person> persons;
+    
+    	public virtual ICollection<Person> Persons
+    	{
+     		get { return persons; }
+     		set { persons = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordDocument> recordDocuments;
+    
+    	public virtual ICollection<RecordDocument> RecordDocuments
+    	{
+     		get { return recordDocuments; }
+     		set { recordDocuments = value; }
+    	}
     }
 }

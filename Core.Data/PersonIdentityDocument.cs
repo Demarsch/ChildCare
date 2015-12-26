@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonIdentityDocument
     {
         public int Id { get; set; }
@@ -23,7 +24,21 @@ namespace Core.Data
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
     
-        public virtual Person Person { get; set; }
-        public virtual IdentityDocumentType IdentityDocumentType { get; set; }
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private IdentityDocumentType identityDocumentType;
+    
+    	public virtual IdentityDocumentType IdentityDocumentType
+    	{
+     		get { return identityDocumentType; }
+     		set { identityDocumentType = value; }
+    	}
     }
 }

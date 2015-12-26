@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordType
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public RecordType()
         {
             this.Assignments = new HashSet<Assignment>();
@@ -50,32 +50,117 @@ namespace Core.Data
         public string NumberType { get; set; }
         public int Priority { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractLimit> RecordContractLimits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeCost> RecordTypeCosts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeEditor> RecordTypeEditors { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordType> RecordTypes1 { get; set; }
-        public virtual RecordType RecordType1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ScheduleItem> ScheduleItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordTypeUnit> RecordTypeUnits { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnalyseRefference> AnalyseRefferences { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnalyseRefference> AnalyseRefferences1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnalyseResult> AnalyseResults { get; set; }
+        [NonSerialized]
+    	private ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContractItem> recordContractItems;
+    
+    	public virtual ICollection<RecordContractItem> RecordContractItems
+    	{
+     		get { return recordContractItems; }
+     		set { recordContractItems = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContractLimit> recordContractLimits;
+    
+    	public virtual ICollection<RecordContractLimit> RecordContractLimits
+    	{
+     		get { return recordContractLimits; }
+     		set { recordContractLimits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordTypeCost> recordTypeCosts;
+    
+    	public virtual ICollection<RecordTypeCost> RecordTypeCosts
+    	{
+     		get { return recordTypeCosts; }
+     		set { recordTypeCosts = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordTypeEditor> recordTypeEditors;
+    
+    	public virtual ICollection<RecordTypeEditor> RecordTypeEditors
+    	{
+     		get { return recordTypeEditors; }
+     		set { recordTypeEditors = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordTypeRolePermission> recordTypeRolePermissions;
+    
+    	public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions
+    	{
+     		get { return recordTypeRolePermissions; }
+     		set { recordTypeRolePermissions = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordType> recordTypes1;
+    
+    	public virtual ICollection<RecordType> RecordTypes1
+    	{
+     		get { return recordTypes1; }
+     		set { recordTypes1 = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType1;
+    
+    	public virtual RecordType RecordType1
+    	{
+     		get { return recordType1; }
+     		set { recordType1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<ScheduleItem> scheduleItems;
+    
+    	public virtual ICollection<ScheduleItem> ScheduleItems
+    	{
+     		get { return scheduleItems; }
+     		set { scheduleItems = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordTypeUnit> recordTypeUnits;
+    
+    	public virtual ICollection<RecordTypeUnit> RecordTypeUnits
+    	{
+     		get { return recordTypeUnits; }
+     		set { recordTypeUnits = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<AnalyseRefference> analyseRefferences;
+    
+    	public virtual ICollection<AnalyseRefference> AnalyseRefferences
+    	{
+     		get { return analyseRefferences; }
+     		set { analyseRefferences = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<AnalyseRefference> analyseRefferences1;
+    
+    	public virtual ICollection<AnalyseRefference> AnalyseRefferences1
+    	{
+     		get { return analyseRefferences1; }
+     		set { analyseRefferences1 = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<AnalyseResult> analyseResults;
+    
+    	public virtual ICollection<AnalyseResult> AnalyseResults
+    	{
+     		get { return analyseResults; }
+     		set { analyseResults = value; }
+    	}
     }
 }

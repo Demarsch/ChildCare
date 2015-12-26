@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Assignment
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Assignment()
         {
             this.Assignments1 = new HashSet<Assignment>();
@@ -48,27 +48,149 @@ namespace Core.Data
         public double Cost { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Assignment> Assignments1 { get; set; }
-        public virtual Assignment Assignment1 { get; set; }
-        public virtual ExecutionPlace ExecutionPlace { get; set; }
-        public virtual FinancingSource FinancingSource { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual Record Record { get; set; }
-        public virtual Record Record1 { get; set; }
-        public virtual Room Room { get; set; }
-        public virtual User User { get; set; }
-        public virtual User User1 { get; set; }
-        public virtual User User2 { get; set; }
-        public virtual Visit Visit { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordContractItem> RecordContractItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordDocument> RecordDocuments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Record> Records { get; set; }
-        public virtual RecordType RecordType { get; set; }
-        public virtual Org Org { get; set; }
-        public virtual Urgently Urgently { get; set; }
+        [NonSerialized]
+    	private ICollection<Assignment> assignments1;
+    
+    	public virtual ICollection<Assignment> Assignments1
+    	{
+     		get { return assignments1; }
+     		set { assignments1 = value; }
+    	}
+        [NonSerialized]
+    	private Assignment assignment1;
+    
+    	public virtual Assignment Assignment1
+    	{
+     		get { return assignment1; }
+     		set { assignment1 = value; }
+    	}
+        [NonSerialized]
+    	private ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
+    	}
+        [NonSerialized]
+    	private FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
+        [NonSerialized]
+    	private Record record1;
+    
+    	public virtual Record Record1
+    	{
+     		get { return record1; }
+     		set { record1 = value; }
+    	}
+        [NonSerialized]
+    	private Room room;
+    
+    	public virtual Room Room
+    	{
+     		get { return room; }
+     		set { room = value; }
+    	}
+        [NonSerialized]
+    	private User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
+    	}
+        [NonSerialized]
+    	private User user1;
+    
+    	public virtual User User1
+    	{
+     		get { return user1; }
+     		set { user1 = value; }
+    	}
+        [NonSerialized]
+    	private User user2;
+    
+    	public virtual User User2
+    	{
+     		get { return user2; }
+     		set { user2 = value; }
+    	}
+        [NonSerialized]
+    	private Visit visit;
+    
+    	public virtual Visit Visit
+    	{
+     		get { return visit; }
+     		set { visit = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordContractItem> recordContractItems;
+    
+    	public virtual ICollection<RecordContractItem> RecordContractItems
+    	{
+     		get { return recordContractItems; }
+     		set { recordContractItems = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordDocument> recordDocuments;
+    
+    	public virtual ICollection<RecordDocument> RecordDocuments
+    	{
+     		get { return recordDocuments; }
+     		set { recordDocuments = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
+        [NonSerialized]
+    	private RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
+        [NonSerialized]
+    	private Org org;
+    
+    	public virtual Org Org
+    	{
+     		get { return org; }
+     		set { org = value; }
+    	}
+        [NonSerialized]
+    	private Urgently urgently;
+    
+    	public virtual Urgently Urgently
+    	{
+     		get { return urgently; }
+     		set { urgently = value; }
+    	}
     }
 }

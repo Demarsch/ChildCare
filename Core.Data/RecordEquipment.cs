@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class RecordEquipment
     {
         public int Id { get; set; }
@@ -21,7 +22,21 @@ namespace Core.Data
         public Nullable<System.DateTime> EndDateTime { get; set; }
         public double Duration { get; set; }
     
-        public virtual Eqiupment Eqiupment { get; set; }
-        public virtual Record Record { get; set; }
+        [NonSerialized]
+    	private Eqiupment eqiupment;
+    
+    	public virtual Eqiupment Eqiupment
+    	{
+     		get { return eqiupment; }
+     		set { eqiupment = value; }
+    	}
+        [NonSerialized]
+    	private Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
     }
 }

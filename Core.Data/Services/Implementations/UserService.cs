@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.DirectoryServices.AccountManagement;
+using System.Security.Principal;
 
 namespace Core.Data.Services
 {
@@ -19,7 +20,7 @@ namespace Core.Data.Services
 
         public string GetCurrentUserSID()
         {
-            return UserPrincipal.Current.Sid.ToString();
+            return WindowsIdentity.GetCurrent().User.Value;
         }
 
         public User GetCurrentUser()

@@ -12,6 +12,7 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonOuterDocument
     {
         public int Id { get; set; }
@@ -19,8 +20,29 @@ namespace Core.Data
         public int OuterDocumentTypeId { get; set; }
         public int DocumentId { get; set; }
     
-        public virtual Document Document { get; set; }
-        public virtual OuterDocumentType OuterDocumentType { get; set; }
-        public virtual Person Person { get; set; }
+        [NonSerialized]
+    	private Document document;
+    
+    	public virtual Document Document
+    	{
+     		get { return document; }
+     		set { document = value; }
+    	}
+        [NonSerialized]
+    	private OuterDocumentType outerDocumentType;
+    
+    	public virtual OuterDocumentType OuterDocumentType
+    	{
+     		get { return outerDocumentType; }
+     		set { outerDocumentType = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
     }
 }

@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class PersonDiagnos
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PersonDiagnos()
         {
             this.Diagnoses = new HashSet<Diagnosis>();
@@ -25,10 +25,37 @@ namespace Core.Data
         public int RecordId { get; set; }
         public int DiagnosTypeId { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Diagnosis> Diagnoses { get; set; }
-        public virtual Person Person { get; set; }
-        public virtual DiagnosType DiagnosType { get; set; }
-        public virtual Record Record { get; set; }
+        [NonSerialized]
+    	private ICollection<Diagnosis> diagnoses;
+    
+    	public virtual ICollection<Diagnosis> Diagnoses
+    	{
+     		get { return diagnoses; }
+     		set { diagnoses = value; }
+    	}
+        [NonSerialized]
+    	private Person person;
+    
+    	public virtual Person Person
+    	{
+     		get { return person; }
+     		set { person = value; }
+    	}
+        [NonSerialized]
+    	private DiagnosType diagnosType;
+    
+    	public virtual DiagnosType DiagnosType
+    	{
+     		get { return diagnosType; }
+     		set { diagnosType = value; }
+    	}
+        [NonSerialized]
+    	private Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
     }
 }

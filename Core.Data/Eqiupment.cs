@@ -12,9 +12,9 @@ namespace Core.Data
     using System;
     using System.Collections.Generic;
     
+    [Serializable]
     public partial class Eqiupment
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Eqiupment()
         {
             this.RecordEquipments = new HashSet<RecordEquipment>();
@@ -35,10 +35,37 @@ namespace Core.Data
         public string PhotoPath { get; set; }
         public string IPAddress { get; set; }
     
-        public virtual Branch Branch { get; set; }
-        public virtual EqiupmentType EqiupmentType { get; set; }
-        public virtual Room Room { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RecordEquipment> RecordEquipments { get; set; }
+        [NonSerialized]
+    	private Branch branch;
+    
+    	public virtual Branch Branch
+    	{
+     		get { return branch; }
+     		set { branch = value; }
+    	}
+        [NonSerialized]
+    	private EqiupmentType eqiupmentType;
+    
+    	public virtual EqiupmentType EqiupmentType
+    	{
+     		get { return eqiupmentType; }
+     		set { eqiupmentType = value; }
+    	}
+        [NonSerialized]
+    	private Room room;
+    
+    	public virtual Room Room
+    	{
+     		get { return room; }
+     		set { room = value; }
+    	}
+        [NonSerialized]
+    	private ICollection<RecordEquipment> recordEquipments;
+    
+    	public virtual ICollection<RecordEquipment> RecordEquipments
+    	{
+     		get { return recordEquipments; }
+     		set { recordEquipments = value; }
+    	}
     }
 }
