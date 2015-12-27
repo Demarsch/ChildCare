@@ -8,6 +8,7 @@ using System.Windows;
 using Core.Data;
 using Core.Data.Services;
 using Core.Misc;
+using Core.Notification;
 using Core.Services;
 using Core.Wpf.Services;
 using Fluent;
@@ -141,6 +142,7 @@ namespace Shell
 
         private void RegisterServices()
         {
+            Container.RegisterInstance(LogManager.GetLogger("COMMON"));
             Container.RegisterType<IDbContextProvider, DbContextProvider>(new ContainerControlledLifetimeManager());
             Container.RegisterType<ICacheService, DbContextCacheService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IViewNameResolver, ConventionBasedViewNameResolver>(new ContainerControlledLifetimeManager());
@@ -150,7 +152,7 @@ namespace Shell
             Container.RegisterType<IDialogServiceAsync, WindowsDialogServiceAsync>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IUserService, UserService>(new ContainerControlledLifetimeManager());
             Container.RegisterType<IFileService, FileService>(new ContainerControlledLifetimeManager());
-            Container.RegisterInstance(LogManager.GetLogger("COMMON"));
+            Container.RegisterType<INotificationService, NotificationService>(new ContainerControlledLifetimeManager());
             //Resolving shared context here to avoid multithreading issue
             var context = Container.Resolve<IDbContextProvider>().SharedContext;
         }
