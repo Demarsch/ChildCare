@@ -10,26 +10,34 @@ namespace Core.Notification
     {
         private readonly ILog log;
 
+        private readonly INotificationService notificationService;
+
         private readonly Predicate<TItem> filter;
 
         private NotificationServiceEngineClient client;
 
         private readonly NotificationServiceEngineCallback<TItem> callback;
 
-        public NotificationServiceSubscription(ILog log, Expression<Predicate<TItem>> filterPredicate = null)
+        public NotificationServiceSubscription(ILog log, INotificationService notificationService, Expression<Predicate<TItem>> filterPredicate = null)
         {
             if (log == null)
             {
                 throw new ArgumentNullException("log");
             }
+            if (notificationService == null)
+            {
+                throw new ArgumentNullException("notificationService");
+            }
             this.log = log;
+            this.notificationService = notificationService;
             if (filterPredicate != null)
             {
                 filter = filterPredicate.Compile();
             }
             callback = new NotificationServiceEngineCallback<TItem>();
-            callback.Notified += CallbackOnNotified; 
+            callback.Notified += CallbackOnNotified;
             client = new NotificationServiceEngineClient(new InstanceContext(callback));
+            client.Endpoint.Address = new EndpointAddress(string.Join("//", new[] { notificationService.ServiceBaseAddress, client.Endpoint.Address == null ? string.Empty : client.Endpoint.Address.Uri.ToString() }));
             client.Open();
             client.Subscribe(typeof(TItem).FullName);
         }

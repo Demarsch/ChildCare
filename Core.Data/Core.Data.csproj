@@ -175,6 +175,7 @@
     <Compile Include="MedicalHelpType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Misc\DataNotFoundException.cs" />
     <Compile Include="Misc\DbContextProviderExtensions.cs" />
     <Compile Include="Misc\DisposableQueryable.cs" />
     <Compile Include="Misc\EmptyDbAsyncEnumerable.cs" />

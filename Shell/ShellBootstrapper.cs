@@ -34,7 +34,7 @@ namespace Shell
             Container.RegisterInstance(Container.Resolve<ShellWindow>().childDialogWindow);
             Application.Current.MainWindow = shellWindow;
             Application.Current.MainWindow.Show();
-            var connectionEstablished = await shellWindow.ShellWindowViewModel.CheckDatabaseConnectionAsync();
+            var connectionEstablished = await shellWindow.ShellWindowViewModel.CheckServicesAreOnlineAsync();
             if (connectionEstablished)
             {
                 await BuildCacheHierarchyAsync();

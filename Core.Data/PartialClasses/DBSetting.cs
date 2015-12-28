@@ -5,5 +5,7 @@
         public const string DefaultRecordTypeTime = "DefaultRecordTypeTime";
 
         public const string CurrentLpuName = "CurrentLpuName";
+
+        public const string NotificationServiceAddress = "NotificationServiceAddress";
     }
 }

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Data;
+using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Misc;
+using Core.Notification;
 using Core.Wpf.Events;
 using Core.Wpf.Mvvm;
 using log4net;
@@ -16,6 +18,8 @@ namespace Shell
     {
         private readonly IDbContextProvider contextProvider;
 
+        private readonly INotificationService notificationService;
+
         private readonly IEventAggregator eventAggregator;
 
         private readonly IEnvironment environment;
@@ -24,7 +28,7 @@ namespace Shell
 
         private readonly IList<IDisposable> disposables;
 
-        public ShellWindowViewModel(IDbContextProvider contextProvider, IEventAggregator eventAggregator, IEnvironment environment, ILog log)
+        public ShellWindowViewModel(IDbContextProvider contextProvider, INotificationService notificationService, IEventAggregator eventAggregator, IEnvironment environment, ILog log)
         {
             if (contextProvider == null)
             {
@@ -42,7 +46,12 @@ namespace Shell
             {
                 throw new ArgumentNullException("log");
             }
+            if (notificationService == null)
+            {
+                throw new ArgumentNullException("notificationService");
+            }
             this.contextProvider = contextProvider;
+            this.notificationService = notificationService;
             this.eventAggregator = eventAggregator;
             this.environment = environment;
             this.log = log;
@@ -66,7 +75,7 @@ namespace Shell
             set { SetProperty(ref isMenuOpen, value); }
         }
 
-        public async Task<bool> CheckDatabaseConnectionAsync()
+        public async Task<bool> CheckServicesAreOnlineAsync()
         {
             BusyMediator.Activate("Подключение к базе данных...");
             OnPropertyChanged(() => CanOpenMenu);
@@ -74,7 +83,14 @@ namespace Shell
             {
                 await Task.Run((Action)CheckDatabaseConnection);
                 await Task.Run((Action)CheckCurrentUserIsAccessible);
+                await notificationService.CheckServiceExistsAsync();
                 return true;
+            }
+            catch (DataNotFoundException ex)
+            {
+                log.Error("Failed to check notification service. " + ex.Message, ex);
+                FailureMediator.Activate("В базе данных не содержится информация об адресе сервиса оповещений. Пожалуйста, обратитесь в службу поддержки", exception: ex);
+                return false;
             }
             catch (Exception ex)
             {
