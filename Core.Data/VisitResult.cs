@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class VisitResult
+    public partial class VisitResult : ICloneable
     {
         public VisitResult()
         {
@@ -28,7 +28,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<Visit> visits;
+    	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
@@ -36,12 +36,17 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	private ExecutionPlace executionPlace;
+    	protected ExecutionPlace executionPlace;
     
     	public virtual ExecutionPlace ExecutionPlace
     	{
      		get { return executionPlace; }
      		set { executionPlace = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

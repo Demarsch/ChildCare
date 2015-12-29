@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class DBSetting
+    public partial class DBSetting : ICloneable
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -23,5 +23,10 @@ namespace Core.Data
         public string Comment { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
+    	}
     }
 }

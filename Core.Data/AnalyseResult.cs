@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class AnalyseResult
+    public partial class AnalyseResult : ICloneable
     {
         public int Id { get; set; }
         public int RecordId { get; set; }
@@ -27,7 +27,7 @@ namespace Core.Data
         public string Details { get; set; }
     
         [NonSerialized]
-    	private Record record;
+    	protected Record record;
     
     	public virtual Record Record
     	{
@@ -35,12 +35,17 @@ namespace Core.Data
      		set { record = value; }
     	}
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
      		get { return recordType; }
      		set { recordType = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

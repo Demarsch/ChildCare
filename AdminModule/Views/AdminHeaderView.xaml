@@ -8,11 +8,8 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:AdminHeaderViewModel}">
-    <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Администрирование"
-                   Style="{x:Null}" />
-    </fluent:RibbonTabItem.Header>
+                      d:DataContext="{d:DesignInstance viewModels:AdminHeaderViewModel}" 
+                      Header="Администрирование">
     <fluent:RibbonGroupBox Header="Отчеты">
         <fluent:Button x:Name="btnTemplates" Command="{Binding ReportTemplateManagerCommand}" 
                        Header="Шаблоны" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/EditWord48x48.png" />       

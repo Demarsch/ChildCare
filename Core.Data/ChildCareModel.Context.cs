@@ -105,7 +105,6 @@ namespace Core.Data
         public virtual DbSet<UserPermisionGroup> UserPermisionGroups { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RecordTypeUnit> RecordTypeUnits { get; set; }
@@ -115,5 +114,6 @@ namespace Core.Data
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
     }
 }

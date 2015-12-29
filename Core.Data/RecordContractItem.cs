@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordContractItem
+    public partial class RecordContractItem : ICloneable
     {
         public int Id { get; set; }
         public int RecordContractId { get; set; }
@@ -27,7 +27,7 @@ namespace Core.Data
         public System.DateTime InDateTime { get; set; }
     
         [NonSerialized]
-    	private PersonStaff personStaff;
+    	protected PersonStaff personStaff;
     
     	public virtual PersonStaff PersonStaff
     	{
@@ -35,7 +35,7 @@ namespace Core.Data
      		set { personStaff = value; }
     	}
         [NonSerialized]
-    	private RecordContract recordContract;
+    	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
@@ -43,20 +43,25 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	private Assignment assignment;
+    	protected RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
+        [NonSerialized]
+    	protected Assignment assignment;
     
     	public virtual Assignment Assignment
     	{
      		get { return assignment; }
      		set { assignment = value; }
     	}
-        [NonSerialized]
-    	private RecordType recordType;
     
-    	public virtual RecordType RecordType
+    	public object Clone()
     	{
-     		get { return recordType; }
-     		set { recordType = value; }
+    		return MemberwiseClone();
     	}
     }
 }

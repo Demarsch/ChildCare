@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordDocument
+    public partial class RecordDocument : ICloneable
     {
         public int Id { get; set; }
         public Nullable<int> AssignmentId { get; set; }
@@ -21,7 +21,7 @@ namespace Core.Data
         public int DocumentId { get; set; }
     
         [NonSerialized]
-    	private Document document;
+    	protected Document document;
     
     	public virtual Document Document
     	{
@@ -29,20 +29,25 @@ namespace Core.Data
      		set { document = value; }
     	}
         [NonSerialized]
-    	private Assignment assignment;
+    	protected Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
+        [NonSerialized]
+    	protected Assignment assignment;
     
     	public virtual Assignment Assignment
     	{
      		get { return assignment; }
      		set { assignment = value; }
     	}
-        [NonSerialized]
-    	private Record record;
     
-    	public virtual Record Record
+    	public object Clone()
     	{
-     		get { return record; }
-     		set { record = value; }
+    		return MemberwiseClone();
     	}
     }
 }

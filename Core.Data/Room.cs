@@ -13,14 +13,14 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Room
+    public partial class Room : ICloneable
     {
         public Room()
         {
             this.ScheduleItems = new HashSet<ScheduleItem>();
             this.Eqiupments = new HashSet<Eqiupment>();
-            this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -31,7 +31,7 @@ namespace Core.Data
         public string Options { get; set; }
     
         [NonSerialized]
-    	private ICollection<ScheduleItem> scheduleItems;
+    	protected ICollection<ScheduleItem> scheduleItems;
     
     	public virtual ICollection<ScheduleItem> ScheduleItems
     	{
@@ -39,7 +39,7 @@ namespace Core.Data
      		set { scheduleItems = value; }
     	}
         [NonSerialized]
-    	private ICollection<Eqiupment> eqiupments;
+    	protected ICollection<Eqiupment> eqiupments;
     
     	public virtual ICollection<Eqiupment> Eqiupments
     	{
@@ -47,20 +47,25 @@ namespace Core.Data
      		set { eqiupments = value; }
     	}
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
     
     	public virtual ICollection<Assignment> Assignments
     	{
      		get { return assignments; }
      		set { assignments = value; }
     	}
-        [NonSerialized]
-    	private ICollection<Record> records;
     
-    	public virtual ICollection<Record> Records
+    	public object Clone()
     	{
-     		get { return records; }
-     		set { records = value; }
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordTypeRole
+    public partial class RecordTypeRole : ICloneable
     {
         public RecordTypeRole()
         {
@@ -26,12 +26,17 @@ namespace Core.Data
         public string Options { get; set; }
     
         [NonSerialized]
-    	private ICollection<RecordTypeRolePermission> recordTypeRolePermissions;
+    	protected ICollection<RecordTypeRolePermission> recordTypeRolePermissions;
     
     	public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions
     	{
      		get { return recordTypeRolePermissions; }
      		set { recordTypeRolePermissions = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

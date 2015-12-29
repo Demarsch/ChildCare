@@ -8,12 +8,8 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:DocumentsHeaderViewModel}">
-    <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Прикрепленные документы"
-                   Style="{x:Null}" />
-    </fluent:RibbonTabItem.Header>
-
+                      d:DataContext="{d:DesignInstance viewModels:DocumentsHeaderViewModel}"
+                      Header="Прикрепленные документы">
     <fluent:RibbonGroupBox Header="Сканирование" FontWeight="Medium">
         <fluent:Button x:Name="btnScanning" Command="{Binding ScanningCommand}" 
                        Header="Сканировать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Scanner48x48.png" />

@@ -13,14 +13,14 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordTypeUnit
+    public partial class RecordTypeUnit : ICloneable
     {
         public int Id { get; set; }
         public int RecordTypeId { get; set; }
         public int UnitId { get; set; }
     
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
@@ -28,12 +28,17 @@ namespace Core.Data
      		set { recordType = value; }
     	}
         [NonSerialized]
-    	private Unit unit;
+    	protected Unit unit;
     
     	public virtual Unit Unit
     	{
      		get { return unit; }
      		set { unit = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

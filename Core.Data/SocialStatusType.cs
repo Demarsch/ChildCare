@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class SocialStatusType
+    public partial class SocialStatusType : ICloneable
     {
         public SocialStatusType()
         {
@@ -27,12 +27,17 @@ namespace Core.Data
         public bool NeedPlace { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonSocialStatus> personSocialStatuses;
+    	protected ICollection<PersonSocialStatus> personSocialStatuses;
     
     	public virtual ICollection<PersonSocialStatus> PersonSocialStatuses
     	{
      		get { return personSocialStatuses; }
      		set { personSocialStatuses = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

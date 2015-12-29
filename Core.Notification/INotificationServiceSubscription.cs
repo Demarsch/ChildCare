@@ -6,6 +6,6 @@ namespace Core.Notification
     {
         event EventHandler<NotificationEventArgs<TItem>> Notified; 
         
-        void Notify(TItem oldItem, TItem newItem);
+        void Notify(TItem originalItem, TItem newItem);
     }
 }

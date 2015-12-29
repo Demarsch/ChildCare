@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class InsuranceCompany
+    public partial class InsuranceCompany : ICloneable
     {
         public InsuranceCompany()
         {
@@ -39,12 +39,17 @@ namespace Core.Data
         public string OKATO { get; set; }
     
         [NonSerialized]
-    	private ICollection<InsuranceDocument> insuranceDocuments;
+    	protected ICollection<InsuranceDocument> insuranceDocuments;
     
     	public virtual ICollection<InsuranceDocument> InsuranceDocuments
     	{
      		get { return insuranceDocuments; }
      		set { insuranceDocuments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

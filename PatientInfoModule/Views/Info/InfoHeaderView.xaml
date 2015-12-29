@@ -9,7 +9,8 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:InfoHeaderViewModel}">
+                      d:DataContext="{d:DesignInstance viewModels:InfoHeaderViewModel}"
+                      Header="Основные данные">
     <fluent:RibbonTabItem.Resources>
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="Margin"
@@ -21,10 +22,6 @@
                                           To="{x:Static Visibility.Visible}" />
         </coreConverters:Converter>
     </fluent:RibbonTabItem.Resources>
-    <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Основные данные"
-                   Style="{x:Null}" />
-    </fluent:RibbonTabItem.Header>
     <fluent:RibbonGroupBox Header="Новый пациент"
                            MinWidth="100"
                            HorizontalContentAlignment="Center">

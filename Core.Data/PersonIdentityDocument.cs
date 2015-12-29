@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class PersonIdentityDocument
+    public partial class PersonIdentityDocument : ICloneable
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
@@ -25,7 +25,7 @@ namespace Core.Data
         public System.DateTime EndDate { get; set; }
     
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -33,12 +33,17 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private IdentityDocumentType identityDocumentType;
+    	protected IdentityDocumentType identityDocumentType;
     
     	public virtual IdentityDocumentType IdentityDocumentType
     	{
      		get { return identityDocumentType; }
      		set { identityDocumentType = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

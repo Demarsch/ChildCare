@@ -13,14 +13,14 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RelativeRelationshipConnection
+    public partial class RelativeRelationshipConnection : ICloneable
     {
         public int Id { get; set; }
         public int ParentRelationshipId { get; set; }
         public int ChildRelationshipId { get; set; }
     
         [NonSerialized]
-    	private RelativeRelationship relativeRelationship;
+    	protected RelativeRelationship relativeRelationship;
     
     	public virtual RelativeRelationship RelativeRelationship
     	{
@@ -28,12 +28,17 @@ namespace Core.Data
      		set { relativeRelationship = value; }
     	}
         [NonSerialized]
-    	private RelativeRelationship relativeRelationship1;
+    	protected RelativeRelationship relativeRelationship1;
     
     	public virtual RelativeRelationship RelativeRelationship1
     	{
      		get { return relativeRelationship1; }
      		set { relativeRelationship1 = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

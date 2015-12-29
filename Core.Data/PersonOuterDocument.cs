@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class PersonOuterDocument
+    public partial class PersonOuterDocument : ICloneable
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
@@ -21,7 +21,7 @@ namespace Core.Data
         public int DocumentId { get; set; }
     
         [NonSerialized]
-    	private Document document;
+    	protected Document document;
     
     	public virtual Document Document
     	{
@@ -29,7 +29,7 @@ namespace Core.Data
      		set { document = value; }
     	}
         [NonSerialized]
-    	private OuterDocumentType outerDocumentType;
+    	protected OuterDocumentType outerDocumentType;
     
     	public virtual OuterDocumentType OuterDocumentType
     	{
@@ -37,12 +37,17 @@ namespace Core.Data
      		set { outerDocumentType = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
      		get { return person; }
      		set { person = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

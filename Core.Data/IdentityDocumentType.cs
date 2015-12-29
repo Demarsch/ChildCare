@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class IdentityDocumentType
+    public partial class IdentityDocumentType : ICloneable
     {
         public IdentityDocumentType()
         {
@@ -25,12 +25,17 @@ namespace Core.Data
         public string Options { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonIdentityDocument> personIdentityDocuments;
+    	protected ICollection<PersonIdentityDocument> personIdentityDocuments;
     
     	public virtual ICollection<PersonIdentityDocument> PersonIdentityDocuments
     	{
      		get { return personIdentityDocuments; }
      		set { personIdentityDocuments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class ExecutionPlace
+    public partial class ExecutionPlace : ICloneable
     {
         public ExecutionPlace()
         {
@@ -21,8 +21,8 @@ namespace Core.Data
             this.VisitOutcomes = new HashSet<VisitOutcome>();
             this.VisitResults = new HashSet<VisitResult>();
             this.Visits = new HashSet<Visit>();
-            this.Assignments = new HashSet<Assignment>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -33,7 +33,7 @@ namespace Core.Data
         public string Options { get; set; }
     
         [NonSerialized]
-    	private ICollection<RecordPeriod> recordPeriods;
+    	protected ICollection<RecordPeriod> recordPeriods;
     
     	public virtual ICollection<RecordPeriod> RecordPeriods
     	{
@@ -41,7 +41,7 @@ namespace Core.Data
      		set { recordPeriods = value; }
     	}
         [NonSerialized]
-    	private ICollection<VisitOutcome> visitOutcomes;
+    	protected ICollection<VisitOutcome> visitOutcomes;
     
     	public virtual ICollection<VisitOutcome> VisitOutcomes
     	{
@@ -49,7 +49,7 @@ namespace Core.Data
      		set { visitOutcomes = value; }
     	}
         [NonSerialized]
-    	private ICollection<VisitResult> visitResults;
+    	protected ICollection<VisitResult> visitResults;
     
     	public virtual ICollection<VisitResult> VisitResults
     	{
@@ -57,7 +57,7 @@ namespace Core.Data
      		set { visitResults = value; }
     	}
         [NonSerialized]
-    	private ICollection<Visit> visits;
+    	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
@@ -65,20 +65,25 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
+    	protected ICollection<VisitTemplate> visitTemplates;
+    
+    	public virtual ICollection<VisitTemplate> VisitTemplates
+    	{
+     		get { return visitTemplates; }
+     		set { visitTemplates = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
     
     	public virtual ICollection<Assignment> Assignments
     	{
      		get { return assignments; }
      		set { assignments = value; }
     	}
-        [NonSerialized]
-    	private ICollection<VisitTemplate> visitTemplates;
     
-    	public virtual ICollection<VisitTemplate> VisitTemplates
+    	public object Clone()
     	{
-     		get { return visitTemplates; }
-     		set { visitTemplates = value; }
+    		return MemberwiseClone();
     	}
     }
 }

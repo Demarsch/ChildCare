@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class CommissionType
+    public partial class CommissionType : ICloneable
     {
         public CommissionType()
         {
@@ -30,7 +30,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
     
     	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
     	{
@@ -38,7 +38,7 @@ namespace Core.Data
      		set { commissionDecisionsLinks = value; }
     	}
         [NonSerialized]
-    	private ICollection<CommissionMember> commissionMembers;
+    	protected ICollection<CommissionMember> commissionMembers;
     
     	public virtual ICollection<CommissionMember> CommissionMembers
     	{
@@ -46,7 +46,7 @@ namespace Core.Data
      		set { commissionMembers = value; }
     	}
         [NonSerialized]
-    	private ICollection<CommissionQuestion> commissionQuestions;
+    	protected ICollection<CommissionQuestion> commissionQuestions;
     
     	public virtual ICollection<CommissionQuestion> CommissionQuestions
     	{
@@ -54,12 +54,17 @@ namespace Core.Data
      		set { commissionQuestions = value; }
     	}
         [NonSerialized]
-    	private ICollection<CommissionSource> commissionSources;
+    	protected ICollection<CommissionSource> commissionSources;
     
     	public virtual ICollection<CommissionSource> CommissionSources
     	{
      		get { return commissionSources; }
      		set { commissionSources = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

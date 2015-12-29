@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Unit
+    public partial class Unit : ICloneable
     {
         public Unit()
         {
@@ -26,12 +26,17 @@ namespace Core.Data
         public bool OnlyForMedWare { get; set; }
     
         [NonSerialized]
-    	private ICollection<RecordTypeUnit> recordTypeUnits;
+    	protected ICollection<RecordTypeUnit> recordTypeUnits;
     
     	public virtual ICollection<RecordTypeUnit> RecordTypeUnits
     	{
      		get { return recordTypeUnits; }
      		set { recordTypeUnits = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

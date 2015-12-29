@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Misc;
+using Core.Notification;
 using ScheduleModule.DTO;
 using Shared.Schedule.Services;
 
@@ -12,29 +13,25 @@ namespace ScheduleModule.Services
 {
     public interface IScheduleService : IScheduleServiceBase
     {
-        IEnumerable<Room> GetRooms();
-
-        IEnumerable<RecordType> GetRecordTypes();
-
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
         
-        IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
+        IEnumerable<ITimeInterval> GenerateAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
 
-        Task SaveAssignmentAsync(Assignment assignment);
+        Task SaveAssignmentAsync(Assignment newAssignment, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
 
-        Task DeleteAssignmentAsync(int assignmentId);
+        Task DeleteAssignmentAsync(int assignmentId, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
 
-        Task CancelAssignmentAsync(int assignmentId);
+        Task CancelAssignmentAsync(int assignmentId, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
 
-        Task UpdateAssignmentAsync(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId);
+        Task UpdateAssignmentAsync(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
 
-        Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, Room newRoom);
+        Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, Room newRoom, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
 
         IEnumerable<ScheduledAssignmentDTO> GetAssignments(int patientId);
 
         IEnumerable<ScheduledAssignmentDTO> GetActualAssignments(int patientId, DateTime date);
 
-        ScheduledAssignmentDTO GetAssignment(int assignmentId, int patientId);
+        Task<ScheduledAssignmentDTO> GetAssignmentAsync(int assignmentId, int patientId);
 
         IDisposableQueryable<Person> GetPatientQuery(int currentPatient);
 

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class PersonAddress
+    public partial class PersonAddress : ICloneable
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
@@ -27,7 +27,7 @@ namespace Core.Data
         public string Apartment { get; set; }
     
         [NonSerialized]
-    	private AddressType addressType;
+    	protected AddressType addressType;
     
     	public virtual AddressType AddressType
     	{
@@ -35,7 +35,7 @@ namespace Core.Data
      		set { addressType = value; }
     	}
         [NonSerialized]
-    	private Okato okato;
+    	protected Okato okato;
     
     	public virtual Okato Okato
     	{
@@ -43,12 +43,17 @@ namespace Core.Data
      		set { okato = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
      		get { return person; }
      		set { person = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

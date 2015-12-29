@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class ScheduleItem
+    public partial class ScheduleItem : ICloneable
     {
         public int Id { get; set; }
         public int RoomId { get; set; }
@@ -25,7 +25,7 @@ namespace Core.Data
         public System.TimeSpan EndTime { get; set; }
     
         [NonSerialized]
-    	private Room room;
+    	protected Room room;
     
     	public virtual Room Room
     	{
@@ -33,12 +33,17 @@ namespace Core.Data
      		set { room = value; }
     	}
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
      		get { return recordType; }
      		set { recordType = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

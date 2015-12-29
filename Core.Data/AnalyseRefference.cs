@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class AnalyseRefference
+    public partial class AnalyseRefference : ICloneable
     {
         public int Id { get; set; }
         public int RecordTypeId { get; set; }
@@ -25,7 +25,7 @@ namespace Core.Data
         public double RefMax { get; set; }
     
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
@@ -33,12 +33,17 @@ namespace Core.Data
      		set { recordType = value; }
     	}
         [NonSerialized]
-    	private RecordType recordType1;
+    	protected RecordType recordType1;
     
     	public virtual RecordType RecordType1
     	{
      		get { return recordType1; }
      		set { recordType1 = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class VisitTemplate
+    public partial class VisitTemplate : ICloneable
     {
         public VisitTemplate()
         {
@@ -31,7 +31,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ExecutionPlace executionPlace;
+    	protected ExecutionPlace executionPlace;
     
     	public virtual ExecutionPlace ExecutionPlace
     	{
@@ -39,7 +39,7 @@ namespace Core.Data
      		set { executionPlace = value; }
     	}
         [NonSerialized]
-    	private FinancingSource financingSource;
+    	protected FinancingSource financingSource;
     
     	public virtual FinancingSource FinancingSource
     	{
@@ -47,7 +47,7 @@ namespace Core.Data
      		set { financingSource = value; }
     	}
         [NonSerialized]
-    	private RecordContract recordContract;
+    	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
@@ -55,7 +55,7 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	private ICollection<Visit> visits;
+    	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
@@ -63,12 +63,17 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	private Urgently urgently;
+    	protected Urgently urgently;
     
     	public virtual Urgently Urgently
     	{
      		get { return urgently; }
      		set { urgently = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

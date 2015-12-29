@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class CommissionDecision
+    public partial class CommissionDecision : ICloneable
     {
         public int Id { get; set; }
         public int CommissionProtocolId { get; set; }
@@ -27,7 +27,7 @@ namespace Core.Data
         public System.DateTime InDateTime { get; set; }
     
         [NonSerialized]
-    	private CommissionMember commissionMember;
+    	protected CommissionMember commissionMember;
     
     	public virtual CommissionMember CommissionMember
     	{
@@ -35,7 +35,7 @@ namespace Core.Data
      		set { commissionMember = value; }
     	}
         [NonSerialized]
-    	private CommissionMember commissionMember1;
+    	protected CommissionMember commissionMember1;
     
     	public virtual CommissionMember CommissionMember1
     	{
@@ -43,7 +43,7 @@ namespace Core.Data
      		set { commissionMember1 = value; }
     	}
         [NonSerialized]
-    	private CommissionProtocol commissionProtocol;
+    	protected CommissionProtocol commissionProtocol;
     
     	public virtual CommissionProtocol CommissionProtocol
     	{
@@ -51,12 +51,17 @@ namespace Core.Data
      		set { commissionProtocol = value; }
     	}
         [NonSerialized]
-    	private Decision decision;
+    	protected Decision decision;
     
     	public virtual Decision Decision
     	{
      		get { return decision; }
      		set { decision = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

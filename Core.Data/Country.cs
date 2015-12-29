@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Country
+    public partial class Country : ICloneable
     {
         public Country()
         {
@@ -27,12 +27,17 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonNationality> personNationalities;
+    	protected ICollection<PersonNationality> personNationalities;
     
     	public virtual ICollection<PersonNationality> PersonNationalities
     	{
      		get { return personNationalities; }
      		set { personNationalities = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

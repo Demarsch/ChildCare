@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class PersonStaff
+    public partial class PersonStaff : ICloneable
     {
         public PersonStaff()
         {
@@ -31,7 +31,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private Branch branch;
+    	protected Branch branch;
     
     	public virtual Branch Branch
     	{
@@ -39,7 +39,7 @@ namespace Core.Data
      		set { branch = value; }
     	}
         [NonSerialized]
-    	private ICollection<CommissionMember> commissionMembers;
+    	protected ICollection<CommissionMember> commissionMembers;
     
     	public virtual ICollection<CommissionMember> CommissionMembers
     	{
@@ -47,7 +47,7 @@ namespace Core.Data
      		set { commissionMembers = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -55,7 +55,7 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private Staff staff;
+    	protected Staff staff;
     
     	public virtual Staff Staff
     	{
@@ -63,7 +63,7 @@ namespace Core.Data
      		set { staff = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordContractItem> recordContractItems;
+    	protected ICollection<RecordContractItem> recordContractItems;
     
     	public virtual ICollection<RecordContractItem> RecordContractItems
     	{
@@ -71,7 +71,7 @@ namespace Core.Data
      		set { recordContractItems = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordContract> recordContracts;
+    	protected ICollection<RecordContract> recordContracts;
     
     	public virtual ICollection<RecordContract> RecordContracts
     	{
@@ -79,12 +79,17 @@ namespace Core.Data
      		set { recordContracts = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordMember> recordMembers;
+    	protected ICollection<RecordMember> recordMembers;
     
     	public virtual ICollection<RecordMember> RecordMembers
     	{
      		get { return recordMembers; }
      		set { recordMembers = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

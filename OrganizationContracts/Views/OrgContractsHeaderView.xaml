@@ -5,15 +5,11 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels"
-                      xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:OrgContractsHeaderViewModel}">
-    <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Договоры с юр.лицами"
-                   Style="{x:Null}" />
-    </fluent:RibbonTabItem.Header>
+                      d:DataContext="{d:DesignInstance viewModels:OrgContractsHeaderViewModel}" 
+                      Header="Договоры с юр.лицами">
     <fluent:RibbonGroupBox Header="Договора" FontWeight="Medium">
         <fluent:Button x:Name="btnAddContract" Command="{Binding AddContractCommand}" 
                        Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddContract48x48.png" />

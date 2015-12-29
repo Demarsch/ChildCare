@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Complication
+    public partial class Complication : ICloneable
     {
         public Complication()
         {
@@ -28,7 +28,7 @@ namespace Core.Data
         public string Options { get; set; }
     
         [NonSerialized]
-    	private ICollection<Complication> complications1;
+    	protected ICollection<Complication> complications1;
     
     	public virtual ICollection<Complication> Complications1
     	{
@@ -36,7 +36,7 @@ namespace Core.Data
      		set { complications1 = value; }
     	}
         [NonSerialized]
-    	private Complication complication1;
+    	protected Complication complication1;
     
     	public virtual Complication Complication1
     	{
@@ -44,12 +44,17 @@ namespace Core.Data
      		set { complication1 = value; }
     	}
         [NonSerialized]
-    	private ICollection<Diagnosis> diagnoses;
+    	protected ICollection<Diagnosis> diagnoses;
     
     	public virtual ICollection<Diagnosis> Diagnoses
     	{
      		get { return diagnoses; }
      		set { diagnoses = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

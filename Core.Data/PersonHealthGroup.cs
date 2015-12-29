@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class PersonHealthGroup
+    public partial class PersonHealthGroup : ICloneable
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
@@ -22,7 +22,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private HealthGroup healthGroup;
+    	protected HealthGroup healthGroup;
     
     	public virtual HealthGroup HealthGroup
     	{
@@ -30,12 +30,17 @@ namespace Core.Data
      		set { healthGroup = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
      		get { return person; }
      		set { person = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Education
+    public partial class Education : ICloneable
     {
         public Education()
         {
@@ -24,12 +24,17 @@ namespace Core.Data
         public string Name { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonEducation> personEducations;
+    	protected ICollection<PersonEducation> personEducations;
     
     	public virtual ICollection<PersonEducation> PersonEducations
     	{
      		get { return personEducations; }
      		set { personEducations = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

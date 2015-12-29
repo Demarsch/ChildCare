@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordContract
+    public partial class RecordContract : ICloneable
     {
         public RecordContract()
         {
@@ -46,7 +46,7 @@ namespace Core.Data
         public int InUserId { get; set; }
     
         [NonSerialized]
-    	private ICollection<CommissionProtocol> commissionProtocols;
+    	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
     	{
@@ -54,7 +54,7 @@ namespace Core.Data
      		set { commissionProtocols = value; }
     	}
         [NonSerialized]
-    	private FinancingSource financingSource;
+    	protected FinancingSource financingSource;
     
     	public virtual FinancingSource FinancingSource
     	{
@@ -62,7 +62,7 @@ namespace Core.Data
      		set { financingSource = value; }
     	}
         [NonSerialized]
-    	private ICollection<MedicalHelpType> medicalHelpTypes;
+    	protected ICollection<MedicalHelpType> medicalHelpTypes;
     
     	public virtual ICollection<MedicalHelpType> MedicalHelpTypes
     	{
@@ -70,7 +70,7 @@ namespace Core.Data
      		set { medicalHelpTypes = value; }
     	}
         [NonSerialized]
-    	private PaymentType paymentType;
+    	protected PaymentType paymentType;
     
     	public virtual PaymentType PaymentType
     	{
@@ -78,7 +78,7 @@ namespace Core.Data
      		set { paymentType = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -86,7 +86,7 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private Person person1;
+    	protected Person person1;
     
     	public virtual Person Person1
     	{
@@ -94,7 +94,7 @@ namespace Core.Data
      		set { person1 = value; }
     	}
         [NonSerialized]
-    	private PersonStaff personStaff;
+    	protected PersonStaff personStaff;
     
     	public virtual PersonStaff PersonStaff
     	{
@@ -102,7 +102,7 @@ namespace Core.Data
      		set { personStaff = value; }
     	}
         [NonSerialized]
-    	private ICollection<PersonTalon> personTalons;
+    	protected ICollection<PersonTalon> personTalons;
     
     	public virtual ICollection<PersonTalon> PersonTalons
     	{
@@ -110,7 +110,7 @@ namespace Core.Data
      		set { personTalons = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordContractItem> recordContractItems;
+    	protected ICollection<RecordContractItem> recordContractItems;
     
     	public virtual ICollection<RecordContractItem> RecordContractItems
     	{
@@ -118,7 +118,7 @@ namespace Core.Data
      		set { recordContractItems = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordContractLimit> recordContractLimits;
+    	protected ICollection<RecordContractLimit> recordContractLimits;
     
     	public virtual ICollection<RecordContractLimit> RecordContractLimits
     	{
@@ -126,7 +126,7 @@ namespace Core.Data
      		set { recordContractLimits = value; }
     	}
         [NonSerialized]
-    	private ICollection<Visit> visits;
+    	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
@@ -134,7 +134,7 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	private ICollection<VisitTemplate> visitTemplates;
+    	protected ICollection<VisitTemplate> visitTemplates;
     
     	public virtual ICollection<VisitTemplate> VisitTemplates
     	{
@@ -142,12 +142,17 @@ namespace Core.Data
      		set { visitTemplates = value; }
     	}
         [NonSerialized]
-    	private Org org;
+    	protected Org org;
     
     	public virtual Org Org
     	{
      		get { return org; }
      		set { org = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

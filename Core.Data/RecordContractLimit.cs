@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordContractLimit
+    public partial class RecordContractLimit : ICloneable
     {
         public int Id { get; set; }
         public int RecordContractId { get; set; }
@@ -21,7 +21,7 @@ namespace Core.Data
         public int Count { get; set; }
     
         [NonSerialized]
-    	private RecordContract recordContract;
+    	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
@@ -29,12 +29,17 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
      		get { return recordType; }
      		set { recordType = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class MedicalHelpType
+    public partial class MedicalHelpType : ICloneable
     {
         public MedicalHelpType()
         {
@@ -27,7 +27,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<CommissionProtocol> commissionProtocols;
+    	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
     	{
@@ -35,7 +35,7 @@ namespace Core.Data
      		set { commissionProtocols = value; }
     	}
         [NonSerialized]
-    	private RecordContract recordContract;
+    	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
@@ -43,12 +43,17 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	private ICollection<PersonTalon> personTalons;
+    	protected ICollection<PersonTalon> personTalons;
     
     	public virtual ICollection<PersonTalon> PersonTalons
     	{
      		get { return personTalons; }
      		set { personTalons = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

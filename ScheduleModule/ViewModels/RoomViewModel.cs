@@ -95,7 +95,7 @@ namespace ScheduleModule.ViewModels
                 TimeSlots.RemoveWhere(x => x is FreeTimeSlotViewModel);
                 return;
             }
-            var availableTimeIntervals = scheduleService.GetAvailableTimeIntervals(workingTimes.Where(x => x.RecordType.IsSameOrParentOf(selectedRecordType)),
+            var availableTimeIntervals = scheduleService.GenerateAvailableTimeIntervals(workingTimes.Where(x => x.RecordType.IsSameOrParentOf(selectedRecordType)),
                                                                                    TimeSlots.OfType<OccupiedTimeSlotViewModel>(),
                                                                                    selectedRecordType.Duration,
                                                                                    selectedRecordType.MinDuration);

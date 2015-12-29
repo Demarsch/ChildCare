@@ -13,14 +13,14 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Urgently
+    public partial class Urgently : ICloneable
     {
         public Urgently()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -33,15 +33,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	private ICollection<Record> records;
+    	protected ICollection<Record> records;
     
     	public virtual ICollection<Record> Records
     	{
@@ -49,7 +41,7 @@ namespace Core.Data
      		set { records = value; }
     	}
         [NonSerialized]
-    	private ICollection<Visit> visits;
+    	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
@@ -57,12 +49,25 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	private ICollection<VisitTemplate> visitTemplates;
+    	protected ICollection<VisitTemplate> visitTemplates;
     
     	public virtual ICollection<VisitTemplate> VisitTemplates
     	{
      		get { return visitTemplates; }
      		set { visitTemplates = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

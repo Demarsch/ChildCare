@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class DefaultProtocol
+    public partial class DefaultProtocol : ICloneable
     {
         public int Id { get; set; }
         public int RecordId { get; set; }
@@ -21,12 +21,17 @@ namespace Core.Data
         public string Conclusion { get; set; }
     
         [NonSerialized]
-    	private Record record;
+    	protected Record record;
     
     	public virtual Record Record
     	{
      		get { return record; }
      		set { record = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,12 +13,12 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Visit
+    public partial class Visit : ICloneable
     {
         public Visit()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -41,7 +41,7 @@ namespace Core.Data
         public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
-    	private FinancingSource financingSource;
+    	protected FinancingSource financingSource;
     
     	public virtual FinancingSource FinancingSource
     	{
@@ -49,7 +49,7 @@ namespace Core.Data
      		set { financingSource = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -57,7 +57,7 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private RecordContract recordContract;
+    	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
@@ -65,7 +65,7 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	private User user;
+    	protected User user;
     
     	public virtual User User
     	{
@@ -73,7 +73,7 @@ namespace Core.Data
      		set { user = value; }
     	}
         [NonSerialized]
-    	private VisitOutcome visitOutcome;
+    	protected VisitOutcome visitOutcome;
     
     	public virtual VisitOutcome VisitOutcome
     	{
@@ -81,7 +81,7 @@ namespace Core.Data
      		set { visitOutcome = value; }
     	}
         [NonSerialized]
-    	private VisitResult visitResult;
+    	protected VisitResult visitResult;
     
     	public virtual VisitResult VisitResult
     	{
@@ -89,7 +89,7 @@ namespace Core.Data
      		set { visitResult = value; }
     	}
         [NonSerialized]
-    	private ExecutionPlace executionPlace;
+    	protected ExecutionPlace executionPlace;
     
     	public virtual ExecutionPlace ExecutionPlace
     	{
@@ -97,15 +97,7 @@ namespace Core.Data
      		set { executionPlace = value; }
     	}
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	private ICollection<Record> records;
+    	protected ICollection<Record> records;
     
     	public virtual ICollection<Record> Records
     	{
@@ -113,7 +105,7 @@ namespace Core.Data
      		set { records = value; }
     	}
         [NonSerialized]
-    	private VisitTemplate visitTemplate;
+    	protected VisitTemplate visitTemplate;
     
     	public virtual VisitTemplate VisitTemplate
     	{
@@ -121,7 +113,7 @@ namespace Core.Data
      		set { visitTemplate = value; }
     	}
         [NonSerialized]
-    	private Org org;
+    	protected Org org;
     
     	public virtual Org Org
     	{
@@ -129,12 +121,25 @@ namespace Core.Data
      		set { org = value; }
     	}
         [NonSerialized]
-    	private Urgently urgently;
+    	protected Urgently urgently;
     
     	public virtual Urgently Urgently
     	{
      		get { return urgently; }
      		set { urgently = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

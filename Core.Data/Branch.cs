@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Branch
+    public partial class Branch : ICloneable
     {
         public Branch()
         {
@@ -30,7 +30,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<Branch> branches1;
+    	protected ICollection<Branch> branches1;
     
     	public virtual ICollection<Branch> Branches1
     	{
@@ -38,7 +38,7 @@ namespace Core.Data
      		set { branches1 = value; }
     	}
         [NonSerialized]
-    	private Branch branch1;
+    	protected Branch branch1;
     
     	public virtual Branch Branch1
     	{
@@ -46,7 +46,7 @@ namespace Core.Data
      		set { branch1 = value; }
     	}
         [NonSerialized]
-    	private ICollection<PersonStaff> personStaffs;
+    	protected ICollection<PersonStaff> personStaffs;
     
     	public virtual ICollection<PersonStaff> PersonStaffs
     	{
@@ -54,12 +54,17 @@ namespace Core.Data
      		set { personStaffs = value; }
     	}
         [NonSerialized]
-    	private ICollection<Eqiupment> eqiupments;
+    	protected ICollection<Eqiupment> eqiupments;
     
     	public virtual ICollection<Eqiupment> Eqiupments
     	{
      		get { return eqiupments; }
      		set { eqiupments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class CommissionProtocol
+    public partial class CommissionProtocol : ICloneable
     {
         public CommissionProtocol()
         {
@@ -45,7 +45,7 @@ namespace Core.Data
         public string Diagnos { get; set; }
     
         [NonSerialized]
-    	private ICollection<CommissionDecision> commissionDecisions;
+    	protected ICollection<CommissionDecision> commissionDecisions;
     
     	public virtual ICollection<CommissionDecision> CommissionDecisions
     	{
@@ -53,7 +53,7 @@ namespace Core.Data
      		set { commissionDecisions = value; }
     	}
         [NonSerialized]
-    	private CommissionSource commissionSource;
+    	protected CommissionSource commissionSource;
     
     	public virtual CommissionSource CommissionSource
     	{
@@ -61,7 +61,7 @@ namespace Core.Data
      		set { commissionSource = value; }
     	}
         [NonSerialized]
-    	private MedicalHelpType medicalHelpType;
+    	protected MedicalHelpType medicalHelpType;
     
     	public virtual MedicalHelpType MedicalHelpType
     	{
@@ -69,7 +69,7 @@ namespace Core.Data
      		set { medicalHelpType = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -77,7 +77,7 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private PersonTalon personTalon;
+    	protected PersonTalon personTalon;
     
     	public virtual PersonTalon PersonTalon
     	{
@@ -85,7 +85,7 @@ namespace Core.Data
      		set { personTalon = value; }
     	}
         [NonSerialized]
-    	private RecordContract recordContract;
+    	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
@@ -93,12 +93,17 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	private User user;
+    	protected User user;
     
     	public virtual User User
     	{
      		get { return user; }
      		set { user = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

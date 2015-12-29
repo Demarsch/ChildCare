@@ -79,7 +79,7 @@ namespace Shared.Schedule.Services
             {
                 return null;
             }
-            var result = new RecordType { Id = recordType.Id, Name = recordType.Name, Assignable = recordType.Assignable };
+            var result = (RecordType)recordType.Clone();
             var children = recordType.RecordTypes1.Select(CopyRecordType).Where(x => x != null).ToList();
             if (children.Count == 0 && result.Assignable != true)
             {

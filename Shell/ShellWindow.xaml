@@ -16,13 +16,19 @@
                      WindowState="Maximized"
                      d:DataContext="{d:DesignInstance shell:ShellWindowViewModel}">
     <fluent:RibbonWindow.Resources>
-        <xctk:VisibilityToBoolConverter x:Key="visibilityToBoolConverter" />
+        <xctk:VisibilityToBoolConverter x:Key="VisibilityToBoolConverter" />
     </fluent:RibbonWindow.Resources>
     <Grid>
         <DockPanel LastChildFill="True">
             <shell:RibbonEx regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleList}"
                            DockPanel.Dock="Top"
                            x:Name="ribbon">
+                <shell:RibbonEx.Resources>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="VerticalAlignment"
+                                Value="Center" />
+                    </Style>
+                </shell:RibbonEx.Resources>
                 <fluent:Ribbon.Menu>
                     <fluent:Backstage IsEnabled="{Binding CanOpenMenu}"
                                       IsOpen="{Binding IsMenuOpen, Mode=TwoWay}">
@@ -35,20 +41,17 @@
                     </fluent:Backstage>
                 </fluent:Ribbon.Menu>
                 <shell:RibbonEx.ContextMenuOverride>
-                    <ContextMenu ItemsSource="{Binding PlacementTarget.Tabs, RelativeSource={RelativeSource Self}, Mode=OneWay}"
-                                 Tag="xxx"
-                                 Background="Aqua">
+                    <ContextMenu ItemsSource="{Binding PlacementTarget.Tabs, RelativeSource={RelativeSource Self}, Mode=OneWay}">
                         <ContextMenu.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}">
                                 <Setter Property="IsCheckable"
                                         Value="True" />
                                 <Setter Property="IsChecked"
-                                        Value="{Binding Visibility, Converter={StaticResource visibilityToBoolConverter}}" />
+                                        Value="{Binding Visibility, Converter={StaticResource VisibilityToBoolConverter}}" />
                                 <Setter Property="Header"
                                         Value="{Binding Header}" />
                             </Style>
                         </ContextMenu.ItemContainerStyle>
-                        
                     </ContextMenu>
                 </shell:RibbonEx.ContextMenuOverride>
             </shell:RibbonEx>

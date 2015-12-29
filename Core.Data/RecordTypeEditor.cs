@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordTypeEditor
+    public partial class RecordTypeEditor : ICloneable
     {
         public int Id { get; set; }
         public int RecordTypeId { get; set; }
@@ -23,12 +23,17 @@ namespace Core.Data
         public bool UseEquipments { get; set; }
     
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
      		get { return recordType; }
      		set { recordType = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

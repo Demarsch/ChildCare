@@ -13,11 +13,10 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordType
+    public partial class RecordType : ICloneable
     {
         public RecordType()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Records = new HashSet<Record>();
@@ -30,6 +29,7 @@ namespace Core.Data
             this.AnalyseRefferences = new HashSet<AnalyseRefference>();
             this.AnalyseRefferences1 = new HashSet<AnalyseRefference>();
             this.AnalyseResults = new HashSet<AnalyseResult>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -51,15 +51,7 @@ namespace Core.Data
         public int Priority { get; set; }
     
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	private ICollection<RecordContractItem> recordContractItems;
+    	protected ICollection<RecordContractItem> recordContractItems;
     
     	public virtual ICollection<RecordContractItem> RecordContractItems
     	{
@@ -67,7 +59,7 @@ namespace Core.Data
      		set { recordContractItems = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordContractLimit> recordContractLimits;
+    	protected ICollection<RecordContractLimit> recordContractLimits;
     
     	public virtual ICollection<RecordContractLimit> RecordContractLimits
     	{
@@ -75,7 +67,7 @@ namespace Core.Data
      		set { recordContractLimits = value; }
     	}
         [NonSerialized]
-    	private ICollection<Record> records;
+    	protected ICollection<Record> records;
     
     	public virtual ICollection<Record> Records
     	{
@@ -83,7 +75,7 @@ namespace Core.Data
      		set { records = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordTypeCost> recordTypeCosts;
+    	protected ICollection<RecordTypeCost> recordTypeCosts;
     
     	public virtual ICollection<RecordTypeCost> RecordTypeCosts
     	{
@@ -91,7 +83,7 @@ namespace Core.Data
      		set { recordTypeCosts = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordTypeEditor> recordTypeEditors;
+    	protected ICollection<RecordTypeEditor> recordTypeEditors;
     
     	public virtual ICollection<RecordTypeEditor> RecordTypeEditors
     	{
@@ -99,7 +91,7 @@ namespace Core.Data
      		set { recordTypeEditors = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordTypeRolePermission> recordTypeRolePermissions;
+    	protected ICollection<RecordTypeRolePermission> recordTypeRolePermissions;
     
     	public virtual ICollection<RecordTypeRolePermission> RecordTypeRolePermissions
     	{
@@ -107,7 +99,7 @@ namespace Core.Data
      		set { recordTypeRolePermissions = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordType> recordTypes1;
+    	protected ICollection<RecordType> recordTypes1;
     
     	public virtual ICollection<RecordType> RecordTypes1
     	{
@@ -115,7 +107,7 @@ namespace Core.Data
      		set { recordTypes1 = value; }
     	}
         [NonSerialized]
-    	private RecordType recordType1;
+    	protected RecordType recordType1;
     
     	public virtual RecordType RecordType1
     	{
@@ -123,7 +115,7 @@ namespace Core.Data
      		set { recordType1 = value; }
     	}
         [NonSerialized]
-    	private ICollection<ScheduleItem> scheduleItems;
+    	protected ICollection<ScheduleItem> scheduleItems;
     
     	public virtual ICollection<ScheduleItem> ScheduleItems
     	{
@@ -131,7 +123,7 @@ namespace Core.Data
      		set { scheduleItems = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordTypeUnit> recordTypeUnits;
+    	protected ICollection<RecordTypeUnit> recordTypeUnits;
     
     	public virtual ICollection<RecordTypeUnit> RecordTypeUnits
     	{
@@ -139,7 +131,7 @@ namespace Core.Data
      		set { recordTypeUnits = value; }
     	}
         [NonSerialized]
-    	private ICollection<AnalyseRefference> analyseRefferences;
+    	protected ICollection<AnalyseRefference> analyseRefferences;
     
     	public virtual ICollection<AnalyseRefference> AnalyseRefferences
     	{
@@ -147,7 +139,7 @@ namespace Core.Data
      		set { analyseRefferences = value; }
     	}
         [NonSerialized]
-    	private ICollection<AnalyseRefference> analyseRefferences1;
+    	protected ICollection<AnalyseRefference> analyseRefferences1;
     
     	public virtual ICollection<AnalyseRefference> AnalyseRefferences1
     	{
@@ -155,12 +147,25 @@ namespace Core.Data
      		set { analyseRefferences1 = value; }
     	}
         [NonSerialized]
-    	private ICollection<AnalyseResult> analyseResults;
+    	protected ICollection<AnalyseResult> analyseResults;
     
     	public virtual ICollection<AnalyseResult> AnalyseResults
     	{
      		get { return analyseResults; }
      		set { analyseResults = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

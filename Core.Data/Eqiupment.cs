@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Eqiupment
+    public partial class Eqiupment : ICloneable
     {
         public Eqiupment()
         {
@@ -36,7 +36,7 @@ namespace Core.Data
         public string IPAddress { get; set; }
     
         [NonSerialized]
-    	private Branch branch;
+    	protected Branch branch;
     
     	public virtual Branch Branch
     	{
@@ -44,7 +44,7 @@ namespace Core.Data
      		set { branch = value; }
     	}
         [NonSerialized]
-    	private EqiupmentType eqiupmentType;
+    	protected EqiupmentType eqiupmentType;
     
     	public virtual EqiupmentType EqiupmentType
     	{
@@ -52,7 +52,7 @@ namespace Core.Data
      		set { eqiupmentType = value; }
     	}
         [NonSerialized]
-    	private Room room;
+    	protected Room room;
     
     	public virtual Room Room
     	{
@@ -60,12 +60,17 @@ namespace Core.Data
      		set { room = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordEquipment> recordEquipments;
+    	protected ICollection<RecordEquipment> recordEquipments;
     
     	public virtual ICollection<RecordEquipment> RecordEquipments
     	{
      		get { return recordEquipments; }
      		set { recordEquipments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

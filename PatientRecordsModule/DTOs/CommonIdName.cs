@@ -1,21 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shared.PatientRecords.DTO
+﻿namespace Shared.PatientRecords.DTO
 {
     public class CommonIdName
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
+
+        protected bool Equals(CommonIdName other)
+        {
+            return Id == other.Id;
+        }
 
         public override bool Equals(object obj)
         {
-            var CommonIdName2 = obj as CommonIdName;
-            if (CommonIdName2 == null) return false;
-            return this.Id == CommonIdName2.Id;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            return Equals((CommonIdName)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
         }
     }
 }

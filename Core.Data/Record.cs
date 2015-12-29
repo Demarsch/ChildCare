@@ -13,12 +13,10 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Record
+    public partial class Record : ICloneable
     {
         public Record()
         {
-            this.Assignments = new HashSet<Assignment>();
-            this.Assignments1 = new HashSet<Assignment>();
             this.DefaultProtocols = new HashSet<DefaultProtocol>();
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
             this.RecordDocuments = new HashSet<RecordDocument>();
@@ -26,6 +24,8 @@ namespace Core.Data
             this.Records1 = new HashSet<Record>();
             this.RecordEquipments = new HashSet<RecordEquipment>();
             this.AnalyseResults = new HashSet<AnalyseResult>();
+            this.Assignments = new HashSet<Assignment>();
+            this.Assignments1 = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -50,31 +50,7 @@ namespace Core.Data
         public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	private ICollection<Assignment> assignments1;
-    
-    	public virtual ICollection<Assignment> Assignments1
-    	{
-     		get { return assignments1; }
-     		set { assignments1 = value; }
-    	}
-        [NonSerialized]
-    	private Assignment assignment;
-    
-    	public virtual Assignment Assignment
-    	{
-     		get { return assignment; }
-     		set { assignment = value; }
-    	}
-        [NonSerialized]
-    	private ICollection<DefaultProtocol> defaultProtocols;
+    	protected ICollection<DefaultProtocol> defaultProtocols;
     
     	public virtual ICollection<DefaultProtocol> DefaultProtocols
     	{
@@ -82,7 +58,7 @@ namespace Core.Data
      		set { defaultProtocols = value; }
     	}
         [NonSerialized]
-    	private ICollection<PersonDiagnos> personDiagnoses;
+    	protected ICollection<PersonDiagnos> personDiagnoses;
     
     	public virtual ICollection<PersonDiagnos> PersonDiagnoses
     	{
@@ -90,7 +66,7 @@ namespace Core.Data
      		set { personDiagnoses = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -98,7 +74,7 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordDocument> recordDocuments;
+    	protected ICollection<RecordDocument> recordDocuments;
     
     	public virtual ICollection<RecordDocument> RecordDocuments
     	{
@@ -106,7 +82,7 @@ namespace Core.Data
      		set { recordDocuments = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordMember> recordMembers;
+    	protected ICollection<RecordMember> recordMembers;
     
     	public virtual ICollection<RecordMember> RecordMembers
     	{
@@ -114,7 +90,7 @@ namespace Core.Data
      		set { recordMembers = value; }
     	}
         [NonSerialized]
-    	private RecordPeriod recordPeriod;
+    	protected RecordPeriod recordPeriod;
     
     	public virtual RecordPeriod RecordPeriod
     	{
@@ -122,7 +98,7 @@ namespace Core.Data
      		set { recordPeriod = value; }
     	}
         [NonSerialized]
-    	private ICollection<Record> records1;
+    	protected ICollection<Record> records1;
     
     	public virtual ICollection<Record> Records1
     	{
@@ -130,7 +106,7 @@ namespace Core.Data
      		set { records1 = value; }
     	}
         [NonSerialized]
-    	private Record record1;
+    	protected Record record1;
     
     	public virtual Record Record1
     	{
@@ -138,7 +114,7 @@ namespace Core.Data
      		set { record1 = value; }
     	}
         [NonSerialized]
-    	private Room room;
+    	protected Room room;
     
     	public virtual Room Room
     	{
@@ -146,7 +122,7 @@ namespace Core.Data
      		set { room = value; }
     	}
         [NonSerialized]
-    	private User user;
+    	protected User user;
     
     	public virtual User User
     	{
@@ -154,7 +130,7 @@ namespace Core.Data
      		set { user = value; }
     	}
         [NonSerialized]
-    	private Visit visit;
+    	protected Visit visit;
     
     	public virtual Visit Visit
     	{
@@ -162,7 +138,7 @@ namespace Core.Data
      		set { visit = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordEquipment> recordEquipments;
+    	protected ICollection<RecordEquipment> recordEquipments;
     
     	public virtual ICollection<RecordEquipment> RecordEquipments
     	{
@@ -170,7 +146,7 @@ namespace Core.Data
      		set { recordEquipments = value; }
     	}
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
@@ -178,7 +154,7 @@ namespace Core.Data
      		set { recordType = value; }
     	}
         [NonSerialized]
-    	private ICollection<AnalyseResult> analyseResults;
+    	protected ICollection<AnalyseResult> analyseResults;
     
     	public virtual ICollection<AnalyseResult> AnalyseResults
     	{
@@ -186,12 +162,41 @@ namespace Core.Data
      		set { analyseResults = value; }
     	}
         [NonSerialized]
-    	private Urgently urgently;
+    	protected Urgently urgently;
     
     	public virtual Urgently Urgently
     	{
      		get { return urgently; }
      		set { urgently = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments1;
+    
+    	public virtual ICollection<Assignment> Assignments1
+    	{
+     		get { return assignments1; }
+     		set { assignments1 = value; }
+    	}
+        [NonSerialized]
+    	protected Assignment assignment;
+    
+    	public virtual Assignment Assignment
+    	{
+     		get { return assignment; }
+     		set { assignment = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

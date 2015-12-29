@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordMember
+    public partial class RecordMember : ICloneable
     {
         public int Id { get; set; }
         public int RecordId { get; set; }
@@ -22,7 +22,7 @@ namespace Core.Data
         public bool IsActive { get; set; }
     
         [NonSerialized]
-    	private PersonStaff personStaff;
+    	protected PersonStaff personStaff;
     
     	public virtual PersonStaff PersonStaff
     	{
@@ -30,7 +30,7 @@ namespace Core.Data
      		set { personStaff = value; }
     	}
         [NonSerialized]
-    	private RecordTypeRolePermission recordTypeRolePermission;
+    	protected RecordTypeRolePermission recordTypeRolePermission;
     
     	public virtual RecordTypeRolePermission RecordTypeRolePermission
     	{
@@ -38,12 +38,17 @@ namespace Core.Data
      		set { recordTypeRolePermission = value; }
     	}
         [NonSerialized]
-    	private Record record;
+    	protected Record record;
     
     	public virtual Record Record
     	{
      		get { return record; }
      		set { record = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

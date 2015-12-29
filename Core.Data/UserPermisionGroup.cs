@@ -13,14 +13,14 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class UserPermisionGroup
+    public partial class UserPermisionGroup : ICloneable
     {
         public int Id { get; set; }
         public int UserId { get; set; }
         public int PermissionGroupId { get; set; }
     
         [NonSerialized]
-    	private PermissionGroup permissionGroup;
+    	protected PermissionGroup permissionGroup;
     
     	public virtual PermissionGroup PermissionGroup
     	{
@@ -28,12 +28,17 @@ namespace Core.Data
      		set { permissionGroup = value; }
     	}
         [NonSerialized]
-    	private User user;
+    	protected User user;
     
     	public virtual User User
     	{
      		get { return user; }
      		set { user = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

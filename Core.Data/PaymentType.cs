@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class PaymentType
+    public partial class PaymentType : ICloneable
     {
         public PaymentType()
         {
@@ -25,12 +25,17 @@ namespace Core.Data
         public string Options { get; set; }
     
         [NonSerialized]
-    	private ICollection<RecordContract> recordContracts;
+    	protected ICollection<RecordContract> recordContracts;
     
     	public virtual ICollection<RecordContract> RecordContracts
     	{
      		get { return recordContracts; }
      		set { recordContracts = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

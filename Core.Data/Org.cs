@@ -13,14 +13,14 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Org
+    public partial class Org : ICloneable
     {
         public Org()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.Visits = new HashSet<Visit>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -30,15 +30,7 @@ namespace Core.Data
         public bool UseInContract { get; set; }
     
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	private ICollection<PersonSocialStatus> personSocialStatuses;
+    	protected ICollection<PersonSocialStatus> personSocialStatuses;
     
     	public virtual ICollection<PersonSocialStatus> PersonSocialStatuses
     	{
@@ -46,7 +38,7 @@ namespace Core.Data
      		set { personSocialStatuses = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordContract> recordContracts;
+    	protected ICollection<RecordContract> recordContracts;
     
     	public virtual ICollection<RecordContract> RecordContracts
     	{
@@ -54,12 +46,25 @@ namespace Core.Data
      		set { recordContracts = value; }
     	}
         [NonSerialized]
-    	private ICollection<Visit> visits;
+    	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
      		get { return visits; }
      		set { visits = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

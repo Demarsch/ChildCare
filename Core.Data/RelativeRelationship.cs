@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RelativeRelationship
+    public partial class RelativeRelationship : ICloneable
     {
         public RelativeRelationship()
         {
@@ -27,7 +27,7 @@ namespace Core.Data
         public Nullable<bool> MustBeMale { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonRelative> personRelatives;
+    	protected ICollection<PersonRelative> personRelatives;
     
     	public virtual ICollection<PersonRelative> PersonRelatives
     	{
@@ -35,7 +35,7 @@ namespace Core.Data
      		set { personRelatives = value; }
     	}
         [NonSerialized]
-    	private ICollection<RelativeRelationshipConnection> relativeRelationshipConnections;
+    	protected ICollection<RelativeRelationshipConnection> relativeRelationshipConnections;
     
     	public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections
     	{
@@ -43,12 +43,17 @@ namespace Core.Data
      		set { relativeRelationshipConnections = value; }
     	}
         [NonSerialized]
-    	private ICollection<RelativeRelationshipConnection> relativeRelationshipConnections1;
+    	protected ICollection<RelativeRelationshipConnection> relativeRelationshipConnections1;
     
     	public virtual ICollection<RelativeRelationshipConnection> RelativeRelationshipConnections1
     	{
      		get { return relativeRelationshipConnections1; }
      		set { relativeRelationshipConnections1 = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

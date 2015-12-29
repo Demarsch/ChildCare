@@ -176,6 +176,7 @@
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Misc\DataNotFoundException.cs" />
+    <Compile Include="Misc\DBContextExtensions.cs" />
     <Compile Include="Misc\DbContextProviderExtensions.cs" />
     <Compile Include="Misc\DisposableQueryable.cs" />
     <Compile Include="Misc\EmptyDbAsyncEnumerable.cs" />
@@ -345,7 +346,6 @@
     <Compile Include="PartialClasses\Person.cs" />
     <Compile Include="PartialClasses\PersonStaff.cs" />
     <Compile Include="PartialClasses\PersonTalon.cs" />
-    <Compile Include="PartialClasses\ScheduleItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IRecordTypeTree.cs" />
     <Compile Include="Services\Interfaces\IUserService.cs" />

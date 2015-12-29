@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class UserMessage
+    public partial class UserMessage : ICloneable
     {
         public int Id { get; set; }
         public int SenderUserId { get; set; }
@@ -26,7 +26,7 @@ namespace Core.Data
         public int UserMessageTypeId { get; set; }
     
         [NonSerialized]
-    	private User user;
+    	protected User user;
     
     	public virtual User User
     	{
@@ -34,7 +34,7 @@ namespace Core.Data
      		set { user = value; }
     	}
         [NonSerialized]
-    	private User user1;
+    	protected User user1;
     
     	public virtual User User1
     	{
@@ -42,12 +42,17 @@ namespace Core.Data
      		set { user1 = value; }
     	}
         [NonSerialized]
-    	private UserMessageType userMessageType;
+    	protected UserMessageType userMessageType;
     
     	public virtual UserMessageType UserMessageType
     	{
      		get { return userMessageType; }
      		set { userMessageType = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

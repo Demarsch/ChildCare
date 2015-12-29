@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class ReportTemplate
+    public partial class ReportTemplate : ICloneable
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -21,5 +21,10 @@ namespace Core.Data
         public string Description { get; set; }
         public bool IsDocXTemplate { get; set; }
         public string Template { get; set; }
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
+    	}
     }
 }

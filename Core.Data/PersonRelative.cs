@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class PersonRelative
+    public partial class PersonRelative : ICloneable
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
@@ -22,7 +22,7 @@ namespace Core.Data
         public bool IsRepresentative { get; set; }
     
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -30,7 +30,7 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private Person person1;
+    	protected Person person1;
     
     	public virtual Person Person1
     	{
@@ -38,12 +38,17 @@ namespace Core.Data
      		set { person1 = value; }
     	}
         [NonSerialized]
-    	private RelativeRelationship relativeRelationship;
+    	protected RelativeRelationship relativeRelationship;
     
     	public virtual RelativeRelationship RelativeRelationship
     	{
      		get { return relativeRelationship; }
      		set { relativeRelationship = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

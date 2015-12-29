@@ -154,7 +154,7 @@ namespace ScheduleModule.ViewModels
                 {
                     return;
                 }
-                var assignment = await Task<ScheduledAssignmentDTO>.Factory.StartNew(() => patientAssignmentService.GetAssignment(assignmentId, currentPatient));
+                var assignment = await patientAssignmentService.GetAssignmentAsync(assignmentId, currentPatient);
                 Assignments.RemoveWhere(x => x.Id == assignmentId);
                 if (assignment != null && !assignment.IsCanceled)
                 {

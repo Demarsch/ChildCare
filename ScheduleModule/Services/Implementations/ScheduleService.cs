@@ -7,6 +7,7 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Misc;
+using Core.Notification;
 using Core.Services;
 using ScheduleModule.DTO;
 using ScheduleModule.Exceptions;
@@ -42,9 +43,9 @@ namespace ScheduleModule.Services
         public ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date)
         {
             var endDate = date.Date.AddDays(1.0);
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                return dataContext.Set<Assignment>()
+                return dataContext.NoTrackingSet<Assignment>()
                                   .Where(x => x.AssignDateTime >= date.Date && x.AssignDateTime < endDate && !x.CancelUserId.HasValue)
                                   .Select(x => new ScheduledAssignmentDTO
                                                {
@@ -65,10 +66,10 @@ namespace ScheduleModule.Services
             }
         }
 
-        public IEnumerable<ITimeInterval> GetAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime,
-                                                                    IEnumerable<ITimeInterval> occupiedTime,
-                                                                    int nominalDurationInMinutes,
-                                                                    int minimumDurationInMinutes)
+        public IEnumerable<ITimeInterval> GenerateAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime,
+                                                                         IEnumerable<ITimeInterval> occupiedTime,
+                                                                         int nominalDurationInMinutes,
+                                                                         int minimumDurationInMinutes)
         {
             if (minimumDurationInMinutes <= 0 || minimumDurationInMinutes % 5 != 0)
             {
@@ -182,22 +183,29 @@ namespace ScheduleModule.Services
             return result;
         }
 
-        public async Task SaveAssignmentAsync(Assignment assignment)
+        public async Task SaveAssignmentAsync(Assignment newAssignment, INotificationServiceSubscription<Assignment> assignmentChangeSubscription)
         {
-            assignment.Note = assignment.Note ?? string.Empty;
-            using (var dataContext = contextProvider.CreateNewContext())
+            newAssignment.Note = newAssignment.Note ?? string.Empty;
+            Assignment originalAssignment = null;
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                if (assignment.Id == 0)
+                dataContext.Configuration.ProxyCreationEnabled = false;
+                if (newAssignment.Id == 0)
                 {
-                    dataContext.Entry(assignment).State = EntityState.Added;
-                    assignment.CreationDateTime = environment.CurrentDate;
+                    dataContext.Entry(newAssignment).State = EntityState.Added;
+                    newAssignment.CreationDateTime = environment.CurrentDate;
                 }
                 else
                 {
-                    dataContext.Entry(assignment).State = EntityState.Modified;
+                    originalAssignment = await dataContext.NoTrackingSet<Assignment>().FirstAsync(x => x.Id == newAssignment.Id);
+                    dataContext.Entry(newAssignment).State = EntityState.Modified;
                 }
-                await CheckForAssignmentConflicts(dataContext, assignment);
+                await CheckForAssignmentConflicts(dataContext, newAssignment);
                 await dataContext.SaveChangesAsync();
+                if (assignmentChangeSubscription != null)
+                {
+                    assignmentChangeSubscription.Notify(originalAssignment, newAssignment);
+                }
             }
         }
 
@@ -205,20 +213,20 @@ namespace ScheduleModule.Services
         {
             var startTime = newAssignment.AssignDateTime;
             var endTime = newAssignment.AssignDateTime.AddMinutes(newAssignment.Duration);
-            var conflictedAssignment = await dataContext.Set<Assignment>()
-                                                  .Where(x => !x.CancelUserId.HasValue && x.Id != newAssignment.Id && (x.RoomId == newAssignment.RoomId || x.PersonId == newAssignment.PersonId))
-                                                  .Select(x => new
-                                                               {
-                                                                   Room = x.Room.Name + " №" + x.Room.Number,
-                                                                   Patient = x.Person.ShortName,
-                                                                   IsSamePatient = x.PersonId == newAssignment.PersonId,
-                                                                   StartTime = x.AssignDateTime,
-                                                                   EndTime = DbFunctions.AddMinutes(x.AssignDateTime, x.Duration)
-                                                               })
-                                                  .FirstOrDefaultAsync(x => (x.StartTime >= startTime && x.StartTime < endTime)
-                                                                       || (x.EndTime > startTime && x.EndTime <= endTime)
-                                                                       || (startTime >= x.StartTime && startTime < x.EndTime)
-                                                                       || (endTime > x.StartTime && endTime < x.EndTime));
+            var conflictedAssignment = await dataContext.NoTrackingSet<Assignment>()
+                                                        .Where(x => !x.CancelUserId.HasValue && x.Id != newAssignment.Id && (x.RoomId == newAssignment.RoomId || x.PersonId == newAssignment.PersonId))
+                                                        .Select(x => new
+                                                                     {
+                                                                         Room = x.Room.Name + " №" + x.Room.Number,
+                                                                         Patient = x.Person.ShortName,
+                                                                         IsSamePatient = x.PersonId == newAssignment.PersonId,
+                                                                         StartTime = x.AssignDateTime,
+                                                                         EndTime = DbFunctions.AddMinutes(x.AssignDateTime, x.Duration)
+                                                                     })
+                                                        .FirstOrDefaultAsync(x => (x.StartTime >= startTime && x.StartTime < endTime)
+                                                                                  || (x.EndTime > startTime && x.EndTime <= endTime)
+                                                                                  || (startTime >= x.StartTime && startTime < x.EndTime)
+                                                                                  || (endTime > x.StartTime && endTime < x.EndTime));
             if (conflictedAssignment == null)
             {
                 return;
@@ -230,55 +238,83 @@ namespace ScheduleModule.Services
             throw new AssignmentConflictException(conflictedAssignment.Room, conflictedAssignment.StartTime, conflictedAssignment.Patient);
         }
 
-        public async Task DeleteAssignmentAsync(int assignmentId)
+        public async Task DeleteAssignmentAsync(int assignmentId, INotificationServiceSubscription<Assignment> assignmentChangeSubscription)
         {
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                dataContext.Entry(new Assignment { Id = assignmentId }).State = EntityState.Deleted;
+                dataContext.Configuration.ProxyCreationEnabled = false;
+                var originalAssignment = await dataContext.NoTrackingSet<Assignment>().FirstAsync(x => x.Id == assignmentId);
+                dataContext.Entry(originalAssignment).State = EntityState.Deleted;
                 await dataContext.SaveChangesAsync();
+                if (assignmentChangeSubscription != null)
+                {
+                    assignmentChangeSubscription.NotifyDelete(originalAssignment);
+                }
             }
         }
 
-        public async Task CancelAssignmentAsync(int assignmentId)
+        public async Task CancelAssignmentAsync(int assignmentId, INotificationServiceSubscription<Assignment> assignmentChangeSubscription)
         {
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                var assignment = dataContext.Set<Assignment>().FirstOrDefault(x => x.Id == assignmentId);
-                assignment.CancelUserId = environment.CurrentUser.Id;
-                assignment.CancelDateTime = environment.CurrentDate;
+                var originalAssignment = await dataContext.NoTrackingSet<Assignment>().FirstAsync(x => x.Id == assignmentId);
+                var newAssignment = (Assignment)originalAssignment.Clone();
+                newAssignment.CancelUserId = environment.CurrentUser.Id;
+                newAssignment.CancelDateTime = environment.CurrentDate;
+                dataContext.Entry(newAssignment).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync();
+                if (assignmentChangeSubscription != null)
+                {
+                    assignmentChangeSubscription.Notify(originalAssignment, newAssignment);
+                }
             }
         }
 
-        public async Task UpdateAssignmentAsync(int assignmentId, int newFinancingSourceId, string newNote, int? newAssignLpuId)
+        public async Task UpdateAssignmentAsync(int assignmentId,
+                                                int newFinancingSourceId,
+                                                string newNote,
+                                                int? newAssignLpuId,
+                                                INotificationServiceSubscription<Assignment> assignmentChangeSubscription)
         {
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                var assignment = dataContext.Set<Assignment>().First(x => x.Id == assignmentId);
-                assignment.FinancingSourceId = newFinancingSourceId;
-                assignment.Note = newNote;
-                assignment.AssignLpuId = newAssignLpuId;
-                assignment.IsTemporary = false;
+                var originalAssignment = await dataContext.NoTrackingSet<Assignment>().FirstAsync(x => x.Id == assignmentId);
+                var newAssignment = (Assignment)originalAssignment.Clone();
+                newAssignment.FinancingSourceId = newFinancingSourceId;
+                newAssignment.Note = newNote;
+                newAssignment.AssignLpuId = newAssignLpuId;
+                newAssignment.IsTemporary = false;
+                dataContext.Entry(newAssignment).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync();
+                if (assignmentChangeSubscription != null)
+                {
+                    assignmentChangeSubscription.Notify(originalAssignment, newAssignment);
+                }
             }
         }
 
-        public async Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, Room newRoom)
+        public async Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, Room newRoom, INotificationServiceSubscription<Assignment> assignmentChangeSubscription)
         {
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                var assignment = dataContext.Set<Assignment>().First(x => x.Id == assignmentId);
-                assignment.AssignDateTime = newTime;
-                assignment.Duration = newDuration;
-                assignment.RoomId = newRoom.Id;
-                await CheckForAssignmentConflicts(dataContext, assignment);
+                var originalAssignment = await dataContext.NoTrackingSet<Assignment>().FirstAsync(x => x.Id == assignmentId);
+                var newAssignment = (Assignment)originalAssignment.Clone();
+                newAssignment.AssignDateTime = newTime;
+                newAssignment.Duration = newDuration;
+                newAssignment.RoomId = newRoom.Id;
+                await CheckForAssignmentConflicts(dataContext, newAssignment);
+                dataContext.Entry(newAssignment).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync();
+                if (assignmentChangeSubscription != null)
+                {
+                    assignmentChangeSubscription.Notify(originalAssignment, newAssignment);
+                }
             }
         }
 
         public IEnumerable<ScheduledAssignmentDTO> GetAssignments(int patientId)
         {
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
                 return dataContext.Set<Assignment>().Where(x => x.PersonId == patientId)
                                   .Select(x => new ScheduledAssignmentDTO
@@ -304,7 +340,7 @@ namespace ScheduleModule.Services
         {
             var startDate = date.Date;
             var endDate = startDate.AddDays(1.0);
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
                 return dataContext.Set<Assignment>().Where(x => x.PersonId == patientId && x.CancelUserId == null && x.AssignDateTime >= startDate && x.AssignDateTime < endDate)
                                   .Select(x => new ScheduledAssignmentDTO
@@ -326,12 +362,15 @@ namespace ScheduleModule.Services
             }
         }
 
-        public ScheduledAssignmentDTO GetAssignment(int assignmentId, int patientId)
+        public async Task<ScheduledAssignmentDTO> GetAssignmentAsync(int assignmentId, int patientId)
         {
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                return dataContext.Set<Assignment>().Where(x => x.Id == assignmentId && x.PersonId == patientId)
-                                  .Select(x => new ScheduledAssignmentDTO
+                var query = dataContext.Set<Assignment>() as IQueryable<Assignment>;
+                query = patientId.IsNewOrNonExisting()
+                            ? query.Where(x => x.Id == assignmentId)
+                            : query.Where(x => x.Id == assignmentId && x.PersonId == patientId);
+                return await query.Select(x => new ScheduledAssignmentDTO
                                                {
                                                    Id = x.Id,
                                                    StartTime = x.AssignDateTime,
@@ -347,7 +386,7 @@ namespace ScheduleModule.Services
                                                    PersonShortName = x.Person.ShortName,
                                                    IsCanceled = x.CancelUserId.HasValue
                                                })
-                                  .FirstOrDefault();
+                                  .FirstOrDefaultAsync();
             }
         }
 
@@ -359,9 +398,9 @@ namespace ScheduleModule.Services
 
         public IEnumerable<Org> GetLpus()
         {
-            using (var context = contextProvider.CreateNewContext())
+            using (var context = contextProvider.CreateLightweightContext())
             {
-                return context.Set<Org>()
+                return context.NoTrackingSet<Org>()
                               .Where(x => x.IsLpu)
                               .OrderBy(x => x.Name)
                               .ToArray();

@@ -151,6 +151,10 @@
       <Project>{304F5AEB-4189-4C9F-96DA-C32E57E5E1BE}</Project>
       <Name>Core.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core.Notification\Core.Notification.csproj">
+      <Project>{ED2FCB8B-DB03-4FF8-934D-84EB934F97E6}</Project>
+      <Name>Core.Notification</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core.Wpf\Core.Wpf.csproj">
       <Project>{62515044-f9c0-4d93-8b55-1407ccf8d3f2}</Project>
       <Name>Core.Wpf</Name>

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class AddressType
+    public partial class AddressType : ICloneable
     {
         public AddressType()
         {
@@ -26,12 +26,17 @@ namespace Core.Data
         public int PriorityForOKATO { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonAddress> personAddresses;
+    	protected ICollection<PersonAddress> personAddresses;
     
     	public virtual ICollection<PersonAddress> PersonAddresses
     	{
      		get { return personAddresses; }
      		set { personAddresses = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordTypeRolePermission
+    public partial class RecordTypeRolePermission : ICloneable
     {
         public RecordTypeRolePermission()
         {
@@ -30,7 +30,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private RecordTypeRole recordTypeRole;
+    	protected RecordTypeRole recordTypeRole;
     
     	public virtual RecordTypeRole RecordTypeRole
     	{
@@ -38,7 +38,7 @@ namespace Core.Data
      		set { recordTypeRole = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordMember> recordMembers;
+    	protected ICollection<RecordMember> recordMembers;
     
     	public virtual ICollection<RecordMember> RecordMembers
     	{
@@ -46,7 +46,7 @@ namespace Core.Data
      		set { recordMembers = value; }
     	}
         [NonSerialized]
-    	private Permission permission;
+    	protected Permission permission;
     
     	public virtual Permission Permission
     	{
@@ -54,12 +54,17 @@ namespace Core.Data
      		set { permission = value; }
     	}
         [NonSerialized]
-    	private RecordType recordType;
+    	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
      		get { return recordType; }
      		set { recordType = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

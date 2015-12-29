@@ -6,12 +6,11 @@
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels"
                       xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-                      xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
-                      xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:PersonRecordsHeaderViewModel}">
+                      d:DataContext="{d:DesignInstance viewModels:PersonRecordsHeaderViewModel}"
+                      Header="Случаи">
     <fluent:RibbonTabItem.Resources>
         <ResourceDictionary>
             <Style TargetType="{x:Type TextBlock}">
@@ -20,10 +19,6 @@
             </Style>
         </ResourceDictionary>
     </fluent:RibbonTabItem.Resources>
-    <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Случаи"
-                   Style="{x:Null}" />
-    </fluent:RibbonTabItem.Header>
     <fluent:RibbonGroupBox Header="Случай">
         <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitAdd48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True" Command="{Binding CreateNewVisitCommand}" >
             <fluent:SplitButton.ItemContainerStyle>

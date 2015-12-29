@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordPeriod
+    public partial class RecordPeriod : ICloneable
     {
         public RecordPeriod()
         {
@@ -30,7 +30,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ExecutionPlace executionPlace;
+    	protected ExecutionPlace executionPlace;
     
     	public virtual ExecutionPlace ExecutionPlace
     	{
@@ -38,12 +38,17 @@ namespace Core.Data
      		set { executionPlace = value; }
     	}
         [NonSerialized]
-    	private ICollection<Record> records;
+    	protected ICollection<Record> records;
     
     	public virtual ICollection<Record> Records
     	{
      		get { return records; }
      		set { records = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

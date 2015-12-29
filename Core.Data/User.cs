@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class User
+    public partial class User : ICloneable
     {
         public User()
         {
@@ -22,10 +22,10 @@ namespace Core.Data
             this.UserMessages1 = new HashSet<UserMessage>();
             this.Visits = new HashSet<Visit>();
             this.UserPermisionGroups = new HashSet<UserPermisionGroup>();
+            this.Records = new HashSet<Record>();
             this.Assignments = new HashSet<Assignment>();
             this.Assignments1 = new HashSet<Assignment>();
             this.Assignments2 = new HashSet<Assignment>();
-            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -35,7 +35,7 @@ namespace Core.Data
         public Nullable<System.DateTime> EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<CommissionProtocol> commissionProtocols;
+    	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
     	{
@@ -43,7 +43,7 @@ namespace Core.Data
      		set { commissionProtocols = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
@@ -51,7 +51,7 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	private ICollection<UserMessage> userMessages;
+    	protected ICollection<UserMessage> userMessages;
     
     	public virtual ICollection<UserMessage> UserMessages
     	{
@@ -59,7 +59,7 @@ namespace Core.Data
      		set { userMessages = value; }
     	}
         [NonSerialized]
-    	private ICollection<UserMessage> userMessages1;
+    	protected ICollection<UserMessage> userMessages1;
     
     	public virtual ICollection<UserMessage> UserMessages1
     	{
@@ -67,7 +67,7 @@ namespace Core.Data
      		set { userMessages1 = value; }
     	}
         [NonSerialized]
-    	private ICollection<Visit> visits;
+    	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
@@ -75,7 +75,7 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	private ICollection<UserPermisionGroup> userPermisionGroups;
+    	protected ICollection<UserPermisionGroup> userPermisionGroups;
     
     	public virtual ICollection<UserPermisionGroup> UserPermisionGroups
     	{
@@ -83,7 +83,15 @@ namespace Core.Data
      		set { userPermisionGroups = value; }
     	}
         [NonSerialized]
-    	private ICollection<Assignment> assignments;
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
     
     	public virtual ICollection<Assignment> Assignments
     	{
@@ -91,7 +99,7 @@ namespace Core.Data
      		set { assignments = value; }
     	}
         [NonSerialized]
-    	private ICollection<Assignment> assignments1;
+    	protected ICollection<Assignment> assignments1;
     
     	public virtual ICollection<Assignment> Assignments1
     	{
@@ -99,20 +107,17 @@ namespace Core.Data
      		set { assignments1 = value; }
     	}
         [NonSerialized]
-    	private ICollection<Assignment> assignments2;
+    	protected ICollection<Assignment> assignments2;
     
     	public virtual ICollection<Assignment> Assignments2
     	{
      		get { return assignments2; }
      		set { assignments2 = value; }
     	}
-        [NonSerialized]
-    	private ICollection<Record> records;
     
-    	public virtual ICollection<Record> Records
+    	public object Clone()
     	{
-     		get { return records; }
-     		set { records = value; }
+    		return MemberwiseClone();
     	}
     }
 }

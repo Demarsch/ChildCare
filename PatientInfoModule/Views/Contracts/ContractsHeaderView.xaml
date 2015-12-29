@@ -8,51 +8,74 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:InfoHeaderViewModel}">
-    <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Договоры"
-                   Style="{x:Null}" />
-    </fluent:RibbonTabItem.Header>
-
-    <fluent:RibbonGroupBox Header="Договора" FontWeight="Medium">
-        <fluent:Button x:Name="btnAddContract" Command="{Binding AddContractCommand}" 
-                       Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddContract48x48.png" />
-        <fluent:Button x:Name="btnSaveContract" Command="{Binding SaveContractCommand}"
-                       Header="Сохранить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Save48x48.png" />
-        <fluent:Button x:Name="btnRemoveContract" Command="{Binding RemoveContractCommand}"
-                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveContract48x48.png" />
-
-        <fluent:DropDownButton x:Name="btnPrintContracts" Header="Печать" HasTriangle="True" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png">
+                      d:DataContext="{d:DesignInstance viewModels:ContractsHeaderViewModel}"
+                      Header="Договоры">
+    <fluent:RibbonGroupBox Header="Договоры" 
+                           FontWeight="Medium">
+        <fluent:Button x:Name="btnAddContract" 
+                       Command="{Binding AddContractCommand}"
+                       Header="Создать"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddContract48x48.png" />
+        <fluent:Button x:Name="btnSaveContract"
+                       Command="{Binding SaveContractCommand}"
+                       Header="Сохранить"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Save48x48.png" />
+        <fluent:Button x:Name="btnRemoveContract"
+                       Command="{Binding RemoveContractCommand}"
+                       Header="Удалить"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveContract48x48.png" />
+        <fluent:DropDownButton x:Name="btnPrintContracts"
+                               Header="Печать"
+                               HasTriangle="True"
+                               LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png">
             <fluent:DropDownButton.Items>
-                <Button Name="btnPrintContract" Command="{Binding PrintContractCommand}" BorderThickness="0" HorizontalContentAlignment="Left" Background="White">
-                    <StackPanel Orientation="Horizontal" >
-                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png" Stretch="Uniform" Height="24" Width="24"/>
-                        <TextBlock Text="Договор" Margin="5"/>
+                <Button Name="btnPrintContract"
+                        Command="{Binding PrintContractCommand}"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left" Background="White">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png"
+                               Stretch="Uniform" 
+                               Height="24" 
+                               Width="24" />
+                        <TextBlock Text="Договор" 
+                                   Margin="5" />
                     </StackPanel>
                 </Button>
-                <Button Name="btnPrintAppendix" Command="{Binding PrintAppendixCommand}" BorderThickness="0" HorizontalContentAlignment="Left" Background="White">
-                    <StackPanel Orientation="Horizontal" >
-                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png" Stretch="Uniform" Height="24" Width="24"/>
-                        <TextBlock Text="Доп. соглашение" Margin="5"/>
+                <Button Name="btnPrintAppendix"
+                        Command="{Binding PrintAppendixCommand}"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left" 
+                        Background="White">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png"
+                               Stretch="Uniform" Height="24" Width="24" />
+                        <TextBlock Text="Доп. соглашение" Margin="5" />
                     </StackPanel>
                 </Button>
             </fluent:DropDownButton.Items>
         </fluent:DropDownButton>
-
     </fluent:RibbonGroupBox>
-
-
-    <fluent:RibbonGroupBox Header="Услуги по договору" FontWeight="Medium">
-        <fluent:Button x:Name="btnAddRecord" Command="{Binding AddRecordCommand}" 
-                       Header="Добавить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />
-        <fluent:Button x:Name="btnRemoveRecord" Command="{Binding RemoveRecordCommand}"
-                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" />
+    <fluent:RibbonGroupBox Header="Услуги по договору"
+                           FontWeight="Medium">
+        <fluent:Button x:Name="btnAddRecord" 
+                       Command="{Binding AddRecordCommand}"
+                       Header="Добавить"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />
+        <fluent:Button x:Name="btnRemoveRecord"
+                       Command="{Binding RemoveRecordCommand}"
+                       Header="Удалить"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" />
     </fluent:RibbonGroupBox>
-
-    <fluent:RibbonGroupBox Header="Доп. соглашения" FontWeight="Medium">
-        <fluent:Button x:Name="btnAddAppendix" Command="{Binding AddAppendixCommand}"
-                       Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddAppendix48x48.png" />
-        <fluent:Button x:Name="btnRemoveAppendix" Command="{Binding RemoveAppendixCommand}"
-                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveAppendix48x48.png" />
+    <fluent:RibbonGroupBox Header="Доп. соглашения"
+                           FontWeight="Medium">
+        <fluent:Button x:Name="btnAddAppendix"
+                       Command="{Binding AddAppendixCommand}"
+                       Header="Создать"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddAppendix48x48.png" />
+        <fluent:Button x:Name="btnRemoveAppendix" 
+                       Command="{Binding RemoveAppendixCommand}"
+                       Header="Удалить"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveAppendix48x48.png" />
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

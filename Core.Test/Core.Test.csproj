@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="Expressions\DateBasedSearchExpressionProviderTest.cs" />
     <Compile Include="Extensions\CacheServiceExtensionsTest.cs" />
-    <Compile Include="Misc\ChangeTrackerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +61,9 @@
       <Project>{CF75CDE2-002C-4113-824A-03A3B7C6847B}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Misc\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

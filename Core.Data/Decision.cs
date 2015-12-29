@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Decision
+    public partial class Decision : ICloneable
     {
         public Decision()
         {
@@ -30,7 +30,7 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	private ICollection<CommissionDecision> commissionDecisions;
+    	protected ICollection<CommissionDecision> commissionDecisions;
     
     	public virtual ICollection<CommissionDecision> CommissionDecisions
     	{
@@ -38,7 +38,7 @@ namespace Core.Data
      		set { commissionDecisions = value; }
     	}
         [NonSerialized]
-    	private ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
     
     	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
     	{
@@ -46,7 +46,7 @@ namespace Core.Data
      		set { commissionDecisionsLinks = value; }
     	}
         [NonSerialized]
-    	private ICollection<Decision> decisions1;
+    	protected ICollection<Decision> decisions1;
     
     	public virtual ICollection<Decision> Decisions1
     	{
@@ -54,12 +54,17 @@ namespace Core.Data
      		set { decisions1 = value; }
     	}
         [NonSerialized]
-    	private Decision decision1;
+    	protected Decision decision1;
     
     	public virtual Decision Decision1
     	{
      		get { return decision1; }
      		set { decision1 = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

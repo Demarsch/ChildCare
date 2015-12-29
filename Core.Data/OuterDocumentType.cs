@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class OuterDocumentType
+    public partial class OuterDocumentType : ICloneable
     {
         public OuterDocumentType()
         {
@@ -29,7 +29,7 @@ namespace Core.Data
         public System.DateTime EndDate { get; set; }
     
         [NonSerialized]
-    	private ICollection<OuterDocumentType> outerDocumentTypes1;
+    	protected ICollection<OuterDocumentType> outerDocumentTypes1;
     
     	public virtual ICollection<OuterDocumentType> OuterDocumentTypes1
     	{
@@ -37,7 +37,7 @@ namespace Core.Data
      		set { outerDocumentTypes1 = value; }
     	}
         [NonSerialized]
-    	private OuterDocumentType outerDocumentType1;
+    	protected OuterDocumentType outerDocumentType1;
     
     	public virtual OuterDocumentType OuterDocumentType1
     	{
@@ -45,12 +45,17 @@ namespace Core.Data
      		set { outerDocumentType1 = value; }
     	}
         [NonSerialized]
-    	private ICollection<PersonOuterDocument> personOuterDocuments;
+    	protected ICollection<PersonOuterDocument> personOuterDocuments;
     
     	public virtual ICollection<PersonOuterDocument> PersonOuterDocuments
     	{
      		get { return personOuterDocuments; }
      		set { personOuterDocuments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

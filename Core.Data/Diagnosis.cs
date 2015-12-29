@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Diagnosis
+    public partial class Diagnosis : ICloneable
     {
         public int Id { get; set; }
         public int PersonDiagnosId { get; set; }
@@ -27,7 +27,7 @@ namespace Core.Data
         public int InPersonId { get; set; }
     
         [NonSerialized]
-    	private Complication complication;
+    	protected Complication complication;
     
     	public virtual Complication Complication
     	{
@@ -35,7 +35,7 @@ namespace Core.Data
      		set { complication = value; }
     	}
         [NonSerialized]
-    	private DiagnosLevel diagnosLevel;
+    	protected DiagnosLevel diagnosLevel;
     
     	public virtual DiagnosLevel DiagnosLevel
     	{
@@ -43,7 +43,7 @@ namespace Core.Data
      		set { diagnosLevel = value; }
     	}
         [NonSerialized]
-    	private PersonDiagnos personDiagnos;
+    	protected PersonDiagnos personDiagnos;
     
     	public virtual PersonDiagnos PersonDiagnos
     	{
@@ -51,12 +51,17 @@ namespace Core.Data
      		set { personDiagnos = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
      		get { return person; }
      		set { person = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

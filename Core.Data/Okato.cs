@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Okato
+    public partial class Okato : ICloneable
     {
         public Okato()
         {
@@ -28,12 +28,17 @@ namespace Core.Data
         public string RegionCode { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonAddress> personAddresses;
+    	protected ICollection<PersonAddress> personAddresses;
     
     	public virtual ICollection<PersonAddress> PersonAddresses
     	{
      		get { return personAddresses; }
      		set { personAddresses = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

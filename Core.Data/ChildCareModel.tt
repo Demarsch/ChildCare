@@ -25,7 +25,7 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
 #>
 <#=codeStringGenerator.UsingDirectives(inHeader: false)#>
 [Serializable]
-<#=codeStringGenerator.EntityClassOpening(entity)#>
+<#=codeStringGenerator.EntityClassOpening(entity)#> : ICloneable
 {
 <#
     var propertiesWithDefaultValues = typeMapper.GetPropertiesWithDefaultValues(entity);
@@ -107,6 +107,11 @@ foreach (var entity in typeMapper.GetItemsToGenerate<EntityType>(itemCollection)
         }
     }
 #>
+
+	public object Clone()
+	{
+		return MemberwiseClone();
+	}
 }
 <#
     EndNamespace(code);
@@ -297,7 +302,7 @@ public class CodeStringGenerator
         var endType = _typeMapper.GetTypeName(navProp.ToEndMember.GetEntityType());
         return string.Format(
             CultureInfo.InvariantCulture,
-            "[NonSerialized]{2}\tprivate {0} {1};{2}{2}\t{3} {0} {4}{2}\t{{{2} {5}\t\tget {{ return {1}; }}{2} {6}\t\tset {{ {1} = value; }}{2}\t}}",
+            "[NonSerialized]{2}\tprotected {0} {1};{2}{2}\t{3} {0} {4}{2}\t{{{2} {5}\t\tget {{ return {1}; }}{2} {6}\t\tset {{ {1} = value; }}{2}\t}}",
 			 navProp.ToEndMember.RelationshipMultiplicity == RelationshipMultiplicity.Many ? ("ICollection<" + endType + ">") : endType,
 			 _code.Escape(navProp).Substring(0, 1).ToLower() + _code.Escape(navProp).Substring(1),
 			 Environment.NewLine,

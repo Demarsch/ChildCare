@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class InsuranceDocument
+    public partial class InsuranceDocument : ICloneable
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
@@ -26,7 +26,7 @@ namespace Core.Data
         public Nullable<System.DateTime> DeleteDateTime { get; set; }
     
         [NonSerialized]
-    	private InsuranceCompany insuranceCompany;
+    	protected InsuranceCompany insuranceCompany;
     
     	public virtual InsuranceCompany InsuranceCompany
     	{
@@ -34,7 +34,7 @@ namespace Core.Data
      		set { insuranceCompany = value; }
     	}
         [NonSerialized]
-    	private InsuranceDocumentType insuranceDocumentType;
+    	protected InsuranceDocumentType insuranceDocumentType;
     
     	public virtual InsuranceDocumentType InsuranceDocumentType
     	{
@@ -42,12 +42,17 @@ namespace Core.Data
      		set { insuranceDocumentType = value; }
     	}
         [NonSerialized]
-    	private Person person;
+    	protected Person person;
     
     	public virtual Person Person
     	{
      		get { return person; }
      		set { person = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

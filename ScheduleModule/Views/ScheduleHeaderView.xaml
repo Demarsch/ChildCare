@@ -12,7 +12,8 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:ScheduleHeaderViewModel}">
+                      d:DataContext="{d:DesignInstance viewModels:ScheduleHeaderViewModel}"
+                      Header="Расписание">
     <fluent:RibbonTabItem.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -24,10 +25,6 @@
             </Style>
         </ResourceDictionary>
     </fluent:RibbonTabItem.Resources>
-    <fluent:RibbonTabItem.Header>
-        <TextBlock Text="Расписание"
-                   Style="{x:Null}" />
-    </fluent:RibbonTabItem.Header>
     <fluent:RibbonGroupBox Header="Дата">
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousWeek48x48.png"

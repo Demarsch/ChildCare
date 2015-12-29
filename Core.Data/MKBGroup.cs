@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class MKBGroup
+    public partial class MKBGroup : ICloneable
     {
         public MKBGroup()
         {
@@ -28,7 +28,7 @@ namespace Core.Data
         public string MKBmax { get; set; }
     
         [NonSerialized]
-    	private ICollection<MKB> mKBs;
+    	protected ICollection<MKB> mKBs;
     
     	public virtual ICollection<MKB> MKBs
     	{
@@ -36,7 +36,7 @@ namespace Core.Data
      		set { mKBs = value; }
     	}
         [NonSerialized]
-    	private ICollection<MKBGroup> mKBGroups1;
+    	protected ICollection<MKBGroup> mKBGroups1;
     
     	public virtual ICollection<MKBGroup> MKBGroups1
     	{
@@ -44,12 +44,17 @@ namespace Core.Data
      		set { mKBGroups1 = value; }
     	}
         [NonSerialized]
-    	private MKBGroup mKBGroup1;
+    	protected MKBGroup mKBGroup1;
     
     	public virtual MKBGroup MKBGroup1
     	{
      		get { return mKBGroup1; }
      		set { mKBGroup1 = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

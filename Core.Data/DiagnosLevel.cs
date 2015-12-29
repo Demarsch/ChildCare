@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class DiagnosLevel
+    public partial class DiagnosLevel : ICloneable
     {
         public DiagnosLevel()
         {
@@ -29,12 +29,17 @@ namespace Core.Data
         public bool IsComplication { get; set; }
     
         [NonSerialized]
-    	private ICollection<Diagnosis> diagnoses;
+    	protected ICollection<Diagnosis> diagnoses;
     
     	public virtual ICollection<Diagnosis> Diagnoses
     	{
      		get { return diagnoses; }
      		set { diagnoses = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Staff
+    public partial class Staff : ICloneable
     {
         public Staff()
         {
@@ -27,12 +27,17 @@ namespace Core.Data
         public bool IsSenior { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonStaff> personStaffs;
+    	protected ICollection<PersonStaff> personStaffs;
     
     	public virtual ICollection<PersonStaff> PersonStaffs
     	{
      		get { return personStaffs; }
      		set { personStaffs = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

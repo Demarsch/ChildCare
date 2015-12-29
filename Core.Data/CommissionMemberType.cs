@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class CommissionMemberType
+    public partial class CommissionMemberType : ICloneable
     {
         public CommissionMemberType()
         {
@@ -29,7 +29,7 @@ namespace Core.Data
         public bool IsMember { get; set; }
     
         [NonSerialized]
-    	private ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
     
     	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
     	{
@@ -37,12 +37,17 @@ namespace Core.Data
      		set { commissionDecisionsLinks = value; }
     	}
         [NonSerialized]
-    	private ICollection<CommissionMember> commissionMembers;
+    	protected ICollection<CommissionMember> commissionMembers;
     
     	public virtual ICollection<CommissionMember> CommissionMembers
     	{
      		get { return commissionMembers; }
      		set { commissionMembers = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

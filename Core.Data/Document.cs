@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class Document
+    public partial class Document : ICloneable
     {
         public Document()
         {
@@ -33,7 +33,7 @@ namespace Core.Data
         public Nullable<System.DateTime> DocumentFromDate { get; set; }
     
         [NonSerialized]
-    	private ICollection<PersonOuterDocument> personOuterDocuments;
+    	protected ICollection<PersonOuterDocument> personOuterDocuments;
     
     	public virtual ICollection<PersonOuterDocument> PersonOuterDocuments
     	{
@@ -41,7 +41,7 @@ namespace Core.Data
      		set { personOuterDocuments = value; }
     	}
         [NonSerialized]
-    	private ICollection<Person> persons;
+    	protected ICollection<Person> persons;
     
     	public virtual ICollection<Person> Persons
     	{
@@ -49,12 +49,17 @@ namespace Core.Data
      		set { persons = value; }
     	}
         [NonSerialized]
-    	private ICollection<RecordDocument> recordDocuments;
+    	protected ICollection<RecordDocument> recordDocuments;
     
     	public virtual ICollection<RecordDocument> RecordDocuments
     	{
      		get { return recordDocuments; }
      		set { recordDocuments = value; }
+    	}
+    
+    	public object Clone()
+    	{
+    		return MemberwiseClone();
     	}
     }
 }

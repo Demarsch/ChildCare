@@ -10,8 +10,6 @@ namespace Core.Notification
     {
         private readonly ILog log;
 
-        private readonly INotificationService notificationService;
-
         private readonly Predicate<TItem> filter;
 
         private NotificationServiceEngineClient client;
@@ -29,7 +27,6 @@ namespace Core.Notification
                 throw new ArgumentNullException("notificationService");
             }
             this.log = log;
-            this.notificationService = notificationService;
             if (filterPredicate != null)
             {
                 filter = filterPredicate.Compile();
@@ -37,7 +34,7 @@ namespace Core.Notification
             callback = new NotificationServiceEngineCallback<TItem>();
             callback.Notified += CallbackOnNotified;
             client = new NotificationServiceEngineClient(new InstanceContext(callback));
-            client.Endpoint.Address = new EndpointAddress(string.Join("//", new[] { notificationService.ServiceBaseAddress, client.Endpoint.Address == null ? string.Empty : client.Endpoint.Address.Uri.ToString() }));
+            client.Endpoint.Address = new EndpointAddress(string.Join("/", new[] { notificationService.ServiceBaseAddress, client.Endpoint.Address == null ? string.Empty : client.Endpoint.Address.Uri.ToString() }));
             client.Open();
             client.Subscribe(typeof(TItem).FullName);
         }
@@ -73,11 +70,11 @@ namespace Core.Notification
 
         public event EventHandler<NotificationEventArgs<TItem>> Notified = delegate { };
 
-        public void Notify(TItem oldItem, TItem newItem)
+        public void Notify(TItem originalItem, TItem newItem)
         {
             try
             {
-                client.Notify(typeof(TItem).FullName, oldItem.Serialize(), newItem.Serialize());
+                client.Notify(typeof(TItem).FullName, originalItem.Serialize(), newItem.Serialize());
             }
             catch (Exception ex)
             {
