@@ -15,38 +15,59 @@
                      Width="525"
                      WindowState="Maximized"
                      d:DataContext="{d:DesignInstance shell:ShellWindowViewModel}">
+    <fluent:RibbonWindow.Resources>
+        <xctk:VisibilityToBoolConverter x:Key="visibilityToBoolConverter" />
+    </fluent:RibbonWindow.Resources>
     <Grid>
         <DockPanel LastChildFill="True">
-            <fluent:Ribbon regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleList}"
-                       DockPanel.Dock="Top">
+            <shell:RibbonEx regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleList}"
+                           DockPanel.Dock="Top"
+                           x:Name="ribbon">
                 <fluent:Ribbon.Menu>
                     <fluent:Backstage IsEnabled="{Binding CanOpenMenu}"
-                                  IsOpen="{Binding IsMenuOpen, Mode=TwoWay}">
+                                      IsOpen="{Binding IsMenuOpen, Mode=TwoWay}">
                         <fluent:Backstage.Header>
                             <TextBlock Margin="3"
-                                   Text="Меню" />
+                                       Text="Меню" />
                         </fluent:Backstage.Header>
                         <fluent:BackstageTabControl
-                        regions:RegionManager.RegionName="{x:Static shared:RegionNames.MainMenu}" />
+                            regions:RegionManager.RegionName="{x:Static shared:RegionNames.MainMenu}" />
                     </fluent:Backstage>
                 </fluent:Ribbon.Menu>
-            </fluent:Ribbon>
+                <shell:RibbonEx.ContextMenuOverride>
+                    <ContextMenu ItemsSource="{Binding PlacementTarget.Tabs, RelativeSource={RelativeSource Self}, Mode=OneWay}"
+                                 Tag="xxx"
+                                 Background="Aqua">
+                        <ContextMenu.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}">
+                                <Setter Property="IsCheckable"
+                                        Value="True" />
+                                <Setter Property="IsChecked"
+                                        Value="{Binding Visibility, Converter={StaticResource visibilityToBoolConverter}}" />
+                                <Setter Property="Header"
+                                        Value="{Binding Header}" />
+                            </Style>
+                        </ContextMenu.ItemContainerStyle>
+                        
+                    </ContextMenu>
+                </shell:RibbonEx.ContextMenuOverride>
+            </shell:RibbonEx>
             <Grid>
                 <ContentControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch" />
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" />
                 <ContentControl Content="{Binding BusyMediator}"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch" />
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" />
                 <ContentControl Content="{Binding FailureMediator}"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch" />
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" />
             </Grid>
         </DockPanel>
         <xctk:WindowContainer ModalBackgroundBrush="#33333333">
             <views:ChildDialogWindow x:Name="childDialogWindow"
                                      WindowStartupLocation="Center"
-                                     WindowStyle="None"/>
+                                     WindowStyle="None" />
         </xctk:WindowContainer>
     </Grid>
 </fluent:RibbonWindow>

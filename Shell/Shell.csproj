@@ -130,6 +130,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RibbonEx.cs" />
     <Compile Include="ShellWindowViewModel.cs" />
     <Compile Include="ConventionBasedViewNameResolver.cs" />
     <Page Include="ShellWindow.xaml">
