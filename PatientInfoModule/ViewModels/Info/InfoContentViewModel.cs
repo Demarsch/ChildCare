@@ -21,6 +21,7 @@ using PatientInfoModule.Services;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Regions;
+using Shared.Patient.ViewModels;
 using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels
@@ -33,6 +34,8 @@ namespace PatientInfoModule.ViewModels
 
         private readonly ILog log;
 
+        private readonly IDialogServiceAsync dialogService;
+
         private readonly PatientInfoViewModel patientInfo;
 
         private readonly IRegionManager regionManager;
@@ -41,13 +44,17 @@ namespace PatientInfoModule.ViewModels
 
         private readonly Func<PatientInfoViewModel> relativeInfoFactory;
 
+        private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
+
         public InfoContentViewModel(IPatientService patientService,
                                     IEventAggregator eventAggregator,
                                     ILog log,
+                                    IDialogServiceAsync dialogService,
                                     PatientInfoViewModel patientInfo,
                                     IRegionManager regionManager,
                                     IViewNameResolver viewNameResolver,
-                                    Func<PatientInfoViewModel> relativeInfoFactory)
+                                    Func<PatientInfoViewModel> relativeInfoFactory,
+                                    Func<PersonSearchDialogViewModel> relativeSearchFactory )
         {
             if (patientService == null)
             {
@@ -61,6 +68,10 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("log");
             }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }
             if (patientInfo == null)
             {
                 throw new ArgumentNullException("patientInfo");
@@ -68,6 +79,10 @@ namespace PatientInfoModule.ViewModels
             if (relativeInfoFactory == null)
             {
                 throw new ArgumentNullException("relativeInfoFactory");
+            }
+            if (relativeSearchFactory == null)
+            {
+                throw new ArgumentNullException("relativeSearchFactory");
             }
             if (regionManager == null)
             {
@@ -80,10 +95,12 @@ namespace PatientInfoModule.ViewModels
             this.patientService = patientService;
             this.eventAggregator = eventAggregator;
             this.log = log;
+            this.dialogService = dialogService;
             this.patientInfo = patientInfo;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.relativeInfoFactory = relativeInfoFactory;
+            this.relativeSearchFactory = relativeSearchFactory;
             currentPatientId = SpecialValues.NonExistingId;
             Relatives = new ObservableCollectionEx<PatientInfoViewModel>();
             Relatives.BeforeCollectionChanged += RelativesOnBeforeCollectionChanged;
@@ -94,7 +111,8 @@ namespace PatientInfoModule.ViewModels
             createNewPatientCommand = new DelegateCommand(CreateNewPatient);
             saveChangesCommand = new DelegateCommand(async () => await SaveChangesAsync(), CanSaveChanges);
             cancelChangesCommand = new DelegateCommand(CancelChanges, CanCancelChanges);
-            addRelativeCommand = new DelegateCommand(AddRelative, CanAddRelative);
+            addRelativeCommand = new DelegateCommand(AddRelativeAsync, CanAddRelative);
+            searchRelativeCommand = new DelegateCommand(SearchRelativeAsync, CanAddRelative);
             goBackToPatientCommand = new DelegateCommand(GoBackToPatient, CanGoBackToPatient);
             saveChangesCommandWrapper = new CommandWrapper { Command = SaveChangesCommand };
             loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientAndRelativesAsync(patientIdBeingLoaded)) };
@@ -128,6 +146,7 @@ namespace PatientInfoModule.ViewModels
             saveChangesCommand.RaiseCanExecuteChanged();
             cancelChangesCommand.RaiseCanExecuteChanged();
             addRelativeCommand.RaiseCanExecuteChanged();
+            searchRelativeCommand.RaiseCanExecuteChanged();
         }
 
         #region Actions
@@ -139,6 +158,8 @@ namespace PatientInfoModule.ViewModels
         private readonly DelegateCommand cancelChangesCommand;
 
         private readonly DelegateCommand addRelativeCommand;
+
+        private readonly DelegateCommand searchRelativeCommand;
 
         private readonly CommandWrapper saveChangesCommandWrapper;
 
@@ -252,7 +273,7 @@ namespace PatientInfoModule.ViewModels
             get { return addRelativeCommand; }
         }
 
-        private async void AddRelative()
+        private async void AddRelativeAsync()
         {
             var newRelative = relativeInfoFactory();
             newRelative.IsRelative = true;
@@ -269,6 +290,46 @@ namespace PatientInfoModule.ViewModels
         private bool CanAddRelative()
         {
             return currentPatientId != SpecialValues.NonExistingId;
+        }
+
+        public ICommand SearchRelativeCommand
+        {
+            get { return searchRelativeCommand; }
+        }
+
+        private async void SearchRelativeAsync()
+        {
+            using (var searchViewModel = relativeSearchFactory())
+            {
+                var result = await dialogService.ShowDialogAsync(searchViewModel);
+                if (result != true)
+                {
+                    return;
+                }
+                var foundRelativeId = searchViewModel.PersonSearchViewModel.SelectedPersonId;
+                if (patientInfo.CurrentPerson != null && patientInfo.CurrentPerson.Id == foundRelativeId)
+                {
+                    SelectedPatientOrRelative.NotificationMediator.Activate("Пациент не может быть родственником самому себе", NotificationMediator.DefaultHideTime);
+                    return;
+                }
+                if (Relatives.Any(x => x.CurrentPerson != null && x.CurrentPerson.Id == foundRelativeId))
+                {
+                    SelectedPatientOrRelative.NotificationMediator.Activate("У пациента уже есть этот родственник", NotificationMediator.DefaultHideTime);
+                    return;
+                }
+                var newRelative = relativeInfoFactory();
+                newRelative.IsRelative = true;
+                newRelative.PersonRelative = new PersonRelative
+                {
+                    IsRepresentative = !Relatives.Any(x => x.IsRepresentative),
+                    PersonId = patientInfo.CurrentPerson.Id,
+                    RelativeId = foundRelativeId
+                };
+                Relatives.Add(newRelative);
+                SelectedPatientOrRelative = newRelative;
+                await newRelative.LoadPatientInfoAsync(foundRelativeId);
+
+            }
         }
 
         private readonly DelegateCommand goBackToPatientCommand;

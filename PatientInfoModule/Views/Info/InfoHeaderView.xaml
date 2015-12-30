@@ -46,7 +46,11 @@
         <fluent:Button Size="Large"
                        Header="Добавить родственника"
                        Command="{Binding ContentViewModel.AddRelativeCommand, Mode=OneTime}"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Relatives48x48.png" />
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesAdd48x48.png" />
+        <fluent:Button Size="Large"
+                       Header="Найти родственника"
+                       Command="{Binding ContentViewModel.SearchRelativeCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png" />
         <fluent:InRibbonGallery MaxItemsInRow="3"
                                 ItemWidth="80"
                                 ItemsSource="{Binding ContentViewModel.Relatives}"

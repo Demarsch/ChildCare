@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:Shared.Patient.ViewModels"
+                    xmlns:views="clr-namespace:Shared.Patient.Views"
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                    xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms">
+    <DataTemplate DataType="{x:Type viewModels:PersonSearchDialogViewModel}">
+        <DataTemplate.Resources>
+            <converters:ProportionConverter x:Key="MinWidthProportionConverter"
+                                            MultiplyBy="0.45" />
+            <converters:ProportionConverter x:Key="HeightProportionConverter"
+                                            MultiplyBy="0.4" />
+        </DataTemplate.Resources>
+        <views:PatientSearchControl DataContext="{Binding PersonSearchViewModel}"
+                                    MinWidth="{Binding WorkingArea.Width,  Source={x:Static forms:Screen.PrimaryScreen}, Converter={StaticResource MinWidthProportionConverter}, Mode=OneTime}" 
+                                    Height="{Binding WorkingArea.Height,  Source={x:Static forms:Screen.PrimaryScreen}, Converter={StaticResource HeightProportionConverter}, Mode=OneTime}"/>
+    </DataTemplate>
+</ResourceDictionary>

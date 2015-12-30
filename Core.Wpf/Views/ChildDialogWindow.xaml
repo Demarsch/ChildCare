@@ -6,12 +6,21 @@
                   xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                   xmlns:misc="clr-namespace:Core.Wpf.Misc"
                   xmlns:mvvm="clr-namespace:Core.Wpf.Mvvm"
+                  xmlns:converters="clr-namespace:Core.Wpf.Converters"
                   mc:Ignorable="d"
                   d:DesignHeight="300"
                   d:DesignWidth="300"
                   d:DataContext="{d:DesignInstance mvvm:IDialogViewModel}"
                   IsModal="True"
                   x:Name="window">
+    <xctk:ChildWindow.Resources>
+        <converters:Converter x:Key="TextToVisibilityConverter" DefaultValue="{x:Static Visibility.Visible}">
+            <converters:ConverterItem From=""
+                                      To="{x:Static Visibility.Collapsed}" />
+            <converters:ConverterItem From="{x:Null}"
+                                      To="{x:Static Visibility.Collapsed}" />
+        </converters:Converter>
+    </xctk:ChildWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -34,7 +43,8 @@
                 Content="{Binding ConfirmButtonText}"
                 Command="{Binding CloseCommand}"
                 IsDefault="True"
-                CommandParameter="{x:Static misc:StaticBoolean.True}" />
+                CommandParameter="{x:Static misc:StaticBoolean.True}"
+                Visibility="{Binding ConfirmButtonText, Converter={StaticResource TextToVisibilityConverter}}"/>
         <Button Grid.Row="1"
                 Grid.Column="2"
                 Margin="5"
@@ -43,6 +53,7 @@
                 Content="{Binding CancelButtonText}"
                 Command="{Binding CloseCommand}"
                 IsCancel="True"
-                CommandParameter="{x:Static misc:StaticBoolean.False}" />
+                CommandParameter="{x:Static misc:StaticBoolean.False}"
+                Visibility="{Binding CancelButtonText, Converter={StaticResource TextToVisibilityConverter}}"/>
     </Grid>
 </xctk:ChildWindow>

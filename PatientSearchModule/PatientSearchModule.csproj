@@ -107,21 +107,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converters\PatientGenderToImageSourceConverter.cs" />
-    <Compile Include="Misc\PatientSearchQuery.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonBirthDateSearchExpressionProvider.cs" />
-    <Compile Include="Model\User Input Processing\Input Normalization\IUserInputNormalizer.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonIdentityDocumentNumberSearchExpressionProvider.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonMedNumberSearchExpressionProvider.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonNamesSearchExpressionProvider.cs" />
-    <Compile Include="Model\User Input Processing\Input Normalization\UserInputNormalizer.cs" />
-    <Compile Include="Model\User Input Processing\Search Expression Providers\PersonSnilsSearchExpressionProvider.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Interfaces\IPatientSearchService.cs" />
-    <Compile Include="Services\Implementations\PatientSearchService.cs" />
-    <Compile Include="ViewModels\PatientSearchViewModel.cs" />
-    <Compile Include="ViewModels\FoundPatientViewModel.cs" />
+    <Compile Include="ViewModels\PatientSearchContentViewModel.cs" />
     <Compile Include="Views\PatientSearchView.xaml.cs">
       <DependentUpon>PatientSearchView.xaml</DependentUpon>
     </Compile>
@@ -131,14 +119,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\FoundPatientView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\PatientSearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -156,6 +136,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.Patient\Shared.Patient.csproj">
+      <Project>{5D4698BD-6256-4BC5-A566-BE7CD9A840BB}</Project>
+      <Name>Shared.Patient</Name>
     </ProjectReference>
     <ProjectReference Include="..\Shell.Shared\Shell.Shared.csproj">
       <Project>{4E0D997F-374E-43BE-9617-8DA82504B7C8}</Project>

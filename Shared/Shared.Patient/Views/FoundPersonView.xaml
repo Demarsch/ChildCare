@@ -1,0 +1,115 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:coreConverters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                    xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
+                    xmlns:coreMisc="clr-namespace:Core.Misc;assembly=Core"
+                    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
+                    xmlns:viewModels="clr-namespace:Shared.Patient.ViewModels"
+                    xmlns:converters="clr-namespace:Shared.Patient.Converters">
+    <DataTemplate DataType="{x:Type viewModels:FoundPersonViewModel}">
+        <DataTemplate.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+                <coreConverters:Converter x:Key="GenderToTextConverter">
+                    <coreConverters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                          To="родился" />
+                    <coreConverters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                          To="родилась" />
+                </coreConverters:Converter>
+                <SolidColorBrush x:Key="ExplanationTextColor" Color="Gray" />
+                <converters:PatientGenderToImageSourceConverter x:Key="genderToImageSourceConverter" />
+            </ResourceDictionary>
+        </DataTemplate.Resources>
+        <Button BorderBrush="DimGray"
+                Background="White"
+                BorderThickness="2"
+                Margin="0 2 0 2"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Left"
+                Command="{Binding DataContext.SelectPersonCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                CommandParameter="{Binding Id}">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.RowSpan="2"
+                        BorderBrush="Black"
+                        BorderThickness="1"
+                        Margin="5">
+                    <Image Width="72"
+                           Height="72"
+                           Stretch="Fill">
+                        <Image.Source>
+                            <MultiBinding Converter="{StaticResource genderToImageSourceConverter}">
+                                <Binding Path="Photo" />
+                                <Binding Path="IsMale" />
+                            </MultiBinding>
+                        </Image.Source>
+                    </Image>
+                </Border>
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="5">
+                    <TextBlock Text="{Binding FullName, Mode=OneWay}"
+                               FontSize="16"
+                               VerticalAlignment="Center">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
+                    <TextBlock Text="{Binding IsMale, Converter={StaticResource GenderToTextConverter}}"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock Text="{Binding BirthDate, StringFormat={x:Static coreMisc:DateTimeFormats.ShortDateFormat}}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Row="1"
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="5">
+                    <TextBlock Text="СНИЛС"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock Text="{Binding Snils}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
+                    <TextBlock Text="ЕМН"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock Text="{Binding MedNumber}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
+                    <TextBlock Text="{Binding IdentityDocument.IdentityDocumentType.Name}"
+                               Foreground="{StaticResource ExplanationTextColor}" />
+                    <TextBlock Text="{Binding IdentityDocument.SeriesAndNumber}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:TextHighlightBehavior HighlightStyle="{StaticResource TextHighlightStyle}"
+                                                             WordsToHighlight="{Binding WordsToHighlight}"/>
+                        </i:Interaction.Behaviors>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Button>
+    </DataTemplate>
+</ResourceDictionary>

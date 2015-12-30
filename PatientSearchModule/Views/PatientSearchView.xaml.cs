@@ -10,7 +10,7 @@ namespace PatientSearchModule.Views
     public partial class PatientSearchView
     {
         [Dependency]
-        public PatientSearchViewModel ViewModel
+        public PatientSearchContentViewModel ContentViewModel
         {
             set { DataContext = value; }
         }

@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
-using Core.Data;
-using Core.Expressions;
 using log4net;
 using Microsoft.Practices.Unity;
-using PatientSearchModule.Model;
-using PatientSearchModule.Services;
 using PatientSearchModule.Views;
 using Prism.Modularity;
 using Prism.Regions;
+using Shared.Patient.Misc;
 using Shell.Shared;
 
 namespace PatientSearchModule
@@ -18,6 +14,8 @@ namespace PatientSearchModule
     public class Module : IModule
     {
         private readonly IUnityContainer container;
+
+        private readonly IUnityContainer globalContainer;
 
         private readonly IRegionManager regionManager;
 
@@ -32,6 +30,7 @@ namespace PatientSearchModule
                 throw new ArgumentNullException("regionManager");
             }
             this.regionManager = regionManager;
+            globalContainer = container;
             this.container = container.CreateChildContainer();
         }
 
@@ -47,16 +46,7 @@ namespace PatientSearchModule
 
         private void RegisterServices()
         {
-            
-            container.RegisterType<IUserInputNormalizer, UserInputNormalizer>(new ContainerControlledLifetimeManager());
-            container.RegisterType<ISearchExpressionProvider<Person>, PersonBirthDateSearchExpressionProvider>("PersonBirthDate", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISearchExpressionProvider<Person>, PersonIdentityDocumentNumberSearchExpressionProvider>("PersonIdentityNumber", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISearchExpressionProvider<Person>, PersonMedNumberSearchExpressionProvider>("PersonMedNumber", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISearchExpressionProvider<Person>, PersonNamesSearchExpressionProvider>("PersonNames", new ContainerControlledLifetimeManager());
-            container.RegisterType<ISearchExpressionProvider<Person>, PersonSnilsSearchExpressionProvider>("PersonSnils", new ContainerControlledLifetimeManager());
-            container.RegisterType<IEnumerable<ISearchExpressionProvider<Person>>, ISearchExpressionProvider<Person>[]>();
-            container.RegisterType<ISearchExpressionProvider<Person>, CompositeSearchExpressionProvider<Person>>();
-            container.RegisterType<IPatientSearchService, PatientSearchService>(new ContainerControlledLifetimeManager());
+            PersonServicesInitializer.Initialize(globalContainer);
         }
 
         private void RegisterLoger()
@@ -67,7 +57,6 @@ namespace PatientSearchModule
         private void RegisterViews()
         {
             regionManager.RegisterViewWithRegion(RegionNames.MainMenu, () => container.Resolve<PatientSearchView>());
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientSearchModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
     }
 }
