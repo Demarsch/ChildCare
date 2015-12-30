@@ -57,6 +57,7 @@
             </shell:RibbonEx>
             <Grid>
                 <ContentControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
+                                x:Name="moduleContent"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" />
                 <ContentControl Content="{Binding BusyMediator}"

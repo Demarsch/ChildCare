@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using Core.Wpf.Views;
 using Fluent;
 using Microsoft.Practices.Unity;
@@ -18,8 +20,8 @@ namespace Shell
     /// </summary>
     public partial class ShellWindow
     {
-        private readonly Dictionary<string, bool> ribbonTabVisibility = new Dictionary<string, bool>(); 
-        
+        private readonly Dictionary<string, bool> ribbonTabVisibility = new Dictionary<string, bool>();
+
         public ShellWindow()
         {
             InitializeComponent();
@@ -55,15 +57,37 @@ namespace Shell
 
         private void RibbonTabsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.NewItems == null)
+            var propertyDescriptor = DependencyPropertyDescriptor.FromProperty(VisibilityProperty, typeof(RibbonTabItem));
+            if (e.OldItems != null)
             {
-                return;
+                foreach (var oldTab in e.OldItems.Cast<RibbonTabItem>())
+                {
+                    propertyDescriptor.RemoveValueChanged(oldTab, OnRibbonTabItemVisibilityChanged);
+                }
             }
-            foreach (var newTab in e.NewItems.Cast<RibbonTabItem>())
+            if (e.NewItems != null)
             {
-                bool value;
-                var isVisible = !ribbonTabVisibility.TryGetValue(GetSettingName(newTab), out value) || value;
-                newTab.Visibility = isVisible == false ? Visibility.Collapsed : Visibility.Visible;
+                foreach (var newTab in e.NewItems.Cast<RibbonTabItem>())
+                {
+                    bool value;
+                    var isVisible = !ribbonTabVisibility.TryGetValue(GetSettingName(newTab), out value) || value;
+                    newTab.Visibility = isVisible == false ? Visibility.Collapsed : Visibility.Visible;
+                    propertyDescriptor.AddValueChanged(newTab, OnRibbonTabItemVisibilityChanged);
+                }
+            }
+        }
+
+        private void OnRibbonTabItemVisibilityChanged(object sender, EventArgs eventArgs)
+        {
+            var visibleTabs = ribbon.Tabs.Where(x => x.Visibility == Visibility.Visible).ToArray();
+            if (visibleTabs.Length == 0)
+            {
+                ribbon.SelectedTabItem = null;
+                ShellWindowViewModel.HideCentralRegionContent();
+            }
+            else if (visibleTabs.Length == 1)
+            {
+                visibleTabs[0].IsSelected = true;
             }
         }
 
@@ -84,7 +108,7 @@ namespace Shell
             try
             {
                 var isolatedStorage = IsolatedStorageFile.GetUserStoreForAssembly();
-                using (var writer = new StreamWriter(new IsolatedStorageFileStream(typeof (ShellWindow).FullName, FileMode.Create, isolatedStorage)))
+                using (var writer = new StreamWriter(new IsolatedStorageFileStream(typeof(ShellWindow).FullName, FileMode.Create, isolatedStorage)))
                 {
                     foreach (var item in ribbonTabVisibility)
                     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Data.Misc;
@@ -11,12 +12,16 @@ using Core.Wpf.Mvvm;
 using log4net;
 using Prism.Events;
 using Prism.Mvvm;
+using Prism.Regions;
+using Shell.Shared;
 
 namespace Shell
 {
     public class ShellWindowViewModel : BindableBase, IDisposable
     {
         private readonly IDbContextProvider contextProvider;
+
+        private readonly IRegionManager regionManager;
 
         private readonly INotificationService notificationService;
 
@@ -28,7 +33,12 @@ namespace Shell
 
         private readonly IList<IDisposable> disposables;
 
-        public ShellWindowViewModel(IDbContextProvider contextProvider, INotificationService notificationService, IEventAggregator eventAggregator, IEnvironment environment, ILog log)
+        public ShellWindowViewModel(IDbContextProvider contextProvider,
+                                    IRegionManager regionManager,
+                                    INotificationService notificationService,
+                                    IEventAggregator eventAggregator,
+                                    IEnvironment environment,
+                                    ILog log)
         {
             if (contextProvider == null)
             {
@@ -50,7 +60,12 @@ namespace Shell
             {
                 throw new ArgumentNullException("notificationService");
             }
+            if (regionManager == null)
+            {
+                throw new ArgumentNullException("regionManager");
+            }
             this.contextProvider = contextProvider;
+            this.regionManager = regionManager;
             this.notificationService = notificationService;
             this.eventAggregator = eventAggregator;
             this.environment = environment;
@@ -61,11 +76,23 @@ namespace Shell
             SubscribeToEvents();
         }
 
+        public void HideCentralRegionContent()
+        {
+            var activeModuleContent = regionManager.Regions[RegionNames.ModuleContent].ActiveViews.FirstOrDefault();
+            if (activeModuleContent != null)
+            {
+                regionManager.Regions[RegionNames.ModuleContent].Deactivate(activeModuleContent);
+            }
+        }
+
         public BusyMediator BusyMediator { get; private set; }
 
         public FailureMediator FailureMediator { get; private set; }
 
-        public bool CanOpenMenu { get { return !FailureMediator.IsActive && !BusyMediator.IsActive; } }
+        public bool CanOpenMenu
+        {
+            get { return !FailureMediator.IsActive && !BusyMediator.IsActive; }
+        }
 
         private bool isMenuOpen;
 
