@@ -15,7 +15,7 @@
         <ResourceDictionary Source="../Views/Analyses/AnalyseProtocolView.xaml" />
         <ResourceDictionary Source="../Views/Analyses/AnalyseRefferencesView.xaml" />
 
-
+        
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate DataType="{x:Type viewModels:PersonRecordEditorViewModel}">

@@ -90,21 +90,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="TwainDotNet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d3cd6e1539fa8c71, processorArchitecture=x86">
-      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="TwainDotNet.WinFroms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d3cd6e1539fa8c71, processorArchitecture=x86">
-      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.WinFroms.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="TwainDotNet.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d3cd6e1539fa8c71, processorArchitecture=x86">
-      <HintPath>..\packages\TwainDotNet.1.0.0\lib\TwainDotNet.Wpf.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WpfControls">
       <HintPath>..\StuffLib\dlls\WpfControls.dll</HintPath>
@@ -171,9 +156,6 @@
     <Compile Include="ViewModels\Documents\ThumbnailViewModel.cs" />
     <Compile Include="ViewModels\Info\InsuranceDocumentCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\InsuranceDocumentViewModel.cs" />
-    <Compile Include="Views\Contracts\AddContractRecordsView.xaml.cs">
-      <DependentUpon>AddContractRecordsView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Contracts\ContractsHeaderView.xaml.cs">
       <DependentUpon>ContractsHeaderView.xaml</DependentUpon>
     </Compile>
@@ -230,9 +212,6 @@
     </Compile>
     <Compile Include="Views\Documents\ScanDocumentsView.xaml.cs">
       <DependentUpon>ScanDocumentsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Documents\SelectPersonDocumentTypeView.xaml.cs">
-      <DependentUpon>SelectPersonDocumentTypeView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -533,12 +533,12 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (SpecialValues.IsNewOrNonExisting(this.PersonId))
             {
-                messageService.ShowError("Не выбран пациент");
+                messageService.ShowWarning("Не выбран пациент");
                 return;
             }
             if (!patientRecordsService.GetRooms(DateTime.Now).Any(x => x.Options.Contains(OptionValues.LaboratoryRoom)))
             {
-                messageService.ShowError("В МИС не найдена информация о кабинете для проведения лабораторных исследований");
+                messageService.ShowWarning("В МИС не найдена информация о кабинете для проведения лабораторных исследований");
                 return;
             }
             var values = (object[])parameter;

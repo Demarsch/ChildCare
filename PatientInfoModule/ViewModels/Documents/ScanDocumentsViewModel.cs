@@ -22,13 +22,13 @@ namespace PatientInfoModule.ViewModels
     {
         private ILog log;
         private IDocumentService documentService;
-        private IFileService fileService; 
+        private IFileService fileService;
+        private IDialogService messageService; 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; private set; }
         private readonly CommandWrapper saveChangesCommandWrapper;
-        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
 
-        public ScanDocumentsViewModel(IDocumentService documentService, IFileService fileService, ILog log)
+        public ScanDocumentsViewModel(IDocumentService documentService, IFileService fileService, ILog log, IDialogService messageService)
         {
             if (documentService == null)
             {
@@ -42,19 +42,22 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("log");
             }
+            if (messageService == null)
+            {
+                throw new ArgumentNullException("messageService");
+            }
             this.documentService = documentService;
+            this.messageService = messageService;
             this.fileService = fileService;
             this.log = log;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            NotificationInteractionRequest = new InteractionRequest<Notification>();
 
             saveCommand = new DelegateCommand(Save);
             PreviewImages = new ObservableCollectionEx<ThumbnailViewModel>();
             DocumentTypes = new ObservableCollectionEx<OuterDocumentType>(documentService.GetOuterDocumentTypes(null));
             saveChangesCommandWrapper = new CommandWrapper { Command = saveCommand };
         }
-
        
         private readonly DelegateCommand saveCommand;
         public ICommand SaveCommand { get { return saveCommand; } }
@@ -105,32 +108,17 @@ namespace PatientInfoModule.ViewModels
         {
             if (!PreviewImages.Any() || PreviewImages.All(x => !x.ThumbnailChecked))
             {
-                /*NotificationInteractionRequest.Raise(new Notification()
-                {
-                    Title = "Внимание",
-                    Content = "Отсутствуют отсканированные документы или вы их не отметили."
-                });*/
-                MessageBox.Show("Отсутствуют отсканированные документы или вы их не отметили.");
+                messageService.ShowWarning("Отсутствуют отсканированные документы или вы их не отметили.");
                 return false;
             }
             if (PreviewImages.Any(x => x.DocumentTypeId < 1))
             {
-                /*NotificationInteractionRequest.Raise(new Notification()
-                {
-                    Title = "Внимание",
-                    Content = "Один или несколько документов не имеют описания."
-                });*/
-                MessageBox.Show("Один или несколько документов не имеют описания.");
+                messageService.ShowWarning("Один или несколько документов не имеют описания.");
                 return false;
             }
             if (PreviewImages.Any(x => x.NeedDate && !x.DocumentDate.HasValue))
             {
-                /*NotificationInteractionRequest.Raise(new Notification()
-                {
-                    Title = "Внимание",
-                    Content = "Один или несколько документов не имеют необходимой даты."
-                });*/
-                MessageBox.Show("Один или несколько документов не имеют необходимой даты.");
+                messageService.ShowWarning("Один или несколько документов не имеют необходимой даты.");
                 return false;
             }
             return true;

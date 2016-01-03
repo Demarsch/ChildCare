@@ -10,17 +10,18 @@ using Prism.Commands;
 using System.Windows.Input;
 using Core.Data;
 using System.Collections.Generic;
+using System.Windows.Navigation;
+using Core.Wpf.Services;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class SelectPersonDocumentTypeViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo
+    public class SelectPersonDocumentTypeViewModel : BindableBase, IDataErrorInfo, IDialogViewModel
     {
         private IDocumentService documentService;
         private ILog log;
-        public BusyMediator BusyMediator { get; set; }
-        public FailureMediator FailureMediator { get; private set; }
+        private IDialogService messageService;
 
-        public SelectPersonDocumentTypeViewModel(IDocumentService documentService, ILog log)
+        public SelectPersonDocumentTypeViewModel(IDocumentService documentService, IDialogService messageService, ILog log)
         {
             if (log == null)
             {
@@ -30,32 +31,21 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("documentService");
             }
+            if (messageService == null)
+            {
+                throw new ArgumentNullException("messageService");
+            }
             this.documentService = documentService;
+            this.messageService = messageService;
             this.log = log;
 
-            BusyMediator = new BusyMediator();
-            FailureMediator = new FailureMediator();
-            SelectCommand = new DelegateCommand(Select);
+            CloseCommand = new DelegateCommand<bool?>(Close);
+        }
 
+        public void Initialize()
+        {
             DocumentTypes = new ObservableCollectionEx<OuterDocumentType>(documentService.GetOuterDocumentTypes(null));
-        }
-
-        public void IntializeCreation(string title)
-        {
-            this.Title = title;
-        }
-      
-        public ICommand SelectCommand { get; private set; }
-        private void Select()
-        {
-            FailureMediator.Deactivate();
-            if (!IsValid)
-            {
-                FailureMediator.Activate("Проверьте правильность заполнения полей.", null, null, true);
-                return;
-            }
-            HostWindow.Close();
-        }
+        }        
 
         private ObservableCollectionEx<OuterDocumentType> documentTypes;
         public ObservableCollectionEx<OuterDocumentType> DocumentTypes
@@ -98,19 +88,7 @@ namespace PatientInfoModule.ViewModels
         {
             get { return description; }
             set { SetProperty(ref description, value); }
-        }
-
-        #region IPopupWindowActionAware implementation
-        public System.Windows.Window HostWindow { get; set; }
-
-        public INotification HostNotification { get; set; }
-        #endregion
-
-        #region INotification implementation
-        public object Content { get; set; }
-
-        public string Title { get; set; }
-        #endregion
+        }           
 
         #region IDataErrorInfo implementation
         private bool saveWasRequested;
@@ -161,6 +139,53 @@ namespace PatientInfoModule.ViewModels
         string IDataErrorInfo.Error
         {
             get { throw new NotImplementedException(); }
+        }
+        #endregion
+
+        #region IDialogViewModel
+
+        public string Title
+        {
+            get { return "Тип документа"; }
+        }
+
+        public string ConfirmButtonText
+        {
+            get { return "Выбрать"; }
+        }
+
+        public string CancelButtonText
+        {
+            get { return "Отмена"; }
+        }
+
+        public DelegateCommand<bool?> CloseCommand { get; private set; }
+        public bool TypeWasSelected = false;
+
+        private void Close(bool? validate)
+        {
+            saveWasRequested = true;
+            if (validate == true)
+            {
+                if (IsValid)
+                {
+                    TypeWasSelected = true;
+                    OnCloseRequested(new ReturnEventArgs<bool>(true));
+                }
+            }
+            else
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+        }
+
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
+
+        protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
         #endregion
     }

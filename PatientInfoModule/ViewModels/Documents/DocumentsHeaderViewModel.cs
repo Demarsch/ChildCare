@@ -74,12 +74,7 @@ namespace PatientInfoModule.ViewModels
         {
             this.patientId = patientId;
             ActivatePersonDocuments();
-        }
-
-        private void LoadSelectedPatientData()
-        {
-            //TODO:
-        }
+        }        
 
         private void UnsubscriveFromEvents()
         {

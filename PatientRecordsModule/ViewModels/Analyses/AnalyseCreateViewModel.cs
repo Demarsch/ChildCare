@@ -518,13 +518,7 @@ namespace Shared.PatientRecords.ViewModels
             if (validate == true)
             {
                 if (IsValid)
-                {
                     CreateAnalyseAssignment();
-                }
-                else
-                {
-                    messageService.ShowWarning("Проверьте правильность заполнения полей.");
-                }
             }
             else
             {

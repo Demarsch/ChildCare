@@ -30,8 +30,8 @@ namespace OrganizationContractsModule.ViewModels
     {
         private readonly IContractService contractService;
         private readonly ILog log;
-        private readonly ICacheService cacheService;     
-        private readonly IEventAggregator eventAggregator;
+        private readonly IDialogServiceAsync dialogService;   
+        private readonly IDialogService messageService;   
         private readonly Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
         private readonly CommandWrapper reloadDataSourcesCommandWrapper;
@@ -39,34 +39,34 @@ namespace OrganizationContractsModule.ViewModels
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; private set; }
         private CancellationTokenSource currentLoadingToken;
-        public InteractionRequest<Confirmation> ConfirmationInteractionRequest { get; private set; }
-        public InteractionRequest<Notification> NotificationInteractionRequest { get; private set; }
-        public InteractionRequest<AddContractOrganizationViewModel> AddContractOrgInteractionRequest { get; private set; }
-               
-        public OrgContractsViewModel(IContractService contractService, ILog log, ICacheService cacheService,
-            IEventAggregator eventAggregator, Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
-        {            
+
+        public OrgContractsViewModel(IContractService contractService, ILog log, IDialogServiceAsync dialogService, IDialogService messageService,
+                                     Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
+        {    
+            if (contractService == null)
+            {
+                throw new ArgumentNullException("contractService");
+            }
             if (log == null)
             {
                 throw new ArgumentNullException("log");
-            }            
-            if (cacheService == null)
-            {
-                throw new ArgumentNullException("cacheService");
-            }           
-           
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException("eventAggregator");
             }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }   
+            if (messageService == null)
+            {
+                throw new ArgumentNullException("messageService");
+            } 
             if (addContractOrganizationViewModelFactory == null)
             {
                 throw new ArgumentNullException("addContractOrganizationViewModelFactory");
             }
             this.contractService = contractService;            
             this.log = log;
-            this.cacheService = cacheService;
-            this.eventAggregator = eventAggregator;
+            this.dialogService = dialogService;
+            this.messageService = messageService;
             this.addContractOrganizationViewModelFactory = addContractOrganizationViewModelFactory;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
@@ -74,11 +74,7 @@ namespace OrganizationContractsModule.ViewModels
             changeTracker.PropertyChanged += OnChangesTracked;
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadContractsAsync), CommandName = "Повторить" };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources), CommandName = "Повторить" };
-
-            ConfirmationInteractionRequest = new InteractionRequest<Confirmation>();
-            NotificationInteractionRequest = new InteractionRequest<Notification>();
-            AddContractOrgInteractionRequest = new InteractionRequest<AddContractOrganizationViewModel>();
-
+            
             addContractCommand = new DelegateCommand(AddContract);
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
             removeContractCommand = new DelegateCommand(RemoveContract, CanRemoveContract);
@@ -308,7 +304,7 @@ namespace OrganizationContractsModule.ViewModels
             List<FieldValue> orgs = new List<FieldValue>();
             var orgsSource = await contractService.GetOrganizations().ToArrayAsync();
             orgs.Add(new FieldValue() { Value = -1, Field = "- выберите организацию -" });            
-            orgs.AddRange(orgsSource.Where(x => x.UseInContract).Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
+            orgs.AddRange(orgsSource.Where(x => x.UseInContract).OrderBy(x => x.Name).Select(x => new FieldValue() { Value = x.Id, Field = x.Name }));
             Organizations = new ObservableCollectionEx<FieldValue>(orgs);
             SelectedOrganizationId = SpecialValues.NonExistingId;
 
@@ -532,32 +528,16 @@ namespace OrganizationContractsModule.ViewModels
         {
             if (selectedContract == null)
             {
-                NotificationInteractionRequest.Raise(new Notification()
-                         {
-                             Title = "Внимание",
-                             Content = "Не выбран договор."
-                         });
+                messageService.ShowWarning("Не выбран договор.");
                 return;
             }
-            ConfirmationInteractionRequest.Raise(new Confirmation()
-            {
-                Title = "Внимание",
-                Content = "Вы уверены, что хотите удалить договор?"
-            }, OnDialogClosed);
-        }
-
-        private void OnDialogClosed(Confirmation confirmation)
-        {
-            if (confirmation.Confirmed)
+            if (messageService.AskUser("Вы уверены, что хотите удалить договор?") == true)
             {
                 var visit = contractService.GetVisitsByContractId(selectedContract.Id).FirstOrDefault();
                 if (visit != null)
                 {
-                    NotificationInteractionRequest.Raise(new Notification()
-                    {
-                        Title = "Внимание",
-                        Content = "Данный договор уже закреплен за случаем обращения пациента \"" + visit.VisitTemplate.ShortName + "\". Удаление договора невозможно."
-                    }, (notification) => { return; });
+                    messageService.ShowInformation("Данный договор уже закреплен за случаем обращения пациента \"" + visit.VisitTemplate.ShortName + "\". Удаление договора невозможно.");
+                    return;
                 }
                 if (selectedContract.Id != SpecialValues.NewId)
                     contractService.DeleteContract(selectedContract.Id);
@@ -565,22 +545,19 @@ namespace OrganizationContractsModule.ViewModels
                 saveContractCommand.RaiseCanExecuteChanged();
                 removeContractCommand.RaiseCanExecuteChanged();
             }
-        }
+        }     
 
-        private void AddOrganization()
+        private async void AddOrganization()
         {
             var addContractOrganizationViewModel = addContractOrganizationViewModelFactory();
-            addContractOrganizationViewModel.IntializeCreation("Добавить организацию");
-            AddContractOrgInteractionRequest.Raise(addContractOrganizationViewModel, OnAddOrgDialogClosed);
-        }
-
-        private void OnAddOrgDialogClosed(AddContractOrganizationViewModel viewModel)
-        {
-            if (!viewModel.SaveSuccesfull) return;
-            Organizations.Add(new FieldValue() { Value = viewModel.orgId, Field = contractService.GetOrganizationById(viewModel.orgId).First().Name });
-            if (SelectedContract.Id == SpecialValues.NewId)
-                SelectedOrganizationId = viewModel.orgId;
-        }
+            var result = await dialogService.ShowDialogAsync(addContractOrganizationViewModel);
+            if (addContractOrganizationViewModel.SaveSuccesfull)
+            {
+                Organizations.Add(new FieldValue() { Value = addContractOrganizationViewModel.orgId, Field = contractService.GetOrganizationById(addContractOrganizationViewModel.orgId).First().Name });
+                if (SelectedContract.Id == SpecialValues.NewId)
+                    SelectedOrganizationId = addContractOrganizationViewModel.orgId;
+            }
+        }              
 
         private readonly DelegateCommand addContractCommand;
         private readonly DelegateCommand saveContractCommand;

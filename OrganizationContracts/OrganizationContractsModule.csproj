@@ -121,9 +121,6 @@
     <Compile Include="ViewModels\ContractViewModel.cs" />
     <Compile Include="ViewModels\OrgContractsHeaderViewModel.cs" />
     <Compile Include="ViewModels\OrgContractsViewModel.cs" />
-    <Compile Include="Views\AddContractOrganizationView.xaml.cs">
-      <DependentUpon>AddContractOrganizationView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\OrgContractsView.xaml.cs">
       <DependentUpon>OrgContractsView.xaml</DependentUpon>
     </Compile>
@@ -163,6 +160,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\AddContractOrganizationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

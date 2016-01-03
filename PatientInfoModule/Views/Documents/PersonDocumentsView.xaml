@@ -11,36 +11,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance viewModels:PersonDocumentsViewModel}">
-    <UserControl.Resources>
-        <DataTemplate x:Key="NotificationWindowTemplate">
-            <Grid MinWidth="200" MinHeight="100">
-                <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
-            </Grid>
-        </DataTemplate>
+    <UserControl.Resources>       
         <CollectionViewSource x:Key="DocumentsGroup" Source="{Binding Path=AllDocuments}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="DocumentTypeParentName" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
-    </UserControl.Resources>
-
-    <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
-                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>
-        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
-                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>
-        <prism:InteractionRequestTrigger SourceObject="{Binding SelectPersonDocumentTypeInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True">
-                <popup:PopupWindowAction.WindowContent>
-                    <views:SelectPersonDocumentTypeView/>
-                </popup:PopupWindowAction.WindowContent>
-            </popup:PopupWindowAction>
-        </prism:InteractionRequestTrigger>
-    </i:Interaction.Triggers>
+    </UserControl.Resources> 
 
     <Grid>
         <ListView AlternationCount="2" Padding="0,0,0,10" BorderThickness="0"

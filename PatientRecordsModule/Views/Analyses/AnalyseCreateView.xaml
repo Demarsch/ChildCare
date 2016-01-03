@@ -11,7 +11,7 @@
         <DataTemplate.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/Shared.PatientRecords;Component/Themes/Generic.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </DataTemplate.Resources>
@@ -35,55 +35,55 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Случай обращения" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" 
+            <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedVisitId, Mode=TwoWay}"
                       ItemsSource="{Binding Visits}" />
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Исследование" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" 
+            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedAnalyseId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" 
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       ItemsSource="{Binding Analyses}" />
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Дата/время записи" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <xctk:DateTimePicker Grid.Row="2" Grid.Column="1" Height="23" Margin="5,2"
+            <xctk:DateTimePicker Grid.Row="2" Grid.Column="1" Height="23" Margin="5,2,25,2"
                              HorizontalAlignment="Left"
-                             Watermark="укажите дату/время записи" HorizontalContentAlignment="Left" ShowButtonSpinner="False" TimeFormat="FullDateTime"
-                             Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" 
+                             Watermark="укажите дату/время записи" HorizontalContentAlignment="Left" ShowButtonSpinner="False" Format="Custom" FormatString="dd MMMM yyyy HH:mm" TimeFormat="ShortTime"
+                             Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                              Value="{Binding AssignDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Источник финанс." Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" IsEnabled="{Binding IsVisitSelected}"
+            <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" IsEnabled="{Binding IsVisitSelected}"
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedFinSourceId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" 
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       ItemsSource="{Binding FinSources}" />
 
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Форма оказания" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" 
+            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedUrgentlyId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" 
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       ItemsSource="{Binding Urgentlies}" />
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Место выполнения" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2" IsEnabled="{Binding IsVisitSelected}"
+            <ComboBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" IsEnabled="{Binding IsVisitSelected}"
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedExecutionPlaceId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" 
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       ItemsSource="{Binding ExecutionPlaces}" />
 
             <TextBlock Grid.Row="6" Grid.Column="0" Text="Примечание" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center" />
             <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="1"
                                Watermark="укажите доп. информацию к записи..."
-                               TextWrapping="Wrap" AcceptsReturn="True" Margin="5,2" VerticalContentAlignment="Center"
+                               TextWrapping="Wrap" AcceptsReturn="True" Margin="5,2,25,2" VerticalContentAlignment="Center"
                                Text="{Binding AnalyseDetails}"/>
 
             <CheckBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding IsCheckAllParameters}" FlowDirection="LeftToRight" Margin="5,2">

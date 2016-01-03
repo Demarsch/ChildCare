@@ -13,10 +13,11 @@ using System.Linq;
 using System.Windows.Input;
 using PatientInfoModule.Services;
 using PatientInfoModule.Misc;
+using System.Windows.Navigation;
 
 namespace PatientInfoModule.ViewModels
 {
-    public class AddContractRecordsViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo
+    public class AddContractRecordsViewModel : BindableBase, IDataErrorInfo, IDialogViewModel
     {
         private readonly IRecordService recordService;
         private readonly IAssignmentService assignmentService;
@@ -55,13 +56,12 @@ namespace PatientInfoModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            SelectRecordsCommand = new DelegateCommand(SelectRecords);
-            CancelCommand = new DelegateCommand(Cancel);
+
+            CloseCommand = new DelegateCommand<bool?>(Close);
         }
 
-        public void IntializeCreation(string title, int personId, int financingSourceId, DateTime contractDate, bool isNewRecordChecked = false, bool isAssignRecordsChecked = false)
-        {  
-            this.Title = title;
+        public void Intialize(int personId, int financingSourceId, DateTime contractDate, bool isNewRecordChecked = false, bool isAssignRecordsChecked = false)
+        {            
             this.personId = personId;
             this.contractDate = contractDate;
             this.isChild = personService.GetPatientQuery(personId).First<Person>().BirthDate.Date.AddYears(18) >= contractDate.Date;
@@ -69,35 +69,20 @@ namespace PatientInfoModule.ViewModels
             IsNewRecordChecked = isNewRecordChecked;
             FinancingSources = recordService.GetActiveFinancingSources();
             SelectedFinancingSourceId = financingSourceId;   
-        }
-
-        private bool canSelectRecords;
-        public bool CanSelectRecords
-        {
-            get { return canSelectRecords; }
-            set { SetProperty(ref canSelectRecords, value); }
-        }
+        }        
 
         private bool isNewRecordChecked;
         public bool IsNewRecordChecked
         {
             get { return isNewRecordChecked; }
-            set 
-            {
-                if (SetProperty(ref isNewRecordChecked, value) && value)
-                    CanSelectRecords = true;
-            }
+            set { SetProperty(ref isNewRecordChecked, value); }
         }
 
         private bool isAssignRecordsChecked;
         public bool IsAssignRecordsChecked
         {
             get { return isAssignRecordsChecked; }
-            set 
-            { 
-                if (SetProperty(ref isAssignRecordsChecked, value) && value)
-                    CanSelectRecords = true;
-            }
+            set { SetProperty(ref isAssignRecordsChecked, value); }
         }
 
         private IEnumerable<FinancingSource> financingSources;
@@ -182,41 +167,8 @@ namespace PatientInfoModule.ViewModels
         {
             get { return selectedAssignment; }
             set { SetProperty(ref selectedAssignment, value); }
-        }
-
-        public ICommand CancelCommand { get; private set; }
-        private void Cancel()
-        {
-            isOk = false;
-            HostWindow.Close();            
-        }
-
-        public bool isOk = false;
-        public ICommand SelectRecordsCommand { get; private set; }
-        private void SelectRecords()
-        {
-            FailureMediator.Deactivate();
-            if (!IsValid)
-            {
-                FailureMediator.Activate("Проверьте правильность заполнения полей.", null, null, true);
-                return;
-            }
-            isOk = true;
-            HostWindow.Close();
-        }              
-
-        #region IPopupWindowActionAware implementation
-        public System.Windows.Window HostWindow { get; set; }
-
-        public INotification HostNotification { get; set; }
-        #endregion
-
-        #region INotification implementation
-        public object Content { get; set; }
-
-        public string Title { get; set; }
-        #endregion
-
+        }               
+      
         #region IDataErrorInfo implementation
         private bool saveWasRequested;
 
@@ -263,6 +215,53 @@ namespace PatientInfoModule.ViewModels
         string IDataErrorInfo.Error
         {
             get { throw new NotImplementedException(); }
+        }
+        #endregion
+
+        #region IDialogViewModel
+
+        public string Title
+        {
+            get { return "Добавить услугу в договор"; }
+        }
+
+        public string ConfirmButtonText
+        {
+            get { return "Выбрать"; }
+        }
+
+        public string CancelButtonText
+        {
+            get { return "Отмена"; }
+        }
+
+        public DelegateCommand<bool?> CloseCommand { get; private set; }
+        public bool RecordsWasSelected = false;
+
+        private void Close(bool? validate)
+        {
+            saveWasRequested = true;
+            if (validate == true)
+            {
+                if (IsValid)
+                {
+                    RecordsWasSelected = true;
+                    OnCloseRequested(new ReturnEventArgs<bool>(true));
+                }
+            }
+            else
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+        }
+
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
+
+        protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
         #endregion
     }

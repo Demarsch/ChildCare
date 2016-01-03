@@ -15,18 +15,22 @@
         <fluent:Button x:Name="btnAddContract" 
                        Command="{Binding AddContractCommand}"
                        Header="Создать"
+                       Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddContract48x48.png" />
         <fluent:Button x:Name="btnSaveContract"
                        Command="{Binding SaveContractCommand}"
                        Header="Сохранить"
+                       Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Save48x48.png" />
         <fluent:Button x:Name="btnRemoveContract"
                        Command="{Binding RemoveContractCommand}"
                        Header="Удалить"
+                       Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveContract48x48.png" />
         <fluent:DropDownButton x:Name="btnPrintContracts"
                                Header="Печать"
                                HasTriangle="True"
+                               Margin="5,2"
                                LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png">
             <fluent:DropDownButton.Items>
                 <Button Name="btnPrintContract"
@@ -61,10 +65,12 @@
         <fluent:Button x:Name="btnAddRecord" 
                        Command="{Binding AddRecordCommand}"
                        Header="Добавить"
+                       Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />
         <fluent:Button x:Name="btnRemoveRecord"
                        Command="{Binding RemoveRecordCommand}"
                        Header="Удалить"
+                       Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Доп. соглашения"
@@ -72,10 +78,12 @@
         <fluent:Button x:Name="btnAddAppendix"
                        Command="{Binding AddAppendixCommand}"
                        Header="Создать"
+                       Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddAppendix48x48.png" />
         <fluent:Button x:Name="btnRemoveAppendix" 
                        Command="{Binding RemoveAppendixCommand}"
                        Header="Удалить"
+                       Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveAppendix48x48.png" />
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

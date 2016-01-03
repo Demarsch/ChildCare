@@ -12,15 +12,23 @@
                       Header="Договоры с юр.лицами">
     <fluent:RibbonGroupBox Header="Договора" FontWeight="Medium">
         <fluent:Button x:Name="btnAddContract" Command="{Binding AddContractCommand}" 
-                       Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddContract48x48.png" />
+                       Header="Создать" 
+                       Margin="5,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AddContract48x48.png" />
         <fluent:Button x:Name="btnSaveContract" Command="{Binding SaveContractCommand}"
-                       Header="Сохранить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Save48x48.png" />
+                       Header="Сохранить" 
+                       Margin="5,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Save48x48.png" />
         <fluent:Button x:Name="btnRemoveContract" Command="{Binding RemoveContractCommand}"
-                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveContract48x48.png" />
+                       Header="Удалить" 
+                       Margin="5,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RemoveContract48x48.png" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Организации" FontWeight="Medium">
         <fluent:Button x:Name="btnAddOrganization" Command="{Binding AddOrganizationCommand}" 
-                       Header="Добавить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />       
+                       Header="Добавить" 
+                       Margin="10,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />       
     </fluent:RibbonGroupBox>
 
 </fluent:RibbonTabItem>

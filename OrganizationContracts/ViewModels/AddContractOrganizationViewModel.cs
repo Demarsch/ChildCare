@@ -20,10 +20,11 @@ using Core.Extensions;
 using Core.Wpf.Misc;
 using Core.Misc;
 using OrganizationContractsModule.Services;
+using System.Windows.Navigation;
 
 namespace OrganizationContractsModule.ViewModels
 {
-    public class AddContractOrganizationViewModel : BindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo, IDisposable
+    public class AddContractOrganizationViewModel : BindableBase, IDataErrorInfo, IDisposable, IDialogViewModel
     {
         private readonly IContractService contractService;
         private readonly ILog logService;
@@ -42,23 +43,17 @@ namespace OrganizationContractsModule.ViewModels
             if (contractService == null)
             {
                 throw new ArgumentNullException("contractService");
-            }
+            }           
             this.contractService = contractService;
             this.logService = logService;
             
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveChangesAsync()), CommandName = "Повторить" };
-            CreateOrgCommand = new DelegateCommand(SaveChangesAsync);
-            CancelCommand = new DelegateCommand(Cancel);
+            saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveChangesAsync()), CommandName = "Повторить" };            
             SaveSuccesfull = false;
+            CloseCommand = new DelegateCommand<bool?>(Close);
         }
-
-        public void IntializeCreation(string title)
-        {  
-            this.Title = title;
-        }
-
+        
         private string name;
         public string Name
         {
@@ -71,27 +66,17 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return details; }
             set { SetProperty(ref details, value); }
-        }
-
-        public ICommand CancelCommand { get; private set; }
-        private void Cancel()
-        {
-            SaveSuccesfull = false;
-            HostWindow.Close();
-        }
+        }       
 
         public ICommand CreateOrgCommand { get; private set; }
         private async void SaveChangesAsync()
         {
-            FailureMediator.Deactivate();
-            if (!IsValid)
-            {
-                return;
-            }
+            FailureMediator.Deactivate();            
             logService.InfoFormat("Saving data for new Org");
             BusyMediator.Activate("Сохранение изменений...");
             try
             {
+                SaveSuccesfull = false;
                 Org org = new Org();
                 org.Name = Name;
                 org.Details = Details.ToSafeString();
@@ -113,23 +98,9 @@ namespace OrganizationContractsModule.ViewModels
             finally
             {
                 BusyMediator.Deactivate();
-                if (SaveSuccesfull)
-                    HostWindow.Close();
             }
         }
-        
-        #region IPopupWindowActionAware implementation
-        public System.Windows.Window HostWindow { get; set; }
-
-        public INotification HostNotification { get; set; }
-        #endregion
-
-        #region INotification implementation
-        public object Content { get; set; }
-
-        public string Title { get; set; }
-        #endregion
-
+             
         #region IDataErrorInfo implementation
         private bool saveWasRequested;
 
@@ -177,6 +148,53 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { throw new NotImplementedException(); }
         }
+        #endregion
+
+        #region IDialogViewModel
+
+        public string Title
+        {
+            get { return "Новая организация"; }
+        }
+
+        public string ConfirmButtonText
+        {
+            get { return "Сохранить"; }
+        }
+
+        public string CancelButtonText
+        {
+            get { return "Отмена"; }
+        }
+
+        public DelegateCommand<bool?> CloseCommand { get; private set; }
+
+        private void Close(bool? validate)
+        {
+            saveWasRequested = true;
+            if (validate == true)
+            {
+                if (IsValid)          
+                {
+                    SaveChangesAsync();
+                    OnCloseRequested(new ReturnEventArgs<bool>(true));                
+                }
+            }
+            else
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+        }
+
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
+
+        protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
         #endregion
 
         public void Dispose()

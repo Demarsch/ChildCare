@@ -142,6 +142,7 @@
     <Compile Include="Mvvm\Mediators\FailureMediator.cs" />
     <Compile Include="Mvvm\Mediators\IMediator.cs" />
     <Compile Include="Mvvm\Mediators\NotificationMediator.cs" />
+    <Compile Include="ScanWPF\WPFWindowMessageHook.cs" />
     <Compile Include="ViewModels\ConfirmationDialogViewModel.cs" />
     <Compile Include="Mvvm\Misc\FieldValue.cs" />
     <Compile Include="Mvvm\Misc\IDialogViewModel.cs" />

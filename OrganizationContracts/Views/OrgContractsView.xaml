@@ -4,10 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:prism="http://www.codeplex.com/prism"
-             xmlns:popup="clr-namespace:Core.Wpf.PopupWindowActionAware;assembly=Core.Wpf"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"             
              xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels"
              xmlns:views="clr-namespace:OrganizationContractsModule.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
@@ -16,12 +13,7 @@
              d:DesignHeight="500"
              d:DesignWidth="800" d:DataContext="{d:DesignInstance viewModels:OrgContractsViewModel}">
 
-    <UserControl.Resources>
-        <DataTemplate x:Key="NotificationWindowTemplate">
-            <Grid MinWidth="200" MinHeight="100">
-                <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
-            </Grid>
-        </DataTemplate>
+    <UserControl.Resources>        
         <converters:Converter x:Key="HidePreview" DefaultValue="{x:Static Visibility.Collapsed}">
             <converters:ConverterItem From="{x:Static coremisc:StaticBoolean.True}"
                                           To="{x:Static Visibility.Visible}" />
@@ -35,25 +27,7 @@
                                           To="{x:Static Visibility.Visible}" />
         </converters:Converter>
     </UserControl.Resources>
-    
-    <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding ConfirmationInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
-                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>
-        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
-                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>
-        <prism:InteractionRequestTrigger SourceObject="{Binding AddContractOrgInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True">
-                <popup:PopupWindowAction.WindowContent>
-                    <views:AddContractOrganizationView/>
-                </popup:PopupWindowAction.WindowContent>
-            </popup:PopupWindowAction>
-        </prism:InteractionRequestTrigger>
-    </i:Interaction.Triggers>
-    
+       
     <Grid>
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>

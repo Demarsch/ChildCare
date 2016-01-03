@@ -31,7 +31,7 @@ namespace PatientInfoModule.Views
                 var context = (this.DataContext as ScanDocumentsViewModel);
                 try
                 {
-                    var hook = new WpfWindowMessageHook(this);
+                    var hook = new WPFWindowMessageHook(this);
                     twain = new Twain(hook);
                 }
                 catch

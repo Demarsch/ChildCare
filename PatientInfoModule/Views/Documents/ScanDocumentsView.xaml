@@ -14,11 +14,6 @@
              SizeToContent="Width" WindowStartupLocation="CenterScreen"
              Title="Сканирование документов">
     <Window.Resources>
-        <DataTemplate x:Key="NotificationWindowTemplate">
-            <Grid MinWidth="200" MinHeight="100">
-                <TextBlock TextWrapping="Wrap" Grid.Row="0" Text="{Binding}"/>
-            </Grid>
-        </DataTemplate>
         <DataTemplate x:Key="ImageTemplate">
             <Grid>
                 <Grid.RowDefinitions>
@@ -45,14 +40,7 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Path=DocumentType, Mode=TwoWay}" MaxWidth="130" Margin="2" HorizontalAlignment="Center" />
             </Grid>
         </DataTemplate>
-    </Window.Resources>
-
-    <i:Interaction.Triggers>
-        <prism:InteractionRequestTrigger SourceObject="{Binding NotificationInteractionRequest, Mode=OneWay}">
-            <popup:PopupWindowAction CenterOverAssociatedObject="True" IsModal="True"
-                                     ContentTemplate="{StaticResource NotificationWindowTemplate}"/>
-        </prism:InteractionRequestTrigger>
-    </i:Interaction.Triggers>
+    </Window.Resources>  
     
     <Grid>
         <Border BorderThickness="1" Grid.Row="1" BorderBrush="#FF6E789A" >

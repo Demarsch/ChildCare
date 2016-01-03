@@ -11,6 +11,7 @@ using Prism.Events;
 using Prism.Modularity;
 using Prism.Regions;
 using Shell.Shared;
+using System.Windows;
 
 namespace OrganizationContracts
 {
@@ -93,7 +94,9 @@ namespace OrganizationContracts
         {
             container.RegisterType<object, OrgContractsView>(viewNameResolver.Resolve<OrgContractsViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<OrgContractsHeaderView>());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<OrgContractsView>());    
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<OrgContractsView>());
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/OrganizationContracts;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
        
         private void RegisterServices()
