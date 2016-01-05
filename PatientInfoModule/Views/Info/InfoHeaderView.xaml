@@ -10,7 +10,7 @@
                       d:DesignHeight="300"
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:InfoHeaderViewModel}"
-                      Header="Основные данные">
+                      Header="Учетная карта">
     <fluent:RibbonTabItem.Resources>
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="Margin"
