@@ -62,7 +62,8 @@
                 IsTabStop="False"/>
         <TextBlock Grid.Row="1"
                    Grid.Column="0"
-                   Text="Тип документа" />
+                   Text="Тип документа"
+                   VerticalAlignment="Center" />
         <ComboBox Grid.Row="1"
                   Grid.Column="1"
                   Grid.ColumnSpan="3"
@@ -74,7 +75,8 @@
                   behaviors:FocusAdvancement.FocusAdvancementDirection="ForwardOnly"/>
         <TextBlock Grid.Row="2"
                    Grid.Column="0"
-                   Text="Серия" />
+                   Text="Серия" 
+                   VerticalAlignment="Center" />
         <TextBox Grid.Row="2"
                  Grid.Column="1"
                  HorizontalAlignment="Stretch"
@@ -82,7 +84,8 @@
                  Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
         <TextBlock Grid.Row="2"
                    Grid.Column="2"
-                   Text="Номер" />
+                   Text="Номер" 
+                   VerticalAlignment="Center" />
         <TextBox Grid.Row="2"
                  Grid.Column="3"
                  HorizontalAlignment="Stretch"
@@ -90,7 +93,8 @@
                  Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
         <TextBlock Grid.Row="3"
                    Grid.Column="0"
-                   Text="Страховая компания" />
+                   Text="Страховая компания" 
+                   VerticalAlignment="Center" />
         <controls:AutoCompleteTextBox Grid.Row="3"
                                      Grid.Column="1"
                                      Grid.ColumnSpan="3"
@@ -120,7 +124,8 @@
         </controls:AutoCompleteTextBox>
         <TextBlock Grid.Row="4"
                    Grid.Column="0"
-                   Text="Действителен с" />
+                   Text="Действителен с" 
+                   VerticalAlignment="Center" />
         <StackPanel Grid.Row="4"
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
@@ -130,7 +135,8 @@
                         Margin="3 3 22 3"
                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
             <CheckBox IsChecked="{Binding HasToDate, UpdateSourceTrigger=PropertyChanged}"
-                      Content="по"/>
+                      Content="по"
+                      VerticalAlignment="Center" />
             <DatePicker SelectedDate="{Binding ToDate, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Margin="3 3 22 3"
                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}"

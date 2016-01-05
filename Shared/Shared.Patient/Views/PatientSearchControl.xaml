@@ -29,7 +29,7 @@
         <Grid HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch">
             <ListBox HorizontalAlignment="Stretch"
-                     VerticalAlignment="Stretch"
+                     VerticalAlignment="Top"
                      Margin="5"
                      BorderThickness="0"
                      Background="{x:Null}"

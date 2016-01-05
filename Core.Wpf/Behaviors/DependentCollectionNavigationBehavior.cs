@@ -55,21 +55,40 @@ namespace Core.Wpf.Behaviors
             {
                 return;
             }
+            ContentControl itemContainer;
             switch (e.Key)
             {
                 case Key.Down:
+                    e.Handled = true;
+                    if (collectionView.IsEmpty)
+                    {
+                        break;
+                    }
                     if (!collectionView.MoveCurrentToNext())
                     {
                         collectionView.MoveCurrentToFirst();
                     }
-                    e.Handled = true;
+                    itemContainer = (ContentControl)DependentSelector.ItemContainerGenerator.ContainerFromItem(collectionView.CurrentItem);
+                    if (itemContainer != null)
+                    {
+                        itemContainer.BringIntoView();
+                    }
                     break;
                 case Key.Up:
+                    e.Handled = true;
+                    if (collectionView.IsEmpty)
+                    {
+                        break;
+                    }
                     if (!collectionView.MoveCurrentToPrevious())
                     {
                         collectionView.MoveCurrentToLast();
                     }
-                    e.Handled = true;
+                    itemContainer = (ContentControl)DependentSelector.ItemContainerGenerator.ContainerFromItem(collectionView.CurrentItem);
+                    if (itemContainer != null)
+                    {
+                        itemContainer.BringIntoView();
+                    }
                     break;
                 case Key.Enter:
                     if (collectionView.IsEmpty)
@@ -77,7 +96,7 @@ namespace Core.Wpf.Behaviors
                         return;
                     }
                     var currentItem = collectionView.CurrentItem ?? DependentSelector.ItemsSource.Cast<object>().First();
-                    var itemContainer = (ContentControl)DependentSelector.ItemContainerGenerator.ContainerFromItem(currentItem);
+                    itemContainer = (ContentControl)DependentSelector.ItemContainerGenerator.ContainerFromItem(currentItem);
                     if (itemContainer == null)
                     {
                         return;

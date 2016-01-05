@@ -23,10 +23,6 @@ namespace Core.Wpf.Controls
         public AutoCompleteTextBox()
         {
             InitializeComponent();
-            Unloaded += OnUnloaded;
-            textBox.TextChanged += TextBoxOnTextChanged;
-            popup.Opened += PopupOnOpened;
-            popup.Closed += PopupOnClosed;
             popup.MaxHeight = Screen.PrimaryScreen.WorkingArea.Height / 5.0;
         }
 
@@ -70,6 +66,11 @@ namespace Core.Wpf.Controls
             if (e.ChangedButton == MouseButton.Left)
             {
                 SelectedItem = ((ListBoxItem)sender).DataContext;
+                popup.IsOpen = false;
+                if (textBox.IsKeyboardFocused)
+                {
+                    textBox.CaretIndex = textBox.Text.Length;
+                }
             }
         }
 
@@ -78,6 +79,11 @@ namespace Core.Wpf.Controls
             if (e.Key == Key.Enter)
             {
                 SelectedItem = ((ListBoxItem)sender).DataContext;
+                popup.IsOpen = false;
+                if (textBox.IsKeyboardFocused)
+                {
+                    textBox.CaretIndex = textBox.Text.Length;
+                }
             }
         }
 
@@ -322,19 +328,29 @@ namespace Core.Wpf.Controls
             set { SetValue(WatermarkProperty, value); }
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            Unloaded -= OnUnloaded;
-            textBox.TextChanged -= TextBoxOnTextChanged;
-            popup.Opened -= PopupOnOpened;
-            popup.Closed -= PopupOnClosed;
-        }
-
         private void TextBoxOnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (listBox.ItemsSource != null && listBox.ItemsSource.Cast<object>().Any())
+            OpenPopupIfHasSuggestions();
+        }
+
+        private bool OpenPopupIfHasSuggestions()
+        {
+            if (listBox.ItemsSource != null && listBox.ItemsSource.Cast<object>().Any() && !popup.IsOpen)
             {
                 popup.IsOpen = true;
+                return true;
+            }
+            return false;
+        }
+
+        private void TextBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up || e.Key == Key.Down)
+            {
+                if (OpenPopupIfHasSuggestions())
+                {
+                    e.Handled = true;
+                }
             }
         }
     }

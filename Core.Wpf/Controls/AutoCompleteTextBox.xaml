@@ -1,66 +1,88 @@
 ﻿<UserControl x:Class="Core.Wpf.Controls.AutoCompleteTextBox"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:Core.Wpf.Converters"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <TextBlock x:Key="defaultBusyContentValue"
-                   Text="Идет поиск..."
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   Foreground="DimGray"
-                   Margin="20" />
-        <converters:Converter x:Key="textToVisibilityConverter"
-                              DefaultValue="{x:Static Visibility.Collapsed}">
-            <converters:ConverterItem From=""
-                                      To="{x:Static Visibility.Visible}" />
-            <converters:ConverterItem From="{x:Null}"
-                                      To="{x:Static Visibility.Visible}" />
-        </converters:Converter>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <TextBlock x:Key="DefaultLoadContentValue"
+                       Text="Идет поиск..."
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Foreground="DimGray"
+                       Margin="20" />
+            <converters:Converter x:Key="TextToVisibilityConverter"
+                                  DefaultValue="{x:Static Visibility.Collapsed}">
+                <converters:ConverterItem From=""
+                                          To="{x:Static Visibility.Visible}" />
+                <converters:ConverterItem From="{x:Null}"
+                                          To="{x:Static Visibility.Visible}" />
+            </converters:Converter>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <TextBox x:Name="textBox"
-                 MouseDoubleClick="TextBoxOnMouseDoubleClick"
-                 HorizontalAlignment="Stretch">
-            <i:Interaction.Behaviors>
-                <behaviors:DependentCollectionNavigationBehavior DependentSelector="{Binding ElementName=listBox}" />
-            </i:Interaction.Behaviors>
-        </TextBox>
-        <TextBlock Text="{Binding Watermark, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                   Foreground="DimGray"
-                   Margin="6 0 0 0"
-                   IsHitTestVisible="False"
-                   Visibility="{Binding Text, ElementName=textBox, Converter={StaticResource textToVisibilityConverter}}"
-                   TextTrimming="CharacterEllipsis"
-                   MaxWidth="{Binding ActualWidth, ElementName=textBox}"
-                   MaxHeight="{Binding ActualHeight, ElementName=textBox}"/>
-        <Border Background="ForestGreen"
-                HorizontalAlignment="Right"
-                Height="{Binding ActualHeight, ElementName=textBox}"
-                Width="3"
-                Visibility="Collapsed"
-                x:Name="hasSelectedItemSign"/>
+        <Grid HorizontalAlignment="Stretch">
+            <TextBox x:Name="textBox"
+                     MouseDoubleClick="TextBoxOnMouseDoubleClick"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Center"
+                     TextWrapping="Wrap"
+                     TextChanged="TextBoxOnTextChanged"
+                     Style="{x:Null}"
+                     PreviewKeyDown="TextBoxOnPreviewKeyDown">
+                <i:Interaction.Behaviors>
+                    <behaviors:DependentCollectionNavigationBehavior DependentSelector="{Binding ElementName=listBox}" />
+                </i:Interaction.Behaviors>
+            </TextBox>
+            <TextBlock Text="{Binding Watermark, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                       Foreground="DimGray"
+                       Margin="2 0 0 0"
+                       IsHitTestVisible="False"
+                       Visibility="{Binding Text, ElementName=textBox, Converter={StaticResource TextToVisibilityConverter}}"
+                       TextTrimming="CharacterEllipsis"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Center"
+                       Height="{Binding ActualHeight, ElementName=textBox}"/>
+            <Border Background="ForestGreen"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Height="{Binding ActualHeight, ElementName=textBox}"
+                    Width="3"
+                    Visibility="Collapsed"
+                    x:Name="hasSelectedItemSign" />
+        </Grid>
         <Popup x:Name="popup"
                PlacementTarget="{x:Reference textBox}"
                Placement="Bottom"
-               Width="{Binding ActualWidth, ElementName=textBox}"
-               StaysOpen="True">
+               MinWidth="{Binding ActualWidth, ElementName=textBox}"
+               StaysOpen="True"
+               Opened="PopupOnOpened"
+               Closed="PopupOnClosed">
             <Popup.Effect>
                 <DropShadowEffect ShadowDepth="2" />
             </Popup.Effect>
             <Grid Background="White"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
-                <ListBox x:Name="listBox" 
+                <ListBox x:Name="listBox"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          ItemTemplate="{Binding ItemTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                         DisplayMemberPath="{Binding DisplayMemberPath, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                         DisplayMemberPath="{Binding DisplayMemberPath, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                         IsTabStop="False">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}">
                             <EventSetter Event="MouseUp"
@@ -69,23 +91,26 @@
                             <EventSetter Event="KeyUp"
                                          HandledEventsToo="True"
                                          Handler="ListBoxItemOnKeyUp" />
+                            <Setter Property="Template"
+                                    Value="{StaticResource DarkListBoxItemTemplate}" />
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
                 <ContentControl x:Name="busyContentControl"
                                 HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch" 
+                                VerticalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"
                                 VerticalContentAlignment="Center"
-                                Content="{Binding LoadContent, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, TargetNullValue={StaticResource defaultBusyContentValue}}"
-                                Visibility="Collapsed"/>
+                                Content="{Binding LoadContent, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, TargetNullValue={StaticResource DefaultLoadContentValue}}"
+                                Visibility="Collapsed"
+                                IsTabStop="False"/>
                 <TextBlock x:Name="noItemsFoundTextBlock"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Margin="20"
                            Foreground="DimGray"
                            Text="Ничего не найдено"
-                           Visibility="Collapsed"/>
+                           Visibility="Collapsed" />
             </Grid>
         </Popup>
     </Grid>

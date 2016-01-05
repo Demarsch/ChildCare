@@ -33,7 +33,7 @@
                 <Setter Property="VerticalContentAlignment"
                         Value="Center" />
                 <Setter Property="behaviors:FocusAdvancement.FocusAdvancementDirection"
-                        Value="Both" />
+                        Value="ForwardOnly" />
             </Style>
             <Style TargetType="{x:Type DatePicker}">
                 <Setter Property="VerticalAlignment"

@@ -66,7 +66,14 @@ namespace Core.Wpf.Behaviors
                 if (elementAllowsToGoBack)
                 {
                     e.Handled = true;
-                    element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
+                    if (element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous)))
+                    {
+                        var currentTextBox = Keyboard.FocusedElement as TextBox;
+                        if (currentTextBox != null)
+                        {
+                            currentTextBox.CaretIndex = currentTextBox.Text.Length;
+                        }
+                    }
                 }
             }
         }

@@ -31,7 +31,8 @@
                 <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
                                           To="{x:Static Brushes.Red}" />
             </converters:Converter>
-            <DataTemplate DataType="{x:Type data:Okato}">
+            <DataTemplate DataType="{x:Type data:Okato}"
+                          x:Key="OkatoTemplate">
                 <Border Padding="5">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="{Binding FullName}"
@@ -100,7 +101,8 @@
                                      DisplayMemberPath="FullName"
                                      SelectedItem="{Binding Region, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      SuggestionProvider="{Binding AddressSuggestionProvider.RegionSuggestionProvider, Mode=OneTime}"
-                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
+                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                                     ItemTemplate="{StaticResource OkatoTemplate}"/>
         <TextBlock Grid.Row="4"
                    Grid.Column="0"
                    Grid.ColumnSpan="2"
