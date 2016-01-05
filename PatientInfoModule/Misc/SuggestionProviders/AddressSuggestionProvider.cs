@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Core.Data;
 using Core.Misc;
 using Core.Services;
+using Core.Wpf.Misc;
 using log4net;
 using Microsoft.Practices.Unity;
 using Prism.Mvvm;
-using WpfControls.Editors;
 
 namespace PatientInfoModule.Misc
 {

@@ -1,6 +1,6 @@
-﻿using PatientInfoModule.Services;
+﻿using Core.Wpf.Misc;
+using PatientInfoModule.Services;
 using System.Collections;
-using WpfControls.Editors;
 
 namespace PatientInfoModule.Misc
 {

@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Linq;
 using Core.Data;
-using Core.Expressions;
 using Core.Misc;
 using Core.Services;
-using WpfControls.Editors;
+using Core.Wpf.Misc;
 
 namespace PatientInfoModule.Misc
 {

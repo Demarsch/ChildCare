@@ -9,6 +9,7 @@
              xmlns:editors="http://wpfcontrols.com/"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
+             xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300"
              d:DesignWidth="450" 
@@ -72,20 +73,20 @@
                    Grid.Column="0"
                    Text="Организация"
                    Visibility="{Binding SelectedSocialStatusType.NeedPlace, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, FallbackValue={x:Static Visibility.Collapsed}}" />
-        <editors:AutoCompleteTextBox Grid.Row="3"
+        <controls:AutoCompleteTextBox Grid.Row="3"
                                      Grid.Column="0"
                                      Grid.ColumnSpan="2"
                                      Margin="3"
                                      Background="White"
                                      MinHeight="40"
-                                     DisplayMember="Name"
-                                     Provider="{Binding OrganizationSuggestionProvider}"
+                                     DisplayMemberPath="Name"
+                                     SuggestionProvider="{Binding OrganizationSuggestionProvider}"
                                      SelectedItem="{Binding SelectedOrganization, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Text="{Binding OrganizationText, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Watermark="Введите любое слово из названия организации"
                                      Visibility="{Binding SelectedSocialStatusType.NeedPlace, Converter={x:Static converters:BoolToVisibilityConverter.Instance}, FallbackValue={x:Static Visibility.Collapsed}}"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
-            <editors:AutoCompleteTextBox.ItemTemplate>
+            <controls:AutoCompleteTextBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type data:Org}">
                     <Border Padding="5">
                         <StackPanel Orientation="Vertical">
@@ -99,8 +100,8 @@
                         </StackPanel>
                     </Border>
                 </DataTemplate>
-            </editors:AutoCompleteTextBox.ItemTemplate>
-        </editors:AutoCompleteTextBox>
+            </controls:AutoCompleteTextBox.ItemTemplate>
+        </controls:AutoCompleteTextBox>
         <TextBlock Grid.Row="4"
                    Grid.Column="0"
                    Text="Должность"

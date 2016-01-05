@@ -1,4 +1,4 @@
-﻿using WpfControls.Editors;
+﻿using Core.Wpf.Misc;
 using PatientInfoModule.Services;
 
 namespace PatientInfoModule.Misc

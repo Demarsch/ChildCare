@@ -9,6 +9,7 @@
              xmlns:editors="http://wpfcontrols.com/"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
+             xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300"
              d:DesignWidth="450" 
@@ -98,18 +99,18 @@
         <TextBlock Grid.Row="3"
                    Grid.Column="0"
                    Text="Кем выдан" />
-        <editors:AutoCompleteTextBox Grid.Row="3"
+        <controls:AutoCompleteTextBox Grid.Row="3"
                                      Grid.Column="1"
                                      Grid.ColumnSpan="3"
                                      Margin="3"
                                      Background="White"
                                      MinHeight="40"
-                                     Provider="{Binding GivenOrgSuggestionProvider}"
+                                     SuggestionProvider="{Binding GivenOrgSuggestionProvider}"
                                      SelectedItem="{Binding GivenOrg, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Text="{Binding GivenOrgText, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Watermark="Введите любое слово из названия выдавшей организации"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
-        </editors:AutoCompleteTextBox>
+        </controls:AutoCompleteTextBox>
         <TextBlock Grid.Row="4"
                    Grid.Column="0"
                    Text="Действителен с" />

@@ -24,6 +24,7 @@ using Core.Misc;
 using WpfControls.Editors;
 using Microsoft.Practices.Unity;
 using Shared.PatientRecords.Misc;
+using ISuggestionProvider = WpfControls.Editors.ISuggestionProvider;
 
 namespace Shared.PatientRecords.ViewModels
 {

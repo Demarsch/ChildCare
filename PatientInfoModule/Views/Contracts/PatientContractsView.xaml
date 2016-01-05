@@ -11,7 +11,8 @@
              xmlns:views="clr-namespace:PatientInfoModule.Views"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             xmlns:coremisc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"             
+             xmlns:coremisc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
+             xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="1024" d:DataContext="{d:DesignInstance viewModels:PatientContractsViewModel}">
@@ -162,16 +163,15 @@
                             Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Заказчик" Margin="2"/>
-                        <editors:AutoCompleteTextBox Name="autocomplete" Grid.Row="4" 
+                        <controls:AutoCompleteTextBox Name="autocomplete" Grid.Row="4" 
                                                 Grid.Column="1" 
                                                 Margin="2,2,25,2" 
                                                 Background="White" MinHeight="23"
-                                                Provider="{Binding PersonSuggestionProvider}"
-                                                DisplayMember="Field"
+                                                SuggestionProvider="{Binding PersonSuggestionProvider}"
+                                                DisplayMemberPath="Field"
                                                 SelectedItem="{Binding SelectedClient, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                                 Watermark="Введите Ф.И.О. заказчика для поиска..."
                                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
-                                                KeyDown="autocomplete_KeyDown" Loaded="autocomplete_Loaded"
                                                 ItemTemplate="{StaticResource ClientsAutoCompleteTemplate}"/>  
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Потребитель" Margin="2"/>

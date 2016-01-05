@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
+using Core.Wpf.Misc;
 using PatientInfoModule.Services;
-using WpfControls.Editors;
 
 namespace PatientInfoModule.Misc
 {

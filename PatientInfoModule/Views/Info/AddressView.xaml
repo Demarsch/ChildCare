@@ -9,6 +9,7 @@
              xmlns:editors="http://wpfcontrols.com/"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
+             xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300"
              d:DesignWidth="450" 
@@ -89,44 +90,38 @@
                    Grid.Column="0"
                    Grid.ColumnSpan="2"
                    Text="Регион/иностранное государство" />
-        <editors:AutoCompleteTextBox Grid.Row="3"
+        <controls:AutoCompleteTextBox Grid.Row="3"
                                      Grid.Column="0"
                                      Grid.ColumnSpan="2"
                                      Margin="3"
                                      Background="White"
                                      HorizontalAlignment="Stretch"
-                                     Watermark="введите слова из названия региона или иностранного государства"
-                                     DisplayMember="FullName"
+                                     Watermark="Введите слова из названия региона или иностранного государства"
+                                     DisplayMemberPath="FullName"
                                      SelectedItem="{Binding Region, Mode=TwoWay, ValidatesOnDataErrors=True}"
-                                     Provider="{Binding AddressSuggestionProvider.RegionSuggestionProvider, Mode=OneTime}"
-                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
-            <editors:AutoCompleteTextBox.LoadingContent>
-                <TextBlock Text="Загрузка данных..."
-                           Margin="5"
-                           FontSize="14" />
-            </editors:AutoCompleteTextBox.LoadingContent>
-        </editors:AutoCompleteTextBox>
+                                     SuggestionProvider="{Binding AddressSuggestionProvider.RegionSuggestionProvider, Mode=OneTime}"
+                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
         <TextBlock Grid.Row="4"
                    Grid.Column="0"
                    Grid.ColumnSpan="2"
                    Text="ОКАТО" />
-        <editors:AutoCompleteTextBox Grid.Row="5"
+        <controls:AutoCompleteTextBox Grid.Row="5"
                                      Grid.Column="0"
                                      Grid.ColumnSpan="2"
                                      Margin="3"
                                      Background="White"
                                      HorizontalAlignment="Stretch"
                                      Watermark="введите слова из района, села, города и др."
-                                     DisplayMember="FullName"
+                                     DisplayMemberPath="FullName"
                                      SelectedItem="{Binding Location, Mode=TwoWay, ValidatesOnDataErrors=True}"
-                                     Provider="{Binding AddressSuggestionProvider.LocationSuggestionProvider, Mode=OneTime}"
+                                     SuggestionProvider="{Binding AddressSuggestionProvider.LocationSuggestionProvider, Mode=OneTime}"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
-            <editors:AutoCompleteTextBox.LoadingContent>
+            <controls:AutoCompleteTextBox.LoadContent>
                 <TextBlock Text="Загрузка данных..."
                            Margin="5"
                            FontSize="14" />
-            </editors:AutoCompleteTextBox.LoadingContent>
-        </editors:AutoCompleteTextBox>
+            </controls:AutoCompleteTextBox.LoadContent>
+        </controls:AutoCompleteTextBox>
         <TextBlock Grid.Row="6"
                    Grid.Column="0"
                    Grid.ColumnSpan="2"

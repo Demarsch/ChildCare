@@ -13,12 +13,29 @@ namespace Core.Wpf.Behaviors
 {
     public class DependentCollectionNavigationBehavior : Behavior<TextBox>
     {
-        public static readonly DependencyProperty DependentItemsControlProperty = DependencyProperty.Register("DependentItemsControl", typeof(ItemsControl), typeof(DependentCollectionNavigationBehavior), new PropertyMetadata(null));
+        public static readonly DependencyProperty DependentSelectorProperty = DependencyProperty.Register("DependentSelector", typeof(Selector), typeof(DependentCollectionNavigationBehavior), new PropertyMetadata(OnDependentItemsControlChanged));
 
-        public ItemsControl DependentItemsControl
+        private static void OnDependentItemsControlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            get { return (ItemsControl)GetValue(DependentItemsControlProperty); }
-            set { SetValue(DependentItemsControlProperty, value); }
+            var behavior = (DependentCollectionNavigationBehavior)d;
+            if (e.OldValue != null)
+            {
+                ((Selector)e.OldValue).IsSynchronizedWithCurrentItem = behavior.wasSynchronizedWithCurrentItem;
+            }
+            if (e.NewValue != null)
+            {
+                var selector = (Selector)e.NewValue;
+                behavior.wasSynchronizedWithCurrentItem = selector.IsSynchronizedWithCurrentItem;
+                selector.IsSynchronizedWithCurrentItem = true;
+            }
+        }
+
+        private bool? wasSynchronizedWithCurrentItem;
+
+        public ItemsControl DependentSelector
+        {
+            get { return (ItemsControl)GetValue(DependentSelectorProperty); }
+            set { SetValue(DependentSelectorProperty, value); }
         }
 
         protected override void OnAttached()
@@ -29,11 +46,11 @@ namespace Core.Wpf.Behaviors
 
         private void AssociatedObjectOnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (DependentItemsControl == null || DependentItemsControl.ItemsSource == null)
+            if (DependentSelector == null || DependentSelector.ItemsSource == null)
             {
                 return;
             }
-            var collectionView = CollectionViewSource.GetDefaultView(DependentItemsControl.ItemsSource);
+            var collectionView = CollectionViewSource.GetDefaultView(DependentSelector.ItemsSource);
             if (collectionView.IsEmpty)
             {
                 return;
@@ -48,37 +65,48 @@ namespace Core.Wpf.Behaviors
                     e.Handled = true;
                     break;
                 case Key.Up:
-                   if (!collectionView.MoveCurrentToPrevious())
+                    if (!collectionView.MoveCurrentToPrevious())
                     {
                         collectionView.MoveCurrentToLast();
                     }
                     e.Handled = true;
                     break;
                 case Key.Enter:
-                    var currentItem = collectionView.CurrentItem;
-                    if (currentItem != null)
+                    if (collectionView.IsEmpty)
                     {
-                        var itemContainer = (ContentControl)DependentItemsControl.ItemContainerGenerator.ContainerFromItem(currentItem);
-                        if (itemContainer == null)
+                        return;
+                    }
+                    var currentItem = collectionView.CurrentItem ?? DependentSelector.ItemsSource.Cast<object>().First();
+                    var itemContainer = (ContentControl)DependentSelector.ItemContainerGenerator.ContainerFromItem(currentItem);
+                    if (itemContainer == null)
+                    {
+                        return;
+                    }
+                    var contentPresenter = itemContainer.FindVisualChildren<ContentPresenter>().FirstOrDefault();
+                    if (contentPresenter == null)
+                    {
+                        return;
+                    }
+                    var itemContent = (UIElement)VisualTreeHelper.GetChild(contentPresenter, 0);
+                    if (itemContent != null)
+                    {
+                        var commandSource = itemContent as ICommandSource;
+                        if (commandSource != null && commandSource.Command != null && commandSource.Command.CanExecute(commandSource.CommandParameter))
                         {
-                            return;
+                            commandSource.Command.Execute(commandSource.CommandParameter);
                         }
-                        var contentPresenter = itemContainer.FindVisualChildren<ContentPresenter>().FirstOrDefault();
-                        if (contentPresenter == null)
+                        else
                         {
-                            return;
-                        }
-                        var itemContent = (UIElement)VisualTreeHelper.GetChild(contentPresenter, 0);
-                        if (itemContent != null)
-                        {
-                            var commandSource = itemContent as ICommandSource;
-                            if (commandSource != null && commandSource.Command != null && commandSource.Command.CanExecute(commandSource.CommandParameter))
+                            var events = new[] { UIElement.PreviewKeyDownEvent, UIElement.KeyDownEvent, UIElement.PreviewKeyUpEvent, UIElement.KeyUpEvent };
+                            var keyEventArgs = new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key);
+                            foreach (var @event in events)
                             {
-                                commandSource.Command.Execute(commandSource.CommandParameter);
-                            }
-                            else
-                            {
-                                itemContent.RaiseEvent(new KeyEventArgs(e.KeyboardDevice, e.InputSource, e.Timestamp, e.Key) { RoutedEvent = Keyboard.PreviewKeyDownEvent });                                
+                                keyEventArgs.RoutedEvent = @event;
+                                itemContent.RaiseEvent(keyEventArgs);
+                                if (keyEventArgs.Handled)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
@@ -90,7 +118,7 @@ namespace Core.Wpf.Behaviors
         protected override void OnDetaching()
         {
             AssociatedObject.PreviewKeyDown -= AssociatedObjectOnPreviewKeyDown;
-            DependentItemsControl = null;
+            DependentSelector = null;
             base.OnDetaching();
         }
     }

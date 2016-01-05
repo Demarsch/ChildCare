@@ -7,6 +7,7 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Wpf.Events;
+using Core.Wpf.Misc;
 using Core.Wpf.Services;
 using Fluent;
 using log4net;
@@ -19,7 +20,6 @@ using Prism.Events;
 using Prism.Modularity;
 using Prism.Regions;
 using Shell.Shared;
-using WpfControls.Editors;
 using Shared.PatientRecords;
 
 namespace PatientInfoModule

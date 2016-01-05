@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using Core.Data;
-using WpfControls.Editors;
+using Core.Wpf.Misc;
 
 namespace PatientInfoModule.Misc
 {

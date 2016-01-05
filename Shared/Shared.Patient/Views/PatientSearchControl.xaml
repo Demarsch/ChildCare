@@ -23,7 +23,7 @@
                            Style="{x:Null}" />
             </xctk:WatermarkTextBox.Watermark>
             <i:Interaction.Behaviors>
-                <behaviors:DependentCollectionNavigationBehavior DependentItemsControl="{Binding ElementName=listBox}" />
+                <behaviors:DependentCollectionNavigationBehavior DependentSelector="{Binding ElementName=listBox}" />
             </i:Interaction.Behaviors>
         </xctk:WatermarkTextBox>
         <Grid HorizontalAlignment="Stretch"

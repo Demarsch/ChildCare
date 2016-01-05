@@ -12,7 +12,6 @@ using Core.Wpf.Misc;
 using Microsoft.Practices.Unity;
 using PatientInfoModule.Misc;
 using Prism.Commands;
-using WpfControls.Editors;
 
 namespace PatientInfoModule.ViewModels
 {

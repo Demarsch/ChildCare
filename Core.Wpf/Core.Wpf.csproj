@@ -53,6 +53,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.3.6.1.236\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -104,6 +105,9 @@
     <Compile Include="Behaviors\TextBoxInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextBoxParentInputHelperBehavior.cs" />
     <Compile Include="Behaviors\TextHighlightBehavior.cs" />
+    <Compile Include="Controls\AutoCompleteTextBox.xaml.cs">
+      <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TreeViewComboBox.xaml.cs">
       <DependentUpon>TreeViewComboBox.xaml</DependentUpon>
     </Compile>
@@ -129,6 +133,7 @@
     <Compile Include="MarkupExtensions\Int32Extension.cs" />
     <Compile Include="Misc\BeforeSelectionChangedEventData.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />
+    <Compile Include="Misc\ISuggestionProvider.cs" />
     <Compile Include="Misc\InputHelpers\DigitsInputHelper.cs" />
     <Compile Include="Misc\FileServiceActions.cs" />
     <Compile Include="Misc\FileServiceFilters.cs" />
@@ -183,6 +188,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\AutoCompleteTextBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\TreeViewComboBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

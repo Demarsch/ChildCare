@@ -6,7 +6,8 @@
              xmlns:wpf="http://wpfcontrols.com/"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels">
+             xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+             xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf">
     <DataTemplate DataType="{x:Type viewModels:AddContractRecordsViewModel}">
         <DataTemplate.Resources>
             <DataTemplate x:Key="RecordTypesAutoCompleteTemplate">
@@ -56,21 +57,19 @@
                 <RadioButton Content="Услуги из номенклатуры" IsChecked="{Binding IsNewRecordChecked, Mode=TwoWay}" Margin="2"/>
                 <StackPanel Orientation="Vertical" 
                         Visibility="{Binding IsNewRecordChecked, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                    <wpf:AutoCompleteTextBox Margin="2"
+                    <controls:AutoCompleteTextBox Margin="2"
                                 Watermark="Введите наименование услуги для поиска..."
-                                DisplayMember="Name"
+                                DisplayMemberPath="Name"
                                 ItemTemplate="{StaticResource RecordTypesAutoCompleteTemplate}"
                                 SelectedItem="{Binding SelectedRecord, Mode=TwoWay}"
-                                IconPlacement="Left"
-                                IconVisibility="Visible"
-                                Provider="{Binding RecordTypesSuggestionProvider}"
+                                SuggestionProvider="{Binding RecordTypesSuggestionProvider}"
                                 x:Name="searchRecord">
-                        <wpf:AutoCompleteTextBox.LoadingContent>
+                        <controls:AutoCompleteTextBox.LoadContent>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Загрузка данных..." Margin="2" FontSize="13" />
                             </StackPanel>
-                        </wpf:AutoCompleteTextBox.LoadingContent>
-                    </wpf:AutoCompleteTextBox>
+                        </controls:AutoCompleteTextBox.LoadContent>
+                    </controls:AutoCompleteTextBox>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
