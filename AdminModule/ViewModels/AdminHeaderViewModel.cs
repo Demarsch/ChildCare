@@ -1,68 +1,92 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
+using Core.Wpf.Services;
 using log4net;
-using Prism.Mvvm;
+using Prism;
 using Prism.Commands;
 using Prism.Events;
+using Prism.Mvvm;
 using Prism.Regions;
-using Core.Wpf.Services;
 using Shell.Shared;
-using Prism;
 
 namespace AdminModule.ViewModels
 {
     public class AdminHeaderViewModel : BindableBase, IActiveAware
     {
-        ILog log;
-        IEventAggregator eventAggregator;
-        IRegionManager regionManager;
-        IViewNameResolver viewNameResolver;
+        private ILog log;
+
+        private IEventAggregator eventAggregator;
+
+        private readonly IRegionManager regionManager;
+
+        private readonly IViewNameResolver viewNameResolver;
 
         public AdminHeaderViewModel(ILog log, IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver)
         {
+            if (log == null)
+            {
+                throw new ArgumentNullException("log");
+            }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
+            if (regionManager == null)
+            {
+                throw new ArgumentNullException("regionManager");
+            }
+            if (viewNameResolver == null)
+            {
+                throw new ArgumentNullException("viewNameResolver");
+            }
             this.log = log;
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            activeSubViewName = viewNameResolver.Resolve<AdminEmptyViewModel>();
+            goToReportTemplatesManagerCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<ReportTemplatesManagerViewModel>()));
         }
 
-        private void PerformNavigation(string navSource = null)
+        private string activeSubViewName;
+
+        private void NavigateToSubView(string newActiveSubViewName)
         {
-            if (string.IsNullOrWhiteSpace(navSource))
-            {
-                if (regionManager.Regions[RegionNames.ModuleContent].ActiveViews.Any())
-                    return;
-                navSource = viewNameResolver.Resolve<AdminEmptyViewModel>();
-            }
-            regionManager.RequestNavigate(RegionNames.ModuleContent, navSource);
+            regionManager.RequestNavigate(RegionNames.ModuleContent, newActiveSubViewName);
+            activeSubViewName = newActiveSubViewName;
         }
 
         private bool isActive;
+
         public bool IsActive
-        { 
+        {
             get { return isActive; }
             set
             {
-                SetProperty(ref isActive, value);
-                if (value)
-                    PerformNavigation();
-            }
-        }
-
-        public event EventHandler IsActiveChanged = (sender, e) => { };
-
-        private DelegateCommand reportTemplatesManagerCommand;
-        public DelegateCommand ReportTemplateManagerCommand
-        {
-            get
-            {
-                return reportTemplatesManagerCommand ?? (reportTemplatesManagerCommand = new DelegateCommand(() =>
+                if (SetProperty(ref isActive, value))
                 {
-                    PerformNavigation(viewNameResolver.Resolve<ReportTemplatesManagerViewModel>());
-                }));
+                    OnIsActiveChanged();
+                }
+                if (value)
+                {
+                    NavigateToSubView(activeSubViewName);
+                }
             }
         }
 
+        public event EventHandler IsActiveChanged;
+
+        protected virtual void OnIsActiveChanged()
+        {
+            var handler = IsActiveChanged;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        private readonly DelegateCommand goToReportTemplatesManagerCommand;
+
+        public ICommand GoToReportTemplateManagerCommand { get { return goToReportTemplatesManagerCommand; }}
     }
 }
