@@ -5,11 +5,11 @@ using PatientInfoModule.Services;
 
 namespace PatientInfoModule.Misc
 {
-    public class InsuranceCompanySuggestionProvider : ISuggestionProvider
+    public class DisabilityDocumentGivenOrgSuggestionsProvider : ISuggestionsProvider
     {
         private readonly IPatientService patientService;
 
-        public InsuranceCompanySuggestionProvider(IPatientService patientService)
+        public DisabilityDocumentGivenOrgSuggestionsProvider(IPatientService patientService)
         {
             if (patientService == null)
             {
@@ -20,7 +20,7 @@ namespace PatientInfoModule.Misc
 
         public IEnumerable GetSuggestions(string filter)
         {
-            return patientService.GetInsuranceCompanies(filter);
+            return patientService.GetDisabilityDocumentGivenOrganizations(filter);
         }
     }
 }

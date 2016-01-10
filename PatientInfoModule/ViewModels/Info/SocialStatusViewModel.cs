@@ -40,13 +40,13 @@ namespace PatientInfoModule.ViewModels
             ChangeTracker = new ChangeTrackerEx<SocialStatusViewModel>(this);
         }
 
-        private ISuggestionProvider organizationSuggestionProvider;
+        private ISuggestionsProvider organizationSuggestionsProvider;
 
         [Dependency(SuggestionProviderNames.Organization)]
-        public ISuggestionProvider OrganizationSuggestionProvider
+        public ISuggestionsProvider OrganizationSuggestionsProvider
         {
-            get { return organizationSuggestionProvider; }
-            set { SetProperty(ref organizationSuggestionProvider, value); }
+            get { return organizationSuggestionsProvider; }
+            set { SetProperty(ref organizationSuggestionsProvider, value); }
         }
 
         private SocialStatusType selectedSocialStatusType;

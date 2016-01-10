@@ -183,12 +183,12 @@ namespace PatientInfoModule
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
 
-            container.RegisterType<ISuggestionProvider, IdentityDocumentGivenOrgSuggestionProvider>(SuggestionProviderNames.IdentityDocumentGiveOrganization, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionProvider, InsuranceCompanySuggestionProvider>(SuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionProvider, PersonSuggestionProvider>(SuggestionProviderNames.Person, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionProvider, OkatoRegionSuggestionProvider>(SuggestionProviderNames.OkatoRegion, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionProvider, DisabilityDocumentGivenOrgSuggestionProvider>(SuggestionProviderNames.DisabilityDocumentGivenOrganization, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionProvider, OrganizationSuggestionProvider>(SuggestionProviderNames.Organization, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, IdentityDocumentGivenOrgSuggestionsProvider>(SuggestionProviderNames.IdentityDocumentGiveOrganization, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, InsuranceCompanySuggestionsProvider>(SuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, PersonSuggestionsProvider>(SuggestionProviderNames.Person, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, OkatoRegionSuggestionsProvider>(SuggestionProviderNames.OkatoRegion, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, DisabilityDocumentGivenOrgSuggestionsProvider>(SuggestionProviderNames.DisabilityDocumentGivenOrganization, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, OrganizationSuggestionsProvider>(SuggestionProviderNames.Organization, new ContainerControlledLifetimeManager());
             container.RegisterType<IAddressSuggestionProvider, AddressSuggestionProvider>(new ContainerControlledLifetimeManager());
         }
 

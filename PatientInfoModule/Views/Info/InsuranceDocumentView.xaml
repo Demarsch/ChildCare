@@ -102,7 +102,7 @@
                                      Background="White"
                                      MinHeight="40"
                                      DisplayMemberPath="NameSMOK"
-                                     SuggestionProvider="{Binding InsuranceCompanySuggestionProvider}"
+                                     SuggestionsProvider="{Binding InsuranceCompanySuggestionsProvider}"
                                      SelectedItem="{Binding InsuranceCompany, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Watermark="Введите любое слово из названия страховой компании"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">

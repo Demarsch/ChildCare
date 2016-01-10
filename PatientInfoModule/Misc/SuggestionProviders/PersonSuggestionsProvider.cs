@@ -4,11 +4,11 @@ using System.Collections;
 
 namespace PatientInfoModule.Misc
 {
-    public class PersonSuggestionProvider : ISuggestionProvider
+    public class PersonSuggestionsProvider : ISuggestionsProvider
     {
         private readonly IPatientService service;
 
-        public PersonSuggestionProvider(IPatientService service)
+        public PersonSuggestionsProvider(IPatientService service)
         {
             this.service = service;
         }

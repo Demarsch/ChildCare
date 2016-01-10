@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Forms;
 using System.Windows.Input;
 using Core.Misc;
 using Core.Wpf.Misc;
+using ComboBox = System.Windows.Controls.ComboBox;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using TextBox = System.Windows.Controls.TextBox;
 
@@ -23,8 +23,35 @@ namespace Core.Wpf.Controls
         public AutoCompleteTextBox()
         {
             InitializeComponent();
-            popup.MaxHeight = Screen.PrimaryScreen.WorkingArea.Height / 5.0;
         }
+
+        #region Components-related
+
+        public static readonly DependencyProperty MaxDropDownHeightProperty = ComboBox.MaxDropDownHeightProperty.AddOwner(typeof(AutoCompleteTextBox));
+
+        public double MaxDropDownHeight
+        {
+            get { return (double)GetValue(MaxDropDownHeightProperty); }
+            set { SetValue(MaxDropDownHeightProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemTemplateProperty = ItemsControl.ItemTemplateProperty.AddOwner(typeof(AutoCompleteTextBox));
+
+        public DataTemplate ItemTemplate
+        {
+            get { return (DataTemplate)GetValue(ItemTemplateProperty); }
+            set { SetValue(ItemTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty MaxLengthProperty = TextBox.MaxLengthProperty.AddOwner(typeof(AutoCompleteTextBox));
+
+        public int MaxLength
+        {
+            get { return (int)GetValue(MaxLengthProperty); }
+            set { SetValue(MaxLengthProperty, value); }
+        }
+
+        #endregion
 
         #region SelectedItem
 
@@ -230,7 +257,7 @@ namespace Core.Wpf.Controls
 
         private bool SearchIsAvaialable()
         {
-            return SuggestionProvider != null && !string.IsNullOrWhiteSpace(Text) && (MinTextLengthToSearch == 0 || Text.Trim().Length >= MinTextLengthToSearch);
+            return SuggestionsProvider != null && !string.IsNullOrWhiteSpace(Text) && (MinTextLengthToSearch == 0 || Text.Trim().Length >= MinTextLengthToSearch);
         }
 
         private async void WaitAndRunSearchAsync()
@@ -260,7 +287,7 @@ namespace Core.Wpf.Controls
 
         private async Task<IEnumerable> SearchAsync(string filter, CancellationToken token)
         {
-            var suggestionProvider = SuggestionProvider;
+            var suggestionProvider = SuggestionsProvider;
             var maxSuggestionCount = MaxSuggestionCount;
             var result = await Task.Factory.StartNew(() => suggestionProvider.GetSuggestions(filter).Cast<object>().Take(maxSuggestionCount), token);
             if (token.IsCancellationRequested)
@@ -296,12 +323,12 @@ namespace Core.Wpf.Controls
 
         #endregion
 
-        public static readonly DependencyProperty SuggestionProviderProperty = DependencyProperty.Register("SuggestionProvider", typeof(ISuggestionProvider), typeof(AutoCompleteTextBox), new PropertyMetadata(default(ISuggestionProvider)));
+        public static readonly DependencyProperty SuggestionsProviderProperty = DependencyProperty.Register("SuggestionsProvider", typeof(ISuggestionsProvider), typeof(AutoCompleteTextBox), new PropertyMetadata(default(ISuggestionsProvider)));
 
-        public ISuggestionProvider SuggestionProvider
+        public ISuggestionsProvider SuggestionsProvider
         {
-            get { return (ISuggestionProvider)GetValue(SuggestionProviderProperty); }
-            set { SetValue(SuggestionProviderProperty, value); }
+            get { return (ISuggestionsProvider)GetValue(SuggestionsProviderProperty); }
+            set { SetValue(SuggestionsProviderProperty, value); }
         }
 
         public static readonly DependencyProperty LoadContentProperty = DependencyProperty.Register("LoadContent", typeof(object), typeof(AutoCompleteTextBox), new PropertyMetadata(null));
@@ -310,14 +337,6 @@ namespace Core.Wpf.Controls
         {
             get { return GetValue(LoadContentProperty); }
             set { SetValue(LoadContentProperty, value); }
-        }
-
-        public static readonly DependencyProperty ItemTemplateProperty = ItemsControl.ItemTemplateProperty.AddOwner(typeof (AutoCompleteTextBox));
-        
-        public DataTemplate ItemTemplate
-        {
-            get { return (DataTemplate)GetValue(ItemTemplateProperty); }
-            set { SetValue(ItemTemplateProperty, value); }
         }
 
         public static readonly DependencyProperty WatermarkProperty = DependencyProperty.Register("Watermark", typeof(string), typeof(AutoCompleteTextBox), new PropertyMetadata(default(string)));

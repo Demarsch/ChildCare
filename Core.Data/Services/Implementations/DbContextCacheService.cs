@@ -77,7 +77,7 @@ namespace Core.Data.Services
         {
             lock (loadedTypes)
             {
-                var type = typeof (TData);
+                var type = typeof(TData);
                 object result;
                 if (!loadedTypes.TryGetValue(type, out result))
                 {
@@ -89,6 +89,14 @@ namespace Core.Data.Services
                     loadedTypes.Add(type, result);
                 }
                 return result as TData[];
+            }
+        }
+
+        public void InvalidateCache<TData>() where TData : class
+        {
+            lock (loadedTypes)
+            {
+                loadedTypes.Remove(typeof(TData));
             }
         }
 

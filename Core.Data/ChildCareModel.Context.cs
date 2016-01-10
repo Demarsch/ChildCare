@@ -75,7 +75,6 @@ namespace Core.Data
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
-        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
         public virtual DbSet<VisitResult> VisitResults { get; set; }
         public virtual DbSet<Visit> Visits { get; set; }
@@ -115,5 +114,6 @@ namespace Core.Data
         public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

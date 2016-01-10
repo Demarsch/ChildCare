@@ -105,7 +105,7 @@
                                      Margin="3"
                                      Background="White"
                                      MinHeight="40"
-                                     SuggestionProvider="{Binding GivenOrgSuggestionProvider}"
+                                     SuggestionsProvider="{Binding GivenOrgSuggestionsProvider}"
                                      SelectedItem="{Binding GivenOrg, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Text="{Binding GivenOrgText, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Watermark="Введите любое слово из названия выдавшей организации"

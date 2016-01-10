@@ -11,7 +11,17 @@
                       d:DataContext="{d:DesignInstance viewModels:AdminHeaderViewModel}" 
                       Header="Администрирование">
     <fluent:RibbonGroupBox Header="Отчеты">
-        <fluent:Button x:Name="btnTemplates" Command="{Binding GoToReportTemplateManagerCommand}" 
-                       Header="Шаблоны" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/EditWord48x48.png" />       
+        <fluent:Button x:Name="btnTemplates" 
+                       Command="{Binding GoToReportTemplateManagerCommand, Mode=OneTime}" 
+                       Header="Шаблоны"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/EditWord48x48.png" />       
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Пользователи и права"
+                           HorizontalContentAlignment="Center"
+                           MinWidth="150">
+        <fluent:Button Command="{Binding GoToUserAccessManagerCommand, Mode=OneTime}" 
+                       Header="Перейти к списку"
+                       HorizontalAlignment="Center"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Users48x48.png" />
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

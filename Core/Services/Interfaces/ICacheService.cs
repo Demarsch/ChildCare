@@ -9,5 +9,7 @@ namespace Core.Services
         TData GetItemByName<TData>(string name) where TData : class;
 
         IEnumerable<TData> GetItems<TData>() where TData : class;
+
+        void InvalidateCache<TData>() where TData : class;
     }
 }

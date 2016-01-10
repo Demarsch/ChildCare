@@ -36,6 +36,7 @@
                      VerticalAlignment="Center"
                      TextWrapping="Wrap"
                      TextChanged="TextBoxOnTextChanged"
+                     MaxLength="{Binding MaxLength, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                      Style="{x:Null}"
                      PreviewKeyDown="TextBoxOnPreviewKeyDown">
                 <i:Interaction.Behaviors>
@@ -65,7 +66,8 @@
                MinWidth="{Binding ActualWidth, ElementName=textBox}"
                StaysOpen="True"
                Opened="PopupOnOpened"
-               Closed="PopupOnClosed">
+               Closed="PopupOnClosed"
+               MaxHeight="{Binding MaxDropDownHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
             <Popup.Effect>
                 <DropShadowEffect ShadowDepth="2" />
             </Popup.Effect>

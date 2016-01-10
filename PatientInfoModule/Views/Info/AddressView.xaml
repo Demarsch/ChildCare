@@ -100,7 +100,7 @@
                                      Watermark="Введите слова из названия региона или иностранного государства"
                                      DisplayMemberPath="FullName"
                                      SelectedItem="{Binding Region, Mode=TwoWay, ValidatesOnDataErrors=True}"
-                                     SuggestionProvider="{Binding AddressSuggestionProvider.RegionSuggestionProvider, Mode=OneTime}"
+                                     SuggestionsProvider="{Binding AddressSuggestionProvider.RegionSuggestionsProvider, Mode=OneTime}"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
                                      ItemTemplate="{StaticResource OkatoTemplate}"/>
         <TextBlock Grid.Row="4"
@@ -116,7 +116,7 @@
                                      Watermark="введите слова из района, села, города и др."
                                      DisplayMemberPath="FullName"
                                      SelectedItem="{Binding Location, Mode=TwoWay, ValidatesOnDataErrors=True}"
-                                     SuggestionProvider="{Binding AddressSuggestionProvider.LocationSuggestionProvider, Mode=OneTime}"
+                                     SuggestionsProvider="{Binding AddressSuggestionProvider.LocationSuggestionsProvider, Mode=OneTime}"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
             <controls:AutoCompleteTextBox.LoadContent>
                 <TextBlock Text="Загрузка данных..."

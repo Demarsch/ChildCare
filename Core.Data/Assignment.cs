@@ -137,30 +137,6 @@ namespace Core.Data
      		set { urgently = value; }
     	}
         [NonSerialized]
-    	protected User user;
-    
-    	public virtual User User
-    	{
-     		get { return user; }
-     		set { user = value; }
-    	}
-        [NonSerialized]
-    	protected User user1;
-    
-    	public virtual User User1
-    	{
-     		get { return user1; }
-     		set { user1 = value; }
-    	}
-        [NonSerialized]
-    	protected User user2;
-    
-    	public virtual User User2
-    	{
-     		get { return user2; }
-     		set { user2 = value; }
-    	}
-        [NonSerialized]
     	protected Visit visit;
     
     	public virtual Visit Visit
@@ -191,6 +167,30 @@ namespace Core.Data
     	{
      		get { return records; }
      		set { records = value; }
+    	}
+        [NonSerialized]
+    	protected User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
+    	}
+        [NonSerialized]
+    	protected User user1;
+    
+    	public virtual User User1
+    	{
+     		get { return user1; }
+     		set { user1 = value; }
+    	}
+        [NonSerialized]
+    	protected User user2;
+    
+    	public virtual User User2
+    	{
+     		get { return user2; }
+     		set { user2 = value; }
     	}
     
     	public object Clone()

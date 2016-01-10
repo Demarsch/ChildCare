@@ -15,7 +15,7 @@ namespace PatientInfoModule.Misc
 {
     public class AddressSuggestionProvider : BindableBase, IAddressSuggestionProvider
     {
-        private readonly LocationSuggestionProviderInternal locationSuggestionProvider;
+        private readonly LocationSuggestionsProviderInternal locationSuggestionsProvider;
 
         public AddressSuggestionProvider(ICacheService cacheService, ILog log)
         {
@@ -23,10 +23,10 @@ namespace PatientInfoModule.Misc
             {
                 throw new ArgumentNullException("cacheService");
             }
-            locationSuggestionProvider = new LocationSuggestionProviderInternal(cacheService, () => SelectedRegion, log);
+            locationSuggestionsProvider = new LocationSuggestionsProviderInternal(cacheService, () => SelectedRegion, log);
         }
         [Dependency(SuggestionProviderNames.OkatoRegion)]
-        public ISuggestionProvider RegionSuggestionProvider { get; set; }
+        public ISuggestionsProvider RegionSuggestionsProvider { get; set; }
 
         private Okato selectedRegion;
 
@@ -36,17 +36,17 @@ namespace PatientInfoModule.Misc
             set { SetProperty(ref selectedRegion, value); }
         }
 
-        public ISuggestionProvider LocationSuggestionProvider
+        public ISuggestionsProvider LocationSuggestionsProvider
         {
-            get { return locationSuggestionProvider; }
+            get { return locationSuggestionsProvider; }
         }
 
         public async Task EnsureDataSourceLoadedAsync()
         {
-            await locationSuggestionProvider.LoadDataSourcesAsync();
+            await locationSuggestionsProvider.LoadDataSourcesAsync();
         }
 
-        private class LocationSuggestionProviderInternal : ISuggestionProvider 
+        private class LocationSuggestionsProviderInternal : ISuggestionsProvider 
         {
             private readonly ICacheService cacheService;
 
@@ -56,7 +56,7 @@ namespace PatientInfoModule.Misc
 
             private Dictionary<Okato, List<Okato>> regionLocations;  
 
-            public LocationSuggestionProviderInternal(ICacheService cacheService, Func<Okato> regionFactory, ILog log)
+            public LocationSuggestionsProviderInternal(ICacheService cacheService, Func<Okato> regionFactory, ILog log)
             {
                 if (cacheService == null)
                 {

@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Core.Wpf.Misc
 {
-    public interface ISuggestionProvider
+    public interface ISuggestionsProvider
     {
         IEnumerable GetSuggestions(string filter);
     }

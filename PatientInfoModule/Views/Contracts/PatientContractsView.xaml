@@ -167,7 +167,7 @@
                                                 Grid.Column="1" 
                                                 Margin="2,2,25,2" 
                                                 Background="White" MinHeight="23"
-                                                SuggestionProvider="{Binding PersonSuggestionProvider}"
+                                                SuggestionsProvider="{Binding PersonSuggestionsProvider}"
                                                 DisplayMemberPath="Field"
                                                 SelectedItem="{Binding SelectedClient, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                                 Watermark="Введите Ф.И.О. заказчика для поиска..."

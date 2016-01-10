@@ -122,14 +122,6 @@ namespace Core.Data
      		set { room = value; }
     	}
         [NonSerialized]
-    	protected User user;
-    
-    	public virtual User User
-    	{
-     		get { return user; }
-     		set { user = value; }
-    	}
-        [NonSerialized]
     	protected Visit visit;
     
     	public virtual Visit Visit
@@ -192,6 +184,14 @@ namespace Core.Data
     	{
      		get { return assignment; }
      		set { assignment = value; }
+    	}
+        [NonSerialized]
+    	protected User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
     	}
     
     	public object Clone()

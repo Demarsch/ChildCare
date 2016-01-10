@@ -80,7 +80,7 @@
                                      Background="White"
                                      MinHeight="40"
                                      DisplayMemberPath="Name"
-                                     SuggestionProvider="{Binding OrganizationSuggestionProvider}"
+                                     SuggestionsProvider="{Binding OrganizationSuggestionsProvider}"
                                      SelectedItem="{Binding SelectedOrganization, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Text="{Binding OrganizationText, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      Watermark="Введите любое слово из названия организации"

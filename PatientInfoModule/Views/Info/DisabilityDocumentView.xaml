@@ -96,7 +96,7 @@
                                      Margin="3"
                                      Background="White"
                                      MinHeight="40"
-                                     SuggestionProvider="{Binding GivenOrgSuggestionProvider}"
+                                     SuggestionsProvider="{Binding GivenOrgSuggestionsProvider}"
                                      SelectedItem="{Binding GivenOrg, ValidatesOnDataErrors=True}"
                                      Text="{Binding GivenOrgText, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                                      Watermark="Введите любое слово из названия выдавшей организации"

@@ -62,7 +62,7 @@
                                 DisplayMemberPath="Name"
                                 ItemTemplate="{StaticResource RecordTypesAutoCompleteTemplate}"
                                 SelectedItem="{Binding SelectedRecord, Mode=TwoWay}"
-                                SuggestionProvider="{Binding RecordTypesSuggestionProvider}"
+                                SuggestionsProvider="{Binding RecordTypesSuggestionsProvider}"
                                 x:Name="searchRecord">
                         <controls:AutoCompleteTextBox.LoadContent>
                             <StackPanel Orientation="Horizontal">

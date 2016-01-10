@@ -90,7 +90,7 @@ namespace PatientInfoModule.ViewModels
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadContractsAsync(patientId)), CommandName = "Повторить" };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources), CommandName = "Повторить" };
            
-            PersonSuggestionProvider = new PersonSuggestionProvider(personService);
+            PersonSuggestionsProvider = new PersonSuggestionsProvider(personService);
 
             ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
 
@@ -386,11 +386,11 @@ namespace PatientInfoModule.ViewModels
 
         #region Properties
 
-        private PersonSuggestionProvider personSuggestionProvider;
-        public PersonSuggestionProvider PersonSuggestionProvider
+        private PersonSuggestionsProvider personSuggestionsProvider;
+        public PersonSuggestionsProvider PersonSuggestionsProvider
         {
-            get { return personSuggestionProvider; }
-            set { SetProperty(ref personSuggestionProvider, value); }
+            get { return personSuggestionsProvider; }
+            set { SetProperty(ref personSuggestionsProvider, value); }
         }
 
         private string contractName;

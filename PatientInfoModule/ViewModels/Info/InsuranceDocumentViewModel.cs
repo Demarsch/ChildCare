@@ -33,13 +33,13 @@ namespace PatientInfoModule.ViewModels
             ChangeTracker = new ChangeTrackerEx<InsuranceDocumentViewModel>(this);
         }
 
-        private ISuggestionProvider insuranceCompanySuggestionProvider;
+        private ISuggestionsProvider insuranceCompanySuggestionsProvider;
 
         [Dependency(SuggestionProviderNames.InsuranceCompany)]
-        public ISuggestionProvider InsuranceCompanySuggestionProvider
+        public ISuggestionsProvider InsuranceCompanySuggestionsProvider
         {
-            get { return insuranceCompanySuggestionProvider; }
-            set { SetProperty(ref insuranceCompanySuggestionProvider, value); }
+            get { return insuranceCompanySuggestionsProvider; }
+            set { SetProperty(ref insuranceCompanySuggestionsProvider, value); }
         }
 
         private int? documentTypeId;

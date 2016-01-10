@@ -46,6 +46,7 @@ namespace AdminModule.ViewModels
             this.viewNameResolver = viewNameResolver;
             activeSubViewName = viewNameResolver.Resolve<AdminEmptyViewModel>();
             goToReportTemplatesManagerCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<ReportTemplatesManagerViewModel>()));
+            goToUserAccessManagerCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<UserAccessManagerViewModel>()));
         }
 
         private string activeSubViewName;
@@ -88,5 +89,9 @@ namespace AdminModule.ViewModels
         private readonly DelegateCommand goToReportTemplatesManagerCommand;
 
         public ICommand GoToReportTemplateManagerCommand { get { return goToReportTemplatesManagerCommand; }}
+
+        private readonly DelegateCommand goToUserAccessManagerCommand;
+
+        public ICommand GoToUserAccessManagerCommand { get { return goToUserAccessManagerCommand; } }
     }
 }

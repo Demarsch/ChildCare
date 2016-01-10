@@ -7,6 +7,11 @@ namespace Core.Data
     [DebuggerDisplay("{Id} - {Name}")]
     public partial class PermissionGroup : IHierarchyItem<PermissionGroup>
     {
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", Id, Name);
+        }
+
         IHierarchyItem IHierarchyItem.Parent { get { return Parent; } }
 
         public IEnumerable<PermissionGroup> Children { get { return PermissionGroups1; } }

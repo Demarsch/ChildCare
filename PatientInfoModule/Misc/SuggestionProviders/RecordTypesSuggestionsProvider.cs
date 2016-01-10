@@ -3,11 +3,11 @@ using PatientInfoModule.Services;
 
 namespace PatientInfoModule.Misc
 {
-    public class RecordTypesSuggestionProvider : ISuggestionProvider
+    public class RecordTypesSuggestionsProvider : ISuggestionsProvider
     {
         private readonly IRecordService service;
 
-        public RecordTypesSuggestionProvider(IRecordService service)
+        public RecordTypesSuggestionsProvider(IRecordService service)
         {
             this.service = service;
         }

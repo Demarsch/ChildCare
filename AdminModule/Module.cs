@@ -1,5 +1,7 @@
-﻿using Core.Data;
+﻿using AdminModule.Services;
+using Core.Data;
 using Prism.Modularity;
+using Shared.Patient.Misc;
 using Shell.Shared;
 using Microsoft.Practices.Unity;
 using log4net;
@@ -33,22 +35,36 @@ namespace AdminModule
             container.RegisterInstance(LogManager.GetLogger("ADMINING"));
             var log = container.Resolve<ILog>();
             log.InfoFormat("{0} module init start", WellKnownModuleNames.AdminModule);
-            CoreReports.Initialize(container);
+            RegisterServices();
+            RegisterViewModels();
+            RegisterViews();
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.AdminModule);
+        }
 
+        private void RegisterServices()
+        {
+            CoreReports.Initialize(container);
+            PersonServicesInitializer.Initialize(container);
+            container.RegisterType<IUserAccessService, UserAccessService>(new ContainerControlledLifetimeManager());
+        }
+
+        private void RegisterViewModels()
+        {
             container.RegisterType<AdminEmptyViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ReportTemplatesManagerViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<AdminHeaderViewModel>(new ContainerControlledLifetimeManager());
+        }
+
+        private void RegisterViews()
+        {
             container.RegisterType<object, AdminEmptyView>(viewNameResolver.Resolve<AdminEmptyViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<AdminEmptyView>());
-
-            container.RegisterType<ReportTemplateEditorViewModel>(new TransientLifetimeManager());
-            container.RegisterType<ReportTemplatesManagerViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<object, ReportTemplatesManagerView>(viewNameResolver.Resolve<ReportTemplatesManagerViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<ReportTemplatesManagerView>());
-
-            // header
-            container.RegisterType<AdminHeaderViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<AdminHeaderView>(new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<AdminHeaderView>());
-            log.InfoFormat("{0} module init finished", WellKnownModuleNames.AdminModule);
+            container.RegisterType<object, UserAccessManagerView>(viewNameResolver.Resolve<UserAccessManagerViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<UserAccessManagerView>());
         }
     }
 }

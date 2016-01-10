@@ -32,13 +32,13 @@ namespace PatientInfoModule.ViewModels
             ChangeTracker = new ChangeTrackerEx<DisabilityDocumentViewModel>(this);
         }
 
-        private ISuggestionProvider givenOrgSuggestionProvider;
+        private ISuggestionsProvider givenOrgSuggestionsProvider;
 
         [Dependency(SuggestionProviderNames.DisabilityDocumentGivenOrganization)]
-        public ISuggestionProvider GivenOrgSuggestionProvider
+        public ISuggestionsProvider GivenOrgSuggestionsProvider
         {
-            get { return givenOrgSuggestionProvider; }
-            set { SetProperty(ref givenOrgSuggestionProvider, value); }
+            get { return givenOrgSuggestionsProvider; }
+            set { SetProperty(ref givenOrgSuggestionsProvider, value); }
         }
 
         private int? disabilityTypeId;

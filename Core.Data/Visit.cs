@@ -65,14 +65,6 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	protected User user;
-    
-    	public virtual User User
-    	{
-     		get { return user; }
-     		set { user = value; }
-    	}
-        [NonSerialized]
     	protected VisitOutcome visitOutcome;
     
     	public virtual VisitOutcome VisitOutcome
@@ -135,6 +127,14 @@ namespace Core.Data
     	{
      		get { return assignments; }
      		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
     	}
     
     	public object Clone()

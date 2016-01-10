@@ -8,11 +8,11 @@ using Core.Wpf.Misc;
 
 namespace PatientInfoModule.Misc
 {
-    public class OkatoRegionSuggestionProvider : ISuggestionProvider
+    public class OkatoRegionSuggestionsProvider : ISuggestionsProvider
     {
         private readonly Okato[] regions;
 
-        public OkatoRegionSuggestionProvider(ICacheService cacheService)
+        public OkatoRegionSuggestionsProvider(ICacheService cacheService)
         {
             if (cacheService == null)
             {

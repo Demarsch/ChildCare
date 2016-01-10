@@ -26,6 +26,14 @@ namespace Core.Data
         public int UserMessageTypeId { get; set; }
     
         [NonSerialized]
+    	protected UserMessageType userMessageType;
+    
+    	public virtual UserMessageType UserMessageType
+    	{
+     		get { return userMessageType; }
+     		set { userMessageType = value; }
+    	}
+        [NonSerialized]
     	protected User user;
     
     	public virtual User User
@@ -40,14 +48,6 @@ namespace Core.Data
     	{
      		get { return user1; }
      		set { user1 = value; }
-    	}
-        [NonSerialized]
-    	protected UserMessageType userMessageType;
-    
-    	public virtual UserMessageType UserMessageType
-    	{
-     		get { return userMessageType; }
-     		set { userMessageType = value; }
     	}
     
     	public object Clone()

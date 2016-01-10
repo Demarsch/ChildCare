@@ -7,11 +7,11 @@ namespace PatientInfoModule.Misc
 {
     public interface IAddressSuggestionProvider : INotifyPropertyChanged
     {
-        ISuggestionProvider RegionSuggestionProvider { get; }
+        ISuggestionsProvider RegionSuggestionsProvider { get; }
 
         Okato SelectedRegion { get; set; }
 
-        ISuggestionProvider LocationSuggestionProvider { get; }
+        ISuggestionsProvider LocationSuggestionsProvider { get; }
 
         Task EnsureDataSourceLoadedAsync();
     }

@@ -1,16 +1,15 @@
-﻿
-using System;
+﻿using System;
 using System.Collections;
 using Core.Wpf.Misc;
 using PatientInfoModule.Services;
 
 namespace PatientInfoModule.Misc
 {
-    public class OrganizationSuggestionProvider : ISuggestionProvider
+    public class IdentityDocumentGivenOrgSuggestionsProvider : ISuggestionsProvider
     {
         private readonly IPatientService patientService;
 
-        public OrganizationSuggestionProvider(IPatientService patientService)
+        public IdentityDocumentGivenOrgSuggestionsProvider(IPatientService patientService)
         {
             if (patientService == null)
             {
@@ -21,7 +20,7 @@ namespace PatientInfoModule.Misc
 
         public IEnumerable GetSuggestions(string filter)
         {
-            return patientService.GetOrganizations(filter);
+            return patientService.GetIdentityDocumentGivenOrganizations(filter);
         }
     }
 }

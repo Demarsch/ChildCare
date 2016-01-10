@@ -51,7 +51,7 @@ namespace PatientInfoModule.ViewModels
             this.assignmentService = assignmentService;
             this.personService = personService;
             this.logService = logService;
-            RecordTypesSuggestionProvider = new RecordTypesSuggestionProvider(recordService);
+            RecordTypesSuggestionsProvider = new RecordTypesSuggestionsProvider(recordService);
             Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>();
 
             BusyMediator = new BusyMediator();
@@ -134,11 +134,11 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        private RecordTypesSuggestionProvider recordTypesSuggestionProvider;
-        public RecordTypesSuggestionProvider RecordTypesSuggestionProvider
+        private RecordTypesSuggestionsProvider recordTypesSuggestionsProvider;
+        public RecordTypesSuggestionsProvider RecordTypesSuggestionsProvider
         {
-            get { return recordTypesSuggestionProvider; }
-            set { SetProperty(ref recordTypesSuggestionProvider, value); }
+            get { return recordTypesSuggestionsProvider; }
+            set { SetProperty(ref recordTypesSuggestionsProvider, value); }
         }
 
         private RecordType selectedRecord;
