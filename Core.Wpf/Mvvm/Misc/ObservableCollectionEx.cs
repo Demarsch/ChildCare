@@ -97,14 +97,14 @@ namespace Core.Wpf.Mvvm
 
         public void Replace(IEnumerable<TItem> newItems)
         {
-            newItems = newItems == null ? new TItem[0] : newItems.ToArray();
-            var wasChanged = Items.Count > 0;
+            var newItemsArray = newItems == null ? new TItem[0] : newItems.ToArray();
+            var wasChanged = Items.Count > 0 || newItemsArray.Length > 0;
             if (wasChanged)
             {
-                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, (IList)newItems, (IList)Items));
+                OnBeforeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, (IList)newItemsArray, (IList)Items));
             }
             Items.Clear();
-            foreach (var item in newItems)
+            foreach (var item in newItemsArray)
             {
                 Items.Add(item);
                 wasChanged = true;

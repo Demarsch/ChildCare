@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ using Prism.Regions;
 
 namespace AdminModule.ViewModels
 {
-    public class UserAccessManagerViewModel : BindableBase, INavigationAware
+    public class UserAccessManagerViewModel : BindableBase, INavigationAware, IDisposable
     {
         private readonly ILog log;
 
@@ -53,6 +54,7 @@ namespace AdminModule.ViewModels
             view.Filter = FilterUsers;
             view.SortDescriptions.Add(new SortDescription("FullName", ListSortDirection.Ascending));
             Groups = new ObservableCollectionEx<PermissionGroupViewModel>();
+            Groups.BeforeCollectionChanged += GroupsOnBeforeCollectionChanged;
             view = CollectionViewSource.GetDefaultView(Groups);
             view.Filter = FilterGroups;
             view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
@@ -166,6 +168,85 @@ namespace AdminModule.ViewModels
         #endregion
 
         #region Groups
+
+        private void GroupsOnBeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            foreach (var oldGroup in e.OldItems.Cast<PermissionGroupViewModel>())
+            {
+                oldGroup.CurrentUserExcludeRequested -= GroupOnCurrentUserExcludeRequested;
+                oldGroup.CurrentUserIncludeRequested -= GroupOnCurrentUserIncludeRequested;
+                oldGroup.DeleteRequested -= GroupOnDeleteRequested;
+            }
+            foreach (var newGroup in e.NewItems.Cast<PermissionGroupViewModel>())
+            {
+                newGroup.CurrentUserExcludeRequested += GroupOnCurrentUserExcludeRequested;
+                newGroup.CurrentUserIncludeRequested += GroupOnCurrentUserIncludeRequested;
+                newGroup.DeleteRequested += GroupOnDeleteRequested;
+            }
+        }
+
+        private void GroupOnDeleteRequested(object sender, EventArgs eventArgs)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async void GroupOnCurrentUserIncludeRequested(object sender, EventArgs eventArgs)
+        {
+            var currentUser = SelectedSecurityObject as UserViewModel;
+            var group = (PermissionGroupViewModel)sender;
+            if (currentUser == null)
+            {
+                log.Warn("Trying to add user to group but user wasn't selected");
+                return;
+            }
+            try
+            {
+                log.InfoFormat("Adding user '{0}' to group '{1}'...", currentUser.FullName, group.Name);
+                BusyMediator.Activate("Добавляем пользователя в группу...");
+                await userAccessService.AddUserToGroupAsync(currentUser.Id, group.Id);
+                group.UserMode = currentUser;
+                log.InfoFormat("Successfully added user '{0}' to group '{1}'", currentUser.FullName, group.Name);
+                CollectionViewSource.GetDefaultView(Groups).Refresh();
+            }
+            catch (Exception ex)
+            {
+                log.InfoFormat("Failed to add user '{0}' to group '{1}'", currentUser.FullName, group.Name);
+                FailureMediator.Activate("Не удалось добавить пользователя в группу. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception:ex, canBeDeactivated:true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        private async void GroupOnCurrentUserExcludeRequested(object sender, EventArgs eventArgs)
+        {
+            var currentUser = SelectedSecurityObject as UserViewModel;
+            var group = (PermissionGroupViewModel)sender;
+            if (currentUser == null)
+            {
+                log.Warn("Trying to remove user from group but user wasn't selected");
+                return;
+            }
+            try
+            {
+                log.InfoFormat("Removing user '{0}' from group '{1}'...", currentUser.FullName, group.Name);
+                BusyMediator.Activate("Удаляем пользователя из группы...");
+                await userAccessService.RemoveUserFromGroupAsync(currentUser.Id, group.Id);
+                group.UserMode = currentUser;
+                log.InfoFormat("Successfully removed user '{0}' to group '{1}'", currentUser.FullName, group.Name);
+                CollectionViewSource.GetDefaultView(Groups).Refresh();
+            }
+            catch (Exception ex)
+            {
+                log.InfoFormat("Failed to remove user '{0}' from group '{1}'", currentUser.FullName, group.Name);
+                FailureMediator.Activate("Не удалось удалить пользователя из группы. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
 
         private readonly DelegateCommand<PermissionGroupViewModel> selectGroupCommand;
 
@@ -303,6 +384,12 @@ namespace AdminModule.ViewModels
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
+        }
+
+        public void Dispose()
+        {
+            Groups.Clear();
+            Groups.BeforeCollectionChanged -= GroupsOnBeforeCollectionChanged;
         }
     }
 }

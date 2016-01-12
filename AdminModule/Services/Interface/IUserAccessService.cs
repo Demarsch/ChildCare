@@ -12,5 +12,13 @@ namespace AdminModule.Services
         Task<IEnumerable<PermissionGroup>> GetGroupsAsync();
 
         Task<IEnumerable<UserDTO>> GetUsersAsync();
+
+        Task AddUserToGroupAsync(int userId, int groupId);
+
+        Task RemoveUserFromGroupAsync(int userId, int groupId);
+
+        Task AddPermissionToGroupAsync(int permissionId, int groupId);
+
+        Task RemovePermissionFromGroupAsync(int permissionId, int groupId);
     }
 }

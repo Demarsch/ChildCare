@@ -27,6 +27,7 @@ namespace AdminModule.ViewModels
                 .ObservesProperty(() => CurrentUserIsIncluded);
             requestDeleteCommand = new DelegateCommand(RequestDelete);
         }
+        public int Id { get { return group.Id; } }
 
         private string name;
 
@@ -51,11 +52,9 @@ namespace AdminModule.ViewModels
             get { return userMode; }
             set
             {
-                if (SetProperty(ref userMode, value))
-                {
-                    OnPropertyChanged(() => IsInUserMode);
-                    OnPropertyChanged(() => CurrentUserIsIncluded);
-                }
+                SetProperty(ref userMode, value);
+                OnPropertyChanged(() => IsInUserMode);
+                OnPropertyChanged(() => CurrentUserIsIncluded);
             }
         }
 
@@ -87,7 +86,7 @@ namespace AdminModule.ViewModels
                 handler(this, EventArgs.Empty);
             }
         }
-        
+
         private readonly DelegateCommand requestCurrentUserExcludeCommand;
 
         public ICommand RequestCurrentUserExcludeCommand { get { return requestCurrentUserExcludeCommand; } }

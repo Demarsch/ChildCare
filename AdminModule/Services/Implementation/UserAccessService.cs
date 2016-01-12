@@ -61,5 +61,48 @@ namespace AdminModule.Services
                               .ToArrayAsync();
             }
         }
+
+        public async Task AddUserToGroupAsync(int userId, int groupId)
+        {
+            var @group = cacheService.GetItemById<PermissionGroup>(groupId);
+            if (@group.UserPermisionGroups.Any(x => x.UserId == userId))
+            {
+                return;
+            }
+            var userGroupMembership = new UserPermisionGroup { PermissionGroupId = groupId, UserId = userId };
+            using (var context = contextProvider.CreateLightweightContext())
+            {
+                context.Entry(userGroupMembership).State = EntityState.Added;
+                await context.SaveChangesAsync();
+            }
+            @group.UserPermisionGroups.Add(userGroupMembership);
+            userGroupMembership.PermissionGroup = @group;
+        }
+
+        public async Task RemoveUserFromGroupAsync(int userId, int groupId)
+        {
+            var @group = cacheService.GetItemById<PermissionGroup>(groupId);
+            var itemToRemove = @group.UserPermisionGroups.FirstOrDefault(x => x.UserId == userId);
+            if (itemToRemove == null)
+            {
+                return;
+            }
+            @group.UserPermisionGroups.Remove(itemToRemove);
+            using (var context = contextProvider.CreateLightweightContext())
+            {
+                context.Entry(itemToRemove).State = EntityState.Deleted;
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddPermissionToGroupAsync(int permissionId, int groupId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task RemovePermissionFromGroupAsync(int permissionId, int groupId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
