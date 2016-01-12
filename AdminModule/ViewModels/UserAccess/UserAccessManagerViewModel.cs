@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -9,6 +10,7 @@ using System.Windows.Input;
 using AdminModule.Model;
 using AdminModule.Services;
 using Core.Data;
+using Core.Extensions;
 using Core.Services;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
@@ -47,11 +49,17 @@ namespace AdminModule.ViewModels
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             Users = new ObservableCollectionEx<UserViewModel>();
-            CollectionViewSource.GetDefaultView(Users).Filter = FilterUsers;
+            var view = CollectionViewSource.GetDefaultView(Users);
+            view.Filter = FilterUsers;
+            view.SortDescriptions.Add(new SortDescription("FullName", ListSortDirection.Ascending));
             Groups = new ObservableCollectionEx<PermissionGroupViewModel>();
-            CollectionViewSource.GetDefaultView(Groups).Filter = FilterGroups;
+            view = CollectionViewSource.GetDefaultView(Groups);
+            view.Filter = FilterGroups;
+            view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
             Permissions = new ObservableCollectionEx<PermissionViewModel>();
-            CollectionViewSource.GetDefaultView(Permissions).Filter = FilterPermissions;
+            view = CollectionViewSource.GetDefaultView(Permissions);
+            view.Filter = FilterPermissions;
+            view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
             initialLoadingWrapper = new CommandWrapper
                                     {
                                         Command = new DelegateCommand(async () => await InitialLoadingAsync()),
@@ -115,6 +123,15 @@ namespace AdminModule.ViewModels
         private void SelectUser(UserViewModel user)
         {
             SelectedSecurityObject = user == SelectedSecurityObject ? null : user;
+            var view = CollectionViewSource.GetDefaultView(Groups);
+            using (view.DeferRefresh())
+            {
+                view.GroupDescriptions.Clear();
+                if (SelectedSecurityObject != null)
+                {
+                    view.GroupDescriptions.Add(new PropertyGroupDescription("CurrentUserIsIncluded"));
+                }
+            }
         }
 
         public ObservableCollectionEx<UserViewModel> Users { get; private set; }
@@ -225,6 +242,7 @@ namespace AdminModule.ViewModels
                 {
                     SelectedSecurityObjectType = null;
                 }
+                Groups.ForEach(x => x.UserMode = value as UserViewModel);
             }
         }
 

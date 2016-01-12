@@ -12,6 +12,7 @@ namespace AdminModule.ViewModels
             {
                 throw new ArgumentNullException("user");
             }
+            Id = user.Id;
             FullName = user.FullName;
         }
 
@@ -22,5 +23,7 @@ namespace AdminModule.ViewModels
             get { return fullName; }
             set { SetProperty(ref fullName, value); }
         }
+
+        public int Id { get; private set; }
     }
 }

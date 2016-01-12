@@ -227,7 +227,10 @@
   <ItemGroup>
     <Resource Include="Resources\Images\ConfigurationSettings256x256.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\UserAdd48x48.png" />
+    <Resource Include="Resources\Images\UserRemove48x48.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\AttachDocument48x48.png" />
     <Resource Include="Resources\Images\DetachDocument48x48.png" />

@@ -7,6 +7,7 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:model="clr-namespace:AdminModule.Model"
+             xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:UserAccessManagerViewModel}">
@@ -28,12 +29,69 @@
                     Padding="5 0 0 0" />
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:PermissionGroupViewModel}">
-            <Button Content="{Binding Name}"
-                    Command="{Binding DataContext.SelectGroupCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                    CommandParameter="{Binding}"
-                    Background="White"
-                    HorizontalContentAlignment="Left"
-                    Padding="5 0 0 0" />
+            <DataTemplate.Resources>
+                <converters:MultiBoolToVisibilityConverter x:Key="AllowIncludeConverter"
+                                                           Condition="Mixed" />
+            </DataTemplate.Resources>
+            <Button
+                Command="{Binding DataContext.SelectGroupCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                CommandParameter="{Binding}"
+                Background="White"
+                HorizontalContentAlignment="Stretch"
+                Padding="5 0 0 0">
+                <Grid HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Name}"
+                               TextWrapping="Wrap" />
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Opacity="0.5"
+                                x:Name="buttonsPanel">
+                        <Button Command="{Binding RequestCurrentUserIncludeCommand, Mode=OneTime}"
+                                Margin="2"
+                                ToolTip="Добавить выбранного пользователю в эту группу">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{StaticResource AllowIncludeConverter}">
+                                    <Binding Path="IsInUserMode" />
+                                    <Binding Path="CurrentUserIsIncluded" />
+                                </MultiBinding>
+                            </Button.Visibility>
+                            <Image Width="20"
+                                   Height="20"
+                                   Source="pack://application:,,,/Core;Component/Resources/Images/UserAdd48x48.png" />
+                        </Button>
+                        <Button Command="{Binding RequestCurrentUserExcludeCommand, Mode=OneTime}"
+                                Margin="2"
+                                ToolTip="Удалить выбранного пользователя из этой группы"
+                                Visibility="{Binding CurrentUserIsIncluded, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                            <Image Width="20"
+                                   Height="20"
+                                   Source="pack://application:,,,/Core;Component/Resources/Images/UserRemove48x48.png" />
+                        </Button>
+                        <Button Command="{Binding RequestDeleteCommand, Mode=OneTime}"
+                                Margin="2"
+                                ToolTip="Удалить эту группу">
+                            <Image Width="20"
+                                   Height="20"
+                                   Source="pack://application:,,,/Core;Component/Resources/Images/Remove.png" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Button>
+            <DataTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver"
+                         Value="True">
+                    <Setter TargetName="buttonsPanel"
+                            Property="Opacity"
+                            Value="1" />
+                </Trigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
         <converters:Converter x:Key="SecurityObjectTypeConverter"
                               DefaultValue="">
@@ -53,6 +111,12 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <converters:Converter x:Key="GroupUserRelationshipConverter">
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                      To="Пользователь не состоит в группах" />
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                      To="Пользователь входит в группы" />
+        </converters:Converter>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
@@ -68,15 +132,13 @@
                 <StackPanel HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
-                    <TextBlock
-                        Text="{Binding SelectedSecurityObjectType, Converter={StaticResource SecurityObjectTypeConverter}}"
-                        FontWeight="SemiBold" />
-                    <ContentControl
-                        Content="{Binding SelectedSecurityObject, TargetNullValue='Для начала работы выберите пользователя, группу или право'}"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center" />
+                    <TextBlock FontWeight="SemiBold"
+                               Text="{Binding SelectedSecurityObjectType, Converter={StaticResource SecurityObjectTypeConverter}}" />
+                    <ContentControl HorizontalContentAlignment="Center"
+                                    Content="{Binding SelectedSecurityObject, TargetNullValue='Для начала работы выберите пользователя, группу или право'}"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
                 </StackPanel>
             </Border>
             <Grid>
@@ -167,7 +229,30 @@
                                  Grid.Column="0"
                                  Grid.ColumnSpan="2"
                                  Margin="5"
-                                 ItemsSource="{Binding Groups}" />
+                                 ItemsSource="{Binding Groups}">
+                            <ListBox.GroupStyle>
+                                <GroupStyle HidesIfEmpty="True">
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate DataType="{x:Type CollectionViewGroup}">
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Separator VerticalAlignment="Center"
+                                                           HorizontalAlignment="Stretch"
+                                                           Height="1"
+                                                           Background="Black" />
+                                                <Border Padding="2 0 2 0"
+                                                        HorizontalAlignment="Left"
+                                                        Background="White"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock FontWeight="SemiBold"
+                                                               Text="{Binding Name, Converter={StaticResource GroupUserRelationshipConverter}}" />
+                                                </Border>
+
+                                            </Grid>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </ListBox.GroupStyle>
+                        </ListBox>
                     </Grid>
                 </Border>
                 <Grid Grid.Column="2"

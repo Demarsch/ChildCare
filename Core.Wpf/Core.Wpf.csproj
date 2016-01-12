@@ -113,6 +113,7 @@
     </Compile>
     <Compile Include="Converters\BoolToCollapsedConverter.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
+    <Compile Include="Converters\MultiBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\TrueToCollapsedConverter.cs" />
     <Compile Include="Converters\CompletedToColorConverter.cs" />
     <Compile Include="Converters\BoolToWindowStateConverter.cs" />

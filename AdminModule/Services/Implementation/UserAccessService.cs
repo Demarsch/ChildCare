@@ -56,7 +56,7 @@ namespace AdminModule.Services
                                                PersonId = x.PersonId,
                                                PhotoData = x.Person.Document.FileData,
                                                Sid = x.SID,
-                                               UserId = x.Id
+                                               Id = x.Id
                                            })
                               .ToArrayAsync();
             }
