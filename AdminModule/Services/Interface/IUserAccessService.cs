@@ -20,5 +20,9 @@ namespace AdminModule.Services
         Task AddPermissionToGroupAsync(int permissionId, int groupId);
 
         Task RemovePermissionFromGroupAsync(int permissionId, int groupId);
+
+        Task<PermissionGroup> CreateNewPermissionGroupAsync(string name, string description);
+
+        Task<PermissionGroup> SavePermissionGroupAsync(string newName, string newDescription, PermissionGroup currentGroup);
     }
 }

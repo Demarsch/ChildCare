@@ -77,6 +77,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.3.6.1.236\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -125,6 +126,7 @@
     <Compile Include="ViewModels\ReportTemplateEditorViewModel.cs" />
     <Compile Include="ViewModels\ReportTemplatesManagerViewModel.cs" />
     <Compile Include="ViewModels\AdminHeaderViewModel.cs" />
+    <Compile Include="ViewModels\UserAccess\GroupEditDialogViewModel.cs" />
     <Compile Include="ViewModels\UserAccess\PermissionGroupViewModel.cs" />
     <Compile Include="ViewModels\UserAccess\PermissionViewModel.cs" />
     <Compile Include="ViewModels\UserAccess\UserAccessManagerViewModel.cs" />
@@ -137,6 +139,9 @@
     </Compile>
     <Compile Include="Views\ReportTemplatesManagerView.xaml.cs">
       <DependentUpon>ReportTemplatesManagerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserAccess\GroupEditDialogView.xaml.cs">
+      <DependentUpon>GroupEditDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UserAccess\UserAccessManagerView.xaml.cs">
       <DependentUpon>UserAccessManagerView.xaml</DependentUpon>
@@ -173,6 +178,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\AdminHeaderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -184,6 +193,10 @@
     <Page Include="Views\ReportTemplatesManagerView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UserAccess\GroupEditDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserAccess\UserAccessManagerView.xaml">
       <SubType>Designer</SubType>

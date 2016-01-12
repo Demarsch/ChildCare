@@ -58,8 +58,10 @@
                                 ToolTip="Добавить выбранного пользователю в эту группу">
                             <Button.Visibility>
                                 <MultiBinding Converter="{StaticResource AllowIncludeConverter}">
-                                    <Binding Path="IsInUserMode" />
-                                    <Binding Path="CurrentUserIsIncluded" />
+                                    <Binding Path="IsInUserMode"
+                                             FallbackValue="{x:Static misc:StaticBoolean.False}"/>
+                                    <Binding Path="CurrentUserIsIncluded"
+                                             FallbackValue="{x:Static misc:StaticBoolean.False}"/>
                                 </MultiBinding>
                             </Button.Visibility>
                             <Image Width="20"
@@ -73,6 +75,13 @@
                             <Image Width="20"
                                    Height="20"
                                    Source="pack://application:,,,/Core;Component/Resources/Images/UserRemove48x48.png" />
+                        </Button>
+                        <Button Command="{Binding RequestEditCommand, Mode=OneTime}"
+                                Margin="2"
+                                ToolTip="Редактировать название или описание группы">
+                            <Image Width="20"
+                                   Height="20"
+                                   Source="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" />
                         </Button>
                         <Button Command="{Binding RequestDeleteCommand, Mode=OneTime}"
                                 Margin="2"
@@ -197,6 +206,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -217,9 +227,19 @@
                                            Style="{x:Null}" />
                             </xctk:WatermarkTextBox.Watermark>
                         </xctk:WatermarkTextBox>
+                        <Button Grid.Row="0"
+                                Grid.Column="2"
+                                Margin="2"
+                                Command="{Binding CreateNewGroupCommand, Mode=OneTime}"
+                                ToolTip="Создать новую группу"
+                                VerticalAlignment="Center">
+                            <Image Width="20"
+                                   Height="20"
+                                   Source="pack://application:,,,/Core;Component/Resources/Images/Add.png" />
+                        </Button>
                         <Separator Grid.Row="0"
                                    Grid.Column="0"
-                                   Grid.ColumnSpan="2"
+                                   Grid.ColumnSpan="3"
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Bottom"
                                    Height="1"
@@ -227,7 +247,7 @@
                                    Margin="0 0 0 -1" />
                         <ListBox Grid.Row="1"
                                  Grid.Column="0"
-                                 Grid.ColumnSpan="2"
+                                 Grid.ColumnSpan="3"
                                  Margin="5"
                                  ItemsSource="{Binding Groups}">
                             <ListBox.GroupStyle>

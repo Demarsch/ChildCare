@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 using AdminModule.Model;
 using AdminModule.Services;
@@ -15,6 +16,7 @@ using Core.Extensions;
 using Core.Services;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
+using Core.Wpf.Services;
 using log4net;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -30,7 +32,15 @@ namespace AdminModule.ViewModels
 
         private readonly IUserAccessService userAccessService;
 
-        public UserAccessManagerViewModel(ILog log, ICacheService cacheService, IUserAccessService userAccessService)
+        private readonly IDialogServiceAsync dialogService;
+
+        private readonly Func<GroupEditDialogViewModel> groupEditDialogViewModelFactory;
+
+        public UserAccessManagerViewModel(ILog log,
+                                          ICacheService cacheService,
+                                          IUserAccessService userAccessService,
+                                          IDialogServiceAsync dialogService,
+                                          Func<GroupEditDialogViewModel> groupEditDialogViewModelFactory)
         {
             if (log == null)
             {
@@ -44,9 +54,19 @@ namespace AdminModule.ViewModels
             {
                 throw new ArgumentNullException("userAccessService");
             }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }
+            if (groupEditDialogViewModelFactory == null)
+            {
+                throw new ArgumentNullException("groupEditDialogViewModelFactory");
+            }
             this.log = log;
             this.cacheService = cacheService;
             this.userAccessService = userAccessService;
+            this.dialogService = dialogService;
+            this.groupEditDialogViewModelFactory = groupEditDialogViewModelFactory;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             Users = new ObservableCollectionEx<UserViewModel>();
@@ -70,6 +90,7 @@ namespace AdminModule.ViewModels
             selectPermissionCommand = new DelegateCommand<PermissionViewModel>(SelectPermission);
             selectUserCommand = new DelegateCommand<UserViewModel>(SelectUser);
             selectGroupCommand = new DelegateCommand<PermissionGroupViewModel>(SelectGroup);
+            createNewGroupCommand = new DelegateCommand(CreateNewGroup);
         }
 
         private readonly char[] separators = { ' ', '-' };
@@ -129,9 +150,16 @@ namespace AdminModule.ViewModels
             using (view.DeferRefresh())
             {
                 view.GroupDescriptions.Clear();
+                view.SortDescriptions.Clear();
                 if (SelectedSecurityObject != null)
                 {
                     view.GroupDescriptions.Add(new PropertyGroupDescription("CurrentUserIsIncluded"));
+                    view.SortDescriptions.Add(new SortDescription("CurrentUserIsIncluded", ListSortDirection.Descending));
+                    view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+                else
+                {
+                    view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
                 }
             }
         }
@@ -169,19 +197,88 @@ namespace AdminModule.ViewModels
 
         #region Groups
 
+        private readonly DelegateCommand createNewGroupCommand;
+
+        public ICommand CreateNewGroupCommand { get { return createNewGroupCommand; } }
+
+        private async void CreateNewGroup()
+        {
+            var viewModel = groupEditDialogViewModelFactory();
+            viewModel.ExistingPermissionGroup = null;
+            viewModel.Name = string.Empty;
+            viewModel.Description = string.Empty;
+            var dialogResult = await dialogService.ShowDialogAsync(viewModel);
+            if (dialogResult == true)
+            {
+                try
+                {
+                    log.InfoFormat("Creating new group with name '{0}'...", viewModel.Name);
+                    BusyMediator.Activate("Сохранение группы...");
+                    var newGroup = await userAccessService.CreateNewPermissionGroupAsync(viewModel.Name, viewModel.Description);
+                    var newGroupViewModel = new PermissionGroupViewModel(newGroup) { UserMode = SelectedSecurityObject as UserViewModel };
+                    Groups.Add(newGroupViewModel);
+                }
+                catch (Exception ex)
+                {
+                    log.ErrorFormatEx(ex, "Failed to add new group with name '{0}'", viewModel.Name);
+                    FailureMediator.Activate("Не удалось создать новую группу. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+                }
+                finally
+                {
+                    viewModel.CancelValidation();
+                    BusyMediator.Deactivate();
+                }
+            }
+        }
+
         private void GroupsOnBeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            foreach (var oldGroup in e.OldItems.Cast<PermissionGroupViewModel>())
+            if (e.OldItems != null)
             {
-                oldGroup.CurrentUserExcludeRequested -= GroupOnCurrentUserExcludeRequested;
-                oldGroup.CurrentUserIncludeRequested -= GroupOnCurrentUserIncludeRequested;
-                oldGroup.DeleteRequested -= GroupOnDeleteRequested;
+                foreach (var oldGroup in e.OldItems.Cast<PermissionGroupViewModel>())
+                {
+                    oldGroup.CurrentUserExcludeRequested -= GroupOnCurrentUserExcludeRequested;
+                    oldGroup.CurrentUserIncludeRequested -= GroupOnCurrentUserIncludeRequested;
+                    oldGroup.DeleteRequested -= GroupOnDeleteRequested;
+                    oldGroup.EditRequested -= GroupOnEditRequested;
+                }
             }
-            foreach (var newGroup in e.NewItems.Cast<PermissionGroupViewModel>())
+            if (e.NewItems != null)
             {
-                newGroup.CurrentUserExcludeRequested += GroupOnCurrentUserExcludeRequested;
-                newGroup.CurrentUserIncludeRequested += GroupOnCurrentUserIncludeRequested;
-                newGroup.DeleteRequested += GroupOnDeleteRequested;
+                foreach (var newGroup in e.NewItems.Cast<PermissionGroupViewModel>())
+                {
+                    newGroup.CurrentUserExcludeRequested += GroupOnCurrentUserExcludeRequested;
+                    newGroup.CurrentUserIncludeRequested += GroupOnCurrentUserIncludeRequested;
+                    newGroup.DeleteRequested += GroupOnDeleteRequested;
+                    newGroup.EditRequested += GroupOnEditRequested;
+                }
+            }
+        }
+
+        private async void GroupOnEditRequested(object sender, EventArgs eventArgs)
+        {
+            var viewModel = groupEditDialogViewModelFactory();
+            var existingGroup = (PermissionGroupViewModel)sender;
+            viewModel.ExistingPermissionGroup = existingGroup;
+            var dialogResult = await dialogService.ShowDialogAsync(viewModel);
+            if (dialogResult == true)
+            {
+                try
+                {
+                    log.InfoFormat("Saving changes to existing group with name '{0}'...", viewModel.Name);
+                    BusyMediator.Activate("Сохранение группы...");
+                    existingGroup.Group = await userAccessService.SavePermissionGroupAsync(viewModel.Name, viewModel.Description, existingGroup.Group);
+                }
+                catch (Exception ex)
+                {
+                    log.ErrorFormatEx(ex, "Failed to save changes to existing group with name '{0}'", viewModel.Name);
+                    FailureMediator.Activate("Не удалось сохранить изменения в группе. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+                }
+                finally
+                {
+                    viewModel.CancelValidation();
+                    BusyMediator.Deactivate();
+                }
             }
         }
 
@@ -203,15 +300,15 @@ namespace AdminModule.ViewModels
             {
                 log.InfoFormat("Adding user '{0}' to group '{1}'...", currentUser.FullName, group.Name);
                 BusyMediator.Activate("Добавляем пользователя в группу...");
-                await userAccessService.AddUserToGroupAsync(currentUser.Id, group.Id);
+                await userAccessService.AddUserToGroupAsync(currentUser.Id, group.Group.Id);
                 group.UserMode = currentUser;
                 log.InfoFormat("Successfully added user '{0}' to group '{1}'", currentUser.FullName, group.Name);
                 CollectionViewSource.GetDefaultView(Groups).Refresh();
             }
             catch (Exception ex)
             {
-                log.InfoFormat("Failed to add user '{0}' to group '{1}'", currentUser.FullName, group.Name);
-                FailureMediator.Activate("Не удалось добавить пользователя в группу. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception:ex, canBeDeactivated:true);
+                log.ErrorFormatEx(ex, "Failed to add user '{0}' to group '{1}'", currentUser.FullName, group.Name);
+                FailureMediator.Activate("Не удалось добавить пользователя в группу. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
             }
             finally
             {
@@ -232,14 +329,14 @@ namespace AdminModule.ViewModels
             {
                 log.InfoFormat("Removing user '{0}' from group '{1}'...", currentUser.FullName, group.Name);
                 BusyMediator.Activate("Удаляем пользователя из группы...");
-                await userAccessService.RemoveUserFromGroupAsync(currentUser.Id, group.Id);
+                await userAccessService.RemoveUserFromGroupAsync(currentUser.Id, group.Group.Id);
                 group.UserMode = currentUser;
                 log.InfoFormat("Successfully removed user '{0}' to group '{1}'", currentUser.FullName, group.Name);
                 CollectionViewSource.GetDefaultView(Groups).Refresh();
             }
             catch (Exception ex)
             {
-                log.InfoFormat("Failed to remove user '{0}' from group '{1}'", currentUser.FullName, group.Name);
+                log.ErrorFormatEx(ex, "Failed to remove user '{0}' from group '{1}'", currentUser.FullName, group.Name);
                 FailureMediator.Activate("Не удалось удалить пользователя из группы. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
             }
             finally

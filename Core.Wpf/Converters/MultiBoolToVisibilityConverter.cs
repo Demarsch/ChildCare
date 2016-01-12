@@ -23,7 +23,7 @@ namespace Core.Wpf.Converters
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var bools = values.Cast<bool?>().Select(x => x.GetValueOrDefault());
+            var bools = values.Select(x => x is bool? ? (bool?)x : false).Select(x => x.GetValueOrDefault());
             switch (Condition)
             {
                 case MultiBoolCondition.AllTrue:

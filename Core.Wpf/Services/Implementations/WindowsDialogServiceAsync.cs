@@ -10,7 +10,7 @@ using Prism.Events;
 
 namespace Core.Wpf.Services
 {
-    public class WindowsDialogServiceAsync : IDialogServiceAsync, IDisposable
+    public class WindowsDialogServiceAsync : IDialogServiceAsync
     {
         private readonly IEventAggregator eventAggregator;
 
@@ -39,6 +39,7 @@ namespace Core.Wpf.Services
             dialogWindow.DataContext = dialogViewModel;
             dialogViewModel.CloseRequested += DialogViewModelOnCloseRequested;
             dialogWindow.Show();
+            dialogWindow.Focus();
             var result = await taskSource.Task;
             dialogViewModel.CloseRequested -= DialogViewModelOnCloseRequested;
             return result;
@@ -47,11 +48,6 @@ namespace Core.Wpf.Services
         private void DialogViewModelOnCloseRequested(object sender, ReturnEventArgs<bool> returnEventArgs)
         {
             taskSource.SetResult(returnEventArgs.Result);
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }

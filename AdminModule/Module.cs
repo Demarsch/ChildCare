@@ -1,4 +1,6 @@
-﻿using AdminModule.Services;
+﻿using System;
+using System.Windows;
+using AdminModule.Services;
 using Core.Data;
 using Prism.Modularity;
 using Shared.Patient.Misc;
@@ -50,6 +52,7 @@ namespace AdminModule
 
         private void RegisterViewModels()
         {
+            container.RegisterType<GroupEditDialogViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<AdminEmptyViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<ReportTemplatesManagerViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<AdminHeaderViewModel>(new ContainerControlledLifetimeManager());
@@ -65,6 +68,8 @@ namespace AdminModule
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<AdminHeaderView>());
             container.RegisterType<object, UserAccessManagerView>(viewNameResolver.Resolve<UserAccessManagerViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<UserAccessManagerView>());
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/AdminModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
     }
 }

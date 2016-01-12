@@ -9,25 +9,39 @@ namespace AdminModule.ViewModels
 {
     public class PermissionGroupViewModel : BindableBase
     {
-        private readonly PermissionGroup group;
-
         public PermissionGroupViewModel(PermissionGroup group)
         {
             if (group == null)
             {
                 throw new ArgumentNullException("group");
             }
-            this.group = group;
-            Name = group.Name;
-            Description = group.Description;
-            requestCurrentUserIncludeCommand = new DelegateCommand(RequestCurrentUserInclude, CanRequestCurrentUserInclude)
+            Group = group;
+            RequestCurrentUserIncludeCommand = new DelegateCommand(RequestCurrentUserInclude, CanRequestCurrentUserInclude)
                 .ObservesProperty(() => IsInUserMode)
                 .ObservesProperty(() => CurrentUserIsIncluded);
-            requestCurrentUserExcludeCommand = new DelegateCommand(RequestCurrentUserExclude, CanRequestCurrentUserExclude)
+            RequestCurrentUserExcludeCommand = new DelegateCommand(RequestCurrentUserExclude, CanRequestCurrentUserExclude)
                 .ObservesProperty(() => CurrentUserIsIncluded);
-            requestDeleteCommand = new DelegateCommand(RequestDelete);
+            RequestDeleteCommand = new DelegateCommand(RequestDelete);
+            RequestEditCommand = new DelegateCommand(RequestEdit);
         }
-        public int Id { get { return group.Id; } }
+
+        private PermissionGroup group;
+
+        public PermissionGroup Group
+        {
+            get { return group; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                group = value;
+                Name = group.Name;
+                Description = group.Description;
+                OnPropertyChanged(string.Empty);
+            }
+        }
 
         private string name;
 
@@ -62,9 +76,7 @@ namespace AdminModule.ViewModels
 
         public bool CurrentUserIsIncluded { get { return userMode != null && group.UserPermisionGroups.Any(x => x.UserId == userMode.Id); } }
 
-        private readonly DelegateCommand requestCurrentUserIncludeCommand;
-
-        public ICommand RequestCurrentUserIncludeCommand { get { return requestCurrentUserIncludeCommand; } }
+        public ICommand RequestCurrentUserIncludeCommand { get; private set; }
 
         private void RequestCurrentUserInclude()
         {
@@ -87,9 +99,7 @@ namespace AdminModule.ViewModels
             }
         }
 
-        private readonly DelegateCommand requestCurrentUserExcludeCommand;
-
-        public ICommand RequestCurrentUserExcludeCommand { get { return requestCurrentUserExcludeCommand; } }
+        public ICommand RequestCurrentUserExcludeCommand { get; private set; }
 
         private void RequestCurrentUserExclude()
         {
@@ -112,9 +122,7 @@ namespace AdminModule.ViewModels
             }
         }
 
-        private readonly DelegateCommand requestDeleteCommand;
-
-        public ICommand RequestDeleteCommand { get { return requestDeleteCommand; } }
+        public ICommand RequestDeleteCommand { get; private set; }
 
         private void RequestDelete()
         {
@@ -126,6 +134,24 @@ namespace AdminModule.ViewModels
         protected virtual void OnDeleteRequested()
         {
             var handler = DeleteRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        public ICommand RequestEditCommand { get; private set; }
+
+        private void RequestEdit()
+        {
+            OnEditRequested();
+        }
+
+        public event EventHandler EditRequested;
+
+        protected virtual void OnEditRequested()
+        {
+            var handler = EditRequested;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);

@@ -97,6 +97,8 @@ namespace Core.Data.Services
             lock (loadedTypes)
             {
                 loadedTypes.Remove(typeof(TData));
+                itemsById.Remove(typeof(TData));
+                itemsByName.Remove(typeof(TData));
             }
         }
 
