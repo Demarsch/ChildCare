@@ -13,7 +13,7 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class UserPermisionGroup : ICloneable
+    public partial class UserPermissionGroup : ICloneable
     {
         public int Id { get; set; }
         public int UserId { get; set; }

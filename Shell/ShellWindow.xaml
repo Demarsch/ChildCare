@@ -68,7 +68,9 @@
                                 VerticalAlignment="Stretch" />
             </Grid>
         </DockPanel>
-        <xctk:WindowContainer ModalBackgroundBrush="#33333333">
+        <xctk:WindowContainer ModalBackgroundBrush="#33333333"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
             <views:ChildDialogWindow x:Name="childDialogWindow"
                                      WindowStartupLocation="Center"
                                      WindowStyle="None" />

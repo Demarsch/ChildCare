@@ -172,15 +172,6 @@
         <AssociationConnector Association="DataLib.FK_Eqiupments_Rooms" />
         <AssociationConnector Association="DataLib.FK_RecordEquipments_Eqiupments" />
         <EntityTypeShape EntityType="DataLib.RecordTypeEditor" Width="1.5" PointX="3" PointY="29" />
-        <EntityTypeShape EntityType="DataLib.PermissionGroupMembership" Width="1.5" PointX="13.625" PointY="41.875" />
-        <EntityTypeShape EntityType="DataLib.PermissionGroup" Width="1.5" PointX="9.375" PointY="2.125" />
-        <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="2.25" PointY="75.5" />
-        <EntityTypeShape EntityType="DataLib.UserPermisionGroup" Width="1.5" PointX="16.625" PointY="43.625" />
-        <AssociationConnector Association="DataLib.FK_PermissionGroupMemberships_PermissionGroups" />
-        <AssociationConnector Association="DataLib.FK_PermissionGroupMemberships_Permissions" />
-        <AssociationConnector Association="DataLib.FK_PermissionGroups_PermissionGroups" />
-        <AssociationConnector Association="DataLib.FK_UserPermisionGroups_PermissionGroups" />
-        <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
         <EntityTypeShape EntityType="DataLib.Unit" Width="1.5" PointX="23.25" PointY="55.75" />
         <EntityTypeShape EntityType="DataLib.IdentityDocumentType" Width="1.5" PointX="4.375" PointY="3.875" />
         <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" />
@@ -251,8 +242,16 @@
         <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
-        <AssociationConnector Association="DataLib.FK_UserPermisionGroups_Users" />
         <AssociationConnector Association="DataLib.FK_Visits_Users_RemovedByUser" />
+        <EntityTypeShape EntityType="DataLib.PermissionGroupMembership" Width="1.5" PointX="18.75" PointY="36.75" />
+        <EntityTypeShape EntityType="DataLib.PermissionGroup" Width="1.5" PointX="5.25" PointY="25.875" />
+        <EntityTypeShape EntityType="DataLib.Permission" Width="1.5" PointX="16.5" PointY="47.625" />
+        <EntityTypeShape EntityType="DataLib.UserPermissionGroup" Width="1.5" PointX="7.5" PointY="29.875" />
+        <AssociationConnector Association="DataLib.FK_PermissionGroupMemberships_PermissionGroups" />
+        <AssociationConnector Association="DataLib.FK_PermissionGroupMemberships_Permissions" />
+        <AssociationConnector Association="DataLib.FK_UserPermissionGroups_PermissionGroups" />
+        <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
+        <AssociationConnector Association="DataLib.FK_UserPermissionGroups_Users" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

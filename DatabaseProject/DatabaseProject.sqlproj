@@ -151,9 +151,9 @@
     <Build Include="dbo\Tables\RecordEquipments.sql" />
     <Build Include="dbo\Tables\EqiupmentTypes.sql" />
     <Build Include="dbo\Tables\Eqiupments.sql" />
-    <Build Include="dbo\Tables\UserPermisionGroups.sql" />
     <Build Include="dbo\Tables\PermissionGroups.sql" />
     <Build Include="dbo\Tables\PermissionGroupMemberships.sql" />
     <Build Include="dbo\Tables\RecordTypeUnits.sql" />
+    <Build Include="dbo\Tables\UserPermissionGroups.sql" />
   </ItemGroup>
 </Project>

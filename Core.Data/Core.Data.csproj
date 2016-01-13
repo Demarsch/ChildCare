@@ -371,7 +371,7 @@
     <Compile Include="UserMessageType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="UserPermisionGroup.cs">
+    <Compile Include="UserPermissionGroup.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Visit.cs">

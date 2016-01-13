@@ -361,7 +361,7 @@ namespace Shared.PatientRecords.Services
                 var permissions = context.Set<RecordTypeRolePermission>().AsNoTracking().Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime &&
                                                                                                     x.RecordTypeMemberRoleId == recordTypeRoleId).Select(x => x.Permission).ToList();
                 return permissions.SelectMany(x => x.PermissionGroupMemberships.Select(y => y.PermissionGroup))
-                                  .SelectMany(x => x.UserPermisionGroups)
+                                  .SelectMany(x => x.UserPermissionGroups)
                                   .SelectMany(x => x.User.Person.PersonStaffs)
                                   .Distinct()
                                   .Select(x => new CommonIdName { Id = x.Id, Name = x.Staff.ShortName + " " + x.Person.ShortName }).ToList();

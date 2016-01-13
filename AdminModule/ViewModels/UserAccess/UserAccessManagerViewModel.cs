@@ -17,6 +17,7 @@ using Core.Services;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
+using Core.Wpf.ViewModels;
 using log4net;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -261,30 +262,59 @@ namespace AdminModule.ViewModels
             var existingGroup = (PermissionGroupViewModel)sender;
             viewModel.ExistingPermissionGroup = existingGroup;
             var dialogResult = await dialogService.ShowDialogAsync(viewModel);
-            if (dialogResult == true)
+            if (dialogResult != true)
             {
-                try
-                {
-                    log.InfoFormat("Saving changes to existing group with name '{0}'...", viewModel.Name);
-                    BusyMediator.Activate("Сохранение группы...");
-                    existingGroup.Group = await userAccessService.SavePermissionGroupAsync(viewModel.Name, viewModel.Description, existingGroup.Group);
-                }
-                catch (Exception ex)
-                {
-                    log.ErrorFormatEx(ex, "Failed to save changes to existing group with name '{0}'", viewModel.Name);
-                    FailureMediator.Activate("Не удалось сохранить изменения в группе. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
-                }
-                finally
-                {
-                    viewModel.CancelValidation();
-                    BusyMediator.Deactivate();
-                }
+                return;
+            }
+            try
+            {
+                log.InfoFormat("Saving changes to existing group with name '{0}'...", viewModel.Name);
+                BusyMediator.Activate("Сохранение группы...");
+                existingGroup.Group = await userAccessService.SavePermissionGroupAsync(viewModel.Name, viewModel.Description, existingGroup.Group);
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Failed to save changes to existing group with name '{0}'", viewModel.Name);
+                FailureMediator.Activate("Не удалось сохранить изменения в группе. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                viewModel.CancelValidation();
+                BusyMediator.Deactivate();
             }
         }
 
-        private void GroupOnDeleteRequested(object sender, EventArgs eventArgs)
+        private async void GroupOnDeleteRequested(object sender, EventArgs eventArgs)
         {
-            throw new NotImplementedException();
+            var group = (PermissionGroupViewModel)sender;
+            var question = @group.Group.UserPermissionGroups.Count > 0
+                ? "В выбранной группе состоят пользователи. Вы уверены что хотите убрать пользователей из группы и удалить ее безвозвратно?"
+                : "Выбранная группа будет удалена безвозвратно. Продолжить?";
+            var viewModel = new ConfirmationDialogViewModel();
+            viewModel.Question = question;
+            viewModel.ConfirmButtonText = "Удалить";
+            viewModel.CancelButtonText = "Отмена";
+            var dialogResult = await dialogService.ShowDialogAsync(viewModel);
+            if (dialogResult != true)
+            {
+                return;
+            }
+            try
+            {
+                log.InfoFormat("Deleting existing group with name '{0}'...", group.Name);
+                BusyMediator.Activate("Удаление группы...");
+                await userAccessService.DeletePermissionGroupAsync(group.Group);
+                Groups.Remove(group);
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Failed to delete existing group with name '{0}'", group.Name);
+                FailureMediator.Activate("Не удалось удалить группу. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
         }
 
         private async void GroupOnCurrentUserIncludeRequested(object sender, EventArgs eventArgs)

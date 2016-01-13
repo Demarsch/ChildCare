@@ -24,8 +24,8 @@ namespace Core.Data
             this.Records = new HashSet<Record>();
             this.UserMessages = new HashSet<UserMessage>();
             this.UserMessages1 = new HashSet<UserMessage>();
-            this.UserPermisionGroups = new HashSet<UserPermisionGroup>();
             this.Visits = new HashSet<Visit>();
+            this.UserPermissionGroups = new HashSet<UserPermissionGroup>();
         }
     
         public int Id { get; set; }
@@ -99,20 +99,20 @@ namespace Core.Data
      		set { userMessages1 = value; }
     	}
         [NonSerialized]
-    	protected ICollection<UserPermisionGroup> userPermisionGroups;
-    
-    	public virtual ICollection<UserPermisionGroup> UserPermisionGroups
-    	{
-     		get { return userPermisionGroups; }
-     		set { userPermisionGroups = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
     	{
      		get { return visits; }
      		set { visits = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<UserPermissionGroup> userPermissionGroups;
+    
+    	public virtual ICollection<UserPermissionGroup> UserPermissionGroups
+    	{
+     		get { return userPermissionGroups; }
+     		set { userPermissionGroups = value; }
     	}
     
     	public object Clone()

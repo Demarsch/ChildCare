@@ -657,7 +657,7 @@ namespace PatientInfoModule.Services
                                                                       x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.RecordTypeMemberRoleId == memberRoleId)
                                                                .SelectMany(x => x.Permission.PermissionGroupMemberships)
                                                                .Select(x => x.PermissionGroup)
-                                                               .SelectMany(x => x.UserPermisionGroups)
+                                                               .SelectMany(x => x.UserPermissionGroups)
                                                                .SelectMany(x => x.User.Person.PersonStaffs), context);
         }
 

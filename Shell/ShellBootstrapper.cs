@@ -69,7 +69,7 @@ namespace Shell
             cacheService.GetItems<Permission>();
             cacheService.GetItems<PermissionGroup>();
             cacheService.GetItems<PermissionGroupMembership>();
-            cacheService.GetItems<UserPermisionGroup>();
+            cacheService.GetItems<UserPermissionGroup>();
         }
 
         private void BuildRelativeRelationshipHierarchy()

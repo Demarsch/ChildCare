@@ -511,7 +511,6 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ParentId" Type="int" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="1000" />
         </EntityType>
@@ -1015,7 +1014,7 @@
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
-        <EntityType Name="UserPermisionGroups">
+        <EntityType Name="UserPermissionGroups">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -1770,7 +1769,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PermissionGroupMemberships_PermissionGroups">
-          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="1" />
+          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="PermissionGroupMemberships" Type="Self.PermissionGroupMemberships" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PermissionGroups">
@@ -1790,18 +1791,6 @@
             </Principal>
             <Dependent Role="PermissionGroupMemberships">
               <PropertyRef Name="PermissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PermissionGroups_PermissionGroups">
-          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="0..1" />
-          <End Role="PermissionGroups1" Type="Self.PermissionGroups" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PermissionGroups">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionGroups1">
-              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2777,26 +2766,28 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserPermisionGroups_PermissionGroups">
-          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="1" />
-          <End Role="UserPermisionGroups" Type="Self.UserPermisionGroups" Multiplicity="*" />
+        <Association Name="FK_UserPermissionGroups_PermissionGroups">
+          <End Role="PermissionGroups" Type="Self.PermissionGroups" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserPermissionGroups" Type="Self.UserPermissionGroups" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PermissionGroups">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="UserPermisionGroups">
+            <Dependent Role="UserPermissionGroups">
               <PropertyRef Name="PermissionGroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserPermisionGroups_Users">
+        <Association Name="FK_UserPermissionGroups_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="UserPermisionGroups" Type="Self.UserPermisionGroups" Multiplicity="*" />
+          <End Role="UserPermissionGroups" Type="Self.UserPermissionGroups" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Users">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="UserPermisionGroups">
+            <Dependent Role="UserPermissionGroups">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
@@ -3090,7 +3081,7 @@
           <EntitySet Name="Urgentlies" EntityType="Self.Urgentlies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserMessages" EntityType="Self.UserMessages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserMessageTypes" EntityType="Self.UserMessageTypes" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserPermisionGroups" EntityType="Self.UserPermisionGroups" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserPermissionGroups" EntityType="Self.UserPermissionGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitOutcomes" EntityType="Self.VisitOutcomes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitResults" EntityType="Self.VisitResults" Schema="dbo" store:Type="Tables" />
@@ -3327,10 +3318,6 @@
           <AssociationSet Name="FK_PermissionGroupMemberships_Permissions" Association="Self.FK_PermissionGroupMemberships_Permissions">
             <End Role="Permissions" EntitySet="Permissions" />
             <End Role="PermissionGroupMemberships" EntitySet="PermissionGroupMemberships" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PermissionGroups_PermissionGroups" Association="Self.FK_PermissionGroups_PermissionGroups">
-            <End Role="PermissionGroups" EntitySet="PermissionGroups" />
-            <End Role="PermissionGroups1" EntitySet="PermissionGroups" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonAddresses_AddressTypes" Association="Self.FK_PersonAddresses_AddressTypes">
             <End Role="AddressTypes" EntitySet="AddressTypes" />
@@ -3652,13 +3639,13 @@
             <End Role="UserMessageTypes" EntitySet="UserMessageTypes" />
             <End Role="UserMessages" EntitySet="UserMessages" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserPermisionGroups_PermissionGroups" Association="Self.FK_UserPermisionGroups_PermissionGroups">
+          <AssociationSet Name="FK_UserPermissionGroups_PermissionGroups" Association="Self.FK_UserPermissionGroups_PermissionGroups">
             <End Role="PermissionGroups" EntitySet="PermissionGroups" />
-            <End Role="UserPermisionGroups" EntitySet="UserPermisionGroups" />
+            <End Role="UserPermissionGroups" EntitySet="UserPermissionGroups" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserPermisionGroups_Users" Association="Self.FK_UserPermisionGroups_Users">
+          <AssociationSet Name="FK_UserPermissionGroups_Users" Association="Self.FK_UserPermissionGroups_Users">
             <End Role="Users" EntitySet="Users" />
-            <End Role="UserPermisionGroups" EntitySet="UserPermisionGroups" />
+            <End Role="UserPermissionGroups" EntitySet="UserPermissionGroups" />
           </AssociationSet>
           <AssociationSet Name="FK_Users_Persons" Association="Self.FK_Users_Persons">
             <End Role="Persons" EntitySet="Persons" />
@@ -4182,31 +4169,7 @@
             <End Role="Eqiupment" EntitySet="Eqiupments" />
             <End Role="RecordEquipment" EntitySet="RecordEquipments" />
           </AssociationSet>
-          <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />          
-          <EntitySet Name="PermissionGroupMemberships" EntityType="DataLib.PermissionGroupMembership" />
-          <EntitySet Name="PermissionGroups" EntityType="DataLib.PermissionGroup" />
-          <EntitySet Name="Permissions" EntityType="DataLib.Permission" />
-          <EntitySet Name="UserPermisionGroups" EntityType="DataLib.UserPermisionGroup" />
-          <AssociationSet Name="FK_PermissionGroupMemberships_PermissionGroups" Association="DataLib.FK_PermissionGroupMemberships_PermissionGroups">
-            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
-            <End Role="PermissionGroupMembership" EntitySet="PermissionGroupMemberships" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PermissionGroupMemberships_Permissions" Association="DataLib.FK_PermissionGroupMemberships_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="PermissionGroupMembership" EntitySet="PermissionGroupMemberships" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PermissionGroups_PermissionGroups" Association="DataLib.FK_PermissionGroups_PermissionGroups">
-            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
-            <End Role="PermissionGroup1" EntitySet="PermissionGroups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserPermisionGroups_PermissionGroups" Association="DataLib.FK_UserPermisionGroups_PermissionGroups">
-            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
-            <End Role="UserPermisionGroup" EntitySet="UserPermisionGroups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
-            <End Role="Permission" EntitySet="Permissions" />
-            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
-          </AssociationSet>
+          <EntitySet Name="RecordTypeEditors" EntityType="DataLib.RecordTypeEditor" />
           <EntitySet Name="Units" EntityType="DataLib.Unit" />
           <EntitySet Name="IdentityDocumentTypes" EntityType="DataLib.IdentityDocumentType" />
           <AssociationSet Name="FK_PersonIdentityDocuments_IdentityDocumentTypes" Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes">
@@ -4448,13 +4411,33 @@
             <End Role="User" EntitySet="Users" />
             <End Role="UserMessage" EntitySet="UserMessages" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserPermisionGroups_Users" Association="DataLib.FK_UserPermisionGroups_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="UserPermisionGroup" EntitySet="UserPermisionGroups" />
-          </AssociationSet>
           <AssociationSet Name="FK_Visits_Users_RemovedByUser" Association="DataLib.FK_Visits_Users_RemovedByUser">
             <End Role="User" EntitySet="Users" />
             <End Role="Visit" EntitySet="Visits" />
+          </AssociationSet>
+          <EntitySet Name="PermissionGroupMemberships" EntityType="DataLib.PermissionGroupMembership" />
+          <EntitySet Name="PermissionGroups" EntityType="DataLib.PermissionGroup" />
+          <EntitySet Name="Permissions" EntityType="DataLib.Permission" />
+          <EntitySet Name="UserPermissionGroups" EntityType="DataLib.UserPermissionGroup" />
+          <AssociationSet Name="FK_PermissionGroupMemberships_PermissionGroups" Association="DataLib.FK_PermissionGroupMemberships_PermissionGroups">
+            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
+            <End Role="PermissionGroupMembership" EntitySet="PermissionGroupMemberships" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PermissionGroupMemberships_Permissions" Association="DataLib.FK_PermissionGroupMemberships_Permissions">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="PermissionGroupMembership" EntitySet="PermissionGroupMemberships" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissionGroups_PermissionGroups" Association="DataLib.FK_UserPermissionGroups_PermissionGroups">
+            <End Role="PermissionGroup" EntitySet="PermissionGroups" />
+            <End Role="UserPermissionGroup" EntitySet="UserPermissionGroups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeRolePermissions_Permissions" Association="DataLib.FK_RecordTypeRolePermissions_Permissions">
+            <End Role="Permission" EntitySet="Permissions" />
+            <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserPermissionGroups_Users" Association="DataLib.FK_UserPermissionGroups_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserPermissionGroup" EntitySet="UserPermissionGroups" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -6159,8 +6142,8 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="RecordTypeRole" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordTypeRole" />
           <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_RecordTypeRolePermissions" FromRole="RecordTypeRolePermission" ToRole="RecordMember" />
-          <NavigationProperty Name="Permission" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="RecordTypeRolePermission" ToRole="Permission" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordTypeRolePermission" ToRole="RecordType" />
+          <NavigationProperty Name="Permission" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="RecordTypeRolePermission" ToRole="Permission" />
         </EntityType>
         <Association Name="FK_RecordTypeRolePermissions_RecordTypeRolePermissions">
           <End Type="DataLib.RecordTypeRole" Role="RecordTypeRole" Multiplicity="1" />
@@ -6684,109 +6667,6 @@
           <Property Name="UseEquipments" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordTypeEditor" ToRole="RecordType" />
         </EntityType>
-        <EntityType Name="PermissionGroupMembership">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PermissionId" Type="Int32" Nullable="false" />
-          <Property Name="GroupId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="PermissionGroup" Relationship="DataLib.FK_PermissionGroupMemberships_PermissionGroups" FromRole="PermissionGroupMembership" ToRole="PermissionGroup" />
-          <NavigationProperty Name="Permission" Relationship="DataLib.FK_PermissionGroupMemberships_Permissions" FromRole="PermissionGroupMembership" ToRole="Permission" />
-        </EntityType>
-        <EntityType Name="PermissionGroup">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PermissionGroupMemberships" Relationship="DataLib.FK_PermissionGroupMemberships_PermissionGroups" FromRole="PermissionGroup" ToRole="PermissionGroupMembership" />
-          <NavigationProperty Name="PermissionGroups1" Relationship="DataLib.FK_PermissionGroups_PermissionGroups" FromRole="PermissionGroup" ToRole="PermissionGroup1" />
-          <NavigationProperty Name="PermissionGroup1" Relationship="DataLib.FK_PermissionGroups_PermissionGroups" FromRole="PermissionGroup1" ToRole="PermissionGroup" />
-          <NavigationProperty Name="UserPermisionGroups" Relationship="DataLib.FK_UserPermisionGroups_PermissionGroups" FromRole="PermissionGroup" ToRole="UserPermisionGroup" />
-        </EntityType>
-        <EntityType Name="Permission">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PermissionGroupMemberships" Relationship="DataLib.FK_PermissionGroupMemberships_Permissions" FromRole="Permission" ToRole="PermissionGroupMembership" />
-          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="Permission" ToRole="RecordTypeRolePermission" />
-        </EntityType>
-        <EntityType Name="UserPermisionGroup">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserId" Type="Int32" Nullable="false" />
-          <Property Name="PermissionGroupId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="PermissionGroup" Relationship="DataLib.FK_UserPermisionGroups_PermissionGroups" FromRole="UserPermisionGroup" ToRole="PermissionGroup" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_UserPermisionGroups_Users" FromRole="UserPermisionGroup" ToRole="User" />
-        </EntityType>
-        <Association Name="FK_PermissionGroupMemberships_PermissionGroups">
-          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="1" />
-          <End Type="DataLib.PermissionGroupMembership" Role="PermissionGroupMembership" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PermissionGroup">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionGroupMembership">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PermissionGroupMemberships_Permissions">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.PermissionGroupMembership" Role="PermissionGroupMembership" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionGroupMembership">
-              <PropertyRef Name="PermissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PermissionGroups_PermissionGroups">
-          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="0..1" />
-          <End Type="DataLib.PermissionGroup" Role="PermissionGroup1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PermissionGroup">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PermissionGroup1">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserPermisionGroups_PermissionGroups">
-          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="1" />
-          <End Type="DataLib.UserPermisionGroup" Role="UserPermisionGroup" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PermissionGroup">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserPermisionGroup">
-              <PropertyRef Name="PermissionGroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeRolePermissions_Permissions">
-          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
-          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Permission">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeRolePermission">
-              <PropertyRef Name="PermissionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Unit">
           <Key>
             <PropertyRef Name="Id" />
@@ -7648,8 +7528,8 @@
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Users" FromRole="User" ToRole="Record" />
           <NavigationProperty Name="UserMessages" Relationship="DataLib.FK_UserMessages_RecieverUsers1" FromRole="User" ToRole="UserMessage" />
           <NavigationProperty Name="UserMessages1" Relationship="DataLib.FK_UserMessages_SenderUsers" FromRole="User" ToRole="UserMessage" />
-          <NavigationProperty Name="UserPermisionGroups" Relationship="DataLib.FK_UserPermisionGroups_Users" FromRole="User" ToRole="UserPermisionGroup" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Users_RemovedByUser" FromRole="User" ToRole="Visit" />
+          <NavigationProperty Name="UserPermissionGroups" Relationship="DataLib.FK_UserPermissionGroups_Users" FromRole="User" ToRole="UserPermissionGroup" />
         </EntityType>
         <Association Name="FK_Assignments_Users_AssignUser">
           <End Type="DataLib.User" Role="User" Multiplicity="1" />
@@ -7747,18 +7627,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserPermisionGroups_Users">
-          <End Type="DataLib.User" Role="User" Multiplicity="1" />
-          <End Type="DataLib.UserPermisionGroup" Role="UserPermisionGroup" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserPermisionGroup">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Visits_Users_RemovedByUser">
           <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
           <End Type="DataLib.Visit" Role="Visit" Multiplicity="*" />
@@ -7768,6 +7636,110 @@
             </Principal>
             <Dependent Role="Visit">
               <PropertyRef Name="RemovedByUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PermissionGroupMembership">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PermissionId" Type="Int32" Nullable="false" />
+          <Property Name="GroupId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PermissionGroup" Relationship="DataLib.FK_PermissionGroupMemberships_PermissionGroups" FromRole="PermissionGroupMembership" ToRole="PermissionGroup" />
+          <NavigationProperty Name="Permission" Relationship="DataLib.FK_PermissionGroupMemberships_Permissions" FromRole="PermissionGroupMembership" ToRole="Permission" />
+        </EntityType>
+        <EntityType Name="PermissionGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PermissionGroupMemberships" Relationship="DataLib.FK_PermissionGroupMemberships_PermissionGroups" FromRole="PermissionGroup" ToRole="PermissionGroupMembership" />
+          <NavigationProperty Name="UserPermissionGroups" Relationship="DataLib.FK_UserPermissionGroups_PermissionGroups" FromRole="PermissionGroup" ToRole="UserPermissionGroup" />
+        </EntityType>
+        <EntityType Name="Permission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PermissionGroupMemberships" Relationship="DataLib.FK_PermissionGroupMemberships_Permissions" FromRole="Permission" ToRole="PermissionGroupMembership" />
+          <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_Permissions" FromRole="Permission" ToRole="RecordTypeRolePermission" />
+        </EntityType>
+        <EntityType Name="UserPermissionGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="PermissionGroupId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PermissionGroup" Relationship="DataLib.FK_UserPermissionGroups_PermissionGroups" FromRole="UserPermissionGroup" ToRole="PermissionGroup" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_UserPermissionGroups_Users" FromRole="UserPermissionGroup" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_PermissionGroupMemberships_PermissionGroups">
+          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.PermissionGroupMembership" Role="PermissionGroupMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PermissionGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PermissionGroupMembership">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PermissionGroupMemberships_Permissions">
+          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
+          <End Type="DataLib.PermissionGroupMembership" Role="PermissionGroupMembership" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PermissionGroupMembership">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissionGroups_PermissionGroups">
+          <End Type="DataLib.PermissionGroup" Role="PermissionGroup" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.UserPermissionGroup" Role="UserPermissionGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PermissionGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserPermissionGroup">
+              <PropertyRef Name="PermissionGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordTypeRolePermissions_Permissions">
+          <End Type="DataLib.Permission" Role="Permission" Multiplicity="1" />
+          <End Type="DataLib.RecordTypeRolePermission" Role="RecordTypeRolePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Permission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeRolePermission">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserPermissionGroups_Users">
+          <End Type="DataLib.User" Role="User" Multiplicity="1" />
+          <End Type="DataLib.UserPermissionGroup" Role="UserPermissionGroup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserPermissionGroup">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8715,43 +8687,6 @@
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
-          </EntitySetMapping>          
-          <EntitySetMapping Name="PermissionGroupMemberships">
-            <EntityTypeMapping TypeName="DataLib.PermissionGroupMembership">
-              <MappingFragment StoreEntitySet="PermissionGroupMemberships">
-                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
-                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PermissionGroups">
-            <EntityTypeMapping TypeName="DataLib.PermissionGroup">
-              <MappingFragment StoreEntitySet="PermissionGroups">
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Permissions">
-            <EntityTypeMapping TypeName="DataLib.Permission">
-              <MappingFragment StoreEntitySet="Permissions">
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UserPermisionGroups">
-            <EntityTypeMapping TypeName="DataLib.UserPermisionGroup">
-              <MappingFragment StoreEntitySet="UserPermisionGroups">
-                <ScalarProperty Name="PermissionGroupId" ColumnName="PermissionGroupId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Units">
             <EntityTypeMapping TypeName="DataLib.Unit">
@@ -8951,6 +8886,42 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="SID" ColumnName="SID" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PermissionGroupMemberships">
+            <EntityTypeMapping TypeName="DataLib.PermissionGroupMembership">
+              <MappingFragment StoreEntitySet="PermissionGroupMemberships">
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PermissionGroups">
+            <EntityTypeMapping TypeName="DataLib.PermissionGroup">
+              <MappingFragment StoreEntitySet="PermissionGroups">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Permissions">
+            <EntityTypeMapping TypeName="DataLib.Permission">
+              <MappingFragment StoreEntitySet="Permissions">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserPermissionGroups">
+            <EntityTypeMapping TypeName="DataLib.UserPermissionGroup">
+              <MappingFragment StoreEntitySet="UserPermissionGroups">
+                <ScalarProperty Name="PermissionGroupId" ColumnName="PermissionGroupId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

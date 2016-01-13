@@ -18,12 +18,10 @@ namespace Core.Data
         public PermissionGroup()
         {
             this.PermissionGroupMemberships = new HashSet<PermissionGroupMembership>();
-            this.PermissionGroups1 = new HashSet<PermissionGroup>();
-            this.UserPermisionGroups = new HashSet<UserPermisionGroup>();
+            this.UserPermissionGroups = new HashSet<UserPermissionGroup>();
         }
     
         public int Id { get; set; }
-        public Nullable<int> ParentId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     
@@ -36,28 +34,12 @@ namespace Core.Data
      		set { permissionGroupMemberships = value; }
     	}
         [NonSerialized]
-    	protected ICollection<PermissionGroup> permissionGroups1;
+    	protected ICollection<UserPermissionGroup> userPermissionGroups;
     
-    	public virtual ICollection<PermissionGroup> PermissionGroups1
+    	public virtual ICollection<UserPermissionGroup> UserPermissionGroups
     	{
-     		get { return permissionGroups1; }
-     		set { permissionGroups1 = value; }
-    	}
-        [NonSerialized]
-    	protected PermissionGroup permissionGroup1;
-    
-    	public virtual PermissionGroup PermissionGroup1
-    	{
-     		get { return permissionGroup1; }
-     		set { permissionGroup1 = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<UserPermisionGroup> userPermisionGroups;
-    
-    	public virtual ICollection<UserPermisionGroup> UserPermisionGroups
-    	{
-     		get { return userPermisionGroups; }
-     		set { userPermisionGroups = value; }
+     		get { return userPermissionGroups; }
+     		set { userPermissionGroups = value; }
     	}
     
     	public object Clone()

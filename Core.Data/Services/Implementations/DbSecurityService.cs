@@ -49,13 +49,12 @@ namespace Core.Data.Services
             int[] userGroupsId;
             using (var context = contextProvider.CreateNewContext())
             {
-                userGroupsId = context.Set<UserPermisionGroup>()
+                userGroupsId = context.Set<UserPermissionGroup>()
                                       .Where(x => x.UserId == environment.CurrentUser.Id)
                                       .Select(x => x.PermissionGroupId)
                                       .ToArray();
             }
             return new HashSet<Permission>(userGroupsId.Select(x => cacheService.GetItemById<PermissionGroup>(x))
-                                                       .SelectMany(x => x.GetAllChildren(true))
                                                        .SelectMany(x => x.PermissionGroupMemberships)
                                                        .Select(x => x.Permission));
         }

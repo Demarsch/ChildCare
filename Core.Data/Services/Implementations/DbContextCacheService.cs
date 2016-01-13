@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Core.Attributes;
+using Core.Data.Misc;
 using Core.Services;
 
 namespace Core.Data.Services
@@ -85,20 +88,105 @@ namespace Core.Data.Services
                     {
                         throw new InvalidOperationException(string.Format("Type {0} is marked as non-cachable", type.Name));
                     }
-                    result = dataContext.Set<TData>().ToArray();
-                    loadedTypes.Add(type, result);
+                    dataContext.Set<TData>().Load();
+                    loadedTypes.Add(type, dataContext.Set<TData>().Local);
+                    result = dataContext.Set<TData>().Local;
                 }
-                return result as TData[];
+                return result as IEnumerable<TData>;
             }
         }
 
-        public void InvalidateCache<TData>() where TData : class
+        public void AddItem<TData>(TData item) where TData : class
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
             lock (loadedTypes)
             {
-                loadedTypes.Remove(typeof(TData));
-                itemsById.Remove(typeof(TData));
-                itemsByName.Remove(typeof(TData));
+                dataContext.Set<TData>().Add(item);
+                try
+                {
+                    dataContext.SaveChanges();
+                }
+                catch
+                {
+                    dataContext.ResetChanges<TData>();
+                    throw;
+                }
+                object itemByIdDictionary;
+                if (itemsById.TryGetValue(typeof (TData), out itemByIdDictionary))
+                {
+                    ((Dictionary<int, TData>)itemByIdDictionary).Add(GetIdSelectorFunction<TData>()(item), item);
+                }
+                object itemByNameDictionary;
+                if (itemsByName.TryGetValue(typeof (TData), out itemByNameDictionary))
+                {
+                    ((Dictionary<string, TData>)itemByNameDictionary).Add(GetNameSelectorFunction<TData>()(item), item);
+                }
+            }
+        }
+
+        public void RemoveItem<TData>(TData item) where TData : class
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
+            lock (loadedTypes)
+            {
+                object loadedItems;
+                if (!loadedTypes.TryGetValue(typeof (TData), out loadedItems))
+                {
+                    return;
+                }
+                dataContext.Set<TData>().Remove(item);
+                try
+                {
+                    dataContext.SaveChanges();
+                }
+                catch
+                {
+                    dataContext.ResetChanges<TData>();
+                    throw;
+                }
+                object itemByIdDictionary;
+                if (itemsById.TryGetValue(typeof(TData), out itemByIdDictionary))
+                {
+                    ((Dictionary<int, TData>)itemByIdDictionary).Remove(GetIdSelectorFunction<TData>()(item));
+                }
+                object itemByNameDictionary;
+                if (itemsByName.TryGetValue(typeof(TData), out itemByNameDictionary))
+                {
+                    ((Dictionary<string, TData>)itemByNameDictionary).Remove(GetNameSelectorFunction<TData>()(item));
+                }
+            }
+        }
+
+        public void UpdateItem<TData>(TData item) where TData : class
+        {
+            dataContext.ChangeTracker.DetectChanges();
+            var entry = dataContext.Entry(item);
+            if (entry.State != EntityState.Modified)
+            {
+                return;
+            }
+            var originalName = (string)entry.OriginalValues[GetNameProperty<TData>().Name];
+            try
+            {
+                dataContext.SaveChanges();
+            }
+            catch
+            {
+                dataContext.ResetChanges<TData>();
+                throw;
+            }
+            object itemByNameDictionary;
+            if (itemsByName.TryGetValue(typeof(TData), out itemByNameDictionary))
+            {
+                var dictionary = (Dictionary<string, TData>)itemByNameDictionary;
+                dictionary.Remove(originalName);
+                dictionary.Add(GetNameSelectorFunction<TData>()(item), item);
             }
         }
 

@@ -24,5 +24,7 @@ namespace AdminModule.Services
         Task<PermissionGroup> CreateNewPermissionGroupAsync(string name, string description);
 
         Task<PermissionGroup> SavePermissionGroupAsync(string newName, string newDescription, PermissionGroup currentGroup);
+
+        Task DeletePermissionGroupAsync(PermissionGroup group);
     }
 }

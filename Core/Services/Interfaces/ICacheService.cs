@@ -10,6 +10,10 @@ namespace Core.Services
 
         IEnumerable<TData> GetItems<TData>() where TData : class;
 
-        void InvalidateCache<TData>() where TData : class;
+        void AddItem<TData>(TData item) where TData : class;
+
+        void RemoveItem<TData>(TData item) where TData : class;
+
+        void UpdateItem<TData>(TData item) where TData : class;
     }
 }

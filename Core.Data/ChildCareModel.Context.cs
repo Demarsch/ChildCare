@@ -98,10 +98,6 @@ namespace Core.Data
         public virtual DbSet<EqiupmentType> EqiupmentTypes { get; set; }
         public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
-        public virtual DbSet<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
-        public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
-        public virtual DbSet<Permission> Permissions { get; set; }
-        public virtual DbSet<UserPermisionGroup> UserPermisionGroups { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
         public virtual DbSet<Record> Records { get; set; }
@@ -115,5 +111,9 @@ namespace Core.Data
         public virtual DbSet<DBSetting> DBSettings { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
+        public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; }
+        public virtual DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
     }
 }

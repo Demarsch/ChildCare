@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AdminModule.Model;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
+using Core.Extensions;
 using Core.Services;
 
 namespace AdminModule.Services
@@ -66,35 +66,24 @@ namespace AdminModule.Services
 
         public async Task AddUserToGroupAsync(int userId, int groupId)
         {
-            var @group = cacheService.GetItemById<PermissionGroup>(groupId);
-            if (@group.UserPermisionGroups.Any(x => x.UserId == userId))
+            var group = cacheService.GetItemById<PermissionGroup>(groupId);
+            if (group.UserPermissionGroups.Any(x => x.UserId == userId))
             {
                 return;
             }
-            var userGroupMembership = new UserPermisionGroup { PermissionGroupId = groupId, UserId = userId };
-            using (var context = contextProvider.CreateLightweightContext())
-            {
-                context.Entry(userGroupMembership).State = EntityState.Added;
-                await context.SaveChangesAsync();
-            }
-            @group.UserPermisionGroups.Add(userGroupMembership);
-            userGroupMembership.PermissionGroup = @group;
+            var userGroupMembership = new UserPermissionGroup { PermissionGroupId = groupId, UserId = userId };
+            await cacheService.AddItemAsync(userGroupMembership);
         }
 
         public async Task RemoveUserFromGroupAsync(int userId, int groupId)
         {
-            var @group = cacheService.GetItemById<PermissionGroup>(groupId);
-            var itemToRemove = @group.UserPermisionGroups.FirstOrDefault(x => x.UserId == userId);
-            if (itemToRemove == null)
+            var group = cacheService.GetItemById<PermissionGroup>(groupId);
+            var userGroupMembership = group.UserPermissionGroups.FirstOrDefault(x => x.UserId == userId);
+            if (userGroupMembership == null)
             {
                 return;
             }
-            @group.UserPermisionGroups.Remove(itemToRemove);
-            using (var context = contextProvider.CreateLightweightContext())
-            {
-                context.Entry(itemToRemove).State = EntityState.Deleted;
-                await context.SaveChangesAsync();
-            }
+            await cacheService.RemoveItemAsync(userGroupMembership);
         }
 
         public async Task AddPermissionToGroupAsync(int permissionId, int groupId)
@@ -110,64 +99,40 @@ namespace AdminModule.Services
         public async Task<PermissionGroup> CreateNewPermissionGroupAsync(string name, string description)
         {
             name = name.Trim();
-            using (var context = contextProvider.CreateLightweightContext())
+            var groupWithTheSameName = cacheService.GetItemByName<PermissionGroup>(name);
+            if (groupWithTheSameName != null)
             {
-                var groupWithTheSameName = await context.Set<PermissionGroup>().FirstOrDefaultAsync(x => x.Name == name);
-                if (groupWithTheSameName != null)
-                {
-                    throw new DataException("Group with the same name already exists");
-                }
-                var result = new PermissionGroup
-                {
-                    Name = name,
-                    Description = description,
-                    PermissionGroupMemberships = new HashSet<PermissionGroupMembership>(),
-                    UserPermisionGroups = new HashSet<UserPermisionGroup>(),
-                    PermissionGroups1 = new HashSet<PermissionGroup>()
-                };
-                context.Entry(result).State = EntityState.Added;
-                await context.SaveChangesAsync();
-                cacheService.InvalidateCache<PermissionGroup>();
-                return result;
+                throw new DataException("Group with the same name already exists");
             }
+            var result = new PermissionGroup
+            {
+                Name = name,
+                Description = description,
+                PermissionGroupMemberships = new HashSet<PermissionGroupMembership>(),
+                UserPermissionGroups = new HashSet<UserPermissionGroup>(),
+            };
+            await Task.Factory.StartNew(() => cacheService.AddItem(result));
+            return result;
         }
 
         public async Task<PermissionGroup> SavePermissionGroupAsync(string newName, string newDescription, PermissionGroup currentGroup)
         {
             newName = newName.Trim();
-            newDescription = newDescription.Trim();
-            var oldName = currentGroup.Name;
-            var oldDescription = currentGroup.Description;
-            DbContext context = null;
-            try
+            newDescription = (newDescription ?? string.Empty).Trim();
+            var groupWithTheSameName = cacheService.GetItemByName<PermissionGroup>(newName);
+            if (groupWithTheSameName != null && groupWithTheSameName.Id != currentGroup.Id)
             {
-                context = contextProvider.CreateLightweightContext();
-                var groupWithTheSameName = await context.Set<PermissionGroup>().FirstOrDefaultAsync(x => x.Name == newName && x.Id != currentGroup.Id);
-                if (groupWithTheSameName != null)
-                {
-                    throw new DataException("Group with the same name already exists");
-                }
-                currentGroup.Name = newName;
-                currentGroup.Description = newDescription;
-                context.Entry(currentGroup).State = EntityState.Modified;
-                await context.SaveChangesAsync();
-                cacheService.InvalidateCache<PermissionGroup>();
-                return currentGroup;
+                throw new DataException("Group with the same name already exists");
             }
-            catch
-            {
-                currentGroup.Name = oldName;
-                currentGroup.Description = oldDescription;
-                throw;
-            }
-            finally
-            {
-                if (context != null)
-                {
-                    context.Dispose();
-                }
-            }
+            currentGroup.Name = newName;
+            currentGroup.Description = newDescription;
+            await cacheService.UpdateItemAsync(currentGroup);
+            return currentGroup;
+        }
 
+        public async Task DeletePermissionGroupAsync(PermissionGroup group)
+        {
+            await cacheService.RemoveItemAsync(group);
         }
     }
 }

@@ -3,7 +3,9 @@
     [PermissionId] INT NOT NULL,
     [GroupId]      INT NOT NULL,
     CONSTRAINT [PK_PermissionGroupMemberships] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_PermissionGroupMemberships_PermissionGroups] FOREIGN KEY ([GroupId]) REFERENCES [dbo].[PermissionGroups] ([Id]),
+    CONSTRAINT [FK_PermissionGroupMemberships_PermissionGroups] FOREIGN KEY ([GroupId]) REFERENCES [dbo].[PermissionGroups] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [FK_PermissionGroupMemberships_Permissions] FOREIGN KEY ([PermissionId]) REFERENCES [dbo].[Permissions] ([Id])
 );
+
+
 

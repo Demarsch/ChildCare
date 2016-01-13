@@ -31,13 +31,9 @@ namespace AdminModule.ViewModels
             get { return existingPermissionGroup; }
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
                 existingPermissionGroup = value;
-                Name = value.Name;
-                Description = value.Description;
+                Name = value == null ? string.Empty : value.Name;
+                Description = value == null ? string.Empty : value.Description;
             }
         }
 

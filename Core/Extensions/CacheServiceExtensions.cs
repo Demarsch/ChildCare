@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Core.Services;
 
 namespace Core.Extensions
@@ -34,6 +35,33 @@ namespace Core.Extensions
             }
             property.SetValue(sourceItem, cacheService.GetItemById<TProperty>((int)idProperty.GetValue(sourceItem)));
             return sourceItem;
+        }
+
+        public static Task AddItemAsync<TItem>(this ICacheService cacheService, TItem item) where TItem : class
+        {
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
+            return Task.Factory.StartNew(() => cacheService.AddItem(item));
+        }
+
+        public static Task RemoveItemAsync<TItem>(this ICacheService cacheService, TItem item) where TItem : class
+        {
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
+            return Task.Factory.StartNew(() => cacheService.RemoveItem(item));
+        }
+
+        public static Task UpdateItemAsync<TItem>(this ICacheService cacheService, TItem item) where TItem : class
+        {
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
+            return Task.Factory.StartNew(() => cacheService.UpdateItem(item));
         }
     }
 }

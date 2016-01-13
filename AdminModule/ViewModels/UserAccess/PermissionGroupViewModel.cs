@@ -74,7 +74,7 @@ namespace AdminModule.ViewModels
 
         public bool IsInUserMode { get { return userMode != null; } }
 
-        public bool CurrentUserIsIncluded { get { return userMode != null && group.UserPermisionGroups.Any(x => x.UserId == userMode.Id); } }
+        public bool CurrentUserIsIncluded { get { return userMode != null && group.UserPermissionGroups.Any(x => x.UserId == userMode.Id); } }
 
         public ICommand RequestCurrentUserIncludeCommand { get; private set; }
 
