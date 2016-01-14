@@ -113,6 +113,12 @@ namespace Shell
                 await notificationService.CheckServiceExistsAsync();
                 return true;
             }
+            catch (UserActivationException ex)
+            {
+                log.InfoFormat("Failed to log in as inactive user with SID {0}", environment.CurrentUser.SID);
+                FailureMediator.Activate("Текущий пользователь неактивен поэтому не может использовать приложение");
+                return false;
+            }
             catch (DataNotFoundException ex)
             {
                 log.Error("Failed to check notification service. " + ex.Message, ex);
@@ -147,8 +153,12 @@ namespace Shell
         private void CheckCurrentUserIsAccessible()
         {
             var serverDate = environment.CurrentDate.ToString(DateTimeFormats.ShortDateTimeFormat);
-            var currentUserSid = environment.CurrentUser.SID;
-            log.InfoFormat("Application is run under user with SID '{0}', current server time is {1}", currentUserSid, serverDate);
+            var currentUser = environment.CurrentUser;
+            if (currentUser.BeginDateTime.Date > DateTime.Today || currentUser.EndDateTime.Date < DateTime.Today)
+            {
+                throw new UserActivationException();
+            }
+            log.InfoFormat("Application is run under user with SID '{0}', current server time is {1}", currentUser.SID, serverDate);
         }
 
         private void SubscribeToEvents()

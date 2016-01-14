@@ -1,0 +1,90 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:AdminModule.ViewModels"
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                    xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf">
+    <DataTemplate DataType="{x:Type viewModels:UserViewModel}">
+        <DataTemplate.Resources>
+            <converters:MultiBoolToVisibilityConverter x:Key="AllowIncludeConverter"
+                                                       Condition="Mixed" />
+            <converters:Converter x:Key="IsActiveToImageConverter">
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                          To="pack://application:,,,/Core;Component/Resources/Images/IsSwitchedOn32x32.png" />
+                <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                          To="pack://application:,,,/Core;Component/Resources/Images/IsSwitchedOff32x32.png" />
+            </converters:Converter>
+        </DataTemplate.Resources>
+        <Button Background="White"
+                Command="{Binding DataContext.SelectUserCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                CommandParameter="{Binding}"
+                HorizontalContentAlignment="Stretch"
+                Padding="5 0 0 0">
+            <Grid HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ToggleButton IsChecked="{Binding IsActive, Mode=OneWay}"
+                              Command="{Binding RequestActivationChangeCommand, Mode=OneTime}"
+                              VerticalContentAlignment="Center">
+                    <ToggleButton.Template>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </ToggleButton.Template>
+                    <Image Source="{Binding IsActive, Converter={StaticResource IsActiveToImageConverter}}" />
+                </ToggleButton>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding FullName}"
+                           TextWrapping="Wrap" />
+                <StackPanel Grid.Column="3"
+                            Orientation="Horizontal"
+                            Opacity="0.5"
+                            x:Name="buttonsPanel"
+                            VerticalAlignment="Center">
+                    <Button Command="{Binding RequestIncludeInCurrentGroupCommand, Mode=OneTime}"
+                            Margin="2"
+                            ToolTip="Добавить этого пользователя в выбранную группу">
+                        <Button.Visibility>
+                            <MultiBinding Converter="{StaticResource AllowIncludeConverter}">
+                                <Binding Path="IsInGroupMode"
+                                         FallbackValue="{x:Static misc:StaticBoolean.False}" />
+                                <Binding Path="IsIncludedInCurrentGroup"
+                                         FallbackValue="{x:Static misc:StaticBoolean.False}" />
+                            </MultiBinding>
+                        </Button.Visibility>
+                        <Image Width="20"
+                               Height="20"
+                               Source="pack://application:,,,/Core;Component/Resources/Images/UserAdd48x48.png" />
+                    </Button>
+                    <Button Command="{Binding RequestExcludeFromCurrentGroupCommand, Mode=OneTime}"
+                            Margin="2"
+                            ToolTip="Удалить этого пользователя из выбранной группы"
+                            Visibility="{Binding IsIncludedInCurrentGroup, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                        <Image Width="20"
+                               Height="20"
+                               Source="pack://application:,,,/Core;Component/Resources/Images/UserRemove48x48.png" />
+                    </Button>
+                    <Button Command="{Binding RequestEditCommand, Mode=OneTime}"
+                            Margin="2"
+                            ToolTip="Редактировать данные пользователя">
+                        <Image Width="20"
+                               Height="20"
+                               Source="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Button>
+        <DataTemplate.Triggers>
+            <Trigger Property="UIElement.IsMouseOver"
+                     Value="True">
+                <Setter TargetName="buttonsPanel"
+                        Property="Opacity"
+                        Value="1" />
+            </Trigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+</ResourceDictionary>

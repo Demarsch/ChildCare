@@ -171,7 +171,8 @@ namespace Core.Data.Services
             {
                 return;
             }
-            var originalName = (string)entry.OriginalValues[GetNameProperty<TData>().Name];
+            var nameProperty = GetNameProperty<TData>();
+            var originalName = nameProperty == null ? string.Empty : (string)entry.OriginalValues[nameProperty.Name];
             try
             {
                 dataContext.SaveChanges();
@@ -182,7 +183,7 @@ namespace Core.Data.Services
                 throw;
             }
             object itemByNameDictionary;
-            if (itemsByName.TryGetValue(typeof(TData), out itemByNameDictionary))
+            if (nameProperty != null && itemsByName.TryGetValue(typeof(TData), out itemByNameDictionary))
             {
                 var dictionary = (Dictionary<string, TData>)itemByNameDictionary;
                 dictionary.Remove(originalName);

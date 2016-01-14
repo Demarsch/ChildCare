@@ -134,5 +134,11 @@ namespace AdminModule.Services
         {
             await cacheService.RemoveItemAsync(group);
         }
+
+        public async Task ChangeUserActivationAsync(User user)
+        {
+            user.EndDateTime = user.EndDateTime == SpecialValues.MaxDate ? DateTime.Today.AddDays(-1.0) : SpecialValues.MaxDate;
+            await cacheService.UpdateItemAsync(user);
+        }
     }
 }

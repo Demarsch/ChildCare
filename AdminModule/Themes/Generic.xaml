@@ -2,6 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:AdminModule.ViewModels"
                     xmlns:views="clr-namespace:AdminModule.Views">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Views/UserAccess/PermissionGroupView.xaml" />
+        <ResourceDictionary Source="../Views/UserAccess/UserView.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type viewModels:GroupEditDialogViewModel}">
         <views:GroupEditDialogView />
     </DataTemplate>
