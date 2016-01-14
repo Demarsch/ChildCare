@@ -88,9 +88,8 @@ namespace Core.Data.Services
                     {
                         throw new InvalidOperationException(string.Format("Type {0} is marked as non-cachable", type.Name));
                     }
-                    dataContext.Set<TData>().Load();
-                    loadedTypes.Add(type, dataContext.Set<TData>().Local);
-                    result = dataContext.Set<TData>().Local;
+                    result = dataContext.Set<TData>().ToArray();
+                    loadedTypes.Add(type, result);
                 }
                 return result as IEnumerable<TData>;
             }

@@ -83,11 +83,11 @@ namespace AdminModule.ViewModels
             return IsInGroupMode && !IsIncludedInCurrentGroup;
         }
 
-        public event EventHandler IncludeInCurrentGroupRequested;
+        public event EventHandler IncludeIntoCurrentGroupRequested;
 
         protected virtual void OnIncludeInCurrentGroupRequested()
         {
-            var handler = IncludeInCurrentGroupRequested;
+            var handler = IncludeIntoCurrentGroupRequested;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);

@@ -116,6 +116,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\PermissionGroupViewModelToGroupHeaderConverter.cs" />
     <Compile Include="Model\SecurityObjectType.cs" />
     <Compile Include="Model\UserDTO.cs" />
     <Compile Include="Module.cs" />
@@ -191,6 +192,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ReportTemplatesManagerView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UserAccess\PermissionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

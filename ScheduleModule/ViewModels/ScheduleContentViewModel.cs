@@ -587,7 +587,7 @@ namespace ScheduleModule.ViewModels
             var polyclinicPlace = cacheService.GetItems<ExecutionPlace>().FirstOrDefault(x => x.IsPolyclynic);
             if (polyclinicPlace == null)
             {
-                FailureMediator.Activate("В базе данных отсутсвует информация о плановой срочности назначения. Обратитесь в службу поддержки", true);
+                FailureMediator.Activate("В базе данных отсутсвует информация об амбулаторном месте выполнения назначения. Обратитесь в службу поддержки", true);
                 return null;
             }
             var assignment = new Assignment

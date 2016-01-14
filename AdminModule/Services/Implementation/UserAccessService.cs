@@ -88,12 +88,24 @@ namespace AdminModule.Services
 
         public async Task AddPermissionToGroupAsync(int permissionId, int groupId)
         {
-            throw new NotImplementedException();
+            var group = cacheService.GetItemById<PermissionGroup>(groupId);
+            if (group.PermissionGroupMemberships.Any(x => x.PermissionId == permissionId))
+            {
+                return;
+            }
+            var permissionGroupMembership = new PermissionGroupMembership() { GroupId = groupId, PermissionId = permissionId };
+            await cacheService.AddItemAsync(permissionGroupMembership);
         }
 
         public async Task RemovePermissionFromGroupAsync(int permissionId, int groupId)
         {
-            throw new NotImplementedException();
+            var group = cacheService.GetItemById<PermissionGroup>(groupId);
+            var permissionGroupMembership = group.PermissionGroupMemberships.FirstOrDefault(x => x.PermissionId == permissionId);
+            if (permissionGroupMembership == null)
+            {
+                return;
+            }
+            await cacheService.RemoveItemAsync(permissionGroupMembership);
         }
 
         public async Task<PermissionGroup> CreateNewPermissionGroupAsync(string name, string description)

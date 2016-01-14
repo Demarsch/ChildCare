@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Input;
+using AdminModule.Converters;
 using AdminModule.Model;
 using AdminModule.Services;
-using Core.Data;
 using Core.Extensions;
 using Core.Services;
 using Core.Wpf.Misc;
@@ -81,6 +77,7 @@ namespace AdminModule.ViewModels
             view.Filter = FilterGroups;
             view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
             Permissions = new ObservableCollectionEx<PermissionViewModel>();
+            Permissions.BeforeCollectionChanged += PermissionsOnBeforeCollectionChanged;
             view = CollectionViewSource.GetDefaultView(Permissions);
             view.Filter = FilterPermissions;
             view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
@@ -103,9 +100,81 @@ namespace AdminModule.ViewModels
 
         public ICommand SelectPermissionCommand { get { return selectPermissionCommand; } }
 
+        private void PermissionsOnBeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (var oldPermission in e.OldItems.Cast<PermissionViewModel>())
+                {
+                    oldPermission.IncludeInCurrentGroupRequested -= PermissionOnIncludeInCurrentGroupRequested ;
+                    oldPermission.ExcludeFromCurrentGroupRequested -= PermissionOnExcludeFromCurrentGroupRequested;
+                }
+            }
+            if (e.NewItems != null)
+            {
+                foreach (var newPermission in e.NewItems.Cast<PermissionViewModel>())
+                {
+                    newPermission.IncludeInCurrentGroupRequested += PermissionOnIncludeInCurrentGroupRequested;
+                    newPermission.ExcludeFromCurrentGroupRequested += PermissionOnExcludeFromCurrentGroupRequested;
+                }
+            }
+        }
+
+        private async void PermissionOnExcludeFromCurrentGroupRequested(object sender, EventArgs eventArgs)
+        {
+            var group = SelectedSecurityObject as PermissionGroupViewModel;
+            var permission = (PermissionViewModel)sender;
+            if (group == null)
+            {
+                log.Warn("Trying to remove permission from group but group wasn't selected");
+                return;
+            }
+            await ExcludePermissionFromGroup(permission, group);
+        }
+
+        private async void PermissionOnIncludeInCurrentGroupRequested(object sender, EventArgs eventArgs)
+        {
+            var group = SelectedSecurityObject as PermissionGroupViewModel;
+            var permission = (PermissionViewModel)sender;
+            if (group == null)
+            {
+                log.Warn("Trying to add permission to group but group wasn't selected");
+                return;
+            }
+            await IncludePermissionIntoGroup(permission, group);
+        }
+
         private void SelectPermission(PermissionViewModel permission)
         {
             SelectedSecurityObject = permission == SelectedSecurityObject ? null : permission;
+            ClearUserView();
+            ClearPermissionView();
+            var view = CollectionViewSource.GetDefaultView(Groups);
+            using (view.DeferRefresh())
+            {
+                view.GroupDescriptions.Clear();
+                view.SortDescriptions.Clear();
+                if (SelectedSecurityObject != null)
+                {
+                    view.GroupDescriptions.Add(new PropertyGroupDescription(null, PermissionGroupViewModelToGroupHeaderConverter.Instance));
+                    view.SortDescriptions.Add(new SortDescription("CurrentPermissionIsIncluded", ListSortDirection.Descending));
+                    view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+                else
+                {
+                    view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+            }
+        }
+        private void ClearPermissionView()
+        {
+            var view = CollectionViewSource.GetDefaultView(Permissions);
+            using (view.DeferRefresh())
+            {
+                view.GroupDescriptions.Clear();
+                view.SortDescriptions.Clear();
+                view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            }
         }
 
         public ObservableCollectionEx<PermissionViewModel> Permissions { get; private set; }
@@ -151,7 +220,7 @@ namespace AdminModule.ViewModels
             {
                 foreach (var oldUser in e.OldItems.Cast<UserViewModel>())
                 {
-                    oldUser.IncludeInCurrentGroupRequested -= UserOnIncludeInCurrentGroupRequested;
+                    oldUser.IncludeIntoCurrentGroupRequested -= UserOnIncludeIntoCurrentGroupRequested;
                     oldUser.ExcludeFromCurrentGroupRequested -= UserOnExcludeFromCurrentGroupRequested;
                     oldUser.ActivationChangeRequested -= UserOnActivationChangeRequested;
                     oldUser.EditRequested -= UserOnEditRequested;
@@ -161,7 +230,7 @@ namespace AdminModule.ViewModels
             {
                 foreach (var newUser in e.NewItems.Cast<UserViewModel>())
                 {
-                    newUser.IncludeInCurrentGroupRequested += UserOnIncludeInCurrentGroupRequested;
+                    newUser.IncludeIntoCurrentGroupRequested += UserOnIncludeIntoCurrentGroupRequested;
                     newUser.ExcludeFromCurrentGroupRequested += UserOnExcludeFromCurrentGroupRequested;
                     newUser.ActivationChangeRequested += UserOnActivationChangeRequested;
                     newUser.EditRequested += UserOnEditRequested;
@@ -209,7 +278,7 @@ namespace AdminModule.ViewModels
             await ExcludeUserFromGroup(user, currentGroup);
         }
 
-        private async void UserOnIncludeInCurrentGroupRequested(object sender, EventArgs eventArgs)
+        private async void UserOnIncludeIntoCurrentGroupRequested(object sender, EventArgs eventArgs)
         {
             var currentGroup = SelectedSecurityObject as PermissionGroupViewModel;
             var user = (UserViewModel)sender;
@@ -218,13 +287,14 @@ namespace AdminModule.ViewModels
                 log.Warn("Trying to add user to group but group wasn't selected");
                 return;
             }
-            await IncludeUserInGroup(user, currentGroup);
+            await IncludeUserIntoGroup(user, currentGroup);
         }
 
         private void SelectUser(UserViewModel user)
         {
             SelectedSecurityObject = user == SelectedSecurityObject ? null : user;
             ClearUserView();
+            ClearPermissionView();
             var view = CollectionViewSource.GetDefaultView(Groups);
             using (view.DeferRefresh())
             {
@@ -232,7 +302,7 @@ namespace AdminModule.ViewModels
                 view.SortDescriptions.Clear();
                 if (SelectedSecurityObject != null)
                 {
-                    view.GroupDescriptions.Add(new PropertyGroupDescription("CurrentUserIsIncluded"));
+                    view.GroupDescriptions.Add(new PropertyGroupDescription(null, PermissionGroupViewModelToGroupHeaderConverter.Instance));
                     view.SortDescriptions.Add(new SortDescription("CurrentUserIsIncluded", ListSortDirection.Descending));
                     view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
                 }
@@ -329,6 +399,8 @@ namespace AdminModule.ViewModels
                 {
                     oldGroup.CurrentUserExcludeRequested -= GroupOnCurrentUserExcludeRequested;
                     oldGroup.CurrentUserIncludeRequested -= GroupOnCurrentUserIncludeRequested;
+                    oldGroup.CurrentPermissionIncludeRequested -= GroupOnCurrentPermissionIncludeRequested;
+                    oldGroup.CurrentPermissionExcludeRequested -= GroupOnCurrentPermissionExcludeRequested;
                     oldGroup.DeleteRequested -= GroupOnDeleteRequested;
                     oldGroup.EditRequested -= GroupOnEditRequested;
                 }
@@ -339,10 +411,36 @@ namespace AdminModule.ViewModels
                 {
                     newGroup.CurrentUserExcludeRequested += GroupOnCurrentUserExcludeRequested;
                     newGroup.CurrentUserIncludeRequested += GroupOnCurrentUserIncludeRequested;
+                    newGroup.CurrentPermissionIncludeRequested += GroupOnCurrentPermissionIncludeRequested;
+                    newGroup.CurrentPermissionExcludeRequested += GroupOnCurrentPermissionExcludeRequested;
                     newGroup.DeleteRequested += GroupOnDeleteRequested;
                     newGroup.EditRequested += GroupOnEditRequested;
                 }
             }
+        }
+
+        private async void GroupOnCurrentPermissionExcludeRequested(object sender, EventArgs eventArgs)
+        {
+            var permission = SelectedSecurityObject as PermissionViewModel;
+            var group = (PermissionGroupViewModel)sender;
+            if (permission == null)
+            {
+                log.Warn("Trying to remove permission from group but permission wasn't selected");
+                return;
+            }
+            await ExcludePermissionFromGroup(permission, group);
+        }
+
+        private async void GroupOnCurrentPermissionIncludeRequested(object sender, EventArgs eventArgs)
+        {
+            var permission = SelectedSecurityObject as PermissionViewModel;
+            var group = (PermissionGroupViewModel)sender;
+            if (permission == null)
+            {
+                log.Warn("Trying to add permission to group but permission wasn't selected");
+                return;
+            }
+            await IncludePermissionIntoGroup(permission, group);
         }
 
         private async void GroupOnEditRequested(object sender, EventArgs eventArgs)
@@ -415,7 +513,7 @@ namespace AdminModule.ViewModels
                 log.Warn("Trying to add user to group but user wasn't selected");
                 return;
             }
-            await IncludeUserInGroup(currentUser, group);
+            await IncludeUserIntoGroup(currentUser, group);
         }
 
         private async void GroupOnCurrentUserExcludeRequested(object sender, EventArgs eventArgs)
@@ -452,6 +550,22 @@ namespace AdminModule.ViewModels
                 else
                 {
                     usersView.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+            }
+            var permissionsView = CollectionViewSource.GetDefaultView(Permissions);
+            using (permissionsView.DeferRefresh())
+            {
+                permissionsView.GroupDescriptions.Clear();
+                permissionsView.SortDescriptions.Clear();
+                if (SelectedSecurityObject != null)
+                {
+                    permissionsView.GroupDescriptions.Add(new PropertyGroupDescription("IsIncludedInCurrentGroup"));
+                    permissionsView.SortDescriptions.Add(new SortDescription("IsIncludedInCurrentGroup", ListSortDirection.Descending));
+                    permissionsView.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+                else
+                {
+                    permissionsView.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
                 }
             }
         }
@@ -500,7 +614,7 @@ namespace AdminModule.ViewModels
 
         #region Cross-functionality
 
-        private async Task IncludeUserInGroup(UserViewModel user, PermissionGroupViewModel group)
+        private async Task IncludeUserIntoGroup(UserViewModel user, PermissionGroupViewModel group)
         {
             try
             {
@@ -562,6 +676,66 @@ namespace AdminModule.ViewModels
             }
         }
 
+        private async Task ExcludePermissionFromGroup(PermissionViewModel permission, PermissionGroupViewModel group)
+        {
+            try
+            {
+                log.InfoFormat("Removing permission '{0}' from group '{1}'...", permission.Name, group.Name);
+                BusyMediator.Activate("Удаляем право из группы...");
+                await userAccessService.RemovePermissionFromGroupAsync(permission.Permission.Id, group.Group.Id);
+                log.InfoFormat("Successfully removed permission '{0}' from group '{1}'", permission.Name, group.Name);
+                if (SelectedSecurityObject == permission)
+                {
+                    group.PermissionMode = permission;
+                    CollectionViewSource.GetDefaultView(Groups).Refresh();
+                }
+                else
+                {
+                    permission.GroupMode = group;
+                    CollectionViewSource.GetDefaultView(Permissions).Refresh();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Failed to remove permission '{0}' from group '{1}'", permission.Name, group.Name);
+                FailureMediator.Activate("Не удалось удалить право из группы. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        private async Task IncludePermissionIntoGroup(PermissionViewModel permission, PermissionGroupViewModel group)
+        {
+            try
+            {
+                log.InfoFormat("Adding permission '{0}' to group '{1}'...", permission.Name, group.Name);
+                BusyMediator.Activate("Добавляем право в группу...");
+                await userAccessService.AddPermissionToGroupAsync(permission.Permission.Id, group.Group.Id);
+                log.InfoFormat("Successfully added permission '{0}' to group '{1}'", permission.Name, group.Name);
+                if (SelectedSecurityObject == permission)
+                {
+                    group.PermissionMode = permission;
+                    CollectionViewSource.GetDefaultView(Groups).Refresh();
+                }
+                else
+                {
+                    permission.GroupMode = group;
+                    CollectionViewSource.GetDefaultView(Permissions).Refresh();
+                }
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Failed to add permission '{0}' to group '{1}'", permission.Name, group.Name);
+                FailureMediator.Activate("Не удалось добавить право в группу. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки", exception: ex, canBeDeactivated: true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
         private object selectedSecurityObject;
 
         public object SelectedSecurityObject
@@ -594,7 +768,9 @@ namespace AdminModule.ViewModels
                     SelectedSecurityObjectType = null;
                 }
                 Groups.ForEach(x => x.UserMode = value as UserViewModel);
+                Groups.ForEach(x => x.PermissionMode = value as PermissionViewModel);
                 Users.ForEach(x => x.GroupMode = value as PermissionGroupViewModel);
+                Permissions.ForEach(x => x.GroupMode = value as PermissionGroupViewModel);
             }
         }
 
@@ -669,6 +845,8 @@ namespace AdminModule.ViewModels
             Groups.BeforeCollectionChanged -= GroupsOnBeforeCollectionChanged;
             Users.Clear();
             Users.BeforeCollectionChanged -= UsersOnBeforeCollectionChanged;
+            Permissions.Clear();
+            Permissions.BeforeCollectionChanged -= PermissionsOnBeforeCollectionChanged;
         }
     }
 }

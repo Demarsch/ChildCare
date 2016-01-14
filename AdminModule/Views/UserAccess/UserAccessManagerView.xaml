@@ -12,14 +12,6 @@
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:UserAccessManagerViewModel}">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type viewModels:PermissionViewModel}">
-            <Button Content="{Binding Name, Mode=OneTime}"
-                    Command="{Binding DataContext.SelectPermissionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                    CommandParameter="{Binding}"
-                    Background="White"
-                    HorizontalContentAlignment="Left"
-                    Padding="5 0 0 0" />
-        </DataTemplate>
         <converters:Converter x:Key="SecurityObjectTypeConverter"
                               DefaultValue="">
             <converters:ConverterItem From="{x:Static model:SecurityObjectType.User}"
@@ -38,17 +30,17 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <converters:Converter x:Key="GroupUserRelationshipConverter">
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
-                                      To="Пользователь не состоит в группах" />
-            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
-                                      To="Пользователь входит в группы" />
-        </converters:Converter>
         <converters:Converter x:Key="UserGroupRelationshipConverter">
             <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
                                       To="Пользователи, не входящие в группу" />
             <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
                                       To="Пользователи, состоящие в группе" />
+        </converters:Converter>
+        <converters:Converter x:Key="PermissionGroupRelationshipConverter">
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
+                                      To="Права, не входящие в группу" />
+            <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
+                                      To="Права, относящиеся к группе" />
         </converters:Converter>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch"
@@ -211,7 +203,7 @@
                                                         Background="White"
                                                         VerticalAlignment="Center">
                                                     <TextBlock FontWeight="SemiBold"
-                                                               Text="{Binding Name, Converter={StaticResource GroupUserRelationshipConverter}}" />
+                                                               Text="{Binding Name}" />
                                                 </Border>
 
                                             </Grid>
@@ -235,7 +227,7 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0"
                                Grid.Column="0"
-                               Text="Группы" />
+                               Text="Права" />
                     <xctk:WatermarkTextBox Grid.Row="0"
                                            Grid.Column="1"
                                            HorizontalAlignment="Stretch"
@@ -260,7 +252,30 @@
                              Grid.Column="0"
                              Grid.ColumnSpan="2"
                              Margin="5"
-                             ItemsSource="{Binding Permissions}" />
+                             ItemsSource="{Binding Permissions}">
+                        <ListBox.GroupStyle>
+                            <GroupStyle HidesIfEmpty="True">
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate DataType="{x:Type CollectionViewGroup}">
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Separator VerticalAlignment="Center"
+                                                           HorizontalAlignment="Stretch"
+                                                           Height="1"
+                                                           Background="Black" />
+                                            <Border Padding="2 0 2 0"
+                                                        HorizontalAlignment="Left"
+                                                        Background="White"
+                                                        VerticalAlignment="Center">
+                                                <TextBlock FontWeight="SemiBold"
+                                                               Text="{Binding Name, Converter={StaticResource PermissionGroupRelationshipConverter}}" />
+                                            </Border>
+
+                                        </Grid>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListBox.GroupStyle>
+                    </ListBox>
                 </Grid>
             </Grid>
         </DockPanel>

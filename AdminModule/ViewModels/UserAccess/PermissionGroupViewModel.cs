@@ -21,6 +21,11 @@ namespace AdminModule.ViewModels
                 .ObservesProperty(() => CurrentUserIsIncluded);
             RequestCurrentUserExcludeCommand = new DelegateCommand(RequestCurrentUserExclude, CanRequestCurrentUserExclude)
                 .ObservesProperty(() => CurrentUserIsIncluded);
+            RequestCurrentPermissionIncludeCommand = new DelegateCommand(RequestCurrentPermissionInclude, CanRequestCurrentPermissionInclude)
+                .ObservesProperty(() => IsInPermissionMode)
+                .ObservesProperty(() => CurrentPermissionIsIncluded);
+            RequestCurrentPermissionExcludeCommand = new DelegateCommand(RequestCurrentPermissionExclude, CanRequestCurrentPermissionExclude)
+                .ObservesProperty(() => CurrentPermissionIsIncluded);
             RequestDeleteCommand = new DelegateCommand(RequestDelete);
             RequestEditCommand = new DelegateCommand(RequestEdit);
         }
@@ -75,6 +80,69 @@ namespace AdminModule.ViewModels
         public bool IsInUserMode { get { return userMode != null; } }
 
         public bool CurrentUserIsIncluded { get { return userMode != null && group.UserPermissionGroups.Any(x => x.UserId == userMode.Id); } }
+
+        private PermissionViewModel permissionMode;
+
+        public PermissionViewModel PermissionMode
+        {
+            get { return permissionMode; }
+            set
+            {
+                SetProperty(ref permissionMode, value);
+                OnPropertyChanged(() => IsInPermissionMode);
+                OnPropertyChanged(() => CurrentPermissionIsIncluded);
+            }
+        }
+
+        public bool IsInPermissionMode { get { return permissionMode != null; } }
+
+        public bool CurrentPermissionIsIncluded { get { return permissionMode != null && group.PermissionGroupMemberships.Any(x => x.PermissionId == permissionMode.Permission.Id); } }
+
+        public ICommand RequestCurrentPermissionIncludeCommand { get; private set; }
+
+        private void RequestCurrentPermissionInclude()
+        {
+            OnCurrentPermissionIncludeRequested();
+        }
+
+        private bool CanRequestCurrentPermissionInclude()
+        {
+            return IsInPermissionMode && !CurrentPermissionIsIncluded;
+        }
+
+        public event EventHandler CurrentPermissionIncludeRequested;
+
+        protected virtual void OnCurrentPermissionIncludeRequested()
+        {
+            var handler = CurrentPermissionIncludeRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        public ICommand RequestCurrentPermissionExcludeCommand { get; private set; }
+
+        private void RequestCurrentPermissionExclude()
+        {
+            OnCurrentPermissionExcludeRequested();
+        }
+
+        private bool CanRequestCurrentPermissionExclude()
+        {
+            return CurrentPermissionIsIncluded;
+        }
+
+        public event EventHandler CurrentPermissionExcludeRequested;
+
+        protected virtual void OnCurrentPermissionExcludeRequested()
+        {
+            var handler = CurrentPermissionExcludeRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
 
         public ICommand RequestCurrentUserIncludeCommand { get; private set; }
 

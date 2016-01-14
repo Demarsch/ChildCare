@@ -5,6 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/UserAccess/PermissionGroupView.xaml" />
         <ResourceDictionary Source="../Views/UserAccess/UserView.xaml" />
+        <ResourceDictionary Source="../Views/UserAccess/PermissionView.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type viewModels:GroupEditDialogViewModel}">
         <views:GroupEditDialogView />
