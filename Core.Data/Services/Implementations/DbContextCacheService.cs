@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -88,7 +91,9 @@ namespace Core.Data.Services
                     {
                         throw new InvalidOperationException(string.Format("Type {0} is marked as non-cachable", type.Name));
                     }
-                    result = dataContext.Set<TData>().ToArray();
+                    var stopWatch = Stopwatch.StartNew();
+                    result = dataContext.Set<TData>().ToList();
+                    stopWatch.Stop();
                     loadedTypes.Add(type, result);
                 }
                 return result as IEnumerable<TData>;
@@ -104,6 +109,7 @@ namespace Core.Data.Services
             lock (loadedTypes)
             {
                 dataContext.Set<TData>().Add(item);
+                var changedEntities = GetChangedEntities();
                 try
                 {
                     dataContext.SaveChanges();
@@ -113,16 +119,7 @@ namespace Core.Data.Services
                     dataContext.ResetChanges<TData>();
                     throw;
                 }
-                object itemByIdDictionary;
-                if (itemsById.TryGetValue(typeof (TData), out itemByIdDictionary))
-                {
-                    ((Dictionary<int, TData>)itemByIdDictionary).Add(GetIdSelectorFunction<TData>()(item), item);
-                }
-                object itemByNameDictionary;
-                if (itemsByName.TryGetValue(typeof (TData), out itemByNameDictionary))
-                {
-                    ((Dictionary<string, TData>)itemByNameDictionary).Add(GetNameSelectorFunction<TData>()(item), item);
-                }
+                ProcessChangedEntities(changedEntities);
             }
         }
 
@@ -135,11 +132,12 @@ namespace Core.Data.Services
             lock (loadedTypes)
             {
                 object loadedItems;
-                if (!loadedTypes.TryGetValue(typeof (TData), out loadedItems))
+                if (!loadedTypes.TryGetValue(typeof(TData), out loadedItems))
                 {
                     return;
                 }
                 dataContext.Set<TData>().Remove(item);
+                var changedEntities = GetChangedEntities();
                 try
                 {
                     dataContext.SaveChanges();
@@ -149,29 +147,14 @@ namespace Core.Data.Services
                     dataContext.ResetChanges<TData>();
                     throw;
                 }
-                object itemByIdDictionary;
-                if (itemsById.TryGetValue(typeof(TData), out itemByIdDictionary))
-                {
-                    ((Dictionary<int, TData>)itemByIdDictionary).Remove(GetIdSelectorFunction<TData>()(item));
-                }
-                object itemByNameDictionary;
-                if (itemsByName.TryGetValue(typeof(TData), out itemByNameDictionary))
-                {
-                    ((Dictionary<string, TData>)itemByNameDictionary).Remove(GetNameSelectorFunction<TData>()(item));
-                }
+                ProcessChangedEntities(changedEntities);
             }
         }
 
         public void UpdateItem<TData>(TData item) where TData : class
         {
             dataContext.ChangeTracker.DetectChanges();
-            var entry = dataContext.Entry(item);
-            if (entry.State != EntityState.Modified)
-            {
-                return;
-            }
-            var nameProperty = GetNameProperty<TData>();
-            var originalName = nameProperty == null ? string.Empty : (string)entry.OriginalValues[nameProperty.Name];
+            var changedEntities = GetChangedEntities();
             try
             {
                 dataContext.SaveChanges();
@@ -181,20 +164,100 @@ namespace Core.Data.Services
                 dataContext.ResetChanges<TData>();
                 throw;
             }
-            object itemByNameDictionary;
-            if (nameProperty != null && itemsByName.TryGetValue(typeof(TData), out itemByNameDictionary))
-            {
-                var dictionary = (Dictionary<string, TData>)itemByNameDictionary;
-                dictionary.Remove(originalName);
-                dictionary.Add(GetNameSelectorFunction<TData>()(item), item);
-            }
+            ProcessChangedEntities(changedEntities);
         }
 
         #region Internals
 
+        private void ProcessChangedEntities(IEnumerable<ChangedEntity> changedEntities)
+        {
+            foreach (var changedEntity in changedEntities)
+            {
+                switch (changedEntity.State)
+                {
+                    case EntityState.Added:
+                        InternalAddItem(changedEntity.Entity);
+                        break;
+                    case EntityState.Deleted:
+                        InternalRemoveItem(changedEntity.Entity);
+                        break;
+                    case EntityState.Modified:
+                        InternalUpdateItem(changedEntity);
+                        break;
+                }
+            }
+        }
+
+        private void InternalUpdateItem(ChangedEntity changedEntity)
+        {
+            object itemByNameDictionary;
+            var type = changedEntity.Entity.GetType();
+            var item = changedEntity.Entity;
+            var nameProperty = GetNameProperty(type);
+            if (itemsByName.TryGetValue(type, out itemByNameDictionary))
+            {
+                var dictionary = (IDictionary)itemByNameDictionary;
+                dictionary.Remove(changedEntity.OriginalValues[nameProperty.Name]);
+                dictionary.Add(changedEntity.NewValues[nameProperty.Name], item);
+            }
+        }
+
+        private void InternalRemoveItem(object item)
+        {
+            var type = item.GetType();
+            object itemCollection;
+            if (loadedTypes.TryGetValue(type, out itemCollection))
+            {
+                ((IList)itemCollection).Remove(item);
+            }
+            object itemByIdDictionary;
+            if (itemsById.TryGetValue(type, out itemByIdDictionary))
+            {
+                ((IDictionary)itemByIdDictionary).Remove(GetId(item));
+            }
+            object itemByNameDictionary;
+            if (itemsByName.TryGetValue(type, out itemByNameDictionary))
+            {
+                ((IDictionary)itemByNameDictionary).Remove(GetName(item));
+            }
+        }
+
+        private void InternalAddItem(object item)
+        {
+            object itemByIdDictionary;
+            var type = item.GetType();
+            object itemCollection;
+            if (loadedTypes.TryGetValue(type, out itemCollection))
+            {
+                ((IList)itemCollection).Add(item);
+            }
+            if (itemsById.TryGetValue(type, out itemByIdDictionary))
+            {
+                ((IDictionary)itemByIdDictionary).Add(GetId(item), item);
+            }
+            object itemByNameDictionary;
+            if (itemsByName.TryGetValue(type, out itemByNameDictionary))
+            {
+                ((IDictionary)itemByNameDictionary).Add(GetName(item), item);
+            }
+        }
+
+        private IEnumerable<ChangedEntity> GetChangedEntities()
+        {
+            return dataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Deleted || x.State == EntityState.Modified)
+                .Select(x => new ChangedEntity(x.Entity,
+                                               x.State == EntityState.Deleted || x.State == EntityState.Modified ? x.OriginalValues : null,
+                                               x.State == EntityState.Added || x.State == EntityState.Modified ? x.CurrentValues : null))
+                    .ToArray();
+        }
+
         internal PropertyInfo GetIdProperty<TData>()
         {
-            var type = typeof(TData);
+            return GetIdProperty(typeof(TData));
+        }
+
+        internal PropertyInfo GetIdProperty(Type type)
+        {
             var idPropertyAttribute = type.GetCustomAttribute<IdPropertyAttribute>();
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToDictionary(x => x.Name);
             PropertyInfo result;
@@ -202,12 +265,21 @@ namespace Core.Data.Services
             {
                 return result;
             }
-            return properties.TryGetValue(ExpectedIdPropertyName, out result) ? result : null;
+            if (properties.TryGetValue(ExpectedIdPropertyName, out result))
+            {
+                return result;
+            }
+            throw new ArgumentException(string.Format("Type '{0}' doesn't contain property that serves as identity property", type.Name));
         }
 
         internal PropertyInfo GetNameProperty<TData>()
         {
             var type = typeof(TData);
+            return GetNameProperty(type);
+        }
+
+        private PropertyInfo GetNameProperty(Type type)
+        {
             var namePropertyAttribute = type.GetCustomAttribute<NamePropertyAttribute>();
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToDictionary(x => x.Name);
             PropertyInfo result;
@@ -219,17 +291,31 @@ namespace Core.Data.Services
             {
                 return result;
             }
-            return properties.TryGetValue(ExpectedSecondaryNamePropertyName, out result) ? result : null;
+            if (properties.TryGetValue(ExpectedSecondaryNamePropertyName, out result))
+            {
+                return result;
+            }
+            throw new ArgumentException(string.Format("Type '{0}' doesn't contain property that serves as name property", type.Name));
+        }
+
+        internal int GetId(object obj)
+        {
+            var type = obj.GetType();
+            var idProperty = GetIdProperty(type);
+            return (int)idProperty.GetValue(obj);
+        }
+
+        internal string GetName(object obj)
+        {
+            var type = obj.GetType();
+            var nameProperty = GetNameProperty(type);
+            return (string)nameProperty.GetValue(obj);
         }
 
         internal Func<TData, int> GetIdSelectorFunction<TData>()
         {
             var type = typeof(TData);
             var idProperty = GetIdProperty<TData>();
-            if (idProperty == null)
-            {
-                throw new ArgumentException(string.Format("Type '{0}' doesn't contain property that serves as identity property", type.Name));
-            }
             var parameter = Expression.Parameter(type, "x");
             var body = Expression.Call(parameter, idProperty.GetGetMethod());
             return Expression.Lambda<Func<TData, int>>(body, parameter).Compile();
@@ -239,13 +325,48 @@ namespace Core.Data.Services
         {
             var type = typeof(TData);
             var nameProperty = GetNameProperty<TData>();
-            if (nameProperty == null)
-            {
-                throw new ArgumentException(string.Format("Type '{0}' doesn't contain property that serves as name property", type.Name));
-            }
             var parameter = Expression.Parameter(type, "x");
             var body = Expression.Call(parameter, nameProperty.GetGetMethod());
             return Expression.Lambda<Func<TData, string>>(body, parameter).Compile();
+        }
+
+        private class ChangedEntity
+        {
+            private readonly object entity;
+
+            private readonly EntityState state;
+
+            private readonly DbPropertyValues originalValues;
+
+            private readonly DbPropertyValues newValues;
+
+            public object Entity
+            {
+                get { return entity; }
+            }
+
+            public DbPropertyValues OriginalValues
+            {
+                get { return originalValues; }
+            }
+
+            public DbPropertyValues NewValues
+            {
+                get { return newValues; }
+            }
+
+            public EntityState State
+            {
+                get { return state; }
+            }
+
+            public ChangedEntity(object entity, DbPropertyValues originalValues, DbPropertyValues newValues)
+            {
+                this.entity = entity;
+                this.state = originalValues == null ? EntityState.Added : newValues == null ? EntityState.Deleted : EntityState.Modified;
+                this.originalValues = originalValues;
+                this.newValues = newValues;
+            }
         }
 
         #endregion

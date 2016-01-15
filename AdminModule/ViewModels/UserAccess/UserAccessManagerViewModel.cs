@@ -365,7 +365,7 @@ namespace AdminModule.ViewModels
         {
             var viewModel = groupEditDialogViewModelFactory();
             viewModel.ExistingPermissionGroup = null;
-            viewModel.Name = string.Empty;
+            viewModel.Name = (GroupsFilter ?? string.Empty).Trim();
             viewModel.Description = string.Empty;
             var dialogResult = await dialogService.ShowDialogAsync(viewModel);
             if (dialogResult == true)
