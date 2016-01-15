@@ -114,6 +114,9 @@ namespace PatientInfoModule.ViewModels
             addRelativeCommand = new DelegateCommand(AddRelativeAsync, CanAddRelative);
             searchRelativeCommand = new DelegateCommand(SearchRelativeAsync, CanAddRelative);
             goBackToPatientCommand = new DelegateCommand(GoBackToPatient, CanGoBackToPatient);
+            createAmbCardCommand = new DelegateCommand(CreateAmbCardAsync, CanCreateAmbCard);
+            deleteAmbCardCommand = new DelegateCommand(DeleteAmbCardAsync, CanDeleteAmbCard);
+            printAmbCardCommand = new DelegateCommand(PrintAmbCardAsync, CanPrintAmbCard);
             saveChangesCommandWrapper = new CommandWrapper { Command = SaveChangesCommand };
             loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientAndRelativesAsync(patientIdBeingLoaded)) };
             currentOperation = new TaskCompletionSource<object>();
@@ -161,9 +164,30 @@ namespace PatientInfoModule.ViewModels
 
         private readonly DelegateCommand searchRelativeCommand;
 
+        private readonly DelegateCommand createAmbCardCommand;
+
+        private readonly DelegateCommand deleteAmbCardCommand;
+
+        private readonly DelegateCommand printAmbCardCommand;
+
         private readonly CommandWrapper saveChangesCommandWrapper;
 
         private readonly CommandWrapper loadRelativeListWrapper;
+
+        public ICommand CreateAmbCardCommand
+        {
+            get { return createAmbCardCommand; }
+        }
+
+        public ICommand DeleteAmbCardCommand
+        {
+            get { return deleteAmbCardCommand; }
+        }
+
+        public ICommand PrintAmbCardCommand
+        {
+            get { return printAmbCardCommand; }
+        }
 
         public ICommand CreateNewPatientCommand
         {
@@ -287,9 +311,39 @@ namespace PatientInfoModule.ViewModels
             await newRelative.LoadPatientInfoAsync(SpecialValues.NewId);
         }
 
+        private async void CreateAmbCardAsync()
+        {
+            await patientService.CreateAmbCard(currentPatientId);
+        }
+
+        private async void DeleteAmbCardAsync()
+        {
+            await patientService.DeleteAmbCard(currentPatientId);
+        }
+
+        private void PrintAmbCardAsync()
+        {
+            
+        }
+
         private bool CanAddRelative()
         {
             return currentPatientId != SpecialValues.NonExistingId;
+        }
+
+        private bool CanCreateAmbCard()
+        {
+            return true;
+        }
+
+        private bool CanDeleteAmbCard()
+        {
+            return true;
+        }
+
+        private bool CanPrintAmbCard()
+        {
+            return true;
         }
 
         public ICommand SearchRelativeCommand

@@ -28,6 +28,10 @@ namespace PatientInfoModule.Services
             
         Task<SavePatientOutput> SavePatientAsync(SavePatientInput data);
 
+        Task<string> CreateAmbCard(int personId);
+
+        Task<bool> DeleteAmbCard(int personId);
+
         IEnumerable GetPersonsByFullName(string filter);
 
         IDisposableQueryable<PersonStaff> GetPersonStaff(int personId, int staffId, DateTime begin, DateTime end);

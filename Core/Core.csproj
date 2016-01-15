@@ -304,6 +304,11 @@
     <Resource Include="Resources\Images\IsSwitchedOff32x32.png" />
     <Resource Include="Resources\Images\IsSwitchedOn32x32.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AmbCardAdd48x48.png" />
+    <Resource Include="Resources\Images\AmbCardPrint48x48.png" />
+    <Resource Include="Resources\Images\AmbCardRemove48x48.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

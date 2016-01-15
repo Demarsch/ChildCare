@@ -231,6 +231,38 @@ namespace PatientInfoModule.Services
             }
         }
 
+        public async Task<string> CreateAmbCard(int personId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+                var year = DateTime.Now.Year;
+                int maxNumber = 1;
+                if (await context.Set<Person>().AnyAsync(x => x.Year == year))
+                    maxNumber = await context.Set<Person>().Where(x => x.Year == year).MaxAsync(x => x.AmbNumber);
+                var person = await context.Set<Person>().FirstOrDefaultAsync(x => x.Id == personId);
+                person.Year = year;
+                person.AmbNumber = maxNumber;
+                person.AmbNumberString = maxNumber + "-" + DateTime.Now.ToString("yy");
+                await context.SaveChangesAsync();
+                return person.AmbNumberString;
+            }
+        }
+
+        public async Task<bool> DeleteAmbCard(int personId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                context.Configuration.ProxyCreationEnabled = false;
+                var person = await context.Set<Person>().FirstOrDefaultAsync(x => x.Id == personId);
+                person.Year = 0;
+                person.AmbNumber = 0;
+                person.AmbNumberString = string.Empty;
+                await context.SaveChangesAsync();
+                return true;
+            }
+        }
+
         private async Task PreparePhotoAsync(SavePatientInput data, DbContext context, SavePatientOutput result)
         {
             if (data.NewPhoto == null || data.NewPhoto.Length == 0)

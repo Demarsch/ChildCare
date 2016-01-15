@@ -109,4 +109,19 @@
                        Command="{Binding ContentViewModel.GoBackToPatientCommand, Mode=OneTime}"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Back48x48.png" />
     </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Амбулаторная карта">
+        <fluent:Button Size="Large"
+                       Header="Создать а/к"
+                       Command="{Binding ContentViewModel.CreateAmbCardCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AmbCardAdd48x48.png" />
+        <fluent:Button Size="Large"
+                       Header="Удалить а/к"
+                       Command="{Binding ContentViewModel.DeleteAmbCardCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AmbCardRemove48x48.png" />
+        <fluent:Button Size="Large"
+                       Header="Печать а/к"
+                       IsEnabled="{Binding ContentViewModel.CanPrintAmbCard}"
+                       Command="{Binding ContentViewModel.PrintAmbCardCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AmbCardPrint48x48.png" />
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>
