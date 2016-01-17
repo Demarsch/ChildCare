@@ -44,11 +44,11 @@
     <fluent:RibbonGroupBox Header="Родственники"
                            MinWidth="300">
         <fluent:Button Size="Large"
-                       Header="Добавить родственника"
+                       Header="Добавить"
                        Command="{Binding ContentViewModel.AddRelativeCommand, Mode=OneTime}"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesAdd48x48.png" />
         <fluent:Button Size="Large"
-                       Header="Найти родственника"
+                       Header="Найти"
                        Command="{Binding ContentViewModel.SearchRelativeCommand, Mode=OneTime}"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png" />
         <fluent:InRibbonGallery MaxItemsInRow="3"

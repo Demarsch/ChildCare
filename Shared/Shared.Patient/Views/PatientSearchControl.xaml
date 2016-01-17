@@ -19,7 +19,7 @@
                                Margin="5 15 5 5"
                                MaxLength="200">
             <xctk:WatermarkTextBox.Watermark>
-                <TextBlock Text="Начните вводить любое имя, номер документа или дату для поиска пациента"
+                <TextBlock Text="Начните вводить любое имя, номер документа или дату рождения для поиска человека"
                            Style="{x:Null}" />
             </xctk:WatermarkTextBox.Watermark>
             <i:Interaction.Behaviors>

@@ -16,7 +16,7 @@ namespace Core.Wpf.Services
 
         private readonly ChildDialogWindow dialogWindow;
 
-        private TaskCompletionSource<bool?> taskSource;
+        private Stack<TaskCompletionSource<bool?>> taskSources;
 
         public WindowsDialogServiceAsync(IEventAggregator eventAggregator, ChildDialogWindow dialogWindow)
         {
@@ -26,27 +26,35 @@ namespace Core.Wpf.Services
             }
             this.eventAggregator = eventAggregator;
             this.dialogWindow = dialogWindow;
+            //This is for propert processing of multiple shows when one dialogviewmodel shows another one
+            taskSources = new Stack<TaskCompletionSource<bool?>>();
         }
 
-        public async Task<bool?> ShowDialogAsync(IDialogViewModel dialogViewModel)
+        public async Task<bool?> ShowDialogAsync(IDialogViewModel targetDialogViewModel, IDialogViewModel sourceDialogViewModel = null)
         {
-            if (dialogViewModel == null)
+            if (targetDialogViewModel == null)
             {
-                throw new ArgumentNullException("dialogViewModel");
+                throw new ArgumentNullException("targetDialogViewModel");
             }
             eventAggregator.GetEvent<MainMenuCloseRequestedEvent>().Publish(null);
-            taskSource = new TaskCompletionSource<bool?>();
-            dialogWindow.DataContext = dialogViewModel;
-            dialogViewModel.CloseRequested += DialogViewModelOnCloseRequested;
+            taskSources.Push(new TaskCompletionSource<bool?>());
+            dialogWindow.DataContext = targetDialogViewModel;
+            targetDialogViewModel.CloseRequested += DialogViewModelOnCloseRequested;
             dialogWindow.Show();
             dialogWindow.Focus();
-            var result = await taskSource.Task;
-            dialogViewModel.CloseRequested -= DialogViewModelOnCloseRequested;
+            var result = await taskSources.Peek().Task;
+            targetDialogViewModel.CloseRequested -= DialogViewModelOnCloseRequested;
+            if (sourceDialogViewModel != null)
+            {
+                dialogWindow.DataContext = sourceDialogViewModel;
+                dialogWindow.Show();
+            }
             return result;
         }
 
         private void DialogViewModelOnCloseRequested(object sender, ReturnEventArgs<bool> returnEventArgs)
         {
+            var taskSource = taskSources.Pop();
             taskSource.SetResult(returnEventArgs.Result);
         }
     }

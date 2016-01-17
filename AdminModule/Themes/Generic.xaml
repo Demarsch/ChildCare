@@ -6,8 +6,12 @@
         <ResourceDictionary Source="../Views/UserAccess/PermissionGroupView.xaml" />
         <ResourceDictionary Source="../Views/UserAccess/UserView.xaml" />
         <ResourceDictionary Source="../Views/UserAccess/PermissionView.xaml" />
+        <ResourceDictionary Source="../Views/UserAccess/PersonSearchDialogView.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type viewModels:GroupEditDialogViewModel}">
         <views:GroupEditDialogView />
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:UserPropertiesDialogViewModel}">
+        <views:UserPropertiesDialogView />
     </DataTemplate>
 </ResourceDictionary>

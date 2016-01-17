@@ -34,10 +34,10 @@ namespace Shared.Patient.ViewModels
         private readonly IFileService fileService;
 
         public PersonSearchViewModel(IPersonSearchService personSearchService,
-                                      ILog log,
-                                      ICacheService cacheService,
-                                      IUserInputNormalizer userInputNormalizer,
-                                      IFileService fileService)
+                                     ILog log,
+                                     ICacheService cacheService,
+                                     IUserInputNormalizer userInputNormalizer,
+                                     IFileService fileService)
         {
             if (personSearchService == null)
             {
@@ -70,11 +70,11 @@ namespace Shared.Patient.ViewModels
             Persons = new ObservableCollectionEx<FoundPersonViewModel>();
             SearchPersonsCommand = new DelegateCommand<bool?>(SearchPersons);
             searchPersonsCommandWrapper = new CommandWrapper
-            {
-                Command = SearchPersonsCommand,
-                CommandName = "Повторный поиск",
-                CommandParameter = false
-            };
+                                          {
+                                              Command = SearchPersonsCommand,
+                                              CommandName = "Повторный поиск",
+                                              CommandParameter = false
+                                          };
             SelectPersonCommand = new DelegateCommand<int?>(SelectPerson);
         }
 
@@ -160,35 +160,34 @@ namespace Shared.Patient.ViewModels
                 query = personSearchService.GetPatientSearchQuery(userInput);
                 var result = await query.PersonsQuery
                                         .Select(x => new
-                                        {
-                                            x.Id,
-                                            x.BirthDate,
-                                            x.IsMale,
-                                            x.Snils,
-                                            x.MedNumber,
-                                            CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == null || y.EndDateTime == DateTime.MaxValue),
-                                            PreviousName = x.PersonNames.Where(y => y.EndDateTime != null && y.EndDateTime != DateTime.MaxValue)
-                                                            .OrderByDescending(y => y.BeginDateTime)
-                                                            .FirstOrDefault(),
-                                            IdentityDocument = x.PersonIdentityDocuments
-                                                                .OrderByDescending(y => y.BeginDate)
-                                                                .FirstOrDefault(),
-                                            Photo = x.Document.FileData
-
-                                        })
+                                                     {
+                                                         x.Id,
+                                                         x.BirthDate,
+                                                         x.IsMale,
+                                                         x.Snils,
+                                                         x.MedNumber,
+                                                         CurrentName = x.PersonNames.FirstOrDefault(y => y.EndDateTime == null || y.EndDateTime == DateTime.MaxValue),
+                                                         PreviousName = x.PersonNames.Where(y => y.EndDateTime != null && y.EndDateTime != DateTime.MaxValue)
+                                                                         .OrderByDescending(y => y.BeginDateTime)
+                                                                         .FirstOrDefault(),
+                                                         IdentityDocument = x.PersonIdentityDocuments
+                                                                             .OrderByDescending(y => y.BeginDate)
+                                                                             .FirstOrDefault(),
+                                                         Photo = x.Document.FileData
+                                                     })
                                         .ToArrayAsync(token);
                 var patients = await result.Select(x => new FoundPersonViewModel
-                {
-                    Id = x.Id,
-                    BirthDate = x.BirthDate,
-                    CurrentName = x.CurrentName,
-                    PreviousName = x.PreviousName,
-                    IsMale = x.IsMale,
-                    IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
-                    MedNumber = x.MedNumber,
-                    Snils = Person.DelimitizeSnils(x.Snils),
-                    Photo = fileService.GetImageSourceFromBinaryData(x.Photo)
-                })
+                                                        {
+                                                            Id = x.Id,
+                                                            BirthDate = x.BirthDate,
+                                                            CurrentName = x.CurrentName,
+                                                            PreviousName = x.PreviousName,
+                                                            IsMale = x.IsMale,
+                                                            IdentityDocument = cacheService.AutoWire(x.IdentityDocument, y => y.IdentityDocumentType),
+                                                            MedNumber = x.MedNumber,
+                                                            Snils = Person.DelimitizeSnils(x.Snils),
+                                                            Photo = fileService.GetImageSourceFromBinaryData(x.Photo)
+                                                        })
                                            .ToArrayAsync(token);
                 log.InfoFormat("Found {0} patients", patients.Length);
                 foreach (var patient in patients)

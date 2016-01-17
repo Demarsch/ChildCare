@@ -19,6 +19,8 @@ using PatientInfoModule.Views;
 using Prism.Events;
 using Prism.Modularity;
 using Prism.Regions;
+using Shared.Patient.Misc;
+using Shared.Patient.Services;
 using Shell.Shared;
 using Shared.PatientRecords;
 
@@ -176,12 +178,12 @@ namespace PatientInfoModule
 
         private void RegisterServices()
         {
+            PersonServicesInitializer.Initialize(container);
 
             container.RegisterType<IPatientService, PatientService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ISuggestionsProvider, IdentityDocumentGivenOrgSuggestionsProvider>(SuggestionProviderNames.IdentityDocumentGiveOrganization, new ContainerControlledLifetimeManager());
             container.RegisterType<ISuggestionsProvider, InsuranceCompanySuggestionsProvider>(SuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());

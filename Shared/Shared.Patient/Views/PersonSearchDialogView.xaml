@@ -9,7 +9,7 @@
             <converters:ProportionConverter x:Key="MinWidthProportionConverter"
                                             MultiplyBy="0.45" />
             <converters:ProportionConverter x:Key="HeightProportionConverter"
-                                            MultiplyBy="0.4" />
+                                            MultiplyBy="0.45" />
         </DataTemplate.Resources>
         <views:PatientSearchControl DataContext="{Binding PersonSearchViewModel}"
                                     MinWidth="{Binding WorkingArea.Width,  Source={x:Static forms:Screen.PrimaryScreen}, Converter={StaticResource MinWidthProportionConverter}, Mode=OneTime}" 

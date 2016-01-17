@@ -8,6 +8,7 @@ using System.Windows.Input;
 using AdminModule.Converters;
 using AdminModule.Model;
 using AdminModule.Services;
+using Core.Data.Misc;
 using Core.Extensions;
 using Core.Services;
 using Core.Wpf.Misc;
@@ -33,11 +34,17 @@ namespace AdminModule.ViewModels
 
         private readonly Func<GroupEditDialogViewModel> groupEditDialogViewModelFactory;
 
+        private readonly Func<PersonSearchDialogViewModel> personSearchDialogViewModelFactory;
+
+        private readonly Func<UserPropertiesDialogViewModel> userPropertiesDialogViewModelFactory;
+
         public UserAccessManagerViewModel(ILog log,
                                           ICacheService cacheService,
                                           IUserAccessService userAccessService,
                                           IDialogServiceAsync dialogService,
-                                          Func<GroupEditDialogViewModel> groupEditDialogViewModelFactory)
+                                          Func<GroupEditDialogViewModel> groupEditDialogViewModelFactory,
+                                          Func<PersonSearchDialogViewModel> personSearchDialogViewModelFactory,
+                                          Func<UserPropertiesDialogViewModel> userPropertiesDialogViewModelFactory)
         {
             if (log == null)
             {
@@ -59,11 +66,21 @@ namespace AdminModule.ViewModels
             {
                 throw new ArgumentNullException("groupEditDialogViewModelFactory");
             }
+            if (personSearchDialogViewModelFactory == null)
+            {
+                throw new ArgumentNullException("personSearchDialogViewModelFactory");
+            }
+            if (userPropertiesDialogViewModelFactory == null)
+            {
+                throw new ArgumentNullException("userPropertiesDialogViewModelFactory");
+            }
             this.log = log;
             this.cacheService = cacheService;
             this.userAccessService = userAccessService;
             this.dialogService = dialogService;
             this.groupEditDialogViewModelFactory = groupEditDialogViewModelFactory;
+            this.personSearchDialogViewModelFactory = personSearchDialogViewModelFactory;
+            this.userPropertiesDialogViewModelFactory = userPropertiesDialogViewModelFactory;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             Users = new ObservableCollectionEx<UserViewModel>();
@@ -86,19 +103,18 @@ namespace AdminModule.ViewModels
                                         Command = new DelegateCommand(async () => await InitialLoadingAsync()),
                                         CommandName = "Повторить"
                                     };
-            selectPermissionCommand = new DelegateCommand<PermissionViewModel>(SelectPermission);
-            selectUserCommand = new DelegateCommand<UserViewModel>(SelectUser);
-            selectGroupCommand = new DelegateCommand<PermissionGroupViewModel>(SelectGroup);
-            createNewGroupCommand = new DelegateCommand(CreateNewGroup);
+            SelectPermissionCommand = new DelegateCommand<PermissionViewModel>(SelectPermission);
+            SelectUserCommand = new DelegateCommand<UserViewModel>(SelectUser);
+            SelectGroupCommand = new DelegateCommand<PermissionGroupViewModel>(SelectGroup);
+            CreateNewGroupCommand = new DelegateCommand(CreateNewGroup);
+            CreateNewUserCommand = new DelegateCommand(CreateNewUser);
         }
 
         private readonly char[] separators = { ' ', '-' };
 
         #region Permissions
 
-        private readonly DelegateCommand<PermissionViewModel> selectPermissionCommand;
-
-        public ICommand SelectPermissionCommand { get { return selectPermissionCommand; } }
+        public ICommand SelectPermissionCommand { get; private set; }
 
         private void PermissionsOnBeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -106,7 +122,7 @@ namespace AdminModule.ViewModels
             {
                 foreach (var oldPermission in e.OldItems.Cast<PermissionViewModel>())
                 {
-                    oldPermission.IncludeInCurrentGroupRequested -= PermissionOnIncludeInCurrentGroupRequested ;
+                    oldPermission.IncludeInCurrentGroupRequested -= PermissionOnIncludeInCurrentGroupRequested;
                     oldPermission.ExcludeFromCurrentGroupRequested -= PermissionOnExcludeFromCurrentGroupRequested;
                 }
             }
@@ -210,9 +226,7 @@ namespace AdminModule.ViewModels
 
         #region Users
 
-        private readonly DelegateCommand<UserViewModel> selectUserCommand;
-
-        public ICommand SelectUserCommand { get { return selectUserCommand; } }
+        public ICommand SelectUserCommand { get; private set; }
 
         private void UsersOnBeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -258,6 +272,30 @@ namespace AdminModule.ViewModels
             finally
             {
                 BusyMediator.Deactivate();
+            }
+        }
+
+        public ICommand CreateNewUserCommand { get; private set; }
+
+        private async void CreateNewUser()
+        {
+            using (var personSearchDialogViewModel = personSearchDialogViewModelFactory())
+            {
+                var dialogResult = await dialogService.ShowDialogAsync(personSearchDialogViewModel);
+                if (dialogResult != true)
+                {
+                    return;
+                }
+                using (var userPropertiesDialogViewModel = userPropertiesDialogViewModelFactory())
+                {
+                    userPropertiesDialogViewModel.CurrentPersonId = personSearchDialogViewModel.PersonSearchViewModel.SelectedPersonId;
+                    dialogResult = await dialogService.ShowDialogAsync(userPropertiesDialogViewModel);
+                    if (dialogResult != true)
+                    {
+                        return;
+                    }
+                    ;
+                }
             }
         }
 
@@ -357,9 +395,7 @@ namespace AdminModule.ViewModels
 
         #region Groups
 
-        private readonly DelegateCommand createNewGroupCommand;
-
-        public ICommand CreateNewGroupCommand { get { return createNewGroupCommand; } }
+        public ICommand CreateNewGroupCommand { get; private set; }
 
         private async void CreateNewGroup()
         {
@@ -492,6 +528,10 @@ namespace AdminModule.ViewModels
                 BusyMediator.Activate("Удаление группы...");
                 await userAccessService.DeletePermissionGroupAsync(group.Group);
                 Groups.Remove(group);
+                if (SelectedSecurityObject == group)
+                {
+                    SelectedSecurityObject = null;
+                }
             }
             catch (Exception ex)
             {
@@ -528,9 +568,7 @@ namespace AdminModule.ViewModels
             await ExcludeUserFromGroup(currentUser, group);
         }
 
-        private readonly DelegateCommand<PermissionGroupViewModel> selectGroupCommand;
-
-        public ICommand SelectGroupCommand { get { return selectGroupCommand; } }
+        public ICommand SelectGroupCommand { get; private set; }
 
         private void SelectGroup(PermissionGroupViewModel group)
         {
@@ -747,25 +785,25 @@ namespace AdminModule.ViewModels
                 {
                     return;
                 }
-                if (value == null)
-                {
-                    SelectedSecurityObjectType = null;
-                }
-                else if (value.GetType() == typeof(UserViewModel))
+                var valueType = value == null ? typeof(object) : value.GetType();
+                if (valueType == typeof(UserViewModel))
                 {
                     SelectedSecurityObjectType = SecurityObjectType.User;
                 }
-                else if (value.GetType() == typeof(PermissionGroupViewModel))
+                else if (valueType == typeof(PermissionGroupViewModel))
                 {
                     SelectedSecurityObjectType = SecurityObjectType.Group;
                 }
-                else if (value.GetType() == typeof(PermissionViewModel))
+                else if (valueType == typeof(PermissionViewModel))
                 {
                     SelectedSecurityObjectType = SecurityObjectType.Permission;
                 }
                 else
                 {
                     SelectedSecurityObjectType = null;
+                    ClearUserView();
+                    ClearGroupView();
+                    ClearPermissionView();
                 }
                 Groups.ForEach(x => x.UserMode = value as UserViewModel);
                 Groups.ForEach(x => x.PermissionMode = value as PermissionViewModel);

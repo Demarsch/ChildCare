@@ -10,6 +10,8 @@ using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Extensions;
 using Core.Services;
+using Core.Wpf.Services;
+using Shared.Patient.Services;
 
 namespace AdminModule.Services
 {
@@ -19,7 +21,9 @@ namespace AdminModule.Services
 
         private readonly IDbContextProvider contextProvider;
 
-        public UserAccessService(ICacheService cacheService, IDbContextProvider contextProvider)
+        private readonly IDocumentService documentService;
+
+        public UserAccessService(ICacheService cacheService, IDbContextProvider contextProvider, IDocumentService documentService)
         {
             if (cacheService == null)
             {
@@ -29,8 +33,13 @@ namespace AdminModule.Services
             {
                 throw new ArgumentNullException("contextProvider");
             }
+            if (documentService == null)
+            {
+                throw new ArgumentNullException("documentService");
+            }
             this.cacheService = cacheService;
             this.contextProvider = contextProvider;
+            this.documentService = documentService;
         }
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -48,19 +57,19 @@ namespace AdminModule.Services
             using (var context = contextProvider.CreateLightweightContext())
             {
                 return await context.Set<User>()
-                              .Select(x => new UserDTO
-                                           {
-                                               ActiveFrom = x.BeginDateTime,
-                                               ActiveTo = x.EndDateTime,
-                                               BirthDate = x.Person.BirthDate,
-                                               IsMale = x.Person.IsMale,
-                                               FullName = x.Person.FullName,
-                                               PersonId = x.PersonId,
-                                               PhotoData = x.Person.Document.FileData,
-                                               Sid = x.SID,
-                                               Id = x.Id
-                                           })
-                              .ToArrayAsync();
+                                    .Select(x => new UserDTO
+                                                 {
+                                                     ActiveFrom = x.BeginDateTime,
+                                                     ActiveTo = x.EndDateTime,
+                                                     BirthDate = x.Person.BirthDate,
+                                                     IsMale = x.Person.IsMale,
+                                                     FullName = x.Person.FullName,
+                                                     PersonId = x.PersonId,
+                                                     PhotoData = x.Person.Document.FileData,
+                                                     Sid = x.SID,
+                                                     Id = x.Id
+                                                 })
+                                    .ToArrayAsync();
             }
         }
 
@@ -93,7 +102,7 @@ namespace AdminModule.Services
             {
                 return;
             }
-            var permissionGroupMembership = new PermissionGroupMembership() { GroupId = groupId, PermissionId = permissionId };
+            var permissionGroupMembership = new PermissionGroupMembership { GroupId = groupId, PermissionId = permissionId };
             await cacheService.AddItemAsync(permissionGroupMembership);
         }
 
@@ -117,12 +126,12 @@ namespace AdminModule.Services
                 throw new DataException("Group with the same name already exists");
             }
             var result = new PermissionGroup
-            {
-                Name = name,
-                Description = description,
-                PermissionGroupMemberships = new HashSet<PermissionGroupMembership>(),
-                UserPermissionGroups = new HashSet<UserPermissionGroup>(),
-            };
+                         {
+                             Name = name,
+                             Description = description,
+                             PermissionGroupMemberships = new HashSet<PermissionGroupMembership>(),
+                             UserPermissionGroups = new HashSet<UserPermissionGroup>(),
+                         };
             await Task.Factory.StartNew(() => cacheService.AddItem(result));
             return result;
         }
@@ -151,6 +160,25 @@ namespace AdminModule.Services
         {
             user.EndDateTime = user.EndDateTime == SpecialValues.MaxDate ? DateTime.Today.AddDays(-1.0) : SpecialValues.MaxDate;
             await cacheService.UpdateItemAsync(user);
+        }
+
+        public async Task<Person> GetPersonAsync(int personId)
+        {
+            using (var context = contextProvider.CreateLightweightContext())
+            {
+                var query = context.Set<Person>().Where(x => x.Id == personId)
+                                   .Include(x => x.PersonNames)
+                                   .Include(x => x.Document);
+                return await query.FirstOrDefaultAsync();
+            }
+        }
+
+        public async Task SavePersonAsync(Person person)
+        {
+            throw new NotImplementedException();
+            using (var context = contextProvider.CreateLightweightContext())
+            {
+            }
         }
     }
 }

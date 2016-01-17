@@ -28,5 +28,9 @@ namespace AdminModule.Services
         Task DeletePermissionGroupAsync(PermissionGroup group);
 
         Task ChangeUserActivationAsync(User user);
+
+        Task<Person> GetPersonAsync(int personId);
+
+        Task SavePersonAsync(Person person);
     }
 }

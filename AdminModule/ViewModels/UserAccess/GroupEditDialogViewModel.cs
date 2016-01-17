@@ -53,14 +53,9 @@ namespace AdminModule.ViewModels
             set { SetProperty(ref description, value); }
         }
 
-        private string title;
         private PermissionGroupViewModel existingPermissionGroup;
 
-        public string Title
-        {
-            get { return title; }
-            set { SetProperty(ref title, value); }
-        }
+        public string Title { get { return string.Empty; } }
 
         public string ConfirmButtonText { get { return "Сохранить"; } }
 

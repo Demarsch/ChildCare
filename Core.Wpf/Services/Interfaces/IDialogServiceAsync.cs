@@ -5,6 +5,6 @@ namespace Core.Wpf.Services
 {
     public interface IDialogServiceAsync
     {
-        Task<bool?> ShowDialogAsync(IDialogViewModel dialogViewModel);
+        Task<bool?> ShowDialogAsync(IDialogViewModel targetDialogViewModel, IDialogViewModel sourceDialogViewModel = null);
     }
 }

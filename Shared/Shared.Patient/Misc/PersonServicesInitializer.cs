@@ -25,6 +25,7 @@ namespace Shared.Patient.Misc
             container.RegisterTypeIfMissing<ISearchExpressionProvider<Person>, PersonSnilsSearchExpressionProvider>("PersonSnils", new ContainerControlledLifetimeManager());
             container.RegisterTypeIfMissing<IEnumerable<ISearchExpressionProvider<Person>>, ISearchExpressionProvider<Person>[]>();
             container.RegisterTypeIfMissing<ISearchExpressionProvider<Person>, CompositeSearchExpressionProvider<Person>>();
+            container.RegisterTypeIfMissing<IDocumentService, DocumentService>(new ContainerControlledLifetimeManager());
             var genericThemeSource = new Uri("pack://application:,,,/Shared.Patient;Component/Themes/Generic.xaml", UriKind.Absolute);
             if (!Application.Current.Resources.MergedDictionaries.Any(x => x.Source.Equals(genericThemeSource)))
             {

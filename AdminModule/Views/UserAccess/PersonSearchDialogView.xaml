@@ -1,0 +1,31 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                    xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+                    xmlns:viewModels="clr-namespace:AdminModule.ViewModels"
+                    xmlns:views="clr-namespace:Shared.Patient.Views;assembly=Shared.Patient">
+    <DataTemplate DataType="{x:Type viewModels:PersonSearchDialogViewModel}">
+        <DataTemplate.Resources>
+            <converters:ProportionConverter x:Key="MinWidthProportionConverter"
+                                            MultiplyBy="0.45" />
+            <converters:ProportionConverter x:Key="HeightProportionConverter"
+                                            MultiplyBy="0.45" />
+        </DataTemplate.Resources>
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+            <TextBlock HorizontalAlignment="Left"
+                       Margin="5 5 5 0">
+                <Run Text="Выполните поиск учетной карты в МИС* или" />
+                <Hyperlink Command="{Binding CreateNewPersonCommand, Mode=OneTime}">создайте новую</Hyperlink>
+            </TextBlock>
+            <views:PatientSearchControl DataContext="{Binding PersonSearchViewModel}"
+                                        MinWidth="{Binding WorkingArea.Width,  Source={x:Static forms:Screen.PrimaryScreen}, Converter={StaticResource MinWidthProportionConverter}, Mode=OneTime}"
+                                        Height="{Binding WorkingArea.Height,  Source={x:Static forms:Screen.PrimaryScreen}, Converter={StaticResource HeightProportionConverter}, Mode=OneTime}" />
+            <TextBlock Text="* отображаются только люди, которые еще не являются пользователями"
+                       FontWeight="SemiBold"
+                       Foreground="DimGray"
+                       HorizontalAlignment="Right" />
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

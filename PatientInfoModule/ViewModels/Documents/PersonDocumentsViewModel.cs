@@ -5,21 +5,18 @@ using System.Threading;
 using System.Windows.Input;
 using Core.Data.Misc;
 using Core.Extensions;
-using Core.Services;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using log4net;
 using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
-using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
-using Prism.Interactivity.InteractionRequest;
 using PatientInfoModule.Views;
 using Core.Data;
 using Core.Wpf.Services;
-using Core.Misc;
+using Shared.Patient.Services;
 
 namespace PatientInfoModule.ViewModels
 {

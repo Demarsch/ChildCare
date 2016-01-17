@@ -4,14 +4,14 @@ using System.Linq;
 using Core.Data;
 using Core.Extensions;
 using Core.Services;
+using Core.Wpf.Misc;
 using Core.Wpf.Services;
 using Shared.Patient.Services;
 using Shared.Patient.ViewModels;
-using WpfControls.Editors;
 
 namespace Shared.Patient.Misc
 {
-    public class PersonSearchSuggestionProvider : ISuggestionProvider
+    public class PersonSearchSuggestionProvider : ISuggestionsProvider
     {
         private readonly IPersonSearchService personSearchService;
 

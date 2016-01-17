@@ -78,6 +78,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -98,9 +99,19 @@
                                        Style="{x:Null}" />
                         </xctk:WatermarkTextBox.Watermark>
                     </xctk:WatermarkTextBox>
+                    <Button Grid.Row="0"
+                            Grid.Column="2"
+                            Margin="2"
+                            Command="{Binding CreateNewUserCommand, Mode=OneTime}"
+                            ToolTip="Создать нового пользователя"
+                            VerticalAlignment="Center">
+                        <Image Width="20"
+                               Height="20"
+                               Source="pack://application:,,,/Core;Component/Resources/Images/Add.png" />
+                    </Button>
                     <Separator Grid.Row="0"
                                Grid.Column="0"
-                               Grid.ColumnSpan="2"
+                               Grid.ColumnSpan="3"
                                HorizontalAlignment="Stretch"
                                VerticalAlignment="Bottom"
                                Height="1"
@@ -108,7 +119,7 @@
                                Margin="0 0 0 -1" />
                     <ListBox Grid.Row="1"
                              Grid.Column="0"
-                             Grid.ColumnSpan="2"
+                             Grid.ColumnSpan="3"
                              Margin="5"
                              ItemsSource="{Binding Users}">
                         <ListBox.GroupStyle>
@@ -117,15 +128,15 @@
                                     <DataTemplate DataType="{x:Type CollectionViewGroup}">
                                         <Grid HorizontalAlignment="Stretch">
                                             <Separator VerticalAlignment="Center"
-                                                           HorizontalAlignment="Stretch"
-                                                           Height="1"
-                                                           Background="Black" />
+                                                       HorizontalAlignment="Stretch"
+                                                       Height="1"
+                                                       Background="Black" />
                                             <Border Padding="2 0 2 0"
-                                                        HorizontalAlignment="Left"
-                                                        Background="White"
-                                                        VerticalAlignment="Center">
+                                                    HorizontalAlignment="Left"
+                                                    Background="White"
+                                                    VerticalAlignment="Center">
                                                 <TextBlock FontWeight="SemiBold"
-                                                               Text="{Binding Name, Converter={StaticResource UserGroupRelationshipConverter}}" />
+                                                           Text="{Binding Name, Converter={StaticResource UserGroupRelationshipConverter}}" />
                                             </Border>
 
                                         </Grid>
@@ -259,15 +270,15 @@
                                     <DataTemplate DataType="{x:Type CollectionViewGroup}">
                                         <Grid HorizontalAlignment="Stretch">
                                             <Separator VerticalAlignment="Center"
-                                                           HorizontalAlignment="Stretch"
-                                                           Height="1"
-                                                           Background="Black" />
+                                                       HorizontalAlignment="Stretch"
+                                                       Height="1"
+                                                       Background="Black" />
                                             <Border Padding="2 0 2 0"
-                                                        HorizontalAlignment="Left"
-                                                        Background="White"
-                                                        VerticalAlignment="Center">
+                                                    HorizontalAlignment="Left"
+                                                    Background="White"
+                                                    VerticalAlignment="Center">
                                                 <TextBlock FontWeight="SemiBold"
-                                                               Text="{Binding Name, Converter={StaticResource PermissionGroupRelationshipConverter}}" />
+                                                           Text="{Binding Name, Converter={StaticResource PermissionGroupRelationshipConverter}}" />
                                             </Border>
 
                                         </Grid>

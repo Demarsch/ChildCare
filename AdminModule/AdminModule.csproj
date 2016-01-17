@@ -117,10 +117,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\PermissionGroupViewModelToGroupHeaderConverter.cs" />
+    <Compile Include="Model\SaveUserInput.cs" />
     <Compile Include="Model\SecurityObjectType.cs" />
     <Compile Include="Model\UserDTO.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Implementation\PersonSearchService.cs" />
     <Compile Include="Services\Interface\IUserAccessService.cs" />
     <Compile Include="Services\Implementation\UserAccessService.cs" />
     <Compile Include="ViewModels\AdminEmptyViewModel.cs" />
@@ -130,7 +132,9 @@
     <Compile Include="ViewModels\UserAccess\GroupEditDialogViewModel.cs" />
     <Compile Include="ViewModels\UserAccess\PermissionGroupViewModel.cs" />
     <Compile Include="ViewModels\UserAccess\PermissionViewModel.cs" />
+    <Compile Include="ViewModels\UserAccess\PersonSearchDialogViewModel.cs" />
     <Compile Include="ViewModels\UserAccess\UserAccessManagerViewModel.cs" />
+    <Compile Include="ViewModels\UserAccess\UserPropertiesDialogViewModel.cs" />
     <Compile Include="ViewModels\UserAccess\UserViewModel.cs" />
     <Compile Include="Views\AdminHeaderView.xaml.cs">
       <DependentUpon>AdminHeaderView.xaml</DependentUpon>
@@ -146,6 +150,9 @@
     </Compile>
     <Compile Include="Views\UserAccess\UserAccessManagerView.xaml.cs">
       <DependentUpon>UserAccessManagerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserAccess\UserPropertiesDialogView.xaml.cs">
+      <DependentUpon>UserPropertiesDialogView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +205,14 @@
     <Page Include="Views\UserAccess\PermissionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UserAccess\PersonSearchDialogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UserAccess\UserPropertiesDialogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UserAccess\UserView.xaml">
       <Generator>MSBuild:Compile</Generator>

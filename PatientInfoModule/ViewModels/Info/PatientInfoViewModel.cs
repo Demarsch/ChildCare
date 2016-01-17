@@ -27,6 +27,7 @@ using PatientInfoModule.Misc;
 using PatientInfoModule.Services;
 using Prism.Commands;
 using Prism.Events;
+using Shared.Patient.Services;
 using Shared.Patient.ViewModels;
 
 namespace PatientInfoModule.ViewModels
@@ -1178,7 +1179,7 @@ namespace PatientInfoModule.ViewModels
 
             private void ValidateFirstName()
             {
-                SetError(x => x.FirstName, string.IsNullOrWhiteSpace(AssociatedItem.FirstName) ? "Фамилия не может быть пустой" : string.Empty);
+                SetError(x => x.FirstName, string.IsNullOrWhiteSpace(AssociatedItem.FirstName) ? "Имя не может быть пустым" : string.Empty);
             }
 
             private void ValidateBirthDate()

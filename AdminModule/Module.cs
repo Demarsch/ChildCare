@@ -4,6 +4,7 @@ using AdminModule.Services;
 using Core.Data;
 using Prism.Modularity;
 using Shared.Patient.Misc;
+using Shared.Patient.Services;
 using Shell.Shared;
 using Microsoft.Practices.Unity;
 using log4net;
@@ -47,6 +48,7 @@ namespace AdminModule
         {
             CoreReports.Initialize(container);
             PersonServicesInitializer.Initialize(container);
+            container.RegisterType<IPersonSearchService, Services.PersonSearchService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IUserAccessService, UserAccessService>(new ContainerControlledLifetimeManager());
         }
 

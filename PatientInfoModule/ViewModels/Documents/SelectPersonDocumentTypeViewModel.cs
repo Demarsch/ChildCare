@@ -12,6 +12,7 @@ using Core.Data;
 using System.Collections.Generic;
 using System.Windows.Navigation;
 using Core.Wpf.Services;
+using Shared.Patient.Services;
 
 namespace PatientInfoModule.ViewModels
 {

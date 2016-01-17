@@ -12,6 +12,7 @@ using Core.Services;
 using PatientInfoModule.Data;
 using Core.Wpf.Mvvm;
 using PatientInfoModule.Misc;
+using Shared.Patient.Services;
 
 namespace PatientInfoModule.Services
 {

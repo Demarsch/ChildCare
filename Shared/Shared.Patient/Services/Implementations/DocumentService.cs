@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
-using System.Threading.Tasks;
-using System.Data.Entity;
 using Core.Wpf.Services;
-using System.Windows.Media.Imaging;
 
-namespace PatientInfoModule.Services
+namespace Shared.Patient.Services
 {
     public class DocumentService : IDocumentService
     {

@@ -1,9 +1,9 @@
-﻿using Core.Data;
-using Core.Data.Misc;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using Core.Data;
+using Core.Data.Misc;
 
-namespace PatientInfoModule.Services
+namespace Shared.Patient.Services
 {
     public interface IDocumentService
     {

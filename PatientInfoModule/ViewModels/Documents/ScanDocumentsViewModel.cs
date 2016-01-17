@@ -15,6 +15,7 @@ using Core.Wpf.Misc;
 using Core.Extensions;
 using Prism.Interactivity.InteractionRequest;
 using Core.Wpf.Services;
+using Shared.Patient.Services;
 
 namespace PatientInfoModule.ViewModels
 {
