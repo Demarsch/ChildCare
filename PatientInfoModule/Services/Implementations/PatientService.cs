@@ -240,7 +240,7 @@ namespace PatientInfoModule.Services
                 var year = DateTime.Now.Year;
                 int maxNumber = 1;
                 if (await context.Set<Person>().AnyAsync(x => x.Year == year))
-                    maxNumber = await context.Set<Person>().Where(x => x.Year == year).MaxAsync(x => x.AmbNumber);
+                    maxNumber = await context.Set<Person>().Where(x => x.Year == year).MaxAsync(x => x.AmbNumber) + 1;
                 var person = await context.Set<Person>().FirstOrDefaultAsync(x => x.Id == personId);
                 person.Year = year;
                 person.AmbNumber = maxNumber;

@@ -504,6 +504,14 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
+        private string ambNumber;
+
+        public string AmbNumber
+        {
+            get { return ambNumber; }
+            set { SetProperty(ref ambNumber, value); }
+        }
+
         private string medNumber;
 
         public string MedNumber
@@ -1006,6 +1014,7 @@ namespace PatientInfoModule.ViewModels
                 IsMale = currentPerson.IsMale;
                 BirthDate = currentPerson.BirthDate;
                 Snils = currentPerson.Snils;
+                AmbNumber = CurrentPerson.AmbNumberString;
                 MedNumber = currentPerson.MedNumber;
                 Phones = currentPerson.Phones;
                 Email = currentPerson.Email;

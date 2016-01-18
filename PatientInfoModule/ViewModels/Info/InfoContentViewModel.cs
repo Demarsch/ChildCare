@@ -23,12 +23,15 @@ using Prism.Events;
 using Prism.Regions;
 using Shared.Patient.ViewModels;
 using Shell.Shared;
+using Core.Services;
 
 namespace PatientInfoModule.ViewModels
 {
     public class InfoContentViewModel : TrackableBindableBase, INavigationAware, IActiveDataErrorInfo, IChangeTrackerMediator, IDisposable
     {
         private readonly IPatientService patientService;
+
+        private readonly ISecurityService securityService;
 
         private readonly IEventAggregator eventAggregator;
 
@@ -47,6 +50,7 @@ namespace PatientInfoModule.ViewModels
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
 
         public InfoContentViewModel(IPatientService patientService,
+                                    ISecurityService securityService,
                                     IEventAggregator eventAggregator,
                                     ILog log,
                                     IDialogServiceAsync dialogService,
@@ -54,7 +58,7 @@ namespace PatientInfoModule.ViewModels
                                     IRegionManager regionManager,
                                     IViewNameResolver viewNameResolver,
                                     Func<PatientInfoViewModel> relativeInfoFactory,
-                                    Func<PersonSearchDialogViewModel> relativeSearchFactory )
+                                    Func<PersonSearchDialogViewModel> relativeSearchFactory)
         {
             if (patientService == null)
             {
@@ -92,6 +96,11 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            this.securityService = securityService;
             this.patientService = patientService;
             this.eventAggregator = eventAggregator;
             this.log = log;
@@ -150,6 +159,15 @@ namespace PatientInfoModule.ViewModels
             cancelChangesCommand.RaiseCanExecuteChanged();
             addRelativeCommand.RaiseCanExecuteChanged();
             searchRelativeCommand.RaiseCanExecuteChanged();
+        }
+
+        private void UpdateAmbCardCommandsState()
+        {
+            createAmbCardCommand.RaiseCanExecuteChanged();
+            deleteAmbCardCommand.RaiseCanExecuteChanged();
+            printAmbCardCommand.RaiseCanExecuteChanged();
+            OnPropertyChanged(() => CanViewCreateAmbCardButton);
+            OnPropertyChanged(() => CanViewDeleteAmbCardButton);
         }
 
         #region Actions
@@ -235,6 +253,7 @@ namespace PatientInfoModule.ViewModels
                 ChangeTracker.AcceptChanges();
                 ChangeTracker.IsEnabled = true;
                 UpdateCommandsState();
+                UpdateAmbCardCommandsState();
                 return true;
             }
             catch (OperationCanceledException)
@@ -313,17 +332,25 @@ namespace PatientInfoModule.ViewModels
 
         private async void CreateAmbCardAsync()
         {
-            await patientService.CreateAmbCard(currentPatientId);
+            var ambNumber = await patientService.CreateAmbCard(currentPatientId);
+            if (ambNumber != string.Empty)
+                patientInfo.AmbNumber = ambNumber;
+            UpdateAmbCardCommandsState();
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
         }
 
         private async void DeleteAmbCardAsync()
         {
-            await patientService.DeleteAmbCard(currentPatientId);
+            var res = await patientService.DeleteAmbCard(currentPatientId);
+            if (res)
+                patientInfo.AmbNumber = string.Empty;
+            UpdateAmbCardCommandsState();
+            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
         }
 
         private void PrintAmbCardAsync()
         {
-            
+
         }
 
         private bool CanAddRelative()
@@ -331,19 +358,23 @@ namespace PatientInfoModule.ViewModels
             return currentPatientId != SpecialValues.NonExistingId;
         }
 
+        public bool CanViewCreateAmbCardButton { get { return currentPatientId > 0 && selectedPatientOrRelative == patientInfo && string.IsNullOrEmpty(patientInfo.AmbNumber); } }
+
+        public bool CanViewDeleteAmbCardButton { get { return currentPatientId > 0 && selectedPatientOrRelative == patientInfo && !string.IsNullOrEmpty(patientInfo.AmbNumber); } }
+
         private bool CanCreateAmbCard()
         {
-            return true;
+            return currentPatientId > 0 && selectedPatientOrRelative == patientInfo && securityService.HasPermission(Permission.CreateAmbCard);
         }
 
         private bool CanDeleteAmbCard()
         {
-            return true;
+            return currentPatientId > 0 && !string.IsNullOrEmpty(patientInfo.AmbNumber) && selectedPatientOrRelative == patientInfo && securityService.HasPermission(Permission.DeleteAmbCard);
         }
 
         private bool CanPrintAmbCard()
         {
-            return true;
+            return currentPatientId > 0 && !string.IsNullOrEmpty(patientInfo.AmbNumber) && selectedPatientOrRelative == patientInfo;
         }
 
         public ICommand SearchRelativeCommand
@@ -447,8 +478,8 @@ namespace PatientInfoModule.ViewModels
 
         private void OnCurrentPatientHasRelativeCheckRequired(object sender, CurrentPatientHasRelativeCheckEventArgs e)
         {
-            e.HasThisRelative = Relatives.Any(x => x.CurrentPerson != null 
-                                              && !x.CurrentPerson.Id.IsNewOrNonExisting() 
+            e.HasThisRelative = Relatives.Any(x => x.CurrentPerson != null
+                                              && !x.CurrentPerson.Id.IsNewOrNonExisting()
                                               && x.CurrentPerson.Id == e.RelativeId);
         }
 
@@ -480,6 +511,7 @@ namespace PatientInfoModule.ViewModels
                 value = value ?? patientInfo;
                 SetProperty(ref selectedPatientOrRelative, value);
                 goBackToPatientCommand.RaiseCanExecuteChanged();
+                UpdateAmbCardCommandsState();
             }
         }
 

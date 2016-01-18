@@ -36,5 +36,9 @@
         public readonly static string UseCompletedVisit = "Использовать закрытые случаи";
 
         public readonly static string ChangeRecordRoom = "Изменить кабинет услуги";
+
+        public readonly static string CreateAmbCard = "Создать а/к";
+
+        public readonly static string DeleteAmbCard = "Удалить а/к";
     }
 }

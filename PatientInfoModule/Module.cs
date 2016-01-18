@@ -143,7 +143,7 @@ namespace PatientInfoModule
                 context = contextProvider.CreateNewContext();
                 var data = await context.Set<Person>()
                                         .Where(x => x.Id == patientId)
-                                        .Select(x => new { x.ShortName, x.IsMale })
+                                        .Select(x => new { x.ShortName, x.IsMale, AmbNumber = x.AmbNumberString })
                                         .FirstOrDefaultAsync();
                 if (data == null)
                 {
@@ -152,9 +152,10 @@ namespace PatientInfoModule
                 }
                 else
                 {
-                    ribbonContextualGroup.Header = string.Format("{0} {1}",
+                    ribbonContextualGroup.Header = string.Format("{0} {1} {2}",
                                                                  data.IsMale ? "Пациент" : "Пациентка",
-                                                                 data.ShortName);
+                                                                 data.ShortName,
+                                                                 string.IsNullOrEmpty(data.AmbNumber) ? string.Empty : " а/к №" + data.AmbNumber);
                 }
             }
             catch (Exception ex)
