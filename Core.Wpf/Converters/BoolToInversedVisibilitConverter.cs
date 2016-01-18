@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace Core.Wpf.Converters
 {
-    public class TrueToCollapsedConverter : IValueConverter
+    public class BoolToInversedVisibilitConverter : IValueConverter
     {
-        public static readonly TrueToCollapsedConverter Instance = new TrueToCollapsedConverter();
+        public static readonly BoolToInversedVisibilitConverter Instance = new BoolToInversedVisibilitConverter();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

@@ -50,6 +50,7 @@ namespace AdminModule
             PersonServicesInitializer.Initialize(container);
             container.RegisterType<IPersonSearchService, Services.PersonSearchService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IUserAccessService, UserAccessService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IUserProvider, ActiveDirectoryUserProvider>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViewModels()

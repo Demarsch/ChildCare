@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using AdminModule.Model;
 using AdminModule.Services;
 using Core.Data.Misc;
 using Core.Extensions;
@@ -22,17 +25,23 @@ namespace AdminModule.ViewModels
     {
         private readonly IUserAccessService userAccessService;
 
+        private readonly IUserProvider userProvider;
+
         private readonly ILog log;
 
         private readonly IDialogServiceAsync dialogService;
 
         private readonly IFileService fileService;
 
-        public UserPropertiesDialogViewModel(IUserAccessService userAccessService, ILog log, IDialogServiceAsync dialogService, IFileService fileService)
+        public UserPropertiesDialogViewModel(IUserAccessService userAccessService, IUserProvider userProvider, ILog log, IDialogServiceAsync dialogService, IFileService fileService)
         {
             if (userAccessService == null)
             {
                 throw new ArgumentNullException("userAccessService");
+            }
+            if (userProvider == null)
+            {
+                throw new ArgumentNullException("userProvider");
             }
             if (dialogService == null)
             {
@@ -47,6 +56,7 @@ namespace AdminModule.ViewModels
                 throw new ArgumentNullException("fileService");
             }
             this.userAccessService = userAccessService;
+            this.userProvider = userProvider;
             this.log = log;
             this.dialogService = dialogService;
             this.fileService = fileService;
@@ -54,6 +64,7 @@ namespace AdminModule.ViewModels
             FailureMediator = new FailureMediator();
             validator = new Validator(this);
             CloseCommand = new DelegateCommand<bool?>(Close);
+            SearchAndSyncUserCommand = new DelegateCommand(SearchAndSyncUserAsync);
             TakePhotoCommand = new DelegateCommand(TakePhotoAsync);
             ChangeTracker = new ChangeTrackerEx<UserPropertiesDialogViewModel>(this);
             ChangeTracker.PropertyChanged += OnChangesTracked;
@@ -207,6 +218,67 @@ namespace AdminModule.ViewModels
 
         #endregion
 
+        #region User-related
+
+        private bool isUserSynced;
+
+        public bool IsUserSynced
+        {
+            get { return isUserSynced; }
+            set { SetTrackedProperty(ref isUserSynced, value); }
+        }
+
+        public ICommand SearchAndSyncUserCommand { get; private set; }
+
+        private async void SearchAndSyncUserAsync()
+        {
+            if (string.IsNullOrWhiteSpace(LastName) || string.IsNullOrWhiteSpace(FirstName))
+            {
+                FailureMediator.Activate("Укажите имя и фамилию для поиска пользователя", true);
+                return;
+            }
+            var searchPattern = string.Format("{0} {1} {2}", LastName, FirstName, MiddleName);
+            try
+            {
+                BusyMediator.Activate("Поиск пользователя в Active Directory");
+                FoundUsers = await userProvider.SearchUsersAsync(searchPattern);
+            }
+            catch (Exception ex)
+            {
+                FailureMediator.Activate("Не удалось найти пользователя в Active Directory", null, ex, true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        private IEnumerable<UserInfo> foundUsers;
+
+        public IEnumerable<UserInfo> FoundUsers
+        {
+            get { return foundUsers; }
+            private set { SetProperty(ref foundUsers, value); }
+        }
+
+        private bool noUserFound;
+
+        public bool NoUserFound
+        {
+            get { return noUserFound; }
+            set { SetProperty(ref noUserFound, value); }
+        }
+
+        private bool showActiveDirectoryUserList;
+
+        public bool ShowActiveDirectoryUserList
+        {
+            get { return showActiveDirectoryUserList; }
+            set { SetProperty(ref showActiveDirectoryUserList, value); }
+        }
+
+        #endregion
+
         private DateTime? currentNameStartDate;
 
         private int currentPersonId;
@@ -329,7 +401,7 @@ namespace AdminModule.ViewModels
 
         #region Validation
 
-        private ValidationMediator<UserPropertiesDialogViewModel> validator; 
+        private readonly ValidationMediator<UserPropertiesDialogViewModel> validator; 
 
         private class Validator : ValidationMediator<UserPropertiesDialogViewModel>
         {

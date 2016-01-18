@@ -37,14 +37,14 @@
             <CheckBox Grid.Row="0" Grid.Column="0" Content="Создать новый случай" IsChecked="{Binding NeedCreateNewVisit}"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Случай" FontWeight="Medium" VerticalAlignment="Center" 
-                       Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:TrueToCollapsedConverter.Instance}}"/>
+                       Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}"/>
             <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2,2,22,2"
                       SelectedValuePath="Id" 
                       DisplayMemberPath="Name" 
                       SelectedItem="{Binding SelectedVisit, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                       Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       ItemsSource="{Binding Visits}" 
-                      Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:TrueToCollapsedConverter.Instance}}"/>
+                      Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}"/>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Шаблон случая" FontWeight="Medium" VerticalAlignment="Center" 
                        Visibility="{Binding NeedCreateNewVisit, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>

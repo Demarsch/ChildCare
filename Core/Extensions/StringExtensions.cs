@@ -114,5 +114,14 @@ namespace Core.Extensions
         {
             return (source ?? string.Empty).Contains(option);
         }
+
+        public static bool CaseInsensitiveContains(this string source, string value)
+        {
+            if (source == null || string.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+            return source.IndexOf(value, StringComparison.CurrentCultureIgnoreCase) != -1;
+        }
     }
 }

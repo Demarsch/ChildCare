@@ -24,7 +24,7 @@
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Top"
-                       MinWidth="{Binding WorkingArea.Width,  Source={x:Static forms:Screen.PrimaryScreen}, Converter={StaticResource MinWidthProportionConverter}, Mode=OneTime}">
+          MinWidth="{Binding WorkingArea.Width,  Source={x:Static forms:Screen.PrimaryScreen}, Converter={StaticResource MinWidthProportionConverter}, Mode=OneTime}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
@@ -32,6 +32,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -174,24 +175,89 @@
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Stretch">
                     <TextBlock Text="{Binding IsMale, Converter={x:Static converters:GenderToTextConverter.Instance}}" />
-                    <Image
-                        Source="{Binding IsMale, Converter={x:Static converters:GenderToImageConverter.Instance}}"
-                        Width="24"
-                        Height="24"
-                        Stretch="Fill" />
+                    <Image Source="{Binding IsMale, Converter={x:Static converters:GenderToImageConverter.Instance}}"
+                           Width="24"
+                           Height="24"
+                           Stretch="Fill" />
                 </StackPanel>
             </ToggleButton>
         </StackPanel>
+        <Button Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Margin="5"
+                Padding="5"
+                Height="40"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Command="{Binding SearchAndSyncUserCommand, Mode=OneTime}"
+                x:Name="syncButton">
+            <Grid>
+                <TextBlock
+                    Text="Пользователь не привязан к Active Directory. Нажмите, чтобы осуществить поиск и выполнить привязку"
+                    Visibility="{Binding IsUserSynced, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance} }"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+                <Grid HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      Visibility="{Binding IsUserSynced, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0">
+                        <Run Text="Логин" />
+                        <Run Text="{Binding Login, Mode=OneWay}"
+                             FontWeight="SemiBold" />
+                        <Run Text="SID" />
+                        <Run Text="{Binding Sid, Mode=OneWay}"
+                             FontWeight="SemiBold" />
+                    </TextBlock>
+                    <Button Grid.Column="2"
+                            Command="{Binding UnsyncUserCommand, Mode=OneTime}"
+                            Margin="2"
+                            ToolTip="Отвязать пользователя от Active Directory">
+                        <Image Width="20"
+                               Height="20"
+                               Source="pack://application:,,,/Core;Component/Resources/Images/Remove.png" />
+                    </Button>
+                </Grid>
+            </Grid>
+        </Button>
+        <Popup Grid.Row="4"
+               Grid.Column="0"
+               Grid.ColumnSpan="4"
+               PlacementTarget="{x:Reference syncButton}"
+               Placement="Bottom"
+               Width="{Binding ActualWidth, ElementName=syncButton}"
+               MinHeight="50"
+               IsOpen="{Binding ShowActiveDirectoryUserList}">
+            <Border Background="White"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+                <Grid HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch">
+                    <TextBlock HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Text="В ActiveDirectory не найдено ни одного совпадания"
+                               Foreground="DimGray" 
+                               Visibility="{Binding NoUserFound, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                </Grid>
+            </Border>
+        </Popup>
         <ContentControl Grid.Row="0"
                         Grid.Column="0"
-                        Grid.RowSpan="4"
+                        Grid.RowSpan="5"
                         Grid.ColumnSpan="4"
                         Content="{Binding BusyMediator}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch" />
         <ContentControl Grid.Row="0"
                         Grid.Column="0"
-                        Grid.RowSpan="4"
+                        Grid.RowSpan="5"
                         Grid.ColumnSpan="4"
                         Content="{Binding FailureMediator}"
                         HorizontalAlignment="Stretch"
