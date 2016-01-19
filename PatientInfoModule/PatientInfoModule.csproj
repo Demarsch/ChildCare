@@ -105,7 +105,6 @@
     <Compile Include="Misc\InputHelpers\RussianBirthCertificateSeriesInputHelper.cs" />
     <Compile Include="Misc\ItemTemplateSelector.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
-    <Compile Include="Misc\InputHelpers\SnilsInputHelper.cs" />
     <Compile Include="Misc\SuggestionProviders\AddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\IAddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\DisabilityDocumentGivenOrgSuggestionsProvider.cs" />

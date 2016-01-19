@@ -3,7 +3,7 @@ using System.Text;
 using Core.Data;
 using Core.Wpf.Misc;
 
-namespace PatientInfoModule.Misc
+namespace Shared.Patient.Misc
 {
     public class SnilsInputHelper : IInputHelper
     {

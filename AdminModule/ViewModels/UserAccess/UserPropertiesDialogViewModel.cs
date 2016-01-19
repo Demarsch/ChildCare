@@ -202,6 +202,22 @@ namespace AdminModule.ViewModels
             set { SetTrackedProperty(ref birthDate, value); }
         }
 
+        private string snils;
+
+        public string Snils
+        {
+            get { return snils; }
+            set { SetTrackedProperty(ref snils, value); }
+        }
+
+        private string medNumber;
+
+        public string MedNumber
+        {
+            get { return medNumber; }
+            set { SetTrackedProperty(ref medNumber, value); }
+        }
+
         #endregion
 
         #region Photo
@@ -392,6 +408,8 @@ namespace AdminModule.ViewModels
                        MiddleName = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => MiddleName) ? MiddleName : null,
                        IsMale = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => IsMale) ? IsMale : (bool?)null,
                        BirthDate = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => BirthDate) ? BirthDate : null,
+                       Snils = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => Snils) ? Snils : null,
+                       MedNumber = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => MedNumber) ? MedNumber : null,
                        Photo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => PhotoSource) ? new ValueOf<byte[]>(fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource)) : ValueOf<byte[]>.Empty,
                        UserInfo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => CurrentUser) ? new ValueOf<UserInfo>(CurrentUser) : ValueOf<UserInfo>.Empty,
                        NewNameStartDate = IsNewName ? NewNameStartDate : null
@@ -413,6 +431,8 @@ namespace AdminModule.ViewModels
                 FirstName = currentName.FirstName;
                 MiddleName = currentName.MiddleName;
                 BirthDate = person.BirthDate;
+                Snils = person.Snils;
+                MedNumber = person.MedNumber;
                 IsMale = person.IsMale;
                 PhotoSource = person.Document == null ? null : fileService.GetImageSourceFromBinaryData(person.Document.FileData);
                 var user = person.Users.FirstOrDefault();
@@ -523,6 +543,14 @@ namespace AdminModule.ViewModels
                 {
                     ValidateBirthDate();
                 }
+                else if (PropertyNameEquals(propertyName, x => x.Snils))
+                {
+                    ValidateSnils();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.MedNumber))
+                {
+                    ValidateMedNumber();
+                }
                 else if (PropertyNameEquals(propertyName, x => x.IsIncorrectName) || PropertyNameEquals(propertyName, x => x.IsNewName))
                 {
                     ValidateIsNewOrIncorrectName();
@@ -547,6 +575,8 @@ namespace AdminModule.ViewModels
                 ValidateLastName();
                 ValidateFirstName();
                 ValidateBirthDate();
+                ValidateSnils();
+                ValidateMedNumber();
                 ValidateIsNewOrIncorrectName();
                 ValidateNewNameStartDate();
                 ValidateCurrentUser();
@@ -574,6 +604,22 @@ namespace AdminModule.ViewModels
                     error = "Дата рождения не может быть в будущем";
                 }
                 SetError(x => x.BirthDate, error);
+            }
+
+            private void ValidateSnils()
+            {
+                SetError(x => x.Snils,
+                         !string.IsNullOrEmpty(AssociatedItem.Snils) && AssociatedItem.Snils.Length != Person.FullSnilsLength
+                             ? "СНИЛС должен либо быть пустым либо быть в формате 000-000-000 00"
+                             : string.Empty);
+            }
+
+            private void ValidateMedNumber()
+            {
+                SetError(x => x.MedNumber,
+                         !string.IsNullOrEmpty(AssociatedItem.MedNumber) && AssociatedItem.MedNumber.Length != Person.FullMedNumberLength
+                             ? "ЕМН должен либо быть пустым либо содержать ровно шестнадцать цифр"
+                             : string.Empty);
             }
 
             private void ValidateIsNewOrIncorrectName()

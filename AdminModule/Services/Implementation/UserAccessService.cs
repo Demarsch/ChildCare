@@ -184,8 +184,8 @@ namespace AdminModule.Services
                 {
                     person = new Person
                     {
-                        Snils = string.Empty,
-                        MedNumber = string.Empty,
+                        Snils = input.Snils,
+                        MedNumber = input.MedNumber,
                         Phones = string.Empty,
                         Email = string.Empty,
                         AmbNumberString = string.Empty
@@ -276,6 +276,8 @@ namespace AdminModule.Services
                 }
                 person.BirthDate = input.BirthDate ?? person.BirthDate;
                 person.IsMale = input.IsMale ?? person.IsMale;
+                person.Snils = input.Snils ?? person.Snils;
+                person.MedNumber = input.MedNumber ?? person.MedNumber;
                 if (input.Photo.HasValue)
                 {
                     //Delete old photo

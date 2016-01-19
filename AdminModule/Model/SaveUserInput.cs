@@ -17,6 +17,10 @@ namespace AdminModule.Model
 
         public DateTime? BirthDate { get; set; }
 
+        public string Snils { get; set; }
+
+        public string MedNumber { get; set; }
+
         public bool? IsMale { get; set; }
 
         public ValueOf<byte[]> Photo { get; set; }

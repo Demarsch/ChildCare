@@ -11,6 +11,7 @@
              xmlns:misc="clr-namespace:PatientInfoModule.Misc"
              xmlns:wpfMisc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
+             xmlns:sharedMisc="clr-namespace:Shared.Patient.Misc;assembly=Shared.Patient"
              mc:Ignorable="d"
              d:DesignHeight="500"
              d:DesignWidth="1024"
@@ -219,7 +220,7 @@
                         <i:Interaction.Behaviors>
                             <coreBehaviors:TextBoxInputHelperBehavior>
                                 <coreBehaviors:TextBoxInputHelperBehavior.InputHelper>
-                                    <misc:SnilsInputHelper />
+                                    <sharedMisc:SnilsInputHelper />
                                 </coreBehaviors:TextBoxInputHelperBehavior.InputHelper>
                             </coreBehaviors:TextBoxInputHelperBehavior>
                         </i:Interaction.Behaviors>
