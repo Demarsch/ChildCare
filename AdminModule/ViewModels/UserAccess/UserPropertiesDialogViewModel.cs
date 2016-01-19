@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using AdminModule.Model;
 using AdminModule.Services;
@@ -63,6 +65,8 @@ namespace AdminModule.ViewModels
             validator = new Validator(this);
             CloseCommand = new DelegateCommand<bool?>(Close);
             SearchAndSyncUserCommand = new DelegateCommand(SearchAndSyncUserAsync);
+            SyncUserCommand = new DelegateCommand<UserInfo>(SyncUser);
+            UnsyncUserCommand = new DelegateCommand(UnsyncUser);
             TakePhotoCommand = new DelegateCommand(TakePhotoAsync);
             ChangeTracker = new ChangeTrackerEx<UserPropertiesDialogViewModel>(this);
             ChangeTracker.PropertyChanged += OnChangesTracked;
@@ -223,7 +227,13 @@ namespace AdminModule.ViewModels
         public bool IsUserSynced
         {
             get { return isUserSynced; }
-            set { SetTrackedProperty(ref isUserSynced, value); }
+            private set
+            {
+                if (SetProperty(ref isUserSynced, value))
+                {
+                    OnPropertyChanged(() => ConfirmButtonText);
+                }
+            }
         }
 
         public ICommand SearchAndSyncUserCommand { get; private set; }
@@ -239,7 +249,20 @@ namespace AdminModule.ViewModels
             try
             {
                 BusyMediator.Activate("Поиск пользователя в Active Directory");
-                FoundUsers = await userProvider.SearchUsersAsync(searchPattern);
+                var users = await userProvider.SearchUsersAsync(searchPattern);
+                FoundUsers = users;
+                if (users != null && users.Count == 1)
+                {
+                    SyncUser(users.First());
+                }
+                else
+                {
+                    ShowActiveDirectoryUserList = true;
+                }
+            }
+            catch (PrincipalServerDownException ex)
+            {
+                FailureMediator.Activate("Не удалось установить связь с Active Directory. Пожалуйста, обратитесь в службу поддержки", null, ex, true);
             }
             catch (Exception ex)
             {
@@ -251,12 +274,32 @@ namespace AdminModule.ViewModels
             }
         }
 
+        private UserInfo currentUser;
+
+        public UserInfo CurrentUser
+        {
+            get { return currentUser; }
+            private set
+            {
+                if (SetTrackedProperty(ref currentUser, value))
+                {
+                    IsUserSynced = currentUser != null;
+                }
+            }
+        }
+
         private IEnumerable<UserInfo> foundUsers;
 
         public IEnumerable<UserInfo> FoundUsers
         {
             get { return foundUsers; }
-            private set { SetProperty(ref foundUsers, value); }
+            private set
+            {
+                if (SetProperty(ref foundUsers, value))
+                {
+                    NoUserFound = foundUsers == null || !foundUsers.Any();
+                }
+            }
         }
 
         private bool noUserFound;
@@ -264,7 +307,7 @@ namespace AdminModule.ViewModels
         public bool NoUserFound
         {
             get { return noUserFound; }
-            set { SetProperty(ref noUserFound, value); }
+            private set { SetProperty(ref noUserFound, value); }
         }
 
         private bool showActiveDirectoryUserList;
@@ -273,6 +316,21 @@ namespace AdminModule.ViewModels
         {
             get { return showActiveDirectoryUserList; }
             set { SetProperty(ref showActiveDirectoryUserList, value); }
+        }
+
+        public ICommand SyncUserCommand { get; private set; }
+
+        private void SyncUser(UserInfo user)
+        {
+            CurrentUser = user;
+            ShowActiveDirectoryUserList = false;
+        }
+
+        public ICommand UnsyncUserCommand { get; private set; }
+
+        private void UnsyncUser()
+        {
+            CurrentUser = null;
         }
 
         #endregion
@@ -305,6 +363,25 @@ namespace AdminModule.ViewModels
 
         public FailureMediator FailureMediator { get; private set; }
 
+        public SaveUserInput PrepareDataForSave()
+        {
+            if (!ChangeTracker.HasChanges && !currentPersonId.IsNewOrNonExisting())
+            {
+                return null;
+            }
+            return new SaveUserInput
+                   {
+                       PersonId = currentPersonId,
+                       LastName = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => LastName) ? LastName : null,
+                       FirstName = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => FirstName) ? FirstName : null,
+                       MiddleName = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => MiddleName) ? MiddleName : null,
+                       IsMale = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => IsMale) ? IsMale : (bool?)null,
+                       BirthDate = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => BirthDate) ? BirthDate : null,
+                       Photo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => PhotoSource) ? new ValueOf<byte[]>(fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource)) : ValueOf<byte[]>.Empty,
+                       UserInfo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => CurrentUser) ? new ValueOf<UserInfo>(CurrentUser) : ValueOf<UserInfo>.Empty
+                   };
+        }
+
         private readonly CommandWrapper loadPatientInfoCommandWrapper;
 
         private async void LoadPatientInfoAsync()
@@ -321,6 +398,13 @@ namespace AdminModule.ViewModels
                 BirthDate = person.BirthDate;
                 IsMale = person.IsMale;
                 PhotoSource = person.Document == null ? null : fileService.GetImageSourceFromBinaryData(person.Document.FileData);
+                var user = person.Users.FirstOrDefault();
+                CurrentUser = user == null ? null : new UserInfo
+                                                    {
+                                                        FullName = user.SystemName,
+                                                        Login = user.Login,
+                                                        Sid = user.SID
+                                                    };
                 ChangeTracker.IsEnabled = true;
             }
             catch (Exception ex)
@@ -430,6 +514,10 @@ namespace AdminModule.ViewModels
                 {
                     ValidateNewNameStartDate();
                 }
+                else if (PropertyNameEquals(propertyName, x => x.CurrentUser))
+                {
+                    ValidateCurrentUser();
+                }
             }
 
             protected override void RaiseAssociatedObjectPropertyChanged()
@@ -444,6 +532,7 @@ namespace AdminModule.ViewModels
                 ValidateBirthDate();
                 ValidateIsNewOrIncorrectName();
                 ValidateNewNameStartDate();
+                ValidateCurrentUser();
             }
 
             private void ValidateLastName()
@@ -497,6 +586,11 @@ namespace AdminModule.ViewModels
                     }
                 }
                 SetError(x => x.NewNameStartDate, error);
+            }
+
+            private void ValidateCurrentUser()
+            {
+                SetError(x => x.CurrentUser, AssociatedItem.CurrentUser == null ? "Пользователь не привязан к Active Directory" : string.Empty);
             }
         }
 

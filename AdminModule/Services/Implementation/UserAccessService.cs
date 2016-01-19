@@ -168,16 +168,29 @@ namespace AdminModule.Services
             {
                 var query = context.Set<Person>().Where(x => x.Id == personId)
                                    .Include(x => x.PersonNames)
+                                   .Include(x => x.Users)
                                    .Include(x => x.Document);
                 return await query.FirstOrDefaultAsync();
             }
         }
 
-        public async Task SavePersonAsync(Person person)
+        public async Task SaveUserAsync(SaveUserInput input)
         {
             throw new NotImplementedException();
             using (var context = contextProvider.CreateLightweightContext())
             {
+                Person person;
+                if (input.PersonId.IsNewOrNonExisting())
+                {
+                    person = new Person();
+                    context.Entry(person).State = EntityState.Added;
+                }
+                else
+                {
+                    person = await context.Set<Person>().FirstAsync();
+                }
+
+                
             }
         }
     }

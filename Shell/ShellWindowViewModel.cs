@@ -158,7 +158,7 @@ namespace Shell
             {
                 throw new UserActivationException();
             }
-            log.InfoFormat("Application is run under user with SID '{0}', current server time is {1}", currentUser.SID, serverDate);
+            log.InfoFormat("Application is run under user with login '{0}', current server time is {1}", currentUser.Login, serverDate);
         }
 
         private void SubscribeToEvents()

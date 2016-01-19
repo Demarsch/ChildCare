@@ -8,9 +8,9 @@ namespace Core.Wpf.Services
     {        
         byte[] GetBinaryDataFromFile(string filePath);
 
-        byte[] GetBinaryDataFromImage(BitmapImage bitmapImage);
-
         byte[] GetBinaryDataFromImage(BitmapEncoder encoder, ImageSource imageSource);
+
+        byte[] GetBinaryDataFromImage(ImageSource imageSource);
 
         string GetFileFromBinaryData(byte[] binaryData, string extension);
 

@@ -1,14 +1,16 @@
 ﻿CREATE TABLE [dbo].[Users] (
     [Id]            INT           IDENTITY (1, 1) NOT NULL,
     [PersonId]      INT           NOT NULL,
-    [SID]           VARCHAR (255) NULL,
+    [SID]           VARCHAR (255) NOT NULL,
     [BeginDateTime] DATETIME      NOT NULL,
     [EndDateTime]   DATETIME      NOT NULL,
-    [Login]         VARCHAR (200) NULL,
-    [SystemName]    VARCHAR (300) NULL,
+    [Login]         VARCHAR (200) NOT NULL,
+    [SystemName]    VARCHAR (300) NOT NULL,
     CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Users_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id])
 );
+
+
 
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO;
@@ -98,19 +99,6 @@ namespace Core.Wpf.Services
             return (ImageSource)imageSourceConverter.ConvertFrom(source);
         }
 
-        public byte[] GetBinaryDataFromImage(BitmapImage bitmap)
-        {
-            var data = new byte[0];
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(bitmap));
-            using (var ms = new MemoryStream())
-            {
-                encoder.Save(ms);
-                data = ms.ToArray();
-            }
-            return data;
-        }
-
         public byte[] GetBinaryDataFromImage(BitmapEncoder encoder, ImageSource imageSource)
         {
             byte[] bytes = null;
@@ -126,6 +114,11 @@ namespace Core.Wpf.Services
                 bytes = stream.ToArray();
             }
             return bytes;
+        }
+
+        public byte[] GetBinaryDataFromImage(ImageSource imageSource)
+        {
+            return GetBinaryDataFromImage(new PngBitmapEncoder(), imageSource as BitmapImage);
         }
 
         public byte[] GetBinaryDataFromFile(string filePath)

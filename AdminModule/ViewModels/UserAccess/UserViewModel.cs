@@ -45,7 +45,7 @@ namespace AdminModule.ViewModels
         }
 
         public int Id { get; private set; }
-        
+
         private PermissionGroupViewModel groupMode;
 
         public PermissionGroupViewModel GroupMode

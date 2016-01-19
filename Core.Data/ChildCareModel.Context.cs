@@ -110,10 +110,10 @@ namespace Core.Data
         public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
-        public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
         public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

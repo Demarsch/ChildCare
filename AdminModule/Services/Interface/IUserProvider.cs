@@ -6,6 +6,6 @@ namespace AdminModule.Services
 {
     public interface IUserProvider
     {
-        Task<IEnumerable<UserInfo>> SearchUsersAsync(string searchPattern);
+        Task<ICollection<UserInfo>> SearchUsersAsync(string searchPattern);
     }
 }

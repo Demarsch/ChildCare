@@ -294,14 +294,66 @@ namespace AdminModule.ViewModels
                     {
                         return;
                     }
-                    ;
+                    try
+                    {
+                        var saveUserInput = userPropertiesDialogViewModel.PrepareDataForSave();
+                        if (saveUserInput == null)
+                        {
+                            return;
+                        }
+                        BusyMediator.Activate("Сохраняем данные пользователя...");
+                        await userAccessService.SaveUserAsync(saveUserInput);
+                        //TODO: refresh user
+                    }
+                    catch (Exception ex)
+                    {
+                        FailureMediator.Activate("Не удалось создать нового пользователя. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки",
+                                                 null,
+                                                 ex,
+                                                 true);
+                    }
+                    finally
+                    {
+                        BusyMediator.Deactivate();
+                    }
                 }
             }
         }
 
-        private void UserOnEditRequested(object sender, EventArgs eventArgs)
+        private async void UserOnEditRequested(object sender, EventArgs eventArgs)
         {
-            throw new NotImplementedException();
+            var user = (UserViewModel)sender;
+            using (var userPropertiesDialogViewModel = userPropertiesDialogViewModelFactory())
+            {
+                userPropertiesDialogViewModel.CurrentPersonId = user.User.PersonId;
+                var dialogResult = await dialogService.ShowDialogAsync(userPropertiesDialogViewModel);
+                if (dialogResult != null)
+                {
+                    return;
+                }
+                try
+                {
+                    var saveUserInput = userPropertiesDialogViewModel.PrepareDataForSave();
+                    if (saveUserInput == null)
+                    {
+                        return;
+                    }
+                    BusyMediator.Activate("Сохраняем данные пользователя...");
+                    await userAccessService.SaveUserAsync(saveUserInput);
+                    //TODO: refresh user
+                }
+                catch (Exception ex)
+                {
+                    FailureMediator.Activate("Не удалось сохранить данные пользователя. Попробуйте еще раз. Если ошибка повторится, пожалуйста, обратитесь в службу поддержки",
+                                             null,
+                                             ex,
+                                             true);
+                }
+                finally
+                {
+                    BusyMediator.Deactivate();
+                }
+            }
         }
 
         private async void UserOnExcludeFromCurrentGroupRequested(object sender, EventArgs eventArgs)

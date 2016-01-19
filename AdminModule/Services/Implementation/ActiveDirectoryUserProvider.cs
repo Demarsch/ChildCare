@@ -11,36 +11,35 @@ namespace AdminModule.Services
 {
     public class ActiveDirectoryUserProvider : IUserProvider
     {
-        public async Task<IEnumerable<UserInfo>> SearchUsersAsync(string searchPattern)
+        public async Task<ICollection<UserInfo>> SearchUsersAsync(string searchPattern)
         {
+            await Task.Delay(1000);
             return await Task.Factory.StartNew(x => SearchUsers(x.ToString()), searchPattern);
         }
 
-        private IEnumerable<UserInfo> SearchUsers(string searchPattern)
+        private ICollection<UserInfo> SearchUsers(string searchPattern)
         {
-            try
-            {
-                string[] words = searchPattern.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                return new PrincipalSearcher(new UserPrincipal(new PrincipalContext(ContextType.Domain)))
-                    .FindAll()
-                    .Where(x => x is UserPrincipal
-                                && x.StructuralObjectClass == "user"
-                                && !string.IsNullOrEmpty(x.UserPrincipalName))
-                    .Select(x => new
-                    {
-                        UserInfo = new UserInfo { Login = x.UserPrincipalName, Sid = x.Sid.Value, FullName = x.Name },
-                        Likeness = words.Count(y => x.UserPrincipalName.CaseInsensitiveContains(y) || x.Name.CaseInsensitiveContains(y))
-                    })
-                    .Where(x => x.Likeness >= words.Length / 2)
-                    .OrderByDescending(x => x.Likeness)
-                    .Take(AppConfiguration.SearchResultTakeTopCount)
-                    .Select(x => x.UserInfo)
-                    .ToArray();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return new UserInfo[]
+                   {
+                       new UserInfo { FullName = "Petrov Petr Petrovich", Login = "XXX\\Login", Sid = "YYYY" },
+                       new UserInfo { FullName = "Ivanov Ivanische Ivanovich", Login = "XXX\\AnotherLogin", Sid = "UUUU" }
+                   };
+            var words = searchPattern.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return new PrincipalSearcher(new UserPrincipal(new PrincipalContext(ContextType.Domain)))
+                .FindAll()
+                .Where(x => x is UserPrincipal
+                            && x.StructuralObjectClass == "user"
+                            && !string.IsNullOrEmpty(x.UserPrincipalName))
+                .Select(x => new
+                {
+                    UserInfo = new UserInfo { Login = x.UserPrincipalName, Sid = x.Sid.Value, FullName = x.Name },
+                    Likeness = words.Count(y => x.UserPrincipalName.CaseInsensitiveContains(y) || x.Name.CaseInsensitiveContains(y))
+                })
+                .Where(x => x.Likeness >= words.Length / 2)
+                .OrderByDescending(x => x.Likeness)
+                .Take(AppConfiguration.SearchResultTakeTopCount)
+                .Select(x => x.UserInfo)
+                .ToArray();
         }
     }
 }

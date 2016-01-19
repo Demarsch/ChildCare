@@ -31,6 +31,6 @@ namespace AdminModule.Services
 
         Task<Person> GetPersonAsync(int personId);
 
-        Task SavePersonAsync(Person person);
+        Task SaveUserAsync(SaveUserInput input);
     }
 }

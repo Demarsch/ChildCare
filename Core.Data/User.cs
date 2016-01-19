@@ -24,8 +24,8 @@ namespace Core.Data
             this.Records = new HashSet<Record>();
             this.UserMessages = new HashSet<UserMessage>();
             this.UserMessages1 = new HashSet<UserMessage>();
-            this.Visits = new HashSet<Visit>();
             this.UserPermissionGroups = new HashSet<UserPermissionGroup>();
+            this.Visits = new HashSet<Visit>();
         }
     
         public int Id { get; set; }
@@ -33,6 +33,8 @@ namespace Core.Data
         public string SID { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public string Login { get; set; }
+        public string SystemName { get; set; }
     
         [NonSerialized]
     	protected ICollection<Assignment> assignments;
@@ -99,20 +101,20 @@ namespace Core.Data
      		set { userMessages1 = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Visit> visits;
-    
-    	public virtual ICollection<Visit> Visits
-    	{
-     		get { return visits; }
-     		set { visits = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<UserPermissionGroup> userPermissionGroups;
     
     	public virtual ICollection<UserPermissionGroup> UserPermissionGroups
     	{
      		get { return userPermissionGroups; }
      		set { userPermissionGroups = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Visit> visits;
+    
+    	public virtual ICollection<Visit> Visits
+    	{
+     		get { return visits; }
+     		set { visits = value; }
     	}
     
     	public object Clone()

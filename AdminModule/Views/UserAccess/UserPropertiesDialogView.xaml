@@ -9,6 +9,7 @@
              xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:AdminModule.ViewModels"
              xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:model="clr-namespace:AdminModule.Model"
              mc:Ignorable="d"
              d:DesignHeight="300"
              d:DesignWidth="300"
@@ -20,6 +21,27 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:ProportionConverter x:Key="MinWidthProportionConverter"
                                             MultiplyBy="0.45" />
+            <DataTemplate DataType="{x:Type model:UserInfo}"
+                          x:Key="UserInfoTemplate">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock>
+                        <Run Text="Логин"
+                             Foreground="DimGray" />
+                        <Run Text="{Binding Login, Mode=OneTime}"
+                             FontWeight="SemiBold" />
+                        <Run Text=" SID"
+                             Foreground="DimGray" />
+                        <Run Text="{Binding Sid, Mode=OneTime}"
+                             FontWeight="SemiBold" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="Полное имя "
+                             Foreground="DimGray" />
+                        <Run Text="{Binding FullName, Mode=OneTime}"
+                             FontWeight="SemiBold" />
+                    </TextBlock>
+                </StackPanel>
+            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch"
@@ -155,11 +177,10 @@
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
                     Orientation="Horizontal">
-            <DatePicker
-                SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                Margin="3 3 22 3"
-                Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
-                behaviors:FocusAdvancement.FocusAdvancementDirection="Both">
+            <DatePicker Margin="3 3 22 3"
+                        SelectedDate="{Binding BirthDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                        Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                        behaviors:FocusAdvancement.FocusAdvancementDirection="Both">
                 <i:Interaction.Behaviors>
                     <behaviors:TextBoxParentInputHelperBehavior>
                         <behaviors:TextBoxParentInputHelperBehavior.InputHelper>
@@ -186,20 +207,22 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="4"
                 Margin="5"
-                Padding="5"
-                Height="40"
+                Padding="2"
+                Height="50"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Stretch"
                 VerticalContentAlignment="Stretch"
                 Command="{Binding SearchAndSyncUserCommand, Mode=OneTime}"
+                Background="White"
                 x:Name="syncButton">
             <Grid>
-                <TextBlock
-                    Text="Пользователь не привязан к Active Directory. Нажмите, чтобы осуществить поиск и выполнить привязку"
-                    Visibility="{Binding IsUserSynced, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance} }"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center" />
+                <TextBlock VerticalAlignment="Center"
+                           Text="Пользователь не привязан к Active Directory. Нажмите, чтобы осуществить поиск и выполнить привязку"
+                           Visibility="{Binding IsUserSynced, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance} }"
+                           HorizontalAlignment="Center"
+                           Tag="{Binding CurrentUser, ValidatesOnDataErrors=True}"
+                           Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
                 <Grid HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"
                       Visibility="{Binding IsUserSynced, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
@@ -208,18 +231,15 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0">
-                        <Run Text="Логин" />
-                        <Run Text="{Binding Login, Mode=OneWay}"
-                             FontWeight="SemiBold" />
-                        <Run Text="SID" />
-                        <Run Text="{Binding Sid, Mode=OneWay}"
-                             FontWeight="SemiBold" />
-                    </TextBlock>
+                    <ContentControl Grid.Column="0"
+                                    Content="{Binding CurrentUser, ValidatesOnDataErrors=True}"
+                                    ContentTemplate="{StaticResource UserInfoTemplate}"
+                                    VerticalContentAlignment="Center" />
                     <Button Grid.Column="2"
                             Command="{Binding UnsyncUserCommand, Mode=OneTime}"
                             Margin="2"
-                            ToolTip="Отвязать пользователя от Active Directory">
+                            ToolTip="Отвязать пользователя от Active Directory"
+                            VerticalAlignment="Center">
                         <Image Width="20"
                                Height="20"
                                Source="pack://application:,,,/Core;Component/Resources/Images/Remove.png" />
@@ -234,17 +254,39 @@
                Placement="Bottom"
                Width="{Binding ActualWidth, ElementName=syncButton}"
                MinHeight="50"
-               IsOpen="{Binding ShowActiveDirectoryUserList}">
+               IsOpen="{Binding ShowActiveDirectoryUserList, Mode=TwoWay}"
+               StaysOpen="False">
             <Border Background="White"
+                    BorderBrush="Black"
+                    BorderThickness="1"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">
                 <Grid HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch">
+                    <ListBox HorizontalAlignment="Stretch"
+                             VerticalAlignment="Stretch"
+                             ItemsSource="{Binding FoundUsers}"
+                             Visibility="{Binding NoUserFound, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type model:UserInfo}">
+                                <Button HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Padding="2"
+                                        Command="{Binding DataContext.SyncUserCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                                        CommandParameter="{Binding}">
+                                    <ContentControl Content="{Binding}"
+                                                    ContentTemplate="{StaticResource UserInfoTemplate}" />
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                     <TextBlock HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                Text="В ActiveDirectory не найдено ни одного совпадания"
-                               Foreground="DimGray" 
-                               Visibility="{Binding NoUserFound, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                               Foreground="DimGray"
+                               Margin="10"
+                               Visibility="{Binding NoUserFound, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
                 </Grid>
             </Border>
         </Popup>

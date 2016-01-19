@@ -98,6 +98,7 @@
     <Compile Include="Misc\TimeIntervals\TimeIntervalCollection.cs" />
     <Compile Include="Misc\Validation\IActiveDataErrorInfo.cs" />
     <Compile Include="Misc\Validation\ValidationMediator.cs" />
+    <Compile Include="Misc\ValueOf.cs" />
     <Compile Include="Misc\WinApiInteraction.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ScanAPI\TwainDotNet\AreaSettings.cs" />
