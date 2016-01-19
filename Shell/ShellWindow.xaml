@@ -69,11 +69,15 @@
             </Grid>
         </DockPanel>
         <xctk:WindowContainer ModalBackgroundBrush="#33333333"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center">
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch">
             <views:ChildDialogWindow x:Name="childDialogWindow"
                                      WindowStartupLocation="Center"
-                                     WindowStyle="None" />
+                                     WindowStyle="None"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     HorizontalContentAlignment="Center"
+                                     VerticalContentAlignment="Center"/>
         </xctk:WindowContainer>
     </Grid>
 </fluent:RibbonWindow>

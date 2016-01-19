@@ -19,11 +19,6 @@ namespace AdminModule.Services
 
         private ICollection<UserInfo> SearchUsers(string searchPattern)
         {
-            return new UserInfo[]
-                   {
-                       new UserInfo { FullName = "Petrov Petr Petrovich", Login = "XXX\\Login", Sid = "YYYY" },
-                       new UserInfo { FullName = "Ivanov Ivanische Ivanovich", Login = "XXX\\AnotherLogin", Sid = "UUUU" }
-                   };
             var words = searchPattern.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             return new PrincipalSearcher(new UserPrincipal(new PrincipalContext(ContextType.Domain)))
                 .FindAll()

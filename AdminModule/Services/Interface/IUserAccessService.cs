@@ -11,7 +11,7 @@ namespace AdminModule.Services
 
         Task<IEnumerable<PermissionGroup>> GetGroupsAsync();
 
-        Task<IEnumerable<UserDTO>> GetUsersAsync();
+        Task<IEnumerable<UserDTO>> GetUsersAsync(int? userId = null);
 
         Task AddUserToGroupAsync(int userId, int groupId);
 
@@ -31,6 +31,6 @@ namespace AdminModule.Services
 
         Task<Person> GetPersonAsync(int personId);
 
-        Task SaveUserAsync(SaveUserInput input);
+        Task<User> SaveUserAsync(SaveUserInput input);
     }
 }

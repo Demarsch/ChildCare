@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using AdminModule.Exceptions;
 using AdminModule.Model;
 using Core.Data;
 using Core.Data.Misc;
@@ -21,9 +22,7 @@ namespace AdminModule.Services
 
         private readonly IDbContextProvider contextProvider;
 
-        private readonly IDocumentService documentService;
-
-        public UserAccessService(ICacheService cacheService, IDbContextProvider contextProvider, IDocumentService documentService)
+        public UserAccessService(ICacheService cacheService, IDbContextProvider contextProvider)
         {
             if (cacheService == null)
             {
@@ -33,13 +32,8 @@ namespace AdminModule.Services
             {
                 throw new ArgumentNullException("contextProvider");
             }
-            if (documentService == null)
-            {
-                throw new ArgumentNullException("documentService");
-            }
             this.cacheService = cacheService;
             this.contextProvider = contextProvider;
-            this.documentService = documentService;
         }
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -52,17 +46,16 @@ namespace AdminModule.Services
             return Task.Factory.StartNew(() => cacheService.GetItems<PermissionGroup>());
         }
 
-        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
+        public async Task<IEnumerable<UserDTO>> GetUsersAsync(int? userId = null)
         {
             using (var context = contextProvider.CreateLightweightContext())
             {
                 return await context.Set<User>()
+                                    .Where(x => userId == null || userId.Value == x.Id)
                                     .Select(x => new UserDTO
                                                  {
                                                      ActiveFrom = x.BeginDateTime,
                                                      ActiveTo = x.EndDateTime,
-                                                     BirthDate = x.Person.BirthDate,
-                                                     IsMale = x.Person.IsMale,
                                                      FullName = x.Person.FullName,
                                                      PersonId = x.PersonId,
                                                      PhotoData = x.Person.Document.FileData,
@@ -174,23 +167,154 @@ namespace AdminModule.Services
             }
         }
 
-        public async Task SaveUserAsync(SaveUserInput input)
+        public async Task<User> SaveUserAsync(SaveUserInput input)
         {
-            throw new NotImplementedException();
             using (var context = contextProvider.CreateLightweightContext())
             {
+                if (input.UserInfo.HasValue)
+                {
+                    if (cacheService.GetItems<User>().Any(x => x.SID == input.UserInfo.Value.Sid && x.PersonId != input.PersonId))
+                    {
+                        throw new UserWithSameSidExistsException();
+                    }
+                }
+                User user;
                 Person person;
                 if (input.PersonId.IsNewOrNonExisting())
                 {
-                    person = new Person();
+                    person = new Person
+                    {
+                        Snils = string.Empty,
+                        MedNumber = string.Empty,
+                        Phones = string.Empty,
+                        Email = string.Empty,
+                        AmbNumberString = string.Empty
+                    };
                     context.Entry(person).State = EntityState.Added;
+                    var newName = new PersonName
+                    {
+                        BeginDateTime = SpecialValues.MinDate,
+                        EndDateTime = SpecialValues.MaxDate,
+                        FirstName = input.FirstName,
+                        LastName = input.LastName,
+                        MiddleName = input.MiddleName,
+                        Person = person
+                    };
+                    context.Entry(newName).State = EntityState.Added;
+                    person.FullName = newName.FullName;
+                    person.ShortName = newName.ShortName;
+                    user = new User
+                    {
+                        BeginDateTime = SpecialValues.MinDate,
+                        EndDateTime = SpecialValues.MaxDate,
+                        Login = input.UserInfo.Value.Login,
+                        SID = input.UserInfo.Value.Sid,
+                        SystemName = input.UserInfo.Value.FullName
+                    };
                 }
                 else
                 {
-                    person = await context.Set<Person>().FirstAsync();
+                    person = await context.Set<Person>()
+                        .Include(x => x.PersonNames)
+                        .Include(x => x.Users)
+                        .Where(x => x.Id == input.PersonId).FirstAsync();
+                    if (input.FirstName != null || input.MiddleName != null || input.LastName != null)
+                    {
+                        var oldName = person.PersonNames.First(x => x.EndDateTime == SpecialValues.MaxDate);
+                        //Old name must be changed
+                        PersonName currentName;
+                        if (input.NewNameStartDate == null)
+                        {
+                            oldName.LastName = input.LastName ?? oldName.LastName;
+                            oldName.FirstName = input.FirstName ?? oldName.FirstName;
+                            oldName.MiddleName = input.MiddleName ?? oldName.MiddleName;
+                            currentName = oldName;
+                        }
+                        else
+                        {
+                            oldName.EndDateTime = input.NewNameStartDate.Value.Date.AddDays(-1.0);
+                            var newName = new PersonName
+                            {
+                                BeginDateTime = input.NewNameStartDate.Value.Date,
+                                EndDateTime = SpecialValues.MaxDate,
+                                FirstName = input.FirstName ?? oldName.FirstName,
+                                LastName = input.LastName ?? oldName.LastName,
+                                MiddleName = input.MiddleName ?? oldName.MiddleName,
+                                PersonId = person.Id
+                            };
+                            context.Entry(newName).State = EntityState.Added;
+                            currentName = newName;
+                        }
+                        person.ShortName = currentName.ShortName;
+                        person.FullName = currentName.FullName;
+                    }
+                    if (input.UserInfo.HasValue)
+                    {
+                        var personUser = person.Users.FirstOrDefault();
+                        if (personUser == null)
+                        {
+                            user = new User
+                            {
+                                BeginDateTime = SpecialValues.MinDate,
+                                EndDateTime = SpecialValues.MaxDate,
+                                PersonId = person.Id
+                            };
+                            context.Entry(person).State = EntityState.Added;
+                        }
+                        else
+                        {
+                            user = cacheService.GetItemById<User>(personUser.Id);
+                        }
+                        user.SID = input.UserInfo.Value.Sid;
+                        user.Login = input.UserInfo.Value.Login;
+                        user.SystemName = input.UserInfo.Value.FullName;
+                    }
+                    else
+                    {
+                        user = cacheService.GetItemById<User>(person.Users.First().Id);
+                    }
                 }
-
-                
+                person.BirthDate = input.BirthDate ?? person.BirthDate;
+                person.IsMale = input.IsMale ?? person.IsMale;
+                if (input.Photo.HasValue)
+                {
+                    //Delete old photo
+                    if (person.PhotoId != null)
+                    {
+                        context.Entry(new Document { Id = person.PhotoId.Value }).State = EntityState.Deleted;
+                    }
+                    if (input.Photo.Value == null || input.Photo.Value.Length == 0)
+                    {
+                        person.PhotoId = null;
+                    }
+                    else
+                    {
+                        //Upload new photo
+                        var newPhoto = new Document
+                        {
+                            FileData = input.Photo.Value,
+                            Description = "фото",
+                            DisplayName = "фото",
+                            Extension = "jpg",
+                            FileName = "фото",
+                            FileSize = input.Photo.Value.Length,
+                            UploadDate = DateTime.Now
+                        };
+                        person.Document = newPhoto;
+                    }
+                }
+                context.ChangeTracker.DetectChanges();
+                await context.SaveChangesAsync();
+                if (user.PersonId == 0)
+                {
+                    user.PersonId = person.Id;
+                    await cacheService.AddItemAsync(user);
+                }
+                else
+                {
+                    await cacheService.UpdateItemAsync(user);
+                }
+                return user;
             }
         }
     }

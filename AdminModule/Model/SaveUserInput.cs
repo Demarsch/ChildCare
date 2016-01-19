@@ -13,6 +13,8 @@ namespace AdminModule.Model
 
         public string MiddleName { get; set; }
 
+        public DateTime? NewNameStartDate { get; set; }
+
         public DateTime? BirthDate { get; set; }
 
         public bool? IsMale { get; set; }

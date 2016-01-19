@@ -11,8 +11,11 @@ namespace AdminModule.ViewModels
 {
     public class UserViewModel : BindableBase
     {
+        private readonly ICacheService cacheService;
+
         public UserViewModel(UserDTO user, ICacheService cacheService)
         {
+            this.cacheService = cacheService;
             if (user == null)
             {
                 throw new ArgumentNullException("user");
@@ -21,10 +24,7 @@ namespace AdminModule.ViewModels
             {
                 throw new ArgumentNullException("cacheService");
             }
-            User = cacheService.GetItemById<User>(user.Id);
-            Id = user.Id;
-            FullName = user.FullName;
-            IsActive = user.ActiveFrom.Date <= DateTime.Today && DateTime.Today <= user.ActiveTo.Date;
+            UpdateUser(user);
             RequestIncludeInCurrentGroupCommand = new DelegateCommand(RequestIncludeInCurrentGroup, CanRequestIncludeInCurrentGroup)
                 .ObservesProperty(() => IsInGroupMode)
                 .ObservesProperty(() => IsIncludedInCurrentGroup);
@@ -32,6 +32,18 @@ namespace AdminModule.ViewModels
                 .ObservesProperty(() => IsIncludedInCurrentGroup);
             RequestActivationChangeCommand = new DelegateCommand(RequestActivationChange);
             RequestEditCommand = new DelegateCommand(RequestEdit);
+        }
+
+        public void UpdateUser(UserDTO user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            User = cacheService.GetItemById<User>(user.Id);
+            Id = user.Id;
+            FullName = user.FullName;
+            IsActive = user.ActiveFrom.Date <= DateTime.Today && DateTime.Today <= user.ActiveTo.Date;
         }
 
         public User User { get; private set; }

@@ -233,6 +233,7 @@
                     </Grid.ColumnDefinitions>
                     <ContentControl Grid.Column="0"
                                     Content="{Binding CurrentUser, ValidatesOnDataErrors=True}"
+                                    Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                     ContentTemplate="{StaticResource UserInfoTemplate}"
                                     VerticalContentAlignment="Center" />
                     <Button Grid.Column="2"

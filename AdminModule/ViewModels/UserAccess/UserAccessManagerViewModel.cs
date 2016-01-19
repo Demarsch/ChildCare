@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 using AdminModule.Converters;
+using AdminModule.Exceptions;
 using AdminModule.Model;
 using AdminModule.Services;
 using Core.Data.Misc;
@@ -302,8 +303,13 @@ namespace AdminModule.ViewModels
                             return;
                         }
                         BusyMediator.Activate("Сохраняем данные пользователя...");
-                        await userAccessService.SaveUserAsync(saveUserInput);
-                        //TODO: refresh user
+                        var resultUser = await userAccessService.SaveUserAsync(saveUserInput);
+                        var newUser = await userAccessService.GetUsersAsync(resultUser.Id);
+                        Users.Add(new UserViewModel(newUser.First(), cacheService));
+                    }
+                    catch (UserWithSameSidExistsException)
+                    {
+                        FailureMediator.Activate("В базе уже существует пользователь, привязаный к этой записи в Active Directory. Попробуйте привязать текущего пользователя к другой записи", true);
                     }
                     catch (Exception ex)
                     {
@@ -327,7 +333,7 @@ namespace AdminModule.ViewModels
             {
                 userPropertiesDialogViewModel.CurrentPersonId = user.User.PersonId;
                 var dialogResult = await dialogService.ShowDialogAsync(userPropertiesDialogViewModel);
-                if (dialogResult != null)
+                if (dialogResult != true)
                 {
                     return;
                 }
@@ -339,8 +345,13 @@ namespace AdminModule.ViewModels
                         return;
                     }
                     BusyMediator.Activate("Сохраняем данные пользователя...");
-                    await userAccessService.SaveUserAsync(saveUserInput);
-                    //TODO: refresh user
+                    var resultUser = await userAccessService.SaveUserAsync(saveUserInput);
+                    var editedUser = await userAccessService.GetUsersAsync(resultUser.Id);
+                    user.UpdateUser(editedUser.First());
+                }
+                catch (UserWithSameSidExistsException)
+                {
+                    FailureMediator.Activate("В базе уже существует пользователь, привязаный к этой записи в Active Directory. Попробуйте привязать текущего пользователя к другой записи", true);
                 }
                 catch (Exception ex)
                 {

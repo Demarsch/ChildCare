@@ -16,10 +16,6 @@ namespace AdminModule.Model
 
         public string FullName { get; set; }
 
-        public DateTime BirthDate { get; set; }
-
         public byte[] PhotoData { get; set; }
-
-        public bool IsMale { get; set; }
     }
 }

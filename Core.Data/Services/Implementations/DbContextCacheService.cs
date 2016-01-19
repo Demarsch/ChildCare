@@ -193,9 +193,9 @@ namespace Core.Data.Services
             object itemByNameDictionary;
             var type = changedEntity.Entity.GetType();
             var item = changedEntity.Entity;
-            var nameProperty = GetNameProperty(type);
             if (itemsByName.TryGetValue(type, out itemByNameDictionary))
             {
+                var nameProperty = GetNameProperty(type);
                 var dictionary = (IDictionary)itemByNameDictionary;
                 dictionary.Remove(changedEntity.OriginalValues[nameProperty.Name]);
                 dictionary.Add(changedEntity.NewValues[nameProperty.Name], item);

@@ -9,9 +9,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using AdminModule.Model;
 using AdminModule.Services;
+using Core.Data;
 using Core.Data.Misc;
 using Core.Extensions;
 using Core.Misc;
+using Core.Services;
 using Core.Wpf.Misc;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
@@ -33,7 +35,14 @@ namespace AdminModule.ViewModels
 
         private readonly IFileService fileService;
 
-        public UserPropertiesDialogViewModel(IUserAccessService userAccessService, IUserProvider userProvider, ILog log, IDialogServiceAsync dialogService, IFileService fileService)
+        private readonly ICacheService cacheService;
+
+        public UserPropertiesDialogViewModel(IUserAccessService userAccessService, 
+                                             IUserProvider userProvider, 
+                                             ILog log, 
+                                             IDialogServiceAsync dialogService, 
+                                             IFileService fileService, 
+                                             ICacheService cacheService)
         {
             if (userAccessService == null)
             {
@@ -55,11 +64,16 @@ namespace AdminModule.ViewModels
             {
                 throw new ArgumentNullException("fileService");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
             this.userAccessService = userAccessService;
             this.userProvider = userProvider;
             this.log = log;
             this.dialogService = dialogService;
             this.fileService = fileService;
+            this.cacheService = cacheService;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             validator = new Validator(this);
@@ -119,6 +133,7 @@ namespace AdminModule.ViewModels
                 if (SetProperty(ref isIncorrectName, value) && value)
                 {
                     IsNewName = false;
+                    NewNameStartDate = null;
                     OnPropertyChanged(() => IsNewName);
                 }
             }
@@ -378,7 +393,8 @@ namespace AdminModule.ViewModels
                        IsMale = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => IsMale) ? IsMale : (bool?)null,
                        BirthDate = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => BirthDate) ? BirthDate : null,
                        Photo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => PhotoSource) ? new ValueOf<byte[]>(fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource)) : ValueOf<byte[]>.Empty,
-                       UserInfo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => CurrentUser) ? new ValueOf<UserInfo>(CurrentUser) : ValueOf<UserInfo>.Empty
+                       UserInfo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => CurrentUser) ? new ValueOf<UserInfo>(CurrentUser) : ValueOf<UserInfo>.Empty,
+                       NewNameStartDate = IsNewName ? NewNameStartDate : null
                    };
         }
 
@@ -388,6 +404,7 @@ namespace AdminModule.ViewModels
         {
             try
             {
+                FailureMediator.Deactivate();
                 BusyMediator.Activate("Загрузка данных пользователя...");
                 var person = await userAccessService.GetPersonAsync(currentPersonId);
                 var currentName = person.PersonNames.First(x => x.EndDateTime == SpecialValues.MaxDate);
@@ -590,7 +607,14 @@ namespace AdminModule.ViewModels
 
             private void ValidateCurrentUser()
             {
-                SetError(x => x.CurrentUser, AssociatedItem.CurrentUser == null ? "Пользователь не привязан к Active Directory" : string.Empty);
+                var error = AssociatedItem.CurrentUser == null ? "Пользователь не привязан к Active Directory" : string.Empty;
+                if (string.IsNullOrEmpty(error))
+                {
+                    error = AssociatedItem.cacheService.GetItems<User>().Any(x => x.SID == AssociatedItem.CurrentUser.Sid && x.PersonId != AssociatedItem.CurrentPersonId)
+                        ? "В базе данных уже существует пользователь, привязанный к этой записи в Active Directory"
+                        : string.Empty;
+                }
+                SetError(x => x.CurrentUser, error);
             }
         }
 
