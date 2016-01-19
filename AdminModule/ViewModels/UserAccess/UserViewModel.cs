@@ -44,6 +44,8 @@ namespace AdminModule.ViewModels
             Id = user.Id;
             FullName = user.FullName;
             IsActive = user.ActiveFrom.Date <= DateTime.Today && DateTime.Today <= user.ActiveTo.Date;
+            Login = user.Login;
+            Sid = user.Sid;
         }
 
         public User User { get; private set; }
@@ -53,7 +55,23 @@ namespace AdminModule.ViewModels
         public string FullName
         {
             get { return fullName; }
-            set { SetProperty(ref fullName, value); }
+            private set { SetProperty(ref fullName, value); }
+        }
+
+        private string sid;
+
+        public string Sid
+        {
+            get { return sid; }
+            private set { SetProperty(ref sid, value); }
+        }
+
+        private string login;
+
+        public string Login
+        {
+            get { return login; }
+            private set { SetProperty(ref login, value); }
         }
 
         public int Id { get; private set; }
