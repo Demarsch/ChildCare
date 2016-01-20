@@ -30,13 +30,15 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <converters:Converter x:Key="UserGroupRelationshipConverter">
+        <converters:Converter x:Key="UserGroupRelationshipConverter"
+                              KeepSourceValueOnDefault="True">
             <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
                                       To="Пользователи, не входящие в группу" />
             <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"
                                       To="Пользователи, состоящие в группе" />
         </converters:Converter>
-        <converters:Converter x:Key="PermissionGroupRelationshipConverter">
+        <converters:Converter x:Key="PermissionGroupRelationshipConverter"
+                              KeepSourceValueOnDefault="True">
             <converters:ConverterItem From="{x:Static misc:StaticBoolean.False}"
                                       To="Права, не входящие в группу" />
             <converters:ConverterItem From="{x:Static misc:StaticBoolean.True}"

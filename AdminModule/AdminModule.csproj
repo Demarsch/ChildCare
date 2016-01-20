@@ -118,6 +118,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\PermissionGroupViewModelToGroupHeaderConverter.cs" />
+    <Compile Include="Converters\UserViewModelToGroupHeaderConverter.cs" />
+    <Compile Include="Converters\PermissionViewModelToGroupHeaderConverter.cs" />
     <Compile Include="Exceptions\UserWithSameSidExistsException.cs" />
     <Compile Include="Model\SaveUserInput.cs" />
     <Compile Include="Model\SecurityObjectType.cs" />

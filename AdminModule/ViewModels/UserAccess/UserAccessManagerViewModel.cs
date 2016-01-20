@@ -164,7 +164,7 @@ namespace AdminModule.ViewModels
         private void SelectPermission(PermissionViewModel permission)
         {
             SelectedSecurityObject = permission == SelectedSecurityObject ? null : permission;
-            ClearUserView();
+            
             ClearPermissionView();
             var view = CollectionViewSource.GetDefaultView(Groups);
             using (view.DeferRefresh())
@@ -180,6 +180,22 @@ namespace AdminModule.ViewModels
                 else
                 {
                     view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+            }
+            view = CollectionViewSource.GetDefaultView(Users);
+            using (view.DeferRefresh())
+            {
+                view.GroupDescriptions.Clear();
+                view.SortDescriptions.Clear();
+                if (SelectedSecurityObject != null)
+                {
+                    view.GroupDescriptions.Add(new PropertyGroupDescription(null, UserViewModelToGroupHeaderConverter.Instance));
+                    view.SortDescriptions.Add(new SortDescription("OwnsCurrentPermission", ListSortDirection.Descending));
+                    view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+                else
+                {
+                    view.SortDescriptions.Add(new SortDescription("FullName", ListSortDirection.Ascending));
                 }
             }
         }
@@ -395,7 +411,6 @@ namespace AdminModule.ViewModels
         {
             SelectedSecurityObject = user == SelectedSecurityObject ? null : user;
             ClearUserView();
-            ClearPermissionView();
             var view = CollectionViewSource.GetDefaultView(Groups);
             using (view.DeferRefresh())
             {
@@ -405,6 +420,22 @@ namespace AdminModule.ViewModels
                 {
                     view.GroupDescriptions.Add(new PropertyGroupDescription(null, PermissionGroupViewModelToGroupHeaderConverter.Instance));
                     view.SortDescriptions.Add(new SortDescription("CurrentUserIsIncluded", ListSortDirection.Descending));
+                    view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+                else
+                {
+                    view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
+            }
+            view = CollectionViewSource.GetDefaultView(Permissions);
+            using (view.DeferRefresh())
+            {
+                view.GroupDescriptions.Clear();
+                view.SortDescriptions.Clear();
+                if (SelectedSecurityObject != null)
+                {
+                    view.GroupDescriptions.Add(new PropertyGroupDescription(null, PermissionViewModelToGroupHeaderConverter.Instance));
+                    view.SortDescriptions.Add(new SortDescription("IsOwnedByCurrentUser", ListSortDirection.Descending));
                     view.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
                 }
                 else
@@ -727,6 +758,7 @@ namespace AdminModule.ViewModels
                 {
                     group.UserMode = user;
                     CollectionViewSource.GetDefaultView(Groups).Refresh();
+                    CollectionViewSource.GetDefaultView(Permissions).Refresh();
                 }
                 else
                 {
@@ -758,6 +790,7 @@ namespace AdminModule.ViewModels
                 {
                     group.UserMode = user;
                     CollectionViewSource.GetDefaultView(Groups).Refresh();
+                    CollectionViewSource.GetDefaultView(Permissions).Refresh();
                 }
                 else
                 {
@@ -789,6 +822,7 @@ namespace AdminModule.ViewModels
                 {
                     group.PermissionMode = permission;
                     CollectionViewSource.GetDefaultView(Groups).Refresh();
+                    CollectionViewSource.GetDefaultView(Users).Refresh();
                 }
                 else
                 {
@@ -819,6 +853,7 @@ namespace AdminModule.ViewModels
                 {
                     group.PermissionMode = permission;
                     CollectionViewSource.GetDefaultView(Groups).Refresh();
+                    CollectionViewSource.GetDefaultView(Users).Refresh();
                 }
                 else
                 {
@@ -870,8 +905,10 @@ namespace AdminModule.ViewModels
                 }
                 Groups.ForEach(x => x.UserMode = value as UserViewModel);
                 Groups.ForEach(x => x.PermissionMode = value as PermissionViewModel);
+                Users.ForEach(x => x.PermissionMode = value as PermissionViewModel);
                 Users.ForEach(x => x.GroupMode = value as PermissionGroupViewModel);
                 Permissions.ForEach(x => x.GroupMode = value as PermissionGroupViewModel);
+                Permissions.ForEach(x => x.UserMode = value as UserViewModel);
             }
         }
 

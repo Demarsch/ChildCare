@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Core.Data;
 using Prism.Commands;
@@ -45,6 +46,30 @@ namespace AdminModule.ViewModels
         public bool IsInGroupMode { get { return groupMode != null; } }
 
         public bool IsIncludedInCurrentGroup { get { return groupMode != null && Permission.PermissionGroupMemberships.Any(x => x.GroupId == groupMode.Group.Id); } }
+
+        private UserViewModel userMode;
+
+        public UserViewModel UserMode
+        {
+            get { return userMode; }
+            set
+            {
+                SetProperty(ref userMode, value);
+                OnPropertyChanged(() => IsInUserMode);
+                OnPropertyChanged(() => IsOwnedByCurrentUser);
+            }
+        }
+
+        public bool IsInUserMode { get { return userMode != null; } }
+
+        public bool IsOwnedByCurrentUser 
+        {
+            get
+            {
+                return userMode != null
+                       && Permission.PermissionGroupMemberships.Any(x => x.PermissionGroup.UserPermissionGroups.Any(y => y.UserId == userMode.User.Id));
+            }
+        }
 
         public ICommand RequestIncludeInCurrentGroupCommand { get; private set; }
 

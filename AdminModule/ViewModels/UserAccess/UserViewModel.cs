@@ -58,6 +58,30 @@ namespace AdminModule.ViewModels
 
         public int Id { get; private set; }
 
+        private PermissionViewModel permissionMode;
+
+        public PermissionViewModel PermissionMode
+        {
+            get { return permissionMode; }
+            set
+            {
+                SetProperty(ref permissionMode, value);
+                OnPropertyChanged(() => IsInPermissionMode);
+                OnPropertyChanged(() => OwnsCurrentPermission);
+            }
+        }
+
+        public bool IsInPermissionMode { get { return permissionMode != null; } }
+
+        public bool OwnsCurrentPermission 
+        {
+            get
+            {
+                return permissionMode != null
+                       && User.UserPermissionGroups.Any(x => x.PermissionGroup.PermissionGroupMemberships.Any(y => y.PermissionId == permissionMode.Permission.Id));
+            } 
+        }
+
         private PermissionGroupViewModel groupMode;
 
         public PermissionGroupViewModel GroupMode
