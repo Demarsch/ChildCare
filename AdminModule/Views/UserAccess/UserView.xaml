@@ -37,9 +37,24 @@
                     </ToggleButton.Template>
                     <Image Source="{Binding IsActive, Converter={StaticResource IsActiveToImageConverter}}" />
                 </ToggleButton>
-                <TextBlock Grid.Column="1"
-                           Text="{Binding FullName}"
-                           TextWrapping="Wrap" />
+                <StackPanel Grid.Column="1"
+                            Orientation="Vertical"
+                            VerticalAlignment="Center">
+                    <TextBlock TextWrapping="Wrap">
+                        <Run Text="Ф.И.О. "
+                             Foreground="DimGray" />
+                        <Run Text="{Binding FullName, Mode=OneWay}" />
+                        <Run Text="Логин "
+                             Foreground="DimGray" />
+                        <Run Text="{Binding Login, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock>
+                        <Run Text="SID "
+                             Foreground="DimGray" />
+                        <Run Text="{Binding Sid, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+
                 <StackPanel Grid.Column="3"
                             Orientation="Horizontal"
                             Opacity="0.5"

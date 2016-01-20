@@ -14,6 +14,8 @@ namespace AdminModule.Model
 
         public string Sid { get; set; }
 
+        public string Login { get; set; }
+
         public string FullName { get; set; }
 
         public byte[] PhotoData { get; set; }
