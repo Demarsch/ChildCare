@@ -11,6 +11,9 @@ using Prism.Regions;
 using Core.Wpf.Services;
 using log4net;
 using Microsoft.Practices.Unity;
+using CommissionsModule.ViewModels;
+using CommissionsModule.Views;
+using CommissionsModule.Services;
 
 namespace CommissionsModule
 {
@@ -58,20 +61,27 @@ namespace CommissionsModule
 
         private void RegisterLogger()
         {
-            log = LogManager.GetLogger("SCHEDIT");
+            log = LogManager.GetLogger("COMMISSIONS");
             container.RegisterInstance(log);
         }
 
         private void RegisterViewModels()
         {
+            container.RegisterType<CommissionsHeaderViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommissionsListViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionsHeaderView>());
+
+            container.RegisterType<object, CommissionsListView>(viewNameResolver.Resolve<CommissionsListViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionsListView>());
         }
 
         private void RegisterServices()
         {
+            container.RegisterType<ICommissionService, CommissionService>(new ContainerControlledLifetimeManager());
         }
     }
 }

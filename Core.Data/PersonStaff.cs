@@ -17,10 +17,10 @@ namespace Core.Data
     {
         public PersonStaff()
         {
-            this.CommissionMembers = new HashSet<CommissionMember>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.RecordMembers = new HashSet<RecordMember>();
+            this.CommissionMembers = new HashSet<CommissionMember>();
         }
     
         public int Id { get; set; }
@@ -37,14 +37,6 @@ namespace Core.Data
     	{
      		get { return branch; }
      		set { branch = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionMember> commissionMembers;
-    
-    	public virtual ICollection<CommissionMember> CommissionMembers
-    	{
-     		get { return commissionMembers; }
-     		set { commissionMembers = value; }
     	}
         [NonSerialized]
     	protected Person person;
@@ -85,6 +77,14 @@ namespace Core.Data
     	{
      		get { return recordMembers; }
      		set { recordMembers = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionMember> commissionMembers;
+    
+    	public virtual ICollection<CommissionMember> CommissionMembers
+    	{
+     		get { return commissionMembers; }
+     		set { commissionMembers = value; }
     	}
     
     	public object Clone()

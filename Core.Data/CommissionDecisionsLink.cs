@@ -16,7 +16,7 @@ namespace Core.Data
     public partial class CommissionDecisionsLink : ICloneable
     {
         public int Id { get; set; }
-        public int CommissionTypeId { get; set; }
+        public int CommissionQuestionId { get; set; }
         public int CommissionTypeMemberId { get; set; }
         public int DecisionId { get; set; }
         public System.DateTime BeginDateTime { get; set; }
@@ -31,12 +31,12 @@ namespace Core.Data
      		set { commissionMemberType = value; }
     	}
         [NonSerialized]
-    	protected CommissionType commissionType;
+    	protected CommissionQuestion commissionQuestion;
     
-    	public virtual CommissionType CommissionType
+    	public virtual CommissionQuestion CommissionQuestion
     	{
-     		get { return commissionType; }
-     		set { commissionType = value; }
+     		get { return commissionQuestion; }
+     		set { commissionQuestion = value; }
     	}
         [NonSerialized]
     	protected Decision decision;

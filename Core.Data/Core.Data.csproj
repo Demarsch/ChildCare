@@ -85,10 +85,16 @@
     </Compile>
     <Compile Include="Classes\RecordTypesTreeQueryItem.cs" />
     <Compile Include="Classes\UserSystemInfo.cs" />
+    <Compile Include="ColorsSetting.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CommissionDecision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="CommissionDecisionsLink.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CommissionFilter.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
     <Compile Include="CommissionMember.cs">

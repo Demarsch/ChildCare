@@ -4,6 +4,7 @@ namespace Core.Data.Misc
 {
     public static class OptionValues
     {
+        //Contracts
         public static readonly string Contract = "|contract|";
         public static readonly string ResponsibleForContract = "|responsibleForContract|";
         public static readonly string Cash = "|cash|";
@@ -15,5 +16,14 @@ namespace Core.Data.Misc
 
         //Rooms
         public static readonly string LaboratoryRoom = "|laboratoryRoom|";
+
+        //Commissions Filters
+        public static readonly string ProtocolsInProcess = "|inProcess|";
+        public static readonly string ProtocolsPreliminary = "|preliminary|";
+        public static readonly string ProtocolsOnCommission = "|onCommission|";
+        public static readonly string ProtocolsOnDate = "|onDate|";
+        public static readonly string ProtocolsAdded = "|added|";
+        public static readonly string ProtocolsAwaiting = "|awaiting|";
+        public static readonly string CommissionFilterHasDate = "|hasDate|";
     }
 }

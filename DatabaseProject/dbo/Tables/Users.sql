@@ -4,11 +4,13 @@
     [SID]           VARCHAR (255) NOT NULL,
     [BeginDateTime] DATETIME      NOT NULL,
     [EndDateTime]   DATETIME      NOT NULL,
-    [Login]         VARCHAR (200) NOT NULL,
-    [SystemName]    VARCHAR (300) NOT NULL,
+    [Login]         VARCHAR (200) CONSTRAINT [DF_Users_Login] DEFAULT ('') NOT NULL,
+    [SystemName]    VARCHAR (300) CONSTRAINT [DF_Users_SystemName] DEFAULT ('') NOT NULL,
     CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Users_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id])
 );
+
+
 
 
 

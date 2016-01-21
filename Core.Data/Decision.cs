@@ -19,6 +19,7 @@ namespace Core.Data
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
             this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.Decisions1 = new HashSet<Decision>();
         }
     
@@ -28,6 +29,9 @@ namespace Core.Data
         public string ShortName { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public bool IsPositive { get; set; }
+        public bool IsNegative { get; set; }
+        public bool IsNeutral { get; set; }
     
         [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;
@@ -44,6 +48,14 @@ namespace Core.Data
     	{
      		get { return commissionDecisionsLinks; }
      		set { commissionDecisionsLinks = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
         [NonSerialized]
     	protected ICollection<Decision> decisions1;

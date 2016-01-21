@@ -17,13 +17,13 @@ namespace Core.Data
     {
         public RecordContract()
         {
-            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.MedicalHelpTypes = new HashSet<MedicalHelpType>();
             this.PersonTalons = new HashSet<PersonTalon>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
         public int Id { get; set; }
@@ -45,14 +45,6 @@ namespace Core.Data
         public System.DateTime InDateTime { get; set; }
         public int InUserId { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<CommissionProtocol> commissionProtocols;
-    
-    	public virtual ICollection<CommissionProtocol> CommissionProtocols
-    	{
-     		get { return commissionProtocols; }
-     		set { commissionProtocols = value; }
-    	}
         [NonSerialized]
     	protected FinancingSource financingSource;
     
@@ -148,6 +140,14 @@ namespace Core.Data
     	{
      		get { return org; }
      		set { org = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
     
     	public object Clone()

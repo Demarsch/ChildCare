@@ -22,7 +22,8 @@ namespace Core.Data
         }
     
         public int Id { get; set; }
-        public int PersonStaffId { get; set; }
+        public Nullable<int> PersonStaffId { get; set; }
+        public Nullable<int> StaffId { get; set; }
         public int CommissionMemberTypeId { get; set; }
         public int CommissionTypeId { get; set; }
         public System.DateTime BeginDateTime { get; set; }
@@ -67,6 +68,14 @@ namespace Core.Data
     	{
      		get { return personStaff; }
      		set { personStaff = value; }
+    	}
+        [NonSerialized]
+    	protected Staff staff;
+    
+    	public virtual Staff Staff
+    	{
+     		get { return staff; }
+     		set { staff = value; }
     	}
     
     	public object Clone()

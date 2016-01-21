@@ -17,8 +17,8 @@ namespace Core.Data
     {
         public MedicalHelpType()
         {
-            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.PersonTalons = new HashSet<PersonTalon>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
         public int Id { get; set; }
@@ -26,14 +26,6 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<CommissionProtocol> commissionProtocols;
-    
-    	public virtual ICollection<CommissionProtocol> CommissionProtocols
-    	{
-     		get { return commissionProtocols; }
-     		set { commissionProtocols = value; }
-    	}
         [NonSerialized]
     	protected RecordContract recordContract;
     
@@ -49,6 +41,14 @@ namespace Core.Data
     	{
      		get { return personTalons; }
      		set { personTalons = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
     
     	public object Clone()

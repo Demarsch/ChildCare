@@ -17,7 +17,6 @@ namespace Core.Data
     {
         public CommissionType()
         {
-            this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
             this.CommissionMembers = new HashSet<CommissionMember>();
             this.CommissionQuestions = new HashSet<CommissionQuestion>();
             this.CommissionSources = new HashSet<CommissionSource>();
@@ -29,14 +28,6 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
-    
-    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
-    	{
-     		get { return commissionDecisionsLinks; }
-     		set { commissionDecisionsLinks = value; }
-    	}
         [NonSerialized]
     	protected ICollection<CommissionMember> commissionMembers;
     

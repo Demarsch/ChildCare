@@ -61,6 +61,14 @@ namespace Core.Data
      		set { commissionSource = value; }
     	}
         [NonSerialized]
+    	protected Decision decision;
+    
+    	public virtual Decision Decision
+    	{
+     		get { return decision; }
+     		set { decision = value; }
+    	}
+        [NonSerialized]
     	protected MedicalHelpType medicalHelpType;
     
     	public virtual MedicalHelpType MedicalHelpType

@@ -17,7 +17,6 @@ namespace Core.Data
     {
         public Person()
         {
-            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.InsuranceDocuments = new HashSet<InsuranceDocument>();
             this.PersonAddresses = new HashSet<PersonAddress>();
             this.PersonDisabilities = new HashSet<PersonDisability>();
@@ -40,6 +39,7 @@ namespace Core.Data
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
             this.Records = new HashSet<Record>();
             this.Assignments = new HashSet<Assignment>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.Users = new HashSet<User>();
         }
     
@@ -61,14 +61,6 @@ namespace Core.Data
         public int PersonHospListHashCode { get; set; }
         public int RadiationListHashCode { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<CommissionProtocol> commissionProtocols;
-    
-    	public virtual ICollection<CommissionProtocol> CommissionProtocols
-    	{
-     		get { return commissionProtocols; }
-     		set { commissionProtocols = value; }
-    	}
         [NonSerialized]
     	protected Document document;
     
@@ -252,6 +244,14 @@ namespace Core.Data
     	{
      		get { return assignments; }
      		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
         [NonSerialized]
     	protected ICollection<User> users;

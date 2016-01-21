@@ -15,6 +15,11 @@ namespace Core.Data
     [Serializable]
     public partial class CommissionQuestion : ICloneable
     {
+        public CommissionQuestion()
+        {
+            this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
+        }
+    
         public int Id { get; set; }
         public int CommissionTypeId { get; set; }
         public string Name { get; set; }
@@ -22,6 +27,14 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    
+    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
+    	{
+     		get { return commissionDecisionsLinks; }
+     		set { commissionDecisionsLinks = value; }
+    	}
         [NonSerialized]
     	protected CommissionType commissionType;
     
