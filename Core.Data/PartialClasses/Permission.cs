@@ -19,6 +19,8 @@
 
         public const string OrganizationContractsModuleAccess = "Доступ к модулю \"Договора с юридическими лицами\"";
 
+        public const string CommissionsModuleAccess = "Доступ к модулю \"Комиссии\"";
+
         #endregion
 
         #region Assignments

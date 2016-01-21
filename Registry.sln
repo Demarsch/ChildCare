@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shell", "Shell", "{2BC03AE7-2D21-4DFF-8C99-0DFA7D353097}"
 EndProject
@@ -85,6 +85,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{F8E497F7-B901-4175-B84A-7D235226EAF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Patient.Test", "Shared.Patient.Test\Shared.Patient.Test.csproj", "{22AF79B3-0E2C-4C24-862F-E4434008EC7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommissionsModule", "CommissionsModule\CommissionsModule.csproj", "{200993AC-7387-4B1B-8D6D-FFA89438B686}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -194,6 +196,10 @@ Global
 		{22AF79B3-0E2C-4C24-862F-E4434008EC7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22AF79B3-0E2C-4C24-862F-E4434008EC7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22AF79B3-0E2C-4C24-862F-E4434008EC7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{200993AC-7387-4B1B-8D6D-FFA89438B686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{200993AC-7387-4B1B-8D6D-FFA89438B686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{200993AC-7387-4B1B-8D6D-FFA89438B686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{200993AC-7387-4B1B-8D6D-FFA89438B686}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,5 +235,9 @@ Global
 		{ED2FCB8B-DB03-4FF8-934D-84EB934F97E6} = {49649D2D-32C3-4130-978A-ED328F498DCE}
 		{F8E497F7-B901-4175-B84A-7D235226EAF0} = {466756B6-43C2-4E6B-AEAC-AB8BBABB0883}
 		{22AF79B3-0E2C-4C24-862F-E4434008EC7A} = {F8E497F7-B901-4175-B84A-7D235226EAF0}
+		{200993AC-7387-4B1B-8D6D-FFA89438B686} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

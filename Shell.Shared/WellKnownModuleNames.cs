@@ -10,6 +10,8 @@
 
         public const string AdminModule = "AdminModule";
 
+        public const string CommissionsModule = "CommissionsModule";
+
         public const string ScheduleModule = "ScheduleModule";
 
         public const string ScheduleEditorModule = "ScheduleEditorModule";
