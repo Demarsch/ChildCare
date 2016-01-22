@@ -73,6 +73,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -87,9 +88,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\CommissionService.cs" />
     <Compile Include="Services\Interfaces\ICommissionService.cs" />
+    <Compile Include="ViewModels\CommissionDecisionHeaderViewModel.cs" />
+    <Compile Include="ViewModels\CommissionDecisionViewModel.cs" />
     <Compile Include="ViewModels\CommissionProtocolViewModel.cs" />
     <Compile Include="ViewModels\CommissionsHeaderViewModel.cs" />
     <Compile Include="ViewModels\CommissionsListViewModel.cs" />
+    <Compile Include="Views\CommissionDecisionHeaderView.xaml.cs">
+      <DependentUpon>CommissionDecisionHeaderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CommissionDecisionView.xaml.cs">
+      <DependentUpon>CommissionDecisionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CommissionsHeaderView.xaml.cs">
       <DependentUpon>CommissionsHeaderView.xaml</DependentUpon>
     </Compile>
@@ -120,6 +129,14 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Views\CommissionDecisionHeaderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CommissionDecisionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CommissionsHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,4 +1,4 @@
-﻿namespace Shared.PatientRecords.DTO
+﻿namespace Core.Misc
 {
     public class CommonIdName
     {

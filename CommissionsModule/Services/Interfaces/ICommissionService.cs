@@ -13,5 +13,7 @@ namespace CommissionsModule.Services
         bool IsCommissionFilterHasDate(int id);
 
         IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int filterId, DateTime? date, bool onlyMyCommissions = false);
+
+        IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
+using Core.Misc;
 using Shared.PatientRecords.DTO;
 using Shared.PatientRecords.Misc;
 using System;

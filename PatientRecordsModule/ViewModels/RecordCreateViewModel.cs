@@ -18,6 +18,7 @@ using System.Data.Entity;
 using Core.Extensions;
 using Core.Services;
 using System.Threading;
+using Core.Misc;
 
 namespace Shared.PatientRecords.ViewModels
 {

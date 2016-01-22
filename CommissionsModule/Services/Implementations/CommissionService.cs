@@ -67,5 +67,12 @@ namespace CommissionsModule.Services
             
             return new DisposableQueryable<CommissionProtocol>(query, context);
         }
+
+
+        public IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionDecision>(context.Set<CommissionDecision>().Where(x => x.CommissionProtocolId == commissionProtocolId), context);
+        }
     }
 }

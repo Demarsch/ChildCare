@@ -148,7 +148,6 @@
     <Compile Include="ViewModels\BrigadeViewModel.cs" />
     <Compile Include="DTOs\VisitTemplateDTO.cs" />
     <Compile Include="DTOs\AssignmentDTO.cs" />
-    <Compile Include="DTOs\CommonIdName.cs" />
     <Compile Include="DTOs\RecordDTO.cs" />
     <Compile Include="DTOs\VisitDTO.cs" />
     <Compile Include="Misc\Common.cs" />

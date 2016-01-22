@@ -68,15 +68,22 @@ namespace CommissionsModule
         private void RegisterViewModels()
         {
             container.RegisterType<CommissionsHeaderViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommissionDecisionHeaderViewModel>(new ContainerControlledLifetimeManager());
+
             container.RegisterType<CommissionsListViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommissionDecisionViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
         {
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionsHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionDecisionHeaderView>());
 
             container.RegisterType<object, CommissionsListView>(viewNameResolver.Resolve<CommissionsListViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, CommissionDecisionView>(viewNameResolver.Resolve<CommissionDecisionViewModel>(), new ContainerControlledLifetimeManager());
+
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionsListView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionDecisionView>());
         }
 
         private void RegisterServices()
