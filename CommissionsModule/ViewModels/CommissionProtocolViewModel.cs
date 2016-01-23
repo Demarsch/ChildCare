@@ -26,14 +26,7 @@ namespace CommissionsModule.ViewModels
         {
             get { return statusColor; }
             set { SetProperty(ref statusColor, value); }
-        }
-
-        private ImageSource statusImage;
-        public ImageSource StatusImage
-        {
-            get { return statusImage; }
-            set { SetProperty(ref statusImage, value); }
-        }
+        }    
 
         private bool? isCompleted;
         public bool? IsCompleted

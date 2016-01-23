@@ -18,6 +18,7 @@ using Prism.Mvvm;
 using System.Threading.Tasks;
 using Prism.Events;
 using Prism.Regions;
+using System.Windows.Media;
 
 namespace CommissionsModule.ViewModels
 {
@@ -70,7 +71,9 @@ namespace CommissionsModule.ViewModels
 
             Filters = new ObservableCollectionEx<FieldValue>();
             Commissions = new ObservableCollectionEx<CommissionProtocolViewModel>();
-            BusyMediator = new BusyMediator();                        
+            BusyMediator = new BusyMediator();
+
+            LoadDataSources();
         }
         #endregion
 
@@ -130,7 +133,13 @@ namespace CommissionsModule.ViewModels
         public CommissionProtocolViewModel SelectedCommission
         {
             get { return selectedCommission; }
-            set { SetProperty(ref selectedCommission, value); }
+            set 
+            { 
+                if (SetProperty(ref selectedCommission, value))
+                {
+                    eventAggregator.GetEvent<PubSubEvent<CommissionProtocolViewModel>>().Publish(value);
+                }
+            }
         }
 
         #endregion
@@ -163,15 +172,12 @@ namespace CommissionsModule.ViewModels
             {
                 commissionProtocolsQuery = commissionService.GetCommissionProtocols(SelectedFilter, FilterDate, OnlyMyCommissions);
 
-                //TODO: PersonTalon can be null
                 var commissionProtocolsSelectQuery = await commissionProtocolsQuery.Select(x => new
                     {
                         Id = x.Id,
                         PatientFIO = x.Person.ShortName,
                         BirthDate = x.Person.BirthDate.Year,
-                        TalonNumber = x.PersonTalon.TalonNumber,
-                        TalonMKB = x.PersonTalon.MKB,
-                        TalonDate = x.PersonTalon.TalonDateTime,
+                        Talon = x.PersonTalon != null ? new { TalonNumber = x.PersonTalon.TalonNumber, TalonDate = x.PersonTalon.TalonDateTime } : null,
                         MKB = x.MKB,
                         IncomeDateTime = x.IncomeDateTime,
                         IsCompleted = x.IsCompleted
@@ -182,10 +188,11 @@ namespace CommissionsModule.ViewModels
                         Id = x.Id,
                         PatientFIO = x.PatientFIO,
                         BirthDate = x.BirthDate + " г.р.",
-                        Talon = "(" + x.TalonNumber + (!string.IsNullOrWhiteSpace(x.TalonMKB) ? " - " + x.TalonMKB : string.Empty) + ") от " + x.TalonDate.ToShortDateString(),                       
-                        MKB = x.MKB,
+                        Talon = x.Talon != null ? x.Talon.TalonNumber + " от " + x.Talon.TalonDate.ToShortDateString() : "талон отсутствует",                       
+                        MKB = "МКБ: " + x.MKB,
                         IncomeDateTime = x.IncomeDateTime.ToShortDateString(),
-                        IsCompleted = x.IsCompleted
+                        IsCompleted = x.IsCompleted,
+                        StatusColor = GetStatusColor(x.IsCompleted)
                     }).ToArray();
 
                 Commissions.AddRange(result);
@@ -205,6 +212,15 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        private SolidColorBrush GetStatusColor(bool? isCompleted)
+        {
+            if (!isCompleted.HasValue)
+                return commissionService.GetColor("|inProgressCommission|");
+            else if (isCompleted == false)
+                return commissionService.GetColor("|deniedCommission|");
+            return commissionService.GetColor("|completedCommission|");
+        }
+
         #endregion
 
 
@@ -220,7 +236,7 @@ namespace CommissionsModule.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            LoadDataSources();
+            
         }
     }
 }

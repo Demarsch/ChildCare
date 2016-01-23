@@ -3,6 +3,7 @@ using Core.Data.Misc;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CommissionsModule.Services
 {
@@ -12,8 +13,10 @@ namespace CommissionsModule.Services
 
         bool IsCommissionFilterHasDate(int id);
 
-        IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int filterId, DateTime? date, bool onlyMyCommissions = false);
+        IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int filterId, DateTime? date = null, bool onlyMyCommissions = false);
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
+
+        SolidColorBrush GetColor(string option);
     }
 }
