@@ -581,13 +581,13 @@ namespace ScheduleModule.ViewModels
             var plannedUrgency = cacheService.GetItems<Urgently>().FirstOrDefault(x => x.IsDefault);
             if (plannedUrgency == null)
             {
-                FailureMediator.Activate("В базе данных отсутсвует информация о плановой срочности назначения. Обратитесь в службу поддержки", true);
+                FailureMediator.Activate("В базе данных отсутствует информация о плановой срочности назначения. Обратитесь в службу поддержки", true);
                 return null;
             }
             var polyclinicPlace = cacheService.GetItems<ExecutionPlace>().FirstOrDefault(x => x.IsPolyclynic);
             if (polyclinicPlace == null)
             {
-                FailureMediator.Activate("В базе данных отсутсвует информация об амбулаторном месте выполнения назначения. Обратитесь в службу поддержки", true);
+                FailureMediator.Activate("В базе данных отсутствует информация об амбулаторном месте выполнения назначения. Обратитесь в службу поддержки", true);
                 return null;
             }
             var assignment = new Assignment
@@ -713,7 +713,7 @@ namespace ScheduleModule.ViewModels
                     log.InfoFormat("Entering movement mode for assignment (Id = {0})", movedAssignment.Id);
                     previousSelectedRecordType = selectedRecordType;
                     previousSelectedRoom = selectedRoom;
-                    SelectedRecordType = recordTypes.First(x => x.Id == movedAssignment.RecordTypeId);
+                    SelectedRecordType = recordTypes.SelectMany(x => x.GetAllChildren(true)).First(x => x.Id == movedAssignment.RecordTypeId);
                     CollectionViewSource.GetDefaultView(recordTypes).Filter = x => ((RecordType)x).Id == SelectedRecordType.Id;
                     SelectedRoom = unseletedRoom;
                 }

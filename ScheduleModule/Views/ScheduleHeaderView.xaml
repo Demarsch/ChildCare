@@ -29,13 +29,13 @@
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousWeek48x48.png"
                        ToolTip="Предыдущая неделя"
-                       Header="Предыдущая неделя"
+                       Header="&lt;&lt;"
                        Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 -7}" />
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/PreviousDay48x48.png"
                        ToolTip="Предыдущий день"
-                       Header="Предыдущий день"
+                       Header="&lt;"
                        Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 -1}" />
         <StackPanel Orientation="Vertical">
@@ -51,13 +51,13 @@
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/NextDay48x48.png"
                        ToolTip="Следующий день"
-                       Header="Следующий день"
+                       Header="&gt;"
                        Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 1}" />
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/ScheduleModule;Component/Resources/Images/NextWeek48x48.png"
                        ToolTip="Следующая неделя"
-                       Header="Следующая неделя"
+                       Header="&gt;&gt;"
                        Command="{Binding ScheduleContentViewModel.ChangeDateCommand, Mode=OneTime}"
                        CommandParameter="{markupExtensions:Int32 7}" />
     </fluent:RibbonGroupBox>
