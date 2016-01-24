@@ -754,6 +754,10 @@ namespace PatientInfoModule.ViewModels
 
         private async void CheckForDuplicatePersonAsync(DuplicatePersonCheckParameters param)
         {
+            if (currentPerson == null || currentPerson.Id.IsNewOrNonExisting() || !ChangeTracker.HasChanges)
+            {
+                return;
+            }
             NotificationMediator.Deactivate();
             await Task.Delay(TimeSpan.FromSeconds(2.0));
             var currentParam = CreateDuplicateCheckParameters();
