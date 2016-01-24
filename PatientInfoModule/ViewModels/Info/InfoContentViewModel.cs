@@ -228,6 +228,7 @@ namespace PatientInfoModule.ViewModels
             FailureMediator.Deactivate();
             if (!Validate())
             {
+                selectedPatientOrRelative.NotificationMediator.Activate("Некоторые поля незаполнены или заполнены с ошибками", NotificationMediator.DefaultHideTime);
                 return false;
             }
             currentOperation = new TaskCompletionSource<object>();

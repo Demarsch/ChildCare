@@ -772,7 +772,7 @@ namespace PatientInfoModule.ViewModels
                 return;
             }
             similarPatient = patient;
-            if (similarPatient == null)
+            if (similarPatient == null || similarPatient.Id == currentPerson.Id)
             {
                 return;
             }
@@ -830,6 +830,7 @@ namespace PatientInfoModule.ViewModels
             await currentOperation.Task;
             if (!Validate())
             {
+                NotificationMediator.Activate("Некоторые поля незаполнены или заполнены неправильно", NotificationMediator.DefaultHideTime);
                 return;
             }
             currentOperation = new TaskCompletionSource<object>();

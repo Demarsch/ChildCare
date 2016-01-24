@@ -422,10 +422,10 @@
                                              Duration="{StaticResource AnimationDuration}"/>
                             <ColorAnimation Storyboard.TargetProperty="Background.Color"
                                             To="Yellow"
-                                            Duration="0:0:1.5"
+                                            Duration="0:0:4"
                                             AutoReverse="True">
                                 <ColorAnimation.EasingFunction>
-                                    <ElasticEase EasingMode="EaseIn" />
+                                    <BounceEase EasingMode="EaseInOut" />
                                 </ColorAnimation.EasingFunction>
                             </ColorAnimation>
                         </Storyboard>

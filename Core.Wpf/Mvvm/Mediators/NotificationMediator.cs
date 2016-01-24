@@ -44,7 +44,12 @@ namespace Core.Wpf.Mvvm
             private set { SetProperty(ref notificationContent, value); }
         }
 
-        public void Activate(object notificationContent, TimeSpan hideAfter = default(TimeSpan))
+        public void Activate(object notificationContent)
+        {
+            Activate(notificationContent, TimeSpan.Zero);
+        }
+
+        public void Activate(object notificationContent, TimeSpan hideAfter)
         {
             if (notificationContent == null)
             {
