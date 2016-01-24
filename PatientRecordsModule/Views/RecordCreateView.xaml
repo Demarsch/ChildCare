@@ -14,6 +14,7 @@
         <DataTemplate.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/Shared.PatientRecords;Component/Themes/Generic.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/Shared.DataTemplates;Component/Core.Data.xaml" />
                 </ResourceDictionary.MergedDictionaries>

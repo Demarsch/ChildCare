@@ -14,6 +14,7 @@ using Microsoft.Practices.Unity;
 using CommissionsModule.ViewModels;
 using CommissionsModule.Views;
 using CommissionsModule.Services;
+using System.Windows;
 
 namespace CommissionsModule
 {
@@ -71,6 +72,7 @@ namespace CommissionsModule
             container.RegisterType<CommissionDecisionHeaderViewModel>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<CommissionsListViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommissionDecisionsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionDecisionViewModel>(new ContainerControlledLifetimeManager());
         }
 
@@ -80,10 +82,13 @@ namespace CommissionsModule
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionDecisionHeaderView>());
 
             container.RegisterType<object, CommissionsListView>(viewNameResolver.Resolve<CommissionsListViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, CommissionDecisionsView>(viewNameResolver.Resolve<CommissionDecisionsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionDecisionView>(viewNameResolver.Resolve<CommissionDecisionViewModel>(), new ContainerControlledLifetimeManager());
 
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionsListView>());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionDecisionView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionDecisionsView>());
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/CommissionsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
         private void RegisterServices()

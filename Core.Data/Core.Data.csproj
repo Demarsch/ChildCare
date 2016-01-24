@@ -204,6 +204,7 @@
     <Compile Include="OuterDocumentType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PartialClasses\Decision.cs" />
     <Compile Include="PartialClasses\IdentityDocumentType.cs" />
     <Compile Include="PartialClasses\Permission.cs" />
     <Compile Include="PartialClasses\PermissionGroup.cs" />

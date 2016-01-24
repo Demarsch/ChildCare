@@ -20,17 +20,17 @@ namespace CommissionsModule.Views
     /// <summary>
     /// Interaction logic for CommissionDecisionView.xaml
     /// </summary>
-    public partial class CommissionDecisionView
+    public partial class CommissionDecisionsView
     {
-        public CommissionDecisionView()
+        public CommissionDecisionsView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public CommissionDecisionViewModel ViewModel
+        public CommissionDecisionsViewModel ViewModel
         {
-            get { return DataContext as CommissionDecisionViewModel; }
+            get { return DataContext as CommissionDecisionsViewModel; }
             set { DataContext = value; }
         }
     }

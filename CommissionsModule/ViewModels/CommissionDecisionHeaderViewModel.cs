@@ -48,7 +48,7 @@ namespace CommissionsModule.ViewModels
                     OnPropertyChanged(() => IsActive);
                     if (value)
                     {
-                        regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<CommissionDecisionViewModel>());
+                        regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<CommissionDecisionsViewModel>());
                     }
                 }
             }
