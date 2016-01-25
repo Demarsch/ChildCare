@@ -54,9 +54,6 @@ namespace CommissionsModule.Services
             var option = context.Set<CommissionFilter>().First(x => x.Id == filterId).Options;
                        
             IQueryable<CommissionProtocol> query = context.Set<CommissionProtocol>();
-            if (date.HasValue)
-                query = query.Where(x => x.ProtocolDate == date.Value);
-
             if (option.Contains(OptionValues.ProtocolsInProcess))
                 query = query.Where(x => x.IsCompleted == false);
             if (option.Contains(OptionValues.ProtocolsPreliminary))

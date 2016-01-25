@@ -92,8 +92,12 @@ namespace CommissionsModule.ViewModels
                 {
                     ShowDateFilter = commissionService.IsCommissionFilterHasDate(value);
                     if (!ShowDateFilter)
+                    {
                         FilterDate = (DateTime?)null;
-                    LoadCommissionProtocolsAsync();
+                        LoadCommissionProtocolsAsync();
+                    }
+                    else
+                        FilterDate = DateTime.Now;
                 }
             }
         }

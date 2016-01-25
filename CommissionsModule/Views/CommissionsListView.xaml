@@ -37,7 +37,7 @@
                  SelectedItem="{Binding SelectedCommission}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{Binding StatusColor}" Margin="0">
+                    <Border Background="{Binding DecisionColorHex}" Margin="0">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />

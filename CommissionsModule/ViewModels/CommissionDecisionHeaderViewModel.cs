@@ -49,10 +49,7 @@ namespace CommissionsModule.ViewModels
                     if (value)
                     {
                         regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<CommissionDecisionsViewModel>());
-
-                        var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
-                        if (activeListItems != null)
-                            regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
+                        regionManager.RequestNavigate(RegionNames.ListItems, viewNameResolver.Resolve<CommissionsListViewModel>());
                     }
                 }
             }
