@@ -85,9 +85,7 @@ namespace CommissionsModule.Services
                 string defColor = HexConverter(System.Drawing.Color.White);
                 if (!decisionId.HasValue) return defColor;
                 var decision = context.Set<Decision>().FirstOrDefault(x => x.Id == decisionId.Value);
-                //if (decision != null)
-                //    return decision.ColorSettings.HexColor;
-                return defColor;
+                return decision != null ? decision.ColorsSetting.Hex : defColor;
             }
         }
 
@@ -101,7 +99,6 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionDecision>(context.Set<CommissionDecision>().Where(x => x.CommissionProtocolId == commissionProtocolId), context);
         }
-
 
         public IDisposableQueryable<CommissionDecision> GetCommissionDecision(int commissionDecisionId)
         {
