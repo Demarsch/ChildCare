@@ -3,6 +3,7 @@ using Core.Data.Misc;
 using Core.Data.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,19 +57,18 @@ namespace CommissionsModule.Services
             if (date.HasValue)
                 query = query.Where(x => x.ProtocolDate == date.Value);
 
-            // TODO: Apply Filters   
             if (option.Contains(OptionValues.ProtocolsInProcess))
                 query = query.Where(x => x.IsCompleted == false);
             if (option.Contains(OptionValues.ProtocolsPreliminary))
-                query = query.Where(x => x.IsCompleted == true);
-            if (option.Contains(OptionValues.ProtocolsOnCommission))
                 query = query.Where(x => x.IsCompleted == null);
+            if (option.Contains(OptionValues.ProtocolsOnCommission))
+                query = query.Where(x => x.IsCompleted == false && x.IsExecuting == true);
             if (option.Contains(OptionValues.ProtocolsOnDate))
                 query = query.Where(x => x.ProtocolDate == date.Value);
             if (option.Contains(OptionValues.ProtocolsAdded))
-                query = query.Where(x => x.ToDoDateTime == date.Value);
+                query = query.Where(x => x.IncomeDateTime == date.Value);
             if (option.Contains(OptionValues.ProtocolsAwaiting))
-                query = query.Where(x => true);
+                query = query.Where(x => x.IsCompleted == true && EntityFunctions.TruncateTime(x.ToDoDateTime) > EntityFunctions.TruncateTime(DateTime.Now));
 
             if (onlyMyCommissions)
             {
@@ -78,15 +78,22 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<CommissionProtocol>(query, context);
         }
 
-        public SolidColorBrush GetColor(string option)
+        public string GetDecisionColorHex(int? decisionId)
         {
             using (var context = contextProvider.CreateNewContext())
             {
-                var color = context.Set<ColorsSetting>().FirstOrDefault(x => x.Options.Contains(option));
-                if (color != null)
-                    return (SolidColorBrush)new BrushConverter().ConvertFromString(color.ColorName);
-                return new SolidColorBrush(Colors.White);
+                string defColor = HexConverter(System.Drawing.Color.White);
+                if (!decisionId.HasValue) return defColor;
+                var decision = context.Set<Decision>().FirstOrDefault(x => x.Id == decisionId.Value);
+                //if (decision != null)
+                //    return decision.ColorSettings.HexColor;
+                return defColor;
             }
+        }
+
+        private static String HexConverter(System.Drawing.Color c)
+        {
+            return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
 
         public IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId)

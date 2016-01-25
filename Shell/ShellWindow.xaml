@@ -56,14 +56,25 @@
                 </shell:RibbonEx.ContextMenuOverride>
             </shell:RibbonEx>
             <Grid>
-                <ContentControl regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <ContentControl Grid.Column="0" 
+                                regions:RegionManager.RegionName="{x:Static shared:RegionNames.ListItems}"
+                                x:Name="listItems" Width="220" MaxWidth="220"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" />
+                <ContentControl Grid.Column="1" 
+                                regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
                                 x:Name="moduleContent"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" />
-                <ContentControl Content="{Binding BusyMediator}"
+                <ContentControl Grid.ColumnSpan="2" Content="{Binding BusyMediator}"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" />
-                <ContentControl Content="{Binding FailureMediator}"
+                <ContentControl Grid.ColumnSpan="2" Content="{Binding FailureMediator}"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" />
             </Grid>

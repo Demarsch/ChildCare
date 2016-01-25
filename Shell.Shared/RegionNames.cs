@@ -9,5 +9,7 @@
         public static readonly string ModuleContent = "ModuleContent";
 
         public static readonly string Overlay = "Overlay";
+
+        public static readonly string ListItems = "ListItems";
     }
 }

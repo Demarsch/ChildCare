@@ -180,7 +180,8 @@ namespace CommissionsModule.ViewModels
                         Talon = x.PersonTalon != null ? new { TalonNumber = x.PersonTalon.TalonNumber, TalonDate = x.PersonTalon.TalonDateTime } : null,
                         MKB = x.MKB,
                         IncomeDateTime = x.IncomeDateTime,
-                        IsCompleted = x.IsCompleted
+                        IsCompleted = x.IsCompleted,
+                        DecisionId = x.DecisionId
                     }).ToArrayAsync();
 
                 var result = commissionProtocolsSelectQuery.Select(x => new CommissionProtocolViewModel()
@@ -192,7 +193,7 @@ namespace CommissionsModule.ViewModels
                         MKB = "МКБ: " + x.MKB,
                         IncomeDateTime = x.IncomeDateTime.ToShortDateString(),
                         IsCompleted = x.IsCompleted,
-                        StatusColor = GetStatusColor(x.IsCompleted)
+                        DecisionColorHex = commissionService.GetDecisionColorHex(x.DecisionId)
                     }).ToArray();
 
                 Commissions.AddRange(result);
@@ -210,15 +211,6 @@ namespace CommissionsModule.ViewModels
                     commissionProtocolsQuery.Dispose();
                 BusyMediator.Deactivate();
             }
-        }
-
-        private SolidColorBrush GetStatusColor(bool? isCompleted)
-        {
-            if (!isCompleted.HasValue)
-                return commissionService.GetColor("|inProgressCommission|");
-            else if (isCompleted == false)
-                return commissionService.GetColor("|deniedCommission|");
-            return commissionService.GetColor("|completedCommission|");
         }
 
         #endregion

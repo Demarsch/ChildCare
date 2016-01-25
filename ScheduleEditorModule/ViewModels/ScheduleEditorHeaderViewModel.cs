@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Core.Data;
 using Core.Wpf.Events;
 using Core.Wpf.Services;
@@ -63,6 +64,10 @@ namespace ScheduleEditorModule.ViewModels
         private void ActivateContent()
         {
             regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<ScheduleEditorContentViewModel>());
+
+            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
+            if (activeListItems != null)
+                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         public event EventHandler IsActiveChanged = delegate { };

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
@@ -63,6 +64,10 @@ namespace OrganizationContractsModule.ViewModels
         private void ActivateOrganizationContracts()
         {
             regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<OrgContractsViewModel>());
+
+            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
+            if (activeListItems != null)
+                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         private bool isActive;

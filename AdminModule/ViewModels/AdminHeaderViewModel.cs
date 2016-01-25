@@ -55,6 +55,10 @@ namespace AdminModule.ViewModels
         {
             regionManager.RequestNavigate(RegionNames.ModuleContent, newActiveSubViewName);
             activeSubViewName = newActiveSubViewName;
+
+            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
+            if (activeListItems != null)
+                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         private bool isActive;

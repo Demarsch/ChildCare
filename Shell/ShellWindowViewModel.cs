@@ -73,7 +73,7 @@ namespace Shell
             disposables = new List<IDisposable>();
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            SubscribeToEvents();
+            SubscribeToEvents();           
         }
 
         public void HideCentralRegionContent()
@@ -82,7 +82,7 @@ namespace Shell
             if (activeModuleContent != null)
             {
                 regionManager.Regions[RegionNames.ModuleContent].Deactivate(activeModuleContent);
-            }
+            }            
         }
 
         public BusyMediator BusyMediator { get; private set; }

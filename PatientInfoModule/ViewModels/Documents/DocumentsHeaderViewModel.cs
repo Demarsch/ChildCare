@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Input;
 using Core.Data;
 using Core.Data.Misc;
@@ -92,6 +93,10 @@ namespace PatientInfoModule.ViewModels
                 var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonDocumentsViewModel>(), navigationParameters);
             }
+
+            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
+            if (activeListItems != null)
+                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         private bool isActive;

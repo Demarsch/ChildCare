@@ -21,11 +21,18 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref id, value); }
         }
 
-        private SolidColorBrush statusColor;
-        public SolidColorBrush StatusColor
+        private int? decisionId;
+        public int? DecisionId
         {
-            get { return statusColor; }
-            set { SetProperty(ref statusColor, value); }
+            get { return decisionId; }
+            set { SetProperty(ref decisionId, value); }
+        }
+
+        private string decisionColorHex;
+        public string DecisionColorHex
+        {
+            get { return decisionColorHex; }
+            set { SetProperty(ref decisionColorHex, value); }
         }    
 
         private bool? isCompleted;

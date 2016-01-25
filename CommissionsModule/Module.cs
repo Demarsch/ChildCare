@@ -85,7 +85,7 @@ namespace CommissionsModule
             container.RegisterType<object, CommissionDecisionsView>(viewNameResolver.Resolve<CommissionDecisionsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionDecisionView>(viewNameResolver.Resolve<CommissionDecisionViewModel>(), new ContainerControlledLifetimeManager());
 
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionsListView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ListItems, () => container.Resolve<CommissionsListView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionDecisionsView>());
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/CommissionsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
