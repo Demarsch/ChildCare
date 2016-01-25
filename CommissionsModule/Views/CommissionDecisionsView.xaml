@@ -19,8 +19,9 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding CommissionDecisions}">
-            </ListView>
+            <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding CommissionDecisions}" SelectedValuePath="CommissionDecisionId" SelectedValue="{Binding SelectedCommissionDecisionId}" HorizontalContentAlignment="Stretch" />
+            <views:CommissionDecisionEditorView Grid.Row="1" Grid.Column="0"/>
+            
         </Grid>
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />

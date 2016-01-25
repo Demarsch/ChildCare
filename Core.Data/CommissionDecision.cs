@@ -20,11 +20,12 @@ namespace Core.Data
         public int CommissionMemberId { get; set; }
         public bool IsOfficial { get; set; }
         public Nullable<int> DecisionId { get; set; }
-        public Nullable<System.DateTime> DecisionInDateTime { get; set; }
+        public Nullable<System.DateTime> ToDoDateTime { get; set; }
         public string Comment { get; set; }
         public int CommissionStage { get; set; }
         public int InitiatorMemberId { get; set; }
-        public System.DateTime InDateTime { get; set; }
+        public Nullable<System.DateTime> DecisionDateTime { get; set; }
+        public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
     	protected CommissionMember commissionMember;
@@ -57,6 +58,14 @@ namespace Core.Data
     	{
      		get { return decision; }
      		set { decision = value; }
+    	}
+        [NonSerialized]
+    	protected User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
     	}
     
     	public object Clone()

@@ -17,6 +17,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
 
+        IDisposableQueryable<CommissionDecision> GetCommissionDecision(int commissionDecisionId);
+
         SolidColorBrush GetColor(string option);
     }
 }

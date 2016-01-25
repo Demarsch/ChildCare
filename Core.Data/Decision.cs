@@ -17,10 +17,10 @@ namespace Core.Data
     {
         public Decision()
         {
-            this.CommissionDecisions = new HashSet<CommissionDecision>();
             this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.Decisions1 = new HashSet<Decision>();
+            this.CommissionDecisions = new HashSet<CommissionDecision>();
         }
     
         public int Id { get; set; }
@@ -29,18 +29,8 @@ namespace Core.Data
         public string ShortName { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
-        public bool IsPositive { get; set; }
-        public bool IsNegative { get; set; }
-        public bool IsNeutral { get; set; }
+        public Nullable<int> ColorSettingsId { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
-    	}
         [NonSerialized]
     	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
     
@@ -72,6 +62,22 @@ namespace Core.Data
     	{
      		get { return decision1; }
      		set { decision1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
+        [NonSerialized]
+    	protected ColorsSetting colorsSetting;
+    
+    	public virtual ColorsSetting ColorsSetting
+    	{
+     		get { return colorsSetting; }
+     		set { colorsSetting = value; }
     	}
     
     	public object Clone()

@@ -26,6 +26,7 @@ namespace Core.Data
             this.UserMessages1 = new HashSet<UserMessage>();
             this.UserPermissionGroups = new HashSet<UserPermissionGroup>();
             this.Visits = new HashSet<Visit>();
+            this.CommissionDecisions = new HashSet<CommissionDecision>();
         }
     
         public int Id { get; set; }
@@ -115,6 +116,14 @@ namespace Core.Data
     	{
      		get { return visits; }
      		set { visits = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
     	}
     
     	public object Clone()

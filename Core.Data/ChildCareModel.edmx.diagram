@@ -214,8 +214,6 @@
         <AssociationConnector Association="DataLib.FK_PermissionGroupMemberships_Permissions" />
         <AssociationConnector Association="DataLib.FK_UserPermissionGroups_PermissionGroups" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
-        <EntityTypeShape EntityType="DataLib.ColorsSetting" Width="1.5" PointX="8.375" PointY="4.75" />
-        <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="23.5" PointY="41.5" />
         <EntityTypeShape EntityType="DataLib.CommissionDecisionsLink" Width="1.5" PointX="21.25" PointY="33.125" />
         <EntityTypeShape EntityType="DataLib.CommissionFilter" Width="1.5" PointX="9.375" PointY="0.75" />
         <EntityTypeShape EntityType="DataLib.CommissionMember" Width="1.5" PointX="21.25" PointY="28.625" />
@@ -224,27 +222,19 @@
         <EntityTypeShape EntityType="DataLib.CommissionQuestion" Width="1.5" PointX="19" PointY="25.375" />
         <EntityTypeShape EntityType="DataLib.CommissionSource" Width="1.5" PointX="19" PointY="33.375" />
         <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="16.75" PointY="33.375" />
-        <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="19" PointY="39.875" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers1" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_CommissionMemberTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_PersonStaffs" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_Staffs" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionSources" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_MedicalHelpTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Persons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonTalons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
-        <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="5.25" PointY="28.625" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users_AssignUser" />
         <AssociationConnector Association="DataLib.FK_Assignments_Users1_CancelUser" />
@@ -256,6 +246,18 @@
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
         <AssociationConnector Association="DataLib.FK_UserPermissionGroups_Users" />
         <AssociationConnector Association="DataLib.FK_Visits_Users_RemovedByUser" />
+        <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="0.75" PointY="11" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Decisions" />
+        <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
+        <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="23.5" PointY="26.875" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers1" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
+        <EntityTypeShape EntityType="DataLib.ColorsSetting" Width="1.5" PointX="0.75" PointY="15.625" />
+        <AssociationConnector Association="DataLib.FK_Decisions_ColorsSettings" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
