@@ -4,8 +4,8 @@
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    <DataTemplate DataType="{x:Type viewModels:CommissionDecisionViewModel}">
-        <Border Background="{Binding ColorType, Converter={x:Static converters:IntToColorConverter.Instance}}">
+    <DataTemplate DataType="{x:Type viewModels:CommissionDecisionViewModel}" >
+        <Border Background="{Binding ColorType}" HorizontalAlignment="Stretch">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>

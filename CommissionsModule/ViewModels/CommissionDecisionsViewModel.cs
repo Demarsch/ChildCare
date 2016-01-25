@@ -68,7 +68,7 @@ namespace CommissionsModule.ViewModels
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             CommissionDecisions = new ObservableCollectionEx<CommissionDecisionViewModel>();
-            SelectedCommissionId = 14;
+            SelectedCommissionId = 3;
         }
         #endregion
 
@@ -89,6 +89,17 @@ namespace CommissionsModule.ViewModels
         {
             get { return decisions; }
             set { SetProperty(ref decisions, value); }
+        }
+
+        private int selectedCommissionDecisionId;
+        public int SelectedCommissionDecisionId
+        {
+            get { return selectedCommissionDecisionId; }
+            set
+            {
+                SetProperty(ref selectedCommissionDecisionId, value);
+                LoadCommissionDecisionDataAsync();
+            }
         }
 
         public ObservableCollectionEx<CommissionDecisionViewModel> CommissionDecisions { get; set; }
@@ -117,13 +128,14 @@ namespace CommissionsModule.ViewModels
             try
             {
                 commissionDecisionsQuery = commissionService.GetCommissionDecisions(SelectedCommissionId);
-                var commissionDecisions = await commissionDecisionsQuery/*.Where(x => x.DecisionId.HasValue)*/.OrderBy(x => x.InDateTime)
+                var commissionDecisions = await commissionDecisionsQuery/*.Where(x => x.DecisionId.HasValue)*/.OrderBy(x => x.DecisionDateTime)
                     .Select(x => new CommissionDecisionViewModel()
                     {
-                        DecisionDate = x.InDateTime,
-                        MemberName = x.CommissionMember.PersonStaffId.HasValue ? x.CommissionMember.PersonStaff.Person.ShortName : string.Empty,
+                        DecisionDate = x.DecisionDateTime,
+                        MemberName = x.CommissionMember.PersonStaffId.HasValue ? x.CommissionMember.PersonStaff.Staff.ShortName + " - " + x.CommissionMember.PersonStaff.Person.ShortName :
+                            x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
                         Decision = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
-                        ColorType = x.DecisionId.HasValue ? (x.Decision.IsNegative ? 0 : x.Decision.IsNeutral ? 1 : x.Decision.IsPositive ? 2 : -1) : -1
+                        ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#000000"
                     })
                     .ToArrayAsync(token);
                 CommissionDecisions.AddRange(commissionDecisions);
@@ -156,7 +168,62 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-
+        private async void LoadCommissionDecisionDataAsync()
+        {
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            var loadingIsCompleted = false;
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            BusyMediator.Activate("Загрузка редактора решения...");
+            logService.InfoFormat("Loading сommission decision with id={0}...", SelectedCommissionDecisionId);
+            IDisposableQueryable<CommissionDecision> commissionDecisionQuery = null;
+            var curDate = DateTime.Now;
+            try
+            {
+                //commissionDecisionQuery = commissionService.GetCommissionDecision(SelectedCommissionDecisionId);
+                //var commissionDecisions = await commissionDecisionsQuery/*.Where(x => x.DecisionId.HasValue)*/.OrderBy(x => x.InDateTime)
+                //    .Select(x => new CommissionDecisionViewModel()
+                //    {
+                //        DecisionDate = x.InDateTime,
+                //        MemberName = x.CommissionMember.PersonStaffId.HasValue ? x.CommissionMember.PersonStaff.Staff.ShortName + " - " + x.CommissionMember.PersonStaff.Person.ShortName :
+                //            x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
+                //        Decision = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
+                //        ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#000000"
+                //    })
+                //    .ToArrayAsync(token);
+                //CommissionDecisions.AddRange(commissionDecisions);
+                //Load recordPeriods
+                //recordPeriodsQuery = patientRecordsService.GetActualRecordPeriods(data.ExecutionPlaceId, data.BeginDateTime);
+                //var recordPeriods = await recordPeriodsQuery.Select(x => new CommonIdName { Id = x.Id, Name = x.Name }).ToArrayAsync(token);
+                //RecordPeriods.AddRange(recordPeriods);
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load сommission decisions with id={0}...", SelectedCommissionDecisionId);
+                FailureMediator.Activate("Не удалость загрузить решения комиссии. Попробуйте еще раз или обратитесь в службу поддержки", reloadCommissionDecisionsCommandWrapper, ex, true);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                //if (commissionDecisionsQuery != null)
+                //{
+                //    commissionDecisionsQuery.Dispose();
+                //}
+            }
+        }
         #endregion
 
         #region INavigationAware implementations

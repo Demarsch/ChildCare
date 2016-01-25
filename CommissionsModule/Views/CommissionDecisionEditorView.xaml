@@ -17,6 +17,15 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0">Решение</TextBlock>
         <controls:TreeViewComboBox Grid.Row="0"
                                        Grid.Column="1"
@@ -30,6 +39,6 @@
         <TextBlock Grid.Row="1" Grid.Column="0">Рекомендации/комментарий</TextBlock>
         <TextBox Grid.Row="1" Grid.Column="1" MaxLines="4" Text="{Binding Comment}"/>
         <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding NeedDecisionInDateTime}">Дата для решения</CheckBox>
-        <DatePicker Grid.Row="2" Grid.Column="1" DisplayDate="{Binding DecisionInDateTime}" IsEnabled="{Binding NeedDecisionInDateTime}"/>
+        <DatePicker Grid.Row="2" Grid.Column="1" DisplayDate="{Binding DecisionInDateTime}" IsEnabled="{Binding NeedDecisionInDateTime}" HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>

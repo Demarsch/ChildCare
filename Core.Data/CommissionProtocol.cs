@@ -45,28 +45,12 @@ namespace Core.Data
         public string Diagnos { get; set; }
     
         [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
-    	}
-        [NonSerialized]
     	protected CommissionSource commissionSource;
     
     	public virtual CommissionSource CommissionSource
     	{
      		get { return commissionSource; }
      		set { commissionSource = value; }
-    	}
-        [NonSerialized]
-    	protected Decision decision;
-    
-    	public virtual Decision Decision
-    	{
-     		get { return decision; }
-     		set { decision = value; }
     	}
         [NonSerialized]
     	protected MedicalHelpType medicalHelpType;
@@ -107,6 +91,22 @@ namespace Core.Data
     	{
      		get { return user; }
      		set { user = value; }
+    	}
+        [NonSerialized]
+    	protected Decision decision;
+    
+    	public virtual Decision Decision
+    	{
+     		get { return decision; }
+     		set { decision = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
     	}
     
     	public object Clone()

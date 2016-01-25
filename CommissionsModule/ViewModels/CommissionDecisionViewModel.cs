@@ -17,8 +17,15 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Properties
-        private DateTime decisionDate;
-        public DateTime DecisionDate
+        private int commissionDecisionId = 0;
+        public int CommissionDecisionId
+        {
+            get { return commissionDecisionId; }
+            set { SetProperty(ref commissionDecisionId, value); }
+        }
+
+        private DateTime? decisionDate;
+        public DateTime? DecisionDate
         {
             get { return decisionDate; }
             set { SetProperty(ref decisionDate, value); }
@@ -38,8 +45,8 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref decision, value); }
         }
 
-        private int colorType;
-        public int ColorType
+        private string colorType;
+        public string ColorType
         {
             get { return colorType; }
             set { SetProperty(ref colorType, value); }

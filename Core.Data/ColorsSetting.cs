@@ -15,11 +15,25 @@ namespace Core.Data
     [Serializable]
     public partial class ColorsSetting : ICloneable
     {
+        public ColorsSetting()
+        {
+            this.Decisions = new HashSet<Decision>();
+        }
+    
         public int Id { get; set; }
-        public int RGB { get; set; }
         public string ColorName { get; set; }
         public string Options { get; set; }
         public string Description { get; set; }
+        public string Hex { get; set; }
+    
+        [NonSerialized]
+    	protected ICollection<Decision> decisions;
+    
+    	public virtual ICollection<Decision> Decisions
+    	{
+     		get { return decisions; }
+     		set { decisions = value; }
+    	}
     
     	public object Clone()
     	{

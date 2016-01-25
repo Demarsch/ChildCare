@@ -18,5 +18,7 @@ namespace CommissionsModule.Services
         IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
 
         string GetDecisionColorHex(int? decisionId);
+        IDisposableQueryable<CommissionDecision> GetCommissionDecision(int commissionDecisionId);
+
     }
 }
