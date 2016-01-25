@@ -24,6 +24,22 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref commissionDecisionId, value); }
         }
 
+        private int stage = 0;
+        public int Stage
+        {
+            get { return stage; }
+            set
+            {
+                SetProperty(ref stage, value);
+                OnPropertyChanged(() => StageText);
+            }
+        }
+
+        public string StageText
+        {
+            get { return Stage + "-й этап"; }
+        }
+
         private DateTime? decisionDate;
         public DateTime? DecisionDate
         {

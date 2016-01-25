@@ -9,6 +9,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance viewModels:CommissionDecisionsViewModel}">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="DecisionStageGrouped" Source="{Binding CommissionDecisions}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="StageText" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -19,9 +26,36 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding CommissionDecisions}" SelectedValuePath="CommissionDecisionId" SelectedValue="{Binding SelectedCommissionDecisionId}" HorizontalContentAlignment="Stretch" />
+            <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedValuePath="CommissionDecisionId" SelectedValue="{Binding SelectedCommissionDecisionId}" HorizontalContentAlignment="Stretch">
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="{x:Type GroupItem}">
+                                <Setter Property="Margin" Value="0,0,0,5"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                <Expander IsExpanded="True" BorderBrush="#FFB0B0B3" BorderThickness="0,0,0,1">
+                                                    <Expander.Header>
+                                                        <DockPanel>
+                                                            <TextBlock FontWeight="Bold" Text="{Binding Path=Name}"/>
+                                                            <!--<TextBlock Text="{Binding ItemCount}" Margin="5,0,0,0" FontWeight="Bold" Foreground="#FFB0B0B3"/>-->
+                                                        </DockPanel>
+                                                    </Expander.Header>
+                                                    <Expander.Content>
+                                                        <ItemsPresenter />
+                                                    </Expander.Content>
+                                                </Expander>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+            </ListView>
             <views:CommissionDecisionEditorView Grid.Row="1" Grid.Column="0"/>
-            
+
         </Grid>
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />

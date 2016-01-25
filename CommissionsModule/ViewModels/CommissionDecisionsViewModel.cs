@@ -132,6 +132,7 @@ namespace CommissionsModule.ViewModels
                     .Select(x => new CommissionDecisionViewModel()
                     {
                         DecisionDate = x.DecisionDateTime,
+                        Stage = x.CommissionStage,
                         MemberName = x.CommissionMember.PersonStaffId.HasValue ? x.CommissionMember.PersonStaff.Staff.ShortName + " - " + x.CommissionMember.PersonStaff.Person.ShortName :
                             x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
                         Decision = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
