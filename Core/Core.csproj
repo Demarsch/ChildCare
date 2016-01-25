@@ -175,7 +175,6 @@
     <Resource Include="Resources\Images\Woman48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Add48x48.png" />
     <Resource Include="Resources\Images\AddAppendix48x48.png" />
     <Resource Include="Resources\Images\AddContract48x48.png" />
     <Resource Include="Resources\Images\Print48x48.png" />
@@ -267,9 +266,6 @@
     <Resource Include="Resources\Images\Cancel-48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Remove.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\Question-64x64.png" />
   </ItemGroup>
   <ItemGroup>
@@ -300,7 +296,7 @@
     <Resource Include="Resources\Images\Users48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Add.png" />
+    <Resource Include="Resources\Images\Add48x48.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\IsSwitchedOff32x32.png" />

@@ -109,7 +109,7 @@
                             VerticalAlignment="Center">
                         <Image Width="20"
                                Height="20"
-                               Source="pack://application:,,,/Core;Component/Resources/Images/Add.png" />
+                               Source="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />
                     </Button>
                     <Separator Grid.Row="0"
                                Grid.Column="0"
@@ -187,7 +187,7 @@
                                 VerticalAlignment="Center">
                             <Image Width="20"
                                    Height="20"
-                                   Source="pack://application:,,,/Core;Component/Resources/Images/Add.png" />
+                                   Source="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />
                         </Button>
                         <Separator Grid.Row="0"
                                    Grid.Column="0"

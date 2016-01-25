@@ -29,7 +29,7 @@
                             <Button Command="{Binding RemoveRecordMemberCommand}" ToolTip="Удалить из бригады" Visibility="{Binding IsPersonMember, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                                 <Button.Template>
                                     <ControlTemplate>
-                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove.png" Height="16" Width="16" HorizontalAlignment="Right"/>
+                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="16" Width="16" HorizontalAlignment="Right"/>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
