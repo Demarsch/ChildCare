@@ -90,9 +90,9 @@ namespace Shared.PatientRecords
         public void Initialize()
         {
             log.InfoFormat("Patient records library start");
-            RegisterServices();
-            RegisterViewModels();
-            RegisterViews();
+            //RegisterServices();
+            //RegisterViewModels();
+            //RegisterViews();
             log.InfoFormat("Patient records library finished");
         }
 

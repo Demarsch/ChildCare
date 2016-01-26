@@ -894,7 +894,7 @@ namespace PatientInfoModule.ViewModels
                 messageService.ShowWarning("Не выбран договор.");
                 return;
             }
-            if (messageService.AskUser("Вы уверены, что хотите удалить договор " + ContractName + "?") == true)
+            if (messageService.AskUser("Вы уверены, что хотите удалить договор " + SelectedContract.ContractName + "?") == true)
             {
                 var visit = recordService.GetVisitsByContractId(selectedContract.Id).FirstOrDefault();
                 if (visit != null)
@@ -1039,14 +1039,18 @@ namespace PatientInfoModule.ViewModels
                 if (saveSuccesfull)
                 {
                     selectedContract.Id = contract.Id;
+                    var client = personService.GetPatientQuery(contract.ClientId.Value).First();
                     saveWasRequested = false;
                     OnPropertyChanged(string.Empty);
                     LoadContractItems();
                     SelectedContract.ContractNumber = contract.Number.ToSafeString();
                     SelectedContract.ContractName = contract.DisplayName;
-                    SelectedContract.Client = new FieldValue { Field = contract.Person.FullName + ", " + contract.Person.BirthYear, Value = contract.Person.Id };
+                    SelectedContract.Client = new FieldValue { Field = client.FullName + ", " + client.BirthYear, Value = client.Id };
                     SelectedContract.ContractBeginDate = contract.BeginDateTime;
                     SelectedContract.ContractEndDate = contract.EndDateTime;
+                    SelectedContract.FinancingSourceId = contract.FinancingSourceId;
+                    SelectedContract.RegistratorId = contract.InUserId;
+                    SelectedContract.PaymentTypeId = contract.PaymentTypeId;
                     UpdateTotalSumRow();
                     contractItemsTracker.AcceptChanges();
                     contractItemsTracker.IsEnabled = true;
@@ -1128,7 +1132,7 @@ namespace PatientInfoModule.ViewModels
                         result = string.IsNullOrEmpty(TransationDate) && IsCashless ? "Укажите дату транзакции" : string.Empty;
                         break;
                     case "ContractItems":
-                        result = !ContractItems.Any() ? "Договор должен содержать хотя бы одну услугу" : string.Empty;
+                        result = !ContractItems.Any(x => !x.IsSection) ? "Договор должен содержать хотя бы одну услугу" : string.Empty;
                         break;
                 }
                 if (string.IsNullOrEmpty(result))
