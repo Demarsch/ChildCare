@@ -68,5 +68,19 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref colorType, value); }
         }
         #endregion
+
+        #region Methods
+
+        public void Initialize(int commissionDecisionId, DateTime? decisionDate, int stage, string memberName, string decisionName, string colorType)
+        {
+            CommissionDecisionId = commissionDecisionId;
+            DecisionDate = decisionDate;
+            Stage = stage;
+            MemberName = memberName;
+            Decision = decisionName;
+            ColorType = colorType;
+        }
+
+        #endregion
     }
 }

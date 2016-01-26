@@ -1,6 +1,7 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -21,5 +22,11 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecision(int commissionDecisionId);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="CommissionQuestionIdAndCommissionTypeMemberId">int array with commissionQuestionId and commissionTypeMemberId</param>
+        /// <returns></returns>
+        IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberId);
     }
 }

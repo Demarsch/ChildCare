@@ -1,6 +1,7 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
+using Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Core.Objects;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Core.Extensions;
 
 namespace CommissionsModule.Services
 {
@@ -15,8 +17,9 @@ namespace CommissionsModule.Services
     {
         private readonly IDbContextProvider contextProvider;
         private readonly IUserService userService;
+        private readonly ICacheService cacheService;
 
-        public CommissionService(IDbContextProvider contextProvider, IUserService userService)
+        public CommissionService(IDbContextProvider contextProvider, IUserService userService, ICacheService cacheService)
         {
             if (contextProvider == null)
             {
@@ -26,6 +29,11 @@ namespace CommissionsModule.Services
             {
                 throw new ArgumentNullException("userService");
             }
+            if (cacheService == null)
+            {
+                throw new ArgumentNullException("cacheService");
+            }
+            this.cacheService = cacheService;
             this.contextProvider = contextProvider;
             this.userService = userService;
         }
@@ -47,12 +55,12 @@ namespace CommissionsModule.Services
                 return false;
             }
         }
-        
+
         public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int filterId, DateTime? date = null, bool onlyMyCommissions = false)
         {
             var context = contextProvider.CreateNewContext();
             var option = context.Set<CommissionFilter>().First(x => x.Id == filterId).Options;
-                       
+
             IQueryable<CommissionProtocol> query = context.Set<CommissionProtocol>();
             if (option.Contains(OptionValues.ProtocolsInProcess))
                 query = query.Where(x => x.IsCompleted == false);
@@ -101,6 +109,29 @@ namespace CommissionsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionDecision>(context.Set<CommissionDecision>().Where(x => x.Id == commissionDecisionId), context);
+        }
+
+        public IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberId)
+        {
+            var context = contextProvider.CreateNewContext();
+            int commissionQuestionId = (commissionQuestionIdAndCommissionTypeMemberId as int[])[0].ToInt();
+            int commissionTypeMemberId = (commissionQuestionIdAndCommissionTypeMemberId as int[])[1].ToInt();
+            return context.Set<Decision>().Where(x => x.ParentId == null && x.CommissionDecisionsLinks.Any(y => y.CommissionTypeMemberId == commissionTypeMemberId && y.CommissionQuestionId == commissionQuestionId))
+                .Select(CopyDecision)
+                .Where(x => x != null)
+                .ToArray();
+        }
+
+        private Decision CopyDecision(Decision decision)
+        {
+            var result = new Decision { Id = decision.Id, Name = decision.Name };
+            var children = decision.Decisions1.Select(CopyDecision).Where(x => x != null).ToList();
+            result.Decisions1 = children.Count == 0 ? null : children;
+            foreach (var childRecortType in children)
+            {
+                childRecortType.Decision1 = result;
+            }
+            return result;
         }
     }
 }

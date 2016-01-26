@@ -12,6 +12,13 @@ namespace CommissionsModule.ViewModels
 {
     public class CommissionDecisionEditorViewModel : TrackableBindableBase
     {
+        #region Constructors
+        public CommissionDecisionEditorViewModel()
+        {
+            Decisions = new ObservableCollectionEx<Decision>();
+        }
+        #endregion
+
         #region Properties
         public ObservableCollectionEx<Decision> Decisions { get; set; }
 
@@ -29,18 +36,33 @@ namespace CommissionsModule.ViewModels
             set { SetTrackedProperty(ref comment, value); }
         }
 
-        private bool needDecisionInDateTime;
-        public bool NeedDecisionInDateTime
+        private bool needDecisionDateTime;
+        public bool NeedDecisionDateTime
         {
-            get { return needDecisionInDateTime; }
-            set { SetTrackedProperty(ref needDecisionInDateTime, value); }
+            get { return needDecisionDateTime; }
+            set { SetTrackedProperty(ref needDecisionDateTime, value); }
         }
 
-        private DateTime decisionInDateTime;
-        public DateTime DecisionInDateTime
+        private DateTime? decisionDateTime;
+        public DateTime? DecisionDateTime
         {
-            get { return decisionInDateTime; }
-            set { SetTrackedProperty(ref decisionInDateTime, value); }
+            get { return decisionDateTime; }
+            set { SetTrackedProperty(ref decisionDateTime, value); }
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void Initialize(string comment, DateTime? decisionDateTime, Decision selectedDecision, IEnumerable<Decision> decisions)
+        {
+            SelectedDecision = null;
+            Comment = comment;
+            DecisionDateTime = decisionDateTime;
+            NeedDecisionDateTime = decisionDateTime.HasValue;
+            Decisions.Clear();
+            Decisions.AddRange(decisions);
+            SelectedDecision = selectedDecision;
         }
 
         #endregion

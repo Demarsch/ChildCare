@@ -26,7 +26,7 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedValuePath="CommissionDecisionId" SelectedValue="{Binding SelectedCommissionDecisionId}" HorizontalContentAlignment="Stretch">
+            <ListView Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCommissionDecision}" HorizontalContentAlignment="Stretch">
                 <ListView.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.ContainerStyle>
@@ -54,7 +54,7 @@
                     </GroupStyle>
                 </ListView.GroupStyle>
             </ListView>
-            <views:CommissionDecisionEditorView Grid.Row="1" Grid.Column="0"/>
+            <ContentControl Content="{Binding CommissionDecisionEditorViewModel}" Grid.Row="1" Grid.Column="0"/>
 
         </Grid>
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />

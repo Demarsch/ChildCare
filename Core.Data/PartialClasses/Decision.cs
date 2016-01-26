@@ -8,18 +8,6 @@ namespace Core.Data
 {
     public partial class Decision
     {
-        public static readonly Predicate<object> DecisionSelectorPredicate = DecisionSelector;
-
-        private static bool DecisionSelector(object obj)
-        {
-            var decision = (Decision)obj;
-            if (decision == null)
-            {
-                return false;
-            }
-            return !decision.ParentId.HasValue;
-        }
-
         public static readonly Func<object, string, bool> DecisionFilterPredicate = DecisionFilter;
 
         private static readonly char[] Separators = { ' ' };
