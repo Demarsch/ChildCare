@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Prism.Events;
 using Prism.Regions;
 using System.Windows.Media;
+using Core.Notification;
 
 namespace CommissionsModule.ViewModels
 {
@@ -30,13 +31,14 @@ namespace CommissionsModule.ViewModels
         private readonly IDialogService messageService;
         private readonly ILog logService;
         private readonly IUserService userService;
+        private readonly INotificationService notificationService;
         private readonly IEventAggregator eventAggregator;
-        private CancellationTokenSource currentOperationToken;
+        private TaskCompletionSource<bool> completionTaskSource;
         #endregion
 
         #region  Constructors
         public CommissionsListViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IDialogService messageService, 
-                                        IUserService userService, IEventAggregator eventAggregator)
+                                        IUserService userService, INotificationService notificationService, IEventAggregator eventAggregator)
         {
             if (commissionService == null)
             {
@@ -61,13 +63,18 @@ namespace CommissionsModule.ViewModels
             if (userService == null)
             {
                 throw new ArgumentNullException("userService");
-            }           
+            }
+            if (notificationService == null)
+            {
+                throw new ArgumentNullException("notificationService");
+            }
             this.dialogService = dialogService;
             this.userService = userService;
             this.messageService = messageService;
             this.eventAggregator = eventAggregator;
             this.commissionService = commissionService;
             this.logService = logService;
+            this.notificationService = notificationService;
 
             Filters = new ObservableCollectionEx<FieldValue>();
             Commissions = new ObservableCollectionEx<CommissionProtocolViewModel>();
@@ -91,13 +98,10 @@ namespace CommissionsModule.ViewModels
                 if (SetProperty(ref selectedFilter, value))
                 {
                     ShowDateFilter = commissionService.IsCommissionFilterHasDate(value);
-                    if (!ShowDateFilter)
-                    {
-                        FilterDate = (DateTime?)null;
-                        LoadCommissionProtocolsAsync();
-                    }
-                    else
+                    if (ShowDateFilter)
                         FilterDate = DateTime.Now;
+                    else
+                        LoadCommissionProtocolsAsync();
                 }
             }
         }
@@ -141,7 +145,7 @@ namespace CommissionsModule.ViewModels
             { 
                 if (SetProperty(ref selectedCommission, value))
                 {
-                    eventAggregator.GetEvent<PubSubEvent<CommissionProtocolViewModel>>().Publish(value);
+                    eventAggregator.GetEvent<PubSubEvent<int>>().Publish(value.Id);
                 }
             }
         }
@@ -201,8 +205,7 @@ namespace CommissionsModule.ViewModels
                     }).ToArray();
 
                 Commissions.AddRange(result);
-                if (Commissions.Any())
-                    SelectedCommission = Commissions.First();
+                await SubscribeToCommissionsProtocolsChanges();
             }
             catch (Exception ex)
             {
@@ -219,6 +222,49 @@ namespace CommissionsModule.ViewModels
 
         #endregion
 
+        private INotificationServiceSubscription<CommissionProtocol> comissionsProtocolsChangeSubscription;
+
+        private async Task<bool> SubscribeToCommissionsProtocolsChanges()
+        {
+            if (completionTaskSource != null)
+                return await completionTaskSource.Task;
+            completionTaskSource = new TaskCompletionSource<bool>();
+            comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>();
+            if (comissionsProtocolsChangeSubscription != null)
+                comissionsProtocolsChangeSubscription.Notified += OnCommissionProtocolNotificationRecievedAsync;
+            completionTaskSource.SetResult(true);
+            return true;
+        }
+
+        private void UnsubscribeToCommissionsProtocolsChanges()
+        {
+            if (comissionsProtocolsChangeSubscription != null)
+            {
+                comissionsProtocolsChangeSubscription.Notified -= OnCommissionProtocolNotificationRecievedAsync;
+                comissionsProtocolsChangeSubscription.Dispose();
+            }
+        }
+
+        private async void OnCommissionProtocolNotificationRecievedAsync(object sender, NotificationEventArgs<CommissionProtocol> e)
+        {
+            await UpdateCommissionProtocolAsync((e.OldItem ?? e.NewItem).Id);
+        }
+
+        private async Task<bool> UpdateCommissionProtocolAsync(int protocolId)
+        {
+            if (completionTaskSource != null)
+                return await completionTaskSource.Task;
+            completionTaskSource = new TaskCompletionSource<bool>();
+            var commissionProtocol = commissionService.GetCommissionProtocolById(protocolId).First();
+            SelectedCommission.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
+            SelectedCommission.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";                       
+            SelectedCommission.MKB = "МКБ: " + commissionProtocol.MKB;
+            SelectedCommission.IncomeDateTime = commissionProtocol.IncomeDateTime.ToShortDateString();
+            SelectedCommission.IsCompleted = commissionProtocol.IsCompleted;
+            SelectedCommission.DecisionColorHex = commissionService.GetDecisionColorHex(commissionProtocol.DecisionId);
+            completionTaskSource.SetResult(true);
+            return true;
+        }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {

@@ -3,7 +3,7 @@
                     xmlns:views="clr-namespace:CommissionsModule.Views"
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="../Views/CommissionDecisionView.xaml" />
+        <ResourceDictionary Source="../Views/Decisions/CommissionDecisionView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate DataType="{x:Type viewModels:CommissionDecisionEditorViewModel}">

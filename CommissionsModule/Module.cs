@@ -69,6 +69,7 @@ namespace CommissionsModule
 
         private void RegisterViewModels()
         {
+            container.RegisterType<CommissionEmptyViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionsHeaderViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionDecisionHeaderViewModel>(new ContainerControlledLifetimeManager());
 
@@ -81,8 +82,9 @@ namespace CommissionsModule
         private void RegisterViews()
         {
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionsHeaderView>());
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionDecisionHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionDecisionHeaderView>());            
 
+            container.RegisterType<object, CommissionEmptyView>(viewNameResolver.Resolve<CommissionEmptyViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionsListView>(viewNameResolver.Resolve<CommissionsListViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionDecisionsView>(viewNameResolver.Resolve<CommissionDecisionsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionDecisionView>(viewNameResolver.Resolve<CommissionDecisionViewModel>(), new ContainerControlledLifetimeManager());
@@ -91,6 +93,7 @@ namespace CommissionsModule
             regionManager.RegisterViewWithRegion(RegionNames.ListItems, () => container.Resolve<CommissionsListView>());
             regionManager.Regions[RegionNames.ListItems].DeactivateActiveViews();
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionDecisionsView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionEmptyView>());
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/CommissionsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }

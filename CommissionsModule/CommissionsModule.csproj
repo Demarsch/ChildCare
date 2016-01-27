@@ -88,27 +88,31 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\CommissionService.cs" />
     <Compile Include="Services\Interfaces\ICommissionService.cs" />
-    <Compile Include="ViewModels\CommissionDecisionEditorViewModel.cs" />
-    <Compile Include="ViewModels\CommissionDecisionHeaderViewModel.cs" />
-    <Compile Include="ViewModels\CommissionDecisionsViewModel.cs" />
-    <Compile Include="ViewModels\CommissionDecisionViewModel.cs" />
-    <Compile Include="ViewModels\CommissionProtocolViewModel.cs" />
-    <Compile Include="ViewModels\CommissionsHeaderViewModel.cs" />
-    <Compile Include="ViewModels\CommissionsListViewModel.cs" />
-    <Compile Include="Views\CommissionDecisionEditorView.xaml.cs">
+    <Compile Include="ViewModels\Decisions\CommissionDecisionEditorViewModel.cs" />
+    <Compile Include="ViewModels\Decisions\CommissionDecisionHeaderViewModel.cs" />
+    <Compile Include="ViewModels\Decisions\CommissionDecisionsViewModel.cs" />
+    <Compile Include="ViewModels\Decisions\CommissionDecisionViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionProtocolViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionsListViewModel.cs" />
+    <Compile Include="ViewModels\CommissionEmptyViewModel.cs" />
+    <Compile Include="Views\Decisions\CommissionDecisionEditorView.xaml.cs">
       <DependentUpon>CommissionDecisionEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CommissionDecisionHeaderView.xaml.cs">
+    <Compile Include="Views\Decisions\CommissionDecisionHeaderView.xaml.cs">
       <DependentUpon>CommissionDecisionHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CommissionDecisionsView.xaml.cs">
+    <Compile Include="Views\Decisions\CommissionDecisionsView.xaml.cs">
       <DependentUpon>CommissionDecisionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CommissionsHeaderView.xaml.cs">
+    <Compile Include="Views\Protocols\CommissionsHeaderView.xaml.cs">
       <DependentUpon>CommissionsHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CommissionsListView.xaml.cs">
+    <Compile Include="Views\Protocols\CommissionsListView.xaml.cs">
       <DependentUpon>CommissionsListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CommissionEmptyView.xaml.cs">
+      <DependentUpon>CommissionEmptyView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +122,10 @@
     <ProjectReference Include="..\Core.Data\Core.Data.csproj">
       <Project>{304f5aeb-4189-4c9f-96da-c32e57e5e1be}</Project>
       <Name>Core.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core.Notification\Core.Notification.csproj">
+      <Project>{ed2fcb8b-db03-4ff8-934d-84eb934f97e6}</Project>
+      <Name>Core.Notification</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core.Wpf\Core.Wpf.csproj">
       <Project>{62515044-f9c0-4d93-8b55-1407ccf8d3f2}</Project>
@@ -142,29 +150,33 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\CommissionDecisionEditorView.xaml">
+    <Page Include="Views\Decisions\CommissionDecisionEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CommissionDecisionHeaderView.xaml">
+    <Page Include="Views\Decisions\CommissionDecisionHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CommissionDecisionsView.xaml">
+    <Page Include="Views\Decisions\CommissionDecisionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CommissionDecisionView.xaml">
+    <Page Include="Views\Decisions\CommissionDecisionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CommissionsHeaderView.xaml">
+    <Page Include="Views\Protocols\CommissionsHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CommissionsListView.xaml">
+    <Page Include="Views\Protocols\CommissionsListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CommissionEmptyView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

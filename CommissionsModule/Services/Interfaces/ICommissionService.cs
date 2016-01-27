@@ -28,5 +28,7 @@ namespace CommissionsModule.Services
         /// <param name="CommissionQuestionIdAndCommissionTypeMemberId">int array with commissionQuestionId and commissionTypeMemberId</param>
         /// <returns></returns>
         IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberId);
+
+        IDisposableQueryable<CommissionProtocol> GetCommissionProtocolById(int protocolId);
     }
 }

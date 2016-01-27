@@ -48,6 +48,7 @@ namespace CommissionsModule.ViewModels
         private void ActivateCommissionsContent()
         {
             regionManager.RequestNavigate(RegionNames.ListItems, viewNameResolver.Resolve<CommissionsListViewModel>());
+            regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<CommissionEmptyViewModel>());
         }
 
         private bool isActive;

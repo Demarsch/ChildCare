@@ -63,7 +63,7 @@
 
                 <ContentControl Grid.Column="0" 
                                 regions:RegionManager.RegionName="{x:Static shared:RegionNames.ListItems}"
-                                x:Name="listItems" MaxWidth="220"
+                                x:Name="listItems"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch" />
                 <ContentControl Grid.Column="1" 

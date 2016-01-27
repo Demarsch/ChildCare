@@ -133,5 +133,11 @@ namespace CommissionsModule.Services
             }
             return result;
         }
+
+        public IDisposableQueryable<CommissionProtocol> GetCommissionProtocolById(int protocolId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.Id == protocolId), context);
+        }
     }
 }
