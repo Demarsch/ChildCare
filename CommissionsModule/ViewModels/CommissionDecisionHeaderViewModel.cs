@@ -20,7 +20,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionDecisionHeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver)
+        public CommissionDecisionHeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, CommissionDecisionsViewModel commissionDecisionsViewModel)
         {
             if (regionManager == null)
             {
@@ -30,10 +30,21 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (commissionDecisionsViewModel == null)
+            {
+                throw new ArgumentNullException("commissionDecisionsViewModel");
+            }
+            CommissionDecisionsViewModel = commissionDecisionsViewModel;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
         }
         #endregion
+
+        #region Properties
+        public CommissionDecisionsViewModel CommissionDecisionsViewModel { get; private set; }
+        #endregion
+
+        #region IActiveAware implementation
 
         private bool isActive;
 
@@ -61,5 +72,7 @@ namespace CommissionsModule.ViewModels
         }
 
         public event EventHandler IsActiveChanged = delegate { };
+
+        #endregion
     }
 }

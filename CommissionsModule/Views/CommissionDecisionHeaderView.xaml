@@ -14,12 +14,12 @@
         <fluent:Button Header="Запрос участника"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
-                       Command="{Binding CommissionDecisionViewModel.AddNewMemberCommand}" />
+                       Command="{Binding CommissionDecisionsViewModel.AddNewMemberCommand}" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox>
         <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png"
-                       Command="{Binding CommissionDecisionViewModel.SaveChangesCommand}" />
+                       Command="{Binding CommissionDecisionsViewModel.SaveDecisionCommand}" />
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

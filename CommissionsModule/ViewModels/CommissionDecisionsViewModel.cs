@@ -19,10 +19,11 @@ using System.Data.Entity;
 using Core.Extensions;
 using Core.Wpf.Misc;
 using Prism.Commands;
+using System.Windows.Input;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionDecisionsViewModel : BindableBase, INavigationAware
+    public class CommissionDecisionsViewModel : BindableBase, INavigationAware, IDisposable
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -32,9 +33,7 @@ namespace CommissionsModule.ViewModels
         private readonly IEventAggregator eventAggregator;
 
         private readonly CommandWrapper reloadCommissionDecisionsCommandWrapper;
-        private readonly CommandWrapper reloadCommissionDecisionCommandWrapper;
-
-        private readonly Decision unselectedDecision;
+        private readonly CommandWrapper saveDecisionCommandWrapper;
 
         private CancellationTokenSource currentOperationToken;
 
@@ -76,13 +75,15 @@ namespace CommissionsModule.ViewModels
             this.commissionService = commissionService;
             this.logService = logService;
             this.CommissionDecisionEditorViewModel = commissionDecisionEditorViewModel;
-            unselectedDecision = new Decision { Name = "Выберите решение" };
+
+            SubscribeToEvents();
+
             reloadCommissionDecisionsCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadCommissionDecisionsAsync()), CommandName = "Повторить" };
-            reloadCommissionDecisionCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => LoadCommissionDecisionDataAsync()), CommandName = "Повторить" };
+            saveDecisionCommandWrapper = new CommandWrapper() { Command = saveDecisionCommand, CommandName = "Повторить" };
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             CommissionDecisions = new ObservableCollectionEx<CommissionDecisionViewModel>();
-            SelectedCommissionId = 3;
+            saveDecisionCommand = new DelegateCommand(SaveDecision);
         }
         #endregion
 
@@ -104,8 +105,8 @@ namespace CommissionsModule.ViewModels
             get { return selectedCommissionDecision; }
             set
             {
-                if (SetProperty(ref selectedCommissionDecision, value))
-                    LoadCommissionDecisionDataAsync();
+                if (SetProperty(ref selectedCommissionDecision, value) && SelectedCommissionDecision != null)
+                    CommissionDecisionEditorViewModel.Initialize(SelectedCommissionDecision.CommissionDecisionId);
             }
         }
 
@@ -117,6 +118,28 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Methods
+
+        public void Dispose()
+        {
+            UnsubscriveFromEvents();
+        }
+
+        private void UnsubscriveFromEvents()
+        {
+            eventAggregator.GetEvent<PubSubEvent<CommissionProtocolViewModel>>().Unsubscribe(OnCommissionProtocolSelected);
+        }
+
+        private void SubscribeToEvents()
+        {
+            eventAggregator.GetEvent<PubSubEvent<CommissionProtocolViewModel>>().Subscribe(OnCommissionProtocolSelected);
+        }
+
+        private void OnCommissionProtocolSelected(CommissionProtocolViewModel selectedCommissionViewModel)
+        {
+            SelectedCommissionId = 0;
+            if (selectedCommissionViewModel != null)
+                SelectedCommissionId = selectedCommissionViewModel.Id;
+        }
 
         private async void LoadCommissionDecisionsAsync()
         {
@@ -136,25 +159,15 @@ namespace CommissionsModule.ViewModels
             try
             {
                 commissionDecisionsQuery = commissionService.GetCommissionDecisions(SelectedCommissionId);
-                var commissionDecisions = await commissionDecisionsQuery/*.Where(x => x.DecisionId.HasValue)*/.OrderBy(x => x.CommissionStage).ThenBy(x => x.DecisionDateTime)
-                    .Select(x => new
-                    {
-                        CommissionDecisionId = x.Id,
-                        DecisionDate = x.DecisionDateTime,
-                        Stage = x.CommissionStage,
-                        MemberName = x.CommissionMember.PersonStaffId.HasValue ? x.CommissionMember.PersonStaff.Staff.ShortName + " - " + x.CommissionMember.PersonStaff.Person.ShortName :
-                            x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
-                        Decision = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
-                        ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#000000"
-                    })
-                    .ToArrayAsync(token);
-                foreach (var commissionDecision in commissionDecisions)
+                var commissionDecisionIds = await commissionDecisionsQuery/*.Where(x => x.DecisionId.HasValue)*/.OrderBy(x => x.CommissionStage).ThenBy(x => x.DecisionDateTime)
+                    .Select(x => x.Id).ToArrayAsync(token);
+                foreach (var commissionDecisionId in commissionDecisionIds)
                 {
                     var commissionDecisionViewModel = commissionDecisionViewModelFactory();
-                    commissionDecisionViewModel.Initialize(commissionDecision.CommissionDecisionId, commissionDecision.DecisionDate, commissionDecision.Stage, commissionDecision.MemberName, commissionDecision.Decision, commissionDecision.ColorType);
+                    await commissionDecisionViewModel.Initialize(commissionDecisionId);
                     CommissionDecisions.Add(commissionDecisionViewModel);
                 }
-                
+
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -180,63 +193,42 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private async void LoadCommissionDecisionDataAsync()
+        private async void SaveDecision()
         {
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
-            var loadingIsCompleted = false;
+            logService.Info("Saving commission decision...");
+            FailureMediator.Deactivate();
+            BusyMediator.Activate("Сохранение данных...");
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
-            BusyMediator.Activate("Загрузка редактора решения...");
-            logService.InfoFormat("Loading сommission decision with id={0}...", SelectedCommissionDecision.CommissionDecisionId);
-            IDisposableQueryable<CommissionDecision> commissionDecisionQuery = null;
-            var curDate = DateTime.Now;
             try
             {
-                commissionDecisionQuery = commissionService.GetCommissionDecision(SelectedCommissionDecision.CommissionDecisionId);
-                var commissionDecision = await commissionDecisionQuery.Select(x => new
-                    {
-                        x.Decision,
-                        Comment = x.Comment,
-                        DecisionDateTime = x.DecisionDateTime,
-                        CommissionQuestionId = x.CommissionProtocol.CommissionQuestionId,
-                        CommissionTypeMemberId = x.CommissionMember.CommissionMemberTypeId
-
-                    }).FirstOrDefaultAsync(token);
-                var decisionsList = await Task.Factory.StartNew<IEnumerable<Decision>>(commissionService.GetDecisions, new int[] { commissionDecision.CommissionQuestionId, commissionDecision.CommissionTypeMemberId });
-                var decisions = new[] { unselectedDecision }.Concat(decisionsList).ToArray();
-                logService.InfoFormat("Loaded {0} decisions", (decisions as Decision[]).Length);
-
-                CommissionDecisionEditorViewModel.Initialize(commissionDecision.Comment, commissionDecision.DecisionDateTime, commissionDecision.Decision, decisions);
-                loadingIsCompleted = true;
-
-
-            }
-            catch (OperationCanceledException)
-            {
-                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+                //CommissionDecisionEditorViewModel
+                var error = await commissionService.SaveDecision(CommissionDecisionEditorViewModel.CommissionDecisionId, CommissionDecisionEditorViewModel.SelectedDecision.Id, CommissionDecisionEditorViewModel.Comment,
+                     CommissionDecisionEditorViewModel.DecisionDateTime, token);
+                if (error != string.Empty)
+                {
+                    logService.ErrorFormat("Failed to save commission decision with error {0}", error);
+                    FailureMediator.Activate("При попытке сохранить решение для комиссии возникла ошибка:" + error + ". Попробуйте еще раз, если ошибка повторится, обратитесь в службу поддержки",
+                        saveDecisionCommandWrapper, canBeDeactivated: true);
+                }
+                else
+                    await SelectedCommissionDecision.Initialize(CommissionDecisionEditorViewModel.CommissionDecisionId);
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to load сommission decision with id={0}...", SelectedCommissionDecision.CommissionDecisionId);
-                FailureMediator.Activate("Не удалость загрузить данные решения. Попробуйте еще раз или обратитесь в службу поддержки", reloadCommissionDecisionCommandWrapper, ex, true);
-                loadingIsCompleted = true;
+                logService.Error("Failed to save commission decision", ex);
+                FailureMediator.Activate("ППри попытке сохранить решение для комиссии возникла ошибка. Попробуйте еще раз, если ошибка повторится, обратитесь в службу поддержки", saveDecisionCommandWrapper, ex, true);
             }
             finally
             {
-                if (loadingIsCompleted)
-                {
-                    BusyMediator.Deactivate();
-                }
-                if (commissionDecisionQuery != null)
-                {
-                    commissionDecisionQuery.Dispose();
-                }
+                BusyMediator.Deactivate();
             }
         }
+        #endregion
+
+        #region Commands
+        private DelegateCommand saveDecisionCommand;
+        public ICommand SaveDecisionCommand { get { return saveDecisionCommand; } }
         #endregion
 
         #region INavigationAware implementations
@@ -255,5 +247,7 @@ namespace CommissionsModule.ViewModels
             return;
         }
         #endregion
+
+        public IEnumerable<object> commissionDecisionIds { get; set; }
     }
 }
