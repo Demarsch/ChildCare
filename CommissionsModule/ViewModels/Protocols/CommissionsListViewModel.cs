@@ -172,9 +172,10 @@ namespace CommissionsModule.ViewModels
 
         public async void LoadCommissionProtocolsAsync()
         {
-            Commissions.Clear();
             BusyMediator.Activate("Загрузка протоколов...");
             logService.Info("Loading commission protocols...");
+            Commissions.Clear();
+            UnsubscribeToCommissionsProtocolsChanges();
             IDisposableQueryable<CommissionProtocol> commissionProtocolsQuery = null;
             try
             {

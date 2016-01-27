@@ -126,19 +126,19 @@ namespace CommissionsModule.ViewModels
 
         private void UnsubscriveFromEvents()
         {
-            eventAggregator.GetEvent<PubSubEvent<CommissionProtocolViewModel>>().Unsubscribe(OnCommissionProtocolSelected);
+            eventAggregator.GetEvent<PubSubEvent<int>>().Unsubscribe(OnCommissionProtocolSelected);
         }
 
         private void SubscribeToEvents()
         {
-            eventAggregator.GetEvent<PubSubEvent<CommissionProtocolViewModel>>().Subscribe(OnCommissionProtocolSelected);
+            eventAggregator.GetEvent<PubSubEvent<int>>().Subscribe(OnCommissionProtocolSelected);
         }
 
-        private void OnCommissionProtocolSelected(CommissionProtocolViewModel selectedCommissionViewModel)
+        private void OnCommissionProtocolSelected(int protocolId)
         {
             SelectedCommissionId = 0;
-            if (selectedCommissionViewModel != null)
-                SelectedCommissionId = selectedCommissionViewModel.Id;
+            if (!SpecialValues.IsNewOrNonExisting(protocolId))
+                SelectedCommissionId = protocolId;
         }
 
         private async void LoadCommissionDecisionsAsync()
