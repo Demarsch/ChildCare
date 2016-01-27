@@ -24,4 +24,11 @@
                        HorizontalAlignment="Center"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Users48x48.png" />
     </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Валидация данных"
+                           HorizontalContentAlignment="Center"
+                           MinWidth="150">
+        <fluent:Button Command="{Binding GoToDatabaseValidationCommand, Mode=OneTime}"
+                       Header="Перейти к валидации"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DatabaseSearch48x48.png"/>
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

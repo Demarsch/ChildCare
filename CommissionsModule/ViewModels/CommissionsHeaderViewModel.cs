@@ -1,4 +1,5 @@
-﻿using Core.Wpf.Services;
+﻿using Core.Wpf.Extensions;
+using Core.Wpf.Services;
 using log4net;
 using Prism;
 using Prism.Events;
@@ -64,6 +65,10 @@ namespace CommissionsModule.ViewModels
                     if (value)
                     {
                         ActivateCommissionsContent();
+                    }
+                    else
+                    {
+                        regionManager.Regions[RegionNames.ListItems].DeactivateActiveViews();
                     }
                 }
             }

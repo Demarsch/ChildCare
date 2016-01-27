@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Wpf.Extensions;
 using Prism;
 using Prism.Modularity;
 using Shell.Shared;
@@ -88,6 +89,7 @@ namespace CommissionsModule
             container.RegisterType<object, CommissionDecisionEditorView>(viewNameResolver.Resolve<CommissionDecisionEditorViewModel>(), new ContainerControlledLifetimeManager());
 
             regionManager.RegisterViewWithRegion(RegionNames.ListItems, () => container.Resolve<CommissionsListView>());
+            regionManager.Regions[RegionNames.ListItems].DeactivateActiveViews();
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionDecisionsView>());
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/CommissionsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });

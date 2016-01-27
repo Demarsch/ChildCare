@@ -1,4 +1,5 @@
-﻿using Core.Wpf.Services;
+﻿using Core.Wpf.Extensions;
+using Core.Wpf.Services;
 using Prism;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -50,6 +51,10 @@ namespace CommissionsModule.ViewModels
                     {
                         regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<CommissionDecisionsViewModel>());
                         regionManager.RequestNavigate(RegionNames.ListItems, viewNameResolver.Resolve<CommissionsListViewModel>());
+                    }
+                    else
+                    {
+                        regionManager.Regions[RegionNames.ListItems].DeactivateActiveViews();
                     }
                 }
             }

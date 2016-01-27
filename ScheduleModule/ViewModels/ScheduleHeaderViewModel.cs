@@ -91,10 +91,6 @@ namespace ScheduleModule.ViewModels
         {
             var navigationParameters = new NavigationParameters { { ParameterNames.PatientId, patientId  } };
             regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<ScheduleContentViewModel>(), navigationParameters);
-
-            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
-            if (activeListItems != null)
-                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         public event EventHandler IsActiveChanged = delegate { };

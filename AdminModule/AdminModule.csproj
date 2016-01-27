@@ -121,6 +121,9 @@
     <Compile Include="Converters\UserViewModelToGroupHeaderConverter.cs" />
     <Compile Include="Converters\PermissionViewModelToGroupHeaderConverter.cs" />
     <Compile Include="Exceptions\UserWithSameSidExistsException.cs" />
+    <Compile Include="Model\DatabaseValidators\ExecutionPlaceValidator.cs" />
+    <Compile Include="Model\DatabaseValidators\IDatabaseValidator.cs" />
+    <Compile Include="Model\DatabaseValidators\IdentityDocumentTypesValidator.cs" />
     <Compile Include="Model\SaveUserInput.cs" />
     <Compile Include="Model\SecurityObjectType.cs" />
     <Compile Include="Model\UserDTO.cs" />
@@ -128,11 +131,15 @@
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementation\ActiveDirectoryUserProvider.cs" />
+    <Compile Include="Services\Implementation\DatabaseValidationService.cs" />
     <Compile Include="Services\Implementation\PersonSearchService.cs" />
+    <Compile Include="Services\Interface\IDatabaseValidtionService.cs" />
     <Compile Include="Services\Interface\IUserAccessService.cs" />
     <Compile Include="Services\Implementation\UserAccessService.cs" />
     <Compile Include="Services\Interface\IUserProvider.cs" />
     <Compile Include="ViewModels\AdminEmptyViewModel.cs" />
+    <Compile Include="ViewModels\DatabaseValidation\DatabaseValidationViewModel.cs" />
+    <Compile Include="Model\DatabaseValidators\UrgencyValidator.cs" />
     <Compile Include="ViewModels\ReportTemplateEditorViewModel.cs" />
     <Compile Include="ViewModels\ReportTemplatesManagerViewModel.cs" />
     <Compile Include="ViewModels\AdminHeaderViewModel.cs" />
@@ -148,6 +155,9 @@
     </Compile>
     <Compile Include="Views\AdminEmptyView.xaml.cs">
       <DependentUpon>AdminEmptyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DatabaseValidation\DatabaseValidationView.xaml.cs">
+      <DependentUpon>DatabaseValidationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ReportTemplatesManagerView.xaml.cs">
       <DependentUpon>ReportTemplatesManagerView.xaml</DependentUpon>
@@ -204,6 +214,10 @@
     <Page Include="Views\AdminEmptyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DatabaseValidation\DatabaseValidationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ReportTemplatesManagerView.xaml">
       <Generator>MSBuild:Compile</Generator>

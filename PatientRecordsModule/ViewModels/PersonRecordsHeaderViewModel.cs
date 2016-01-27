@@ -305,10 +305,6 @@ namespace Shared.PatientRecords.ViewModels
                 var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonRecordsViewModel>(), navigationParameters);
             }
-
-            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
-            if (activeListItems != null)
-                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         void personRecordsViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

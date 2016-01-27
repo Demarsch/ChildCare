@@ -105,10 +105,6 @@ namespace PatientInfoModule.ViewModels
                 var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PatientContractsViewModel>(), navigationParameters);
             }
-
-            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
-            if (activeListItems != null)
-                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         private bool isActive;

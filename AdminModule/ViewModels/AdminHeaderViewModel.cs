@@ -45,8 +45,9 @@ namespace AdminModule.ViewModels
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             activeSubViewName = viewNameResolver.Resolve<AdminEmptyViewModel>();
-            goToReportTemplatesManagerCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<ReportTemplatesManagerViewModel>()));
-            goToUserAccessManagerCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<UserAccessManagerViewModel>()));
+            GoToReportTemplateManagerCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<ReportTemplatesManagerViewModel>()));
+            GoToUserAccessManagerCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<UserAccessManagerViewModel>()));
+            GoToDatabaseValidationCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<DatabaseValidationViewModel>()));
         }
 
         private string activeSubViewName;
@@ -55,10 +56,6 @@ namespace AdminModule.ViewModels
         {
             regionManager.RequestNavigate(RegionNames.ModuleContent, newActiveSubViewName);
             activeSubViewName = newActiveSubViewName;
-
-            var activeListItems = regionManager.Regions[RegionNames.ListItems].ActiveViews.FirstOrDefault();
-            if (activeListItems != null)
-                regionManager.Regions[RegionNames.ListItems].Deactivate(activeListItems);
         }
 
         private bool isActive;
@@ -90,12 +87,10 @@ namespace AdminModule.ViewModels
             }
         }
 
-        private readonly DelegateCommand goToReportTemplatesManagerCommand;
+        public ICommand GoToReportTemplateManagerCommand { get; private set; }
 
-        public ICommand GoToReportTemplateManagerCommand { get { return goToReportTemplatesManagerCommand; }}
+        public ICommand GoToUserAccessManagerCommand { get; private set; }
 
-        private readonly DelegateCommand goToUserAccessManagerCommand;
-
-        public ICommand GoToUserAccessManagerCommand { get { return goToUserAccessManagerCommand; } }
+        public ICommand GoToDatabaseValidationCommand { get; private set; }
     }
 }
