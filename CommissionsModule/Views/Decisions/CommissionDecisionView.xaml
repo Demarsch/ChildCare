@@ -5,23 +5,28 @@
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate DataType="{x:Type viewModels:CommissionDecisionViewModel}" >
-        <Border Background="{Binding ColorType}" HorizontalAlignment="Stretch">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
+        <Grid>
+            <Border Background="{Binding ColorType}" HorizontalAlignment="Stretch">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DecisionDate}"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MemberName}" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DecisionDate}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MemberName}" FontWeight="Bold"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Decision}"/>
-            </Grid>
-        </Border>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Decision}"/>
+                </Grid>
+            </Border>
+
+            <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+        </Grid>
     </DataTemplate>
 </ResourceDictionary>

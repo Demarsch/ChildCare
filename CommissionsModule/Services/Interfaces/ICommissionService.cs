@@ -30,5 +30,6 @@ namespace CommissionsModule.Services
         IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberId);
 
         IDisposableQueryable<CommissionProtocol> GetCommissionProtocolById(int protocolId);
+        Task<string> SaveDecision(int commissionDecisionId, int decisionId, string comment, DateTime? decisionDateTime, CancellationToken token);
     }
 }

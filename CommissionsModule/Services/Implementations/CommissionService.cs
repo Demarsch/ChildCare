@@ -139,5 +139,28 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.Id == protocolId), context);
         }
+
+        public async Task<string> SaveDecision(int commissionDecisionId, int decisionId, string comment, DateTime? decisionDateTime, System.Threading.CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var commissionDecision = context.Set<CommissionDecision>().FirstOrDefault(x => x.Id == commissionDecisionId);
+                if (commissionDecision == null)
+                    return "Не найдено решение для комиссии";
+                commissionDecision.DecisionId = decisionId;
+                commissionDecision.Comment = comment;
+                commissionDecision.DecisionDateTime = decisionDateTime;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+            }
+            return string.Empty;
+        }
     }
 }

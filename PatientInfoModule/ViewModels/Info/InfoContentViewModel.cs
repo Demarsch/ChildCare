@@ -127,6 +127,8 @@ namespace PatientInfoModule.ViewModels
             deleteAmbCardCommand = new DelegateCommand(DeleteAmbCardAsync, CanDeleteAmbCard);
             printAmbCardCommand = new DelegateCommand(PrintAmbCardAsync, CanPrintAmbCard);
             saveChangesCommandWrapper = new CommandWrapper { Command = SaveChangesCommand };
+            recreateAmbCardWrapper = new CommandWrapper { Command = CreateAmbCardCommand };
+            redeleteAmbCardWrapper = new CommandWrapper { Command = DeleteAmbCardCommand };
             loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientAndRelativesAsync(patientIdBeingLoaded)) };
             currentOperation = new TaskCompletionSource<object>();
             currentOperation.SetResult(null);
@@ -191,6 +193,10 @@ namespace PatientInfoModule.ViewModels
         private readonly CommandWrapper saveChangesCommandWrapper;
 
         private readonly CommandWrapper loadRelativeListWrapper;
+
+        private readonly CommandWrapper recreateAmbCardWrapper;
+
+        private readonly CommandWrapper redeleteAmbCardWrapper;
 
         public ICommand CreateAmbCardCommand
         {
@@ -333,20 +339,38 @@ namespace PatientInfoModule.ViewModels
 
         private async void CreateAmbCardAsync()
         {
-            var ambNumber = await patientService.CreateAmbCard(currentPatientId);
-            if (ambNumber != string.Empty)
-                patientInfo.AmbNumber = ambNumber;
-            UpdateAmbCardCommandsState();
-            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
+            log.InfoFormat("Creating amb card for person with id={0}", currentPatientId);
+            try
+            {
+                var ambNumber = await patientService.CreateAmbCard(currentPatientId);
+                if (ambNumber != string.Empty)
+                    patientInfo.AmbNumber = ambNumber;
+                UpdateAmbCardCommandsState();
+                eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Failed to create amb card for person with id={0}", currentPatientId);
+                FailureMediator.Activate("Не удалость завести амбулатоную карту. Попробуйте еще раз или обратитесь в службу поддержки", recreateAmbCardWrapper, ex, true);
+            }
         }
 
         private async void DeleteAmbCardAsync()
         {
-            var res = await patientService.DeleteAmbCard(currentPatientId);
-            if (res)
-                patientInfo.AmbNumber = string.Empty;
-            UpdateAmbCardCommandsState();
-            eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
+            log.InfoFormat("Deleting amb card for person with id={0}", currentPatientId);
+            try
+            {
+                var res = await patientService.DeleteAmbCard(currentPatientId);
+                if (res)
+                    patientInfo.AmbNumber = string.Empty;
+                UpdateAmbCardCommandsState();
+                eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Failed to delete amb card for person with id={0}", currentPatientId);
+                FailureMediator.Activate("Не удалость удалить амбулатоную карту. Попробуйте еще раз или обратитесь в службу поддержки", redeleteAmbCardWrapper, ex, true);
+            }
         }
 
         private void PrintAmbCardAsync()
