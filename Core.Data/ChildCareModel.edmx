@@ -104,6 +104,7 @@
           <Property Name="ToDoDateTime" Type="datetime" />
           <Property Name="Comment" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="CommissionStage" Type="int" Nullable="false" />
+          <Property Name="NeedAlllMemmbersInStage" Type="bit" Nullable="false" />
           <Property Name="InitiatorMemberId" Type="int" Nullable="false" />
           <Property Name="DecisionDateTime" Type="datetime" />
           <Property Name="RemovedByUserId" Type="int" />
@@ -7845,6 +7846,7 @@
           <NavigationProperty Name="CommissionProtocol" Relationship="DataLib.FK_CommissionDecisions_CommissionProtocols" FromRole="CommissionDecision" ToRole="CommissionProtocol" />
           <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="CommissionDecision" ToRole="Decision" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_CommissionDecisions_Users" FromRole="CommissionDecision" ToRole="User" />
+          <Property Name="NeedAlllMemmbersInStage" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_CommissionDecisions_CommissionMembers">
           <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="1" />
@@ -9112,6 +9114,7 @@
           <EntitySetMapping Name="CommissionDecisions">
             <EntityTypeMapping TypeName="DataLib.CommissionDecision">
               <MappingFragment StoreEntitySet="CommissionDecisions">
+                <ScalarProperty Name="NeedAlllMemmbersInStage" ColumnName="NeedAlllMemmbersInStage" />
                 <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
                 <ScalarProperty Name="DecisionDateTime" ColumnName="DecisionDateTime" />
                 <ScalarProperty Name="InitiatorMemberId" ColumnName="InitiatorMemberId" />

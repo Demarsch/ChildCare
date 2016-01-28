@@ -26,6 +26,7 @@ namespace Core.Data
         public int InitiatorMemberId { get; set; }
         public Nullable<System.DateTime> DecisionDateTime { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
+        public bool NeedAlllMemmbersInStage { get; set; }
     
         [NonSerialized]
     	protected CommissionMember commissionMember;

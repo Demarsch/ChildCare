@@ -35,8 +35,8 @@
                                        DisplayMemberPath="Name"
                                        ItemTemplate="{StaticResource DecisionsTree}"
                                        FilterPredicate="{x:Static data:Decision.DecisionFilterPredicate}"/>
-        <TextBlock Grid.Row="1" Grid.Column="0">Рекомендации/комментарий</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" MaxLines="4" Text="{Binding Comment}"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Top">Рекомендации/комментарий</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" TextWrapping="WrapWithOverflow" Height="90" VerticalContentAlignment="Top" AcceptsReturn="True" Text="{Binding Comment}"/>
         <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding NeedDecisionDateTime}">Дата для решения</CheckBox>
         <DatePicker Grid.Row="2" Grid.Column="1" DisplayDate="{Binding DecisionDateTime}" IsEnabled="{Binding NeedDecisionDateTime}" HorizontalAlignment="Left"/>
     </Grid>

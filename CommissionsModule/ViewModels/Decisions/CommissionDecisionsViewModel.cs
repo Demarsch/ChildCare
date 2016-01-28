@@ -20,6 +20,7 @@ using Core.Extensions;
 using Core.Wpf.Misc;
 using Prism.Commands;
 using System.Windows.Input;
+using Core.Services;
 
 namespace CommissionsModule.ViewModels
 {
@@ -30,6 +31,7 @@ namespace CommissionsModule.ViewModels
         private readonly IDialogServiceAsync dialogService;
         private readonly ILog logService;
         private readonly IUserService userService;
+        private readonly ISecurityService securityService;
         private readonly IEventAggregator eventAggregator;
 
         private readonly CommandWrapper reloadCommissionDecisionsCommandWrapper;
@@ -41,7 +43,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionDecisionsViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator,
+        public CommissionDecisionsViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IUserService userService, ISecurityService securityService, IEventAggregator eventAggregator,
             CommissionDecisionEditorViewModel commissionDecisionEditorViewModel, Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory)
         {
             if (commissionService == null)
@@ -68,6 +70,11 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("commissionDecisionViewModelFactory");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            this.securityService = securityService;
             this.commissionDecisionViewModelFactory = commissionDecisionViewModelFactory;
             this.userService = userService;
             this.dialogService = dialogService;
@@ -159,7 +166,15 @@ namespace CommissionsModule.ViewModels
             try
             {
                 commissionDecisionsQuery = commissionService.GetCommissionDecisions(SelectedCommissionId);
-                var commissionDecisionIds = await commissionDecisionsQuery/*.Where(x => x.DecisionId.HasValue)*/.OrderBy(x => x.CommissionStage).ThenBy(x => x.DecisionDateTime)
+                var showAllCommissionDecisions = securityService.HasPermission(Permission.ShowAllCommissionDecisions);
+                var currentUserPersonStaffIdsTask = Task.Run((Func<IEnumerable<int>>)userService.GetCurrentUserPersonStaffIds);
+                var currentUserStaffIdsTask = Task.Run((Func<IEnumerable<int>>)userService.GetCurrentUserStaffIds);
+                await Task.WhenAll(currentUserPersonStaffIdsTask, currentUserStaffIdsTask);
+                var currentUserPersonStaffIds = currentUserPersonStaffIdsTask.Result;
+                var currentUserStaffIds = currentUserStaffIdsTask.Result;
+                var commissionDecisionIds = await commissionDecisionsQuery
+                    .Where(x => showAllCommissionDecisions || (x.DecisionId.HasValue || (currentUserPersonStaffIds.Contains(x.CommissionMember.PersonStaffId ?? 0) || currentUserStaffIds.Contains(x.CommissionMember.StaffId ?? 0))))
+                    .OrderBy(x => x.CommissionStage).ThenBy(x => x.DecisionDateTime ?? SpecialValues.MaxDate)
                     .Select(x => x.Id).ToArrayAsync(token);
                 foreach (var commissionDecisionId in commissionDecisionIds)
                 {
@@ -247,7 +262,5 @@ namespace CommissionsModule.ViewModels
             return;
         }
         #endregion
-
-        public IEnumerable<object> commissionDecisionIds { get; set; }
     }
 }

@@ -33,6 +33,12 @@
 
         #endregion
 
+        #region Commissions
+
+        public readonly static string ShowAllCommissionDecisions = "Отображать все решения комиссии";
+
+        #endregion
+
         public readonly static string ChangeRecordParentVisit = "Изменить родительский случай";
 
         public readonly static string UseCompletedVisit = "Использовать закрытые случаи";
