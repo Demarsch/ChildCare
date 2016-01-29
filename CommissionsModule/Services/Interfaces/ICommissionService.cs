@@ -1,5 +1,6 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
+using Core.Notification;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,6 +12,8 @@ namespace CommissionsModule.Services
     public interface ICommissionService
     {
         IDisposableQueryable<CommissionFilter> GetCommissionFilters(string options = "");
+
+        CommissionFilter GetCommissionFilterById(int id);
 
         bool IsCommissionFilterHasDate(int id);
 
@@ -30,6 +33,13 @@ namespace CommissionsModule.Services
         IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberId);
 
         IDisposableQueryable<CommissionProtocol> GetCommissionProtocolById(int protocolId);
+
         Task<string> SaveDecision(int commissionDecisionId, int decisionId, string comment, DateTime? decisionDateTime, CancellationToken token);
+
+        Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
+
+        Task DeleteCommissionProtocolAsync(int protocolId, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
+
+        Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
     }
 }

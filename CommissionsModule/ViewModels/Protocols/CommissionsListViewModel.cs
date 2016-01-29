@@ -20,6 +20,7 @@ using Prism.Events;
 using Prism.Regions;
 using System.Windows.Media;
 using Core.Notification;
+using System.Data.Entity.Core.Objects;
 
 namespace CommissionsModule.ViewModels
 {
@@ -143,7 +144,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedCommission; }
             set 
             { 
-                if (SetProperty(ref selectedCommission, value))
+                if (SetProperty(ref selectedCommission, value) && value != null)
                 {
                     eventAggregator.GetEvent<PubSubEvent<int>>().Publish(value.Id);
                 }
@@ -184,6 +185,7 @@ namespace CommissionsModule.ViewModels
                 var commissionProtocolsSelectQuery = await commissionProtocolsQuery.Select(x => new
                     {
                         Id = x.Id,
+                        PersonId = x.PersonId,
                         PatientFIO = x.Person.ShortName,
                         BirthDate = x.Person.BirthDate.Year,
                         Talon = x.PersonTalon != null ? new { TalonNumber = x.PersonTalon.TalonNumber, TalonDate = x.PersonTalon.TalonDateTime } : null,
@@ -196,10 +198,11 @@ namespace CommissionsModule.ViewModels
                 var result = commissionProtocolsSelectQuery.Select(x => new CommissionProtocolViewModel()
                     {
                         Id = x.Id,
+                        PersonId = x.PersonId,
                         PatientFIO = x.PatientFIO,
                         BirthDate = x.BirthDate + " г.р.",
                         Talon = x.Talon != null ? x.Talon.TalonNumber + " от " + x.Talon.TalonDate.ToShortDateString() : "талон отсутствует",                       
-                        MKB = "МКБ: " + x.MKB,
+                        MKB = !string.IsNullOrEmpty(x.MKB) ? "МКБ: " + x.MKB : string.Empty,
                         IncomeDateTime = x.IncomeDateTime.ToShortDateString(),
                         IsCompleted = x.IsCompleted,
                         DecisionColorHex = commissionService.GetDecisionColorHex(x.DecisionId)
@@ -221,6 +224,32 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        /*private void TestCreationProtocol()
+        {
+            CommissionProtocol protocol = new CommissionProtocol();
+            protocol.PersonId = 1;
+            protocol.CommissionTypeId = 1;
+            protocol.DecisionId = 1;
+            protocol.ProtocolNumber = 21;
+            protocol.ProtocolDate = DateTime.Now;
+            protocol.IsCompleted = false;
+            protocol.IsExecuting = true;
+            protocol.IncomeDateTime = DateTime.Now;
+            protocol.BeginDateTime = DateTime.Now;
+            protocol.CompleteDateTime = DateTime.Now;
+            protocol.OutcomeDateTime = DateTime.Now;
+            protocol.ToDoDateTime = DateTime.Now;
+            protocol.Comment = string.Empty;
+            protocol.MKB = "I22";
+            protocol.InUserId = 8;
+            protocol.CommissionSourceId = 1;
+            protocol.CommissionQuestionId = 1;
+            protocol.RecordContractId = 51;
+            protocol.Address = string.Empty;
+            protocol.Diagnos = string.Empty;
+            commissionService.SaveCommissionProtocolAsync(protocol, comissionsProtocolsChangeSubscription);
+        }*/
+
         #endregion
 
         private INotificationServiceSubscription<CommissionProtocol> comissionsProtocolsChangeSubscription;
@@ -230,7 +259,28 @@ namespace CommissionsModule.ViewModels
             if (completionTaskSource != null)
                 return await completionTaskSource.Task;
             completionTaskSource = new TaskCompletionSource<bool>();
-            comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>();
+
+            var filter = commissionService.GetCommissionFilterById(SelectedFilter);
+
+            if (filter.Options.Contains(OptionValues.ProtocolsInProcess))
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false);
+            if (filter.Options.Contains(OptionValues.ProtocolsPreliminary))
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == null);
+            if (filter.Options.Contains(OptionValues.ProtocolsOnCommission))
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false && x.IsExecuting == true);
+            if (filter.Options.Contains(OptionValues.ProtocolsOnDate) && FilterDate.HasValue)
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.ProtocolDate == FilterDate.Value);
+            if (filter.Options.Contains(OptionValues.ProtocolsAdded) && FilterDate.HasValue)
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IncomeDateTime == FilterDate.Value);
+            if (filter.Options.Contains(OptionValues.ProtocolsAwaiting))
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == true && EntityFunctions.TruncateTime(x.ToDoDateTime) > EntityFunctions.TruncateTime(DateTime.Now));
+
+            if (OnlyMyCommissions)
+            {
+                int currentPersonId = userService.GetCurrentUser().PersonId;
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.CommissionDecisions.Any(a => a.CommissionMember.PersonStaff.PersonId == currentPersonId));
+            }
+            
             if (comissionsProtocolsChangeSubscription != null)
                 comissionsProtocolsChangeSubscription.Notified += OnCommissionProtocolNotificationRecievedAsync;
             completionTaskSource.SetResult(true);
@@ -248,7 +298,32 @@ namespace CommissionsModule.ViewModels
 
         private async void OnCommissionProtocolNotificationRecievedAsync(object sender, NotificationEventArgs<CommissionProtocol> e)
         {
-            await UpdateCommissionProtocolAsync((e.OldItem ?? e.NewItem).Id);
+            if (e.IsDelete)
+                Commissions.Remove(Commissions.FirstOrDefault(x => x.Id == e.OldItem.Id));
+            if (e.IsUpdate)
+                await UpdateCommissionProtocolAsync(e.NewItem.Id);
+            if (e.IsCreate)
+                await CreateCommissionProtocolAsync(e.NewItem.Id);
+        }
+
+        private async Task<bool> CreateCommissionProtocolAsync(int protocolId)
+        {
+            if (completionTaskSource != null)
+                return await completionTaskSource.Task;
+            completionTaskSource = new TaskCompletionSource<bool>();
+            var commissionProtocol = commissionService.GetCommissionProtocolById(protocolId).First();
+            CommissionProtocolViewModel protocol = new CommissionProtocolViewModel();
+            protocol.PersonId = commissionProtocol.PersonId;
+            protocol.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
+            protocol.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";
+            protocol.MKB = (string.IsNullOrEmpty(commissionProtocol.MKB) ? "МКБ: " + commissionProtocol.MKB : string.Empty);
+            protocol.IncomeDateTime = commissionProtocol.IncomeDateTime.ToShortDateString();
+            protocol.IsCompleted = commissionProtocol.IsCompleted;
+            protocol.DecisionColorHex = commissionService.GetDecisionColorHex(commissionProtocol.DecisionId);
+
+            Commissions.Add(protocol);
+            completionTaskSource.SetResult(true);
+            return true;
         }
 
         private async Task<bool> UpdateCommissionProtocolAsync(int protocolId)
@@ -258,8 +333,8 @@ namespace CommissionsModule.ViewModels
             completionTaskSource = new TaskCompletionSource<bool>();
             var commissionProtocol = commissionService.GetCommissionProtocolById(protocolId).First();
             SelectedCommission.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
-            SelectedCommission.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";                       
-            SelectedCommission.MKB = "МКБ: " + commissionProtocol.MKB;
+            SelectedCommission.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";
+            SelectedCommission.MKB = (string.IsNullOrEmpty(commissionProtocol.MKB) ? "МКБ: " + commissionProtocol.MKB : string.Empty);
             SelectedCommission.IncomeDateTime = commissionProtocol.IncomeDateTime.ToShortDateString();
             SelectedCommission.IsCompleted = commissionProtocol.IsCompleted;
             SelectedCommission.DecisionColorHex = commissionService.GetDecisionColorHex(commissionProtocol.DecisionId);

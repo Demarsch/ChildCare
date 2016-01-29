@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Core.Extensions;
+using Core.Notification;
+using System.Data.Entity;
 
 namespace CommissionsModule.Services
 {
@@ -161,6 +163,71 @@ namespace CommissionsModule.Services
                 await context.SaveChangesAsync(token);
             }
             return string.Empty;
+        }
+
+
+        public CommissionFilter GetCommissionFilterById(int id)
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                return db.Set<CommissionFilter>().FirstOrDefault(x => x.Id == id);
+            }
+        }
+
+        public async Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
+        {
+            CommissionProtocol originalProtocol = null;
+            using (var dataContext = contextProvider.CreateLightweightContext())
+            {
+                dataContext.Configuration.ProxyCreationEnabled = false;
+                if (newProtocol.Id == SpecialValues.NewId)
+                {
+                    dataContext.Entry(newProtocol).State = EntityState.Added;
+                }
+                else
+                {
+                    originalProtocol = await dataContext.NoTrackingSet<CommissionProtocol>().FirstAsync(x => x.Id == newProtocol.Id);
+                    dataContext.Entry(newProtocol).State = EntityState.Modified;
+                }
+                await dataContext.SaveChangesAsync();
+                if (protocolChangeSubscription != null)
+                {
+                    protocolChangeSubscription.Notify(originalProtocol, newProtocol);
+                }
+            }
+        }
+
+        public async Task DeleteCommissionProtocolAsync(int protocolId, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
+        {
+            using (var dataContext = contextProvider.CreateLightweightContext())
+            {
+                dataContext.Configuration.ProxyCreationEnabled = false;
+                var originalProtocol = await dataContext.NoTrackingSet<CommissionProtocol>().FirstAsync(x => x.Id == protocolId);
+                dataContext.Entry(originalProtocol).State = EntityState.Deleted;
+                await dataContext.SaveChangesAsync();
+                if (protocolChangeSubscription != null)
+                {
+                    protocolChangeSubscription.NotifyDelete(originalProtocol);
+                }
+            }
+        }
+
+        public async Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate,
+                                                INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
+        {
+            using (var dataContext = contextProvider.CreateLightweightContext())
+            {
+                var originalProtocol = await dataContext.NoTrackingSet<CommissionProtocol>().FirstAsync(x => x.Id == protocolId);
+                var newProtocol = (CommissionProtocol)originalProtocol.Clone();
+                newProtocol.ProtocolDate = protocolDate;
+
+                dataContext.Entry(newProtocol).State = EntityState.Modified;
+                await dataContext.SaveChangesAsync();
+                if (protocolChangeSubscription != null)
+                {
+                    protocolChangeSubscription.Notify(originalProtocol, newProtocol);
+                }
+            }
         }
     }
 }

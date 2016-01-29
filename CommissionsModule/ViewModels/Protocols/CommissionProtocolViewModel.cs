@@ -21,6 +21,13 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref id, value); }
         }
 
+        private int personId;
+        public int PersonId
+        {
+            get { return personId; }
+            set { SetProperty(ref personId, value); }
+        }
+
         private int? decisionId;
         public int? DecisionId
         {
