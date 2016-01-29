@@ -140,7 +140,7 @@ namespace CommissionsModule.ViewModels
                         x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
                     DecisionName = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
                     x.Comment,
-                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#FFFFFF"
+                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#E5E5E5"
                 }).FirstOrDefaultAsync(token);
                 DecisionDate = commissionDecision.DecisionDate;
                 Stage = commissionDecision.Stage;

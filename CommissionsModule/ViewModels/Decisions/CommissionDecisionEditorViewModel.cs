@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Core.Extensions;
 using System.Data.Entity;
 using Prism.Commands;
+using Core.Data.Services;
 
 namespace CommissionsModule.ViewModels
 {
@@ -23,6 +24,7 @@ namespace CommissionsModule.ViewModels
 
         private readonly ICommissionService commissionService;
         private readonly ILog logService;
+        private readonly IUserService userService;
 
         private readonly Decision unselectedDecision;
 
@@ -32,7 +34,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionDecisionEditorViewModel(ICommissionService commissionService, ILog logService)
+        public CommissionDecisionEditorViewModel(ICommissionService commissionService, ILog logService, IUserService userService)
         {
             if (commissionService == null)
             {
@@ -42,6 +44,11 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("logService");
             }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
+            this.userService = userService;
             this.commissionService = commissionService;
             this.logService = logService;
 
@@ -71,7 +78,11 @@ namespace CommissionsModule.ViewModels
             get { return selectedDecision; }
             set
             {
-                value = SelectDecision(value, Decisions);
+
+                if (value == null)
+                    value = unselectedDecision;
+                else
+                    value = SelectDecision(value, Decisions);
                 SetTrackedProperty(ref selectedDecision, value);
             }
         }
@@ -100,6 +111,13 @@ namespace CommissionsModule.ViewModels
         {
             get { return decisionDateTime; }
             set { SetTrackedProperty(ref decisionDateTime, value); }
+        }
+
+        private bool canEdit;
+        public bool CanEdit
+        {
+            get { return canEdit; }
+            set { SetTrackedProperty(ref canEdit, value); }
         }
 
         public BusyMediator BusyMediator { get; set; }
@@ -137,14 +155,30 @@ namespace CommissionsModule.ViewModels
                         x.DecisionDateTime,
                         x.Decision,
                         x.CommissionProtocol.CommissionQuestionId,
-                        x.CommissionMember.CommissionMemberTypeId
+                        x.CommissionMember.CommissionMemberTypeId,
+                        x.CommissionStage,
+                        PersonStaffId = x.CommissionMember.PersonStaffId ?? 0,
+                        StaffId = x.CommissionMember.StaffId ?? 0,
+                        CommissionDecisions = x.CommissionProtocol.CommissionDecisions.Select(y => new { y.CommissionStage, y.NeedAlllMemmbersInStage, HasDecision = y.DecisionId.HasValue })
                     })
                     .FirstOrDefaultAsync(token);
                 var decisionsList = await Task.Factory.StartNew<IEnumerable<Decision>>(commissionService.GetDecisions, new int[] { commissionDecision.CommissionQuestionId, commissionDecision.CommissionMemberTypeId });
                 var decisions = new[] { unselectedDecision }.Concat(decisionsList).ToArray();
                 logService.InfoFormat("Loaded {0} decisions", (decisions as Decision[]).Length);
                 Decisions.AddRange(decisions);
-
+                // editing ability
+                var currentUserPersonStaffIdsTask = Task.Run((Func<IEnumerable<int>>)userService.GetCurrentUserPersonStaffIds);
+                var currentUserStaffIdsTask = Task.Run((Func<IEnumerable<int>>)userService.GetCurrentUserStaffIds);
+                await Task.WhenAll(currentUserPersonStaffIdsTask, currentUserStaffIdsTask);
+                var currentUserPersonStaffIds = currentUserPersonStaffIdsTask.Result;
+                var currentUserStaffIds = currentUserStaffIdsTask.Result;
+                int curStage = -1;
+                var rStage = commissionDecision.CommissionDecisions.GroupBy(x => x.CommissionStage).OrderBy(x => x.Key)
+                     .FirstOrDefault(x => x.Any(y => y.NeedAlllMemmbersInStage) ? !x.All(y => y.HasDecision) : !x.Any(y => y.HasDecision));
+                if (rStage != null)
+                    curStage = rStage.Key;
+                CanEdit = (currentUserPersonStaffIds.Contains(commissionDecision.PersonStaffId) || currentUserStaffIds.Contains(commissionDecision.StaffId)) && curStage == commissionDecision.CommissionStage;
+                // decision data
                 Comment = commissionDecision.Comment;
                 DecisionDateTime = commissionDecision.DecisionDateTime;
                 NeedDecisionDateTime = commissionDecision.DecisionDateTime.HasValue;
