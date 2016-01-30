@@ -29,15 +29,15 @@ namespace AdminModule.Model
                 var options = new HashSet<string>(context.Set<IdentityDocumentType>().Where(x => x.Options != null).Select(x => x.Options));
                 if (!options.Any(x => x.Contains(IdentityDocumentType.IsRussianPassportOption)))
                 {
-                    result.Add(new ValidationResult(false, string.Format("В таблице IdentityDocumentTypes отсутствует информация о российском паспорте. В его поле Options должно содержаться значение '{0}'", IdentityDocumentType.IsRussianPassportOption)));
+                    result.Add(new ValidationResult(true, string.Format("В таблице IdentityDocumentTypes отсутствует информация о российском паспорте. В его поле Options должно содержаться значение '{0}'", IdentityDocumentType.IsRussianPassportOption)));
                 }
                 if (!options.Any(x => x.Contains(IdentityDocumentType.IsRussianBirthCertificateOption)))
                 {
-                    result.Add(new ValidationResult(false, string.Format("В таблице IdentityDocumentTypes отсутствует информация о российском свидетельстве о рождении. В его поле Options должно содержаться значение '{0}'", IdentityDocumentType.IsRussianBirthCertificateOption)));
+                    result.Add(new ValidationResult(true, string.Format("В таблице IdentityDocumentTypes отсутствует информация о российском свидетельстве о рождении. В его поле Options должно содержаться значение '{0}'", IdentityDocumentType.IsRussianBirthCertificateOption)));
                 }
                 if (!options.Any(x => x.Contains(IdentityDocumentType.IsRussianForeignPassportOption)))
                 {
-                    result.Add(new ValidationResult(false, string.Format("В таблице IdentityDocumentTypes отсутствует информация о российском заграничном паспорте. В его поле Options должно содержаться значение '{0}'", IdentityDocumentType.IsRussianForeignPassportOption)));
+                    result.Add(new ValidationResult(true, string.Format("В таблице IdentityDocumentTypes отсутствует информация о российском заграничном паспорте. В его поле Options должно содержаться значение '{0}'", IdentityDocumentType.IsRussianForeignPassportOption)));
                 }
                 return result;
             }

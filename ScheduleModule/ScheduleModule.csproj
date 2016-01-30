@@ -167,6 +167,10 @@
       <Project>{ee5f4410-13f6-477f-8ad6-99e848234331}</Project>
       <Name>Shared.DataTemplates</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.Patient\Shared.Patient.csproj">
+      <Project>{5D4698BD-6256-4BC5-A566-BE7CD9A840BB}</Project>
+      <Name>Shared.Patient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.Schedule\Shared.Schedule.csproj">
       <Project>{95DCE91E-6880-4977-9861-2F65D8D61264}</Project>
       <Name>Shared.Schedule</Name>

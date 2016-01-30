@@ -23,6 +23,13 @@
                 <Setter Property="Margin"
                     Value="0" />
             </Style>
+            <converters:Converter x:Key="UnselectedPatientToShortNameConverter"
+                                  KeepSourceValueOnDefault="True">
+                <converters:ConverterItem From=""
+                                          To="не выбран" />
+                <converters:ConverterItem From="{x:Null}"
+                                          To="не выбран" />
+            </converters:Converter>
         </ResourceDictionary>
     </fluent:RibbonTabItem.Resources>
     <fluent:RibbonGroupBox Header="Дата">
@@ -100,6 +107,18 @@
                        Size="Large"
                        Command="{Binding ScheduleContentViewModel.ClearFiltersCommand, Mode=OneTime}"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" />
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="{Binding ScheduleContentViewModel.CurrentPatientShortName, StringFormat='Пациент {0}', Converter={StaticResource UnselectedPatientToShortNameConverter}}"
+                           MinWidth="150"
+                           HorizontalContentAlignment="Center">
+        <fluent:DropDownButton Header="Список назначений"
+                               HorizontalAlignment="Center"
+                               LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentList48x48.png"
+                               IsEnabled="{Binding ScheduleContentViewModel.PatientAssignmentListViewModel.PatientIsSelected}"
+                               IsDropDownOpen="{Binding ScheduleContentViewModel.PatientAssignmentListViewModel.StartAssignmentLoading, Mode=OneWayToSource}">
+            <ContentControl Content="{Binding ScheduleContentViewModel.PatientAssignmentListViewModel, Mode=OneTime}"
+                            MaxHeight="300" />
+        </fluent:DropDownButton>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Перенос"
                            Visibility="{Binding ScheduleContentViewModel.IsMovingAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">

@@ -114,6 +114,7 @@
     <Compile Include="Converters\BoolToCollapsedConverter.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
     <Compile Include="Converters\CommissionStatusToImageConverter.cs" />
+    <Compile Include="Converters\DateToUserFriendlyStringConverter.cs" />
     <Compile Include="Converters\IntToColorConverter.cs" />
     <Compile Include="Converters\MultiBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToInversedVisibilitConverter.cs" />

@@ -55,6 +55,7 @@ namespace PatientInfoModule.ViewModels
                                     ILog log,
                                     IDialogServiceAsync dialogService,
                                     PatientInfoViewModel patientInfo,
+                                    PatientAssignmentListViewModel patientAssignmentList,
                                     IRegionManager regionManager,
                                     IViewNameResolver viewNameResolver,
                                     Func<PatientInfoViewModel> relativeInfoFactory,
@@ -79,6 +80,10 @@ namespace PatientInfoModule.ViewModels
             if (patientInfo == null)
             {
                 throw new ArgumentNullException("patientInfo");
+            }
+            if (patientAssignmentList == null)
+            {
+                throw new ArgumentNullException("patientAssignmentList");
             }
             if (relativeInfoFactory == null)
             {
@@ -110,7 +115,8 @@ namespace PatientInfoModule.ViewModels
             this.viewNameResolver = viewNameResolver;
             this.relativeInfoFactory = relativeInfoFactory;
             this.relativeSearchFactory = relativeSearchFactory;
-            currentPatientId = SpecialValues.NonExistingId;
+            PatientAssignmentListViewModel = patientAssignmentList;
+            currentPatientId = PatientAssignmentListViewModel.PatientId = SpecialValues.NonExistingId;
             Relatives = new ObservableCollectionEx<PatientInfoViewModel>();
             Relatives.BeforeCollectionChanged += RelativesOnBeforeCollectionChanged;
             changeTracker = new CompositeChangeTracker(patientInfo.ChangeTracker, new ObservableCollectionChangeTracker<PatientInfoViewModel>(Relatives));
@@ -134,6 +140,8 @@ namespace PatientInfoModule.ViewModels
             currentOperation.SetResult(null);
             eventAggregator.GetEvent<BeforeSelectionChangedEvent<Person>>().Subscribe(OnBeforePatientSelected);
         }
+
+        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
 
         private void OnBeforePatientSelected(BeforeSelectionChangedEventData data)
         {
@@ -247,7 +255,7 @@ namespace PatientInfoModule.ViewModels
                 await patientInfo.SaveChangesAsync();
                 if (isNewPatient)
                 {
-                    currentPatientId = patientInfo.CurrentPerson.Id;
+                    currentPatientId = PatientAssignmentListViewModel.PatientId = patientInfo.CurrentPerson.Id;
                     eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
                 }
                 foreach (var relative in Relatives.Where(x => x.CurrentPerson.Id.IsNewOrNonExisting() || x.ChangeTracker.HasChanges))
@@ -564,7 +572,7 @@ namespace PatientInfoModule.ViewModels
                 ChangeTracker.IsEnabled = false;
                 patientIdBeingLoaded = targetPatientId;
                 await Task.WhenAll(patientInfo.LoadPatientInfoAsync(targetPatientId), LoadRelativesAsync(targetPatientId));
-                currentPatientId = targetPatientId;
+                currentPatientId = PatientAssignmentListViewModel.PatientId = targetPatientId;
                 patientIdBeingLoaded = SpecialValues.NonExistingId;
                 ChangeTracker.IsEnabled = true;
                 UpdateCommandsState();

@@ -25,6 +25,7 @@ using ScheduleModule.DTO;
 using ScheduleModule.Exceptions;
 using ScheduleModule.Misc;
 using ScheduleModule.Services;
+using Shared.Patient.ViewModels;
 using Shared.Schedule.Events;
 
 namespace ScheduleModule.ViewModels
@@ -52,6 +53,7 @@ namespace ScheduleModule.ViewModels
         private readonly IEventAggregator eventAggregator;
 
         public ScheduleContentViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
+                                        PatientAssignmentListViewModel patientAssignmentListViewModel,
                                         INotificationService notificationService,
                                         IScheduleService scheduleService,
                                         ILog log,
@@ -97,7 +99,12 @@ namespace ScheduleModule.ViewModels
             {
                 throw new ArgumentNullException("overlayAssignmentCollectionViewModel");
             }
+            if (patientAssignmentListViewModel == null)
+            {
+                throw new ArgumentNullException("patientAssignmentListViewModel");
+            }
             OverlayAssignmentCollectionViewModel = overlayAssignmentCollectionViewModel;
+            PatientAssignmentListViewModel = patientAssignmentListViewModel;
             this.notificationService = notificationService;
             this.securityService = securityService;
             this.eventAggregator = eventAggregator;
@@ -400,6 +407,8 @@ namespace ScheduleModule.ViewModels
         }
 
         #region Assignments
+
+        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
 
         private async void RoomOnAssignmentCreationRequested(object sender, ReturnEventArgs<FreeTimeSlotViewModel> e)
         {
@@ -890,6 +899,12 @@ namespace ScheduleModule.ViewModels
 
         private string currentPatientShortName;
 
+        public string CurrentPatientShortName
+        {
+            get { return currentPatientShortName; }
+            private set { SetProperty(ref currentPatientShortName, value); }
+        }
+
         private int currentPatientId;
 
         public int CurrentPatientId
@@ -897,11 +912,16 @@ namespace ScheduleModule.ViewModels
             get { return currentPatientId; }
             set
             {
-                currentPatientId = value;
+                PatientAssignmentListViewModel.PatientId = currentPatientId = value;
+                if (currentPatientId.IsNewOrNonExisting())
+                {
+                    CurrentPatientShortName = string.Empty;
+                    return;
+                }
                 var query = scheduleService.GetPatientQuery(currentPatientId);
                 try
                 {
-                    currentPatientShortName = query.Select(x => x.ShortName).FirstOrDefault();
+                    CurrentPatientShortName = query.Select(x => x.ShortName).FirstOrDefault();
                 }
                 catch (Exception ex)
                 {

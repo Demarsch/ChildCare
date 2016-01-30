@@ -1,0 +1,101 @@
+﻿<UserControl x:Class="Shared.Patient.Views.PatientAssignmentListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:Shared.Patient.ViewModels"
+             xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             mc:Ignorable="d"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance viewModels:PatientAssignmentListViewModel}"
+             MinWidth="200">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="Assignments"
+                              Source="{Binding Assignments}">
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="AssignDateTime"
+                                                Direction="Descending" />
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="AssignDateTime.Date" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+        <converters:DateToUserFriendlyStringConverter x:Key="DateToUserFriendlyStringConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <ListBox HorizontalAlignment="Stretch"
+                 VerticalAlignment="Stretch"
+                 BorderBrush="Black"
+                 BorderThickness="1"
+                 HorizontalContentAlignment="Stretch"
+                 ItemsSource="{Binding Source={StaticResource Assignments}}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="BorderBrush"
+                            Value="Black" />
+                    <Setter Property="BorderThickness"
+                            Value="0" />
+                    <Setter Property="Margin"
+                            Value="0 0 0 1" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:PatientAssignmentViewModel}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Grid.RowSpan="2"
+                                   Text="{Binding AssignDateTime, StringFormat=HH:mm, Mode=OneTime}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="1"
+                                   Text="{Binding RecordType, Mode=OneTime}"
+                                   TextWrapping="Wrap" />
+                        <!--Cancel assignment button-->
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="1"
+                                   Text="{Binding Room, Mode=OneTime}"
+                                   FontStyle="Italic" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate DataType="{x:Type CollectionViewGroup}">
+                            <Label BorderBrush="Black"
+                                   FontWeight="SemiBold"
+                                   BorderThickness="0 1 0 1"
+                                   Background="LightBlue"
+                                   Content="{Binding Name, Converter={StaticResource DateToUserFriendlyStringConverter}}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListBox.GroupStyle>
+        </ListBox>
+        <TextBlock Text="У пациента нет ни одного назначения"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   IsHitTestVisible="False"
+                   Visibility="{Binding NoAssignments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}" />
+        <ContentControl Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding FailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+    </Grid>
+</UserControl>

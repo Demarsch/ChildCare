@@ -158,15 +158,22 @@
     <Compile Include="Model\User Input Processing\Search Expression Providers\PersonNamesSearchExpressionProvider.cs" />
     <Compile Include="Model\User Input Processing\Search Expression Providers\PersonSnilsSearchExpressionProvider.cs" />
     <Compile Include="Services\Implementations\DocumentService.cs" />
+    <Compile Include="Services\Implementations\PatientAssignmentService.cs" />
     <Compile Include="Services\Implementations\PersonSearchService.cs" />
     <Compile Include="Services\Interfaces\IDocumentService.cs" />
+    <Compile Include="Services\Interfaces\IPatientAssignmentService.cs" />
     <Compile Include="Services\Interfaces\IPersonSearchService.cs" />
     <Compile Include="ViewModels\FoundPersonViewModel.cs" />
     <Compile Include="ViewModels\MediaInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\PatientAssignmentListViewModel.cs" />
+    <Compile Include="ViewModels\PatientAssignmentViewModel.cs" />
     <Compile Include="ViewModels\PersonSearchDialogViewModel.cs" />
     <Compile Include="ViewModels\PersonSearchViewModel.cs" />
     <Compile Include="ViewModels\PhotoViewModel.cs" />
+    <Compile Include="Views\PatientAssignmentListView.xaml.cs">
+      <DependentUpon>PatientAssignmentListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PatientSearchControl.xaml.cs">
       <DependentUpon>PatientSearchControl.xaml</DependentUpon>
     </Compile>
@@ -197,6 +204,10 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PatientAssignmentListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PersonSearchDialogView.xaml">
       <Generator>MSBuild:Compile</Generator>

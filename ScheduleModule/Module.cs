@@ -9,6 +9,7 @@ using Prism.Regions;
 using ScheduleModule.Services;
 using ScheduleModule.ViewModels;
 using ScheduleModule.Views;
+using Shared.Patient.Misc;
 using Shell.Shared;
 
 namespace ScheduleModule
@@ -80,6 +81,7 @@ namespace ScheduleModule
         private void RegisterServices()
         {
             container.RegisterType<IScheduleService, ScheduleService>(new ContainerControlledLifetimeManager());
+            PersonServicesInitializer.Initialize(container);
         }
     }
 }

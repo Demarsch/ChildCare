@@ -9,6 +9,7 @@ using Prism;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
+using Shared.Patient.ViewModels;
 using Shell.Shared;
 
 namespace PatientInfoModule.ViewModels
@@ -50,6 +51,8 @@ namespace PatientInfoModule.ViewModels
             SubscribeToEvents();
         }
 
+        public PatientAssignmentListViewModel PatientAssignmentListViewModel { get; private set; }
+
         public InfoContentViewModel ContentViewModel { get; private set; }
 
         private int patientId;
@@ -67,13 +70,7 @@ namespace PatientInfoModule.ViewModels
         private void OnPatientSelected(int patientId)
         {
             this.patientId = patientId;
-            LoadSelectedPatientData();
             ActivatePatientInfo();
-        }
-
-        private void LoadSelectedPatientData()
-        {
-            //TODO:
         }
 
         private void UnsubscriveFromEvents()
