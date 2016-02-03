@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
              xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
@@ -13,6 +14,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Shared.DataTemplates;Component/Core.Data.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -25,19 +27,30 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0">Решение</TextBlock>
-        <controls:TreeViewComboBox Grid.Row="0"
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextAlignment="Center" Foreground="Maroon"
+                   Text="{Binding ErrorText}" Visibility="{Binding CanEdit, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}" />
+        <TextBlock Grid.Row="1" Grid.Column="0">
+                    <Run Text="Решение" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+        </TextBlock>
+        <controls:TreeViewComboBox Grid.Row="1"
                                        Grid.Column="1"
                                        Margin="0,0,20,0"
                                        ItemsSource="{Binding Decisions}"
-                                       SelectedItem="{Binding SelectedDecision}"
+                                       SelectedItem="{Binding SelectedDecision, ValidatesOnDataErrors=True}"
+                                       Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                        DisplayMemberPath="Name"
                                        ItemTemplate="{StaticResource DecisionsTree}"
                                        FilterPredicate="{x:Static data:Decision.DecisionFilterPredicate}"/>
-        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Top">Рекомендации/комментарий</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" TextWrapping="WrapWithOverflow" Height="90" VerticalContentAlignment="Top" AcceptsReturn="True" Text="{Binding Comment}"/>
-        <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding NeedDecisionDateTime}">Дата для решения</CheckBox>
-        <DatePicker Grid.Row="2" Grid.Column="1" DisplayDate="{Binding DecisionDateTime}" IsEnabled="{Binding NeedDecisionDateTime}" HorizontalAlignment="Left"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Top">Рекомендации/комментарий</TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1" TextWrapping="WrapWithOverflow" Height="90" VerticalContentAlignment="Top" AcceptsReturn="True" Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"/>
+        
+        <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding NeedToDoDecisionDateTime, ValidatesOnDataErrors=True}">Дата для решения</CheckBox>
+        <DatePicker Grid.Row="3" Grid.Column="1" SelectedDate="{Binding ToDoDecisionDateTime, ValidatesOnDataErrors=True}" IsEnabled="{Binding NeedToDoDecisionDateTime}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
+                    HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>

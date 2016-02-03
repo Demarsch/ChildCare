@@ -24,7 +24,7 @@ using Core.Services;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionDecisionsViewModel : BindableBase, INavigationAware, IDisposable
+    public class CommissionDecisionsViewModel : BindableBase, INavigationAware, IDisposable, IChangeTrackerMediator
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -89,9 +89,13 @@ namespace CommissionsModule.ViewModels
             saveDecisionCommandWrapper = new CommandWrapper() { Command = saveDecisionCommand, CommandName = "Повторить" };
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            NotificationMediator = new NotificationMediator();
+            ChangeTracker = new ChangeTrackerEx<CommissionDecisionEditorViewModel>(CommissionDecisionEditorViewModel);
+            ChangeTracker.PropertyChanged += ChangeTracker_PropertyChanged;
             CommissionDecisions = new ObservableCollectionEx<CommissionDecisionViewModel>();
-            saveDecisionCommand = new DelegateCommand(SaveDecision);
+            saveDecisionCommand = new DelegateCommand(SaveDecision, CanSaveDecision);
         }
+
         #endregion
 
         #region Properties
@@ -113,7 +117,10 @@ namespace CommissionsModule.ViewModels
             set
             {
                 if (SetProperty(ref selectedCommissionDecision, value) && SelectedCommissionDecision != null)
+                {
+                    CommissionDecisionEditorViewModel.ChangeTracker = ChangeTracker;
                     CommissionDecisionEditorViewModel.Initialize(SelectedCommissionDecision.CommissionDecisionId);
+                }
             }
         }
 
@@ -122,6 +129,8 @@ namespace CommissionsModule.ViewModels
         public CommissionDecisionEditorViewModel CommissionDecisionEditorViewModel { get; set; }
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
+        public NotificationMediator NotificationMediator { get; set; }
+        public IChangeTracker ChangeTracker { get; set; }
         #endregion
 
         #region Methods
@@ -208,18 +217,28 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        private bool CanSaveDecision()
+        {
+            if (CommissionDecisionEditorViewModel == null || SelectedCommissionDecision == null)
+            {
+                return false;
+            }
+            return ChangeTracker.HasChanges;
+        }
+
         private async void SaveDecision()
         {
             logService.Info("Saving commission decision...");
             FailureMediator.Deactivate();
             BusyMediator.Activate("Сохранение данных...");
             currentOperationToken = new CancellationTokenSource();
+            var savedSuccessfull = false;
             var token = currentOperationToken.Token;
             try
             {
                 //CommissionDecisionEditorViewModel
                 var error = await commissionService.SaveDecision(CommissionDecisionEditorViewModel.CommissionDecisionId, CommissionDecisionEditorViewModel.SelectedDecision.Id, CommissionDecisionEditorViewModel.Comment,
-                     CommissionDecisionEditorViewModel.DecisionDateTime, token);
+                     CommissionDecisionEditorViewModel.ToDoDecisionDateTime, token);
                 if (error != string.Empty)
                 {
                     logService.ErrorFormat("Failed to save commission decision with error {0}", error);
@@ -227,7 +246,10 @@ namespace CommissionsModule.ViewModels
                         saveDecisionCommandWrapper, canBeDeactivated: true);
                 }
                 else
+                {
+                    savedSuccessfull = true;
                     await SelectedCommissionDecision.Initialize(CommissionDecisionEditorViewModel.CommissionDecisionId);
+                }
             }
             catch (Exception ex)
             {
@@ -236,9 +258,26 @@ namespace CommissionsModule.ViewModels
             }
             finally
             {
+                if (savedSuccessfull)
+                {
+                    ChangeTracker.AcceptChanges();
+                    NotificationMediator.Activate("Данные сохранены.", NotificationMediator.DefaultHideTime);
+                }
                 BusyMediator.Deactivate();
             }
         }
+        #endregion
+
+        #region Events
+
+        void ChangeTracker_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                saveDecisionCommand.RaiseCanExecuteChanged();
+            }
+        }
+
         #endregion
 
         #region Commands

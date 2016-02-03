@@ -92,6 +92,7 @@
     <Compile Include="ViewModels\Decisions\CommissionDecisionHeaderViewModel.cs" />
     <Compile Include="ViewModels\Decisions\CommissionDecisionsViewModel.cs" />
     <Compile Include="ViewModels\Decisions\CommissionDecisionViewModel.cs" />
+    <Compile Include="ViewModels\Decisions\ValidationMediator.cs" />
     <Compile Include="ViewModels\Protocols\CommissionProtocolViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionsListViewModel.cs" />

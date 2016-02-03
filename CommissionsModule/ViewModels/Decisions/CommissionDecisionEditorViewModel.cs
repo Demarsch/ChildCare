@@ -15,10 +15,13 @@ using Core.Extensions;
 using System.Data.Entity;
 using Prism.Commands;
 using Core.Data.Services;
+using Core.Misc;
+using System.ComponentModel;
+using CommissionsModule.ViewModels.Decisions;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionDecisionEditorViewModel : TrackableBindableBase
+    public class CommissionDecisionEditorViewModel : TrackableBindableBase, IChangeTrackerMediator, IDataErrorInfo
     {
         #region Fields
 
@@ -31,6 +34,8 @@ namespace CommissionsModule.ViewModels
         private CommandWrapper reloadCommissionDecisionCommandWrapper;
 
         private CancellationTokenSource currentOperationToken;
+
+        private readonly ValidationMediator validator;
         #endregion
 
         #region Constructors
@@ -55,6 +60,8 @@ namespace CommissionsModule.ViewModels
             reloadCommissionDecisionCommandWrapper = new CommandWrapper() { Command = new DelegateCommand<int?>(Initialize), CommandParameter = CommissionDecisionId, CommandName = "Повторить" };
             unselectedDecision = new Decision { Name = "Выберите решение" };
 
+            validator = new ValidationMediator(this);
+
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
 
@@ -69,7 +76,7 @@ namespace CommissionsModule.ViewModels
         public int CommissionDecisionId
         {
             get { return commissionDecisionId; }
-            private set { SetProperty(ref commissionDecisionId, value); }
+            private set { SetTrackedProperty(ref commissionDecisionId, value); }
         }
 
         private Decision selectedDecision;
@@ -94,34 +101,42 @@ namespace CommissionsModule.ViewModels
             set { SetTrackedProperty(ref comment, value); }
         }
 
-        private bool needDecisionDateTime;
-        public bool NeedDecisionDateTime
+        private bool needtoDoDecisionDateTime;
+        public bool NeedToDoDecisionDateTime
         {
-            get { return needDecisionDateTime; }
+            get { return needtoDoDecisionDateTime; }
             set
             {
-                SetTrackedProperty(ref needDecisionDateTime, value);
+                SetTrackedProperty(ref needtoDoDecisionDateTime, value);
                 if (!value)
-                    DecisionDateTime = null;
+                    ToDoDecisionDateTime = null;
             }
         }
 
-        private DateTime? decisionDateTime;
-        public DateTime? DecisionDateTime
+        private DateTime? toDoDecisionDateTime;
+        public DateTime? ToDoDecisionDateTime
         {
-            get { return decisionDateTime; }
-            set { SetTrackedProperty(ref decisionDateTime, value); }
+            get { return toDoDecisionDateTime; }
+            set { SetTrackedProperty(ref toDoDecisionDateTime, value); }
         }
 
         private bool canEdit;
         public bool CanEdit
         {
             get { return canEdit; }
-            set { SetTrackedProperty(ref canEdit, value); }
+            set { SetProperty(ref canEdit, value); }
+        }
+
+        private string errorText;
+        public string ErrorText
+        {
+            get { return errorText; }
+            set { SetProperty(ref errorText, value); }
         }
 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
+        public IChangeTracker ChangeTracker { get; set; }
 
         #endregion
 
@@ -130,6 +145,7 @@ namespace CommissionsModule.ViewModels
         public async void Initialize(int? commissionDecisionId)
         {
             var commDecisionId = commissionDecisionId.ToInt();
+            ErrorText = string.Empty;
             Decisions.Clear();
             if (commDecisionId < 1)
                 return;
@@ -159,6 +175,7 @@ namespace CommissionsModule.ViewModels
                         x.CommissionStage,
                         PersonStaffId = x.CommissionMember.PersonStaffId ?? 0,
                         StaffId = x.CommissionMember.StaffId ?? 0,
+                        CommissionProtocolIsCompleted = x.CommissionProtocol.IsCompleted,
                         CommissionDecisions = x.CommissionProtocol.CommissionDecisions.Select(y => new { y.CommissionStage, y.NeedAlllMemmbersInStage, HasDecision = y.DecisionId.HasValue })
                     })
                     .FirstOrDefaultAsync(token);
@@ -177,11 +194,24 @@ namespace CommissionsModule.ViewModels
                      .FirstOrDefault(x => x.Any(y => y.NeedAlllMemmbersInStage) ? !x.All(y => y.HasDecision) : !x.Any(y => y.HasDecision));
                 if (rStage != null)
                     curStage = rStage.Key;
-                CanEdit = (currentUserPersonStaffIds.Contains(commissionDecision.PersonStaffId) || currentUserStaffIds.Contains(commissionDecision.StaffId)) && curStage == commissionDecision.CommissionStage;
+                else
+                    curStage = commissionDecision.CommissionDecisions.Max(x => x.CommissionStage);
+                CanEdit = (currentUserPersonStaffIds.Contains(commissionDecision.PersonStaffId) || currentUserStaffIds.Contains(commissionDecision.StaffId)) && curStage == commissionDecision.CommissionStage &&
+                    commissionDecision.CommissionProtocolIsCompleted != true;
+
+                if (commissionDecision.CommissionProtocolIsCompleted == true)
+                    ErrorText = "Комиссия уже завершена! Вынесение решения невозможно";
+                else if (curStage > commissionDecision.CommissionStage)
+                    ErrorText = "Данный этап комиссии уже пройден";
+                else if (curStage < commissionDecision.CommissionStage)
+                    ErrorText = "Данный этап комиссии еще не активен";
+                else if (!currentUserPersonStaffIds.Contains(commissionDecision.PersonStaffId) && !currentUserStaffIds.Contains(commissionDecision.StaffId))
+                    ErrorText = "Вы не являетесь членом комиссии, который принимает данное решение";
+
                 // decision data
                 Comment = commissionDecision.Comment;
-                DecisionDateTime = commissionDecision.DecisionDateTime;
-                NeedDecisionDateTime = commissionDecision.DecisionDateTime.HasValue;
+                ToDoDecisionDateTime = commissionDecision.DecisionDateTime;
+                NeedToDoDecisionDateTime = commissionDecision.DecisionDateTime.HasValue;
                 SelectedDecision = commissionDecision.Decision;
                 loadingIsCompleted = true;
             }
@@ -200,6 +230,8 @@ namespace CommissionsModule.ViewModels
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
+                    if (ChangeTracker != null)
+                        ChangeTracker.IsEnabled = true;
                 }
                 if (commissionDecisionsQuery != null)
                 {
@@ -222,6 +254,61 @@ namespace CommissionsModule.ViewModels
             return returnDecision;
         }
 
+        #endregion
+
+
+        #region IDataErrorInfo implementation
+
+        public string Error
+        {
+            get { return validator.Error; }
+        }
+
+        public string this[string columnName]
+        {
+            get { return validator[columnName]; }
+        }
+
+        private class ValidationMediator : ValidationMediator<CommissionDecisionEditorViewModel>
+        {
+            public ValidationMediator(CommissionDecisionEditorViewModel associatedItem)
+                : base(associatedItem)
+            {
+            }
+
+            protected override void OnValidateProperty(string propertyName)
+            {
+                if (PropertyNameEquals(propertyName, x => x.SelectedDecision))
+                {
+                    ValidateDecision();
+                }
+                if (PropertyNameEquals(propertyName, x => x.ToDoDecisionDateTime))
+                {
+                    ValidateToDoDecisionDateTime();
+                }
+            }
+
+            protected override void RaiseAssociatedObjectPropertyChanged()
+            {
+                AssociatedItem.OnPropertyChanged(string.Empty);
+            }
+
+            protected override void OnValidate()
+            {
+                ValidateDecision();
+                ValidateToDoDecisionDateTime();
+            }
+
+            private void ValidateDecision()
+            {
+                SetError(x => x.SelectedDecision, AssociatedItem.selectedDecision == null || AssociatedItem.SelectedDecision.Id < 1 ? "Необходимо указать решение" : string.Empty);
+            }
+
+            private void ValidateToDoDecisionDateTime()
+            {
+                SetError(x => x.ToDoDecisionDateTime, AssociatedItem.ToDoDecisionDateTime == null && AssociatedItem.NeedToDoDecisionDateTime ? "Необходимо указать дату, когда требуется выполнить решение" : string.Empty);
+            }
+        }
         #endregion
     }
 }
