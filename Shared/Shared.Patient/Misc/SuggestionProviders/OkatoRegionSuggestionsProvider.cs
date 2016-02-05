@@ -6,7 +6,7 @@ using Core.Misc;
 using Core.Services;
 using Core.Wpf.Misc;
 
-namespace PatientInfoModule.Misc
+namespace Shared.Patient.Misc
 {
     public class OkatoRegionSuggestionsProvider : ISuggestionsProvider
     {

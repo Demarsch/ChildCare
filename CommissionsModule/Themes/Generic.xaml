@@ -4,6 +4,10 @@
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/Decisions/CommissionDecisionView.xaml" />
+
+        <ResourceDictionary Source="../Views/Protocols/PreliminaryProtocolView.xaml" />
+        <ResourceDictionary Source="../Views/Protocols/CommissionСonductView.xaml" />
+        <ResourceDictionary Source="../Views/Protocols/CommissionСonclusionView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate DataType="{x:Type viewModels:CommissionDecisionEditorViewModel}">

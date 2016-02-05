@@ -1,0 +1,13 @@
+﻿<ResourceDictionary x:Class="CommissionsModule.Views.CommissionСonductView"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <DataTemplate DataType="{x:Type viewModels:CommissionСonductViewModel}" >
+        <Grid>
+            <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

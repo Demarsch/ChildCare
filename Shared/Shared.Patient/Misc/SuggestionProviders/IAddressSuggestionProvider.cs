@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Core.Data;
 using Core.Wpf.Misc;
 
-namespace PatientInfoModule.Misc
+namespace Shared.Patient.Misc
 {
     public interface IAddressSuggestionProvider : INotifyPropertyChanged
     {

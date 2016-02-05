@@ -4,84 +4,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionProtocolViewModel: BindableBase
+    public class CommissionProtocolViewModel : BindableBase
     {
-        public CommissionProtocolViewModel()
+        #region Constructiors
+        public CommissionProtocolViewModel(PreliminaryProtocolViewModel preliminaryProtocolViewModel, CommissionСonductViewModel commissionСonductViewModel, CommissionСonclusionViewModel commissionСonclusionViewModel)
         {
+            if (preliminaryProtocolViewModel == null)
+            {
+                throw new ArgumentNullException("preliminaryProtocolViewModel");
+            }
+            if (commissionСonductViewModel == null)
+            {
+                throw new ArgumentNullException("commissionСonductViewModel");
+            }
+            if (commissionСonclusionViewModel == null)
+            {
+                throw new ArgumentNullException("commissionСonclusionViewModel");
+            }
+            PreliminaryProtocolViewModel = preliminaryProtocolViewModel;
+            CommissionСonductViewModel = commissionСonductViewModel;
+            CommissionСonclusionViewModel = commissionСonclusionViewModel;
         }
+        #endregion
 
-        private int id;
-        public int Id
-        {
-            get { return id; }
-            set { SetProperty(ref id, value); }
-        }
+        #region Properties
 
-        private int personId;
-        public int PersonId
-        {
-            get { return personId; }
-            set { SetProperty(ref personId, value); }
-        }
+        public PreliminaryProtocolViewModel PreliminaryProtocolViewModel { get; set; }
+        public CommissionСonductViewModel CommissionСonductViewModel { get; set; }
+        public CommissionСonclusionViewModel CommissionСonclusionViewModel { get; set; }
 
-        private int? decisionId;
-        public int? DecisionId
-        {
-            get { return decisionId; }
-            set { SetProperty(ref decisionId, value); }
-        }
-
-        private string decisionColorHex;
-        public string DecisionColorHex
-        {
-            get { return decisionColorHex; }
-            set { SetProperty(ref decisionColorHex, value); }
-        }    
-
-        private bool? isCompleted;
-        public bool? IsCompleted
-        {
-            get { return isCompleted; }
-            set { SetProperty(ref isCompleted, value); }
-        }
-
-        private string patientFIO;
-        public string PatientFIO
-        {
-            get { return patientFIO; }
-            set { SetProperty(ref patientFIO, value); }
-        }
-
-        private string birthDate;
-        public string BirthDate
-        {
-            get { return birthDate; }
-            set { SetProperty(ref birthDate, value); }
-        }
-
-        private string talon;
-        public string Talon
-        {
-            get { return talon; }
-            set { SetProperty(ref talon, value); }
-        }
-
-        private string mkb;
-        public string MKB
-        {
-            get { return mkb; }
-            set { SetProperty(ref mkb, value); }
-        }
-
-        private string incomeDateTime;
-        public string IncomeDateTime
-        {
-            get { return incomeDateTime; }
-            set { SetProperty(ref incomeDateTime, value); }
-        }
+        #endregion
     }
 }

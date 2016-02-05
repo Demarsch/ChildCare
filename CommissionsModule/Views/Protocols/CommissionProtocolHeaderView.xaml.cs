@@ -8,17 +8,17 @@ namespace CommissionsModule.Views
     /// <summary>
     /// Interaction logic for CommissionsHeaderView.xaml
     /// </summary>
-    public partial class CommissionsHeaderView
+    public partial class CommissionProtocolHeaderView
     {
-        public CommissionsHeaderView()
+        public CommissionProtocolHeaderView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public CommissionsHeaderViewModel ViewModel
+        public CommissionProtocolHeaderViewModel ViewModel
         {
-            get { return DataContext as CommissionsHeaderViewModel; }
+            get { return DataContext as CommissionProtocolHeaderViewModel; }
             set { DataContext = value; }
         }
     }

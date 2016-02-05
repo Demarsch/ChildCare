@@ -11,7 +11,7 @@ using log4net;
 using Microsoft.Practices.Unity;
 using Prism.Mvvm;
 
-namespace PatientInfoModule.Misc
+namespace Shared.Patient.Misc
 {
     public class AddressSuggestionProvider : BindableBase, IAddressSuggestionProvider
     {

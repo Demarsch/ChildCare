@@ -92,11 +92,14 @@
     <Compile Include="ViewModels\Decisions\CommissionDecisionHeaderViewModel.cs" />
     <Compile Include="ViewModels\Decisions\CommissionDecisionsViewModel.cs" />
     <Compile Include="ViewModels\Decisions\CommissionDecisionViewModel.cs" />
-    <Compile Include="ViewModels\Decisions\ValidationMediator.cs" />
-    <Compile Include="ViewModels\Protocols\CommissionProtocolViewModel.cs" />
-    <Compile Include="ViewModels\Protocols\CommissionsHeaderViewModel.cs" />
-    <Compile Include="ViewModels\Protocols\CommissionsListViewModel.cs" />
+    <Compile Include="ViewModels\ListProtocols\CommissionProtocolListViewModel.cs" />
+    <Compile Include="ViewModels\ListProtocols\CommissionsListViewModel.cs" />
     <Compile Include="ViewModels\CommissionEmptyViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionProtocolHeaderViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionProtocolViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionСonclusionViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionСonductViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\PreliminaryProtocolViewModel.cs" />
     <Compile Include="Views\Decisions\CommissionDecisionEditorView.xaml.cs">
       <DependentUpon>CommissionDecisionEditorView.xaml</DependentUpon>
     </Compile>
@@ -106,14 +109,17 @@
     <Compile Include="Views\Decisions\CommissionDecisionsView.xaml.cs">
       <DependentUpon>CommissionDecisionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Protocols\CommissionsHeaderView.xaml.cs">
-      <DependentUpon>CommissionsHeaderView.xaml</DependentUpon>
+    <Compile Include="Views\Protocols\CommissionProtocolHeaderView.xaml.cs">
+      <DependentUpon>CommissionProtocolHeaderView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Protocols\CommissionsListView.xaml.cs">
+    <Compile Include="Views\ListProtocols\CommissionsListView.xaml.cs">
       <DependentUpon>CommissionsListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CommissionEmptyView.xaml.cs">
       <DependentUpon>CommissionEmptyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Protocols\CommissionProtocolView.xaml.cs">
+      <DependentUpon>CommissionProtocolView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -136,9 +142,17 @@
       <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PatientRecordsModule\Shared.PatientRecords.csproj">
+      <Project>{5b63c016-181b-49e5-9b91-9120a78ebf72}</Project>
+      <Name>Shared.PatientRecords</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.DataTemplates\Shared.DataTemplates.csproj">
       <Project>{ee5f4410-13f6-477f-8ad6-99e848234331}</Project>
       <Name>Shared.DataTemplates</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.Patient\Shared.Patient.csproj">
+      <Project>{5d4698bd-6256-4bc5-a566-be7cd9a840bb}</Project>
+      <Name>Shared.Patient</Name>
     </ProjectReference>
     <ProjectReference Include="..\Shell.Shared\Shell.Shared.csproj">
       <Project>{4e0d997f-374e-43be-9617-8da82504b7c8}</Project>
@@ -167,17 +181,33 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Protocols\CommissionsHeaderView.xaml">
+    <Page Include="Views\Protocols\CommissionСonclusionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Protocols\CommissionСonductView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Protocols\PreliminaryProtocolView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Protocols\CommissionProtocolHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Protocols\CommissionsListView.xaml">
+    <Page Include="Views\ListProtocols\CommissionsListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CommissionEmptyView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Protocols\CommissionProtocolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

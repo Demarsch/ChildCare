@@ -150,6 +150,10 @@
     <Compile Include="Misc\CmdBehavior\IExecutionStrategy.cs" />
     <Compile Include="Misc\PersonSearchQuery.cs" />
     <Compile Include="Misc\PersonSearchSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\AddressSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\IAddressSuggestionProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\OkatoRegionSuggestionsProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
     <Compile Include="Model\User Input Processing\Input Normalization\IUserInputNormalizer.cs" />
     <Compile Include="Model\User Input Processing\Input Normalization\UserInputNormalizer.cs" />
     <Compile Include="Model\User Input Processing\Search Expression Providers\PersonBirthDateSearchExpressionProvider.cs" />
@@ -163,6 +167,7 @@
     <Compile Include="Services\Interfaces\IDocumentService.cs" />
     <Compile Include="Services\Interfaces\IPatientAssignmentService.cs" />
     <Compile Include="Services\Interfaces\IPersonSearchService.cs" />
+    <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\FoundPersonViewModel.cs" />
     <Compile Include="ViewModels\MediaInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -171,6 +176,9 @@
     <Compile Include="ViewModels\PersonSearchDialogViewModel.cs" />
     <Compile Include="ViewModels\PersonSearchViewModel.cs" />
     <Compile Include="ViewModels\PhotoViewModel.cs" />
+    <Compile Include="Views\AddressView.xaml.cs">
+      <DependentUpon>AddressView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PatientAssignmentListView.xaml.cs">
       <DependentUpon>PatientAssignmentListView.xaml</DependentUpon>
     </Compile>
@@ -202,6 +210,10 @@
   <ItemGroup />
   <ItemGroup>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AddressView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

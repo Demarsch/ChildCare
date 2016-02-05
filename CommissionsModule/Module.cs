@@ -16,6 +16,11 @@ using CommissionsModule.ViewModels;
 using CommissionsModule.Views;
 using CommissionsModule.Services;
 using System.Windows;
+using Shared.Patient.Misc;
+using Shared.PatientRecords.Services;
+using Core.Wpf.Misc;
+using Shared.Patient.Views;
+using Shared.Patient.ViewModels;
 
 namespace CommissionsModule
 {
@@ -70,18 +75,24 @@ namespace CommissionsModule
         private void RegisterViewModels()
         {
             container.RegisterType<CommissionEmptyViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<CommissionsHeaderViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommissionProtocolHeaderViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionDecisionHeaderViewModel>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<CommissionsListViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionDecisionsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionDecisionEditorViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionDecisionViewModel>(new TransientLifetimeManager());
+            container.RegisterType<CommissionProtocolViewModel>(new TransientLifetimeManager());
+            container.RegisterType<PreliminaryProtocolViewModel>(new TransientLifetimeManager());
+            container.RegisterType<CommissionСonductViewModel>(new TransientLifetimeManager());
+            container.RegisterType<CommissionСonclusionViewModel>(new TransientLifetimeManager());
+
+            container.RegisterType<AddressViewModel>(new TransientLifetimeManager());
         }
 
         private void RegisterViews()
         {
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionsHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionProtocolHeaderView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<CommissionDecisionHeaderView>());            
 
             container.RegisterType<object, CommissionEmptyView>(viewNameResolver.Resolve<CommissionEmptyViewModel>(), new ContainerControlledLifetimeManager());
@@ -89,10 +100,17 @@ namespace CommissionsModule
             container.RegisterType<object, CommissionDecisionsView>(viewNameResolver.Resolve<CommissionDecisionsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionDecisionView>(viewNameResolver.Resolve<CommissionDecisionViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionDecisionEditorView>(viewNameResolver.Resolve<CommissionDecisionEditorViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, CommissionProtocolView>(viewNameResolver.Resolve<CommissionProtocolViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, CommissionСonclusionView>(viewNameResolver.Resolve<CommissionСonclusionViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, CommissionСonductView>(viewNameResolver.Resolve<CommissionСonductViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PreliminaryProtocolView>(viewNameResolver.Resolve<PreliminaryProtocolViewModel>(), new ContainerControlledLifetimeManager());
+
+            container.RegisterType<object, AddressView>(viewNameResolver.Resolve<AddressViewModel>(), new ContainerControlledLifetimeManager());
 
             regionManager.RegisterViewWithRegion(RegionNames.ListItems, () => container.Resolve<CommissionsListView>());
             regionManager.Regions[RegionNames.ListItems].DeactivateActiveViews();
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionDecisionsView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionProtocolView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<CommissionEmptyView>());
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/CommissionsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
@@ -101,6 +119,9 @@ namespace CommissionsModule
         private void RegisterServices()
         {
             container.RegisterType<ICommissionService, CommissionService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IDiagnosService, DiagnosService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, OkatoRegionSuggestionsProvider>(SuggestionProviderNames.OkatoRegion, new ContainerControlledLifetimeManager());
+            container.RegisterType<IAddressSuggestionProvider, AddressSuggestionProvider>(new ContainerControlledLifetimeManager());
         }
     }
 }

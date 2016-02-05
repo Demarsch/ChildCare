@@ -105,15 +105,12 @@
     <Compile Include="Misc\InputHelpers\RussianBirthCertificateSeriesInputHelper.cs" />
     <Compile Include="Misc\ItemTemplateSelector.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
-    <Compile Include="Misc\SuggestionProviders\AddressSuggestionProvider.cs" />
-    <Compile Include="Misc\SuggestionProviders\IAddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\DisabilityDocumentGivenOrgSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\IdentityDocumentGivenOrgSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\OrganizationSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\InsuranceCompanySuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\PersonSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\RecordTypesSuggestionsProvider.cs" />
-    <Compile Include="Misc\SuggestionProviders\OkatoRegionSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -145,7 +142,6 @@
     <Compile Include="ViewModels\Contracts\PatientContractsViewModel.cs" />
     <Compile Include="ViewModels\Documents\PersonDocumentsViewModel.cs" />
     <Compile Include="ViewModels\Documents\ScanDocumentsViewModel.cs" />
-    <Compile Include="ViewModels\Info\AddressViewModel.cs" />
     <Compile Include="ViewModels\Info\IdentityDocumentViewModel.cs" />
     <Compile Include="ViewModels\Documents\ThumbnailViewModel.cs" />
     <Compile Include="ViewModels\Info\InsuranceDocumentCollectionViewModel.cs" />
@@ -158,9 +154,6 @@
     </Compile>
     <Compile Include="Views\EmptyPatientInfoView.xaml.cs">
       <DependentUpon>EmptyPatientInfoView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Info\AddressView.xaml.cs">
-      <DependentUpon>AddressView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Info\AddressCollectionView.xaml.cs">
       <DependentUpon>AddressCollectionView.xaml</DependentUpon>
@@ -260,10 +253,6 @@
     <Page Include="Views\EmptyPatientInfoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Info\AddressView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Info\AddressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>

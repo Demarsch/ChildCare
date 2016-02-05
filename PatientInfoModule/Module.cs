@@ -20,6 +20,7 @@ using Prism.Events;
 using Prism.Modularity;
 using Prism.Regions;
 using Shared.Patient.Misc;
+using PatientInfoModuleSuggestionProviderNames = PatientInfoModule.Misc.SuggestionProviderNames;
 using Shared.Patient.Services;
 using Shell.Shared;
 using Shared.PatientRecords;
@@ -186,12 +187,12 @@ namespace PatientInfoModule
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
 
-            container.RegisterType<ISuggestionsProvider, IdentityDocumentGivenOrgSuggestionsProvider>(SuggestionProviderNames.IdentityDocumentGiveOrganization, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionsProvider, InsuranceCompanySuggestionsProvider>(SuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionsProvider, PersonSuggestionsProvider>(SuggestionProviderNames.Person, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionsProvider, OkatoRegionSuggestionsProvider>(SuggestionProviderNames.OkatoRegion, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionsProvider, DisabilityDocumentGivenOrgSuggestionsProvider>(SuggestionProviderNames.DisabilityDocumentGivenOrganization, new ContainerControlledLifetimeManager());
-            container.RegisterType<ISuggestionsProvider, OrganizationSuggestionsProvider>(SuggestionProviderNames.Organization, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, IdentityDocumentGivenOrgSuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.IdentityDocumentGiveOrganization, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, InsuranceCompanySuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, PersonSuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.Person, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, OkatoRegionSuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.OkatoRegion, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, DisabilityDocumentGivenOrgSuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.DisabilityDocumentGivenOrganization, new ContainerControlledLifetimeManager());
+            container.RegisterType<ISuggestionsProvider, OrganizationSuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.Organization, new ContainerControlledLifetimeManager());
             container.RegisterType<IAddressSuggestionProvider, AddressSuggestionProvider>(new ContainerControlledLifetimeManager());
         }
 

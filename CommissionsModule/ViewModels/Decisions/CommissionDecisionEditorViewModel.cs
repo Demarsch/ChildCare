@@ -17,7 +17,6 @@ using Prism.Commands;
 using Core.Data.Services;
 using Core.Misc;
 using System.ComponentModel;
-using CommissionsModule.ViewModels.Decisions;
 
 namespace CommissionsModule.ViewModels
 {

@@ -29,6 +29,7 @@ using Prism.Commands;
 using Prism.Events;
 using Shared.Patient.Services;
 using Shared.Patient.ViewModels;
+using Shared.Patient.Misc;
 
 namespace PatientInfoModule.ViewModels
 {

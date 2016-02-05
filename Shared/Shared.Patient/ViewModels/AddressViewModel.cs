@@ -8,10 +8,10 @@ using Core.Data.Misc;
 using Core.Misc;
 using Core.Services;
 using Core.Wpf.Misc;
-using PatientInfoModule.Misc;
 using Prism.Commands;
+using Shared.Patient.Misc;
 
-namespace PatientInfoModule.ViewModels
+namespace Shared.Patient.ViewModels
 {
     public class AddressViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator, IActiveDataErrorInfo
     {

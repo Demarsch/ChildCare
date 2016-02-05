@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace CommissionsModule.ViewModels
 {
     public class CommissionDecisionHeaderViewModel : BindableBase, IActiveAware

@@ -78,7 +78,7 @@ namespace CommissionsModule.ViewModels
             this.notificationService = notificationService;
 
             Filters = new ObservableCollectionEx<FieldValue>();
-            Commissions = new ObservableCollectionEx<CommissionProtocolViewModel>();
+            Commissions = new ObservableCollectionEx<CommissionProtocolListViewModel>();
             BusyMediator = new BusyMediator();
 
             LoadDataSources();
@@ -136,10 +136,10 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        public ObservableCollectionEx<CommissionProtocolViewModel> Commissions { get; set; }
+        public ObservableCollectionEx<CommissionProtocolListViewModel> Commissions { get; set; }
 
-        private CommissionProtocolViewModel selectedCommission;
-        public CommissionProtocolViewModel SelectedCommission
+        private CommissionProtocolListViewModel selectedCommission;
+        public CommissionProtocolListViewModel SelectedCommission
         {
             get { return selectedCommission; }
             set 
@@ -195,7 +195,7 @@ namespace CommissionsModule.ViewModels
                         DecisionId = x.DecisionId
                     }).ToArrayAsync();
 
-                var result = commissionProtocolsSelectQuery.Select(x => new CommissionProtocolViewModel()
+                var result = commissionProtocolsSelectQuery.Select(x => new CommissionProtocolListViewModel()
                     {
                         Id = x.Id,
                         PersonId = x.PersonId,
@@ -312,7 +312,7 @@ namespace CommissionsModule.ViewModels
                 return await completionTaskSource.Task;
             completionTaskSource = new TaskCompletionSource<bool>();
             var commissionProtocol = commissionService.GetCommissionProtocolById(protocolId).First();
-            CommissionProtocolViewModel protocol = new CommissionProtocolViewModel();
+            CommissionProtocolListViewModel protocol = new CommissionProtocolListViewModel();
             protocol.PersonId = commissionProtocol.PersonId;
             protocol.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
             protocol.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";

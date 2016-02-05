@@ -4,7 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+             xmlns:sharedViewModels="clr-namespace:Shared.Patient.ViewModels;assembly=Shared.Patient"
              xmlns:views="clr-namespace:PatientInfoModule.Views"
+             xmlns:sharedViews="clr-namespace:Shared.Patient.Views;assembly=Shared.Patient"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:ext="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
              mc:Ignorable="d"
@@ -32,8 +34,8 @@
                               ItemsSource="{Binding Addresses}"
                               VerticalAlignment="Top">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type viewModels:AddressViewModel}">
-                            <views:AddressView />
+                        <DataTemplate DataType="{x:Type sharedViewModels:AddressViewModel}">
+                            <sharedViews:AddressView />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

@@ -11,6 +11,7 @@ using Core.Misc;
 using Core.Wpf.Mvvm;
 using Prism.Commands;
 using Prism.Mvvm;
+using Shared.Patient.ViewModels;
 
 namespace PatientInfoModule.ViewModels
 {
