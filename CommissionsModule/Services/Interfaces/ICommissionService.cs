@@ -41,5 +41,17 @@ namespace CommissionsModule.Services
         Task DeleteCommissionProtocolAsync(int protocolId, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
         Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
+
+        IEnumerable<CommissionType> GetCommissionType(object onDate);
+
+        IEnumerable<CommissionSource> GetCommissionSource(object onDate);
+
+        IDisposableQueryable<Org> GetCommissionSentLPUs(DateTime onDate);
+
+        IDisposableQueryable<PersonTalon> GetPatientTalons(int personId);
+
+        IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate);
+
+        IEnumerable<CommissionQuestion> GetCommissionQuestions(object onDate);
     }
 }

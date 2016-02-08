@@ -21,6 +21,7 @@ namespace Core.Data
             this.RecordContracts = new HashSet<RecordContract>();
             this.Visits = new HashSet<Visit>();
             this.Assignments = new HashSet<Assignment>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
         public int Id { get; set; }
@@ -28,6 +29,8 @@ namespace Core.Data
         public string Details { get; set; }
         public bool IsLpu { get; set; }
         public bool UseInContract { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
     	protected ICollection<PersonSocialStatus> personSocialStatuses;
@@ -60,6 +63,14 @@ namespace Core.Data
     	{
      		get { return assignments; }
      		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
     
     	public object Clone()

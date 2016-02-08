@@ -229,5 +229,46 @@ namespace CommissionsModule.Services
                 }
             }
         }
+
+
+        public IEnumerable<CommissionType> GetCommissionType(object onDate)
+        {
+            DateTime dt = SpecialValues.MinDate;
+            DateTime.TryParse(onDate.ToSafeString(), out dt);
+            return cacheService.GetItems<CommissionType>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
+        }
+
+        public IEnumerable<CommissionSource> GetCommissionSource(object onDate)
+        {
+            DateTime dt = SpecialValues.MinDate;
+            DateTime.TryParse(onDate.ToSafeString(), out dt);
+            return cacheService.GetItems<CommissionSource>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
+        }
+
+        public IDisposableQueryable<Org> GetCommissionSentLPUs(DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Org>(context.Set<Org>().Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.IsLpu), context);
+        }
+
+        public IDisposableQueryable<PersonTalon> GetPatientTalons(int personId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.PersonId == personId), context);
+        }
+
+        public IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate)
+        {
+            DateTime dt = SpecialValues.MinDate;
+            DateTime.TryParse(onDate.ToSafeString(), out dt);
+            return cacheService.GetItems<MedicalHelpType>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
+        }
+
+        public IEnumerable<CommissionQuestion> GetCommissionQuestions(object onDate)
+        {
+            DateTime dt = SpecialValues.MinDate;
+            DateTime.TryParse(onDate.ToSafeString(), out dt);
+            return cacheService.GetItems<CommissionQuestion>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
+        }
     }
 }

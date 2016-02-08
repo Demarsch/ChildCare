@@ -1317,7 +1317,7 @@ namespace Shared.PatientRecords.ViewModels
                         break;
                     case "RoomId":
                         result = RoomId.ToInt() < 1 ? "Не указан кабинет" : string.Empty;
-                        break;                    
+                        break;
                 }
                 if (string.IsNullOrEmpty(result))
                 {

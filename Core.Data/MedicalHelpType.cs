@@ -25,6 +25,9 @@ namespace Core.Data
         public Nullable<int> RecordContractId { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
     
         [NonSerialized]
     	protected RecordContract recordContract;

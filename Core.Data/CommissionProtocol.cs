@@ -41,9 +41,18 @@ namespace Core.Data
         public Nullable<int> PersonTalonId { get; set; }
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public Nullable<int> RecordContractId { get; set; }
-        public string Address { get; set; }
+        public string PersonAddressId { get; set; }
         public string Diagnos { get; set; }
+        public int SentLPUId { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
         [NonSerialized]
     	protected CommissionSource commissionSource;
     
@@ -53,12 +62,28 @@ namespace Core.Data
      		set { commissionSource = value; }
     	}
         [NonSerialized]
+    	protected Decision decision;
+    
+    	public virtual Decision Decision
+    	{
+     		get { return decision; }
+     		set { decision = value; }
+    	}
+        [NonSerialized]
     	protected MedicalHelpType medicalHelpType;
     
     	public virtual MedicalHelpType MedicalHelpType
     	{
      		get { return medicalHelpType; }
      		set { medicalHelpType = value; }
+    	}
+        [NonSerialized]
+    	protected Org org;
+    
+    	public virtual Org Org
+    	{
+     		get { return org; }
+     		set { org = value; }
     	}
         [NonSerialized]
     	protected Person person;
@@ -91,22 +116,6 @@ namespace Core.Data
     	{
      		get { return user; }
      		set { user = value; }
-    	}
-        [NonSerialized]
-    	protected Decision decision;
-    
-    	public virtual Decision Decision
-    	{
-     		get { return decision; }
-     		set { decision = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
     	}
     
     	public object Clone()
