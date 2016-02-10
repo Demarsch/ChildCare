@@ -9,6 +9,24 @@
                       d:DesignHeight="300"
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:CommissionProtocolHeaderViewModel}" 
-                      Header="Комиссии">    
-    
+                      Header="Комиссии">
+    <fluent:RibbonGroupBox>
+        <fluent:Button Header="Создать комиссию"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
+                       Command="{Binding CommissionProtocolViewModel.CreateCommissionCommand}" />
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Состояние комиссии">
+        <fluent:ToggleButton Header="Предварит. протокол"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"/>
+        <fluent:ToggleButton Header="Проведение комиссии" x:Name="btnCommissionConduction"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
+                       Command="{Binding CommissionProtocolViewModel.AddCommissionConductionCommand}" CommandParameter="{Binding ElementName=btnCommissionConduction, Path=IsChecked}"/>
+        <fluent:ToggleButton Header="Комиссия завершена" x:Name="btnCommissionConclusion"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
+                       Command="{Binding CommissionProtocolViewModel.AddCommissionConclusionCommand}" CommandParameter="{Binding ElementName=btnCommissionConclusion, Path=IsChecked}"/>
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

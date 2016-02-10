@@ -257,6 +257,12 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.PersonId == personId), context);
         }
 
+        public IDisposableQueryable<Person> GetPerson(int personId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Person>(context.Set<Person>().Where(x => x.Id == personId), context);
+        }
+
         public IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate)
         {
             DateTime dt = SpecialValues.MinDate;

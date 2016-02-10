@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary x:Class="CommissionsModule.Views.PreliminaryProtocolView"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:view="clr-namespace:Shared.Patient.Views;assembly=Shared.Patient"
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
                     xmlns:sharedView ="clr-namespace:Shared.Patient.Views;assembly=Shared.Patient"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
@@ -13,7 +14,6 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -24,33 +24,30 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Text="{Binding Patient}" />
-                <ContentControl Grid.Row="0" Grid.Column="4" Grid.RowSpan="6" Content="{Binding AddressViewModel}"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">Вид комиссии</TextBlock>
+                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0, 2, 0, 0" ItemsSource="{Binding CommissionTypes}" SelectedValue="{Binding SelectedCommissionTypeId}" SelectedValuePath="Id" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Margin="2, 2, 2, 0">Вопрос комиссии</TextBlock>
+                <ComboBox Grid.Row="1" Grid.Column="3" Margin="0, 2, 0, 0" ItemsSource="{Binding CommissionQuestions}" SelectedValue="{Binding SelectedCommissionQuestionId}" SelectedValuePath="Id"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0">Вид комиссии</TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding CommissionTypes}" SelectedValue="{Binding SelectedCommissionTypeId}" SelectedValuePath="Id" />
-                <TextBlock Grid.Row="1" Grid.Column="2">Вопрос комиссии</TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding CommissionQuestions}" SelectedValue="{Binding SelectedCommissionQuestionId}" SelectedValuePath="Id"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="2, 2, 2, 0">Источник обращения</TextBlock>
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="0, 2, 0, 0" ItemsSource="{Binding CommissionSources}" SelectedValue="{Binding SelectedCommissionSourceId}" SelectedValuePath="Id"/>
+                <TextBlock Grid.Row="2" Grid.Column="2" Margin="2, 2, 2, 0">Направившее ЛПУ</TextBlock>
+                <ComboBox Grid.Row="2" Grid.Column="3" Margin="0, 2, 0, 0" ItemsSource="{Binding SentLPUs}" SelectedValue="{Binding SelectedSentLPUId}" SelectedValuePath="Id"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="0">Источник обращения</TextBlock>
-                <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding CommissionSources}" SelectedValue="{Binding SelectedCommissionSourceId}" SelectedValuePath="Id"/>
-                <TextBlock Grid.Row="2" Grid.Column="2">Направившее ЛПУ</TextBlock>
-                <ComboBox Grid.Row="2" Grid.Column="3" ItemsSource="{Binding SentLPUs}" SelectedValue="{Binding SelectedSentLPUId}" SelectedValuePath="Id"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="2, 2, 2, 0">Талон</TextBlock>
+                <ComboBox Grid.Row="3" Grid.Column="1" Margin="0, 2, 0, 0" ItemsSource="{Binding Talons}" SelectedValue="{Binding SelectedTalonId}" SelectedValuePath="Id"/>
+                <TextBlock Grid.Row="3" Grid.Column="2" Margin="2, 2, 2, 0">Вид помощи</TextBlock>
+                <ComboBox Grid.Row="3" Grid.Column="3" Margin="0, 2, 0, 0" ItemsSource="{Binding HelpTypes}" SelectedValue="{Binding SelectedHelpTypeId}" SelectedValuePath="Id"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0">Талон</TextBlock>
-                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding Talons}" SelectedValue="{Binding SelectedTalonId}" SelectedValuePath="Id"/>
-                <TextBlock Grid.Row="3" Grid.Column="2">Вид помощи</TextBlock>
-                <ComboBox Grid.Row="3" Grid.Column="3" ItemsSource="{Binding HelpTypes}" SelectedValue="{Binding SelectedHelpTypeId}" SelectedValuePath="Id"/>
-
-                <TextBlock Grid.Row="4" Grid.Column="0">Диагноз МКБ</TextBlock>
-                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Text="{Binding MKB}" Width="100"></TextBox>
-                    <Button Command="{Binding SelectMKBDiagnosCommand}" Margin="2,0,0,0">...</Button>
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="2, 2, 2, 0">Диагноз МКБ</TextBlock>
+                <StackPanel Grid.Row="4" Grid.Column="1" Margin="0, 2, 0, 0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBox Margin="0, 2, 2, 0" Text="{Binding MKB}" Width="100"></TextBox>
+                    <Button Command="{Binding SelectMKBCommand}" Margin="2,0,0,0">...</Button>
                 </StackPanel>
-                <TextBlock Grid.Row="4" Grid.Column="2">Дата принятия док-ов</TextBlock>
-                <DatePicker Grid.Row="4" Grid.Column="3" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding IncomeDateTime}"/>
+                <TextBlock Grid.Row="4" Grid.Column="2" Margin="2, 2, 2, 0">Дата принятия док-ов</TextBlock>
+                <DatePicker Grid.Row="4" Grid.Column="3" Margin="0, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding IncomeDateTime}"/>
 
-
+                <view:AddressView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Margin="2, 2, 2, 0" DataContext="{Binding AddressViewModel}"/>
             </Grid>
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />

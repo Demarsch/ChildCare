@@ -6,6 +6,7 @@
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate DataType="{x:Type viewModels:CommissionСonductViewModel}" >
         <Grid>
+            <TextBlock>Проведение комиссии</TextBlock>
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
         </Grid>

@@ -135,6 +135,13 @@ namespace CommissionsModule.ViewModels
             set { SetTrackedProperty(ref mkb, value); }
         }
 
+        private string patient;
+        public string Patient
+        {
+            get { return patient; }
+            set { SetProperty(ref patient, value); }
+        }
+
         public AddressViewModel AddressViewModel { get; private set; }
 
         //DataSources
@@ -147,6 +154,7 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
+        public PersonSearchViewModel PersonSearchViewModel { get; set; }
 
         #endregion
 

@@ -53,5 +53,7 @@ namespace CommissionsModule.Services
         IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate);
 
         IEnumerable<CommissionQuestion> GetCommissionQuestions(object onDate);
+
+        IDisposableQueryable<Person> GetPerson(int personId);
     }
 }
