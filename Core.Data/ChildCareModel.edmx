@@ -170,13 +170,12 @@
           <Property Name="ToDoDateTime" Type="datetime" />
           <Property Name="Comment" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="MKB" Type="varchar" MaxLength="10" Nullable="false" />
-          <Property Name="InUserId" Type="int" Nullable="false" />
           <Property Name="CommissionSourceId" Type="int" Nullable="false" />
           <Property Name="CommissionQuestionId" Type="int" Nullable="false" />
           <Property Name="PersonTalonId" Type="int" />
           <Property Name="MedicalHelpTypeId" Type="int" />
           <Property Name="RecordContractId" Type="int" />
-          <Property Name="PersonAddressId" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="PersonAddressId" Type="int" />
           <Property Name="Diagnos" Type="varchar" MaxLength="8000" Nullable="false" />
           <Property Name="SentLPUId" Type="int" Nullable="false" />
         </EntityType>
@@ -1556,6 +1555,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CommissionProtocols_PersonAddresses">
+          <End Role="PersonAddresses" Type="Self.PersonAddresses" Multiplicity="0..1" />
+          <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonAddresses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionProtocols">
+              <PropertyRef Name="PersonAddressId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommissionProtocols_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
           <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
@@ -1589,18 +1600,6 @@
             </Principal>
             <Dependent Role="CommissionProtocols">
               <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionProtocols_Users">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocols">
-              <PropertyRef Name="InUserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3323,6 +3322,10 @@
             <End Role="Orgs" EntitySet="Orgs" />
             <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
           </AssociationSet>
+          <AssociationSet Name="FK_CommissionProtocols_PersonAddresses" Association="Self.FK_CommissionProtocols_PersonAddresses">
+            <End Role="PersonAddresses" EntitySet="PersonAddresses" />
+            <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
+          </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_Persons" Association="Self.FK_CommissionProtocols_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
@@ -3333,10 +3336,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="Self.FK_CommissionProtocols_RecordContracts">
             <End Role="RecordContracts" EntitySet="RecordContracts" />
-            <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_Users" Association="Self.FK_CommissionProtocols_Users">
-            <End Role="Users" EntitySet="Users" />
             <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionQuestions_CommissionTypes" Association="Self.FK_CommissionQuestions_CommissionTypes">
@@ -4557,6 +4556,10 @@
             <End Role="Org" EntitySet="Orgs" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
           </AssociationSet>
+          <AssociationSet Name="FK_CommissionProtocols_PersonAddresses" Association="DataLib.FK_CommissionProtocols_PersonAddresses">
+            <End Role="PersonAddress" EntitySet="PersonAddresses" />
+            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_Persons" Association="DataLib.FK_CommissionProtocols_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
@@ -4567,10 +4570,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="DataLib.FK_CommissionProtocols_RecordContracts">
             <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_Users" Association="DataLib.FK_CommissionProtocols_Users">
-            <End Role="User" EntitySet="Users" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
           </AssociationSet>
           </EntityContainer>
@@ -4793,6 +4792,7 @@
           <NavigationProperty Name="AddressType" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="PersonAddress" ToRole="AddressType" />
           <NavigationProperty Name="Okato" Relationship="DataLib.FK_PersonAddresses_Okatos" FromRole="PersonAddress" ToRole="Okato" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Addresses_Persons" FromRole="PersonAddress" ToRole="Person" />
+          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_PersonAddresses" FromRole="PersonAddress" ToRole="CommissionProtocol" />
         </EntityType>
         <EntityType Name="PersonDisability">
           <Key>
@@ -7586,7 +7586,6 @@
           <NavigationProperty Name="UserPermissionGroups" Relationship="DataLib.FK_UserPermissionGroups_Users" FromRole="User" ToRole="UserPermissionGroup" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Users_RemovedByUser" FromRole="User" ToRole="Visit" />
           <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_Users" FromRole="User" ToRole="CommissionDecision" />
-          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Users" FromRole="User" ToRole="CommissionProtocol" />
         </EntityType>
         <Association Name="FK_Assignments_Users_AssignUser">
           <End Type="DataLib.User" Role="User" Multiplicity="1" />
@@ -7850,13 +7849,12 @@
           <Property Name="ToDoDateTime" Type="DateTime" Precision="3" />
           <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="InUserId" Type="Int32" Nullable="false" />
           <Property Name="CommissionSourceId" Type="Int32" Nullable="false" />
           <Property Name="CommissionQuestionId" Type="Int32" Nullable="false" />
           <Property Name="PersonTalonId" Type="Int32" />
           <Property Name="MedicalHelpTypeId" Type="Int32" />
           <Property Name="RecordContractId" Type="Int32" />
-          <Property Name="PersonAddressId" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="PersonAddressId" Type="Int32" />
           <Property Name="Diagnos" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="SentLPUId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_CommissionProtocols" FromRole="CommissionProtocol" ToRole="CommissionDecision" />
@@ -7864,10 +7862,10 @@
           <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionProtocols_Decisions" FromRole="CommissionProtocol" ToRole="Decision" />
           <NavigationProperty Name="MedicalHelpType" Relationship="DataLib.FK_CommissionProtocols_MedicalHelpTypes" FromRole="CommissionProtocol" ToRole="MedicalHelpType" />
           <NavigationProperty Name="Org" Relationship="DataLib.FK_CommissionProtocols_Orgs" FromRole="CommissionProtocol" ToRole="Org" />
+          <NavigationProperty Name="PersonAddress" Relationship="DataLib.FK_CommissionProtocols_PersonAddresses" FromRole="CommissionProtocol" ToRole="PersonAddress" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="CommissionProtocol" ToRole="Person" />
           <NavigationProperty Name="PersonTalon" Relationship="DataLib.FK_CommissionProtocols_PersonTalons" FromRole="CommissionProtocol" ToRole="PersonTalon" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="CommissionProtocol" ToRole="RecordContract" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_CommissionProtocols_Users" FromRole="CommissionProtocol" ToRole="User" />
         </EntityType>
         <Association Name="FK_CommissionDecisions_CommissionProtocols">
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="1" />
@@ -7929,6 +7927,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CommissionProtocols_PersonAddresses">
+          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonAddress">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionProtocol">
+              <PropertyRef Name="PersonAddressId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommissionProtocols_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
@@ -7962,18 +7972,6 @@
             </Principal>
             <Dependent Role="CommissionProtocol">
               <PropertyRef Name="RecordContractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionProtocols_Users">
-          <End Type="DataLib.User" Role="User" Multiplicity="1" />
-          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocol">
-              <PropertyRef Name="InUserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9173,7 +9171,6 @@
                 <ScalarProperty Name="PersonTalonId" ColumnName="PersonTalonId" />
                 <ScalarProperty Name="CommissionQuestionId" ColumnName="CommissionQuestionId" />
                 <ScalarProperty Name="CommissionSourceId" ColumnName="CommissionSourceId" />
-                <ScalarProperty Name="InUserId" ColumnName="InUserId" />
                 <ScalarProperty Name="MKB" ColumnName="MKB" />
                 <ScalarProperty Name="Comment" ColumnName="Comment" />
                 <ScalarProperty Name="ToDoDateTime" ColumnName="ToDoDateTime" />

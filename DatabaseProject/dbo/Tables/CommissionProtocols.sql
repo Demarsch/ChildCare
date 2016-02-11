@@ -14,13 +14,12 @@
     [ToDoDateTime]         DATETIME       NULL,
     [Comment]              VARCHAR (8000) NOT NULL,
     [MKB]                  VARCHAR (10)   NOT NULL,
-    [InUserId]             INT            NOT NULL,
     [CommissionSourceId]   INT            NOT NULL,
     [CommissionQuestionId] INT            NOT NULL,
     [PersonTalonId]        INT            NULL,
     [MedicalHelpTypeId]    INT            NULL,
     [RecordContractId]     INT            NULL,
-    [PersonAddressId]      VARCHAR (1000) NOT NULL,
+    [PersonAddressId]      INT            NULL,
     [Diagnos]              VARCHAR (8000) NOT NULL,
     [SentLPUId]            INT            CONSTRAINT [DF_CommissionProtocols_SentLPU] DEFAULT ((1)) NOT NULL,
     CONSTRAINT [PK_CommissionProtocols] PRIMARY KEY CLUSTERED ([Id] ASC),
@@ -28,11 +27,13 @@
     CONSTRAINT [FK_CommissionProtocols_Decisions] FOREIGN KEY ([DecisionId]) REFERENCES [dbo].[Decisions] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_MedicalHelpTypes] FOREIGN KEY ([MedicalHelpTypeId]) REFERENCES [dbo].[MedicalHelpTypes] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_Orgs] FOREIGN KEY ([SentLPUId]) REFERENCES [dbo].[Orgs] ([Id]),
+    CONSTRAINT [FK_CommissionProtocols_PersonAddresses] FOREIGN KEY ([PersonAddressId]) REFERENCES [dbo].[PersonAddresses] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_PersonTalons] FOREIGN KEY ([PersonTalonId]) REFERENCES [dbo].[PersonTalons] ([Id]),
-    CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
-    CONSTRAINT [FK_CommissionProtocols_Users] FOREIGN KEY ([InUserId]) REFERENCES [dbo].[Users] ([Id])
+    CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id])
 );
+
+
 
 
 

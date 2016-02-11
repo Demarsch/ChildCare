@@ -17,10 +17,12 @@ using CommissionsModule.Services;
 using System.Threading;
 using System.Data.Entity;
 using Core.Data.Misc;
+using System.ComponentModel;
+using Core.Misc;
 
 namespace CommissionsModule.ViewModels
 {
-    public class PreliminaryProtocolViewModel : TrackableBindableBase
+    public class PreliminaryProtocolViewModel : TrackableBindableBase, IChangeTrackerMediator, IDataErrorInfo
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -32,6 +34,8 @@ namespace CommissionsModule.ViewModels
         private readonly CommandWrapper reInitializeCommandWrapper;
 
         private readonly MKBTreeViewModel mkbTreeViewModel;
+
+        private ValidationMediator validationMediator;
 
         private DateTime onDate;
         #endregion
@@ -65,6 +69,9 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            NotificationMediator = new NotificationMediator();
+            validationMediator = new ValidationMediator(this);
+            ChangeTracker = new ChangeTrackerEx<PreliminaryProtocolViewModel>(this);
 
             CommissionQuestions = new ObservableCollectionEx<CommissionQuestion>();
             CommissionTypes = new ObservableCollectionEx<CommissionType>();
@@ -144,6 +151,7 @@ namespace CommissionsModule.ViewModels
 
         public AddressViewModel AddressViewModel { get; private set; }
 
+
         //DataSources
         public ObservableCollectionEx<CommissionType> CommissionTypes { get; private set; }
         public ObservableCollectionEx<CommissionQuestion> CommissionQuestions { get; private set; }
@@ -152,8 +160,11 @@ namespace CommissionsModule.ViewModels
         public ObservableCollectionEx<PersonTalon> Talons { get; private set; }
         public ObservableCollectionEx<MedicalHelpType> HelpTypes { get; private set; }
 
-        public BusyMediator BusyMediator { get; set; }
-        public FailureMediator FailureMediator { get; set; }
+        public BusyMediator BusyMediator { get; private set; }
+        public FailureMediator FailureMediator { get; private set; }
+        public NotificationMediator NotificationMediator { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
+
         public PersonSearchViewModel PersonSearchViewModel { get; set; }
 
         #endregion
@@ -161,9 +172,23 @@ namespace CommissionsModule.ViewModels
         #region Commands
         private DelegateCommand selectMKBCommand;
         public ICommand SelectMKBCommand { get { return selectMKBCommand; } }
+
         #endregion
 
         #region Methods
+        public void GetPreliminaryCommissionProtocolData(ref CommissionProtocol commissionProtocol)
+        {
+            commissionProtocol.CommissionTypeId = SelectedCommissionTypeId;
+            commissionProtocol.CommissionQuestionId = SelectedCommissionQuestionId;
+            commissionProtocol.CommissionSourceId = SelectedCommissionSourceId;
+            commissionProtocol.SentLPUId = selectedSentLPUId;
+            commissionProtocol.PersonTalonId = SelectedTalonId;
+            commissionProtocol.MedicalHelpTypeId = SelectedHelpTypeId;
+            commissionProtocol.MKB = MKB;
+            commissionProtocol.IncomeDateTime = IncomeDateTime;
+            commissionProtocol.PersonAddress = AddressViewModel.Model;
+        }
+
         public async void SelectMKB()
         {
             var result = await dialogService.ShowDialogAsync(mkbTreeViewModel);
@@ -234,6 +259,7 @@ namespace CommissionsModule.ViewModels
             SelectedTalonId = -1;
             SelectedHelpTypeId = -1;
             IncomeDateTime = DateTime.Now;
+            AddressViewModel.Model = null;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -259,7 +285,8 @@ namespace CommissionsModule.ViewModels
                     x.PersonTalonId,
                     x.MedicalHelpTypeId,
                     x.IncomeDateTime,
-                    x.PersonId
+                    x.PersonId,
+                    x.PersonAddress
                 }).FirstOrDefaultAsync(token);
                 if (commissionProtocolData != null)
                 {
@@ -284,6 +311,7 @@ namespace CommissionsModule.ViewModels
                     SelectedTalonId = commissionProtocolData.PersonTalonId.ToInt();
                     SelectedHelpTypeId = commissionProtocolData.MedicalHelpTypeId.ToInt();
                     IncomeDateTime = commissionProtocolData.IncomeDateTime;
+                    AddressViewModel.Model = commissionProtocolData.PersonAddress;
                 }
                 loadingIsCompleted = true;
             }
@@ -300,11 +328,109 @@ namespace CommissionsModule.ViewModels
             finally
             {
                 if (loadingIsCompleted)
+                {
                     BusyMediator.Deactivate();
+                    ChangeTracker.IsEnabled = true;
+                }
                 if (commissionProtocolQuery != null)
                     commissionProtocolQuery.Dispose();
             }
         }
+        #endregion
+
+        #region IDataErrorInfo implementation
+        public string Error
+        {
+            get { return validationMediator.Error; }
+        }
+
+        public string this[string columnName]
+        {
+            get { return validationMediator[columnName]; }
+        }
+
+        public bool Validate()
+        {
+            return validationMediator.Validate() && AddressViewModel.Validate();
+        }
+
+        public void CancelValidation()
+        {
+            validationMediator.CancelValidation();
+        }
+
+        public class ValidationMediator : ValidationMediator<PreliminaryProtocolViewModel>
+        {
+
+            public ValidationMediator(PreliminaryProtocolViewModel associatedItem)
+                : base(associatedItem)
+            {
+            }
+
+            protected override void OnValidateProperty(string propertyName)
+            {
+                if (PropertyNameEquals(propertyName, x => x.SelectedCommissionTypeId))
+                {
+                    ValidateCommissionType();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.SelectedCommissionQuestionId))
+                {
+                    ValidateCommissionQuestion();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.SelectedCommissionSourceId))
+                {
+                    ValidateCommissionSource();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.SelectedSentLPUId))
+                {
+                    ValidateSentLPU();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.MKB))
+                {
+                    ValidateMKB();
+                }
+            }
+
+            private void ValidateMKB()
+            {
+                SetError(x => x.MKB, string.IsNullOrEmpty(AssociatedItem.MKB) ? "Укажите диагноз по МКБ" : string.Empty);
+            }
+
+            private void ValidateSentLPU()
+            {
+                SetError(x => x.SelectedSentLPUId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedSentLPUId) ? "Укажите направившее ЛПУ" : string.Empty);
+            }
+
+            private void ValidateCommissionSource()
+            {
+                SetError(x => x.SelectedCommissionSourceId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionSourceId) ? "Укажите источник обращения" : string.Empty);
+            }
+
+            private void ValidateCommissionQuestion()
+            {
+                SetError(x => x.SelectedCommissionQuestionId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionQuestionId) ? "Укажите рассматриваемый комиссией вопрос" : string.Empty);
+            }
+
+            private void ValidateCommissionType()
+            {
+                SetError(x => x.SelectedCommissionTypeId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionTypeId) ? "Укажите вид комиссии" : string.Empty);
+            }
+
+            protected override void RaiseAssociatedObjectPropertyChanged()
+            {
+                AssociatedItem.OnPropertyChanged(string.Empty);
+            }
+
+            protected override void OnValidate()
+            {
+                ValidateCommissionType();
+                ValidateCommissionQuestion();
+                ValidateCommissionSource();
+                ValidateSentLPU();
+                ValidateMKB();
+            }
+        }
+
         #endregion
     }
 }

@@ -249,16 +249,16 @@
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
         <EntityTypeShape EntityType="DataLib.ColorsSetting" Width="1.5" PointX="0.75" PointY="15.625" />
         <AssociationConnector Association="DataLib.FK_Decisions_ColorsSettings" />
-        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="21.25" PointY="36.625" />
+        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="21.25" PointY="36.75" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionSources" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_MedicalHelpTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Orgs" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonAddresses" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Persons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonTalons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Users" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

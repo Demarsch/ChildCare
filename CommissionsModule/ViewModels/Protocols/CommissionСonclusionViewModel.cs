@@ -1,4 +1,5 @@
-﻿using Core.Data.Misc;
+﻿using Core.Data;
+using Core.Data.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +92,11 @@ namespace CommissionsModule.ViewModels
             //    if (commissionProtocolQuery != null)
             //        commissionProtocolQuery.Dispose();
             //}
+        }
+
+        public void GetСonclusionCommissionProtocolData(ref CommissionProtocol commissionProtocol)
+        {
+            
         }
         #endregion
     }

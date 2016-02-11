@@ -55,5 +55,7 @@ namespace CommissionsModule.Services
         IEnumerable<CommissionQuestion> GetCommissionQuestions(object onDate);
 
         IDisposableQueryable<Person> GetPerson(int personId);
+
+        Task SaveCommissionProtocol(CommissionProtocol commissionProtocol, CancellationToken token);
     }
 }

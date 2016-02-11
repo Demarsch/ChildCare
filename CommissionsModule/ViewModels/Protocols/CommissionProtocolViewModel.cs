@@ -16,10 +16,13 @@ using System.Windows.Input;
 using Core.Extensions;
 using System.Data.Entity;
 using Core.Wpf.Mvvm;
+using Core.Misc;
+using Core.Data;
+using Core.Wpf.Misc;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionProtocolViewModel : BindableBase, IDisposable
+    public class CommissionProtocolViewModel : BindableBase, IChangeTrackerMediator, IDisposable
     {
         #region Fields
 
@@ -31,6 +34,8 @@ namespace CommissionsModule.ViewModels
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
 
         private CancellationTokenSource currentOperationToken;
+
+        private CommandWrapper reSaveCommissionProtocol;
         #endregion
 
         #region Constructiors
@@ -78,13 +83,19 @@ namespace CommissionsModule.ViewModels
             CommissionСonductViewModel = commissionСonductViewModel;
             CommissionСonclusionViewModel = commissionСonclusionViewModel;
             createCommissionCommand = new DelegateCommand(CreateCommission);
+            saveCommissionProtocolCommand = new DelegateCommand(SaveCommissionProtocol, CanSaveCommissionProtocol);
             addCommissionConductionCommand = new DelegateCommand<bool?>(AddCommissionConduction);
             addCommissionConclusionCommand = new DelegateCommand<bool?>(AddCommissionConclusion);
+
+            reSaveCommissionProtocol = new CommandWrapper() { Command = saveCommissionProtocolCommand, CommandName = "Повторить" };
             SubscribeToEvents();
 
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
+            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker/*,CommissionСonductViewModel.ChangeTracker, addCommissionConclusionCommand.ChangeTracker */);
+            ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
         }
+
         #endregion
 
         #region Properties
@@ -177,13 +188,18 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref patient, value); }
         }
 
-        public FailureMediator FailureMediator { get; set; }
-        public NotificationMediator NotificationMediator { get; set; }
+        public FailureMediator FailureMediator { get; private set; }
+        public NotificationMediator NotificationMediator { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
+
         #endregion
 
         #region Commands
         private DelegateCommand createCommissionCommand;
         public ICommand CreateCommissionCommand { get { return createCommissionCommand; } }
+
+        private DelegateCommand saveCommissionProtocolCommand;
+        public ICommand SaveCommissionProtocolCommand { get { return saveCommissionProtocolCommand; } }
 
         private DelegateCommand<bool?> addCommissionConductionCommand;
         public ICommand AddCommissionConductionCommand { get { return addCommissionConductionCommand; } }
@@ -319,6 +335,58 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        private async void SaveCommissionProtocol()
+        {
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            logService.InfoFormat("Saving commission protocol with id = {0} for patient with id = {1}", SelectedCommissionProtocolId, SelectedPersonId);
+            try
+            {
+                var commissionProtocol = new CommissionProtocol()
+                {
+                    Id = SelectedCommissionProtocolId,
+                    PersonId = SelectedPersonId,
+                    ProtocolNumber = 0,
+                    ProtocolDate = DateTime.Now,
+                    IsCompleted = CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? false :
+                    CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? true : (bool?)null,
+                };
+                //ToDo: Maybe change on better decision!
+                switch (CommissionProtocolState)
+                {
+                    case CommissionProtocolState.Сonclusion:
+                        PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
+                        CommissionСonductViewModel.GetСonductionCommissionProtocolData(ref commissionProtocol);
+                        CommissionСonclusionViewModel.GetСonclusionCommissionProtocolData(ref commissionProtocol);
+                        break;
+                    case CommissionProtocolState.Сonduction:
+                        PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
+                        CommissionСonductViewModel.GetСonductionCommissionProtocolData(ref commissionProtocol);
+                        break;
+                    case CommissionProtocolState.Preliminary:
+                        PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
+                        break;
+                    default:
+                        break;
+                }
+                await commissionService.SaveCommissionProtocol(commissionProtocol, token);
+            }
+            catch (OperationCanceledException) {/*Do nothing. Cancelled operation means that user selected different patient before previous one was loaded  */}
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to save commission protocol with id = {0} for patient with id = {1}", SelectedCommissionProtocolId, SelectedPersonId);
+                FailureMediator.Activate("Не удалось сохранить протокол комиссии", reSaveCommissionProtocol, ex, true);
+            }
+            finally
+            {
+            }
+        }
+
         public void Dispose()
         {
             UnsubscriveFromEvents();
@@ -339,6 +407,23 @@ namespace CommissionsModule.ViewModels
             SelectedCommissionProtocolId = SpecialValues.NonExistingId;
             if (!SpecialValues.IsNewOrNonExisting(protocolId))
                 SelectedCommissionProtocolId = protocolId;
+        }
+
+        private bool CanSaveCommissionProtocol()
+        {
+            return ChangeTracker.HasChanges;
+        }
+
+        #endregion
+
+        #region Events
+
+        void CompositeChangeTracker_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
+            {
+                saveCommissionProtocolCommand.RaiseCanExecuteChanged();
+            }
         }
 
         #endregion

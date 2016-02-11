@@ -15,6 +15,11 @@ namespace Core.Data
     [Serializable]
     public partial class PersonAddress : ICloneable
     {
+        public PersonAddress()
+        {
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
+        }
+    
         public int Id { get; set; }
         public int PersonId { get; set; }
         public int AddressTypeId { get; set; }
@@ -49,6 +54,14 @@ namespace Core.Data
     	{
      		get { return person; }
      		set { person = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
     
     	public object Clone()

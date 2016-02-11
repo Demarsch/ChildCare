@@ -12,6 +12,7 @@ using System.Windows.Media;
 using Core.Extensions;
 using Core.Notification;
 using System.Data.Entity;
+using System.Threading;
 
 namespace CommissionsModule.Services
 {
@@ -142,7 +143,7 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.Id == protocolId), context);
         }
 
-        public async Task<string> SaveDecision(int commissionDecisionId, int decisionId, string comment, DateTime? decisionDateTime, System.Threading.CancellationToken token)
+        public async Task<string> SaveDecision(int commissionDecisionId, int decisionId, string comment, DateTime? decisionDateTime, CancellationToken token)
         {
             if (token.IsCancellationRequested)
             {
@@ -165,6 +166,25 @@ namespace CommissionsModule.Services
             return string.Empty;
         }
 
+        public async Task SaveCommissionProtocol(CommissionProtocol commissionProtocol, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            using (var context = contextProvider.CreateNewContext())
+            {
+                if (SpecialValues.NewId == commissionProtocol.Id)
+                    context.Entry(commissionProtocol).State = EntityState.Added;
+                else
+                    context.Entry(commissionProtocol).State = EntityState.Modified;
+                if (token.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(token);
+                }
+                await context.SaveChangesAsync(token);
+            }
+        }
 
         public CommissionFilter GetCommissionFilterById(int id)
         {

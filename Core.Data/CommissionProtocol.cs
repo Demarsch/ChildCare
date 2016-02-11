@@ -35,13 +35,12 @@ namespace Core.Data
         public Nullable<System.DateTime> ToDoDateTime { get; set; }
         public string Comment { get; set; }
         public string MKB { get; set; }
-        public int InUserId { get; set; }
         public int CommissionSourceId { get; set; }
         public int CommissionQuestionId { get; set; }
         public Nullable<int> PersonTalonId { get; set; }
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public Nullable<int> RecordContractId { get; set; }
-        public string PersonAddressId { get; set; }
+        public Nullable<int> PersonAddressId { get; set; }
         public string Diagnos { get; set; }
         public int SentLPUId { get; set; }
     
@@ -86,6 +85,14 @@ namespace Core.Data
      		set { org = value; }
     	}
         [NonSerialized]
+    	protected PersonAddress personAddress;
+    
+    	public virtual PersonAddress PersonAddress
+    	{
+     		get { return personAddress; }
+     		set { personAddress = value; }
+    	}
+        [NonSerialized]
     	protected Person person;
     
     	public virtual Person Person
@@ -108,14 +115,6 @@ namespace Core.Data
     	{
      		get { return recordContract; }
      		set { recordContract = value; }
-    	}
-        [NonSerialized]
-    	protected User user;
-    
-    	public virtual User User
-    	{
-     		get { return user; }
-     		set { user = value; }
     	}
     
     	public object Clone()

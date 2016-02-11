@@ -7,6 +7,13 @@
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate DataType="{x:Type viewModels:PreliminaryProtocolViewModel}" >
+        <DataTemplate.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </DataTemplate.Resources>
         <Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -25,14 +32,18 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">Вид комиссии</TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0, 2, 0, 0" ItemsSource="{Binding CommissionTypes}" SelectedValue="{Binding SelectedCommissionTypeId}" SelectedValuePath="Id" />
+                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0, 2, 0, 22" ItemsSource="{Binding CommissionTypes}" 
+                          SelectedValue="{Binding SelectedCommissionTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id" />
                 <TextBlock Grid.Row="1" Grid.Column="2" Margin="2, 2, 2, 0">Вопрос комиссии</TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="3" Margin="0, 2, 0, 0" ItemsSource="{Binding CommissionQuestions}" SelectedValue="{Binding SelectedCommissionQuestionId}" SelectedValuePath="Id"/>
+                <ComboBox Grid.Row="1" Grid.Column="3" Margin="0, 2, 0, 22" ItemsSource="{Binding CommissionQuestions}" 
+                          SelectedValue="{Binding SelectedCommissionQuestionId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="2, 2, 2, 0">Источник обращения</TextBlock>
-                <ComboBox Grid.Row="2" Grid.Column="1" Margin="0, 2, 0, 0" ItemsSource="{Binding CommissionSources}" SelectedValue="{Binding SelectedCommissionSourceId}" SelectedValuePath="Id"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="0, 2, 0, 22" ItemsSource="{Binding CommissionSources}" 
+                          SelectedValue="{Binding SelectedCommissionSourceId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
                 <TextBlock Grid.Row="2" Grid.Column="2" Margin="2, 2, 2, 0">Направившее ЛПУ</TextBlock>
-                <ComboBox Grid.Row="2" Grid.Column="3" Margin="0, 2, 0, 0" ItemsSource="{Binding SentLPUs}" SelectedValue="{Binding SelectedSentLPUId}" SelectedValuePath="Id"/>
+                <ComboBox Grid.Row="2" Grid.Column="3" Margin="0, 2, 0, 22" ItemsSource="{Binding SentLPUs}" 
+                          SelectedValue="{Binding SelectedSentLPUId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Margin="2, 2, 2, 0">Талон</TextBlock>
                 <ComboBox Grid.Row="3" Grid.Column="1" Margin="0, 2, 0, 0" ItemsSource="{Binding Talons}" SelectedValue="{Binding SelectedTalonId}" SelectedValuePath="Id"/>
@@ -41,7 +52,7 @@
 
                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="2, 2, 2, 0">Диагноз МКБ</TextBlock>
                 <StackPanel Grid.Row="4" Grid.Column="1" Margin="0, 2, 0, 0" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Margin="0, 2, 2, 0" Text="{Binding MKB}" Width="100"></TextBox>
+                    <TextBox Margin="0, 2, 2, 0" Text="{Binding MKB, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" Width="100"></TextBox>
                     <Button Command="{Binding SelectMKBCommand}" Margin="2,0,0,0">...</Button>
                 </StackPanel>
                 <TextBlock Grid.Row="4" Grid.Column="2" Margin="2, 2, 2, 0">Дата принятия док-ов</TextBlock>
