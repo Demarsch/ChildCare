@@ -75,6 +75,7 @@
                 ToolTip="Удалить документ"
                 Template="{StaticResource CloseButtonTemplate}"
                 Command="{Binding DeleteCommand, Mode=OneTime}"
+                Visibility="{Binding CanDeleteAddress, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                 IsTabStop="False"/>
         <TextBlock Grid.Row="1"
                    Grid.Column="0"
@@ -164,7 +165,7 @@
         <TextBlock Grid.Row="9"
                    Grid.Column="0"
                    Text="Актуален с" />
-        <StackPanel Grid.Row="10"
+        <StackPanel Grid.Row="9"
                     Grid.Column="1"
                     HorizontalAlignment="Stretch"
                     Orientation="Horizontal">

@@ -32,12 +32,27 @@ namespace Shared.Patient.ViewModels
             this.cacheService = cacheService;
             AddressSuggestionProvider = addressSuggestionProvider;
             validator = new ValidationMediator(this);
-            AddressTypes = cacheService.GetItems<AddressType>();
+            AddressTypeCategory = AddressTypeCategory.Registry;
             DeleteCommand = new DelegateCommand(Delete);
             ChangeTracker = new ChangeTrackerEx<AddressViewModel>(this);
+            CanDeleteAddress = true;
         }
 
-        public IAddressSuggestionProvider AddressSuggestionProvider { get; private set; }   
+        public IAddressSuggestionProvider AddressSuggestionProvider { get; private set; }
+
+        private AddressTypeCategory addressTypeCategory = AddressTypeCategory.Registry;
+        public AddressTypeCategory AddressTypeCategory
+        {
+            get { return addressTypeCategory; }
+            set
+            {
+                SetProperty(ref addressTypeCategory, value);
+                AddressTypes = cacheService.GetItems<AddressType>()
+                    .Where(x => addressTypeCategory == AddressTypeCategory.All || x.Category.IndexOf("|" + addressTypeCategory.ToString() + "|") > -1);
+            }
+        }
+
+        public bool CanDeleteAddress { get; set; }
 
         private int? addressTypeId;
 
@@ -66,7 +81,7 @@ namespace Shared.Patient.ViewModels
                     AddressSuggestionProvider.SelectedRegion = value;
                     Location = null;
                     UpdateUserText();
-                }; 
+                };
             }
         }
 
@@ -205,7 +220,7 @@ namespace Shared.Patient.ViewModels
                     EndDateTime = ToDate.GetValueOrDefault(SpecialValues.MaxDate),
                     Building = Building ?? string.Empty,
                     House = House ?? string.Empty,
-                    OkatoId = Location == null 
+                    OkatoId = Location == null
                                     ? Region == null
                                         ? SpecialValues.NonExistingId
                                         : Region.Id

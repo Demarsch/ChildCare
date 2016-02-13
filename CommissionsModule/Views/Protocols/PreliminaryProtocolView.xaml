@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary x:Class="CommissionsModule.Views.PreliminaryProtocolView"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:view="clr-namespace:Shared.Patient.Views;assembly=Shared.Patient"
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
                     xmlns:sharedView ="clr-namespace:Shared.Patient.Views;assembly=Shared.Patient"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
@@ -31,24 +30,44 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">Вид комиссии</TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0, 2, 0, 22" ItemsSource="{Binding CommissionTypes}" 
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">
+                    <Run Text="Вид комиссии" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0, 2, 22, 0" ItemsSource="{Binding CommissionTypes}" 
                           SelectedValue="{Binding SelectedCommissionTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id" />
-                <TextBlock Grid.Row="1" Grid.Column="2" Margin="2, 2, 2, 0">Вопрос комиссии</TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="3" Margin="0, 2, 0, 22" ItemsSource="{Binding CommissionQuestions}" 
+                <TextBlock Grid.Row="1" Grid.Column="2" Margin="2, 2, 2, 0">
+                    <Run Text="Вопрос комиссии" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <ComboBox Grid.Row="1" Grid.Column="3" Margin="0, 2, 22, 0" ItemsSource="{Binding CommissionQuestions}" 
                           SelectedValue="{Binding SelectedCommissionQuestionId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Margin="2, 2, 2, 0">Источник обращения</TextBlock>
-                <ComboBox Grid.Row="2" Grid.Column="1" Margin="0, 2, 0, 22" ItemsSource="{Binding CommissionSources}" 
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="2, 2, 2, 0">
+                    <Run Text="Источник обращения" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="0, 2, 22, 0" ItemsSource="{Binding CommissionSources}" 
                           SelectedValue="{Binding SelectedCommissionSourceId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
-                <TextBlock Grid.Row="2" Grid.Column="2" Margin="2, 2, 2, 0">Направившее ЛПУ</TextBlock>
-                <ComboBox Grid.Row="2" Grid.Column="3" Margin="0, 2, 0, 22" ItemsSource="{Binding SentLPUs}" 
+                <TextBlock Grid.Row="2" Grid.Column="2" Margin="2, 2, 2, 0">
+                    <Run Text="Направившее ЛПУ" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <ComboBox Grid.Row="2" Grid.Column="3" Margin="0, 2, 22, 0" ItemsSource="{Binding SentLPUs}" 
                           SelectedValue="{Binding SelectedSentLPUId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Margin="2, 2, 2, 0">Талон</TextBlock>
-                <ComboBox Grid.Row="3" Grid.Column="1" Margin="0, 2, 0, 0" ItemsSource="{Binding Talons}" SelectedValue="{Binding SelectedTalonId}" SelectedValuePath="Id"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="2, 2, 2, 0">Талон пациента</TextBlock>
+                <ComboBox Grid.Row="3" Grid.Column="1" Margin="0, 2, 22, 0" ItemsSource="{Binding Talons}" SelectedValue="{Binding SelectedTalonId}" SelectedValuePath="Id"/>
                 <TextBlock Grid.Row="3" Grid.Column="2" Margin="2, 2, 2, 0">Вид помощи</TextBlock>
-                <ComboBox Grid.Row="3" Grid.Column="3" Margin="0, 2, 0, 0" ItemsSource="{Binding HelpTypes}" SelectedValue="{Binding SelectedHelpTypeId}" SelectedValuePath="Id"/>
+                <ComboBox Grid.Row="3" Grid.Column="3" Margin="0, 2, 22, 0" ItemsSource="{Binding HelpTypes}" SelectedValue="{Binding SelectedHelpTypeId}" SelectedValuePath="Id"/>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" Margin="2, 2, 2, 0">Диагноз МКБ</TextBlock>
                 <StackPanel Grid.Row="4" Grid.Column="1" Margin="0, 2, 0, 0" Orientation="Horizontal" HorizontalAlignment="Left">
@@ -58,7 +77,14 @@
                 <TextBlock Grid.Row="4" Grid.Column="2" Margin="2, 2, 2, 0">Дата принятия док-ов</TextBlock>
                 <DatePicker Grid.Row="4" Grid.Column="3" Margin="0, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding IncomeDateTime}"/>
 
-                <view:AddressView Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Margin="2, 2, 2, 0" DataContext="{Binding AddressViewModel}"/>
+                <TextBlock Grid.Row="5" Grid.Column="0" Margin="2, 2, 2, 0">
+                    <Run Text="Адрес пациента" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <ComboBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Margin="0, 2, 22, 0" ItemsSource="{Binding PersonAddresses}" 
+                          SelectedValue="{Binding SelectedPersonAddressId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
             </Grid>
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />

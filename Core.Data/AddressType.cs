@@ -24,6 +24,7 @@ namespace Core.Data
         public string Name { get; set; }
         public bool WithoutEndDate { get; set; }
         public int PriorityForOKATO { get; set; }
+        public string Category { get; set; }
     
         [NonSerialized]
     	protected ICollection<PersonAddress> personAddresses;

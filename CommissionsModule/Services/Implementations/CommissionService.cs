@@ -296,5 +296,12 @@ namespace CommissionsModule.Services
             DateTime.TryParse(onDate.ToSafeString(), out dt);
             return cacheService.GetItems<CommissionQuestion>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
         }
+
+
+        public IDisposableQueryable<PersonAddress> GetPatientAddresses(int personId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<PersonAddress>(context.Set<PersonAddress>().Where(x => x.PersonId == personId), context);
+        }
     }
 }

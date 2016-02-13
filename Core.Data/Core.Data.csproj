@@ -181,6 +181,7 @@
     <Compile Include="MedicalHelpType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Misc\AddressTypeCategory.cs" />
     <Compile Include="Misc\DataNotFoundException.cs" />
     <Compile Include="Misc\DBContextExtensions.cs" />
     <Compile Include="Misc\DbContextProviderExtensions.cs" />

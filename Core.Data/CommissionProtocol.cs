@@ -40,9 +40,9 @@ namespace Core.Data
         public Nullable<int> PersonTalonId { get; set; }
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public Nullable<int> RecordContractId { get; set; }
-        public Nullable<int> PersonAddressId { get; set; }
+        public int PersonAddressId { get; set; }
         public string Diagnos { get; set; }
-        public int SentLPUId { get; set; }
+        public Nullable<int> SentLPUId { get; set; }
     
         [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;

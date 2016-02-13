@@ -112,7 +112,10 @@ namespace CommissionsModule.ViewModels
             {
                 SetProperty(ref selectedCommissionProtocolId, value);
                 if (value != SpecialValues.NewId)
+                {
                     SetCommissionProtocolState();
+                    ShowCommissionProtocol = selectedCommissionProtocolId > 0;
+                }
             }
         }
 
@@ -124,6 +127,7 @@ namespace CommissionsModule.ViewModels
             {
                 SetProperty(ref selectedPersonId, value);
                 SetPatientName();
+                ShowCommissionProtocol = selectedPersonId > 0;
             }
         }
 
@@ -188,6 +192,13 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref patient, value); }
         }
 
+        private bool showCommissionProtocol;
+        public bool ShowCommissionProtocol
+        {
+            get { return showCommissionProtocol; }
+            set { SetProperty(ref showCommissionProtocol, value); }
+        }
+
         public FailureMediator FailureMediator { get; private set; }
         public NotificationMediator NotificationMediator { get; private set; }
         public IChangeTracker ChangeTracker { get; private set; }
@@ -231,6 +242,8 @@ namespace CommissionsModule.ViewModels
 
         private async void SetCommissionProtocolState()
         {
+            if (SelectedCommissionProtocolId < 1)
+                return;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -271,7 +284,7 @@ namespace CommissionsModule.ViewModels
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to load commission protocol state with protocol id ={0}", SelectedCommissionProtocolId);
-                FailureMediator.Activate("ННе удалось загрузить состояние протокола", exception: ex);
+                FailureMediator.Activate("Не удалось загрузить состояние протокола", exception: ex);
             }
             finally
             {

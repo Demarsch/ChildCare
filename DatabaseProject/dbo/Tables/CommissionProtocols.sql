@@ -19,9 +19,9 @@
     [PersonTalonId]        INT            NULL,
     [MedicalHelpTypeId]    INT            NULL,
     [RecordContractId]     INT            NULL,
-    [PersonAddressId]      INT            NULL,
+    [PersonAddressId]      INT            NOT NULL,
     [Diagnos]              VARCHAR (8000) NOT NULL,
-    [SentLPUId]            INT            CONSTRAINT [DF_CommissionProtocols_SentLPU] DEFAULT ((1)) NOT NULL,
+    [SentLPUId]            INT            NULL,
     CONSTRAINT [PK_CommissionProtocols] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_CommissionProtocols_CommissionSources] FOREIGN KEY ([CommissionSourceId]) REFERENCES [dbo].[CommissionSources] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_Decisions] FOREIGN KEY ([DecisionId]) REFERENCES [dbo].[Decisions] ([Id]),
@@ -32,6 +32,8 @@
     CONSTRAINT [FK_CommissionProtocols_PersonTalons] FOREIGN KEY ([PersonTalonId]) REFERENCES [dbo].[PersonTalons] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id])
 );
+
+
 
 
 

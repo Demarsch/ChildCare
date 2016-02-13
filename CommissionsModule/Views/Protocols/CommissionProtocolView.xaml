@@ -4,17 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels ="clr-namespace:CommissionsModule.ViewModels"
+             xmlns:view="clr-namespace:CommissionsModule.Views"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance viewModels:CommissionProtocolViewModel}">
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <StackPanel>
-            <TextBlock Text="{Binding Patient}"/>
-            <ContentControl VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Content="{Binding PreliminaryProtocolViewModel}"/>
-            <ContentControl Content="{Binding CommissionСonductViewModel}" Visibility="{Binding CommissionСonductVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
-            <ContentControl Content="{Binding CommissionСonclusionViewModel}" Visibility="{Binding CommissionСonclusionVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
-        </StackPanel>
-        <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding FailureMediator}"/>
-        <ContentControl HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{Binding NotificationMediator}"/>
+    <Grid>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+            <StackPanel>
+                <TextBlock Text="{Binding Patient}"/>
+                <ContentControl VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Content="{Binding PreliminaryProtocolViewModel}"/>
+                <ContentControl Content="{Binding CommissionСonductViewModel}" Visibility="{Binding CommissionСonductVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                <ContentControl Content="{Binding CommissionСonclusionViewModel}" Visibility="{Binding CommissionСonclusionVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            </StackPanel>
+            <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding FailureMediator}"/>
+            <ContentControl HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{Binding NotificationMediator}"/>
+        </Grid>
+        <view:CommissionEmptyView Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}" />
     </Grid>
 </UserControl>

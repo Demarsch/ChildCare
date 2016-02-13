@@ -13,6 +13,7 @@
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="WithoutEndDate" Type="bit" Nullable="false" />
           <Property Name="PriorityForOKATO" Type="int" Nullable="false" />
+          <Property Name="Category" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="AnalyseRefferences">
           <Key>
@@ -175,9 +176,9 @@
           <Property Name="PersonTalonId" Type="int" />
           <Property Name="MedicalHelpTypeId" Type="int" />
           <Property Name="RecordContractId" Type="int" />
-          <Property Name="PersonAddressId" Type="int" />
+          <Property Name="PersonAddressId" Type="int" Nullable="false" />
           <Property Name="Diagnos" Type="varchar" MaxLength="8000" Nullable="false" />
-          <Property Name="SentLPUId" Type="int" Nullable="false" />
+          <Property Name="SentLPUId" Type="int" />
         </EntityType>
         <EntityType Name="CommissionQuestions">
           <Key>
@@ -1544,7 +1545,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CommissionProtocols_Orgs">
-          <End Role="Orgs" Type="Self.Orgs" Multiplicity="1" />
+          <End Role="Orgs" Type="Self.Orgs" Multiplicity="0..1" />
           <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Orgs">
@@ -1556,7 +1557,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CommissionProtocols_PersonAddresses">
-          <End Role="PersonAddresses" Type="Self.PersonAddresses" Multiplicity="0..1" />
+          <End Role="PersonAddresses" Type="Self.PersonAddresses" Multiplicity="1" />
           <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PersonAddresses">
@@ -4582,6 +4583,7 @@
           <Property Name="WithoutEndDate" Type="Boolean" Nullable="false" />
           <Property Name="PriorityForOKATO" Type="Int32" Nullable="false" />
           <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="AddressType" ToRole="PersonAddress" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Branch">
           <Key>
@@ -7854,9 +7856,9 @@
           <Property Name="PersonTalonId" Type="Int32" />
           <Property Name="MedicalHelpTypeId" Type="Int32" />
           <Property Name="RecordContractId" Type="Int32" />
-          <Property Name="PersonAddressId" Type="Int32" />
+          <Property Name="PersonAddressId" Type="Int32" Nullable="false" />
           <Property Name="Diagnos" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="SentLPUId" Type="Int32" Nullable="false" />
+          <Property Name="SentLPUId" Type="Int32" />
           <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_CommissionProtocols" FromRole="CommissionProtocol" ToRole="CommissionDecision" />
           <NavigationProperty Name="CommissionSource" Relationship="DataLib.FK_CommissionProtocols_CommissionSources" FromRole="CommissionProtocol" ToRole="CommissionSource" />
           <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionProtocols_Decisions" FromRole="CommissionProtocol" ToRole="Decision" />
@@ -7916,7 +7918,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CommissionProtocols_Orgs">
-          <End Type="DataLib.Org" Role="Org" Multiplicity="1" />
+          <End Type="DataLib.Org" Role="Org" Multiplicity="0..1" />
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Org">
@@ -7928,7 +7930,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_CommissionProtocols_PersonAddresses">
-          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="0..1" />
+          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="1" />
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="PersonAddress">
@@ -7984,6 +7986,7 @@
           <EntitySetMapping Name="AddressTypes">
             <EntityTypeMapping TypeName="DataLib.AddressType">
               <MappingFragment StoreEntitySet="AddressTypes">
+                <ScalarProperty Name="Category" ColumnName="Category" />
                 <ScalarProperty Name="PriorityForOKATO" ColumnName="PriorityForOKATO" />
                 <ScalarProperty Name="WithoutEndDate" ColumnName="WithoutEndDate" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
