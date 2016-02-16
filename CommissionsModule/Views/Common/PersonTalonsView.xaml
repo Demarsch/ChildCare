@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="CommissionsModule.Views.Common.PersonTalonsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
+             xmlns:views="clr-namespace:CommissionsModule.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="500" MinHeight="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Column="0" Grid.Row="0" LastChildFill="True">
+            <Button Content="Привязать талон к И/Б" Margin="2" DockPanel.Dock="Right"/>
+            <Button Content="Удалить" Margin="2" DockPanel.Dock="Right"/>
+            <Button Content="Добавить" Margin="2" DockPanel.Dock="Right"/>
+            <TextBlock Text="Талоны пациента" Margin="2" FontWeight="Medium"/>
+        </DockPanel>
+
+        <ListBox Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="Black" 
+                 HorizontalContentAlignment="Stretch" Margin="2"        
+                 ItemsSource="{Binding Talons}"
+                 SelectedItem="{Binding SelectedTalon}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{Binding TalonColorHex}" Margin="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                Source="{Binding IsCompleted, Converter={x:Static converters:TalonStateToImageConverter.Instance}}"
+                                Width="40" Height="40" Stretch="Fill" Margin="0,0,2,0"/>
+                            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="{Binding TalonNumber}" Margin="0,0,5,0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding HospitalisationNumber}" Margin="0,0,5,0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding TalonDate}" Margin="0,0,5,0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding TalonState}" Margin="0" FontWeight="Medium"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock Text="{Binding MedHelpType}" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding MKB}" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Address}" Margin="0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+    </Grid>
+</UserControl>

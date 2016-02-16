@@ -59,5 +59,7 @@ namespace CommissionsModule.Services
         IDisposableQueryable<Person> GetPerson(int personId);
 
         Task SaveCommissionProtocol(CommissionProtocol commissionProtocol, CancellationToken token);
+
+        IDisposableQueryable<CommissionProtocol> GetPersonCommissionProtocols(int personId);
     }
 }

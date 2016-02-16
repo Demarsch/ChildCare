@@ -17,9 +17,9 @@ namespace Core.Data
     {
         public Decision()
         {
-            this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
             this.Decisions1 = new HashSet<Decision>();
             this.CommissionDecisions = new HashSet<CommissionDecision>();
+            this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
@@ -31,14 +31,6 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
         public Nullable<int> ColorSettingsId { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
-    
-    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
-    	{
-     		get { return commissionDecisionsLinks; }
-     		set { commissionDecisionsLinks = value; }
-    	}
         [NonSerialized]
     	protected ICollection<Decision> decisions1;
     
@@ -56,6 +48,14 @@ namespace Core.Data
      		set { decision1 = value; }
     	}
         [NonSerialized]
+    	protected ColorsSetting colorsSetting;
+    
+    	public virtual ColorsSetting ColorsSetting
+    	{
+     		get { return colorsSetting; }
+     		set { colorsSetting = value; }
+    	}
+        [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;
     
     	public virtual ICollection<CommissionDecision> CommissionDecisions
@@ -64,12 +64,12 @@ namespace Core.Data
      		set { commissionDecisions = value; }
     	}
         [NonSerialized]
-    	protected ColorsSetting colorsSetting;
+    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
     
-    	public virtual ColorsSetting ColorsSetting
+    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
     	{
-     		get { return colorsSetting; }
-     		set { colorsSetting = value; }
+     		get { return commissionDecisionsLinks; }
+     		set { commissionDecisionsLinks = value; }
     	}
         [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;

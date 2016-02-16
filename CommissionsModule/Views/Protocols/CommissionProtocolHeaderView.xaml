@@ -29,4 +29,11 @@
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
                        Command="{Binding CommissionProtocolViewModel.AddCommissionConclusionCommand}" CommandParameter="{Binding ElementName=btnCommissionConclusion, Path=IsChecked}"/>
     </fluent:RibbonGroupBox>
+
+    <fluent:RibbonGroupBox>
+        <fluent:Button Header="Временно"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Question-64x64.png"
+                       Command="{Binding CommissionProtocolViewModel.CommonButtonCommand}" />
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

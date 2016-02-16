@@ -27,7 +27,8 @@ namespace Core.Data
         public string MKB { get; set; }
         public int RecordContractId { get; set; }
         public Nullable<int> MedicalHelpTypeId { get; set; }
-        public string Address { get; set; }
+        public Nullable<int> PersonAddressId { get; set; }
+        public Nullable<bool> IsCompleted { get; set; }
     
         [NonSerialized]
     	protected MedicalHelpType medicalHelpType;
@@ -36,6 +37,14 @@ namespace Core.Data
     	{
      		get { return medicalHelpType; }
      		set { medicalHelpType = value; }
+    	}
+        [NonSerialized]
+    	protected PersonAddress personAddress;
+    
+    	public virtual PersonAddress PersonAddress
+    	{
+     		get { return personAddress; }
+     		set { personAddress = value; }
     	}
         [NonSerialized]
     	protected Person person;

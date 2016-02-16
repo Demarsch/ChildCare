@@ -727,7 +727,8 @@
           <Property Name="MKB" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="RecordContractId" Type="int" Nullable="false" />
           <Property Name="MedicalHelpTypeId" Type="int" />
-          <Property Name="Address" Type="varchar" MaxLength="1000" />
+          <Property Name="PersonAddressId" Type="int" />
+          <Property Name="IsCompleted" Type="bit" />
         </EntityType>
         <EntityType Name="RecordContractItems">
           <Key>
@@ -2270,6 +2271,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PersonTalons_PersonAddresses">
+          <End Role="PersonAddresses" Type="Self.PersonAddresses" Multiplicity="0..1" />
+          <End Role="PersonTalons" Type="Self.PersonTalons" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonAddresses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonTalons">
+              <PropertyRef Name="PersonAddressId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PersonTalons_Persons">
           <End Role="Persons" Type="Self.Persons" Multiplicity="1" />
           <End Role="PersonTalons" Type="Self.PersonTalons" Multiplicity="*" />
@@ -3559,6 +3572,10 @@
             <End Role="MedicalHelpTypes" EntitySet="MedicalHelpTypes" />
             <End Role="PersonTalons" EntitySet="PersonTalons" />
           </AssociationSet>
+          <AssociationSet Name="FK_PersonTalons_PersonAddresses" Association="Self.FK_PersonTalons_PersonAddresses">
+            <End Role="PersonAddresses" EntitySet="PersonAddresses" />
+            <End Role="PersonTalons" EntitySet="PersonTalons" />
+          </AssociationSet>
           <AssociationSet Name="FK_PersonTalons_Persons" Association="Self.FK_PersonTalons_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="PersonTalons" EntitySet="PersonTalons" />
@@ -3862,7 +3879,6 @@
           <EntitySet Name="Persons" EntityType="DataLib.Person" />
           <EntitySet Name="PersonSocialStatuses" EntityType="DataLib.PersonSocialStatus" />
           <EntitySet Name="PersonStaffs" EntityType="DataLib.PersonStaff" />
-          <EntitySet Name="PersonTalons" EntityType="DataLib.PersonTalon" />
           <EntitySet Name="RecordContractItems" EntityType="DataLib.RecordContractItem" />
           <EntitySet Name="RecordContractLimits" EntityType="DataLib.RecordContractLimit" />
           <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
@@ -3941,10 +3957,6 @@
             <End Role="RecordContract" EntitySet="RecordContracts" />
             <End Role="MedicalHelpType" EntitySet="MedicalHelpTypes" />
           </AssociationSet>
-          <AssociationSet Name="FK_PersonTalons_MedicalHelpTypes" Association="DataLib.FK_PersonTalons_MedicalHelpTypes">
-            <End Role="MedicalHelpType" EntitySet="MedicalHelpTypes" />
-            <End Role="PersonTalon" EntitySet="PersonTalons" />
-          </AssociationSet>
           <AssociationSet Name="FK_PersonAddresses_Okatos" Association="DataLib.FK_PersonAddresses_Okatos">
             <End Role="Okato" EntitySet="Okatos" />
             <End Role="PersonAddress" EntitySet="PersonAddresses" />
@@ -4013,10 +4025,6 @@
             <End Role="Person" EntitySet="Persons" />
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
           </AssociationSet>
-          <AssociationSet Name="FK_PersonTalons_Persons" Association="DataLib.FK_PersonTalons_Persons">
-            <End Role="Person" EntitySet="Persons" />
-            <End Role="PersonTalon" EntitySet="PersonTalons" />
-          </AssociationSet>
           <AssociationSet Name="FK_RecordContracts_Clients" Association="DataLib.FK_RecordContracts_Clients">
             <End Role="Person" EntitySet="Persons" />
             <End Role="RecordContract" EntitySet="RecordContracts" />
@@ -4044,10 +4052,6 @@
           <AssociationSet Name="FK_RecordContracts_PersonStaffs" Association="DataLib.FK_RecordContracts_PersonStaffs">
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
             <End Role="RecordContract" EntitySet="RecordContracts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonTalons_RecordContracts" Association="DataLib.FK_PersonTalons_RecordContracts">
-            <End Role="RecordContract" EntitySet="RecordContracts" />
-            <End Role="PersonTalon" EntitySet="PersonTalons" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordContractItems_RecordContracts" Association="DataLib.FK_RecordContractItems_RecordContracts">
             <End Role="RecordContract" EntitySet="RecordContracts" />
@@ -4429,45 +4433,6 @@
             <End Role="Permission" EntitySet="Permissions" />
             <End Role="RecordTypeRolePermission" EntitySet="RecordTypeRolePermissions" />
           </AssociationSet>
-          <EntitySet Name="CommissionDecisionsLinks" EntityType="DataLib.CommissionDecisionsLink" />
-          <EntitySet Name="CommissionFilters" EntityType="DataLib.CommissionFilter" />
-          <EntitySet Name="CommissionMembers" EntityType="DataLib.CommissionMember" />
-          <EntitySet Name="CommissionMemberTypes" EntityType="DataLib.CommissionMemberType" />
-          <EntitySet Name="CommissionQuestions" EntityType="DataLib.CommissionQuestion" />
-          <EntitySet Name="CommissionSources" EntityType="DataLib.CommissionSource" />
-          <EntitySet Name="CommissionTypes" EntityType="DataLib.CommissionType" />
-          <AssociationSet Name="FK_CommissionDecisionsLinks_CommissionMemberTypes" Association="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes">
-            <End Role="CommissionMemberType" EntitySet="CommissionMemberTypes" />
-            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionDecisionsLinks_CommissionQuestions" Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions">
-            <End Role="CommissionQuestion" EntitySet="CommissionQuestions" />
-            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionMembers_CommissionMemberTypes" Association="DataLib.FK_CommissionMembers_CommissionMemberTypes">
-            <End Role="CommissionMemberType" EntitySet="CommissionMemberTypes" />
-            <End Role="CommissionMember" EntitySet="CommissionMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionMembers_CommissionTypes" Association="DataLib.FK_CommissionMembers_CommissionTypes">
-            <End Role="CommissionType" EntitySet="CommissionTypes" />
-            <End Role="CommissionMember" EntitySet="CommissionMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionMembers_PersonStaffs" Association="DataLib.FK_CommissionMembers_PersonStaffs">
-            <End Role="PersonStaff" EntitySet="PersonStaffs" />
-            <End Role="CommissionMember" EntitySet="CommissionMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionMembers_Staffs" Association="DataLib.FK_CommissionMembers_Staffs">
-            <End Role="Staff" EntitySet="Staffs" />
-            <End Role="CommissionMember" EntitySet="CommissionMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionQuestions_CommissionTypes" Association="DataLib.FK_CommissionQuestions_CommissionTypes">
-            <End Role="CommissionType" EntitySet="CommissionTypes" />
-            <End Role="CommissionQuestion" EntitySet="CommissionQuestions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionSources_CommissionTypes" Association="DataLib.FK_CommissionSources_CommissionTypes">
-            <End Role="CommissionType" EntitySet="CommissionTypes" />
-            <End Role="CommissionSource" EntitySet="CommissionSources" />
-          </AssociationSet>
           <EntitySet Name="Users" EntityType="DataLib.User" />
           <AssociationSet Name="FK_Assignments_Users_AssignUser" Association="DataLib.FK_Assignments_Users_AssignUser">
             <End Role="User" EntitySet="Users" />
@@ -4506,21 +4471,51 @@
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
           <EntitySet Name="Decisions" EntityType="DataLib.Decision" />
-          <AssociationSet Name="FK_CommissionDecisionsLinks_Decisions" Association="DataLib.FK_CommissionDecisionsLinks_Decisions">
-            <End Role="Decision" EntitySet="Decisions" />
-            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
-          </AssociationSet>
           <AssociationSet Name="FK_Decisions_Decisions" Association="DataLib.FK_Decisions_Decisions">
             <End Role="Decision" EntitySet="Decisions" />
             <End Role="Decision1" EntitySet="Decisions" />
           </AssociationSet>
+          <EntitySet Name="ColorsSettings" EntityType="DataLib.ColorsSetting" />
+          <AssociationSet Name="FK_Decisions_ColorsSettings" Association="DataLib.FK_Decisions_ColorsSettings">
+            <End Role="ColorsSetting" EntitySet="ColorsSettings" />
+            <End Role="Decision" EntitySet="Decisions" />
+          </AssociationSet>
+          <EntitySet Name="PersonTalons" EntityType="DataLib.PersonTalon" />
+          <AssociationSet Name="FK_PersonTalons_MedicalHelpTypes" Association="DataLib.FK_PersonTalons_MedicalHelpTypes">
+            <End Role="MedicalHelpType" EntitySet="MedicalHelpTypes" />
+            <End Role="PersonTalon" EntitySet="PersonTalons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonTalons_PersonAddresses" Association="DataLib.FK_PersonTalons_PersonAddresses">
+            <End Role="PersonAddress" EntitySet="PersonAddresses" />
+            <End Role="PersonTalon" EntitySet="PersonTalons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonTalons_Persons" Association="DataLib.FK_PersonTalons_Persons">
+            <End Role="Person" EntitySet="Persons" />
+            <End Role="PersonTalon" EntitySet="PersonTalons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonTalons_RecordContracts" Association="DataLib.FK_PersonTalons_RecordContracts">
+            <End Role="RecordContract" EntitySet="RecordContracts" />
+            <End Role="PersonTalon" EntitySet="PersonTalons" />
+          </AssociationSet>
           <EntitySet Name="CommissionDecisions" EntityType="DataLib.CommissionDecision" />
+          <EntitySet Name="CommissionDecisionsLinks" EntityType="DataLib.CommissionDecisionsLink" />
+          <EntitySet Name="CommissionFilters" EntityType="DataLib.CommissionFilter" />
+          <EntitySet Name="CommissionMembers" EntityType="DataLib.CommissionMember" />
+          <EntitySet Name="CommissionMemberTypes" EntityType="DataLib.CommissionMemberType" />
+          <EntitySet Name="CommissionProtocols" EntityType="DataLib.CommissionProtocol" />
+          <EntitySet Name="CommissionQuestions" EntityType="DataLib.CommissionQuestion" />
+          <EntitySet Name="CommissionSources" EntityType="DataLib.CommissionSource" />
+          <EntitySet Name="CommissionTypes" EntityType="DataLib.CommissionType" />
           <AssociationSet Name="FK_CommissionDecisions_CommissionMembers" Association="DataLib.FK_CommissionDecisions_CommissionMembers">
             <End Role="CommissionMember" EntitySet="CommissionMembers" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisions_CommissionMembers1" Association="DataLib.FK_CommissionDecisions_CommissionMembers1">
             <End Role="CommissionMember" EntitySet="CommissionMembers" />
+            <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionDecisions_CommissionProtocols" Association="DataLib.FK_CommissionDecisions_CommissionProtocols">
+            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisions_Decisions" Association="DataLib.FK_CommissionDecisions_Decisions">
@@ -4531,15 +4526,33 @@
             <End Role="User" EntitySet="Users" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
           </AssociationSet>
-          <EntitySet Name="ColorsSettings" EntityType="DataLib.ColorsSetting" />
-          <AssociationSet Name="FK_Decisions_ColorsSettings" Association="DataLib.FK_Decisions_ColorsSettings">
-            <End Role="ColorsSetting" EntitySet="ColorsSettings" />
-            <End Role="Decision" EntitySet="Decisions" />
+          <AssociationSet Name="FK_CommissionDecisionsLinks_CommissionMemberTypes" Association="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes">
+            <End Role="CommissionMemberType" EntitySet="CommissionMemberTypes" />
+            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
           </AssociationSet>
-          <EntitySet Name="CommissionProtocols" EntityType="DataLib.CommissionProtocol" />
-          <AssociationSet Name="FK_CommissionDecisions_CommissionProtocols" Association="DataLib.FK_CommissionDecisions_CommissionProtocols">
-            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
-            <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
+          <AssociationSet Name="FK_CommissionDecisionsLinks_CommissionQuestions" Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions">
+            <End Role="CommissionQuestion" EntitySet="CommissionQuestions" />
+            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionDecisionsLinks_Decisions" Association="DataLib.FK_CommissionDecisionsLinks_Decisions">
+            <End Role="Decision" EntitySet="Decisions" />
+            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionMembers_CommissionMemberTypes" Association="DataLib.FK_CommissionMembers_CommissionMemberTypes">
+            <End Role="CommissionMemberType" EntitySet="CommissionMemberTypes" />
+            <End Role="CommissionMember" EntitySet="CommissionMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionMembers_CommissionTypes" Association="DataLib.FK_CommissionMembers_CommissionTypes">
+            <End Role="CommissionType" EntitySet="CommissionTypes" />
+            <End Role="CommissionMember" EntitySet="CommissionMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionMembers_PersonStaffs" Association="DataLib.FK_CommissionMembers_PersonStaffs">
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+            <End Role="CommissionMember" EntitySet="CommissionMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionMembers_Staffs" Association="DataLib.FK_CommissionMembers_Staffs">
+            <End Role="Staff" EntitySet="Staffs" />
+            <End Role="CommissionMember" EntitySet="CommissionMembers" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_CommissionSources" Association="DataLib.FK_CommissionProtocols_CommissionSources">
             <End Role="CommissionSource" EntitySet="CommissionSources" />
@@ -4572,6 +4585,14 @@
           <AssociationSet Name="FK_CommissionProtocols_RecordContracts" Association="DataLib.FK_CommissionProtocols_RecordContracts">
             <End Role="RecordContract" EntitySet="RecordContracts" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionQuestions_CommissionTypes" Association="DataLib.FK_CommissionQuestions_CommissionTypes">
+            <End Role="CommissionType" EntitySet="CommissionTypes" />
+            <End Role="CommissionQuestion" EntitySet="CommissionQuestions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionSources_CommissionTypes" Association="DataLib.FK_CommissionSources_CommissionTypes">
+            <End Role="CommissionType" EntitySet="CommissionTypes" />
+            <End Role="CommissionSource" EntitySet="CommissionSources" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AddressType">
@@ -4736,10 +4757,10 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_MedicalHelpTypes_RecordContracts" FromRole="MedicalHelpType" ToRole="RecordContract" />
-          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_MedicalHelpTypes" FromRole="MedicalHelpType" ToRole="PersonTalon" />
           <Property Name="Code" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_MedicalHelpTypes" FromRole="MedicalHelpType" ToRole="PersonTalon" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_MedicalHelpTypes" FromRole="MedicalHelpType" ToRole="CommissionProtocol" />
         </EntityType>
         <EntityType Name="Okato">
@@ -4794,6 +4815,7 @@
           <NavigationProperty Name="AddressType" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="PersonAddress" ToRole="AddressType" />
           <NavigationProperty Name="Okato" Relationship="DataLib.FK_PersonAddresses_Okatos" FromRole="PersonAddress" ToRole="Okato" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Addresses_Persons" FromRole="PersonAddress" ToRole="Person" />
+          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_PersonAddresses" FromRole="PersonAddress" ToRole="PersonTalon" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_PersonAddresses" FromRole="PersonAddress" ToRole="CommissionProtocol" />
         </EntityType>
         <EntityType Name="PersonDisability">
@@ -4948,7 +4970,6 @@
           <NavigationProperty Name="PersonRelatives1" Relationship="DataLib.FK_PersonRelatives_Persons1" FromRole="Person" ToRole="PersonRelative" />
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_Persons" FromRole="Person" ToRole="PersonSocialStatus" />
           <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="Person" ToRole="PersonStaff" />
-          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="Person" ToRole="PersonTalon" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="Person" ToRole="RecordContract" />
           <NavigationProperty Name="RecordContracts1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="Person" ToRole="RecordContract" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Persons" FromRole="Person" ToRole="Visit" />
@@ -4957,6 +4978,7 @@
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_Persons" FromRole="Person" ToRole="Record" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_Persons" FromRole="Person" ToRole="Assignment" />
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
+          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="Person" ToRole="PersonTalon" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="Person" ToRole="CommissionProtocol" />
         </EntityType>
         <EntityType Name="PersonSocialStatus">
@@ -4991,23 +5013,6 @@
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContract" />
           <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_PersonStaffs" FromRole="PersonStaff" ToRole="RecordMember" />
           <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_PersonStaffs" FromRole="PersonStaff" ToRole="CommissionMember" />
-        </EntityType>
-        <EntityType Name="PersonTalon">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PersonId" Type="Int32" Nullable="false" />
-          <Property Name="TalonNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="TalonDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="RecordContractId" Type="Int32" Nullable="false" />
-          <Property Name="MedicalHelpTypeId" Type="Int32" />
-          <Property Name="Address" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="MedicalHelpType" Relationship="DataLib.FK_PersonTalons_MedicalHelpTypes" FromRole="PersonTalon" ToRole="MedicalHelpType" />
-          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="PersonTalon" ToRole="Person" />
-          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="PersonTalon" ToRole="RecordContract" />
-          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_PersonTalons" FromRole="PersonTalon" ToRole="CommissionProtocol" />
         </EntityType>
         <EntityType Name="RecordContractItem">
           <Key>
@@ -5067,12 +5072,12 @@
           <NavigationProperty Name="Person" Relationship="DataLib.FK_RecordContracts_Clients" FromRole="RecordContract" ToRole="Person" />
           <NavigationProperty Name="Person1" Relationship="DataLib.FK_RecordContracts_Consumers" FromRole="RecordContract" ToRole="Person" />
           <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="RecordContract" ToRole="PersonStaff" />
-          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordContracts" FromRole="RecordContract" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordContracts" FromRole="RecordContract" ToRole="RecordContractLimit" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_RecordContracts" FromRole="RecordContract" ToRole="Visit" />
           <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_RecordContracts" FromRole="RecordContract" ToRole="VisitTemplate" />
           <NavigationProperty Name="Org" Relationship="DataLib.FK_RecordContracts_Orgs" FromRole="RecordContract" ToRole="Org" />
+          <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="RecordContract" ToRole="PersonTalon" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="RecordContract" ToRole="CommissionProtocol" />
         </EntityType>
         <EntityType Name="RecordTypeRole">
@@ -5429,18 +5434,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonTalons_MedicalHelpTypes">
-          <End Type="DataLib.MedicalHelpType" Role="MedicalHelpType" Multiplicity="0..1" />
-          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MedicalHelpType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonTalon">
-              <PropertyRef Name="MedicalHelpTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PersonAddresses_Okatos">
           <End Type="DataLib.Okato" Role="Okato" Multiplicity="1" />
           <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="*" />
@@ -5647,18 +5640,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PersonTalons_Persons">
-          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
-          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonTalon">
-              <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RecordContracts_Clients">
           <End Type="DataLib.Person" Role="Person" Multiplicity="0..1" />
           <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="*" />
@@ -5740,18 +5721,6 @@
             </Principal>
             <Dependent Role="RecordContract">
               <PropertyRef Name="InUserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonTalons_RecordContracts">
-          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
-          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordContract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonTalon">
-              <PropertyRef Name="RecordContractId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7379,194 +7348,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="CommissionDecisionsLink">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CommissionQuestionId" Type="Int32" Nullable="false" />
-          <Property Name="CommissionTypeMemberId" Type="Int32" Nullable="false" />
-          <Property Name="DecisionId" Type="Int32" Nullable="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="CommissionMemberType" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" FromRole="CommissionDecisionsLink" ToRole="CommissionMemberType" />
-          <NavigationProperty Name="CommissionQuestion" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" FromRole="CommissionDecisionsLink" ToRole="CommissionQuestion" />
-          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionDecisionsLinks_Decisions" FromRole="CommissionDecisionsLink" ToRole="Decision" />
-        </EntityType>
-        <EntityType Name="CommissionFilter">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="CommissionMember">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PersonStaffId" Type="Int32" />
-          <Property Name="StaffId" Type="Int32" />
-          <Property Name="CommissionMemberTypeId" Type="Int32" Nullable="false" />
-          <Property Name="CommissionTypeId" Type="Int32" Nullable="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="CommissionMemberType" Relationship="DataLib.FK_CommissionMembers_CommissionMemberTypes" FromRole="CommissionMember" ToRole="CommissionMemberType" />
-          <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionMember" ToRole="CommissionType" />
-          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_CommissionMembers_PersonStaffs" FromRole="CommissionMember" ToRole="PersonStaff" />
-          <NavigationProperty Name="Staff" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="CommissionMember" ToRole="Staff" />
-          <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers" FromRole="CommissionMember" ToRole="CommissionDecision" />
-          <NavigationProperty Name="CommissionDecisions1" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers1" FromRole="CommissionMember" ToRole="CommissionDecision" />
-        </EntityType>
-        <EntityType Name="CommissionMemberType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="IsChief" Type="Boolean" Nullable="false" />
-          <Property Name="IsSecretary" Type="Boolean" Nullable="false" />
-          <Property Name="IsMember" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" FromRole="CommissionMemberType" ToRole="CommissionDecisionsLink" />
-          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_CommissionMemberTypes" FromRole="CommissionMemberType" ToRole="CommissionMember" />
-        </EntityType>
-        <EntityType Name="CommissionQuestion">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CommissionTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" FromRole="CommissionQuestion" ToRole="CommissionDecisionsLink" />
-          <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionQuestions_CommissionTypes" FromRole="CommissionQuestion" ToRole="CommissionType" />
-        </EntityType>
-        <EntityType Name="CommissionSource">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CommissionTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionSources_CommissionTypes" FromRole="CommissionSource" ToRole="CommissionType" />
-          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_CommissionSources" FromRole="CommissionSource" ToRole="CommissionProtocol" />
-        </EntityType>
-        <EntityType Name="CommissionType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionType" ToRole="CommissionMember" />
-          <NavigationProperty Name="CommissionQuestions" Relationship="DataLib.FK_CommissionQuestions_CommissionTypes" FromRole="CommissionType" ToRole="CommissionQuestion" />
-          <NavigationProperty Name="CommissionSources" Relationship="DataLib.FK_CommissionSources_CommissionTypes" FromRole="CommissionType" ToRole="CommissionSource" />
-        </EntityType>
-        <Association Name="FK_CommissionDecisionsLinks_CommissionMemberTypes">
-          <End Type="DataLib.CommissionMemberType" Role="CommissionMemberType" Multiplicity="1" />
-          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionMemberType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecisionsLink">
-              <PropertyRef Name="CommissionTypeMemberId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionDecisionsLinks_CommissionQuestions">
-          <End Type="DataLib.CommissionQuestion" Role="CommissionQuestion" Multiplicity="1" />
-          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionQuestion">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecisionsLink">
-              <PropertyRef Name="CommissionQuestionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionMembers_CommissionMemberTypes">
-          <End Type="DataLib.CommissionMemberType" Role="CommissionMemberType" Multiplicity="1" />
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionMemberType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionMember">
-              <PropertyRef Name="CommissionMemberTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionMembers_CommissionTypes">
-          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="1" />
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionMember">
-              <PropertyRef Name="CommissionTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionMembers_PersonStaffs">
-          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PersonStaff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionMember">
-              <PropertyRef Name="PersonStaffId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionMembers_Staffs">
-          <End Type="DataLib.Staff" Role="Staff" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Staff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionMember">
-              <PropertyRef Name="StaffId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionQuestions_CommissionTypes">
-          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="1" />
-          <End Type="DataLib.CommissionQuestion" Role="CommissionQuestion" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionQuestion">
-              <PropertyRef Name="CommissionTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionSources_CommissionTypes">
-          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="1" />
-          <End Type="DataLib.CommissionSource" Role="CommissionSource" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionSource">
-              <PropertyRef Name="CommissionTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="Id" />
@@ -7708,25 +7489,13 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ColorSettingsId" Type="Int32" />
-          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_Decisions" FromRole="Decision" ToRole="CommissionDecisionsLink" />
           <NavigationProperty Name="Decisions1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision" ToRole="Decision1" />
           <NavigationProperty Name="Decision1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision1" ToRole="Decision" />
-          <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="Decision" ToRole="CommissionDecision" />
           <NavigationProperty Name="ColorsSetting" Relationship="DataLib.FK_Decisions_ColorsSettings" FromRole="Decision" ToRole="ColorsSetting" />
+          <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="Decision" ToRole="CommissionDecision" />
+          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_Decisions" FromRole="Decision" ToRole="CommissionDecisionsLink" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Decisions" FromRole="Decision" ToRole="CommissionProtocol" />
         </EntityType>
-        <Association Name="FK_CommissionDecisionsLinks_Decisions">
-          <End Type="DataLib.Decision" Role="Decision" Multiplicity="1" />
-          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Decision">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecisionsLink">
-              <PropertyRef Name="DecisionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Decisions_Decisions">
           <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
           <End Type="DataLib.Decision" Role="Decision1" Multiplicity="*" />
@@ -7736,76 +7505,6 @@
             </Principal>
             <Dependent Role="Decision1">
               <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="CommissionDecision">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CommissionProtocolId" Type="Int32" Nullable="false" />
-          <Property Name="CommissionMemberId" Type="Int32" Nullable="false" />
-          <Property Name="IsOfficial" Type="Boolean" Nullable="false" />
-          <Property Name="DecisionId" Type="Int32" />
-          <Property Name="ToDoDateTime" Type="DateTime" Precision="3" />
-          <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="CommissionStage" Type="Int32" Nullable="false" />
-          <Property Name="InitiatorMemberId" Type="Int32" Nullable="false" />
-          <Property Name="DecisionDateTime" Type="DateTime" Precision="3" />
-          <Property Name="RemovedByUserId" Type="Int32" />
-          <NavigationProperty Name="CommissionMember" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers" FromRole="CommissionDecision" ToRole="CommissionMember" />
-          <NavigationProperty Name="CommissionMember1" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers1" FromRole="CommissionDecision" ToRole="CommissionMember" />
-          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="CommissionDecision" ToRole="Decision" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_CommissionDecisions_Users" FromRole="CommissionDecision" ToRole="User" />
-          <Property Name="NeedAlllMemmbersInStage" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="CommissionProtocol" Relationship="DataLib.FK_CommissionDecisions_CommissionProtocols" FromRole="CommissionDecision" ToRole="CommissionProtocol" />
-        </EntityType>
-        <Association Name="FK_CommissionDecisions_CommissionMembers">
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="1" />
-          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionMember">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecision">
-              <PropertyRef Name="CommissionMemberId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionDecisions_CommissionMembers1">
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="1" />
-          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionMember">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecision">
-              <PropertyRef Name="InitiatorMemberId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionDecisions_Decisions">
-          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Decision">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecision">
-              <PropertyRef Name="DecisionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionDecisions_Users">
-          <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecision">
-              <PropertyRef Name="RemovedByUserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7832,6 +7531,148 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="PersonTalon">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="TalonNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TalonDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="RecordContractId" Type="Int32" Nullable="false" />
+          <Property Name="MedicalHelpTypeId" Type="Int32" />
+          <Property Name="PersonAddressId" Type="Int32" />
+          <Property Name="IsCompleted" Type="Boolean" />
+          <NavigationProperty Name="MedicalHelpType" Relationship="DataLib.FK_PersonTalons_MedicalHelpTypes" FromRole="PersonTalon" ToRole="MedicalHelpType" />
+          <NavigationProperty Name="PersonAddress" Relationship="DataLib.FK_PersonTalons_PersonAddresses" FromRole="PersonTalon" ToRole="PersonAddress" />
+          <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="PersonTalon" ToRole="Person" />
+          <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_PersonTalons_RecordContracts" FromRole="PersonTalon" ToRole="RecordContract" />
+          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_PersonTalons" FromRole="PersonTalon" ToRole="CommissionProtocol" />
+        </EntityType>
+        <Association Name="FK_PersonTalons_MedicalHelpTypes">
+          <End Type="DataLib.MedicalHelpType" Role="MedicalHelpType" Multiplicity="0..1" />
+          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MedicalHelpType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonTalon">
+              <PropertyRef Name="MedicalHelpTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonTalons_PersonAddresses">
+          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="0..1" />
+          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonAddress">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonTalon">
+              <PropertyRef Name="PersonAddressId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonTalons_Persons">
+          <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
+          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonTalon">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonTalons_RecordContracts">
+          <End Type="DataLib.RecordContract" Role="RecordContract" Multiplicity="1" />
+          <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordContract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonTalon">
+              <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CommissionDecision">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommissionProtocolId" Type="Int32" Nullable="false" />
+          <Property Name="CommissionMemberId" Type="Int32" Nullable="false" />
+          <Property Name="IsOfficial" Type="Boolean" Nullable="false" />
+          <Property Name="DecisionId" Type="Int32" />
+          <Property Name="ToDoDateTime" Type="DateTime" Precision="3" />
+          <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="CommissionStage" Type="Int32" Nullable="false" />
+          <Property Name="NeedAlllMemmbersInStage" Type="Boolean" Nullable="false" />
+          <Property Name="InitiatorMemberId" Type="Int32" Nullable="false" />
+          <Property Name="DecisionDateTime" Type="DateTime" Precision="3" />
+          <Property Name="RemovedByUserId" Type="Int32" />
+          <NavigationProperty Name="CommissionMember" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers" FromRole="CommissionDecision" ToRole="CommissionMember" />
+          <NavigationProperty Name="CommissionMember1" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers1" FromRole="CommissionDecision" ToRole="CommissionMember" />
+          <NavigationProperty Name="CommissionProtocol" Relationship="DataLib.FK_CommissionDecisions_CommissionProtocols" FromRole="CommissionDecision" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="CommissionDecision" ToRole="Decision" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_CommissionDecisions_Users" FromRole="CommissionDecision" ToRole="User" />
+        </EntityType>
+        <EntityType Name="CommissionDecisionsLink">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommissionQuestionId" Type="Int32" Nullable="false" />
+          <Property Name="CommissionTypeMemberId" Type="Int32" Nullable="false" />
+          <Property Name="DecisionId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CommissionMemberType" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" FromRole="CommissionDecisionsLink" ToRole="CommissionMemberType" />
+          <NavigationProperty Name="CommissionQuestion" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" FromRole="CommissionDecisionsLink" ToRole="CommissionQuestion" />
+          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionDecisionsLinks_Decisions" FromRole="CommissionDecisionsLink" ToRole="Decision" />
+        </EntityType>
+        <EntityType Name="CommissionFilter">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="CommissionMember">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PersonStaffId" Type="Int32" />
+          <Property Name="StaffId" Type="Int32" />
+          <Property Name="CommissionMemberTypeId" Type="Int32" Nullable="false" />
+          <Property Name="CommissionTypeId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers" FromRole="CommissionMember" ToRole="CommissionDecision" />
+          <NavigationProperty Name="CommissionDecisions1" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers1" FromRole="CommissionMember" ToRole="CommissionDecision" />
+          <NavigationProperty Name="CommissionMemberType" Relationship="DataLib.FK_CommissionMembers_CommissionMemberTypes" FromRole="CommissionMember" ToRole="CommissionMemberType" />
+          <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionMember" ToRole="CommissionType" />
+          <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_CommissionMembers_PersonStaffs" FromRole="CommissionMember" ToRole="PersonStaff" />
+          <NavigationProperty Name="Staff" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="CommissionMember" ToRole="Staff" />
+        </EntityType>
+        <EntityType Name="CommissionMemberType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IsChief" Type="Boolean" Nullable="false" />
+          <Property Name="IsSecretary" Type="Boolean" Nullable="false" />
+          <Property Name="IsMember" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" FromRole="CommissionMemberType" ToRole="CommissionDecisionsLink" />
+          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_CommissionMemberTypes" FromRole="CommissionMemberType" ToRole="CommissionMember" />
+        </EntityType>
         <EntityType Name="CommissionProtocol">
           <Key>
             <PropertyRef Name="Id" />
@@ -7869,6 +7710,69 @@
           <NavigationProperty Name="PersonTalon" Relationship="DataLib.FK_CommissionProtocols_PersonTalons" FromRole="CommissionProtocol" ToRole="PersonTalon" />
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="CommissionProtocol" ToRole="RecordContract" />
         </EntityType>
+        <EntityType Name="CommissionQuestion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommissionTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" FromRole="CommissionQuestion" ToRole="CommissionDecisionsLink" />
+          <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionQuestions_CommissionTypes" FromRole="CommissionQuestion" ToRole="CommissionType" />
+        </EntityType>
+        <EntityType Name="CommissionSource">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CommissionTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_CommissionSources" FromRole="CommissionSource" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionSources_CommissionTypes" FromRole="CommissionSource" ToRole="CommissionType" />
+        </EntityType>
+        <EntityType Name="CommissionType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionType" ToRole="CommissionMember" />
+          <NavigationProperty Name="CommissionQuestions" Relationship="DataLib.FK_CommissionQuestions_CommissionTypes" FromRole="CommissionType" ToRole="CommissionQuestion" />
+          <NavigationProperty Name="CommissionSources" Relationship="DataLib.FK_CommissionSources_CommissionTypes" FromRole="CommissionType" ToRole="CommissionSource" />
+        </EntityType>
+        <Association Name="FK_CommissionDecisions_CommissionMembers">
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="1" />
+          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionMember">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecision">
+              <PropertyRef Name="CommissionMemberId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionDecisions_CommissionMembers1">
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="1" />
+          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionMember">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecision">
+              <PropertyRef Name="InitiatorMemberId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommissionDecisions_CommissionProtocols">
           <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="1" />
           <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
@@ -7878,6 +7782,114 @@
             </Principal>
             <Dependent Role="CommissionDecision">
               <PropertyRef Name="CommissionProtocolId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionDecisions_Decisions">
+          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecision">
+              <PropertyRef Name="DecisionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionDecisions_Users">
+          <End Type="DataLib.User" Role="User" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecision">
+              <PropertyRef Name="RemovedByUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionDecisionsLinks_CommissionMemberTypes">
+          <End Type="DataLib.CommissionMemberType" Role="CommissionMemberType" Multiplicity="1" />
+          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionMemberType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecisionsLink">
+              <PropertyRef Name="CommissionTypeMemberId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionDecisionsLinks_CommissionQuestions">
+          <End Type="DataLib.CommissionQuestion" Role="CommissionQuestion" Multiplicity="1" />
+          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionQuestion">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecisionsLink">
+              <PropertyRef Name="CommissionQuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionDecisionsLinks_Decisions">
+          <End Type="DataLib.Decision" Role="Decision" Multiplicity="1" />
+          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecisionsLink">
+              <PropertyRef Name="DecisionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionMembers_CommissionMemberTypes">
+          <End Type="DataLib.CommissionMemberType" Role="CommissionMemberType" Multiplicity="1" />
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionMemberType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionMember">
+              <PropertyRef Name="CommissionMemberTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionMembers_CommissionTypes">
+          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="1" />
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionMember">
+              <PropertyRef Name="CommissionTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionMembers_PersonStaffs">
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonStaff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionMember">
+              <PropertyRef Name="PersonStaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionMembers_Staffs">
+          <End Type="DataLib.Staff" Role="Staff" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Staff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionMember">
+              <PropertyRef Name="StaffId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7974,6 +7986,30 @@
             </Principal>
             <Dependent Role="CommissionProtocol">
               <PropertyRef Name="RecordContractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionQuestions_CommissionTypes">
+          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="1" />
+          <End Type="DataLib.CommissionQuestion" Role="CommissionQuestion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionQuestion">
+              <PropertyRef Name="CommissionTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionSources_CommissionTypes">
+          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="1" />
+          <End Type="DataLib.CommissionSource" Role="CommissionSource" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionSource">
+              <PropertyRef Name="CommissionTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8336,20 +8372,6 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="StaffId" ColumnName="StaffId" />
                 <ScalarProperty Name="BranchId" ColumnName="BranchId" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PersonTalons">
-            <EntityTypeMapping TypeName="DataLib.PersonTalon">
-              <MappingFragment StoreEntitySet="PersonTalons">
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="MedicalHelpTypeId" ColumnName="MedicalHelpTypeId" />
-                <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
-                <ScalarProperty Name="MKB" ColumnName="MKB" />
-                <ScalarProperty Name="TalonDateTime" ColumnName="TalonDateTime" />
-                <ScalarProperty Name="TalonNumber" ColumnName="TalonNumber" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -9027,6 +9049,76 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="DataLib.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="SystemName" ColumnName="SystemName" />
+                <ScalarProperty Name="Login" ColumnName="Login" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="SID" ColumnName="SID" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Decisions">
+            <EntityTypeMapping TypeName="DataLib.Decision">
+              <MappingFragment StoreEntitySet="Decisions">
+                <ScalarProperty Name="ColorSettingsId" ColumnName="ColorSettingsId" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ColorsSettings">
+            <EntityTypeMapping TypeName="DataLib.ColorsSetting">
+              <MappingFragment StoreEntitySet="ColorsSettings">
+                <ScalarProperty Name="Hex" ColumnName="Hex" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="ColorName" ColumnName="ColorName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonTalons">
+            <EntityTypeMapping TypeName="DataLib.PersonTalon">
+              <MappingFragment StoreEntitySet="PersonTalons">
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
+                <ScalarProperty Name="PersonAddressId" ColumnName="PersonAddressId" />
+                <ScalarProperty Name="MedicalHelpTypeId" ColumnName="MedicalHelpTypeId" />
+                <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
+                <ScalarProperty Name="MKB" ColumnName="MKB" />
+                <ScalarProperty Name="TalonDateTime" ColumnName="TalonDateTime" />
+                <ScalarProperty Name="TalonNumber" ColumnName="TalonNumber" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommissionDecisions">
+            <EntityTypeMapping TypeName="DataLib.CommissionDecision">
+              <MappingFragment StoreEntitySet="CommissionDecisions">
+                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
+                <ScalarProperty Name="DecisionDateTime" ColumnName="DecisionDateTime" />
+                <ScalarProperty Name="InitiatorMemberId" ColumnName="InitiatorMemberId" />
+                <ScalarProperty Name="NeedAlllMemmbersInStage" ColumnName="NeedAlllMemmbersInStage" />
+                <ScalarProperty Name="CommissionStage" ColumnName="CommissionStage" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="ToDoDateTime" ColumnName="ToDoDateTime" />
+                <ScalarProperty Name="DecisionId" ColumnName="DecisionId" />
+                <ScalarProperty Name="IsOfficial" ColumnName="IsOfficial" />
+                <ScalarProperty Name="CommissionMemberId" ColumnName="CommissionMemberId" />
+                <ScalarProperty Name="CommissionProtocolId" ColumnName="CommissionProtocolId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="CommissionDecisionsLinks">
             <EntityTypeMapping TypeName="DataLib.CommissionDecisionsLink">
               <MappingFragment StoreEntitySet="CommissionDecisionsLinks">
@@ -9073,6 +9165,35 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="CommissionProtocols">
+            <EntityTypeMapping TypeName="DataLib.CommissionProtocol">
+              <MappingFragment StoreEntitySet="CommissionProtocols">
+                <ScalarProperty Name="SentLPUId" ColumnName="SentLPUId" />
+                <ScalarProperty Name="Diagnos" ColumnName="Diagnos" />
+                <ScalarProperty Name="PersonAddressId" ColumnName="PersonAddressId" />
+                <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
+                <ScalarProperty Name="MedicalHelpTypeId" ColumnName="MedicalHelpTypeId" />
+                <ScalarProperty Name="PersonTalonId" ColumnName="PersonTalonId" />
+                <ScalarProperty Name="CommissionQuestionId" ColumnName="CommissionQuestionId" />
+                <ScalarProperty Name="CommissionSourceId" ColumnName="CommissionSourceId" />
+                <ScalarProperty Name="MKB" ColumnName="MKB" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="ToDoDateTime" ColumnName="ToDoDateTime" />
+                <ScalarProperty Name="OutcomeDateTime" ColumnName="OutcomeDateTime" />
+                <ScalarProperty Name="CompleteDateTime" ColumnName="CompleteDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="IncomeDateTime" ColumnName="IncomeDateTime" />
+                <ScalarProperty Name="IsExecuting" ColumnName="IsExecuting" />
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
+                <ScalarProperty Name="ProtocolDate" ColumnName="ProtocolDate" />
+                <ScalarProperty Name="ProtocolNumber" ColumnName="ProtocolNumber" />
+                <ScalarProperty Name="DecisionId" ColumnName="DecisionId" />
+                <ScalarProperty Name="CommissionTypeId" ColumnName="CommissionTypeId" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="CommissionQuestions">
             <EntityTypeMapping TypeName="DataLib.CommissionQuestion">
               <MappingFragment StoreEntitySet="CommissionQuestions">
@@ -9104,90 +9225,6 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="DataLib.User">
-              <MappingFragment StoreEntitySet="Users">
-                <ScalarProperty Name="SystemName" ColumnName="SystemName" />
-                <ScalarProperty Name="Login" ColumnName="Login" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="SID" ColumnName="SID" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Decisions">
-            <EntityTypeMapping TypeName="DataLib.Decision">
-              <MappingFragment StoreEntitySet="Decisions">
-                <ScalarProperty Name="ColorSettingsId" ColumnName="ColorSettingsId" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CommissionDecisions">
-            <EntityTypeMapping TypeName="DataLib.CommissionDecision">
-              <MappingFragment StoreEntitySet="CommissionDecisions">
-                <ScalarProperty Name="NeedAlllMemmbersInStage" ColumnName="NeedAlllMemmbersInStage" />
-                <ScalarProperty Name="RemovedByUserId" ColumnName="RemovedByUserId" />
-                <ScalarProperty Name="DecisionDateTime" ColumnName="DecisionDateTime" />
-                <ScalarProperty Name="InitiatorMemberId" ColumnName="InitiatorMemberId" />
-                <ScalarProperty Name="CommissionStage" ColumnName="CommissionStage" />
-                <ScalarProperty Name="Comment" ColumnName="Comment" />
-                <ScalarProperty Name="ToDoDateTime" ColumnName="ToDoDateTime" />
-                <ScalarProperty Name="DecisionId" ColumnName="DecisionId" />
-                <ScalarProperty Name="IsOfficial" ColumnName="IsOfficial" />
-                <ScalarProperty Name="CommissionMemberId" ColumnName="CommissionMemberId" />
-                <ScalarProperty Name="CommissionProtocolId" ColumnName="CommissionProtocolId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ColorsSettings">
-            <EntityTypeMapping TypeName="DataLib.ColorsSetting">
-              <MappingFragment StoreEntitySet="ColorsSettings">
-                <ScalarProperty Name="Hex" ColumnName="Hex" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Options" ColumnName="Options" />
-                <ScalarProperty Name="ColorName" ColumnName="ColorName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CommissionProtocols">
-            <EntityTypeMapping TypeName="DataLib.CommissionProtocol">
-              <MappingFragment StoreEntitySet="CommissionProtocols">
-                <ScalarProperty Name="SentLPUId" ColumnName="SentLPUId" />
-                <ScalarProperty Name="Diagnos" ColumnName="Diagnos" />
-                <ScalarProperty Name="PersonAddressId" ColumnName="PersonAddressId" />
-                <ScalarProperty Name="RecordContractId" ColumnName="RecordContractId" />
-                <ScalarProperty Name="MedicalHelpTypeId" ColumnName="MedicalHelpTypeId" />
-                <ScalarProperty Name="PersonTalonId" ColumnName="PersonTalonId" />
-                <ScalarProperty Name="CommissionQuestionId" ColumnName="CommissionQuestionId" />
-                <ScalarProperty Name="CommissionSourceId" ColumnName="CommissionSourceId" />
-                <ScalarProperty Name="MKB" ColumnName="MKB" />
-                <ScalarProperty Name="Comment" ColumnName="Comment" />
-                <ScalarProperty Name="ToDoDateTime" ColumnName="ToDoDateTime" />
-                <ScalarProperty Name="OutcomeDateTime" ColumnName="OutcomeDateTime" />
-                <ScalarProperty Name="CompleteDateTime" ColumnName="CompleteDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="IncomeDateTime" ColumnName="IncomeDateTime" />
-                <ScalarProperty Name="IsExecuting" ColumnName="IsExecuting" />
-                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
-                <ScalarProperty Name="ProtocolDate" ColumnName="ProtocolDate" />
-                <ScalarProperty Name="ProtocolNumber" ColumnName="ProtocolNumber" />
-                <ScalarProperty Name="DecisionId" ColumnName="DecisionId" />
-                <ScalarProperty Name="CommissionTypeId" ColumnName="CommissionTypeId" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

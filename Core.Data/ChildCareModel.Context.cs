@@ -54,7 +54,6 @@ namespace Core.Data
         public virtual DbSet<Person> Persons { get; set; }
         public virtual DbSet<PersonSocialStatus> PersonSocialStatuses { get; set; }
         public virtual DbSet<PersonStaff> PersonStaffs { get; set; }
-        public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<RecordContractItem> RecordContractItems { get; set; }
         public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
@@ -105,17 +104,18 @@ namespace Core.Data
         public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Decision> Decisions { get; set; }
+        public virtual DbSet<ColorsSetting> ColorsSettings { get; set; }
+        public virtual DbSet<PersonTalon> PersonTalons { get; set; }
+        public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
         public virtual DbSet<CommissionFilter> CommissionFilters { get; set; }
         public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
         public virtual DbSet<CommissionMemberType> CommissionMemberTypes { get; set; }
+        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<Decision> Decisions { get; set; }
-        public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
-        public virtual DbSet<ColorsSetting> ColorsSettings { get; set; }
-        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
     }
 }

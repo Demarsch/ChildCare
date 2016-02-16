@@ -21,6 +21,8 @@ using Shared.PatientRecords.Services;
 using Core.Wpf.Misc;
 using Shared.Patient.Views;
 using Shared.Patient.ViewModels;
+using CommissionsModule.ViewModels.Common;
+using CommissionsModule.Views.Common;
 
 namespace CommissionsModule
 {
@@ -87,6 +89,10 @@ namespace CommissionsModule
             container.RegisterType<CommissionСonductViewModel>(new TransientLifetimeManager());
             container.RegisterType<CommissionСonclusionViewModel>(new TransientLifetimeManager());
 
+            container.RegisterType<CommonViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonCommissionsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonTalonsViewModel>(new ContainerControlledLifetimeManager());
+
             container.RegisterType<AddressViewModel>(new TransientLifetimeManager());
         }
 
@@ -104,6 +110,10 @@ namespace CommissionsModule
             container.RegisterType<object, CommissionСonclusionView>(viewNameResolver.Resolve<CommissionСonclusionViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionСonductView>(viewNameResolver.Resolve<CommissionСonductViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PreliminaryProtocolView>(viewNameResolver.Resolve<PreliminaryProtocolViewModel>(), new ContainerControlledLifetimeManager());
+
+            container.RegisterType<object, CommonView>(viewNameResolver.Resolve<CommonViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PersonCommissionsView>(viewNameResolver.Resolve<PersonCommissionsViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, PersonTalonsView>(viewNameResolver.Resolve<PersonTalonsViewModel>(), new ContainerControlledLifetimeManager());
 
             container.RegisterType<object, AddressView>(viewNameResolver.Resolve<AddressViewModel>(), new ContainerControlledLifetimeManager());
 

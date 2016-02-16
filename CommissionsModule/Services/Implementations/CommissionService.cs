@@ -303,5 +303,11 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonAddress>(context.Set<PersonAddress>().Where(x => x.PersonId == personId), context);
         }
+
+        public IDisposableQueryable<CommissionProtocol> GetPersonCommissionProtocols(int personId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.PersonId == personId), context);
+        }
     }
 }

@@ -31,7 +31,6 @@ namespace Core.Data
             this.PersonRelatives1 = new HashSet<PersonRelative>();
             this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
             this.PersonStaffs = new HashSet<PersonStaff>();
-            this.PersonTalons = new HashSet<PersonTalon>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.RecordContracts1 = new HashSet<RecordContract>();
             this.Visits = new HashSet<Visit>();
@@ -40,6 +39,7 @@ namespace Core.Data
             this.Records = new HashSet<Record>();
             this.Assignments = new HashSet<Assignment>();
             this.Users = new HashSet<User>();
+            this.PersonTalons = new HashSet<PersonTalon>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
@@ -182,14 +182,6 @@ namespace Core.Data
      		set { personStaffs = value; }
     	}
         [NonSerialized]
-    	protected ICollection<PersonTalon> personTalons;
-    
-    	public virtual ICollection<PersonTalon> PersonTalons
-    	{
-     		get { return personTalons; }
-     		set { personTalons = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<RecordContract> recordContracts;
     
     	public virtual ICollection<RecordContract> RecordContracts
@@ -252,6 +244,14 @@ namespace Core.Data
     	{
      		get { return users; }
      		set { users = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<PersonTalon> personTalons;
+    
+    	public virtual ICollection<PersonTalon> PersonTalons
+    	{
+     		get { return personTalons; }
+     		set { personTalons = value; }
     	}
         [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;

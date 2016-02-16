@@ -18,11 +18,11 @@ namespace Core.Data
         public RecordContract()
         {
             this.MedicalHelpTypes = new HashSet<MedicalHelpType>();
-            this.PersonTalons = new HashSet<PersonTalon>();
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
+            this.PersonTalons = new HashSet<PersonTalon>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
@@ -94,14 +94,6 @@ namespace Core.Data
      		set { personStaff = value; }
     	}
         [NonSerialized]
-    	protected ICollection<PersonTalon> personTalons;
-    
-    	public virtual ICollection<PersonTalon> PersonTalons
-    	{
-     		get { return personTalons; }
-     		set { personTalons = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<RecordContractItem> recordContractItems;
     
     	public virtual ICollection<RecordContractItem> RecordContractItems
@@ -140,6 +132,14 @@ namespace Core.Data
     	{
      		get { return org; }
      		set { org = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<PersonTalon> personTalons;
+    
+    	public virtual ICollection<PersonTalon> PersonTalons
+    	{
+     		get { return personTalons; }
+     		set { personTalons = value; }
     	}
         [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;

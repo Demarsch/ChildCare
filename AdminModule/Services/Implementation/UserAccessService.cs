@@ -277,8 +277,8 @@ namespace AdminModule.Services
                 }
                 person.BirthDate = input.BirthDate ?? person.BirthDate;
                 person.IsMale = input.IsMale ?? person.IsMale;
-                person.Snils = input.Snils ?? person.Snils;
-                person.MedNumber = input.MedNumber ?? person.MedNumber;
+                person.Snils = (input.Snils ?? person.Snils).ToSafeString();
+                person.MedNumber = (input.MedNumber ?? person.MedNumber).ToSafeString();
                 if (input.Photo.HasValue)
                 {
                     //Delete old photo

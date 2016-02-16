@@ -8,9 +8,9 @@ using System.Windows.Media;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionProtocolListViewModel: BindableBase
+    public class CommissionItemViewModel: BindableBase
     {
-        public CommissionProtocolListViewModel()
+        public CommissionItemViewModel()
         {
         }
 
@@ -35,12 +35,26 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref decisionId, value); }
         }
 
+        private string decisionText;
+        public string DecisionText
+        {
+            get { return decisionText; }
+            set { SetProperty(ref decisionText, value); }
+        }
+
         private string decisionColorHex;
         public string DecisionColorHex
         {
             get { return decisionColorHex; }
             set { SetProperty(ref decisionColorHex, value); }
-        }    
+        }
+
+        private string protocolNumber;
+        public string ProtocolNumber
+        {
+            get { return protocolNumber; }
+            set { SetProperty(ref protocolNumber, value); }
+        }  
 
         private bool? isCompleted;
         public bool? IsCompleted
@@ -68,6 +82,13 @@ namespace CommissionsModule.ViewModels
         {
             get { return talon; }
             set { SetProperty(ref talon, value); }
+        }
+
+        private string medHelpType;
+        public string MedHelpType
+        {
+            get { return medHelpType; }
+            set { SetProperty(ref medHelpType, value); }
         }
 
         private string mkb;
