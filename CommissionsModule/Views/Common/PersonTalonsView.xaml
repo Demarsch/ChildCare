@@ -6,6 +6,7 @@
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
              xmlns:views="clr-namespace:CommissionsModule.Views"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="500" MinHeight="200">
     <Grid>
@@ -19,8 +20,8 @@
 
         <DockPanel Grid.Column="0" Grid.Row="0" LastChildFill="True">
             <Button Content="Привязать талон к И/Б" Margin="2" DockPanel.Dock="Right"/>
-            <Button Content="Удалить" Margin="2" DockPanel.Dock="Right"/>
-            <Button Content="Добавить" Margin="2" DockPanel.Dock="Right"/>
+            <Button Content="Удалить" Margin="2" Command="{Binding RemoveTalonCommand}" CommandParameter="{Binding}" DockPanel.Dock="Right"/>
+            <Button Content="Добавить" Margin="2" Command="{Binding AddTalonCommand}" DockPanel.Dock="Right"/>
             <TextBlock Text="Талоны пациента" Margin="2" FontWeight="Medium"/>
         </DockPanel>
 
@@ -28,10 +29,15 @@
                  HorizontalContentAlignment="Stretch" Margin="2"        
                  ItemsSource="{Binding Talons}"
                  SelectedItem="{Binding SelectedTalon}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding EditTalonCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Background="{Binding TalonColorHex}" Margin="0">
-                        <Grid>
+                        <Grid>                            
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />

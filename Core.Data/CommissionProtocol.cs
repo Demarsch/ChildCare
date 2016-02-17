@@ -101,20 +101,20 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	protected PersonTalon personTalon;
-    
-    	public virtual PersonTalon PersonTalon
-    	{
-     		get { return personTalon; }
-     		set { personTalon = value; }
-    	}
-        [NonSerialized]
     	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
      		get { return recordContract; }
      		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	protected PersonTalon personTalon;
+    
+    	public virtual PersonTalon PersonTalon
+    	{
+     		get { return personTalon; }
+     		set { personTalon = value; }
     	}
     
     	public object Clone()

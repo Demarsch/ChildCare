@@ -4,7 +4,7 @@
     {
         public static readonly string ForeignCountryStartsWith = "C";
 
-        public static readonly string RegionEndsWith = "000000000";
+        public static readonly string RegionEndsWith = "00000000";
 
         public bool IsRegion { get { return CodeOKATO.EndsWith(RegionEndsWith); } }
 

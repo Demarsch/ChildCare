@@ -25,11 +25,20 @@ namespace Core.Data
         public string TalonNumber { get; set; }
         public System.DateTime TalonDateTime { get; set; }
         public string MKB { get; set; }
+        public string Comment { get; set; }
         public int RecordContractId { get; set; }
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public Nullable<int> PersonAddressId { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
+    	}
         [NonSerialized]
     	protected MedicalHelpType medicalHelpType;
     
@@ -61,14 +70,6 @@ namespace Core.Data
     	{
      		get { return recordContract; }
      		set { recordContract = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionProtocol> commissionProtocols;
-    
-    	public virtual ICollection<CommissionProtocol> CommissionProtocols
-    	{
-     		get { return commissionProtocols; }
-     		set { commissionProtocols = value; }
     	}
     
     	public object Clone()

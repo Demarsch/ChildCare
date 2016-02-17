@@ -309,5 +309,12 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.PersonId == personId), context);
         }
+
+
+        public IDisposableQueryable<PersonTalon> GetTalonById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.Id == id), context);
+        }
     }
 }

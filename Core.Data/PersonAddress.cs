@@ -17,8 +17,8 @@ namespace Core.Data
     {
         public PersonAddress()
         {
-            this.PersonTalons = new HashSet<PersonTalon>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
+            this.PersonTalons = new HashSet<PersonTalon>();
         }
     
         public int Id { get; set; }
@@ -57,20 +57,20 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	protected ICollection<PersonTalon> personTalons;
-    
-    	public virtual ICollection<PersonTalon> PersonTalons
-    	{
-     		get { return personTalons; }
-     		set { personTalons = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<PersonTalon> personTalons;
+    
+    	public virtual ICollection<PersonTalon> PersonTalons
+    	{
+     		get { return personTalons; }
+     		set { personTalons = value; }
     	}
     
     	public object Clone()

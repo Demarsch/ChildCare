@@ -118,7 +118,8 @@
                                      DisplayMemberPath="FullName"
                                      SelectedItem="{Binding Location, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                      SuggestionsProvider="{Binding AddressSuggestionProvider.LocationSuggestionsProvider, Mode=OneTime}"
-                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}">
+                                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                                     ItemTemplate="{StaticResource OkatoTemplate}">
             <controls:AutoCompleteTextBox.LoadContent>
                 <TextBlock Text="Загрузка данных..."
                            Margin="5"

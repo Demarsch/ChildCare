@@ -19,7 +19,7 @@ namespace Shared.Patient.Misc
                 throw new ArgumentNullException("cacheService");
             }
             regions = cacheService.GetItems<Okato>()
-                                  .Where(x => x.CodeOKATO.EndsWith("000000000") || x.CodeOKATO.StartsWith("C"))
+                                  .Where(x => x.CodeOKATO.EndsWith("00000000") || x.CodeOKATO.StartsWith("C"))
                                   .ToArray();
         }
 

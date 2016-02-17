@@ -1,0 +1,124 @@
+﻿<ResourceDictionary x:Class="CommissionsModule.Views.Common.CreateTalonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels.Common"
+             xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:data="clr-namespace:Core.Data;assembly=Core.Data">
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+    </ResourceDictionary.MergedDictionaries>           
+      
+    <DataTemplate DataType="{x:Type data:Okato}"
+                          x:Key="OkatoTemplate">
+        <Border Padding="5">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{Binding FullName}" FontWeight="Bold" Margin="0 0 0 3" />
+                <TextBlock Text="{Binding CodeOKATO}" Foreground="Gray" FontFamily="Segoe UI" Margin="0 3 0 0" />
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewModels:CreateTalonViewModel}" > 
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,2" Text="Номер талона" FontWeight="Medium"/>
+            <xctk:MaskedTextBox Grid.Column="1" Grid.Row="0" Margin="5,2,25,2" FontWeight="Medium"
+                            Mask="00\.0000\.00000\.000" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}" IncludeLiteralsInValue="False"
+                            Value="{Binding TalonNumber}"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,2" Text="Вид помощи" FontWeight="Medium"/>
+            <ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
+                      SelectedValuePath="Value" 
+                      DisplayMemberPath="Field" 
+                      SelectedValue="{Binding SelectedMedicalHelpTypeId, Mode=TwoWay}"
+                      ItemsSource="{Binding MedicalHelpTypes}" />
+            <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,2" Text="МКБ-10" FontWeight="Medium"/>
+            <xctk:MaskedTextBox Grid.Column="1" Grid.Row="2" Margin="5,2,25,2" 
+                            Mask=">L00\.00" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}" IncludeLiteralsInValue="False"
+                            Value="{Binding CodeMKB}"/>
+
+            <GroupBox Header="Адрес по талону" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,2,25,2" FontWeight="Medium">
+                <StackPanel>
+                    <TextBlock Margin="5,2" Text="Регион/иностранное государство" FontWeight="Normal"/>
+                    <controls:AutoCompleteTextBox Margin="5,2,25,2" FontWeight="Normal"
+                                         Background="White"
+                                         HorizontalAlignment="Stretch"
+                                         Watermark="Введите слова из названия региона или иностранного государства"
+                                         DisplayMemberPath="FullName"
+                                         SelectedItem="{Binding Region, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                         SuggestionsProvider="{Binding AddressSuggestionProvider.RegionSuggestionsProvider, Mode=OneTime}"
+                                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                                         ItemTemplate="{StaticResource OkatoTemplate}"/>
+                    <TextBlock Margin="5,2" Text="ОКАТО" FontWeight="Normal" />
+                    <controls:AutoCompleteTextBox Margin="5,2,25,2" FontWeight="Normal"
+                                         Background="White"
+                                         HorizontalAlignment="Stretch"
+                                         Watermark="введите слова из района, села, города и др."
+                                         DisplayMemberPath="FullName"
+                                         SelectedItem="{Binding Location, Mode=TwoWay, ValidatesOnDataErrors=True}"
+                                         SuggestionsProvider="{Binding AddressSuggestionProvider.LocationSuggestionsProvider, Mode=OneTime}"
+                                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                                         ItemTemplate="{StaticResource OkatoTemplate}">
+                        <controls:AutoCompleteTextBox.LoadContent>
+                            <TextBlock Text="Загрузка данных..."
+                               Margin="5"
+                               FontSize="14" />
+                        </controls:AutoCompleteTextBox.LoadContent>
+                    </controls:AutoCompleteTextBox>
+                    <TextBlock Margin="5,2" Text="По документу" FontWeight="Normal" />
+                    <TextBox Margin="5,2,25,2" FontWeight="Normal"
+                     Text="{Binding UserText, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                     TextWrapping="Wrap" AcceptsReturn="True" Height="Auto" MinHeight="50"/>
+                    <Grid  HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Дом" FontWeight="Normal" Margin="5,2" />
+                        <TextBox Grid.Column="1" MaxLength="10" Margin="5,2,25,2"
+                         Text="{Binding House, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
+                        <TextBlock Grid.Column="2" Text="Корпус" FontWeight="Normal" Margin="5,2" />
+                        <TextBox Grid.Column="3" Text="{Binding Building, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="10" Margin="5,2,25,2" />
+                        <TextBlock Grid.Column="4" Text="Квартира" FontWeight="Normal" Margin="5,2" />
+                        <TextBox Grid.Column="5" Text="{Binding Appartment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="10" Margin="5,2,25,2" />
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <TextBlock Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Margin="5,2" Text="Комментарии" FontWeight="Medium"/>
+            <TextBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" MinHeight="50"
+                 Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"
+                 TextWrapping="Wrap" AcceptsReturn="True" Margin="2,2,25,2"/>
+            <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" 
+                  IsChecked="{Binding IsCompleted}" FlowDirection="LeftToRight" Margin="5,2">
+                <TextBlock FlowDirection="RightToLeft" Text="Талон закрыт" FontWeight="Medium" />
+            </CheckBox>
+
+            <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="6" Grid.ColumnSpan="2" />
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

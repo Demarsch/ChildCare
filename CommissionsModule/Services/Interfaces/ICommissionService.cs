@@ -50,6 +50,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<PersonTalon> GetPatientTalons(int personId);
 
+        IDisposableQueryable<PersonTalon> GetTalonById(int id);
+
         IDisposableQueryable<PersonAddress> GetPatientAddresses(int personId);
 
         IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate);

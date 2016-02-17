@@ -89,9 +89,10 @@ namespace CommissionsModule
             container.RegisterType<CommissionСonductViewModel>(new TransientLifetimeManager());
             container.RegisterType<CommissionСonclusionViewModel>(new TransientLifetimeManager());
 
-            container.RegisterType<CommonViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonCommissionsViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonTalonsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommonViewModel>(new TransientLifetimeManager());
+            container.RegisterType<PersonCommissionsViewModel>(new TransientLifetimeManager());
+            container.RegisterType<PersonTalonsViewModel>(new TransientLifetimeManager());
+            container.RegisterType<CreateTalonViewModel>(new TransientLifetimeManager());
 
             container.RegisterType<AddressViewModel>(new TransientLifetimeManager());
         }
@@ -114,6 +115,7 @@ namespace CommissionsModule
             container.RegisterType<object, CommonView>(viewNameResolver.Resolve<CommonViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonCommissionsView>(viewNameResolver.Resolve<PersonCommissionsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonTalonsView>(viewNameResolver.Resolve<PersonTalonsViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, CreateTalonView>(viewNameResolver.Resolve<CreateTalonViewModel>(), new ContainerControlledLifetimeManager());
 
             container.RegisterType<object, AddressView>(viewNameResolver.Resolve<AddressViewModel>(), new ContainerControlledLifetimeManager());
 

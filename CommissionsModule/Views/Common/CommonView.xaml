@@ -10,9 +10,9 @@
             <DockPanel LastChildFill="True">
                 <views:PersonHospitalisationsView DockPanel.Dock="Top"/>
                 <Separator BorderBrush="Black" BorderThickness="2" DockPanel.Dock="Top" Margin="2,7,2,7"/>
-                <ContentControl Content="{Binding PersonTalonsVM}"/>
+                <ContentControl Content="{Binding PersonTalonsVM}" DockPanel.Dock="Top"/>
                 <Separator BorderBrush="Black" BorderThickness="2" DockPanel.Dock="Top" Margin="2,7,2,7"/>
-                <ContentControl Content="{Binding PersonCommissionsVM}" DockPanel.Dock="Top"/>
+                <ContentControl Content="{Binding PersonCommissionsVM}"/>
             </DockPanel>
         </Grid>
     </DataTemplate>

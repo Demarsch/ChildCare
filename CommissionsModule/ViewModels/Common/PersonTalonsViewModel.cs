@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Prism.Events;
 using Prism.Regions;
 using System.Windows.Media;
+using System.Windows.Input;
 
 namespace CommissionsModule.ViewModels.Common
 {
@@ -29,10 +30,13 @@ namespace CommissionsModule.ViewModels.Common
         private readonly ILog logService;
         private readonly IDialogService messageService;
         private readonly IEventAggregator eventAggregator;
+        private readonly IDialogServiceAsync dialogService;
+        private readonly Func<CreateTalonViewModel> createTalonViewModelFactory;
         #endregion
 
         #region  Constructors
-        public PersonTalonsViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator)
+        public PersonTalonsViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator, 
+            IDialogServiceAsync dialogService, Func<CreateTalonViewModel> createTalonViewModelFactory)
         {
             if (commissionService == null)
             {
@@ -49,11 +53,24 @@ namespace CommissionsModule.ViewModels.Common
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
-            }          
+            }
+            if (dialogService == null)
+            {
+                throw new ArgumentNullException("dialogService");
+            }
+            if (createTalonViewModelFactory == null)
+            {
+                throw new ArgumentNullException("createTalonViewModelFactory");
+            }  
             this.eventAggregator = eventAggregator;
             this.commissionService = commissionService;
             this.logService = logService;
             this.messageService = messageService;
+            this.dialogService = dialogService;
+            this.createTalonViewModelFactory = createTalonViewModelFactory;
+
+            addTalonCommand = new DelegateCommand(AddTalon);
+            editTalonCommand = new DelegateCommand(EditTalon);
 
             Talons = new ObservableCollectionEx<PersonTalonViewModel>();
             BusyMediator = new BusyMediator();
@@ -61,19 +78,25 @@ namespace CommissionsModule.ViewModels.Common
         #endregion
 
         #region Properties
+        private DelegateCommand addTalonCommand;
+        public ICommand AddTalonCommand { get { return addTalonCommand; } }
+
+        private DelegateCommand editTalonCommand;
+        public ICommand EditTalonCommand { get { return editTalonCommand; } }
+
         public BusyMediator BusyMediator { get; set; }
 
         public ObservableCollectionEx<PersonTalonViewModel> Talons { get; set; }
 
-        private CommissionItemViewModel selectedTalon;
-        public CommissionItemViewModel SelectedTalon
+        private PersonTalonViewModel selectedTalon;
+        public PersonTalonViewModel SelectedTalon
         {
             get { return selectedTalon; }
             set 
             {
                 SetProperty(ref selectedTalon, value);
-                //if (SetProperty(ref selectedTalon, value) && value != null)
-                //    eventAggregator.GetEvent<PubSubEvent<int>>().Publish(value.Id);   
+                if (SetProperty(ref selectedTalon, value) && value != null)
+                    eventAggregator.GetEvent<PubSubEvent<int>>().Publish(value.Id);   
             }
         }
 
@@ -92,7 +115,7 @@ namespace CommissionsModule.ViewModels.Common
 
         #region Methods
 
-        public async void LoadTalonsAsync()
+        private async void LoadTalonsAsync()
         {
             BusyMediator.Activate("Загрузка талонов пациента...");
             logService.Info("Loading patient talons...");
@@ -141,6 +164,29 @@ namespace CommissionsModule.ViewModels.Common
             }
         }
 
-        #endregion             
+        private async void AddTalon()
+        {
+            var createTalonViewModel = createTalonViewModelFactory();
+            createTalonViewModel.Initialize();
+            var result = await dialogService.ShowDialogAsync(createTalonViewModel);
+            if (result == true)
+            {
+
+            }
+        }
+
+        private async void EditTalon()
+        {
+            var createTalonViewModel = createTalonViewModelFactory();
+            createTalonViewModel.Initialize(SelectedTalon.Id);
+            var result = await dialogService.ShowDialogAsync(createTalonViewModel);
+            if (result == true)
+            {
+
+            }
+        }
+
+        #endregion      
+       
     }
 }
