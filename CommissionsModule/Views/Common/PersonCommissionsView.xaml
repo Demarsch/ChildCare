@@ -6,7 +6,7 @@
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels.Common"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="500" MinHeight="200">
+             d:DesignHeight="200" d:DesignWidth="500" MinHeight="200" MaxHeight="300">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -17,10 +17,25 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Column="0" Grid.Row="0" LastChildFill="True">
-            <Button Content="Печать" Margin="2" DockPanel.Dock="Right"/>
-            <Button Content="Удалить" Margin="2" DockPanel.Dock="Right"/>
-            <Button Content="Добавить" Margin="2" DockPanel.Dock="Right"/>
-            <TextBlock Text="Протоколы комиссий пациента" Margin="2" FontWeight="Medium"/>
+            <Button Margin="2" DockPanel.Dock="Right" Command="{Binding LinkTalonToHospitalisationCommand}" CommandParameter="{Binding SelectedTalon.Id}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" Height="16" Width="16" Margin="2"/>
+                    <TextBlock Text="Печать" VerticalAlignment="Center" Margin="5,2"/>
+                </StackPanel>
+            </Button>
+            <Button Margin="2" DockPanel.Dock="Right" Command="{Binding RemoveTalonCommand}" CommandParameter="{Binding SelectedTalon.Id}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="16" Width="16" Margin="2"/>
+                    <TextBlock Text="Удалить" VerticalAlignment="Center" Margin="5,2"/>
+                </StackPanel>
+            </Button>
+            <Button Margin="2" DockPanel.Dock="Right" Command="{Binding EditTalonCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" Height="16" Width="16" Margin="2"/>
+                    <TextBlock Text="Добавить" VerticalAlignment="Center" Margin="5,2"/>
+                </StackPanel>
+            </Button>            
+            <TextBlock Text="Протоколы комиссий пациента" Margin="5,2" VerticalAlignment="Center" FontWeight="Medium"/>
         </DockPanel>
         
         <ListBox Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="Black" 

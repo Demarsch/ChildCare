@@ -146,8 +146,11 @@
                                     ParsingNumberStyle="Integer" TextAlignment="Left"
                                     Value="{Binding ContractCost}" Margin="2,2,25,2" />
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="Доп. информация" />
-                        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding OrgDetails, UpdateSourceTrigger=PropertyChanged}" MinHeight="23"
-                             TextWrapping="Wrap" AcceptsReturn="True" Margin="2,2,25,2" Height="Auto"/>
+                        <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="1"  Margin="5,2,25,2" MinHeight="50"
+                               Watermark="укажите адрес как в документе..."
+                               TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Center"
+                               Text="{Binding OrgDetails, UpdateSourceTrigger=PropertyChanged}"/>
+                        
                         <TextBlock Grid.Row="7" Grid.Column="0">
                             <Run Text="Ответственный" />
                             <Run Text="*" FontWeight="SemiBold" Foreground="Red" />

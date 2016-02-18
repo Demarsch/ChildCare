@@ -13,6 +13,7 @@ using Core.Extensions;
 using Core.Notification;
 using System.Data.Entity;
 using System.Threading;
+using Core.Misc;
 
 namespace CommissionsModule.Services
 {
@@ -316,5 +317,91 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.Id == id), context);
         }
+        
+        public IDisposableQueryable<RecordContract> GetRecordContractsByOptions(string options, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordContract>(context.Set<RecordContract>()
+                                                                  .Where(x => x.Options.Contains(options) && x.BeginDateTime <= onDate && x.EndDateTime > onDate)
+                                                                  .Take(AppConfiguration.SearchResultTakeTopCount), context);
+        }
+        
+        public IDisposableQueryable<AddressType> GetAddressTypeByCategory(string category)
+        {
+            var context = contextProvider.CreateNewContext();
+            var filter = category.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            var query = context.Set<AddressType>().ToList().Where(x => filter.Any(y => x.Category.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1)).AsQueryable();
+            return new DisposableQueryable<AddressType>(query.Take(AppConfiguration.SearchResultTakeTopCount), context);
+        }
+        
+        public async Task<int> SaveTalon(PersonTalon talon, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+                throw new OperationCanceledException(token);
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var savedTalon = talon.Id == SpecialValues.NewId ? new PersonTalon() : context.Set<PersonTalon>().First(x => x.Id == talon.Id);
+                savedTalon.PersonId = talon.PersonId;
+                savedTalon.TalonNumber = talon.TalonNumber.ToSafeString();
+                savedTalon.TalonDateTime = talon.TalonDateTime;
+                savedTalon.MKB = talon.MKB.ToSafeString();
+                savedTalon.Comment = talon.Comment.ToSafeString();
+                savedTalon.RecordContractId = talon.RecordContractId;
+                savedTalon.MedicalHelpTypeId = talon.MedicalHelpTypeId;
+                savedTalon.IsCompleted = talon.IsCompleted;
+                savedTalon.PersonAddressId = talon.PersonAddressId;
+                context.Entry<PersonTalon>(savedTalon).State = savedTalon.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+
+                if (token.IsCancellationRequested)
+                    throw new OperationCanceledException(token);
+                await context.SaveChangesAsync(token);
+                return savedTalon.Id;
+            }
+        }
+
+        public async Task<bool> RemoveTalon(int talonId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var contract = context.Set<PersonTalon>().First(x => x.Id == talonId);
+                context.Entry(contract).State = EntityState.Deleted;
+                try
+                {
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public async Task<int> SaveTalonAddress(PersonAddress talonAddress, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+                throw new OperationCanceledException(token);
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var savedAddress = talonAddress.Id == SpecialValues.NewId ? new PersonAddress() : context.Set<PersonAddress>().First(x => x.Id == talonAddress.Id);
+                savedAddress.PersonId = talonAddress.PersonId;
+                savedAddress.AddressTypeId = talonAddress.AddressTypeId;
+                savedAddress.OkatoId = talonAddress.OkatoId;
+                savedAddress.UserText = talonAddress.UserText.ToSafeString();
+                savedAddress.House = talonAddress.House.ToSafeString();
+                savedAddress.Building = talonAddress.Building.ToSafeString();
+                savedAddress.Apartment = talonAddress.Apartment.ToSafeString();
+                savedAddress.BeginDateTime = talonAddress.BeginDateTime;
+                savedAddress.EndDateTime = talonAddress.EndDateTime;
+                context.Entry<PersonAddress>(savedAddress).State = savedAddress.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
+
+                if (token.IsCancellationRequested)
+                    throw new OperationCanceledException(token);
+                await context.SaveChangesAsync(token);
+                return savedAddress.Id;
+            }
+        }
+
+        
     }
 }

@@ -40,24 +40,40 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,2" Text="Номер талона" FontWeight="Medium"/>
+            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,2" FontWeight="Medium">
+                            <Run Text="Номер талона" />
+                            <Run Text="*" Foreground="Red"/>
+            </TextBlock>
+            
             <xctk:MaskedTextBox Grid.Column="1" Grid.Row="0" Margin="5,2,25,2" FontWeight="Medium"
-                            Mask="00\.0000\.00000\.000" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}" IncludeLiteralsInValue="False"
-                            Value="{Binding TalonNumber}"/>
-            <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,2" Text="Вид помощи" FontWeight="Medium"/>
+                            Mask="00\.0000\.00000\.000" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}"
+                            Value="{Binding TalonNumber, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                            Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,2" FontWeight="Medium">
+                            <Run Text="Вид помощи" />
+                            <Run Text="*" Foreground="Red"/>
+            </TextBlock>
             <ComboBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
-                      SelectedValue="{Binding SelectedMedicalHelpTypeId, Mode=TwoWay}"
-                      ItemsSource="{Binding MedicalHelpTypes}" />
-            <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,2" Text="МКБ-10" FontWeight="Medium"/>
-            <xctk:MaskedTextBox Grid.Column="1" Grid.Row="2" Margin="5,2,25,2" 
-                            Mask=">L00\.00" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}" IncludeLiteralsInValue="False"
-                            Value="{Binding CodeMKB}"/>
+                      SelectedValue="{Binding SelectedMedicalHelpTypeId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                      ItemsSource="{Binding MedicalHelpTypes}"
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+            <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,2" FontWeight="Medium">
+                            <Run Text="МКБ-10" />
+                            <Run Text="*" Foreground="Red"/>
+            </TextBlock>
+            <xctk:MaskedTextBox Grid.Column="1" Grid.Row="2" Margin="5,2,25,2" FontWeight="Medium"
+                            Mask="L00\.99" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}"
+                            Value="{Binding CodeMKB, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                            Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
             <GroupBox Header="Адрес по талону" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,2,25,2" FontWeight="Medium">
                 <StackPanel>
-                    <TextBlock Margin="5,2" Text="Регион/иностранное государство" FontWeight="Normal"/>
+                    <TextBlock Margin="5,2" FontWeight="Normal">
+                            <Run Text="Регион/иностранное государство" />
+                            <Run Text="*" Foreground="Red"/>
+                    </TextBlock>
                     <controls:AutoCompleteTextBox Margin="5,2,25,2" FontWeight="Normal"
                                          Background="White"
                                          HorizontalAlignment="Stretch"
@@ -65,9 +81,12 @@
                                          DisplayMemberPath="FullName"
                                          SelectedItem="{Binding Region, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                          SuggestionsProvider="{Binding AddressSuggestionProvider.RegionSuggestionsProvider, Mode=OneTime}"
-                                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                          ItemTemplate="{StaticResource OkatoTemplate}"/>
-                    <TextBlock Margin="5,2" Text="ОКАТО" FontWeight="Normal" />
+                    <TextBlock Margin="5,2" FontWeight="Normal">
+                            <Run Text="ОКАТО" />
+                            <Run Text="*" Foreground="Red"/>
+                    </TextBlock>
                     <controls:AutoCompleteTextBox Margin="5,2,25,2" FontWeight="Normal"
                                          Background="White"
                                          HorizontalAlignment="Stretch"
@@ -75,7 +94,7 @@
                                          DisplayMemberPath="FullName"
                                          SelectedItem="{Binding Location, Mode=TwoWay, ValidatesOnDataErrors=True}"
                                          SuggestionsProvider="{Binding AddressSuggestionProvider.LocationSuggestionsProvider, Mode=OneTime}"
-                                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
+                                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                          ItemTemplate="{StaticResource OkatoTemplate}">
                         <controls:AutoCompleteTextBox.LoadContent>
                             <TextBlock Text="Загрузка данных..."
@@ -84,10 +103,11 @@
                         </controls:AutoCompleteTextBox.LoadContent>
                     </controls:AutoCompleteTextBox>
                     <TextBlock Margin="5,2" Text="По документу" FontWeight="Normal" />
-                    <TextBox Margin="5,2,25,2" FontWeight="Normal"
-                     Text="{Binding UserText, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                     Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
-                     TextWrapping="Wrap" AcceptsReturn="True" Height="Auto" MinHeight="50"/>
+                    <xctk:WatermarkTextBox Margin="5,2,25,2" FontWeight="Normal"
+                               Watermark="укажите адрес как в документе..."
+                               TextWrapping="Wrap" AcceptsReturn="True" MinHeight="50" VerticalContentAlignment="Center"
+                               Text="{Binding UserText, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                               Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
                     <Grid  HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -97,27 +117,26 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Дом" FontWeight="Normal" Margin="5,2" />
-                        <TextBox Grid.Column="1" MaxLength="10" Margin="5,2,25,2"
-                         Text="{Binding House, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
-                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}" />
+                        <TextBlock Grid.Column="0" Text="Дом" Margin="5,2" FontWeight="Normal"/>
+                        <TextBox Grid.Column="1" Margin="5,2,15,2" MinWidth="35" Text="{Binding House}" />
                         <TextBlock Grid.Column="2" Text="Корпус" FontWeight="Normal" Margin="5,2" />
-                        <TextBox Grid.Column="3" Text="{Binding Building, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="10" Margin="5,2,25,2" />
-                        <TextBlock Grid.Column="4" Text="Квартира" FontWeight="Normal" Margin="5,2" />
-                        <TextBox Grid.Column="5" Text="{Binding Appartment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLength="10" Margin="5,2,25,2" />
+                        <TextBox Grid.Column="3" Text="{Binding Building, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="35" Margin="5,2,15,2" />
+                        <TextBlock Grid.Column="4" Text="Квартира" Margin="5,2" FontWeight="Normal"/>
+                        <TextBox Grid.Column="5" Text="{Binding Appartment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="35" Margin="5,2,15,2" />
                     </Grid>
                 </StackPanel>
             </GroupBox>
 
             <TextBlock Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Margin="5,2" Text="Комментарии" FontWeight="Medium"/>
-            <TextBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" MinHeight="50"
-                 Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"
-                 TextWrapping="Wrap" AcceptsReturn="True" Margin="2,2,25,2"/>
+            <xctk:WatermarkTextBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
+                               Watermark="доп. информация..."
+                               TextWrapping="Wrap" AcceptsReturn="True" Margin="5,2,25,2" VerticalContentAlignment="Center"
+                               Text="{Binding Comment}"/>
             <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" 
                   IsChecked="{Binding IsCompleted}" FlowDirection="LeftToRight" Margin="5,2">
                 <TextBlock FlowDirection="RightToLeft" Text="Талон закрыт" FontWeight="Medium" />
             </CheckBox>
-
+           
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="6" Grid.ColumnSpan="2" />
         </Grid>
     </DataTemplate>

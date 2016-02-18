@@ -8,7 +8,7 @@
              xmlns:views="clr-namespace:CommissionsModule.Views"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="500" MinHeight="200">
+             d:DesignHeight="200" d:DesignWidth="500" MinHeight="200" MaxHeight="300">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -19,10 +19,25 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Column="0" Grid.Row="0" LastChildFill="True">
-            <Button Content="Привязать талон к И/Б" Margin="2" DockPanel.Dock="Right"/>
-            <Button Content="Удалить" Margin="2" Command="{Binding RemoveTalonCommand}" CommandParameter="{Binding}" DockPanel.Dock="Right"/>
-            <Button Content="Добавить" Margin="2" Command="{Binding AddTalonCommand}" DockPanel.Dock="Right"/>
-            <TextBlock Text="Талоны пациента" Margin="2" FontWeight="Medium"/>
+            <Button Margin="2" DockPanel.Dock="Right">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Link48x48.png" Height="16" Width="16" Margin="2"/>
+                    <TextBlock Text="Привязать к И/Б" VerticalAlignment="Center" Margin="5,2"/>
+                </StackPanel>
+            </Button>
+            <Button Margin="2" DockPanel.Dock="Right" Command="{Binding RemoveTalonCommand}" CommandParameter="{Binding SelectedTalon.Id}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="16" Width="16" Margin="2"/>
+                    <TextBlock Text="Удалить" VerticalAlignment="Center" Margin="5,2"/>
+                </StackPanel>
+            </Button>
+            <Button Margin="2" DockPanel.Dock="Right" Command="{Binding EditTalonCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" Height="16" Width="16" Margin="2"/>
+                    <TextBlock Text="Добавить" VerticalAlignment="Center" Margin="5,2"/>
+                </StackPanel>
+            </Button>
+            <TextBlock Text="Талоны пациента" Margin="5,2" FontWeight="Medium" VerticalAlignment="Center"/>
         </DockPanel>
 
         <ListBox Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="Black" 
@@ -31,7 +46,7 @@
                  SelectedItem="{Binding SelectedTalon}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding EditTalonCommand}"/>
+                    <i:InvokeCommandAction Command="{Binding EditTalonCommand}" CommandParameter="{Binding SelectedTalon.Id}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <ListBox.ItemTemplate>
@@ -45,9 +60,10 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
                                 Source="{Binding IsCompleted, Converter={x:Static converters:TalonStateToImageConverter.Instance}}"
                                 Width="40" Height="40" Stretch="Fill" Margin="0,0,2,0"/>
                             <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
@@ -56,10 +72,21 @@
                                 <TextBlock Text="{Binding TalonDate}" Margin="0,0,5,0" FontWeight="Medium"/>
                                 <TextBlock Text="{Binding TalonState}" Margin="0" FontWeight="Medium"/>
                             </StackPanel>
+                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Margin="0,0,5,0">
+                                    <Run Text=" Вид помощи: "/>
+                                    <Run Text="{Binding MedHelpType}"/>
+                                </TextBlock>
+                                <TextBlock Margin="0,0,5,0">
+                                    <Run Text=" МКБ-10: "/>
+                                    <Run Text="{Binding MKB}"/>                                    
+                                </TextBlock>
+                            </StackPanel>
                             <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
-                                <TextBlock Text="{Binding MedHelpType}" Margin="0,0,5,0"/>
-                                <TextBlock Text="{Binding MKB}" Margin="0,0,5,0"/>
-                                <TextBlock Text="{Binding Address}" Margin="0"/>
+                                <TextBlock>
+                                    <Run Text="Адрес: " />
+                                    <Run Text="{Binding Address}" />
+                                </TextBlock>
                             </StackPanel>
                         </Grid>
                     </Border>

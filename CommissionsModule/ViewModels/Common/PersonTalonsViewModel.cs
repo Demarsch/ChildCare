@@ -69,20 +69,25 @@ namespace CommissionsModule.ViewModels.Common
             this.dialogService = dialogService;
             this.createTalonViewModelFactory = createTalonViewModelFactory;
 
-            addTalonCommand = new DelegateCommand(AddTalon);
-            editTalonCommand = new DelegateCommand(EditTalon);
+            editTalonCommand = new DelegateCommand<int?>(EditTalon);
+            removeTalonCommand = new DelegateCommand<int?>(RemoveTalon);
+            linkTalonToHospitalisationCommand = new DelegateCommand<int?>(LinkTalonToHospitalisation);
 
             Talons = new ObservableCollectionEx<PersonTalonViewModel>();
             BusyMediator = new BusyMediator();
         }
+        
         #endregion
 
         #region Properties
-        private DelegateCommand addTalonCommand;
-        public ICommand AddTalonCommand { get { return addTalonCommand; } }
-
-        private DelegateCommand editTalonCommand;
+        private DelegateCommand<int?> editTalonCommand;
         public ICommand EditTalonCommand { get { return editTalonCommand; } }
+
+        private DelegateCommand<int?> removeTalonCommand;
+        public ICommand RemoveTalonCommand { get { return removeTalonCommand; } }
+
+        private DelegateCommand<int?> linkTalonToHospitalisationCommand;
+        public ICommand LinkTalonToHospitalisationCommand { get { return linkTalonToHospitalisationCommand; } }
 
         public BusyMediator BusyMediator { get; set; }
 
@@ -143,10 +148,11 @@ namespace CommissionsModule.ViewModels.Common
                         TalonNumber = x.Number,
                         HospitalisationNumber = " - " + x.HospitalisatoinNumber + " - ",
                         TalonDate = "(добавлен " + x.TalonDate.ToShortDateString() + ")",
-                        MKB = !string.IsNullOrEmpty(x.CodeMKB) ? "МКБ: " + x.CodeMKB : string.Empty,
+                        MKB = !string.IsNullOrEmpty(x.CodeMKB) ? x.CodeMKB : "отсутствует",
                         MedHelpType = x.HelpType,
+                        IsCompleted = x.IsCompleted,
                         TalonState = !x.IsCompleted.HasValue ? " - создан" : (x.IsCompleted == false ? " - в работе" : " - закрыт"),
-                        Address = x.Address
+                        Address = x.Address                        
                     }).ToArray();
 
                 Talons.AddRange(result);
@@ -164,26 +170,41 @@ namespace CommissionsModule.ViewModels.Common
             }
         }
 
-        private async void AddTalon()
+        private async void EditTalon(int? selectedTalonId)
         {
-            var createTalonViewModel = createTalonViewModelFactory();
-            createTalonViewModel.Initialize();
-            var result = await dialogService.ShowDialogAsync(createTalonViewModel);
-            if (result == true)
-            {
+            var editTalonViewModel = createTalonViewModelFactory();
+            if (!selectedTalonId.HasValue)
+                editTalonViewModel.Initialize(PersonId);
+            else
+                editTalonViewModel.Initialize(PersonId, selectedTalonId.Value);
+            var result = await dialogService.ShowDialogAsync(editTalonViewModel);
+            if (result == true && editTalonViewModel.SaveIsSuccessful)
+                LoadTalonsAsync();
+        }
 
+        private async void RemoveTalon(int? selectedTalonId)
+        {
+            if (!selectedTalonId.HasValue)
+            {
+                messageService.ShowWarning("Выберите талон");
+                return;
+            }
+            if (messageService.AskUser("Удалить талон ?") == true)
+            {
+                bool isOk = await commissionService.RemoveTalon(selectedTalonId.Value);
+                if (isOk)
+                    LoadTalonsAsync();
             }
         }
 
-        private async void EditTalon()
+        private void LinkTalonToHospitalisation(int? selectedTalonId)
         {
-            var createTalonViewModel = createTalonViewModelFactory();
-            createTalonViewModel.Initialize(SelectedTalon.Id);
-            var result = await dialogService.ShowDialogAsync(createTalonViewModel);
-            if (result == true)
+            if (!selectedTalonId.HasValue)
             {
-
+                messageService.ShowWarning("Выберите талон");
+                return;
             }
+            messageService.ShowWarning("Отсутствует функционал по работе с И/Б");
         }
 
         #endregion      

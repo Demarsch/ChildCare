@@ -22,14 +22,13 @@ using Core.Misc;
 
 namespace CommissionsModule.ViewModels.Common
 {
-    public class CreateTalonViewModel : BindableBase, IDialogViewModel, IActiveDataErrorInfo
+    public class CreateTalonViewModel : BindableBase, IDialogViewModel, IDataErrorInfo
     {
         private readonly ICommissionService commissionService;
         private readonly ILog logService;
         private readonly IDialogService messageService;
         private readonly ICacheService cacheService;
-        private readonly ValidationMediator validator;
-        public int talonId;
+        private CancellationTokenSource currentSavingToken;
 
         public CreateTalonViewModel(ICommissionService commissionService,
                                       IDialogServiceAsync dialogService,
@@ -74,6 +73,10 @@ namespace CommissionsModule.ViewModels.Common
 
         public BusyMediator BusyMediator { get; set; }
         public IAddressSuggestionProvider AddressSuggestionProvider { get; private set; }
+
+        public int TalonId { get; private set; }
+
+        public int PersonId { get; private set; }
 
         private Okato region;
         public Okato Region
@@ -172,6 +175,8 @@ namespace CommissionsModule.ViewModels.Common
             
         }
 
+        public bool SaveIsSuccessful { get; set; }
+
         #endregion
 
         #region Methods
@@ -185,9 +190,11 @@ namespace CommissionsModule.ViewModels.Common
                 : location.FullName;
         }
 
-        internal void Initialize(int talonId = 0)
+        internal void Initialize(int personId, int talonId = SpecialValues.NewId)
         {
-            this.talonId = talonId;
+            TalonId = talonId;
+            PersonId = personId;
+            saveWasRequested = false;
             LoadDataSources();
             if (!SpecialValues.IsNewOrNonExisting(talonId))
                 LoadTalonDataAsync();
@@ -199,7 +206,7 @@ namespace CommissionsModule.ViewModels.Common
             logService.Info("Loading data sources for talons...");
             try
             {
-                var talon = commissionService.GetTalonById(this.talonId).First();
+                var talon = commissionService.GetTalonById(TalonId).First();
                 TalonNumber = talon.TalonNumber;
                 SelectedMedicalHelpTypeId = talon.MedicalHelpTypeId.HasValue ? talon.MedicalHelpTypeId.Value : SpecialValues.NonExistingId;
                 CodeMKB = talon.MKB;
@@ -246,15 +253,14 @@ namespace CommissionsModule.ViewModels.Common
             try
             {
                 DateTime onDate = DateTime.Now;
-                if (!SpecialValues.IsNewOrNonExisting(talonId))
-                    onDate = commissionService.GetTalonById(talonId).First().TalonDateTime;
+                if (!SpecialValues.IsNewOrNonExisting(TalonId))
+                    onDate = commissionService.GetTalonById(TalonId).First().TalonDateTime;
                 var medicalHelpTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<MedicalHelpType>>)commissionService.GetCommissionMedicalHelpTypes, onDate);
                 await Task.WhenAny(medicalHelpTypesTask, AddressSuggestionProvider.EnsureDataSourceLoadedAsync());
                 var medicalHelpTypesQuery = medicalHelpTypesTask.Result.Select(x => new { x.Id, x.Code, x.ShortName }).ToArray();
                 MedicalHelpTypes.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите вид помощи -" });
                 MedicalHelpTypes.AddRange(medicalHelpTypesQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Code + (!string.IsNullOrEmpty(x.ShortName) ? (" - " + x.ShortName) : string.Empty) }));
-                SelectedMedicalHelpTypeId = SpecialValues.NonExistingId;
-                
+                SelectedMedicalHelpTypeId = SpecialValues.NonExistingId;                
             }
             catch (Exception ex)
             {
@@ -267,9 +273,86 @@ namespace CommissionsModule.ViewModels.Common
             }
         }
 
-        private bool IsTalonValid()
+        private async void SaveTalon()
         {
-            throw new NotImplementedException();
+            BusyMediator.Activate("Сохранение талона...");
+            logService.Info("Save talon ...");
+            if (currentSavingToken != null)
+            {
+                currentSavingToken.Cancel();
+                currentSavingToken.Dispose();
+            }
+            currentSavingToken = new CancellationTokenSource();
+            var token = currentSavingToken.Token;
+            SaveIsSuccessful = false;
+            try
+            {
+                PersonTalon talon = commissionService.GetTalonById(TalonId).FirstOrDefault();
+                if (talon == null)
+                    talon = new PersonTalon() { TalonDateTime = DateTime.Now };
+                talon.PersonId = PersonId;
+                talon.TalonNumber = TalonNumber;
+                talon.MKB = CodeMKB;
+                talon.Comment = Comment;
+                talon.RecordContractId = commissionService.GetRecordContractsByOptions(OptionValues.HMHContract, talon.TalonDateTime).First().Id;
+                talon.MedicalHelpTypeId = SelectedMedicalHelpTypeId;
+                talon.IsCompleted = SpecialValues.IsNewOrNonExisting(talon.Id) ? (IsCompleted == false ? (bool?)null : true) : IsCompleted;
+                var talonAddress = new PersonAddress() 
+                { 
+                    Id = talon.PersonAddressId.HasValue ? talon.PersonAddressId.Value : SpecialValues.NewId,
+                    PersonId = PersonId,
+                    AddressTypeId = commissionService.GetAddressTypeByCategory(AddressTypeCategory.Talon.ToString()).First().Id,
+                    OkatoId = Location.Id, 
+                    UserText = UserText, 
+                    House = House, 
+                    Building = building,
+                    Apartment = Appartment,
+                    BeginDateTime = SpecialValues.MinDate, 
+                    EndDateTime = SpecialValues.MaxDate 
+                };
+
+                string exception = string.Empty;
+                int talonAddressId = await commissionService.SaveTalonAddress(talonAddress, token);
+                talon.PersonAddressId = talonAddressId;
+
+                exception = string.Empty;
+                TalonId = await commissionService.SaveTalon(talon, token);
+                SaveIsSuccessful = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Nothing to do as it means that we somehow cancelled save operation
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to save talon for person with Id = {0}", PersonId);
+                messageService.ShowError("Не удалось сохранить талон.");
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        private bool HasAllRequiredFields()
+        {
+            DateTime onDate = DateTime.Now;
+            var talon = commissionService.GetTalonById(TalonId).FirstOrDefault();
+            if (talon != null)
+                onDate = talon.TalonDateTime;
+            var HMHContract = commissionService.GetRecordContractsByOptions(OptionValues.HMHContract, onDate).FirstOrDefault();
+            if (HMHContract == null)
+            {
+                messageService.ShowError("Отсутствует договор на оказание ВМП.");
+                return false;
+            }
+            var talonAddressType = commissionService.GetAddressTypeByCategory(AddressTypeCategory.Talon.ToString()).FirstOrDefault();
+            if (talonAddressType == null)
+            {
+                messageService.ShowError("Отсутствует тип адреса по талону.");
+                return false;
+            }
+            return true;
         }
 
         #endregion
@@ -283,7 +366,7 @@ namespace CommissionsModule.ViewModels.Common
 
         public string ConfirmButtonText
         {
-            get { return !SpecialValues.IsNewOrNonExisting(talonId) ? "Создать" : "Сохранить"; }
+            get { return SpecialValues.IsNewOrNonExisting(TalonId) ? "Создать" : "Сохранить"; }
         }
 
         public string CancelButtonText
@@ -297,8 +380,11 @@ namespace CommissionsModule.ViewModels.Common
         {
             if (validate == true)
             {
-                if(IsTalonValid())
+                if (HasAllRequiredFields() && IsValid)
+                {
+                    SaveTalon();
                     OnCloseRequested(new ReturnEventArgs<bool>(true));
+                }
             }
             else
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
@@ -317,81 +403,69 @@ namespace CommissionsModule.ViewModels.Common
 
         #endregion
 
-        #region Errors
-        #region IDataErrorInfo validation
+        #region IDataError
+
+        private bool saveWasRequested;
+
+        private readonly HashSet<string> invalidProperties = new HashSet<string>();
+
+        private bool IsValid
+        {
+            get
+            {
+                saveWasRequested = true;
+                OnPropertyChanged(string.Empty);
+                return invalidProperties.Count < 1;
+            }
+        }
+
+        string IDataErrorInfo.Error
+        {
+            get { throw new NotImplementedException(); }
+        }
 
         public string this[string columnName]
         {
-            get { return validator[columnName]; }
-        }
-
-        public string Error
-        {
-            get { return validator.Error; }
-        }
-
-        public bool Validate()
-        {
-            return validator.Validate();
-        }
-
-        public void CancelValidation()
-        {
-            validator.CancelValidation();
-        }
-
-        private class ValidationMediator : ValidationMediator<CreateTalonViewModel>
-        {
-            public ValidationMediator(CreateTalonViewModel associatedItem)
-                : base(associatedItem)
+            get
             {
-            }
-
-            protected override void OnValidateProperty(string propertyName)
-            {
-                if (PropertyNameEquals(propertyName, x => x.Region))
+                if (!saveWasRequested)
                 {
-                    ValidateRegion();
+                    invalidProperties.Remove(columnName);
+                    return string.Empty;
                 }
-                else if (PropertyNameEquals(propertyName, x => x.UserText))
+                var result = string.Empty;
+                if (columnName == "TalonNumber")
                 {
-                    ValidateUserText();
+                    result = string.IsNullOrEmpty(TalonNumber) ? "Укажите номер талона" : string.Empty;
                 }
-                else if (PropertyNameEquals(propertyName, x => x.House))
+                if (columnName == "CodeMKB")
                 {
-                    ValidateHouse();
+                    result = string.IsNullOrEmpty(CodeMKB) ? "Укажите корректный код МКБ" : string.Empty;
                 }
+                if (columnName == "SelectedMedicalHelpTypeId")
+                {
+                    result = SelectedMedicalHelpTypeId.IsNewOrNonExisting() ? "Укажите вид помощи" : string.Empty;
+                }               
+                if (columnName == "UserText")
+                {
+                    result = string.IsNullOrEmpty(UserText) ? "Укажите адрес по документу" : string.Empty;
+                }
+                if (columnName == "Region")
+                {
+                    result = Region == null ? "Выберите регион или иностранное государство" : string.Empty;
+                }
+                if (string.IsNullOrEmpty(result))
+                {
+                    invalidProperties.Remove(columnName);
+                }
+                else
+                {
+                    invalidProperties.Add(columnName);
+                }
+                return result;
             }
-
-            protected override void RaiseAssociatedObjectPropertyChanged()
-            {
-                AssociatedItem.OnPropertyChanged(string.Empty);
-            }
-
-            protected override void OnValidate()
-            {
-                ValidateRegion();
-                ValidateUserText();
-                ValidateHouse();
-            }
-
-            private void ValidateHouse()
-            {
-                SetError(x => x.House, AssociatedItem.Region == null ? "Укажите номер дома" : string.Empty);
-            }
-
-            private void ValidateUserText()
-            {
-                SetError(x => x.UserText, AssociatedItem.Region == null ? "Укажите адрес по документу" : string.Empty);
-            }
-
-            private void ValidateRegion()
-            {
-                SetError(x => x.Region, AssociatedItem.Region == null ? "Выберите регион или иностранное государство" : string.Empty);
-            }           
         }
 
-        #endregion
         #endregion
     }
 }

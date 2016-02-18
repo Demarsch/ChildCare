@@ -9,6 +9,7 @@ namespace Core.Data.Misc
         public static readonly string ResponsibleForContract = "|responsibleForContract|";
         public static readonly string Cash = "|cash|";
         public static readonly string Cashless = "|cashless|";
+        public static readonly string HMHContract = "|HMH|";
 
         //Diagnoses
         public static readonly string DiagnosSpecialistExamination = "|specialistExamination|";
@@ -25,5 +26,6 @@ namespace Core.Data.Misc
         public static readonly string ProtocolsAdded = "|added|";
         public static readonly string ProtocolsAwaiting = "|awaiting|";
         public static readonly string CommissionFilterHasDate = "|hasDate|";
+
     }
 }

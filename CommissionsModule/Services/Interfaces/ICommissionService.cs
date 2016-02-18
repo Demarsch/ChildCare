@@ -52,6 +52,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<PersonTalon> GetTalonById(int id);
 
+        IDisposableQueryable<RecordContract> GetRecordContractsByOptions(string options, DateTime onDate);
+
         IDisposableQueryable<PersonAddress> GetPatientAddresses(int personId);
 
         IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate);
@@ -63,5 +65,13 @@ namespace CommissionsModule.Services
         Task SaveCommissionProtocol(CommissionProtocol commissionProtocol, CancellationToken token);
 
         IDisposableQueryable<CommissionProtocol> GetPersonCommissionProtocols(int personId);
+
+        IDisposableQueryable<AddressType> GetAddressTypeByCategory(string category);
+
+        Task<int> SaveTalon(PersonTalon talon, CancellationToken token);
+
+        Task<int> SaveTalonAddress(PersonAddress talonAddress, CancellationToken token);
+
+        Task<bool> RemoveTalon(int talonId);
     }
 }
