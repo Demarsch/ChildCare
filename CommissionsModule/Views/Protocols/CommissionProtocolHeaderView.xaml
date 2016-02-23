@@ -36,4 +36,10 @@
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Question-64x64.png"
                        Command="{Binding CommissionProtocolViewModel.CommonButtonCommand}" />
     </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox>
+        <fluent:Button Header="Сохранить"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png" 
+                       Command="{Binding CommissionProtocolViewModel.SaveCommissionProtocolCommand}"/>
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

@@ -1,5 +1,7 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
+using Core.Wpf.Mvvm;
+using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +10,39 @@ using System.Threading.Tasks;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionСonductViewModel
+    public class CommissionСonductViewModel : BindableBase
     {
+        #region Properties
+
+        private CommissionMember selectedAvailableMember;
+        public CommissionMember SelectedAvailableMember
+        {
+            get { return selectedAvailableMember; }
+            set { SetProperty(ref selectedAvailableMember, value); }
+        }
+
+        private CommissionDecisionViewModel selectedCurrentMember;
+        public CommissionDecisionViewModel SelectedCurrentMember
+        {
+            get { return selectedCurrentMember; }
+            set { SetProperty(ref selectedCurrentMember, value); }
+        }
+
+        public IEnumerable<CommissionMember> AvailableMembers { get; set; }
+        public ObservableCollectionEx<CommissionDecisionViewModel> CurrentMembers { get; set; }
+
+        #endregion
+
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
+            AvailableMembers = new CommissionMember[] {
+                new CommissionMember { Id = 0, PersonStaffId = 1},
+                new CommissionMember { Id = 0, PersonStaffId = 1},
+                new CommissionMember { Id = 0, PersonStaffId = 1},
+                new CommissionMember { Id = 0, PersonStaffId = 1},
+                new CommissionMember { Id = 0, PersonStaffId = 1},
+            };
             //CommissionProtocolId = commissionProtocolId;
             //SelectedCommissionTypeId = -1;
             //SelectedCommissionQuestionId = -1;
@@ -100,6 +130,6 @@ namespace CommissionsModule.ViewModels
         }
         #endregion
 
-        
+
     }
 }
