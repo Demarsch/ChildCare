@@ -76,7 +76,6 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            NotificationMediator = new NotificationMediator();
             validationMediator = new ValidationMediator(this);
             ChangeTracker = new ChangeTrackerEx<PreliminaryProtocolViewModel>(this);
 
@@ -218,7 +217,6 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; private set; }
         public FailureMediator FailureMediator { get; private set; }
-        public NotificationMediator NotificationMediator { get; private set; }
         public IChangeTracker ChangeTracker { get; private set; }
 
         public PersonSearchViewModel PersonSearchViewModel { get; set; }

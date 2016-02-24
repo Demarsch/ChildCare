@@ -21,6 +21,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
 
+        IDisposableQueryable<CommissionMember> GetCommissionMembers(int commissionTypeId, DateTime onDate);
+
         string GetDecisionColorHex(int? decisionId);
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecision(int commissionDecisionId);

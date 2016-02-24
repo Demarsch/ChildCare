@@ -31,7 +31,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">
-                    <Run Text="Вид комиссии" />
+                    <Run Text="Тип комиссии" />
                     <Run Text="*"
                          FontWeight="SemiBold"
                          Foreground="Red" />

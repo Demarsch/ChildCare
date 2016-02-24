@@ -14,15 +14,15 @@
             </CollectionViewSource>
         </DataTemplate.Resources>
 
-        <Grid>
+        <Grid >
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <ListView ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" AllowDrop="True"></ListView>
-                <ListView ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}">
+
+                <ListView Grid.Column="0" ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" HorizontalContentAlignment="Stretch"/>
+                <ListView Grid.Column="1" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}">
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
@@ -53,6 +53,7 @@
             </Grid>
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

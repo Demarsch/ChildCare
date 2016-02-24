@@ -317,7 +317,7 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.Id == id), context);
         }
-        
+
         public IDisposableQueryable<RecordContract> GetRecordContractsByOptions(string options, DateTime onDate)
         {
             var context = contextProvider.CreateNewContext();
@@ -325,7 +325,7 @@ namespace CommissionsModule.Services
                                                                   .Where(x => x.Options.Contains(options) && x.BeginDateTime <= onDate && x.EndDateTime > onDate)
                                                                   .Take(AppConfiguration.SearchResultTakeTopCount), context);
         }
-        
+
         public IDisposableQueryable<AddressType> GetAddressTypeByCategory(string category)
         {
             var context = contextProvider.CreateNewContext();
@@ -333,7 +333,7 @@ namespace CommissionsModule.Services
             var query = context.Set<AddressType>().ToList().Where(x => filter.Any(y => x.Category.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1)).AsQueryable();
             return new DisposableQueryable<AddressType>(query.Take(AppConfiguration.SearchResultTakeTopCount), context);
         }
-        
+
         public async Task<int> SaveTalon(PersonTalon talon, CancellationToken token)
         {
             if (token.IsCancellationRequested)
@@ -402,6 +402,13 @@ namespace CommissionsModule.Services
             }
         }
 
-        
+
+
+
+        public IDisposableQueryable<CommissionMember> GetCommissionMembers(int commissionTypeId, DateTime onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.CommissionTypeId == commissionTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
     }
 }
