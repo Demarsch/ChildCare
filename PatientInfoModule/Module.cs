@@ -96,6 +96,7 @@ namespace PatientInfoModule
             container.RegisterType<InfoContentViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PatientContractsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonDocumentsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PersonTalonsCommissionsHospitalisationsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
@@ -109,6 +110,10 @@ namespace PatientInfoModule
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PatientContractsView>());
             container.RegisterType<object, PersonDocumentsView>(viewNameResolver.Resolve<PersonDocumentsViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonDocumentsView>());
+
+            container.RegisterType<object, PersonTalonsCommissionsHospitalisationsView>(viewNameResolver.Resolve<PersonTalonsCommissionsHospitalisationsViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonTalonsCommissionsHospitalisationsView>());
+
             container.RegisterInstance(Common.RibbonGroupName,
                                        new RibbonContextualTabGroup
                                        {
@@ -121,6 +126,7 @@ namespace PatientInfoModule
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<InfoHeaderView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<DocumentsHeaderView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<ContractsHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonTalonsCommissionsHospitalisationsHeaderView>());
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/PatientInfoModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
@@ -186,6 +192,7 @@ namespace PatientInfoModule
             container.RegisterType<IRecordService, RecordService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContractService, ContractService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAssignmentService, AssignmentService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ICommissionService, CommissionService>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<ISuggestionsProvider, IdentityDocumentGivenOrgSuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.IdentityDocumentGiveOrganization, new ContainerControlledLifetimeManager());
             container.RegisterType<ISuggestionsProvider, InsuranceCompanySuggestionsProvider>(PatientInfoModuleSuggestionProviderNames.InsuranceCompany, new ContainerControlledLifetimeManager());

@@ -19,7 +19,6 @@ using Core.Wpf.Mvvm;
 using Core.Misc;
 using Core.Data;
 using Core.Wpf.Misc;
-using CommissionsModule.ViewModels.Common;
 
 namespace CommissionsModule.ViewModels
 {
@@ -33,7 +32,6 @@ namespace CommissionsModule.ViewModels
         private readonly ILog logService;
 
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
-        private readonly Func<CommonViewModel> commonViewModelFactory;
 
         private CancellationTokenSource currentOperationToken;
 
@@ -42,7 +40,7 @@ namespace CommissionsModule.ViewModels
 
         #region Constructiors
         public CommissionProtocolViewModel(ICommissionService commissionService, IEventAggregator eventAggregator, IDialogServiceAsync dialogService, ILog logService, PreliminaryProtocolViewModel preliminaryProtocolViewModel, CommissionСonductViewModel commissionСonductViewModel, CommissionСonclusionViewModel commissionСonclusionViewModel,
-             Func<PersonSearchDialogViewModel> relativeSearchFactory, Func<CommonViewModel> commonViewModelFactory)
+             Func<PersonSearchDialogViewModel> relativeSearchFactory)
         {
             if (preliminaryProtocolViewModel == null)
             {
@@ -76,15 +74,10 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("commissionService");
             }
-            if (commonViewModelFactory == null)
-            {
-                throw new ArgumentNullException("commonViewModelFactory");
-            }
             this.commissionService = commissionService;
             this.logService = logService;
             this.dialogService = dialogService;
             this.relativeSearchFactory = relativeSearchFactory;
-            this.commonViewModelFactory = commonViewModelFactory;
             this.eventAggregator = eventAggregator;
             PreliminaryProtocolViewModel = preliminaryProtocolViewModel;
             CommissionСonductViewModel = commissionСonductViewModel;
@@ -93,8 +86,6 @@ namespace CommissionsModule.ViewModels
             saveCommissionProtocolCommand = new DelegateCommand(SaveCommissionProtocol, CanSaveCommissionProtocol);
             addCommissionConductionCommand = new DelegateCommand<bool?>(AddCommissionConduction);
             addCommissionConclusionCommand = new DelegateCommand<bool?>(AddCommissionConclusion);
-
-            commonButtonCommand = new DelegateCommand(SomeFunction);
 
             reSaveCommissionProtocol = new CommandWrapper() { Command = saveCommissionProtocolCommand, CommandName = "Повторить" };
             SubscribeToEvents();
@@ -227,27 +218,9 @@ namespace CommissionsModule.ViewModels
         private DelegateCommand<bool?> addCommissionConclusionCommand;
         public ICommand AddCommissionConclusionCommand { get { return addCommissionConclusionCommand; } }
 
-        private DelegateCommand commonButtonCommand;
-        public ICommand CommonButtonCommand { get { return commonButtonCommand; } }
-
         #endregion
 
-        #region Methods
-
-        private async void SomeFunction()
-        {
-            int personId = SelectedPersonId;
-            if (SpecialValues.IsNewOrNonExisting(personId))
-            {
-                if (!SpecialValues.IsNewOrNonExisting(SelectedCommissionProtocolId))
-                    personId = commissionService.GetCommissionProtocolById(SelectedCommissionProtocolId).First().PersonId;
-                else
-                    return;
-            }
-            var commonViewModel = commonViewModelFactory();
-            commonViewModel.Initialize(personId);
-            var result = await dialogService.ShowDialogAsync(commonViewModel);
-        }
+        #region Methods              
 
         private void AddCommissionConduction(bool? select)
         {

@@ -1,11 +1,11 @@
-﻿<ResourceDictionary x:Class="CommissionsModule.Views.Common.CreateTalonView"
+﻿<ResourceDictionary x:Class="PatientInfoModule.Views.CreateTalonView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels.Common"
+             xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
              xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data">

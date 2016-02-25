@@ -16,11 +16,11 @@ using log4net;
 using Prism.Commands;
 using Prism.Mvvm;
 using System.Threading.Tasks;
-using CommissionsModule.Services;
 using Shared.Patient.Misc;
 using Core.Misc;
+using PatientInfoModule.Services;
 
-namespace CommissionsModule.ViewModels.Common
+namespace PatientInfoModule.ViewModels
 {
     public class CreateTalonViewModel : BindableBase, IDialogViewModel, IDataErrorInfo
     {
@@ -273,7 +273,7 @@ namespace CommissionsModule.ViewModels.Common
             }
         }
 
-        private async void SaveTalon()
+        private async Task SaveTalon()
         {
             BusyMediator.Activate("Сохранение талона...");
             logService.Info("Save talon ...");
@@ -311,12 +311,12 @@ namespace CommissionsModule.ViewModels.Common
                     EndDateTime = SpecialValues.MaxDate 
                 };
 
-                string exception = string.Empty;
-                int talonAddressId = await commissionService.SaveTalonAddress(talonAddress, token);
-                talon.PersonAddressId = talonAddressId;
+                var resultAddress = await commissionService.SaveTalonAddress(talonAddress, token);
+                talon.PersonAddressId = resultAddress;
 
-                exception = string.Empty;
-                TalonId = await commissionService.SaveTalon(talon, token);
+                var talonResult = await commissionService.SaveTalon(talon, token);
+                TalonId = talonResult;
+
                 SaveIsSuccessful = true;
             }
             catch (OperationCanceledException)
@@ -326,6 +326,7 @@ namespace CommissionsModule.ViewModels.Common
             catch (Exception ex)
             {
                 logService.ErrorFormatEx(ex, "Failed to save talon for person with Id = {0}", PersonId);
+                SaveIsSuccessful = false;
                 messageService.ShowError("Не удалось сохранить талон.");
             }
             finally
@@ -376,13 +377,13 @@ namespace CommissionsModule.ViewModels.Common
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
 
-        private void Close(bool? validate)
+        private async void Close(bool? validate)
         {
             if (validate == true)
             {
                 if (HasAllRequiredFields() && IsValid)
                 {
-                    SaveTalon();
+                    await SaveTalon();
                     OnCloseRequested(new ReturnEventArgs<bool>(true));
                 }
             }

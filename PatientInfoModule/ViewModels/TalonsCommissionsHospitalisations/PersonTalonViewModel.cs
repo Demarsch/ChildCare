@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace CommissionsModule.ViewModels.Common
+namespace PatientInfoModule.ViewModels
 {
     public class PersonTalonViewModel: BindableBase
     {

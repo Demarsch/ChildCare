@@ -117,16 +117,20 @@
     <Compile Include="Services\Implementations\ContractService.cs" />
     <Compile Include="Services\Implementations\AssignmentService.cs" />
     <Compile Include="Services\Implementations\PatientService.cs" />
+    <Compile Include="Services\Implementations\CommissionService.cs" />
     <Compile Include="Services\Interfaces\IContractService.cs" />
     <Compile Include="Services\Interfaces\IPatientService.cs" />
     <Compile Include="Services\Interfaces\IAssignmentService.cs" />
     <Compile Include="Services\Implementations\RecordService.cs" />
+    <Compile Include="Services\Interfaces\ICommissionService.cs" />
     <Compile Include="Services\Interfaces\IRecordService.cs" />
     <Compile Include="ViewModels\Contracts\AddContractRecordsViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractItemViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractAssignmentsViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonCommissionViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsViewModel.cs" />
     <Compile Include="ViewModels\Documents\DocumentsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Documents\SelectPersonDocumentTypeViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
@@ -146,6 +150,11 @@
     <Compile Include="ViewModels\Documents\ThumbnailViewModel.cs" />
     <Compile Include="ViewModels\Info\InsuranceDocumentCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\InsuranceDocumentViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\CreateTalonViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonCommissionsCollectionViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCollectionViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonViewModel.cs" />
     <Compile Include="Views\Contracts\ContractsHeaderView.xaml.cs">
       <DependentUpon>ContractsHeaderView.xaml</DependentUpon>
     </Compile>
@@ -199,6 +208,21 @@
     </Compile>
     <Compile Include="Views\Documents\ScanDocumentsView.xaml.cs">
       <DependentUpon>ScanDocumentsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsView.xaml.cs">
+      <DependentUpon>PersonTalonsCommissionsHospitalisationsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsHeaderView.xaml.cs">
+      <DependentUpon>PersonTalonsCommissionsHospitalisationsHeaderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TalonsCommissionsHospitalisations\PersonCommissionsCollectionView.xaml.cs">
+      <DependentUpon>PersonCommissionsCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TalonsCommissionsHospitalisations\PersonHospitalisationsView.xaml.cs">
+      <DependentUpon>PersonHospitalisationsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TalonsCommissionsHospitalisations\PersonTalonsCollectionView.xaml.cs">
+      <DependentUpon>PersonTalonsCollectionView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -317,6 +341,30 @@
     <Page Include="Views\Documents\SelectPersonDocumentTypeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TalonsCommissionsHospitalisations\CreateTalonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsHeaderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TalonsCommissionsHospitalisations\PersonCommissionsCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TalonsCommissionsHospitalisations\PersonHospitalisationsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TalonsCommissionsHospitalisations\PersonTalonsCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

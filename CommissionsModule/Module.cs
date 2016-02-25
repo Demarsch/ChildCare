@@ -21,8 +21,6 @@ using Shared.PatientRecords.Services;
 using Core.Wpf.Misc;
 using Shared.Patient.Views;
 using Shared.Patient.ViewModels;
-using CommissionsModule.ViewModels.Common;
-using CommissionsModule.Views.Common;
 
 namespace CommissionsModule
 {
@@ -89,11 +87,6 @@ namespace CommissionsModule
             container.RegisterType<CommissionСonductViewModel>(new TransientLifetimeManager());
             container.RegisterType<CommissionСonclusionViewModel>(new TransientLifetimeManager());
 
-            container.RegisterType<CommonViewModel>(new TransientLifetimeManager());
-            container.RegisterType<PersonCommissionsViewModel>(new TransientLifetimeManager());
-            container.RegisterType<PersonTalonsViewModel>(new TransientLifetimeManager());
-            container.RegisterType<CreateTalonViewModel>(new TransientLifetimeManager());
-
             container.RegisterType<AddressViewModel>(new TransientLifetimeManager());
         }
 
@@ -111,11 +104,6 @@ namespace CommissionsModule
             container.RegisterType<object, CommissionСonclusionView>(viewNameResolver.Resolve<CommissionСonclusionViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, CommissionСonductView>(viewNameResolver.Resolve<CommissionСonductViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PreliminaryProtocolView>(viewNameResolver.Resolve<PreliminaryProtocolViewModel>(), new ContainerControlledLifetimeManager());
-
-            container.RegisterType<object, CommonView>(viewNameResolver.Resolve<CommonViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, PersonCommissionsView>(viewNameResolver.Resolve<PersonCommissionsViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, PersonTalonsView>(viewNameResolver.Resolve<PersonTalonsViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, CreateTalonView>(viewNameResolver.Resolve<CreateTalonViewModel>(), new ContainerControlledLifetimeManager());
 
             container.RegisterType<object, AddressView>(viewNameResolver.Resolve<AddressViewModel>(), new ContainerControlledLifetimeManager());
 

@@ -1,5 +1,4 @@
-﻿using CommissionsModule.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -19,10 +18,12 @@ using System.Threading.Tasks;
 using Prism.Events;
 using Prism.Regions;
 using System.Windows.Media;
+using PatientInfoModule.Services;
+using System.Windows.Input;
 
-namespace CommissionsModule.ViewModels.Common
+namespace PatientInfoModule.ViewModels
 {
-    public class PersonCommissionsViewModel : BindableBase
+    public class PersonCommissionsCollectionViewModel : BindableBase
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -32,7 +33,7 @@ namespace CommissionsModule.ViewModels.Common
         #endregion
 
         #region  Constructors
-        public PersonCommissionsViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator)
+        public PersonCommissionsCollectionViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator)
         {
             if (commissionService == null)
             {
@@ -55,25 +56,37 @@ namespace CommissionsModule.ViewModels.Common
             this.logService = logService;
             this.messageService = messageService;
 
-            Commissions = new ObservableCollectionEx<CommissionItemViewModel>();
+            removeCommissionProtocolCommand = new DelegateCommand<int?>(RemoveCommissionProtocol);
+            printCommissionProtocolCommand = new DelegateCommand<int?>(PrintCommissionProtocol);
+
+            Commissions = new ObservableCollectionEx<PersonCommissionViewModel>();
             BusyMediator = new BusyMediator();
         }
+                
         #endregion
 
         #region Properties
-        public BusyMediator BusyMediator { get; set; }      
+        public BusyMediator BusyMediator { get; set; }
 
-        public ObservableCollectionEx<CommissionItemViewModel> Commissions { get; set; }
+        private DelegateCommand<int?> removeCommissionProtocolCommand;
+        public ICommand RemoveCommissionProtocolCommand { get { return removeCommissionProtocolCommand; } }
 
-        private CommissionItemViewModel selectedCommission;
-        public CommissionItemViewModel SelectedCommission
+        private DelegateCommand<int?> printCommissionProtocolCommand;
+        public ICommand PrintCommissionProtocolCommand { get { return printCommissionProtocolCommand; } }
+
+        public ObservableCollectionEx<PersonCommissionViewModel> Commissions { get; set; }
+
+        private PersonCommissionViewModel selectedCommission;
+        public PersonCommissionViewModel SelectedCommission
         {
             get { return selectedCommission; }
             set 
             {
-                SetProperty(ref selectedCommission, value);
-                //if (SetProperty(ref selectedCommission, value) && value != null)
-                //   eventAggregator.GetEvent<PubSubEvent<int>>().Publish(value.Id);   
+                if (SetProperty(ref selectedCommission, value) && value != null)
+                {
+                    eventAggregator.GetEvent<PubSubEvent<int>>().Publish(value.Id);
+                    eventAggregator.GetEvent<PubSubEvent<PersonCommissionViewModel>>().Publish(value);
+                }
             }
         }
 
@@ -115,7 +128,7 @@ namespace CommissionsModule.ViewModels.Common
                         DecisionText = x.Decision.Name
                     }).ToArrayAsync();
 
-                var result = commissionProtocolsSelectQuery.Select(x => new CommissionItemViewModel()
+                var result = commissionProtocolsSelectQuery.Select(x => new PersonCommissionViewModel()
                     {
                         Id = x.Id,
                         ProtocolNumber = x.Number > 0 ? (x.Number + " от " + x.ProtocolDate.ToShortDateString() + " - ") : ("(расм. " + x.ProtocolDate.ToShortDateString() + ") - "),
@@ -140,6 +153,41 @@ namespace CommissionsModule.ViewModels.Common
                     commissionProtocolsQuery.Dispose();
                 BusyMediator.Deactivate();
             }
+        }
+
+        private async void RemoveCommissionProtocol(int? selectedProtocolId)
+        {
+            if (SpecialValues.IsNewOrNonExisting(PersonId))
+            {
+                messageService.ShowWarning("Не выбран пациент.");
+                return;
+            }
+            if (!selectedProtocolId.HasValue || SpecialValues.IsNewOrNonExisting(selectedProtocolId.Value))
+            {
+                messageService.ShowWarning("Выберите комиссию");
+                return;
+            }
+            if (messageService.AskUser("Удалить комиссию ?") == true)
+            {
+                //bool isOk = await commissionService.RemoveCommissionProtocol(selectedProtocolId.Value);
+                //if (isOk)
+                //    LoadCommissionProtocolsAsync();
+            }
+        }
+
+        private void PrintCommissionProtocol(int? selectedProtocolId)
+        {
+            if (SpecialValues.IsNewOrNonExisting(PersonId))
+            {
+                messageService.ShowWarning("Не выбран пациент.");
+                return;
+            }
+            if (!selectedProtocolId.HasValue || SpecialValues.IsNewOrNonExisting(selectedProtocolId.Value))
+            {
+                messageService.ShowWarning("Выберите комиссию");
+                return;
+            }
+            messageService.ShowWarning("Отсутствует печатная форма протокола");
         }
 
         #endregion             

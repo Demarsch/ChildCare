@@ -255,7 +255,6 @@ namespace CommissionsModule.ViewModels
 
         #endregion
 
-
         #region IDataErrorInfo implementation
 
         public string Error

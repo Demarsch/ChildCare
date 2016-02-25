@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CommissionsModule.Views.Common
+namespace PatientInfoModule.Views
 {
     /// <summary>
     /// Interaction logic for PersonHospitalisationsView.xaml

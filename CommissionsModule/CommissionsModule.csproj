@@ -92,11 +92,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\CommissionService.cs" />
     <Compile Include="Services\Interfaces\ICommissionService.cs" />
-    <Compile Include="ViewModels\Common\CommonViewModel.cs" />
-    <Compile Include="ViewModels\Common\CreateTalonViewModel.cs" />
-    <Compile Include="ViewModels\Common\PersonTalonViewModel.cs" />
-    <Compile Include="ViewModels\Common\PersonTalonsViewModel.cs" />
-    <Compile Include="ViewModels\Common\PersonCommissionsViewModel.cs" />
     <Compile Include="ViewModels\Decisions\CommissionDecisionEditorViewModel.cs" />
     <Compile Include="ViewModels\Decisions\CommissionDecisionHeaderViewModel.cs" />
     <Compile Include="ViewModels\Decisions\CommissionDecisionsViewModel.cs" />
@@ -110,12 +105,6 @@
     <Compile Include="ViewModels\Protocols\CommissionСonclusionViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionСonductViewModel.cs" />
     <Compile Include="ViewModels\Protocols\PreliminaryProtocolViewModel.cs" />
-    <Compile Include="Views\Common\PersonCommissionsView.xaml.cs">
-      <DependentUpon>PersonCommissionsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Common\PersonHospitalisationsView.xaml.cs">
-      <DependentUpon>PersonHospitalisationsView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Decisions\CommissionDecisionEditorView.xaml.cs">
       <DependentUpon>CommissionDecisionEditorView.xaml</DependentUpon>
     </Compile>
@@ -136,9 +125,6 @@
     </Compile>
     <Compile Include="Views\Protocols\CommissionProtocolView.xaml.cs">
       <DependentUpon>CommissionProtocolView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Common\PersonTalonsView.xaml.cs">
-      <DependentUpon>PersonTalonsView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -184,22 +170,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Common\CommonView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Common\CreateTalonView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Common\PersonCommissionsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Common\PersonHospitalisationsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Decisions\CommissionDecisionEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -241,10 +211,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Protocols\CommissionProtocolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Common\PersonTalonsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

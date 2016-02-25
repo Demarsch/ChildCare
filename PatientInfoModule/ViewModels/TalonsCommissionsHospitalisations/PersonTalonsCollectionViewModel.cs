@@ -1,5 +1,4 @@
-﻿using CommissionsModule.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -20,10 +19,11 @@ using Prism.Events;
 using Prism.Regions;
 using System.Windows.Media;
 using System.Windows.Input;
+using PatientInfoModule.Services;
 
-namespace CommissionsModule.ViewModels.Common
+namespace PatientInfoModule.ViewModels
 {
-    public class PersonTalonsViewModel : BindableBase
+    public class PersonTalonsCollectionViewModel : BindableBase
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -35,7 +35,7 @@ namespace CommissionsModule.ViewModels.Common
         #endregion
 
         #region  Constructors
-        public PersonTalonsViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator, 
+        public PersonTalonsCollectionViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator, 
             IDialogServiceAsync dialogService, Func<CreateTalonViewModel> createTalonViewModelFactory)
         {
             if (commissionService == null)
@@ -99,9 +99,8 @@ namespace CommissionsModule.ViewModels.Common
             get { return selectedTalon; }
             set 
             {
-                SetProperty(ref selectedTalon, value);
                 if (SetProperty(ref selectedTalon, value) && value != null)
-                    eventAggregator.GetEvent<PubSubEvent<int>>().Publish(value.Id);   
+                    eventAggregator.GetEvent<PubSubEvent<PersonTalonViewModel>>().Publish(value);   
             }
         }
 
@@ -135,7 +134,7 @@ namespace CommissionsModule.ViewModels.Common
                         Id = x.Id,
                         Number = x.TalonNumber,
                         TalonDate = x.TalonDateTime,
-                        HospitalisatoinNumber = "нет И/Б",
+                        HospitalisationNumber = "нет И/Б",
                         IsCompleted = x.IsCompleted,
                         HelpType = x.MedicalHelpTypeId.HasValue ? x.MedicalHelpType.Code : string.Empty,
                         CodeMKB = x.MKB,
@@ -145,8 +144,8 @@ namespace CommissionsModule.ViewModels.Common
                 var result = talonsSelectQuery.Select(x => new PersonTalonViewModel()
                     {
                         Id = x.Id,
-                        TalonNumber = x.Number,
-                        HospitalisationNumber = " - " + x.HospitalisatoinNumber + " - ",
+                        TalonNumber = " " + x.Number,
+                        HospitalisationNumber = " - " + x.HospitalisationNumber + " - ",
                         TalonDate = "(добавлен " + x.TalonDate.ToShortDateString() + ")",
                         MKB = !string.IsNullOrEmpty(x.CodeMKB) ? x.CodeMKB : "отсутствует",
                         MedHelpType = x.HelpType,
@@ -172,8 +171,14 @@ namespace CommissionsModule.ViewModels.Common
 
         private async void EditTalon(int? selectedTalonId)
         {
+            if (SpecialValues.IsNewOrNonExisting(PersonId))
+            {
+                messageService.ShowWarning("Не выбран пациент.");
+                return;
+            }
+
             var editTalonViewModel = createTalonViewModelFactory();
-            if (!selectedTalonId.HasValue)
+            if (!selectedTalonId.HasValue || SpecialValues.IsNewOrNonExisting(selectedTalonId.Value))
                 editTalonViewModel.Initialize(PersonId);
             else
                 editTalonViewModel.Initialize(PersonId, selectedTalonId.Value);
@@ -184,12 +189,17 @@ namespace CommissionsModule.ViewModels.Common
 
         private async void RemoveTalon(int? selectedTalonId)
         {
-            if (!selectedTalonId.HasValue)
+            if (SpecialValues.IsNewOrNonExisting(PersonId))
+            {
+                messageService.ShowWarning("Не выбран пациент.");
+                return;
+            }
+            if (!selectedTalonId.HasValue || SpecialValues.IsNewOrNonExisting(selectedTalonId.Value))
             {
                 messageService.ShowWarning("Выберите талон");
                 return;
             }
-            if (messageService.AskUser("Удалить талон ?") == true)
+            if (messageService.AskUser("Удалить талон ") == true)
             {
                 bool isOk = await commissionService.RemoveTalon(selectedTalonId.Value);
                 if (isOk)
@@ -199,7 +209,12 @@ namespace CommissionsModule.ViewModels.Common
 
         private void LinkTalonToHospitalisation(int? selectedTalonId)
         {
-            if (!selectedTalonId.HasValue)
+            if (SpecialValues.IsNewOrNonExisting(PersonId))
+            {
+                messageService.ShowWarning("Не выбран пациент.");
+                return;
+            }
+            if (!selectedTalonId.HasValue || SpecialValues.IsNewOrNonExisting(selectedTalonId.Value))
             {
                 messageService.ShowWarning("Выберите талон");
                 return;

@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="PatientInfoModule.Views.PersonCommissionsCollectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="500">
+    <Grid>   
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Комиссии пациента:" FontWeight="Medium" TextDecorations="Underline"/>
+            <ListBox BorderThickness="1" BorderBrush="Black" MinHeight="200"
+                     HorizontalContentAlignment="Stretch" Margin="2"
+                     ItemsSource="{Binding Commissions}"
+                     SelectedItem="{Binding SelectedCommission}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{Binding DecisionColorHex}" Margin="0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Source="{Binding IsCompleted, Converter={x:Static converters:CommissionStatusToImageConverter.Instance}}"
+                                    Width="32" Height="32" Stretch="Uniform" Margin="0,0,2,0"/>
+                                <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding ProtocolNumber}" Margin="0,0,5,0" FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding DecisionText}" Margin="0" FontWeight="Medium"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding MedHelpType}" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding MKB}" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding Talon}" Margin="0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,37 @@
+﻿<fluent:RibbonTabItem x:Class="PatientInfoModule.Views.PersonTalonsCommissionsHospitalisationsHeaderView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:fluent="urn:fluent-ribbon"
+                      xmlns:viewModels="clr-namespace:PatientInfoModule.ViewModels"
+                      mc:Ignorable="d"
+                      d:DesignHeight="300"
+                      d:DesignWidth="300"
+                      d:DataContext="{d:DesignInstance viewModels:PersonTalonsCommissionsHospitalisationsHeaderViewModel}"
+                      Header="Талоны, комиссии, госпитализации">
+    <fluent:RibbonGroupBox Header="Талоны" FontWeight="Medium">
+        <fluent:Button Command="{Binding EditTalonCommand}"
+                       Margin="5,2"
+                       Header="Добавить" 
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Add48x48.png" />
+        <fluent:Button Command="{Binding RemoveTalonCommand}" CommandParameter="{Binding SelectedTalonId}"
+                       Header="Удалить" 
+                       Margin="5,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" />
+        <fluent:Button Command="{Binding LinkTalonToHospitalisationCommand}" CommandParameter="{Binding SelectedTalonId}"
+                       Header="Привязать к И/Б" 
+                       Margin="5,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Link48x48.png" />
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Комиссии" FontWeight="Medium">
+        <fluent:Button Command="{Binding RemoveCommissionProtocolCommand}" CommandParameter="{Binding SelectedCommissionId}"
+                       Header="Удалить" 
+                       Margin="5,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" />
+        <fluent:Button Command="{Binding PrintCommissionProtocolCommand}" CommandParameter="{Binding SelectedCommissionId}"
+                       Header="Печать протокола" 
+                       Margin="5,2"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" />
+    </fluent:RibbonGroupBox>
+</fluent:RibbonTabItem>
