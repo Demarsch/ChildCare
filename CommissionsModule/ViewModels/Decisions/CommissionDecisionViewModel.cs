@@ -70,6 +70,13 @@ namespace CommissionsModule.ViewModels
             get { return Stage + "-й этап"; }
         }
 
+        private bool needAllMembers;
+        public bool NeedAllMembers
+        {
+            get { return needAllMembers; }
+            set { SetProperty(ref needAllMembers, value); }
+        }
+
         private DateTime? decisionDate;
         public DateTime? DecisionDate
         {
@@ -140,10 +147,12 @@ namespace CommissionsModule.ViewModels
                         x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
                     DecisionName = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
                     x.Comment,
-                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#E5E5E5"
+                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#E5E5E5",
+                    x.NeedAlllMemmbersInStage
                 }).FirstOrDefaultAsync(token);
                 DecisionDate = commissionDecision.DecisionDate;
                 Stage = commissionDecision.Stage;
+                NeedAllMembers = commissionDecision.NeedAlllMemmbersInStage;
                 MemberName = commissionDecision.MemberName;
                 Decision = commissionDecision.DecisionName;
                 ColorType = commissionDecision.ColorType;

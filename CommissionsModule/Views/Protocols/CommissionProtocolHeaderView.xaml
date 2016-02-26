@@ -19,14 +19,14 @@
     <fluent:RibbonGroupBox Header="Состояние комиссии">
         <fluent:ToggleButton Header="Предварит. протокол"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"/>
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionPreliminary.png"/>
         <fluent:ToggleButton Header="Проведение комиссии" x:Name="btnCommissionConduction"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionConduct.png"
                        Command="{Binding CommissionProtocolViewModel.AddCommissionConductionCommand}" CommandParameter="{Binding ElementName=btnCommissionConduction, Path=IsChecked}"/>
         <fluent:ToggleButton Header="Комиссия завершена" x:Name="btnCommissionConclusion"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionConclusion.png"
                        Command="{Binding CommissionProtocolViewModel.AddCommissionConclusionCommand}" CommandParameter="{Binding ElementName=btnCommissionConclusion, Path=IsChecked}"/>
     </fluent:RibbonGroupBox>    
     <fluent:RibbonGroupBox>

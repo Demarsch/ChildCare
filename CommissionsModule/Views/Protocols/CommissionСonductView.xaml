@@ -3,26 +3,25 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
-    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
     <DataTemplate DataType="{x:Type viewModels:CommissionСonductViewModel}" >
 
-        <DataTemplate.Resources>
-            <CollectionViewSource x:Key="DecisionStageGrouped" Source="{Binding CurrentMembers}">
-                <CollectionViewSource.GroupDescriptions>
-                    <PropertyGroupDescription PropertyName="StageText" />
-                </CollectionViewSource.GroupDescriptions>
-            </CollectionViewSource>
-        </DataTemplate.Resources>
-
-        <Grid >
+        <Grid>
+            <Grid.Resources>
+                <CollectionViewSource x:Key="DecisionStageGrouped" Source="{Binding CurrentMembers}">
+                    <CollectionViewSource.GroupDescriptions>
+                        <PropertyGroupDescription PropertyName="StageText" />
+                    </CollectionViewSource.GroupDescriptions>
+                </CollectionViewSource>
+            </Grid.Resources>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
 
-                <ListView Grid.Column="0" ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" HorizontalContentAlignment="Stretch"/>
-                <ListView Grid.Column="1" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}">
+                <ListView Grid.Column="0" ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" HorizontalContentAlignment="Stretch" x:Name="AvailableMembersContainer" />
+                <ListView Grid.Column="1" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}" HorizontalContentAlignment="Stretch">
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
@@ -35,7 +34,7 @@
                                                     <Expander.Header>
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock FontWeight="Bold" Text="{Binding Path=Name}"/>
-                                                            <Button Content="123" HorizontalAlignment="Right"/>
+                                                            <ToggleButton Content="123" HorizontalAlignment="Right"/>
                                                         </StackPanel>
                                                     </Expander.Header>
                                                     <Expander.Content>

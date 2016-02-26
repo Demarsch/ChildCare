@@ -15,6 +15,7 @@ using Core.Extensions;
 using Core.Wpf.Misc;
 using Prism.Commands;
 using Core.Misc;
+using System.Windows.Input;
 
 namespace CommissionsModule.ViewModels
 {
@@ -29,7 +30,6 @@ namespace CommissionsModule.ViewModels
         private readonly CommandWrapper reInitializeCommandWrapper;
 
         private CancellationTokenSource currentOperationToken;
-
 
         #endregion
 
@@ -53,12 +53,14 @@ namespace CommissionsModule.ViewModels
             this.logService = logService;
             AvailableMembers = new ObservableCollectionEx<CommissionMemberViewModel>();
             CurrentMembers = new ObservableCollectionEx<CommissionDecisionViewModel>();
+            addSelectedAvailableMemberCommand = new DelegateCommand<CommissionMemberViewModel>(AddSelectedAvailableMember);
 
             reInitializeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => Initialize(CommissionProtocolId)), CommandName = "Повторить" };
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
         }
+
         #endregion
 
         #region Properties
@@ -131,14 +133,15 @@ namespace CommissionsModule.ViewModels
                     AvailableMembers.AddRange(commissionMembers);
                 }
                 var commissionDecisionIds = await commissionDecisionsQuery.Select(x => x.Id).ToArrayAsync(token);
-                //List<Task> decisionsTask = new List<Task>();
+                List<Task> decisionsTask = new List<Task>();
                 foreach (var commissionDecisionId in commissionDecisionIds)
                 {
                     var commissionDecisionViewModel = commissionDecisionViewModelFactory();
-                    await commissionDecisionViewModel.Initialize(commissionDecisionId);
+                    //await commissionDecisionViewModel.Initialize(commissionDecisionId);
+                    decisionsTask.Add(commissionDecisionViewModel.Initialize(commissionDecisionId));
                     CurrentMembers.Add(commissionDecisionViewModel);
                 }
-                //await Task.WhenAll(decisionsTask);
+                await Task.WhenAll(decisionsTask);
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -168,8 +171,19 @@ namespace CommissionsModule.ViewModels
         {
             throw new NotImplementedException();
         }
+
+        private async void AddSelectedAvailableMember(CommissionMemberViewModel selectedCommissionMemberViewModel)
+        {
+            var commissionDecisionViewModel = commissionDecisionViewModelFactory();
+            await commissionDecisionViewModel.Initialize(SpecialValues.NewId);
+            CurrentMembers.Add(commissionDecisionViewModel);
+        }
         #endregion
 
+        #region Commands
 
+        private DelegateCommand<CommissionMemberViewModel> addSelectedAvailableMemberCommand;
+        public ICommand AddSelectedAvailableMemberCommand { get { return addSelectedAvailableMemberCommand; } }
+        #endregion
     }
 }

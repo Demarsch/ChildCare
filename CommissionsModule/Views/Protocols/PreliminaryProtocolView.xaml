@@ -4,15 +4,12 @@
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
                     xmlns:sharedView ="clr-namespace:Shared.Patient.Views;assembly=Shared.Patient"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
-    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <DataTemplate DataType="{x:Type viewModels:PreliminaryProtocolViewModel}" >
-        <DataTemplate.Resources>
-            <ResourceDictionary>
-                <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
-                </ResourceDictionary.MergedDictionaries>
-            </ResourceDictionary>
-        </DataTemplate.Resources>
         <Grid>
             <Grid>
                 <Grid.ColumnDefinitions>

@@ -35,17 +35,17 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                <Expander IsExpanded="True" BorderBrush="#FFB0B0B3" BorderThickness="0,0,0,1">
-                                                    <Expander.Header>
-                                                        <DockPanel>
-                                                            <TextBlock FontWeight="Bold" Text="{Binding Path=Name}"/>
-                                                            <!--<TextBlock Text="{Binding ItemCount}" Margin="5,0,0,0" FontWeight="Bold" Foreground="#FFB0B0B3"/>-->
-                                                        </DockPanel>
-                                                    </Expander.Header>
-                                                    <Expander.Content>
-                                                        <ItemsPresenter />
-                                                    </Expander.Content>
-                                                </Expander>
+                                            <Expander IsExpanded="True" BorderBrush="#FFB0B0B3" BorderThickness="0,0,0,1">
+                                                <Expander.Header>
+                                                    <DockPanel>
+                                                        <TextBlock FontWeight="Bold" Text="{Binding Path=Name}"/>
+                                                        <!--<TextBlock Text="{Binding ItemCount}" Margin="5,0,0,0" FontWeight="Bold" Foreground="#FFB0B0B3"/>-->
+                                                    </DockPanel>
+                                                </Expander.Header>
+                                                <Expander.Content>
+                                                    <ItemsPresenter />
+                                                </Expander.Content>
+                                            </Expander>
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>

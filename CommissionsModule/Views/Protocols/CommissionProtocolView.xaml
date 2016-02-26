@@ -13,7 +13,9 @@
             <StackPanel>
                 <TextBlock Text="{Binding Patient}"/>
                 <ContentControl VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Content="{Binding PreliminaryProtocolViewModel}"/>
-                <ContentControl Content="{Binding CommissionСonductViewModel}" Visibility="{Binding CommissionСonductVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding CommissionСonductVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                    <ContentControl Content="{Binding CommissionСonductViewModel}" />
+                </ScrollViewer>
                 <ContentControl Content="{Binding CommissionСonclusionViewModel}" Visibility="{Binding CommissionСonclusionVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             </StackPanel>
             <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding FailureMediator}"/>
