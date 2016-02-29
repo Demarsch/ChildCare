@@ -6,8 +6,8 @@
     [MKB]               VARCHAR (10)   NOT NULL,
     [Comment]           VARCHAR (1000) CONSTRAINT [DF_PersonTalons_Comment] DEFAULT ('') NOT NULL,
     [RecordContractId]  INT            NOT NULL,
-    [MedicalHelpTypeId] INT            NULL,
-    [PersonAddressId]   INT            NULL,
+    [MedicalHelpTypeId] INT            NOT NULL,
+    [PersonAddressId]   INT            NOT NULL,
     [IsCompleted]       BIT            NULL,
     [InUserId]          INT            NOT NULL,
     [RemovedByUserId]   INT            NULL,
@@ -19,6 +19,8 @@
     CONSTRAINT [FK_PersonTalons_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
     CONSTRAINT [FK_PersonTalons_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 
