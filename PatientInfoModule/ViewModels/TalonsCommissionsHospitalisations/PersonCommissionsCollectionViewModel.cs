@@ -20,6 +20,7 @@ using Prism.Regions;
 using System.Windows.Media;
 using PatientInfoModule.Services;
 using System.Windows.Input;
+using Core.Services;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -29,11 +30,14 @@ namespace PatientInfoModule.ViewModels
         private readonly ICommissionService commissionService;
         private readonly ILog logService;
         private readonly IDialogService messageService;
+        private readonly ISecurityService securityService;
+        private readonly IUserService userService;
         private readonly IEventAggregator eventAggregator;
         #endregion
 
         #region  Constructors
-        public PersonCommissionsCollectionViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator)
+        public PersonCommissionsCollectionViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService,
+            ISecurityService securityService, IUserService userService, IEventAggregator eventAggregator)
         {
             if (commissionService == null)
             {
@@ -47,6 +51,14 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("messageService");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
@@ -54,6 +66,8 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.commissionService = commissionService;
             this.logService = logService;
+            this.userService = userService;
+            this.securityService = securityService;
             this.messageService = messageService;
 
             removeCommissionProtocolCommand = new DelegateCommand<int?>(RemoveCommissionProtocol);
@@ -169,9 +183,20 @@ namespace PatientInfoModule.ViewModels
             }
             if (messageService.AskUser("Удалить комиссию ?") == true)
             {
-                //bool isOk = await commissionService.RemoveCommissionProtocol(selectedProtocolId.Value);
-                //if (isOk)
-                //    LoadCommissionProtocolsAsync();
+                if (!securityService.HasPermission(Permission.DeleteCommissionProtocol))
+                {
+                    messageService.ShowWarning("У вас нет прав на удаление комиссии.");
+                    return;
+                }
+                var deletedCommission = commissionService.GetCommissionProtocolById(selectedProtocolId.Value).FirstOrDefault();
+                if (deletedCommission != null && deletedCommission.InUserId != userService.GetCurrentUser().Id)
+                {
+                    messageService.ShowWarning("Комиссию может удалить только тот, кто ее создал.");
+                    return;
+                }
+                bool isOk = await commissionService.RemoveCommissionProtocol(deletedCommission.Id);
+                if (isOk)
+                    LoadCommissionProtocolsAsync();
             }
         }
 

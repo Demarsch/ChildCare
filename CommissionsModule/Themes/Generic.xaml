@@ -6,6 +6,7 @@
         <ResourceDictionary Source="../Views/Protocols/CommissionСonductView.xaml" />
         <ResourceDictionary Source="../Views/Protocols/CommissionСonclusionView.xaml" />
         <ResourceDictionary Source="../Views/Protocols/CommissionMemberView.xaml" />
+        <ResourceDictionary Source="../Views/Protocols/EditorCommissionMembersView.xaml" />
 
         <ResourceDictionary Source="pack://application:,,,/Shared.PatientRecords;component/Views/Diagnoses/MKBTreeView.xaml" />
     </ResourceDictionary.MergedDictionaries>    

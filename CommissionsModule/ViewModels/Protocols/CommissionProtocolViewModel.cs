@@ -32,6 +32,7 @@ namespace CommissionsModule.ViewModels
         private readonly ILog logService;
 
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
+        private readonly Func<EditorCommissionMembersViewModel> editorCommissionMembersFactory;
 
         private CancellationTokenSource currentOperationToken;
 
@@ -40,7 +41,7 @@ namespace CommissionsModule.ViewModels
 
         #region Constructiors
         public CommissionProtocolViewModel(ICommissionService commissionService, IEventAggregator eventAggregator, IDialogServiceAsync dialogService, ILog logService, PreliminaryProtocolViewModel preliminaryProtocolViewModel, CommissionСonductViewModel commissionСonductViewModel, CommissionСonclusionViewModel commissionСonclusionViewModel,
-             Func<PersonSearchDialogViewModel> relativeSearchFactory)
+             Func<PersonSearchDialogViewModel> relativeSearchFactory, Func<EditorCommissionMembersViewModel> editorCommissionMembersFactory)
         {
             if (preliminaryProtocolViewModel == null)
             {
@@ -62,6 +63,10 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("relativeSearchFactory");
             }
+            if (editorCommissionMembersFactory == null)
+            {
+                throw new ArgumentNullException("editorCommissionMembersFactory");
+            }
             if (dialogService == null)
             {
                 throw new ArgumentNullException("dialogService");
@@ -78,12 +83,14 @@ namespace CommissionsModule.ViewModels
             this.logService = logService;
             this.dialogService = dialogService;
             this.relativeSearchFactory = relativeSearchFactory;
+            this.editorCommissionMembersFactory = editorCommissionMembersFactory;
             this.eventAggregator = eventAggregator;
             PreliminaryProtocolViewModel = preliminaryProtocolViewModel;
             CommissionСonductViewModel = commissionСonductViewModel;
             CommissionСonclusionViewModel = commissionСonclusionViewModel;
             createCommissionCommand = new DelegateCommand(CreateCommission);
             saveCommissionProtocolCommand = new DelegateCommand(SaveCommissionProtocol, CanSaveCommissionProtocol);
+            editCommissionMembersCommand = new DelegateCommand(EditCommissionMembers);
             addCommissionConductionCommand = new DelegateCommand<bool?>(AddCommissionConduction);
             addCommissionConclusionCommand = new DelegateCommand<bool?>(AddCommissionConclusion);
 
@@ -218,6 +225,8 @@ namespace CommissionsModule.ViewModels
         private DelegateCommand<bool?> addCommissionConclusionCommand;
         public ICommand AddCommissionConclusionCommand { get { return addCommissionConclusionCommand; } }
 
+        private DelegateCommand editCommissionMembersCommand;
+        public ICommand EditCommissionMembersCommand { get { return editCommissionMembersCommand; } }
         #endregion
 
         #region Methods              
@@ -397,6 +406,20 @@ namespace CommissionsModule.ViewModels
             }
             finally
             {
+            }
+        }
+
+        private async void EditCommissionMembers()
+        {
+            if (!SpecialValues.IsNewOrNonExisting(SelectedCommissionProtocolId))
+            {
+                var editCommisionMembersViewModel = editorCommissionMembersFactory();
+                editCommisionMembersViewModel.Initialize(SelectedCommissionProtocolId);
+                var result = await dialogService.ShowDialogAsync(editCommisionMembersViewModel);
+                if (result == true)
+                {
+
+                }
             }
         }
 

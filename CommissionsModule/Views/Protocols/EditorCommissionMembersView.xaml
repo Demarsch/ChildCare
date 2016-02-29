@@ -1,0 +1,16 @@
+﻿<ResourceDictionary x:Class="CommissionsModule.Views.Protocols.EditorCommissionMembersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
+    <DataTemplate DataType="{x:Type viewModels:EditorCommissionMembersViewModel}" >
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="?" 
+                   FontSize="48"
+                   HorizontalAlignment="Center"/>
+            <TextBlock Text="Состав комиссии" />
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

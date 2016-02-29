@@ -38,6 +38,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,2" FontWeight="Medium">
@@ -136,7 +137,13 @@
                   IsChecked="{Binding IsCompleted}" FlowDirection="LeftToRight" Margin="5,2">
                 <TextBlock FlowDirection="RightToLeft" Text="Талон закрыт" FontWeight="Medium" />
             </CheckBox>
-           
+
+            <TextBlock Grid.Column="0" Grid.Row="7" Margin="5,2" FontWeight="Medium" 
+                       Visibility="{Binding TalonSaved, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                            <Run Text="Талон создан: " />
+                            <Run Text="{Binding InUser}" FontStyle="Italic"/>
+            </TextBlock>
+
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="6" Grid.ColumnSpan="2" />
         </Grid>
     </DataTemplate>

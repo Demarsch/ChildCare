@@ -112,10 +112,10 @@ namespace Core.Data
         public virtual DbSet<CommissionFilter> CommissionFilters { get; set; }
         public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
         public virtual DbSet<CommissionMemberType> CommissionMemberTypes { get; set; }
-        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
+        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
     }
 }

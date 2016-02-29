@@ -30,6 +30,8 @@ namespace Core.Data
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public Nullable<int> PersonAddressId { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
+        public int InUserId { get; set; }
+        public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
@@ -64,12 +66,28 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
+    	protected User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
+    	}
+        [NonSerialized]
     	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
     	{
      		get { return recordContract; }
      		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	protected User user1;
+    
+    	public virtual User User1
+    	{
+     		get { return user1; }
+     		set { user1 = value; }
     	}
     
     	public object Clone()

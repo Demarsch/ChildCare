@@ -77,7 +77,7 @@ namespace CommissionsModule.Services
             if (option.Contains(OptionValues.ProtocolsAdded))
                 query = query.Where(x => x.IncomeDateTime == date.Value);
             if (option.Contains(OptionValues.ProtocolsAwaiting))
-                query = query.Where(x => x.IsCompleted == true && EntityFunctions.TruncateTime(x.ToDoDateTime) > EntityFunctions.TruncateTime(DateTime.Now));
+                query = query.Where(x => x.IsCompleted == true && DbFunctions.TruncateTime(x.ToDoDateTime) > DbFunctions.TruncateTime(DateTime.Now));
 
             if (onlyMyCommissions)
             {
@@ -224,7 +224,8 @@ namespace CommissionsModule.Services
             {
                 dataContext.Configuration.ProxyCreationEnabled = false;
                 var originalProtocol = await dataContext.NoTrackingSet<CommissionProtocol>().FirstAsync(x => x.Id == protocolId);
-                dataContext.Entry(originalProtocol).State = EntityState.Deleted;
+                originalProtocol.RemovedByUserId = userService.GetCurrentUser().Id;
+                dataContext.Entry(originalProtocol).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync();
                 if (protocolChangeSubscription != null)
                 {
@@ -275,7 +276,7 @@ namespace CommissionsModule.Services
         public IDisposableQueryable<PersonTalon> GetPatientTalons(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.PersonId == personId), context);
+            return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.PersonId == personId && !x.RemovedByUserId.HasValue), context);
         }
 
         public IDisposableQueryable<Person> GetPerson(int personId)
@@ -308,7 +309,7 @@ namespace CommissionsModule.Services
         public IDisposableQueryable<CommissionProtocol> GetPersonCommissionProtocols(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.PersonId == personId), context);
+            return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.PersonId == personId && !x.RemovedByUserId.HasValue), context);
         }
 
 
@@ -363,8 +364,9 @@ namespace CommissionsModule.Services
         {
             using (var context = contextProvider.CreateNewContext())
             {
-                var contract = context.Set<PersonTalon>().First(x => x.Id == talonId);
-                context.Entry(contract).State = EntityState.Deleted;
+                var talon = context.Set<PersonTalon>().First(x => x.Id == talonId);
+                talon.RemovedByUserId = userService.GetCurrentUser().Id;
+                context.Entry(talon).State = EntityState.Modified;
                 try
                 {
                     await context.SaveChangesAsync();
@@ -402,8 +404,24 @@ namespace CommissionsModule.Services
             }
         }
 
-
-
+        public async Task<bool> RemoveCommissionProtocol(int protocolId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var commission = context.Set<CommissionProtocol>().First(x => x.Id == protocolId);
+                commission.RemovedByUserId = userService.GetCurrentUser().Id;
+                context.Entry(commission).State = EntityState.Modified;
+                try
+                {
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
         public IDisposableQueryable<CommissionMember> GetCommissionMembers(int commissionTypeId, DateTime onDate)
         {

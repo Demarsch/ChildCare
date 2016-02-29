@@ -22,16 +22,22 @@
     [PersonAddressId]      INT            NOT NULL,
     [Diagnos]              VARCHAR (8000) NOT NULL,
     [SentLPUId]            INT            NULL,
+    [InUserId]             INT            NOT NULL,
+    [RemovedByUserId]      INT            NULL,
     CONSTRAINT [PK_CommissionProtocols] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_CommissionProtocols_CommissionSources] FOREIGN KEY ([CommissionSourceId]) REFERENCES [dbo].[CommissionSources] ([Id]),
+    CONSTRAINT [FK_CommissionProtocols_CreateUsers] FOREIGN KEY ([InUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_Decisions] FOREIGN KEY ([DecisionId]) REFERENCES [dbo].[Decisions] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_MedicalHelpTypes] FOREIGN KEY ([MedicalHelpTypeId]) REFERENCES [dbo].[MedicalHelpTypes] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_Orgs] FOREIGN KEY ([SentLPUId]) REFERENCES [dbo].[Orgs] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_PersonAddresses] FOREIGN KEY ([PersonAddressId]) REFERENCES [dbo].[PersonAddresses] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_PersonTalons] FOREIGN KEY ([PersonTalonId]) REFERENCES [dbo].[PersonTalons] ([Id]),
-    CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id])
+    CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
+    CONSTRAINT [FK_CommissionProtocols_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

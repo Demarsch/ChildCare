@@ -28,6 +28,7 @@ namespace PatientInfoModule.ViewModels
         private readonly ILog logService;
         private readonly IDialogService messageService;
         private readonly ICacheService cacheService;
+        private readonly IUserService userService;
         private CancellationTokenSource currentSavingToken;
 
         public CreateTalonViewModel(ICommissionService commissionService,
@@ -35,6 +36,7 @@ namespace PatientInfoModule.ViewModels
                                       IDialogService messageService,
                                       ILog logService,
                                       ICacheService cacheService, 
+                                      IUserService userService,
                                       IAddressSuggestionProvider addressSuggestionProvider)
         {
             if (logService == null)
@@ -49,6 +51,10 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("messageService");
             }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
             if (cacheService == null)
             {
                 throw new ArgumentNullException("cacheService");
@@ -61,6 +67,7 @@ namespace PatientInfoModule.ViewModels
             this.commissionService = commissionService;
             this.messageService = messageService;
             this.cacheService = cacheService;
+            this.userService = userService;
 
             AddressSuggestionProvider = addressSuggestionProvider;
 
@@ -99,7 +106,7 @@ namespace PatientInfoModule.ViewModels
             get { return location; }
             set
             {
-                if (SetProperty(ref location, value))
+               if (SetProperty(ref location, value))
                     UpdateUserText();
             }
         }       
@@ -160,6 +167,29 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref isCompleted, value); }
         }
 
+        private bool talonSaved;
+        public bool TalonSaved
+        {
+            get { return talonSaved; }
+            set 
+            {
+                if (SetProperty(ref talonSaved, value))
+                {
+                    if (!SpecialValues.IsNewOrNonExisting(TalonId))
+                        InUser = commissionService.GetTalonById(TalonId).First().User.Person.ShortName;
+                    else
+                        InUser = userService.GetCurrentUser().Person.ShortName;
+                }
+            }
+        }
+
+        private string inUser;
+        public string InUser
+        {
+            get { return inUser; }
+            set { SetProperty(ref inUser, value); }
+        }
+
         private ObservableCollectionEx<FieldValue> medicalHelpTypes;
         public ObservableCollectionEx<FieldValue> MedicalHelpTypes
         {
@@ -212,27 +242,31 @@ namespace PatientInfoModule.ViewModels
                 CodeMKB = talon.MKB;
                 Comment = talon.Comment;
                 IsCompleted = (talon.IsCompleted == true) ? true : false;
-                Appartment = talon.PersonAddress.Apartment;
-                Building = talon.PersonAddress.Building;
-                House = talon.PersonAddress.House;
-                var okato = cacheService.GetItemById<Okato>(talon.PersonAddress.OkatoId);
-                if (okato == null)
+                if (talon.PersonAddressId.HasValue)
                 {
-                    Region = null;
-                    Location = null;                    
+                    Appartment = talon.PersonAddress.Apartment;
+                    Building = talon.PersonAddress.Building;
+                    House = talon.PersonAddress.House;
+                    var okato = cacheService.GetItemById<Okato>(talon.PersonAddress.OkatoId);
+                    if (okato == null)
+                    {
+                        Region = null;
+                        Location = null;
+                    }
+                    else if (okato.IsRegion || okato.IsForeignCountry)
+                    {
+                        Region = okato;
+                        Location = null;
+                    }
+                    else
+                    {
+                        var regionCode = okato.CodeOKATO.Substring(0, 2);
+                        Region = cacheService.GetItems<Okato>().First(x => x.CodeOKATO.StartsWith(regionCode) && x.IsRegion && okato.FullName.StartsWith(x.FullName));
+                        Location = okato;
+                    }
+                    UserText = talon.PersonAddress.UserText;
                 }
-                else if (okato.IsRegion || okato.IsForeignCountry)
-                {
-                    Region = okato;
-                    Location = null;                    
-                }
-                else
-                {
-                    var regionCode = okato.CodeOKATO.Substring(0, 2);
-                    Region = cacheService.GetItems<Okato>().First(x => x.CodeOKATO.StartsWith(regionCode) && x.IsRegion && okato.FullName.StartsWith(x.FullName));
-                    Location = okato;
-                }
-                UserText = talon.PersonAddress.UserText;
+                TalonSaved = true;
             }
             catch (Exception ex)
             {
@@ -260,7 +294,8 @@ namespace PatientInfoModule.ViewModels
                 var medicalHelpTypesQuery = medicalHelpTypesTask.Result.Select(x => new { x.Id, x.Code, x.ShortName }).ToArray();
                 MedicalHelpTypes.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите вид помощи -" });
                 MedicalHelpTypes.AddRange(medicalHelpTypesQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Code + (!string.IsNullOrEmpty(x.ShortName) ? (" - " + x.ShortName) : string.Empty) }));
-                SelectedMedicalHelpTypeId = SpecialValues.NonExistingId;                
+                SelectedMedicalHelpTypeId = SpecialValues.NonExistingId;
+                TalonSaved = false;
             }
             catch (Exception ex)
             {
@@ -316,7 +351,7 @@ namespace PatientInfoModule.ViewModels
 
                 var talonResult = await commissionService.SaveTalon(talon, token);
                 TalonId = talonResult;
-
+                TalonSaved = true;
                 SaveIsSuccessful = true;
             }
             catch (OperationCanceledException)
@@ -454,6 +489,10 @@ namespace PatientInfoModule.ViewModels
                 if (columnName == "Region")
                 {
                     result = Region == null ? "Выберите регион или иностранное государство" : string.Empty;
+                }
+                if (columnName == "Location")
+                {
+                    result = Location == null ? "Укажите ОКАТО района, села, города" : string.Empty;
                 }
                 if (string.IsNullOrEmpty(result))
                 {

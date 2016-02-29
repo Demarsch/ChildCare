@@ -30,5 +30,7 @@ namespace PatientInfoModule.Services
         Task<int> SaveTalonAddress(PersonAddress talonAddress, CancellationToken token);
 
         Task<bool> RemoveTalon(int talonId);
+
+        Task<bool> RemoveCommissionProtocol(int protocolId);
     }
 }

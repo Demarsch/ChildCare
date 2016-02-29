@@ -37,6 +37,16 @@
 
         public readonly static string ShowAllCommissionDecisions = "Отображать все решения комиссии";
 
+        public readonly static string DeleteCommissionProtocol = "Удалить протокол комиссии";
+
+        #endregion
+
+        #region PersonTalons
+
+        public readonly static string EditPersonTalon = "Редактировать талон пациента";
+        
+        public readonly static string DeletePersonTalon = "Удалить талон пациента";
+
         #endregion
 
         public readonly static string ChangeRecordParentVisit = "Изменить родительский случай";

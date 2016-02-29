@@ -8,59 +8,65 @@
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="500">
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <TextBlock Text="Талоны пациента:" FontWeight="Medium" TextDecorations="Underline" />
-            <ListBox BorderThickness="1" BorderBrush="Black" MinHeight="200"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+       
+        <TextBlock Grid.Row="0" Text="Талоны пациента:" FontWeight="Medium" TextDecorations="Underline" Margin="2" />
+        <ListBox Grid.Row="1" BorderThickness="1" BorderBrush="Black" MinHeight="32"
                  HorizontalContentAlignment="Stretch" Margin="2"        
                  ItemsSource="{Binding Talons}"
                  SelectedItem="{Binding SelectedTalon}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <i:InvokeCommandAction Command="{Binding EditTalonCommand}" CommandParameter="{Binding SelectedTalon.Id}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="{Binding TalonColorHex}" Margin="0">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding EditTalonCommand}" CommandParameter="{Binding SelectedTalon.Id}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{Binding TalonColorHex}" Margin="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                                <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center"
                                 Source="{Binding IsCompleted, Converter={x:Static converters:TalonStateToImageConverter.Instance}}"
                                 Width="32" Height="32" Stretch="Uniform" Margin="0,0,2,0"/>
-                                <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
-                                    <TextBlock Text="{Binding TalonNumber}" Margin="0,0,7,0" FontWeight="Medium"/>
-                                    <TextBlock Text="{Binding HospitalisationNumber}" Margin="0,0,7,0" FontWeight="Medium"/>
-                                    <TextBlock Text="{Binding TalonDate}" Margin="0,0,7,0" FontWeight="Medium"/>
-                                    <TextBlock Text="{Binding TalonState}" Margin="0" FontWeight="Medium"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-                                    <TextBlock Margin="0,0,7,0">
+                            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="{Binding TalonNumber}" Margin="0,0,7,0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding HospitalisationNumber}" Margin="0,0,7,0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding TalonDate}" Margin="0,0,7,0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding TalonState}" Margin="0" FontWeight="Medium"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Margin="0,0,7,0">
                                         <Run Text=" Вид помощи: " FontWeight="Medium"/>
                                         <Run Text="{Binding MedHelpType}"/>
-                                    </TextBlock>
-                                    <TextBlock Margin="0,0,7,0">
+                                </TextBlock>
+                                <TextBlock Margin="0,0,7,0">
                                         <Run Text=" МКБ-10: " FontWeight="Medium"/>
                                         <Run Text="{Binding MKB}"/>
-                                    </TextBlock>
-                                    <TextBlock>
+                                </TextBlock>
+                                <TextBlock>
                                         <Run Text="Адрес: " FontWeight="Medium"/>
                                         <Run Text="{Binding Address}" />
-                                    </TextBlock>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
 </UserControl>

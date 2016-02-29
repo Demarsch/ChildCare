@@ -20,6 +20,7 @@ using Prism.Regions;
 using System.Windows.Media;
 using System.Windows.Input;
 using PatientInfoModule.Services;
+using Core.Services;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -31,12 +32,14 @@ namespace PatientInfoModule.ViewModels
         private readonly IDialogService messageService;
         private readonly IEventAggregator eventAggregator;
         private readonly IDialogServiceAsync dialogService;
+        private readonly ISecurityService securityService;
+        private readonly IUserService userService;
         private readonly Func<CreateTalonViewModel> createTalonViewModelFactory;
         #endregion
 
         #region  Constructors
         public PersonTalonsCollectionViewModel(ICommissionService commissionService, ILog logService, IDialogService messageService, IEventAggregator eventAggregator, 
-            IDialogServiceAsync dialogService, Func<CreateTalonViewModel> createTalonViewModelFactory)
+            IDialogServiceAsync dialogService, ISecurityService securityService, IUserService userService, Func<CreateTalonViewModel> createTalonViewModelFactory)
         {
             if (commissionService == null)
             {
@@ -58,6 +61,14 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("dialogService");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
             if (createTalonViewModelFactory == null)
             {
                 throw new ArgumentNullException("createTalonViewModelFactory");
@@ -65,6 +76,8 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.commissionService = commissionService;
             this.logService = logService;
+            this.securityService = securityService;
+            this.userService = userService;
             this.messageService = messageService;
             this.dialogService = dialogService;
             this.createTalonViewModelFactory = createTalonViewModelFactory;
@@ -176,6 +189,11 @@ namespace PatientInfoModule.ViewModels
                 messageService.ShowWarning("Не выбран пациент.");
                 return;
             }
+            if (!securityService.HasPermission(Permission.EditPersonTalon))
+            {
+                messageService.ShowWarning("У вас нет прав на " + ((!selectedTalonId.HasValue || SpecialValues.IsNewOrNonExisting(selectedTalonId.Value)) ? "создание" : "редактирование") + " талона.");
+                return;
+            }
 
             var editTalonViewModel = createTalonViewModelFactory();
             if (!selectedTalonId.HasValue || SpecialValues.IsNewOrNonExisting(selectedTalonId.Value))
@@ -199,7 +217,18 @@ namespace PatientInfoModule.ViewModels
                 messageService.ShowWarning("Выберите талон");
                 return;
             }
-            if (messageService.AskUser("Удалить талон ") == true)
+            if (!securityService.HasPermission(Permission.DeletePersonTalon))
+            {
+                messageService.ShowWarning("У вас нет прав на удаление талона.");
+                return;
+            }
+            var deletedTalon = commissionService.GetCommissionProtocolById(selectedTalonId.Value).FirstOrDefault();
+            if (deletedTalon != null && deletedTalon.InUserId != userService.GetCurrentUser().Id)
+            {
+                messageService.ShowWarning("Талон может удалить только тот, кто его создал.");
+                return;
+            }
+            if (messageService.AskUser("Удалить талон ?") == true)
             {
                 bool isOk = await commissionService.RemoveTalon(selectedTalonId.Value);
                 if (isOk)

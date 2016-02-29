@@ -43,6 +43,8 @@ namespace Core.Data
         public int PersonAddressId { get; set; }
         public string Diagnos { get; set; }
         public Nullable<int> SentLPUId { get; set; }
+        public int InUserId { get; set; }
+        public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;
@@ -59,6 +61,14 @@ namespace Core.Data
     	{
      		get { return commissionSource; }
      		set { commissionSource = value; }
+    	}
+        [NonSerialized]
+    	protected User user;
+    
+    	public virtual User User
+    	{
+     		get { return user; }
+     		set { user = value; }
     	}
         [NonSerialized]
     	protected Decision decision;
@@ -107,6 +117,14 @@ namespace Core.Data
     	{
      		get { return recordContract; }
      		set { recordContract = value; }
+    	}
+        [NonSerialized]
+    	protected User user1;
+    
+    	public virtual User User1
+    	{
+     		get { return user1; }
+     		set { user1 = value; }
     	}
         [NonSerialized]
     	protected PersonTalon personTalon;

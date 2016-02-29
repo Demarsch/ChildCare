@@ -66,7 +66,7 @@ namespace PatientInfoModule.Services
         public IDisposableQueryable<PersonTalon> GetPatientTalons(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.PersonId == personId), context);
+            return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.PersonId == personId && !x.RemovedByUserId.HasValue), context);
         }
 
         public IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate)
@@ -79,7 +79,7 @@ namespace PatientInfoModule.Services
         public IDisposableQueryable<CommissionProtocol> GetPersonCommissionProtocols(int personId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.PersonId == personId), context);
+            return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.PersonId == personId && !x.RemovedByUserId.HasValue), context);
         }
         
         public IDisposableQueryable<PersonTalon> GetTalonById(int id)
@@ -120,6 +120,7 @@ namespace PatientInfoModule.Services
                 savedTalon.MedicalHelpTypeId = talon.MedicalHelpTypeId;
                 savedTalon.IsCompleted = talon.IsCompleted;
                 savedTalon.PersonAddressId = talon.PersonAddressId;
+                savedTalon.InUserId = userService.GetCurrentUser().Id;
                 context.Entry<PersonTalon>(savedTalon).State = savedTalon.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
 
                 if (token.IsCancellationRequested)
@@ -133,8 +134,9 @@ namespace PatientInfoModule.Services
         {
             using (var context = contextProvider.CreateNewContext())
             {
-                var contract = context.Set<PersonTalon>().First(x => x.Id == talonId);
-                context.Entry(contract).State = EntityState.Deleted;
+                var talon = context.Set<PersonTalon>().First(x => x.Id == talonId);
+                talon.RemovedByUserId = userService.GetCurrentUser().Id;
+                context.Entry(talon).State = EntityState.Modified;
                 try
                 {
                     await context.SaveChangesAsync();
@@ -172,5 +174,23 @@ namespace PatientInfoModule.Services
             }
         }
 
+        public async Task<bool> RemoveCommissionProtocol(int protocolId)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var commission = context.Set<CommissionProtocol>().First(x => x.Id == protocolId);
+                commission.RemovedByUserId = userService.GetCurrentUser().Id;
+                context.Entry(commission).State = EntityState.Modified;
+                try
+                {
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
     }
 }
