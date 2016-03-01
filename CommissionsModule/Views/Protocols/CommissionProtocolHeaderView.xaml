@@ -13,7 +13,7 @@
     <fluent:RibbonGroupBox>
         <fluent:Button Header="Создать комиссию"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesAdd48x48.png"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionAdd.png"
                        Command="{Binding CommissionProtocolViewModel.CreateCommissionCommand}" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Состояние комиссии">

@@ -38,6 +38,8 @@
         public readonly static string ShowAllCommissionDecisions = "Отображать все решения комиссии";
 
         public readonly static string DeleteCommissionProtocol = "Удалить протокол комиссии";
+        
+        public readonly static string DeleteCommissionDecisionWithDecision = "Удалять решение комиссии";
 
         public readonly static string EditCommissionMembers = "Редактировать состав комиссии";
 

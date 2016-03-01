@@ -56,13 +56,6 @@ namespace CommissionsModule.ViewModels
         public string PersonName { get; set; }
         public string MemberTypeName { get; set; }
 
-        public bool showBtnsPanel = true;
-        public bool ShowBtnsPanel
-        {
-            get { return showBtnsPanel; }
-            set { SetProperty(ref showBtnsPanel, value); }
-        }
-
         #region Properties
 
         public BusyMediator BusyMediator { get; set; }

@@ -188,7 +188,7 @@ namespace CommissionsModule.ViewModels
                 foreach (var commissionDecisionId in commissionDecisionIds)
                 {
                     var commissionDecisionViewModel = commissionDecisionViewModelFactory();
-                    await commissionDecisionViewModel.Initialize(commissionDecisionId);
+                    await commissionDecisionViewModel.Initialize(commissionDecisionId, false);
                     CommissionDecisions.Add(commissionDecisionViewModel);
                 }
 
@@ -248,7 +248,7 @@ namespace CommissionsModule.ViewModels
                 else
                 {
                     savedSuccessfull = true;
-                    await SelectedCommissionDecision.Initialize(CommissionDecisionEditorViewModel.CommissionDecisionId);
+                    await SelectedCommissionDecision.Initialize(CommissionDecisionEditorViewModel.CommissionDecisionId, false);
                 }
             }
             catch (Exception ex)

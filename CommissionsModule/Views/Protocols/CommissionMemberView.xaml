@@ -7,15 +7,7 @@
                     xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate DataType="{x:Type viewModels:CommissionMemberViewModel}" >
-        <!--<i:Interaction.Triggers>
-            <i:EventTrigger EventName="Mouse_Enter">
-                <i:InvokeCommandAction Command="{Binding ShowBtnsPanelCommand}" CommandParameter="True"/>
-            </i:EventTrigger>
-            <i:EventTrigger EventName="Mouse_Leave">
-                <i:InvokeCommandAction Command="{Binding ShowBtnsPanelCommand}" CommandParameter="False"/>
-            </i:EventTrigger>
-        </i:Interaction.Triggers>-->
-        <Grid Background="#FFBBCFBB" HorizontalAlignment="Stretch">
+        <Grid Background="#FFBBCFBB" HorizontalAlignment="Stretch" x:Name="grid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
@@ -25,7 +17,7 @@
                 <TextBlock Text="{Binding StaffName}" FontWeight="Bold" Margin="2, 1, 2, 1"/>
                 <TextBlock Text="{Binding PersonName}" FontWeight="Bold" Margin="2, 1, 2, 1"/>
             </StackPanel>
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ShowBtnsPanel, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+            <StackPanel x:Name="btns" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=grid, Path=IsMouseOver, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                 <Button Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding ElementName=AvailableMembersContainer, Path=DataContext.AddSelectedAvailableMemberCommand}" CommandParameter="{Binding}">
                     <Button.ContentTemplate>
                         <DataTemplate>

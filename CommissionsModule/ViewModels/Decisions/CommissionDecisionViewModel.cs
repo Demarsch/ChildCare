@@ -14,6 +14,7 @@ using Core.Data;
 using Core.Extensions;
 using Core.Wpf.Misc;
 using Prism.Commands;
+using Core.Services;
 
 namespace CommissionsModule.ViewModels
 {
@@ -21,6 +22,7 @@ namespace CommissionsModule.ViewModels
     {
         #region Fields
         private readonly ICommissionService commissionService;
+        private readonly ISecurityService securityService;
         private readonly ILog logService;
 
         private CommandWrapper reloadInitialzeCommandWrapper;
@@ -29,7 +31,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionDecisionViewModel(ICommissionService commissionService, ILog logService)
+        public CommissionDecisionViewModel(ICommissionService commissionService, ISecurityService securityService, ILog logService)
         {
             if (commissionService == null)
             {
@@ -39,6 +41,11 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("logService");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            this.securityService = securityService;
             this.commissionService = commissionService;
             this.logService = logService;
 
@@ -112,15 +119,18 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref colorType, value); }
         }
 
+        public bool CanDeleteMember { get; private set; }
+
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
         #endregion
 
         #region Methods
 
-        public async Task Initialize(int? commissionDecisionId)
+        public async Task Initialize(int? commissionDecisionId, bool canDeleteMember)
         {
             var commDecisionId = commissionDecisionId.ToInt();
+            CanDeleteMember = canDeleteMember && (canDeleteMember || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision));
             if (commDecisionId < 1)
                 return;
 

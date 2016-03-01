@@ -16,6 +16,7 @@ using Core.Wpf.Misc;
 using Prism.Commands;
 using Core.Misc;
 using System.Windows.Input;
+using Core.Services;
 
 namespace CommissionsModule.ViewModels
 {
@@ -23,6 +24,7 @@ namespace CommissionsModule.ViewModels
     {
         #region Fields
         private readonly ICommissionService commissionService;
+        private readonly ISecurityService securityService;
         private readonly ILog logService;
 
         private readonly Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory;
@@ -34,7 +36,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionСonductViewModel(ICommissionService commissionService, ILog logService, Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory)
+        public CommissionСonductViewModel(ICommissionService commissionService, ISecurityService securityService, ILog logService, Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory)
         {
             if (commissionService == null)
             {
@@ -48,12 +50,18 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("commissionDecisionViewModelFactory");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
+            this.securityService = securityService;
             this.commissionDecisionViewModelFactory = commissionDecisionViewModelFactory;
             this.commissionService = commissionService;
             this.logService = logService;
             AvailableMembers = new ObservableCollectionEx<CommissionMemberViewModel>();
             CurrentMembers = new ObservableCollectionEx<CommissionDecisionViewModel>();
             addSelectedAvailableMemberCommand = new DelegateCommand<CommissionMemberViewModel>(AddSelectedAvailableMember);
+            removeCurrentMemberCommand = new DelegateCommand<CommissionDecisionViewModel>(RemoveCurrentMember);
 
             reInitializeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => Initialize(CommissionProtocolId)), CommandName = "Повторить" };
 
@@ -138,7 +146,7 @@ namespace CommissionsModule.ViewModels
                 {
                     var commissionDecisionViewModel = commissionDecisionViewModelFactory();
                     //await commissionDecisionViewModel.Initialize(commissionDecisionId);
-                    decisionsTask.Add(commissionDecisionViewModel.Initialize(commissionDecisionId));
+                    decisionsTask.Add(commissionDecisionViewModel.Initialize(commissionDecisionId, true));
                     CurrentMembers.Add(commissionDecisionViewModel);
                 }
                 await Task.WhenAll(decisionsTask);
@@ -175,8 +183,13 @@ namespace CommissionsModule.ViewModels
         private async void AddSelectedAvailableMember(CommissionMemberViewModel selectedCommissionMemberViewModel)
         {
             var commissionDecisionViewModel = commissionDecisionViewModelFactory();
-            await commissionDecisionViewModel.Initialize(SpecialValues.NewId);
+            await commissionDecisionViewModel.Initialize(SpecialValues.NewId, true);
             CurrentMembers.Add(commissionDecisionViewModel);
+        }
+
+        private void RemoveCurrentMember(CommissionDecisionViewModel commissionDecisionViewModel)
+        {
+            CurrentMembers.Remove(commissionDecisionViewModel);
         }
         #endregion
 
@@ -184,6 +197,9 @@ namespace CommissionsModule.ViewModels
 
         private DelegateCommand<CommissionMemberViewModel> addSelectedAvailableMemberCommand;
         public ICommand AddSelectedAvailableMemberCommand { get { return addSelectedAvailableMemberCommand; } }
+
+        private DelegateCommand<CommissionDecisionViewModel> removeCurrentMemberCommand;
+        public ICommand RemoveCurrentMemberCommand { get { return removeCurrentMemberCommand; } }
         #endregion
     }
 }

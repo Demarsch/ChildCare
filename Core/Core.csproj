@@ -327,6 +327,9 @@
     <Resource Include="Resources\Images\CommissionConduct.png" />
     <Resource Include="Resources\Images\CommissionPreliminary.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\CommissionAdd.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
