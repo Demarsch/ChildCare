@@ -410,16 +410,13 @@ namespace CommissionsModule.ViewModels
         }
 
         private async void EditCommissionMembers()
-        {
-            if (!SpecialValues.IsNewOrNonExisting(SelectedCommissionProtocolId))
+        {            
+            var editCommisionMembersViewModel = editorCommissionMembersFactory();
+            editCommisionMembersViewModel.Initialize();
+            var result = await dialogService.ShowDialogAsync(editCommisionMembersViewModel);
+            if (result == true && (editCommisionMembersViewModel.IsChanged || editCommisionMembersViewModel.Members.Any(x => x.IsChanged)))
             {
-                var editCommisionMembersViewModel = editorCommissionMembersFactory();
-                editCommisionMembersViewModel.Initialize(SelectedCommissionProtocolId);
-                var result = await dialogService.ShowDialogAsync(editCommisionMembersViewModel);
-                if (result == true)
-                {
 
-                }
             }
         }
 

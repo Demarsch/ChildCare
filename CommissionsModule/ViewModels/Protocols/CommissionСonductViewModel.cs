@@ -123,7 +123,7 @@ namespace CommissionsModule.ViewModels
                     curDate = commissionProtocolData.IncomeDateTime;
 
                     commissionMembersQuery = commissionService.GetCommissionMembers(commissionProtocolData.CommissionTypeId, curDate);
-                    var commissionMembers = await commissionMembersQuery.Select(x => new CommissionMemberViewModel
+                    var commissionMembers = await commissionMembersQuery.Select(x => new CommissionMemberViewModel()
                     {
                         Id = x.Id,
                         MemberTypeName = x.CommissionMemberType.Name,

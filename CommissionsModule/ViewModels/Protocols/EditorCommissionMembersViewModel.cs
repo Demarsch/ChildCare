@@ -1,83 +1,124 @@
-﻿using CommissionsModule.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Windows.Navigation;
+using Core.Data;
+using Core.Data.Classes;
 using Core.Data.Misc;
 using Core.Data.Services;
+using Core.Extensions;
 using Core.Services;
 using Core.Wpf.Mvvm;
 using Core.Wpf.Services;
 using log4net;
 using Prism.Commands;
 using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Navigation;
+using Shared.Patient.Misc;
+using Core.Misc;
+using CommissionsModule.Services;
+using System.Windows.Input;
+using System.Collections.Specialized;
 
 namespace CommissionsModule.ViewModels
 {
-    public class EditorCommissionMembersViewModel : BindableBase, IDialogViewModel, IDataErrorInfo
+    public class EditorCommissionMembersViewModel : BindableBase, IDialogViewModel, IDataErrorInfo, IDisposable
     {
         private readonly ICommissionService commissionService;
         private readonly ILog logService;
-        private readonly IDialogService messageService;
-        private readonly ICacheService cacheService;
-        private readonly IUserService userService;
-        private CancellationTokenSource currentSavingToken;
+        private readonly Func<CommissionMemberViewModel> commissionMemberViewModelFactory;
 
         public EditorCommissionMembersViewModel(ICommissionService commissionService,
-                                      IDialogServiceAsync dialogService,
-                                      IDialogService messageService,
                                       ILog logService,
-                                      ICacheService cacheService, 
-                                      IUserService userService)
+                                      Func<CommissionMemberViewModel> commissionMemberViewModelFactory)
         {
             if (logService == null)
             {
                 throw new ArgumentNullException("logService");
-            }            
-            if (dialogService == null)
+            }          
+            if (commissionService == null)
             {
-                throw new ArgumentNullException("dialogService");
+                throw new ArgumentNullException("commissionService");
             }
-            if (messageService == null)
+            if (commissionMemberViewModelFactory == null)
             {
-                throw new ArgumentNullException("messageService");
-            }
-            if (userService == null)
-            {
-                throw new ArgumentNullException("userService");
-            }
-            if (cacheService == null)
-            {
-                throw new ArgumentNullException("cacheService");
-            }            
+                throw new ArgumentNullException("commissionMemberViewModelFactory");
+            }        
             this.logService = logService;
             this.commissionService = commissionService;
-            this.messageService = messageService;
-            this.cacheService = cacheService;
-            this.userService = userService;
+            this.commissionMemberViewModelFactory = commissionMemberViewModelFactory;
 
             BusyMediator = new BusyMediator();
             CloseCommand = new DelegateCommand<bool?>(Close);
+
+            RemoveMemberCommand = new DelegateCommand<CommissionMemberViewModel>(RemoveCommissionMember);
+            addMemberCommand = new DelegateCommand(AddMember);
+
+            Members = new ObservableCollectionEx<CommissionMemberViewModel>();
+            Members.CollectionChanged += OnMembersChanged;
         }
 
         #region Properties
+
         public BusyMediator BusyMediator { get; set; }
+
+        public ICommand RemoveMemberCommand { get; private set; }
+
+        public ObservableCollectionEx<CommissionMemberViewModel> Members { get; private set; }
+
+        private ObservableCollectionEx<FieldValue> commissionsTypes;
+        public ObservableCollectionEx<FieldValue> CommissionsTypes
+        {
+            get 
+            {
+                if (commissionsTypes == null)
+                    commissionsTypes = new ObservableCollectionEx<FieldValue>();
+                return commissionsTypes; 
+            }
+            set { SetProperty(ref commissionsTypes, value); }
+        }
+
+        private int selectedCommissionTypeId;
+        public int SelectedCommissionTypeId
+        {
+            get { return selectedCommissionTypeId; }
+            set 
+            { 
+                if (SetProperty(ref selectedCommissionTypeId, value))
+                    LoadCommissionMembersAsync();
+            }
+        }
+        
+        private void OnMembersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            IsChanged = true;
+        }
+
+        private bool isChanged;
+        public bool IsChanged
+        {
+            get { return isChanged; }
+            set { SetProperty(ref isChanged, value); }
+        }
+
+        private readonly DelegateCommand addMemberCommand;
+        public ICommand AddMemberCommand { get { return addMemberCommand; } }
 
         #endregion
 
-        private bool HasAllRequiredFields()
+        private void RemoveCommissionMember(CommissionMemberViewModel member)
         {
-            throw new NotImplementedException();
+            Members.Remove(member);
         }
 
-        private Task SaveCommissionMembers()
+        private async void AddMember()
         {
-            throw new NotImplementedException();
-        }  
+            var memberViewModel = commissionMemberViewModelFactory();
+            await memberViewModel.Initialize();
+            Members.Add(memberViewModel);
+        }     
 
         #region IDialogViewModel
 
@@ -98,15 +139,13 @@ namespace CommissionsModule.ViewModels
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
 
-        private async void Close(bool? validate)
+        private void Close(bool? validate)
         {
             if (validate == true)
             {
-                if (HasAllRequiredFields() && IsValid)
-                {
-                    await SaveCommissionMembers();
+                if (IsValid && Members.All(x => x.IsValid))
                     OnCloseRequested(new ReturnEventArgs<bool>(true));
-                }
+                return;
             }
             else
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
@@ -156,10 +195,8 @@ namespace CommissionsModule.ViewModels
                     return string.Empty;
                 }
                 var result = string.Empty;
-                /*if (columnName == "TalonNumber")
-                {
-                    result = string.IsNullOrEmpty(TalonNumber) ? "Укажите номер талона" : string.Empty;
-                } */               
+                if (columnName == "SelectedCommissionTypeId")
+                    result = SpecialValues.IsNewOrNonExisting(SelectedCommissionTypeId) ? "Укажите тип комиссии" : string.Empty;
                 if (string.IsNullOrEmpty(result))
                     invalidProperties.Remove(columnName);
                 else
@@ -170,9 +207,77 @@ namespace CommissionsModule.ViewModels
 
         #endregion
 
-        internal void Initialize(int commissionProtocolId)
+        internal async void Initialize()
         {
-            
+            CommissionsTypes.Clear();
+            BusyMediator.Activate("Загрузка данных...");
+            logService.Info("Loading data sources for commission types...");
+            try
+            {
+                var commissionTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionType>>)commissionService.GetCommissionTypes, DateTime.Now);
+                await Task.WhenAny(commissionTypesTask);
+                var commissionTypesQuery = commissionTypesTask.Result.Select(x => new { x.Id, x.Name, x.ShortName }).ToArray();
+                CommissionsTypes.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите тип комиссии -" });
+                CommissionsTypes.AddRange(commissionTypesQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
+                SelectedCommissionTypeId = SpecialValues.NonExistingId;
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load data sources for commission types");
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        private async void LoadCommissionMembersAsync()
+        {
+            Members.Clear();
+            if (SpecialValues.IsNewOrNonExisting(SelectedCommissionTypeId))
+                return;
+            BusyMediator.Activate("Загрузка данных...");
+            logService.Info("Loading commission members...");
+            IDisposableQueryable<CommissionMember> commissionMembersQuery = null;
+            try
+            {
+                commissionMembersQuery = commissionService.GetCommissionMembers(SelectedCommissionTypeId, DateTime.Now);
+                var commissionMembersSelectedQuery = await commissionMembersQuery
+                                                            .Select(x => new
+                                                            {
+                                                               Id = x.Id, 
+                                                               MemberTypeId = x.CommissionMemberTypeId,
+                                                               PersonStaffId = x.PersonStaffId,
+                                                               StaffId = x.StaffId
+                                                            }).ToArrayAsync();
+                foreach (var member in commissionMembersSelectedQuery)
+                {
+                    var memberViewModel = new CommissionMemberViewModel(commissionService, logService);
+                    await memberViewModel.Initialize();
+                    memberViewModel.Id = member.Id;
+                    memberViewModel.SelectedMemberTypeId = member.MemberTypeId;
+                    if (member.PersonStaffId.HasValue)
+                        memberViewModel.SelectedPersonStaffId = member.PersonStaffId.Value;
+                    else if (member.StaffId.HasValue)
+                        memberViewModel.SelectedStaffId = member.StaffId.Value;
+                    Members.Add(memberViewModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load commission members");
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (commissionMembersQuery != null)
+                    commissionMembersQuery.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Members.CollectionChanged -= OnMembersChanged;
         }
     }
 }

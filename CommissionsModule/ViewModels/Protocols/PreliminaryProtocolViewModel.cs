@@ -271,7 +271,7 @@ namespace CommissionsModule.ViewModels
             var dataloaded = false;
             try
             {
-                var commissionTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionType>>)commissionService.GetCommissionType, onDate);
+                var commissionTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionType>>)commissionService.GetCommissionTypes, onDate);
                 var commissionSourcesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionSource>>)commissionService.GetCommissionSource, onDate);
                 var commissionQuestionsTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionQuestion>>)commissionService.GetCommissionQuestions, onDate);
                 var commissionSentLPUsTask = commissionSentLPUquery.Select(x => new CommonIdName { Id = x.Id, Name = x.Name }).ToArrayAsync();

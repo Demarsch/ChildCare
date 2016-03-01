@@ -44,7 +44,7 @@ namespace CommissionsModule.Services
 
         Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
-        IEnumerable<CommissionType> GetCommissionType(object onDate);
+        IEnumerable<CommissionType> GetCommissionTypes(object onDate);
 
         IEnumerable<CommissionSource> GetCommissionSource(object onDate);
 
@@ -77,5 +77,11 @@ namespace CommissionsModule.Services
         Task<bool> RemoveTalon(int talonId);
 
         Task<bool> RemoveCommissionProtocol(int protocolId);
+
+        IDisposableQueryable<CommissionMemberType> GetCommissionMemberTypes();
+
+        IDisposableQueryable<PersonStaff> GetPersonStaffs(object onDate);
+
+        IDisposableQueryable<Staff> GetStaffs();
     }
 }

@@ -251,9 +251,8 @@ namespace CommissionsModule.Services
                 }
             }
         }
-
-
-        public IEnumerable<CommissionType> GetCommissionType(object onDate)
+        
+        public IEnumerable<CommissionType> GetCommissionTypes(object onDate)
         {
             DateTime dt = SpecialValues.MinDate;
             DateTime.TryParse(onDate.ToSafeString(), out dt);
@@ -427,6 +426,26 @@ namespace CommissionsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.CommissionTypeId == commissionTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
+        }
+
+        public IDisposableQueryable<CommissionMemberType> GetCommissionMemberTypes()
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionMemberType>(context.Set<CommissionMemberType>(), context);
+        }
+
+        public IDisposableQueryable<PersonStaff> GetPersonStaffs(object onDate)
+        {
+            DateTime dt = SpecialValues.MinDate;
+            DateTime.TryParse(onDate.ToSafeString(), out dt);
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<PersonStaff>(context.Set<PersonStaff>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime), context);
+        }
+
+        public IDisposableQueryable<Staff> GetStaffs()
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Staff>(context.Set<Staff>(), context);
         }
     }
 }
