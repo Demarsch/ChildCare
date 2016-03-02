@@ -468,16 +468,12 @@ namespace CommissionsModule.Services
                                   .ToArray();
                 foreach (var member in added)
                 {
-                    member.EndDateTime = SpecialValues.MaxDate;
                     context.Entry(member).State = EntityState.Added;
                 }
                 foreach (var member in removed)
                 {
                     if (member.CommissionDecisions.Any() || member.CommissionDecisions1.Any())
-                    {
-                        member.EndDateTime = DateTime.Now.Date.AddDays(1);
                         context.Entry(member).State = EntityState.Modified;
-                    }
                     else
                         context.Entry(member).State = EntityState.Deleted;
                 }
@@ -488,10 +484,7 @@ namespace CommissionsModule.Services
                     member.Old.PersonStaffId = member.New.PersonStaffId;
                     member.Old.StaffId = member.New.StaffId;
                     member.Old.BeginDateTime = member.New.BeginDateTime.Date;
-                    if (member.New.BeginDateTime > member.Old.EndDateTime)
-                        member.Old.EndDateTime = SpecialValues.MaxDate;
-                    else
-                        member.Old.EndDateTime = member.New.EndDateTime.Date;
+                    member.Old.EndDateTime = member.New.EndDateTime.Date;
                     context.Entry(member.Old).State = EntityState.Modified;
                 }
                 await context.SaveChangesAsync();                

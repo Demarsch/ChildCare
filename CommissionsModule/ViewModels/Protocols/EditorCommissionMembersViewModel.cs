@@ -85,9 +85,12 @@ namespace CommissionsModule.ViewModels
         {
             get { return selectedCommissionTypeId; }
             set 
-            { 
+            {
                 if (SetProperty(ref selectedCommissionTypeId, value))
+                {
+                    CanAddMember = !SpecialValues.IsNewOrNonExisting(value);
                     LoadCommissionMembersAsync();
+                }
             }
         }
 
@@ -100,6 +103,13 @@ namespace CommissionsModule.ViewModels
                 if (SetProperty(ref onDate, value))
                     LoadCommissionMembersAsync();
             }
+        }
+
+        private bool canAddMember;
+        public bool CanAddMember
+        {
+            get { return canAddMember; }
+            set { SetProperty(ref canAddMember, value); }
         }
 
         private void OnMembersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -129,8 +139,32 @@ namespace CommissionsModule.ViewModels
             var memberViewModel = commissionMemberViewModelFactory();
             await memberViewModel.Initialize();
             Members.Add(memberViewModel);
-        }     
-
+        } 
+    
+        private async void SaveCommissionMembers()
+        {
+            try
+            {
+                await commissionService.SaveCommissionMembersAsync(Members
+                                                                .Select(x => new CommissionMember
+                                                                {
+                                                                    Id = x.Id,
+                                                                    PersonStaffId = !SpecialValues.IsNewOrNonExisting(x.SelectedPersonStaffId) ? x.SelectedPersonStaffId : (int?)null,
+                                                                    StaffId = !SpecialValues.IsNewOrNonExisting(x.SelectedStaffId) ? x.SelectedStaffId : (int?)null,
+                                                                    CommissionMemberTypeId = x.SelectedMemberTypeId,
+                                                                    CommissionTypeId = SelectedCommissionTypeId,
+                                                                    BeginDateTime = x.BeginDateTime,
+                                                                    EndDateTime = x.EndDateTime,
+                                                                }).ToArray(), OnDate);
+                logService.Info("CommissionMembers changes successfully saved");
+            }
+            catch (Exception ex)
+            {
+                logService.Error("Failed to save CommissionMembers changes", ex);
+                //FailureMediator.Activate("Не удалось сохранить изменения в составе комиссии. Попробуйте еще раз, если ошибка повторится, обратитесь в службу поддержки", null, ex, true);
+            }                 
+        }
+ 
         #region IDialogViewModel
 
         public string Title
@@ -145,7 +179,7 @@ namespace CommissionsModule.ViewModels
 
         public string CancelButtonText
         {
-            get { return "Отмена"; }
+            get { return "Закрыть"; }
         }
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
@@ -155,12 +189,15 @@ namespace CommissionsModule.ViewModels
             if (validate == true)
             {
                 if (IsValid && Members.All(x => x.IsValid))
-                    OnCloseRequested(new ReturnEventArgs<bool>(true));
+                {
+                    SaveCommissionMembers();
+                    //OnCloseRequested(new ReturnEventArgs<bool>(true));
+                }
                 return;
             }
             else
                 OnCloseRequested(new ReturnEventArgs<bool>(false));
-        }             
+        }                   
 
         public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
 
@@ -237,6 +274,7 @@ namespace CommissionsModule.ViewModels
                 CommissionsTypes.AddRange(commissionTypesQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
                 SelectedCommissionTypeId = SpecialValues.NonExistingId;
                 OnDate = DateTime.Now.Date;
+                CanAddMember = false;
             }
             catch (Exception ex)
             {
@@ -279,7 +317,7 @@ namespace CommissionsModule.ViewModels
                     memberViewModel.Id = member.Id;
                     memberViewModel.SelectedMemberTypeId = member.MemberTypeId;
                     memberViewModel.BeginDateTime = member.BeginDateTime.Date;
-                    memberViewModel.EndDateTime = member.EndDateTime == SpecialValues.MaxDate ? string.Empty : " по " + member.EndDateTime.ToString("dd MMMM yyyy");
+                    memberViewModel.EndDateTime = member.EndDateTime.Date;
                     if (member.PersonStaffId.HasValue)
                         memberViewModel.SelectedPersonStaffId = member.PersonStaffId.Value;
                     else if (member.StaffId.HasValue)

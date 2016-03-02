@@ -19,6 +19,7 @@ using Core.Wpf.Mvvm;
 using Core.Misc;
 using Core.Data;
 using Core.Wpf.Misc;
+using Core.Services;
 
 namespace CommissionsModule.ViewModels
 {
@@ -30,6 +31,7 @@ namespace CommissionsModule.ViewModels
         private readonly IEventAggregator eventAggregator;
         private readonly IDialogServiceAsync dialogService;
         private readonly ILog logService;
+        private readonly ISecurityService securityService;
 
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
         private readonly Func<EditorCommissionMembersViewModel> editorCommissionMembersFactory;
@@ -40,7 +42,9 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructiors
-        public CommissionProtocolViewModel(ICommissionService commissionService, IEventAggregator eventAggregator, IDialogServiceAsync dialogService, ILog logService, PreliminaryProtocolViewModel preliminaryProtocolViewModel, CommissionСonductViewModel commissionСonductViewModel, CommissionСonclusionViewModel commissionСonclusionViewModel,
+        public CommissionProtocolViewModel(ICommissionService commissionService, IEventAggregator eventAggregator, IDialogServiceAsync dialogService, ILog logService, 
+            PreliminaryProtocolViewModel preliminaryProtocolViewModel, CommissionСonductViewModel commissionСonductViewModel, CommissionСonclusionViewModel commissionСonclusionViewModel,
+            ISecurityService securityService,
              Func<PersonSearchDialogViewModel> relativeSearchFactory, Func<EditorCommissionMembersViewModel> editorCommissionMembersFactory)
         {
             if (preliminaryProtocolViewModel == null)
@@ -75,6 +79,10 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("logService");
             }
+            if (securityService == null)
+            {
+                throw new ArgumentNullException("securityService");
+            }
             if (commissionService == null)
             {
                 throw new ArgumentNullException("commissionService");
@@ -82,6 +90,7 @@ namespace CommissionsModule.ViewModels
             this.commissionService = commissionService;
             this.logService = logService;
             this.dialogService = dialogService;
+            this.securityService = securityService;
             this.relativeSearchFactory = relativeSearchFactory;
             this.editorCommissionMembersFactory = editorCommissionMembersFactory;
             this.eventAggregator = eventAggregator;
@@ -90,7 +99,7 @@ namespace CommissionsModule.ViewModels
             CommissionСonclusionViewModel = commissionСonclusionViewModel;
             createCommissionCommand = new DelegateCommand(CreateCommission);
             saveCommissionProtocolCommand = new DelegateCommand(SaveCommissionProtocol, CanSaveCommissionProtocol);
-            editCommissionMembersCommand = new DelegateCommand(EditCommissionMembers);
+            editCommissionMembersCommand = new DelegateCommand(EditCommissionMembers, CanEditCommissionMembers);
             addCommissionConductionCommand = new DelegateCommand<bool?>(AddCommissionConduction);
             addCommissionConclusionCommand = new DelegateCommand<bool?>(AddCommissionConclusion);
 
@@ -101,6 +110,11 @@ namespace CommissionsModule.ViewModels
             NotificationMediator = new NotificationMediator();
             ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker/*,CommissionСonductViewModel.ChangeTracker, addCommissionConclusionCommand.ChangeTracker */);
             ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
+        }
+
+        private bool CanEditCommissionMembers()
+        {
+            return securityService.HasPermission(Permission.EditCommissionMembers);
         }
 
         #endregion
@@ -414,30 +428,10 @@ namespace CommissionsModule.ViewModels
             var editCommisionMembersViewModel = editorCommissionMembersFactory();
             editCommisionMembersViewModel.Initialize();
             var result = await dialogService.ShowDialogAsync(editCommisionMembersViewModel);
-            if (result == true && (editCommisionMembersViewModel.IsChanged || editCommisionMembersViewModel.Members.Any(x => x.IsChanged)))
+            /*if (result == true && (editCommisionMembersViewModel.IsChanged || editCommisionMembersViewModel.Members.Any(x => x.IsChanged)))
             {
-                try
-                {
-                    await commissionService.SaveCommissionMembersAsync(
-                                                            editCommisionMembersViewModel
-                                                            .Members.Select(x => new CommissionMember
-                                                            {
-                                                                Id = x.Id,
-                                                                PersonStaffId = !SpecialValues.IsNewOrNonExisting(x.SelectedPersonStaffId) ? x.SelectedPersonStaffId : (int?)null,
-                                                                StaffId = !SpecialValues.IsNewOrNonExisting(x.SelectedStaffId) ? x.SelectedStaffId : (int?)null,
-                                                                CommissionMemberTypeId = x.SelectedMemberTypeId,
-                                                                CommissionTypeId = editCommisionMembersViewModel.SelectedCommissionTypeId,
-                                                                BeginDateTime = x.BeginDateTime,
-                                                                EndDateTime = SpecialValues.MaxDate
-                                                            }).ToArray(), editCommisionMembersViewModel.OnDate);
-                    logService.Info("CommissionMembers changes successfully saved");
-                }
-                catch (Exception ex)
-                {
-                    logService.Error("Failed to save CommissionMembers changes", ex);
-                    FailureMediator.Activate("Не удалось сохранить изменения в составе комиссии. Попробуйте еще раз, если ошибка повторится, обратитесь в службу поддержки", null, ex, true);
-                }
-            }
+                
+            }*/
         }
 
         public void Dispose()

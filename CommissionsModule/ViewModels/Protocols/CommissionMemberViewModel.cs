@@ -87,11 +87,17 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private string endDateTime;
-        public string EndDateTime
+        private DateTime endDateTime;
+        public DateTime EndDateTime
         {
             get { return endDateTime; }
-            set { SetProperty(ref endDateTime, value); }
+            set
+            {
+                if (SetProperty(ref endDateTime, value))
+                {
+                    IsChanged = true;
+                };
+            }
         }
 
         private ObservableCollectionEx<FieldValue> memberTypes;
@@ -272,6 +278,7 @@ namespace CommissionsModule.ViewModels
                 SelectedStaffId = SpecialValues.NonExistingId;
 
                 BeginDateTime = DateTime.Now.Date;
+                EndDateTime = SpecialValues.MaxDate;
             }
             catch (Exception ex)
             {
