@@ -473,7 +473,7 @@ namespace CommissionsModule.Services
                 }
                 foreach (var member in removed)
                 {
-                    if (member.CommissionDecisions.Any())
+                    if (member.CommissionDecisions.Any() || member.CommissionDecisions1.Any())
                     {
                         member.EndDateTime = DateTime.Now.Date.AddDays(1);
                         context.Entry(member).State = EntityState.Modified;
