@@ -729,8 +729,8 @@
           <Property Name="MKB" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Comment" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="RecordContractId" Type="int" Nullable="false" />
-          <Property Name="MedicalHelpTypeId" Type="int" />
-          <Property Name="PersonAddressId" Type="int" />
+          <Property Name="MedicalHelpTypeId" Type="int" Nullable="false" />
+          <Property Name="PersonAddressId" Type="int" Nullable="false" />
           <Property Name="IsCompleted" Type="bit" />
           <Property Name="InUserId" Type="int" Nullable="false" />
           <Property Name="RemovedByUserId" Type="int" />
@@ -2301,7 +2301,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PersonTalons_MedicalHelpTypes">
-          <End Role="MedicalHelpTypes" Type="Self.MedicalHelpTypes" Multiplicity="0..1" />
+          <End Role="MedicalHelpTypes" Type="Self.MedicalHelpTypes" Multiplicity="1" />
           <End Role="PersonTalons" Type="Self.PersonTalons" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="MedicalHelpTypes">
@@ -2313,7 +2313,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PersonTalons_PersonAddresses">
-          <End Role="PersonAddresses" Type="Self.PersonAddresses" Multiplicity="0..1">
+          <End Role="PersonAddresses" Type="Self.PersonAddresses" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
           <End Role="PersonTalons" Type="Self.PersonTalons" Multiplicity="*" />
@@ -7460,7 +7460,7 @@
           <NavigationProperty Name="CommissionProtocols1" Relationship="DataLib.FK_CommissionProtocols_RemovedUsers" FromRole="User" ToRole="CommissionProtocol" />
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_CreateUsers" FromRole="User" ToRole="PersonTalon" />
           <NavigationProperty Name="PersonTalons1" Relationship="DataLib.FK_PersonTalons_RemovedUsers" FromRole="User" ToRole="PersonTalon" />
-        </EntityType>
+          </EntityType>
         <Association Name="FK_Assignments_Users_AssignUser">
           <End Type="DataLib.User" Role="User" Multiplicity="1" />
           <End Type="DataLib.Assignment" Role="Assignment" Multiplicity="*" />
@@ -8064,8 +8064,8 @@
           <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="Comment" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
           <Property Name="RecordContractId" Type="Int32" Nullable="false" />
-          <Property Name="MedicalHelpTypeId" Type="Int32" />
-          <Property Name="PersonAddressId" Type="Int32" />
+          <Property Name="MedicalHelpTypeId" Type="Int32" Nullable="false" />
+          <Property Name="PersonAddressId" Type="Int32" Nullable="false" />
           <Property Name="IsCompleted" Type="Boolean" />
           <Property Name="InUserId" Type="Int32" Nullable="false" />
           <Property Name="RemovedByUserId" Type="Int32" />
@@ -8090,7 +8090,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PersonTalons_MedicalHelpTypes">
-          <End Type="DataLib.MedicalHelpType" Role="MedicalHelpType" Multiplicity="0..1" />
+          <End Type="DataLib.MedicalHelpType" Role="MedicalHelpType" Multiplicity="1" />
           <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="MedicalHelpType">
@@ -8102,7 +8102,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PersonTalons_PersonAddresses">
-          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="0..1">
+          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
           <End Type="DataLib.PersonTalon" Role="PersonTalon" Multiplicity="*" />

@@ -447,5 +447,55 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Staff>(context.Set<Staff>(), context);
         }
+
+
+        public async Task SaveCommissionMembersAsync(CommissionMember[] commissionMembers, DateTime onDate)
+        {
+            using (var context = contextProvider.CreateNewContext())
+            {
+                if (!commissionMembers.Any()) return;
+                int commissionTypeId = commissionMembers.First().CommissionTypeId;
+                var dbMembers = context.Set<CommissionMember>().Where(x => x.CommissionTypeId == commissionTypeId && x.BeginDateTime <= onDate.Date && x.EndDateTime > onDate.Date);
+                
+                var old = dbMembers.ToDictionary(x => x.Id);
+                var @new = commissionMembers.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
+                var added = commissionMembers.Where(x => x.Id == SpecialValues.NewId).ToArray();
+                var removed = old.Where(x => !@new.ContainsKey(x.Key))
+                             .Select(removedDocument => removedDocument.Value)
+                             .ToArray();
+                var existed = @new.Where(x => old.ContainsKey(x.Key))
+                                  .Select(x => new { Old = old[x.Key], New = x.Value, IsChanged = !x.Value.Equals(old[x.Key]) })
+                                  .ToArray();
+                foreach (var member in added)
+                {
+                    member.EndDateTime = SpecialValues.MaxDate;
+                    context.Entry(member).State = EntityState.Added;
+                }
+                foreach (var member in removed)
+                {
+                    if (member.CommissionDecisions.Any())
+                    {
+                        member.EndDateTime = DateTime.Now.Date.AddDays(1);
+                        context.Entry(member).State = EntityState.Modified;
+                    }
+                    else
+                        context.Entry(member).State = EntityState.Deleted;
+                }
+                foreach (var member in existed.Where(x => x.IsChanged))
+                {
+                    member.Old.CommissionTypeId = member.New.CommissionTypeId;
+                    member.Old.CommissionMemberTypeId = member.New.CommissionMemberTypeId;
+                    member.Old.PersonStaffId = member.New.PersonStaffId;
+                    member.Old.StaffId = member.New.StaffId;
+                    member.Old.BeginDateTime = member.New.BeginDateTime.Date;
+                    if (member.New.BeginDateTime > member.Old.EndDateTime)
+                        member.Old.EndDateTime = SpecialValues.MaxDate;
+                    else
+                        member.Old.EndDateTime = member.New.EndDateTime.Date;
+                    context.Entry(member.Old).State = EntityState.Modified;
+                }
+                await context.SaveChangesAsync();                
+            }
+        }
     }
 }

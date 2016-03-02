@@ -238,12 +238,11 @@ namespace PatientInfoModule.ViewModels
             {
                 var talon = commissionService.GetTalonById(TalonId).First();
                 TalonNumber = talon.TalonNumber;
-                SelectedMedicalHelpTypeId = talon.MedicalHelpTypeId.HasValue ? talon.MedicalHelpTypeId.Value : SpecialValues.NonExistingId;
+                SelectedMedicalHelpTypeId = talon.MedicalHelpTypeId;
                 CodeMKB = talon.MKB;
                 Comment = talon.Comment;
                 IsCompleted = (talon.IsCompleted == true) ? true : false;
-                if (talon.PersonAddressId.HasValue)
-                {
+                
                     Appartment = talon.PersonAddress.Apartment;
                     Building = talon.PersonAddress.Building;
                     House = talon.PersonAddress.House;
@@ -265,7 +264,7 @@ namespace PatientInfoModule.ViewModels
                         Location = okato;
                     }
                     UserText = talon.PersonAddress.UserText;
-                }
+                
                 TalonSaved = true;
             }
             catch (Exception ex)
@@ -334,7 +333,7 @@ namespace PatientInfoModule.ViewModels
                 talon.IsCompleted = SpecialValues.IsNewOrNonExisting(talon.Id) ? (IsCompleted == false ? (bool?)null : true) : IsCompleted;
                 var talonAddress = new PersonAddress() 
                 { 
-                    Id = talon.PersonAddressId.HasValue ? talon.PersonAddressId.Value : SpecialValues.NewId,
+                    Id = talon.PersonAddressId,
                     PersonId = PersonId,
                     AddressTypeId = commissionService.GetAddressTypeByCategory(AddressTypeCategory.Talon.ToString()).First().Id,
                     OkatoId = Location.Id, 

@@ -74,6 +74,26 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref isChanged, value); }
         }
 
+        private DateTime beginDateTime;
+        public DateTime BeginDateTime
+        {
+            get { return beginDateTime; }
+            set
+            {
+                if (SetProperty(ref beginDateTime, value))
+                {
+                    IsChanged = true;
+                };
+            }
+        }
+
+        private string endDateTime;
+        public string EndDateTime
+        {
+            get { return endDateTime; }
+            set { SetProperty(ref endDateTime, value); }
+        }
+
         private ObservableCollectionEx<FieldValue> memberTypes;
         public ObservableCollectionEx<FieldValue> MemberTypes
         {
@@ -250,6 +270,8 @@ namespace CommissionsModule.ViewModels
                 Staffs.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите должность участника -" });
                 Staffs.AddRange(staffsQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
                 SelectedStaffId = SpecialValues.NonExistingId;
+
+                BeginDateTime = DateTime.Now.Date;
             }
             catch (Exception ex)
             {

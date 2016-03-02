@@ -90,7 +90,18 @@ namespace CommissionsModule.ViewModels
                     LoadCommissionMembersAsync();
             }
         }
-        
+
+        private DateTime onDate;
+        public DateTime OnDate
+        {
+            get { return onDate; }
+            set
+            {
+                if (SetProperty(ref onDate, value))
+                    LoadCommissionMembersAsync();
+            }
+        }
+
         private void OnMembersChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             IsChanged = true;
@@ -207,23 +218,29 @@ namespace CommissionsModule.ViewModels
 
         #endregion
 
-        internal async void Initialize()
+        internal void Initialize()
+        {
+            LoadCommissionTypes();
+        }
+
+        private async void LoadCommissionTypes()
         {
             CommissionsTypes.Clear();
             BusyMediator.Activate("Загрузка данных...");
-            logService.Info("Loading data sources for commission types...");
+            logService.Info("Loading commission types...");
             try
-            {
+            {                
                 var commissionTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionType>>)commissionService.GetCommissionTypes, DateTime.Now);
                 await Task.WhenAny(commissionTypesTask);
                 var commissionTypesQuery = commissionTypesTask.Result.Select(x => new { x.Id, x.Name, x.ShortName }).ToArray();
                 CommissionsTypes.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите тип комиссии -" });
                 CommissionsTypes.AddRange(commissionTypesQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
                 SelectedCommissionTypeId = SpecialValues.NonExistingId;
+                OnDate = DateTime.Now.Date;
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to load data sources for commission types");
+                logService.ErrorFormatEx(ex, "Failed to load commission types");
             }
             finally
             {
@@ -241,21 +258,28 @@ namespace CommissionsModule.ViewModels
             IDisposableQueryable<CommissionMember> commissionMembersQuery = null;
             try
             {
-                commissionMembersQuery = commissionService.GetCommissionMembers(SelectedCommissionTypeId, DateTime.Now);
+                commissionMembersQuery = commissionService.GetCommissionMembers(SelectedCommissionTypeId, OnDate);
                 var commissionMembersSelectedQuery = await commissionMembersQuery
                                                             .Select(x => new
                                                             {
                                                                Id = x.Id, 
                                                                MemberTypeId = x.CommissionMemberTypeId,
                                                                PersonStaffId = x.PersonStaffId,
-                                                               StaffId = x.StaffId
+                                                               StaffId = x.StaffId,
+                                                               BeginDateTime = x.BeginDateTime,
+                                                               EndDateTime = x.EndDateTime,
+                                                               IsChief = x.CommissionMemberType.IsChief,
+                                                               IsSecretary= x.CommissionMemberType.IsSecretary,
+                                                               IsMember = x.CommissionMemberType.IsMember,
                                                             }).ToArrayAsync();
-                foreach (var member in commissionMembersSelectedQuery)
+                foreach (var member in commissionMembersSelectedQuery.OrderByDescending(x => x.IsChief).ThenByDescending(x => x.IsSecretary).ThenByDescending(x => x.IsMember))
                 {
                     var memberViewModel = new CommissionMemberViewModel(commissionService, logService);
                     await memberViewModel.Initialize();
                     memberViewModel.Id = member.Id;
                     memberViewModel.SelectedMemberTypeId = member.MemberTypeId;
+                    memberViewModel.BeginDateTime = member.BeginDateTime.Date;
+                    memberViewModel.EndDateTime = member.EndDateTime == SpecialValues.MaxDate ? string.Empty : " по " + member.EndDateTime.ToString("dd MMMM yyyy");
                     if (member.PersonStaffId.HasValue)
                         memberViewModel.SelectedPersonStaffId = member.PersonStaffId.Value;
                     else if (member.StaffId.HasValue)
@@ -278,6 +302,6 @@ namespace CommissionsModule.ViewModels
         public void Dispose()
         {
             Members.CollectionChanged -= OnMembersChanged;
-        }
+        }       
     }
 }

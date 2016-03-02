@@ -27,8 +27,8 @@ namespace Core.Data
         public string MKB { get; set; }
         public string Comment { get; set; }
         public int RecordContractId { get; set; }
-        public Nullable<int> MedicalHelpTypeId { get; set; }
-        public Nullable<int> PersonAddressId { get; set; }
+        public int MedicalHelpTypeId { get; set; }
+        public int PersonAddressId { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
         public int InUserId { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }

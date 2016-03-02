@@ -416,7 +416,27 @@ namespace CommissionsModule.ViewModels
             var result = await dialogService.ShowDialogAsync(editCommisionMembersViewModel);
             if (result == true && (editCommisionMembersViewModel.IsChanged || editCommisionMembersViewModel.Members.Any(x => x.IsChanged)))
             {
-
+                try
+                {
+                    await commissionService.SaveCommissionMembersAsync(
+                                                            editCommisionMembersViewModel
+                                                            .Members.Select(x => new CommissionMember
+                                                            {
+                                                                Id = x.Id,
+                                                                PersonStaffId = !SpecialValues.IsNewOrNonExisting(x.SelectedPersonStaffId) ? x.SelectedPersonStaffId : (int?)null,
+                                                                StaffId = !SpecialValues.IsNewOrNonExisting(x.SelectedStaffId) ? x.SelectedStaffId : (int?)null,
+                                                                CommissionMemberTypeId = x.SelectedMemberTypeId,
+                                                                CommissionTypeId = editCommisionMembersViewModel.SelectedCommissionTypeId,
+                                                                BeginDateTime = x.BeginDateTime,
+                                                                EndDateTime = SpecialValues.MaxDate
+                                                            }).ToArray(), editCommisionMembersViewModel.OnDate);
+                    logService.Info("CommissionMembers changes successfully saved");
+                }
+                catch (Exception ex)
+                {
+                    logService.Error("Failed to save CommissionMembers changes", ex);
+                    FailureMediator.Activate("Не удалось сохранить изменения в составе комиссии. Попробуйте еще раз, если ошибка повторится, обратитесь в службу поддержки", null, ex, true);
+                }
             }
         }
 

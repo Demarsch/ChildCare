@@ -149,7 +149,7 @@ namespace PatientInfoModule.ViewModels
                         TalonDate = x.TalonDateTime,
                         HospitalisationNumber = "нет И/Б",
                         IsCompleted = x.IsCompleted,
-                        HelpType = x.MedicalHelpTypeId.HasValue ? x.MedicalHelpType.Code : string.Empty,
+                        HelpType = x.MedicalHelpType.Code,
                         CodeMKB = x.MKB,
                         Address = x.PersonAddress.UserText
                     }).ToArrayAsync();

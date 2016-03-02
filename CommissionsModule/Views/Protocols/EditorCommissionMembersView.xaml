@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
-             xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels">
+             xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
+             xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit">
     
     <DataTemplate DataType="{x:Type viewModels:EditorCommissionMembersViewModel}">
-        <StackPanel Orientation="Vertical" Width="800">
+        <StackPanel Orientation="Vertical" Width="900">
             <ToolBar OverflowMode="Never">
                 <Button Command="{Binding AddMemberCommand, Mode=OneTime}">
                     <StackPanel Orientation="Horizontal">
@@ -16,15 +17,24 @@
                                Stretch="Uniform"
                                Margin="2"
                                VerticalAlignment="Center" />
-                        <TextBlock Margin="2" VerticalAlignment="Center" Text="Добавить" />
+                        <TextBlock Margin="2" VerticalAlignment="Center" Text="Добавить участника" />
                     </StackPanel>
-                </Button>                
+                </Button>
+                
+                <TextBlock Margin="20,2,0,2" VerticalAlignment="Center" Text="Состав комиссии" />
                 <ComboBox HorizontalAlignment="Stretch" Margin="5,2,25,2" 
                       SelectedValuePath="Value" 
                       DisplayMemberPath="Field" 
                       SelectedValue="{Binding SelectedCommissionTypeId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                       ItemsSource="{Binding CommissionsTypes}"
-                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}" />
+                      Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" />
+
+                <TextBlock Text=" на " Margin="5,2" />
+                <toolkit:DateTimePicker Margin="5,2,25,2"  Watermark="Дата" Format="LongDate"
+                                    Value="{Binding OnDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                                    Validation.ErrorTemplate="{DynamicResource ValidationTemplate}"/>
+                
+                
             </ToolBar>
             
             <Grid>
@@ -45,6 +55,9 @@
                                     <ColumnDefinition SharedSizeGroup="PersonStaffs" Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition SharedSizeGroup="Staffs" Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition SharedSizeGroup="BeginDateTime" Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Button Margin="2"
                                         Padding="2"
@@ -85,6 +98,12 @@
                                           ItemsSource="{Binding Staffs}"
                                           IsEnabled="{Binding CanSelectStaff}"
                                           Validation.ErrorTemplate="{DynamicResource ValidationTemplate}" />
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="5" Text="действует до" Margin="0 2 20 2" FontStyle="Italic"/>
+
+                                <toolkit:DateTimePicker Grid.Row="0" Grid.Column="6" Margin="5 2" Watermark="Дата" Format="LongDate" Value="{Binding BeginDateTime}"/>
+
+                                <TextBlock Grid.Row="0" Grid.Column="7" Text="{Binding EndDateTime}" Margin="0 2" FontStyle="Italic"/>
 
                             </Grid>
                             <DataTemplate.Triggers>
