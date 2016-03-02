@@ -117,6 +117,9 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+
+                <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="8"/>
+                <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.ColumnSpan="8"/>
             </Grid>
         </StackPanel>
     </DataTemplate>

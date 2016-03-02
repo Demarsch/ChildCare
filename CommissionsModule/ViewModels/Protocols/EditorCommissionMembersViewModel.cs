@@ -51,6 +51,7 @@ namespace CommissionsModule.ViewModels
             this.commissionMemberViewModelFactory = commissionMemberViewModelFactory;
 
             BusyMediator = new BusyMediator();
+            FailureMediator = new FailureMediator();
             CloseCommand = new DelegateCommand<bool?>(Close);
 
             RemoveMemberCommand = new DelegateCommand<CommissionMemberViewModel>(RemoveCommissionMember);
@@ -63,6 +64,8 @@ namespace CommissionsModule.ViewModels
         #region Properties
 
         public BusyMediator BusyMediator { get; set; }
+
+        public FailureMediator FailureMediator { get; private set; }
 
         public ICommand RemoveMemberCommand { get; private set; }
 
@@ -131,7 +134,17 @@ namespace CommissionsModule.ViewModels
 
         private void RemoveCommissionMember(CommissionMemberViewModel member)
         {
-            Members.Remove(member);
+            FailureMediator.Deactivate();
+            if (!SpecialValues.IsNewOrNonExisting(member.Id))
+            { 
+                var commissionMember = commissionService.CommissionMemberById(member.Id).FirstOrDefault();
+                if (commissionMember != null && !commissionMember.CommissionDecisions.Any() && !commissionMember.CommissionDecisions1.Any())
+                    Members.Remove(member);
+                else
+                    FailureMediator.Activate("Удаление невозможно. Данный участник уже выносил решения в комиссиях или являлся инициатором комиссии. Вы можете скорректировать срок действия его полномочий.", true);
+            }
+            else
+                Members.Remove(member);            
         }
 
         private async void AddMember()
@@ -143,8 +156,11 @@ namespace CommissionsModule.ViewModels
     
         private async void SaveCommissionMembers()
         {
+            FailureMediator.Deactivate();
             try
             {
+                BusyMediator.Activate("Сохранение данных...");
+                logService.Info("Saving CommissionMembers...");
                 await commissionService.SaveCommissionMembersAsync(Members
                                                                 .Select(x => new CommissionMember
                                                                 {
@@ -156,13 +172,18 @@ namespace CommissionsModule.ViewModels
                                                                     BeginDateTime = x.BeginDateTime,
                                                                     EndDateTime = x.EndDateTime,
                                                                 }).ToArray(), OnDate);
+                LoadCommissionMembersAsync();
                 logService.Info("CommissionMembers changes successfully saved");
             }
             catch (Exception ex)
             {
                 logService.Error("Failed to save CommissionMembers changes", ex);
-                //FailureMediator.Activate("Не удалось сохранить изменения в составе комиссии. Попробуйте еще раз, если ошибка повторится, обратитесь в службу поддержки", null, ex, true);
-            }                 
+                FailureMediator.Activate("Не удалось сохранить изменения в составе комиссии. Попробуйте еще раз, если ошибка повторится, обратитесь в службу поддержки", null, ex, true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }  
         }
  
         #region IDialogViewModel

@@ -85,5 +85,7 @@ namespace CommissionsModule.Services
         IDisposableQueryable<Staff> GetStaffs();
 
         Task SaveCommissionMembersAsync(CommissionMember[] commissionMembers, DateTime commissionOnDate);
+
+        IDisposableQueryable<CommissionMember> CommissionMemberById(int id);
     }
 }

@@ -472,9 +472,7 @@ namespace CommissionsModule.Services
                 }
                 foreach (var member in removed)
                 {
-                    if (member.CommissionDecisions.Any() || member.CommissionDecisions1.Any())
-                        context.Entry(member).State = EntityState.Modified;
-                    else
+                    if (!member.CommissionDecisions.Any() && !member.CommissionDecisions1.Any()) //decisionMaker and initiator
                         context.Entry(member).State = EntityState.Deleted;
                 }
                 foreach (var member in existed.Where(x => x.IsChanged))
@@ -490,5 +488,12 @@ namespace CommissionsModule.Services
                 await context.SaveChangesAsync();                
             }
         }
+
+        public IDisposableQueryable<CommissionMember> CommissionMemberById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.Id == id), context);
+        }
+
     }
 }
