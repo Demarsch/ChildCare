@@ -989,7 +989,7 @@ namespace PatientInfoModule.ViewModels
                                                                 CurrentNationality = x.PersonNationalities.FirstOrDefault(y => y.EndDateTime == SpecialValues.MaxDate),
                                                                 CurrentIdentityDocuments = x.PersonIdentityDocuments,
                                                                 CurrentInsuranceDocuments = x.InsuranceDocuments,
-                                                                CurrentAddresses = x.PersonAddresses,
+                                                                CurrentAddresses = x.PersonAddresses.Where(y => y.AddressType.Category.IndexOf(AddressTypeCategory.Registry.ToString()) != -1),
                                                                 CurrentDisabilityDocuments = x.PersonDisabilities,
                                                                 CurrentSocialStatuses = x.PersonSocialStatuses
                                                             })
@@ -1002,6 +1002,7 @@ namespace PatientInfoModule.ViewModels
                         PhotoSource = fileService.GetImageSourceFromBinaryData(document.FileData);
                     }
                 }
+
                 currentName = result.CurrentName;
                 currentPerson = result.CurrentPerson;
                 currentHealthGroup = result.CurrentHealthGroup;
@@ -1010,7 +1011,7 @@ namespace PatientInfoModule.ViewModels
                 currentNationality = result.CurrentNationality;
                 IdentityDocuments.Model = currentIdentityDocuments = result.CurrentIdentityDocuments;
                 InsuranceDocuments.Model = currentInsuranceDocuments = result.CurrentInsuranceDocuments;
-                Addresses.Model = currentAddresses = result.CurrentAddresses;
+                Addresses.Model = currentAddresses = result.CurrentAddresses.ToArray();
                 DisabilityDocuments.Model = currentDisabilityDocuments = result.CurrentDisabilityDocuments;
                 SocialStatuses.Model = currentSocialStatuses = result.CurrentSocialStatuses;
 
