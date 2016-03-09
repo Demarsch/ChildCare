@@ -113,6 +113,8 @@
     </Compile>
     <Compile Include="Converters\BoolToCollapsedConverter.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
+    <Compile Include="Converters\AllMembersToImageConverter.cs" />
+    <Compile Include="Converters\AllMembersToTextConverter.cs" />
     <Compile Include="Converters\TalonStateToImageConverter.cs" />
     <Compile Include="Converters\CommissionStatusToImageConverter.cs" />
     <Compile Include="Converters\DateToUserFriendlyStringConverter.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="Extensions\RegionExtensions.cs" />
     <Compile Include="MarkupExtensions\Int32Extension.cs" />
     <Compile Include="Misc\BeforeSelectionChangedEventData.cs" />
+    <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />
     <Compile Include="Misc\ISuggestionsProvider.cs" />
     <Compile Include="Misc\InputHelpers\DigitsInputHelper.cs" />

@@ -99,13 +99,14 @@
     <Compile Include="ViewModels\ListCommissions\CommissionItemViewModel.cs" />
     <Compile Include="ViewModels\ListCommissions\CommissionsListViewModel.cs" />
     <Compile Include="ViewModels\CommissionEmptyViewModel.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionMemberGroupItem.cs" />
+    <Compile Include="ViewModels\Protocols\CommissionMemberStageViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionMemberViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionProtocolHeaderViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionProtocolState.cs" />
     <Compile Include="ViewModels\Protocols\CommissionProtocolViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionСonclusionViewModel.cs" />
     <Compile Include="ViewModels\Protocols\CommissionСonductViewModel.cs" />
-    <Compile Include="ViewModels\Protocols\DelegateCommand.cs" />
     <Compile Include="ViewModels\Protocols\EditorCommissionMembersViewModel.cs" />
     <Compile Include="ViewModels\Protocols\PreliminaryProtocolViewModel.cs" />
     <Compile Include="Views\Decisions\CommissionDecisionEditorView.xaml.cs">

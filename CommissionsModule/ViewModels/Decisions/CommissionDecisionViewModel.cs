@@ -48,17 +48,24 @@ namespace CommissionsModule.ViewModels
             this.securityService = securityService;
             this.commissionService = commissionService;
             this.logService = logService;
-
             BusyMediator = new BusyMediator();
         }
+
         #endregion
 
         #region Properties
-        private int commissionDecisionId = 0;
+        private int commissionDecisionId = SpecialValues.NonExistingId;
         public int CommissionDecisionId
         {
             get { return commissionDecisionId; }
             set { SetProperty(ref commissionDecisionId, value); }
+        }
+
+        private int commissionMemberId = SpecialValues.NonExistingId;
+        public int CommissionMemberId
+        {
+            get { return commissionMemberId; }
+            set { SetProperty(ref commissionMemberId, value); }
         }
 
         private int stage = 0;
@@ -68,20 +75,28 @@ namespace CommissionsModule.ViewModels
             set
             {
                 SetProperty(ref stage, value);
-                OnPropertyChanged(() => StageText);
+                if (CommissionMemberGroupItem != null)
+                    CommissionMemberGroupItem.Stage = stage;
             }
-        }
-
-        public string StageText
-        {
-            get { return Stage + "-й этап"; }
         }
 
         private bool needAllMembers;
         public bool NeedAllMembers
         {
             get { return needAllMembers; }
-            set { SetProperty(ref needAllMembers, value); }
+            set
+            {
+                SetProperty(ref needAllMembers, value);
+                if (CommissionMemberGroupItem != null)
+                    CommissionMemberGroupItem.NeedAllMembers = needAllMembers;
+            }
+        }
+
+        private CommissionMemberGroupItem commissionMemberGroupItem;
+        public CommissionMemberGroupItem CommissionMemberGroupItem
+        {
+            get { return commissionMemberGroupItem; }
+            set { SetProperty(ref commissionMemberGroupItem, value); }
         }
 
         private DateTime? decisionDate;
@@ -127,9 +142,75 @@ namespace CommissionsModule.ViewModels
 
         #region Methods
 
+        public void EraseProperties()
+        {
+            CommissionMemberGroupItem = new CommissionMemberGroupItem();
+            DecisionDate = DateTime.Now;
+            Stage = 0;
+            NeedAllMembers = false;
+            MemberName = string.Empty;
+            Decision = string.Empty;
+            ColorType = "#E5E5E5";
+            Comment = string.Empty;
+        }
+
+        public async Task InitializeNew(int commissionMemberId, int stage, bool canDeleteMember)
+        {
+            var commMemberId = commissionDecisionId.ToInt();
+            CanDeleteMember = canDeleteMember && (canDeleteMember || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision));
+            if (commMemberId < 1)
+                return;
+
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
+            CommissionMemberId = commMemberId;
+            var loadingIsCompleted = false;
+            currentOperationToken = new CancellationTokenSource();
+            var token = currentOperationToken.Token;
+            BusyMediator.Activate("Загрузка нового решения протокола комиссии...");
+            logService.InfoFormat("Loading сommission member with id={0} and stage={1}...", commMemberId, stage);
+            IDisposableQueryable<CommissionMember> commissionDecisionsQuery = null;
+            try
+            {
+                commissionDecisionsQuery = commissionService.GetCommissionMember(commMemberId);
+                var commissionDecision = await commissionDecisionsQuery.Select(x => new
+                {
+                    MemberName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.ShortName + " - " + x.PersonStaff.Person.ShortName : x.StaffId.HasValue ? x.Staff.ShortName : string.Empty
+                }).FirstOrDefaultAsync(token);
+                MemberName = commissionDecision.MemberName;
+                Stage = stage;
+                CommissionDecisionId = SpecialValues.NewId;
+                loadingIsCompleted = true;
+            }
+            catch (OperationCanceledException)
+            {
+                //Do nothing. Cancelled operation means that user selected different patient before previous one was loaded
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to load сommissionmember with id={0} and stage={1}...", commMemberId, stage);
+                loadingIsCompleted = true;
+            }
+            finally
+            {
+                if (loadingIsCompleted)
+                {
+                    BusyMediator.Deactivate();
+                }
+                if (commissionDecisionsQuery != null)
+                {
+                    commissionDecisionsQuery.Dispose();
+                }
+            }
+        }
+
         public async Task Initialize(int? commissionDecisionId, bool canDeleteMember)
         {
             var commDecisionId = commissionDecisionId.ToInt();
+            EraseProperties();
             CanDeleteMember = canDeleteMember && (canDeleteMember || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision));
             if (commDecisionId < 1)
                 return;
@@ -190,7 +271,6 @@ namespace CommissionsModule.ViewModels
                 }
             }
         }
-
         #endregion
     }
 }

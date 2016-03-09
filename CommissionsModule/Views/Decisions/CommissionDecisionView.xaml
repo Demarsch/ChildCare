@@ -28,7 +28,7 @@
                                 Visibility="{Binding CanDeleteMember, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                             <Button.ContentTemplate>
                                 <DataTemplate>
-                                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="24" Width="24"/>
+                                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="20" Width="20"/>
                                 </DataTemplate>
                             </Button.ContentTemplate>
                         </Button>

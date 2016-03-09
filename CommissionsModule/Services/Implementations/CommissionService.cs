@@ -251,7 +251,7 @@ namespace CommissionsModule.Services
                 }
             }
         }
-        
+
         public IEnumerable<CommissionType> GetCommissionTypes(object onDate)
         {
             DateTime dt = SpecialValues.MinDate;
@@ -428,6 +428,12 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.CommissionTypeId == commissionTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime), context);
         }
 
+        public IDisposableQueryable<CommissionMember> GetCommissionMember(int commissionMemberId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.CommissionTypeId == commissionMemberId), context);
+        }
+
         public IDisposableQueryable<CommissionMemberType> GetCommissionMemberTypes()
         {
             var context = contextProvider.CreateNewContext();
@@ -456,7 +462,7 @@ namespace CommissionsModule.Services
                 if (!commissionMembers.Any()) return;
                 int commissionTypeId = commissionMembers.First().CommissionTypeId;
                 var dbMembers = context.Set<CommissionMember>().Where(x => x.CommissionTypeId == commissionTypeId && x.BeginDateTime <= onDate.Date && x.EndDateTime > onDate.Date);
-                
+
                 var old = dbMembers.ToDictionary(x => x.Id);
                 var @new = commissionMembers.Where(x => x.Id != SpecialValues.NewId).ToDictionary(x => x.Id);
                 var added = commissionMembers.Where(x => x.Id == SpecialValues.NewId).ToArray();
@@ -485,7 +491,7 @@ namespace CommissionsModule.Services
                     member.Old.EndDateTime = member.New.EndDateTime.Date;
                     context.Entry(member.Old).State = EntityState.Modified;
                 }
-                await context.SaveChangesAsync();                
+                await context.SaveChangesAsync();
             }
         }
 

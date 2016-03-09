@@ -10,18 +10,18 @@
             <Grid.Resources>
                 <CollectionViewSource x:Key="DecisionStageGrouped" Source="{Binding CurrentMembers}">
                     <CollectionViewSource.GroupDescriptions>
-                        <PropertyGroupDescription PropertyName="StageText" />
+                        <PropertyGroupDescription PropertyName="CommissionMemberGroupItem" />
                     </CollectionViewSource.GroupDescriptions>
                 </CollectionViewSource>
             </Grid.Resources>
-            <Grid>
+            <Grid x:Name="AvailableMembersContainer">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
 
-                <ListView Grid.Column="0" ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" HorizontalContentAlignment="Stretch" x:Name="AvailableMembersContainer" />
-                <ListView Grid.Column="1" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}" HorizontalContentAlignment="Stretch">
+                <ListView Grid.Column="0" ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" HorizontalContentAlignment="Stretch"/>
+                <ListView x:Name="DecissionsList" Grid.Column="1" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}" HorizontalContentAlignment="Stretch">
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.ContainerStyle>
@@ -32,10 +32,29 @@
                                             <ControlTemplate TargetType="{x:Type GroupItem}">
                                                 <Expander IsExpanded="True" BorderBrush="#FFB0B0B3" BorderThickness="0,0,0,1">
                                                     <Expander.Header>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock FontWeight="Bold" Text="{Binding Path=Name}"/>
-                                                            <ToggleButton Content="123" HorizontalAlignment="Right"/>
-                                                        </StackPanel>
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                                                <TextBlock FontWeight="Bold" Text="{Binding Name.StageText}"/>
+
+                                                                <ToggleButton Background="Transparent" IsChecked="{Binding Name.NeedAllMembers}" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.ChangeNeedAllMembersCommand}" CommandParameter="{Binding Name}">
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                                                                        <TextBlock Text="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToTextConverter.Instance}}" />
+                                                                        <Image Source="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToImageConverter.Instance}}" Width="24" Height="24" Stretch="Fill" />
+                                                                    </StackPanel>
+                                                                </ToggleButton>
+                                                            </StackPanel>
+                                                            <Button Grid.Column="1" Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.RemoveStageCommand}" CommandParameter="{Binding Name}">
+                                                                <Button.ContentTemplate>
+                                                                    <DataTemplate>
+                                                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="20" Width="20"/>
+                                                                    </DataTemplate>
+                                                                </Button.ContentTemplate>
+                                                            </Button>
+                                                        </Grid>
                                                     </Expander.Header>
                                                     <Expander.Content>
                                                         <ItemsPresenter />

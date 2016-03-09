@@ -21,6 +21,7 @@ using Core.Misc;
 using CommissionsModule.Services;
 using System.Windows.Input;
 using System.Collections.Specialized;
+using CommissionsModule.ViewModels.Protocols;
 
 namespace CommissionsModule.ViewModels
 {
@@ -42,21 +43,28 @@ namespace CommissionsModule.ViewModels
             this.logService = logService;
             this.commissionService = commissionService;
 
+            ContextMenuItems = new ObservableCollectionEx<CommissionMemberStageViewModel>();
             BusyMediator = new BusyMediator();
             IsChanged = true;
         }
 
-        public CommissionMemberViewModel()
-        {
-
-        }
+        #region Properties
 
         public int Id { get; set; }
         public string StaffName { get; set; }
         public string PersonName { get; set; }
         public string MemberTypeName { get; set; }
 
-        #region Properties
+
+        public ObservableCollectionEx<CommissionMemberStageViewModel> contextMenuItems;
+        public ObservableCollectionEx<CommissionMemberStageViewModel> ContextMenuItems
+        {
+            get { return contextMenuItems; }
+            private set
+            {
+                SetProperty(ref contextMenuItems, value);
+            }
+        }
 
         public BusyMediator BusyMediator { get; set; }
 
@@ -109,7 +117,7 @@ namespace CommissionsModule.ViewModels
         public int SelectedMemberTypeId
         {
             get { return selectedMemberTypeId; }
-            set 
+            set
             {
                 if (SetProperty(ref selectedMemberTypeId, value))
                 {
@@ -134,8 +142,8 @@ namespace CommissionsModule.ViewModels
         public int SelectedPersonStaffId
         {
             get { return selectedPersonStaffId; }
-            set 
-            { 
+            set
+            {
                 if (SetProperty(ref selectedPersonStaffId, value))
                 {
                     SelectedStaffId = SpecialValues.NonExistingId;
@@ -233,7 +241,7 @@ namespace CommissionsModule.ViewModels
                     invalidProperties.Add(columnName);
                 return result;
             }
-        }        
+        }
 
         #endregion
 
@@ -282,6 +290,16 @@ namespace CommissionsModule.ViewModels
                 BusyMediator.Deactivate();
             }
         }
-            
+
+        public void CommissionStagesChanged(int[] stages)
+        {
+            ContextMenuItems.Clear();
+            ContextMenuItems.AddRange(stages.Select(x => new CommissionMemberStageViewModel { Stage = x, CommissionMemberId = Id }));
+            var maxStage = 0;
+            if (ContextMenuItems.Any())
+                maxStage = ContextMenuItems.Max(x => x.Stage);
+            var nextStage = ++maxStage;
+            ContextMenuItems.Add(new CommissionMemberStageViewModel { Stage = nextStage, CommissionMemberId = Id });
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructiors
-        public CommissionProtocolViewModel(ICommissionService commissionService, IEventAggregator eventAggregator, IDialogServiceAsync dialogService, ILog logService, 
+        public CommissionProtocolViewModel(ICommissionService commissionService, IEventAggregator eventAggregator, IDialogServiceAsync dialogService, ILog logService,
             PreliminaryProtocolViewModel preliminaryProtocolViewModel, CommissionСonductViewModel commissionСonductViewModel, CommissionСonclusionViewModel commissionСonclusionViewModel,
             ISecurityService securityService,
              Func<PersonSearchDialogViewModel> relativeSearchFactory, Func<EditorCommissionMembersViewModel> editorCommissionMembersFactory)
@@ -100,6 +100,7 @@ namespace CommissionsModule.ViewModels
             createCommissionCommand = new DelegateCommand(CreateCommission);
             saveCommissionProtocolCommand = new DelegateCommand(SaveCommissionProtocol, CanSaveCommissionProtocol);
             editCommissionMembersCommand = new DelegateCommand(EditCommissionMembers, CanEditCommissionMembers);
+           
             addCommissionConductionCommand = new DelegateCommand<bool?>(AddCommissionConduction);
             addCommissionConclusionCommand = new DelegateCommand<bool?>(AddCommissionConclusion);
 
@@ -110,11 +111,6 @@ namespace CommissionsModule.ViewModels
             NotificationMediator = new NotificationMediator();
             ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker/*,CommissionСonductViewModel.ChangeTracker, addCommissionConclusionCommand.ChangeTracker */);
             ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
-        }
-
-        private bool CanEditCommissionMembers()
-        {
-            return securityService.HasPermission(Permission.EditCommissionMembers);
         }
 
         #endregion
@@ -241,9 +237,17 @@ namespace CommissionsModule.ViewModels
 
         private DelegateCommand editCommissionMembersCommand;
         public ICommand EditCommissionMembersCommand { get { return editCommissionMembersCommand; } }
+
         #endregion
 
-        #region Methods              
+        #region Methods
+
+      
+
+        private bool CanEditCommissionMembers()
+        {
+            return securityService.HasPermission(Permission.EditCommissionMembers);
+        }
 
         private void AddCommissionConduction(bool? select)
         {
@@ -424,7 +428,7 @@ namespace CommissionsModule.ViewModels
         }
 
         private async void EditCommissionMembers()
-        {            
+        {
             var editCommisionMembersViewModel = editorCommissionMembersFactory();
             editCommisionMembersViewModel.Initialize();
             var result = await dialogService.ShowDialogAsync(editCommisionMembersViewModel);

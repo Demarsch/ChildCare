@@ -3,6 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
                     xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                    xmlns:misc="clr-namespace:Core.Wpf.Misc;assembly=Core.Wpf"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -18,12 +19,55 @@
                 <TextBlock Text="{Binding PersonName}" FontWeight="Bold" Margin="2, 1, 2, 1"/>
             </StackPanel>
             <StackPanel x:Name="btns" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{Binding ElementName=grid, Path=IsMouseOver, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                <Button Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding ElementName=AvailableMembersContainer, Path=DataContext.AddSelectedAvailableMemberCommand}" CommandParameter="{Binding}">
+                <Button Background="Transparent" BorderThickness="0" VerticalAlignment="Center">
+                    <Button.Resources>
+                        <misc:BindingProxy x:Key="proxy" Data="{Binding}" />
+                    </Button.Resources>
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <EventTrigger RoutedEvent="Click">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                                    <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                                                </BooleanAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </Style.Triggers>
+                            <!--<Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu ItemsSource="{Binding ContextMenuItems}">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Command" Value="{Binding  ElementName=AvailableMembersContainer, Path=DataContext.AddSelectedAvailableMemberCommand}"/>
+                                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>-->
+                        </Style>
+                    </Button.Style>
                     <Button.ContentTemplate>
+                        
                         <DataTemplate>
                             <Image Source="pack://application:,,,/Core;Component/Resources/Images/arrowRight24x24.png"/>
                         </DataTemplate>
                     </Button.ContentTemplate>
+                    <Button.ContextMenu>
+                        <ContextMenu ItemsSource="{Binding ContextMenuItems}">
+                            <ContextMenu.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <Setter Property="CommandParameter" Value="{Binding}"/>
+                                    <Setter Property="Command" Value="{Binding Path=DataContext.AddSelectedAvailableMemberCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=ListView}}"/>
+                                </Style>
+                            </ContextMenu.ItemContainerStyle>
+                        </ContextMenu>
+                    </Button.ContextMenu>
                 </Button>
             </StackPanel>
         </Grid>

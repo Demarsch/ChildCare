@@ -17,10 +17,11 @@ using Prism.Commands;
 using Core.Misc;
 using System.Windows.Input;
 using Core.Services;
+using CommissionsModule.ViewModels.Protocols;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionСonductViewModel : BindableBase
+    public class CommissionСonductViewModel : BindableBase, IDisposable
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -28,6 +29,7 @@ namespace CommissionsModule.ViewModels
         private readonly ILog logService;
 
         private readonly Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory;
+        private readonly Func<CommissionMemberViewModel> commissionMemberViewModelFactory;
 
         private readonly CommandWrapper reInitializeCommandWrapper;
 
@@ -36,7 +38,8 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionСonductViewModel(ICommissionService commissionService, ISecurityService securityService, ILog logService, Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory)
+        public CommissionСonductViewModel(ICommissionService commissionService, ISecurityService securityService, ILog logService,
+            Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory, Func<CommissionMemberViewModel> commissionMemberViewModelFactory)
         {
             if (commissionService == null)
             {
@@ -50,18 +53,26 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("commissionDecisionViewModelFactory");
             }
+            if (commissionMemberViewModelFactory == null)
+            {
+                throw new ArgumentNullException("commissionMemberViewModelFactory");
+            }
             if (securityService == null)
             {
                 throw new ArgumentNullException("securityService");
             }
             this.securityService = securityService;
             this.commissionDecisionViewModelFactory = commissionDecisionViewModelFactory;
+            this.commissionMemberViewModelFactory = commissionMemberViewModelFactory;
             this.commissionService = commissionService;
             this.logService = logService;
             AvailableMembers = new ObservableCollectionEx<CommissionMemberViewModel>();
             CurrentMembers = new ObservableCollectionEx<CommissionDecisionViewModel>();
-            addSelectedAvailableMemberCommand = new DelegateCommand<CommissionMemberViewModel>(AddSelectedAvailableMember);
+
+            addSelectedAvailableMemberCommand = new DelegateCommand<CommissionMemberStageViewModel>(AddSelectedAvailableMember);
             removeCurrentMemberCommand = new DelegateCommand<CommissionDecisionViewModel>(RemoveCurrentMember);
+            changeNeedAllMembersCommand = new DelegateCommand<CommissionMemberGroupItem>(ChangeNeedAllMembers);
+            removeStageCommand = new DelegateCommand<CommissionMemberGroupItem>(RemoveStage);
 
             reInitializeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => Initialize(CommissionProtocolId)), CommandName = "Повторить" };
 
@@ -87,21 +98,25 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref selectedCurrentMember, value); }
         }
 
-        public ObservableCollectionEx<CommissionMemberViewModel> AvailableMembers { get; set; }
+
         public ObservableCollectionEx<CommissionDecisionViewModel> CurrentMembers { get; set; }
+        public ObservableCollectionEx<CommissionMemberViewModel> AvailableMembers { get; set; }
 
         public BusyMediator BusyMediator { get; private set; }
         public FailureMediator FailureMediator { get; private set; }
 
         public int CommissionProtocolId { get; private set; }
+        public int PersonId { get; private set; }
         #endregion
 
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
+            CurrentMembers.CollectionChanged -= CurrentMembers_CollectionChanged;
             AvailableMembers.Clear();
             CurrentMembers.Clear();
             CommissionProtocolId = commissionProtocolId;
+            PersonId = personId;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -116,7 +131,6 @@ namespace CommissionsModule.ViewModels
             var commissionDecisionsQuery = commissionService.GetCommissionDecisions(commissionProtocolId);
             IDisposableQueryable<CommissionMember> commissionMembersQuery = null;
             var curDate = DateTime.Now;
-            var persId = personId;
             try
             {
                 var commissionProtocolData = await commissionProtocolQuery.Select(x => new
@@ -127,18 +141,26 @@ namespace CommissionsModule.ViewModels
                 }).FirstOrDefaultAsync(token);
                 if (commissionProtocolData != null)
                 {
-                    persId = commissionProtocolData.PersonId;
+                    PersonId = commissionProtocolData.PersonId;
                     curDate = commissionProtocolData.IncomeDateTime;
 
                     commissionMembersQuery = commissionService.GetCommissionMembers(commissionProtocolData.CommissionTypeId, curDate);
-                    var commissionMembers = await commissionMembersQuery.Select(x => new CommissionMemberViewModel()
+                    var commissionMembers = await commissionMembersQuery.Select(x => new
                     {
                         Id = x.Id,
                         MemberTypeName = x.CommissionMemberType.Name,
                         PersonName = x.PersonStaffId.HasValue ? x.PersonStaff.Person.ShortName : string.Empty,
                         StaffName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.Name : x.StaffId.HasValue ? x.Staff.Name : string.Empty
                     }).ToArrayAsync();
-                    AvailableMembers.AddRange(commissionMembers);
+                    foreach (var commissionMember in commissionMembers)
+                    {
+                        var commissionMemberViewModel = commissionMemberViewModelFactory();
+                        commissionMemberViewModel.Id = commissionMember.Id;
+                        commissionMemberViewModel.MemberTypeName = commissionMember.MemberTypeName;
+                        commissionMemberViewModel.PersonName = commissionMember.PersonName;
+                        commissionMemberViewModel.StaffName = commissionMember.StaffName;
+                        AvailableMembers.Add(commissionMemberViewModel);
+                    }
                 }
                 var commissionDecisionIds = await commissionDecisionsQuery.Select(x => x.Id).ToArrayAsync(token);
                 List<Task> decisionsTask = new List<Task>();
@@ -150,6 +172,8 @@ namespace CommissionsModule.ViewModels
                     CurrentMembers.Add(commissionDecisionViewModel);
                 }
                 await Task.WhenAll(decisionsTask);
+                SetStagesMenuItems();
+                CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -175,31 +199,82 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        void CurrentMembers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            SetStagesMenuItems();
+        }
+
+        private void SetStagesMenuItems()
+        {
+            var stages = CurrentMembers.Select(x => x.Stage).Distinct().OrderBy(x => x).ToArray();
+            foreach (var availableMember in AvailableMembers)
+            {
+                availableMember.CommissionStagesChanged(stages);
+            }
+        }
+
+        public void Dispose()
+        {
+            CurrentMembers.CollectionChanged -= CurrentMembers_CollectionChanged;
+        }
+
         public void GetСonductionCommissionProtocolData(ref CommissionProtocol commissionProtocol)
         {
             throw new NotImplementedException();
         }
 
-        private async void AddSelectedAvailableMember(CommissionMemberViewModel selectedCommissionMemberViewModel)
+        private async void AddSelectedAvailableMember(CommissionMemberStageViewModel selectedCommissionMemberStageViewModel)
         {
             var commissionDecisionViewModel = commissionDecisionViewModelFactory();
-            await commissionDecisionViewModel.Initialize(SpecialValues.NewId, true);
+            await commissionDecisionViewModel.InitializeNew(selectedCommissionMemberStageViewModel.CommissionMemberId, selectedCommissionMemberStageViewModel.Stage, true);
             CurrentMembers.Add(commissionDecisionViewModel);
         }
 
         private void RemoveCurrentMember(CommissionDecisionViewModel commissionDecisionViewModel)
         {
+            var curStage = commissionDecisionViewModel.Stage;
             CurrentMembers.Remove(commissionDecisionViewModel);
+            if (!CurrentMembers.Any(x => x.Stage == curStage))
+                ChangeStageInt(curStage);
+            SetStagesMenuItems();
+        }
+
+        private void ChangeStageInt(int curStage)
+        {
+            foreach (var curMembers in CurrentMembers.Where(x => x.Stage > curStage))
+            {
+                curMembers.Stage--;
+            }
+        }
+
+        private void ChangeNeedAllMembers(CommissionMemberGroupItem commissionMemberGroupItem)
+        {
+            foreach (var currentMember in CurrentMembers.Where(x => x.Stage == commissionMemberGroupItem.Stage))
+                currentMember.NeedAllMembers = commissionMemberGroupItem.NeedAllMembers;
+        }
+
+        private void RemoveStage(CommissionMemberGroupItem commissionMemberGroupItem)
+        {
+            var curStage = commissionMemberGroupItem.Stage;
+            CurrentMembers.RemoveWhere(x => x.Stage == commissionMemberGroupItem.Stage);
+            ChangeStageInt(curStage);
+            SetStagesMenuItems();
         }
         #endregion
 
         #region Commands
 
-        private DelegateCommand<CommissionMemberViewModel> addSelectedAvailableMemberCommand;
+        private DelegateCommand<CommissionMemberStageViewModel> addSelectedAvailableMemberCommand;
         public ICommand AddSelectedAvailableMemberCommand { get { return addSelectedAvailableMemberCommand; } }
 
         private DelegateCommand<CommissionDecisionViewModel> removeCurrentMemberCommand;
         public ICommand RemoveCurrentMemberCommand { get { return removeCurrentMemberCommand; } }
+
+        private DelegateCommand<CommissionMemberGroupItem> changeNeedAllMembersCommand;
+        public ICommand ChangeNeedAllMembersCommand { get { return changeNeedAllMembersCommand; } }
+
+        private DelegateCommand<CommissionMemberGroupItem> removeStageCommand;
+        public ICommand RemoveStageCommand { get { return removeStageCommand; } }
         #endregion
     }
 }
