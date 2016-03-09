@@ -47,14 +47,6 @@ namespace Core.Data
         public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
-    	}
-        [NonSerialized]
     	protected CommissionSource commissionSource;
     
     	public virtual CommissionSource CommissionSource
@@ -133,6 +125,14 @@ namespace Core.Data
     	{
      		get { return personTalon; }
      		set { personTalon = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
     	}
     
     	public object Clone()

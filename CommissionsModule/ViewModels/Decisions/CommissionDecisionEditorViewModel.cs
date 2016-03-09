@@ -175,7 +175,7 @@ namespace CommissionsModule.ViewModels
                         PersonStaffId = x.CommissionMember.PersonStaffId ?? 0,
                         StaffId = x.CommissionMember.StaffId ?? 0,
                         CommissionProtocolIsCompleted = x.CommissionProtocol.IsCompleted,
-                        CommissionDecisions = x.CommissionProtocol.CommissionDecisions.Select(y => new { y.CommissionStage, y.NeedAlllMemmbersInStage, HasDecision = y.DecisionId.HasValue })
+                        CommissionDecisions = x.CommissionProtocol.CommissionDecisions.Select(y => new { y.CommissionStage, y.NeedAllMembersInStage, HasDecision = y.DecisionId.HasValue })
                     })
                     .FirstOrDefaultAsync(token);
                 var decisionsList = await Task.Factory.StartNew<IEnumerable<Decision>>(commissionService.GetDecisions, new int[] { commissionDecision.CommissionQuestionId, commissionDecision.CommissionMemberTypeId });
@@ -190,7 +190,7 @@ namespace CommissionsModule.ViewModels
                 var currentUserStaffIds = currentUserStaffIdsTask.Result;
                 int curStage = -1;
                 var rStage = commissionDecision.CommissionDecisions.GroupBy(x => x.CommissionStage).OrderBy(x => x.Key)
-                     .FirstOrDefault(x => x.Any(y => y.NeedAlllMemmbersInStage) ? !x.All(y => y.HasDecision) : !x.Any(y => y.HasDecision));
+                     .FirstOrDefault(x => x.Any(y => y.NeedAllMembersInStage) ? !x.All(y => y.HasDecision) : !x.Any(y => y.HasDecision));
                 if (rStage != null)
                     curStage = rStage.Key;
                 else

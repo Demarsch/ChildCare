@@ -18,9 +18,9 @@ namespace Core.Data
         public Decision()
         {
             this.Decisions1 = new HashSet<Decision>();
-            this.CommissionDecisions = new HashSet<CommissionDecision>();
             this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
+            this.CommissionDecisions = new HashSet<CommissionDecision>();
         }
     
         public int Id { get; set; }
@@ -56,14 +56,6 @@ namespace Core.Data
      		set { colorsSetting = value; }
     	}
         [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
     
     	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
@@ -78,6 +70,14 @@ namespace Core.Data
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
     	}
     
     	public object Clone()

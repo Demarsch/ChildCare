@@ -226,7 +226,7 @@ namespace CommissionsModule.ViewModels
         private async void AddSelectedAvailableMember(CommissionMemberStageViewModel selectedCommissionMemberStageViewModel)
         {
             var commissionDecisionViewModel = commissionDecisionViewModelFactory();
-            await commissionDecisionViewModel.InitializeNew(selectedCommissionMemberStageViewModel.CommissionMemberId, selectedCommissionMemberStageViewModel.Stage, true);
+            await commissionDecisionViewModel.InitializeNew(selectedCommissionMemberStageViewModel.CommissionMemberId, selectedCommissionMemberStageViewModel.Stage, CommissionProtocolId, true);
             CurrentMembers.Add(commissionDecisionViewModel);
         }
 

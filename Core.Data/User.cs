@@ -25,11 +25,11 @@ namespace Core.Data
             this.UserMessages1 = new HashSet<UserMessage>();
             this.UserPermissionGroups = new HashSet<UserPermissionGroup>();
             this.Visits = new HashSet<Visit>();
-            this.CommissionDecisions = new HashSet<CommissionDecision>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.CommissionProtocols1 = new HashSet<CommissionProtocol>();
             this.PersonTalons = new HashSet<PersonTalon>();
             this.PersonTalons1 = new HashSet<PersonTalon>();
+            this.CommissionDecisions = new HashSet<CommissionDecision>();
         }
     
         public int Id { get; set; }
@@ -113,14 +113,6 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
@@ -151,6 +143,14 @@ namespace Core.Data
     	{
      		get { return personTalons1; }
      		set { personTalons1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
     	}
     
     	public object Clone()

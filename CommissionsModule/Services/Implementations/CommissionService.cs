@@ -431,7 +431,7 @@ namespace CommissionsModule.Services
         public IDisposableQueryable<CommissionMember> GetCommissionMember(int commissionMemberId)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.CommissionTypeId == commissionMemberId), context);
+            return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.Id == commissionMemberId), context);
         }
 
         public IDisposableQueryable<CommissionMemberType> GetCommissionMemberTypes()

@@ -23,7 +23,7 @@ namespace Core.Data
         public Nullable<System.DateTime> ToDoDateTime { get; set; }
         public string Comment { get; set; }
         public int CommissionStage { get; set; }
-        public bool NeedAlllMemmbersInStage { get; set; }
+        public bool NeedAllMembersInStage { get; set; }
         public int InitiatorMemberId { get; set; }
         public Nullable<System.DateTime> DecisionDateTime { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
@@ -45,6 +45,14 @@ namespace Core.Data
      		set { commissionMember1 = value; }
     	}
         [NonSerialized]
+    	protected CommissionProtocol commissionProtocol;
+    
+    	public virtual CommissionProtocol CommissionProtocol
+    	{
+     		get { return commissionProtocol; }
+     		set { commissionProtocol = value; }
+    	}
+        [NonSerialized]
     	protected Decision decision;
     
     	public virtual Decision Decision
@@ -59,14 +67,6 @@ namespace Core.Data
     	{
      		get { return user; }
      		set { user = value; }
-    	}
-        [NonSerialized]
-    	protected CommissionProtocol commissionProtocol;
-    
-    	public virtual CommissionProtocol CommissionProtocol
-    	{
-     		get { return commissionProtocol; }
-     		set { commissionProtocol = value; }
     	}
     
     	public object Clone()
