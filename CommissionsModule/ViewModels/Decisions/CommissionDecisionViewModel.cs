@@ -28,6 +28,10 @@ namespace CommissionsModule.ViewModels
         private CommandWrapper reloadInitialzeCommandWrapper;
 
         private CancellationTokenSource currentOperationToken;
+
+        private int commissionProtocolId = SpecialValues.NonExistingId;
+
+        private string emptyDecisionColor = "#E5E5E5";
         #endregion
 
         #region Constructors
@@ -144,19 +148,24 @@ namespace CommissionsModule.ViewModels
 
         public void EraseProperties()
         {
-            CommissionMemberGroupItem = new CommissionMemberGroupItem();
-            DecisionDate = DateTime.Now;
+
+            CommissionDecisionId = SpecialValues.NonExistingId;
+            CommissionMemberId = SpecialValues.NonExistingId;
+            commissionProtocolId = SpecialValues.NonExistingId;
+            DecisionDate = null;
             Stage = 0;
             NeedAllMembers = false;
             MemberName = string.Empty;
             Decision = string.Empty;
-            ColorType = "#E5E5E5";
+            ColorType = emptyDecisionColor;
             Comment = string.Empty;
+            CommissionMemberGroupItem = new CommissionMemberGroupItem();
         }
 
-        public async Task InitializeNew(int commissionMemberId, int stage, bool canDeleteMember)
+        public async Task InitializeNew(int commissionMemberId, int stage, int commissionProtocolId, bool canDeleteMember)
         {
-            var commMemberId = commissionDecisionId.ToInt();
+            EraseProperties();
+            var commMemberId = commissionMemberId.ToInt();
             CanDeleteMember = canDeleteMember && (canDeleteMember || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision));
             if (commMemberId < 1)
                 return;
@@ -167,20 +176,24 @@ namespace CommissionsModule.ViewModels
                 currentOperationToken.Dispose();
             }
             CommissionMemberId = commMemberId;
+            this.commissionProtocolId = commissionProtocolId;
             var loadingIsCompleted = false;
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
             BusyMediator.Activate("Загрузка нового решения протокола комиссии...");
             logService.InfoFormat("Loading сommission member with id={0} and stage={1}...", commMemberId, stage);
-            IDisposableQueryable<CommissionMember> commissionDecisionsQuery = null;
+            IDisposableQueryable<CommissionMember> commissionMemberQuery = commissionService.GetCommissionMember(commMemberId);
+            IDisposableQueryable<CommissionProtocol> commissionProtocolQuery = commissionService.GetCommissionProtocolById(commissionProtocolId);
             try
             {
-                commissionDecisionsQuery = commissionService.GetCommissionMember(commMemberId);
-                var commissionDecision = await commissionDecisionsQuery.Select(x => new
+                var commissionDecisionTask = commissionMemberQuery.Select(x => new
                 {
                     MemberName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.ShortName + " - " + x.PersonStaff.Person.ShortName : x.StaffId.HasValue ? x.Staff.ShortName : string.Empty
                 }).FirstOrDefaultAsync(token);
-                MemberName = commissionDecision.MemberName;
+                var commissionProtocolAllMemberTask = commissionProtocolQuery.SelectMany(x => x.CommissionDecisions.Where(y => y.CommissionStage == stage)).Select(x => x.NeedAllMembersInStage).FirstOrDefaultAsync(token);
+                await Task.WhenAll(commissionDecisionTask, commissionProtocolAllMemberTask);
+                MemberName = commissionDecisionTask.Result.MemberName;
+                NeedAllMembers = commissionProtocolAllMemberTask.Result;
                 Stage = stage;
                 CommissionDecisionId = SpecialValues.NewId;
                 loadingIsCompleted = true;
@@ -200,9 +213,9 @@ namespace CommissionsModule.ViewModels
                 {
                     BusyMediator.Deactivate();
                 }
-                if (commissionDecisionsQuery != null)
+                if (commissionMemberQuery != null)
                 {
-                    commissionDecisionsQuery.Dispose();
+                    commissionMemberQuery.Dispose();
                 }
             }
         }
@@ -238,12 +251,14 @@ namespace CommissionsModule.ViewModels
                         x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
                     DecisionName = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
                     x.Comment,
-                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : "#E5E5E5",
-                    x.NeedAlllMemmbersInStage
+                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : emptyDecisionColor,
+                    x.NeedAllMembersInStage,
+                    x.CommissionProtocolId
                 }).FirstOrDefaultAsync(token);
+                commissionProtocolId = commissionDecision.CommissionProtocolId;
                 DecisionDate = commissionDecision.DecisionDate;
                 Stage = commissionDecision.Stage;
-                NeedAllMembers = commissionDecision.NeedAlllMemmbersInStage;
+                NeedAllMembers = commissionDecision.NeedAllMembersInStage;
                 MemberName = commissionDecision.MemberName;
                 Decision = commissionDecision.DecisionName;
                 ColorType = commissionDecision.ColorType;
