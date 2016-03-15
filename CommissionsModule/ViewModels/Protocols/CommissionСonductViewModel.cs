@@ -73,6 +73,8 @@ namespace CommissionsModule.ViewModels
             removeCurrentMemberCommand = new DelegateCommand<CommissionDecisionViewModel>(RemoveCurrentMember);
             changeNeedAllMembersCommand = new DelegateCommand<CommissionMemberGroupItem>(ChangeNeedAllMembers);
             removeStageCommand = new DelegateCommand<CommissionMemberGroupItem>(RemoveStage);
+            upStageCommand = new DelegateCommand<CommissionMemberGroupItem>(UpStage);
+            downStageCommand = new DelegateCommand<CommissionMemberGroupItem>(DownStage);
 
             reInitializeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => Initialize(CommissionProtocolId)), CommandName = "Повторить" };
 
@@ -173,6 +175,7 @@ namespace CommissionsModule.ViewModels
                 }
                 await Task.WhenAll(decisionsTask);
                 SetStagesMenuItems();
+                SetCurrentMembersIsNotLastItem();
                 CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
                 loadingIsCompleted = true;
             }
@@ -202,6 +205,16 @@ namespace CommissionsModule.ViewModels
         void CurrentMembers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             SetStagesMenuItems();
+            SetCurrentMembersIsNotLastItem();
+        }
+
+        private void SetCurrentMembersIsNotLastItem()
+        {
+            var maxStage = CurrentMembers.Max(x => x.Stage);
+            foreach (var member in CurrentMembers)
+            {
+                member.IsNotLastItem = (member.Stage != maxStage);
+            }
         }
 
         private void SetStagesMenuItems()
@@ -236,7 +249,7 @@ namespace CommissionsModule.ViewModels
             CurrentMembers.Remove(commissionDecisionViewModel);
             if (!CurrentMembers.Any(x => x.Stage == curStage))
                 ChangeStageInt(curStage);
-            SetStagesMenuItems();
+            //SetStagesMenuItems();
         }
 
         private void ChangeStageInt(int curStage)
@@ -258,7 +271,32 @@ namespace CommissionsModule.ViewModels
             var curStage = commissionMemberGroupItem.Stage;
             CurrentMembers.RemoveWhere(x => x.Stage == commissionMemberGroupItem.Stage);
             ChangeStageInt(curStage);
-            SetStagesMenuItems();
+            //SetStagesMenuItems();
+        }
+
+        private void UpStage(CommissionMemberGroupItem commissionMemberGroupItem)
+        {
+            SwapStage(commissionMemberGroupItem.Stage, commissionMemberGroupItem.Stage - 1);
+        }
+
+        private void DownStage(CommissionMemberGroupItem commissionMemberGroupItem)
+        {
+            SwapStage(commissionMemberGroupItem.Stage, commissionMemberGroupItem.Stage + 1);
+        }
+
+        private void SwapStage(int curStage, int newStage)
+        {
+            var curStageMembers = CurrentMembers.Where(x => x.Stage == curStage).ToArray();
+            var newStageMembers = CurrentMembers.Where(x => x.Stage == newStage).ToArray();
+            foreach (var member in curStageMembers)
+            {
+                member.Stage = newStage;
+            }
+            foreach (var member in newStageMembers)
+            {
+                member.Stage = curStage;
+            }
+            SetCurrentMembersIsNotLastItem();
         }
         #endregion
 
@@ -275,6 +313,12 @@ namespace CommissionsModule.ViewModels
 
         private DelegateCommand<CommissionMemberGroupItem> removeStageCommand;
         public ICommand RemoveStageCommand { get { return removeStageCommand; } }
+
+        private DelegateCommand<CommissionMemberGroupItem> upStageCommand;
+        public ICommand UpStageCommand { get { return upStageCommand; } }
+
+        private DelegateCommand<CommissionMemberGroupItem> downStageCommand;
+        public ICommand DownStageCommand { get { return downStageCommand; } }
         #endregion
     }
 }

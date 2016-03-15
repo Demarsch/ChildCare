@@ -84,6 +84,18 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        private bool isNotLastItem;
+        public bool IsNotLastItem
+        {
+            get { return isNotLastItem; }
+            set
+            {
+                SetProperty(ref isNotLastItem, value);
+                if (CommissionMemberGroupItem != null)
+                    CommissionMemberGroupItem.IsNotLastItem = isNotLastItem;
+            }
+        }
+
         private bool needAllMembers;
         public bool NeedAllMembers
         {

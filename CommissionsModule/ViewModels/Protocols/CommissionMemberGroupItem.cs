@@ -17,6 +17,7 @@ namespace CommissionsModule.ViewModels
             {
                 SetProperty(ref stage, value);
                 OnPropertyChanged(() => StageText);
+                OnPropertyChanged(() => IsNotFirstItem);
             }
         }
 
@@ -25,6 +26,18 @@ namespace CommissionsModule.ViewModels
         {
             get { return needAllMembers; }
             set { SetProperty(ref needAllMembers, value); }
+        }
+
+        public bool IsNotFirstItem
+        {
+            get { return stage != 1; }
+        }
+
+        private bool isNotLastItem;
+        public bool IsNotLastItem
+        {
+            get { return isNotLastItem; }
+            set { SetProperty(ref isNotLastItem, value); }
         }
 
         public string StageText

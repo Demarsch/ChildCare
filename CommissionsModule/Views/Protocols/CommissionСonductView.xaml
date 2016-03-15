@@ -47,13 +47,40 @@
                                                                     </StackPanel>
                                                                 </ToggleButton>
                                                             </StackPanel>
-                                                            <Button Grid.Column="1" Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.RemoveStageCommand}" CommandParameter="{Binding Name}">
-                                                                <Button.ContentTemplate>
-                                                                    <DataTemplate>
-                                                                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="20" Width="20"/>
-                                                                    </DataTemplate>
-                                                                </Button.ContentTemplate>
-                                                            </Button>
+                                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                                <Button Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.UpStageCommand}" CommandParameter="{Binding Name}"
+                                                                        Visibility="{Binding Name.IsNotFirstItem, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}">
+                                                                    <Button.ContentTemplate>
+                                                                        <DataTemplate>
+                                                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/ArrowUp24x24.png" Height="20" Width="20"/>
+                                                                        </DataTemplate>
+                                                                    </Button.ContentTemplate>
+                                                                    <Button.ToolTip>
+                                                                        <TextBlock Text="Выполнить до предыдущего этапа"/>
+                                                                    </Button.ToolTip>
+                                                                </Button>
+                                                                <Button Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.DownStageCommand}" CommandParameter="{Binding Name}"
+                                                                        Visibility="{Binding Name.IsNotLastItem, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}">
+                                                                    <Button.ContentTemplate>
+                                                                        <DataTemplate>
+                                                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/ArrowDown24x24.png" Height="20" Width="20"/>
+                                                                        </DataTemplate>
+                                                                    </Button.ContentTemplate>
+                                                                    <Button.ToolTip>
+                                                                        <TextBlock Text="Выполнить после следующего этапа"/>
+                                                                    </Button.ToolTip>
+                                                                </Button>
+                                                                <Button Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.RemoveStageCommand}" CommandParameter="{Binding Name}">
+                                                                    <Button.ContentTemplate>
+                                                                        <DataTemplate>
+                                                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="20" Width="20"/>
+                                                                        </DataTemplate>
+                                                                    </Button.ContentTemplate>
+                                                                    <Button.ToolTip>
+                                                                        <TextBlock Text="Удалить этап целиком"/>
+                                                                    </Button.ToolTip>
+                                                                </Button>
+                                                            </StackPanel>
                                                         </Grid>
                                                     </Expander.Header>
                                                     <Expander.Content>
