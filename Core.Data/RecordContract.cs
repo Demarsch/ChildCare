@@ -46,14 +46,6 @@ namespace Core.Data
         public int InUserId { get; set; }
     
         [NonSerialized]
-    	protected FinancingSource financingSource;
-    
-    	public virtual FinancingSource FinancingSource
-    	{
-     		get { return financingSource; }
-     		set { financingSource = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<MedicalHelpType> medicalHelpTypes;
     
     	public virtual ICollection<MedicalHelpType> MedicalHelpTypes
@@ -148,6 +140,14 @@ namespace Core.Data
     	{
      		get { return personTalons; }
      		set { personTalons = value; }
+    	}
+        [NonSerialized]
+    	protected FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
     	}
     
     	public object Clone()

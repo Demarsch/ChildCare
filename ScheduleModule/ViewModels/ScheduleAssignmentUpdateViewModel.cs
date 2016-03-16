@@ -23,7 +23,7 @@ namespace ScheduleModule.ViewModels
 
         public ScheduleAssignmentUpdateViewModel(IScheduleService scheduleService, ICacheService cacheService, bool runCountdown)
         {
-            FinancingSources = cacheService.GetItems<FinancingSource>().OrderBy(x => x.Name).ToArray();
+            FinancingSources = cacheService.GetItems<FinancingSource>().Where(x => !string.IsNullOrEmpty(x.Options)).OrderBy(x => x.ShortName).ToArray();
             AssignLpuList = new[] { SelfAssigned }.Concat(scheduleService.GetLpus()).ToArray();
             CloseCommand = new DelegateCommand<bool?>(Close);
             if (runCountdown)

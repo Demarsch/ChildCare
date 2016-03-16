@@ -39,14 +39,6 @@ namespace Core.Data
      		set { executionPlace = value; }
     	}
         [NonSerialized]
-    	protected FinancingSource financingSource;
-    
-    	public virtual FinancingSource FinancingSource
-    	{
-     		get { return financingSource; }
-     		set { financingSource = value; }
-    	}
-        [NonSerialized]
     	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
@@ -69,6 +61,14 @@ namespace Core.Data
     	{
      		get { return urgently; }
      		set { urgently = value; }
+    	}
+        [NonSerialized]
+    	protected FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
     	}
     
     	public object Clone()

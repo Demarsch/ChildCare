@@ -31,7 +31,6 @@ namespace Core.Data
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
         public virtual DbSet<Education> Educations { get; set; }
-        public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<HealthGroup> HealthGroups { get; set; }
         public virtual DbSet<InsuranceCompany> InsuranceCompanies { get; set; }
         public virtual DbSet<InsuranceDocument> InsuranceDocuments { get; set; }
@@ -89,7 +88,6 @@ namespace Core.Data
         public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
-        public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RecordTypeUnit> RecordTypeUnits { get; set; }
@@ -117,5 +115,7 @@ namespace Core.Data
         public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
+        public virtual DbSet<FinancingSource> FinancingSources { get; set; }
+        public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
     }
 }

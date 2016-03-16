@@ -814,10 +814,10 @@ namespace ScheduleModule.ViewModels
 
         private int GetFinancingSource()
         {
-            var result = cacheService.GetItems<FinancingSource>().Where(x => !x.IsActive).Select(x => x.Id).FirstOrDefault();
+            var result = cacheService.GetItems<FinancingSource>().Where(x => !x.IsActive && !string.IsNullOrEmpty(x.Options)).Select(x => x.Id).FirstOrDefault();
             if (result == 0)
             {
-                result = cacheService.GetItems<FinancingSource>().Select(x => x.Id).FirstOrDefault();
+                result = cacheService.GetItems<FinancingSource>().Where(x => !string.IsNullOrEmpty(x.Options)).Select(x => x.Id).FirstOrDefault();
             }
             return result;
         }

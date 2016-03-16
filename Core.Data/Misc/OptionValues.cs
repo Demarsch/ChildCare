@@ -27,5 +27,12 @@ namespace Core.Data.Misc
         public static readonly string ProtocolsAwaiting = "|awaiting|";
         public static readonly string CommissionFilterHasDate = "|hasDate|";
 
+        //Financing Sources
+        public static readonly string OMS = "|oms|";
+        public static readonly string Pay = "|pay|";
+        public static readonly string Organization = "|org|";
+        public static readonly string HMH = "|hmh|";
+        public static readonly string Donations = "|donations|";
+
     }
 }

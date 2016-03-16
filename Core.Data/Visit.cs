@@ -41,14 +41,6 @@ namespace Core.Data
         public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
-    	protected FinancingSource financingSource;
-    
-    	public virtual FinancingSource FinancingSource
-    	{
-     		get { return financingSource; }
-     		set { financingSource = value; }
-    	}
-        [NonSerialized]
     	protected Person person;
     
     	public virtual Person Person
@@ -135,6 +127,14 @@ namespace Core.Data
     	{
      		get { return user; }
      		set { user = value; }
+    	}
+        [NonSerialized]
+    	protected FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
     	}
     
     	public object Clone()

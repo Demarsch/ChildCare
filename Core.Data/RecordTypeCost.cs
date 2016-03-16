@@ -32,20 +32,20 @@ namespace Core.Data
         public string InUserLogin { get; set; }
     
         [NonSerialized]
-    	protected FinancingSource financingSource;
-    
-    	public virtual FinancingSource FinancingSource
-    	{
-     		get { return financingSource; }
-     		set { financingSource = value; }
-    	}
-        [NonSerialized]
     	protected RecordType recordType;
     
     	public virtual RecordType RecordType
     	{
      		get { return recordType; }
      		set { recordType = value; }
+    	}
+        [NonSerialized]
+    	protected FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
     	}
     
     	public object Clone()

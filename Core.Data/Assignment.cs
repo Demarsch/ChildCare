@@ -73,14 +73,6 @@ namespace Core.Data
      		set { executionPlace = value; }
     	}
         [NonSerialized]
-    	protected FinancingSource financingSource;
-    
-    	public virtual FinancingSource FinancingSource
-    	{
-     		get { return financingSource; }
-     		set { financingSource = value; }
-    	}
-        [NonSerialized]
     	protected Org org;
     
     	public virtual Org Org
@@ -191,6 +183,14 @@ namespace Core.Data
     	{
      		get { return user2; }
      		set { user2 = value; }
+    	}
+        [NonSerialized]
+    	protected FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
     	}
     
     	public object Clone()

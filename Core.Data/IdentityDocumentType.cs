@@ -23,6 +23,10 @@ namespace Core.Data
         public int Id { get; set; }
         public string Name { get; set; }
         public string Options { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
+        public string DocSeria { get; set; }
+        public string DocNumber { get; set; }
     
         [NonSerialized]
     	protected ICollection<PersonIdentityDocument> personIdentityDocuments;

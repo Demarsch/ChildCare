@@ -105,7 +105,7 @@ namespace OrganizationContractsModule.Services
         public IDisposableQueryable<FinancingSource> GetActiveFinancingSources()
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().Where(x => x.IsOrgContract && x.IsActive), context);
+            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().Where(x => x.Options.Contains(OptionValues.Organization) && x.IsActive), context);
         }
 
         public IDisposableQueryable<RecordType> GetRecordTypesByOptions(string options)
