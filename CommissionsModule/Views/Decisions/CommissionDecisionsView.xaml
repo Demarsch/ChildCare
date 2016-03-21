@@ -55,6 +55,7 @@
                 </ListView.GroupStyle>
             </ListView>
             <ContentControl Content="{Binding CommissionDecisionEditorViewModel}" Grid.Row="1" Grid.Column="0"/>
+            <!--<views:CommissionDecisionEditorView DataContext="{Binding CommissionDecisionEditorViewModel}" Grid.Row="1" Grid.Column="0"/>-->
 
         </Grid>
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />

@@ -45,6 +45,7 @@ namespace Core.Data
         public Nullable<int> SentLPUId { get; set; }
         public int InUserId { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
+        public string WaitingFor { get; set; }
     
         [NonSerialized]
     	protected CommissionSource commissionSource;

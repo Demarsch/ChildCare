@@ -20,6 +20,7 @@
     [MedicalHelpTypeId]    INT            NULL,
     [RecordContractId]     INT            NULL,
     [PersonAddressId]      INT            NOT NULL,
+    [WaitingFor]           VARCHAR (500)  CONSTRAINT [DF_CommissionProtocols_WaitingFor] DEFAULT ('') NOT NULL,
     [Diagnos]              VARCHAR (8000) NOT NULL,
     [SentLPUId]            INT            NULL,
     [InUserId]             INT            NOT NULL,
@@ -36,6 +37,8 @@
     CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

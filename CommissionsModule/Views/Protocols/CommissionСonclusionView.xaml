@@ -2,11 +2,81 @@
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
-                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf">
+                    xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                    xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
+                    xmlns:data="clr-namespace:Core.Data;assembly=Core.Data">
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <DataTemplate DataType="{x:Type viewModels:CommissionСonclusionViewModel}" >
+        <DataTemplate.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Shared.DataTemplates;Component/Core.Data.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </DataTemplate.Resources>
         <Grid>
-            <TextBlock>Завершение комиссии</TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="2, 2, 2, 0">
+                    <Run Text="Протокол №" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <TextBox Grid.Row="0" Grid.Column="1"  Text="{Binding ProtocolNumber}"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Margin="2, 2, 2, 0">
+                    <Run Text=" от " />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <DatePicker Grid.Row="0" Grid.Column="3" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding ProtocolDate}"/>
+
+                <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding NeedWaitingFor}">Протокол в ожидании</CheckBox>
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" IsEnabled="{Binding NeedWaitingFor}" Text="{Binding WaitingFor}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0">Диагноз</TextBlock>
+                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Diagnosis}"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0">
+                    <Run Text="Решение" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <controls:TreeViewComboBox Grid.Row="3"
+                                       Grid.Column="1"
+                                       Grid.ColumnSpan="3"
+                                       Margin="0,0,20,0"
+                                       ItemsSource="{Binding Decisions}"
+                                       SelectedItem="{Binding SelectedDecision, ValidatesOnDataErrors=True}"
+                                       Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                                       DisplayMemberPath="Name"
+                                       ItemTemplate="{StaticResource DecisionsTree}"
+                                       FilterPredicate="{x:Static data:Decision.DecisionFilterPredicate}"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0">Рекомендации</TextBlock>
+                <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Comment}"/>
+
+                <CheckBox Grid.Row="5" Grid.Column="0" IsChecked="{Binding NeedToDoDateTime}">Дата выполнения решения</CheckBox>
+                <DatePicker Grid.Row="5" Grid.Column="1" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" IsEnabled="{Binding NeedToDoDateTime}" SelectedDate="{Binding ToDoDateTime}"/>
+
+            </Grid>
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
         </Grid>

@@ -115,22 +115,27 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<CommissionDecision>(context.Set<CommissionDecision>().Where(x => x.Id == commissionDecisionId), context);
         }
 
-        public IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberId)
+        public IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberIdAndOnDate)
         {
+            var tuple = commissionQuestionIdAndCommissionTypeMemberIdAndOnDate as Tuple<int, int, DateTime>;
+            if (tuple == null) return null;
             var context = contextProvider.CreateNewContext();
-            int commissionQuestionId = (commissionQuestionIdAndCommissionTypeMemberId as int[])[0].ToInt();
-            int commissionTypeMemberId = (commissionQuestionIdAndCommissionTypeMemberId as int[])[1].ToInt();
-            return context.Set<Decision>().Where(x => x.ParentId == null && x.CommissionDecisionsLinks.Any(y => y.CommissionTypeMemberId == commissionTypeMemberId && y.CommissionQuestionId == commissionQuestionId))
-                .Select(CopyDecision)
+            int commissionQuestionId = tuple.Item1;
+            int commissionTypeMemberId = tuple.Item2;
+            DateTime onDate = tuple.Item3;
+            return context.Set<Decision>().Where(x => x.ParentId == null && onDate >= x.BeginDateTime && onDate < x.EndDateTime &&
+                x.CommissionDecisionsLinks.Any(y => (commissionTypeMemberId == SpecialValues.NonExistingId || y.CommissionTypeMemberId == commissionTypeMemberId) &&
+                    (commissionQuestionId == SpecialValues.NonExistingId || y.CommissionQuestionId == commissionQuestionId) && onDate >= y.BeginDateTime && onDate < y.EndDateTime)).ToArray()
+                .Select(x => CopyDecision(x, onDate))
                 .Where(x => x != null)
                 .ToArray();
         }
 
-        private Decision CopyDecision(Decision decision)
+        private Decision CopyDecision(Decision decision, DateTime onDate)
         {
             var result = new Decision { Id = decision.Id, Name = decision.Name };
-            var children = decision.Decisions1.Select(CopyDecision).Where(x => x != null).ToList();
-            result.Decisions1 = children.Count == 0 ? null : children;
+            var children = decision.Decisions1.Where(x => onDate >= x.BeginDateTime && onDate < x.EndDateTime).Select(x => CopyDecision(x, onDate)).Where(x => x != null).ToArray();
+            result.Decisions1 = children.Length == 0 ? null : children;
             foreach (var childRecortType in children)
             {
                 childRecortType.Decision1 = result;

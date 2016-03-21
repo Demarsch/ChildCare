@@ -24,8 +24,8 @@
                     <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Decision}"/>
 
                     <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding ElementName=AvailableMembersContainer, Path=DataContext.RemoveCurrentMemberCommand}" CommandParameter="{Binding}"
-                                Visibility="{Binding CanDeleteMember, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                        <Button Name="btn" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding ElementName=AvailableMembersContainer, Path=DataContext.RemoveCurrentMemberCommand}" CommandParameter="{Binding}"
+                                Visibility="{Binding ElementName=btn, Path=IsEnabled, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                             <Button.ContentTemplate>
                                 <DataTemplate>
                                     <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="20" Width="20"/>

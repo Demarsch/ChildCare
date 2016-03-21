@@ -178,7 +178,8 @@ namespace CommissionsModule.ViewModels
                         CommissionDecisions = x.CommissionProtocol.CommissionDecisions.Select(y => new { y.CommissionStage, y.NeedAllMembersInStage, HasDecision = y.DecisionId.HasValue })
                     })
                     .FirstOrDefaultAsync(token);
-                var decisionsList = await Task.Factory.StartNew<IEnumerable<Decision>>(commissionService.GetDecisions, new int[] { commissionDecision.CommissionQuestionId, commissionDecision.CommissionMemberTypeId });
+                var decisionsList = await Task.Factory.StartNew<IEnumerable<Decision>>(commissionService.GetDecisions,
+                    new Tuple<int, int, DateTime>(commissionDecision.CommissionQuestionId, commissionDecision.CommissionMemberTypeId, commissionDecision.DecisionDateTime ?? DateTime.Now.Date));
                 var decisions = new[] { unselectedDecision }.Concat(decisionsList).ToArray();
                 logService.InfoFormat("Loaded {0} decisions", (decisions as Decision[]).Length);
                 Decisions.AddRange(decisions);

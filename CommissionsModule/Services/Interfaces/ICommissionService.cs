@@ -32,7 +32,7 @@ namespace CommissionsModule.Services
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="CommissionQuestionIdAndCommissionTypeMemberId">int array with commissionQuestionId and commissionTypeMemberId</param>
+        /// <param name="CommissionQuestionIdAndCommissionTypeMemberId">Tuple<int, int, DateTime> with commissionQuestionId and commissionTypeMemberId and onDate (SpecialValue.NotExist for int items is allDecisions)</param>
         /// <returns></returns>
         IEnumerable<Decision> GetDecisions(object commissionQuestionIdAndCommissionTypeMemberId);
 

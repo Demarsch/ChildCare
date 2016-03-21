@@ -70,9 +70,9 @@ namespace CommissionsModule.ViewModels
             CurrentMembers = new ObservableCollectionEx<CommissionDecisionViewModel>();
 
             addSelectedAvailableMemberCommand = new DelegateCommand<CommissionMemberStageViewModel>(AddSelectedAvailableMember);
-            removeCurrentMemberCommand = new DelegateCommand<CommissionDecisionViewModel>(RemoveCurrentMember);
+            removeCurrentMemberCommand = new DelegateCommand<CommissionDecisionViewModel>(RemoveCurrentMember, CanRemoveCurrentMember);
             changeNeedAllMembersCommand = new DelegateCommand<CommissionMemberGroupItem>(ChangeNeedAllMembers);
-            removeStageCommand = new DelegateCommand<CommissionMemberGroupItem>(RemoveStage);
+            removeStageCommand = new DelegateCommand<CommissionMemberGroupItem>(RemoveStage, CanRemoveStage);
             upStageCommand = new DelegateCommand<CommissionMemberGroupItem>(UpStage);
             downStageCommand = new DelegateCommand<CommissionMemberGroupItem>(DownStage);
 
@@ -114,19 +114,21 @@ namespace CommissionsModule.ViewModels
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
-            CurrentMembers.CollectionChanged -= CurrentMembers_CollectionChanged;
-            AvailableMembers.Clear();
-            CurrentMembers.Clear();
-            CommissionProtocolId = commissionProtocolId;
-            PersonId = personId;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
                 currentOperationToken.Dispose();
             }
-            var loadingIsCompleted = false;
+
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
+            CurrentMembers.CollectionChanged -= CurrentMembers_CollectionChanged;
+            AvailableMembers.Clear();
+            CurrentMembers.Clear();
+            CommissionProtocolId = commissionProtocolId;
+            PersonId = personId;
+
+            var loadingIsCompleted = false;
             BusyMediator.Activate("Загрузка хода комиссии...");
             logService.InfoFormat("Loading commission conduction with protocol id ={0}", commissionProtocolId);
             var commissionProtocolQuery = commissionService.GetCommissionProtocolById(commissionProtocolId);
@@ -153,16 +155,21 @@ namespace CommissionsModule.ViewModels
                         MemberTypeName = x.CommissionMemberType.Name,
                         PersonName = x.PersonStaffId.HasValue ? x.PersonStaff.Person.ShortName : string.Empty,
                         StaffName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.Name : x.StaffId.HasValue ? x.Staff.Name : string.Empty
-                    }).ToArrayAsync();
+                    }).ToArrayAsync(token);
+
+                    var commissionMembersToAdd = new List<CommissionMemberViewModel>();
                     foreach (var commissionMember in commissionMembers)
                     {
+                        if (token.IsCancellationRequested) break;
                         var commissionMemberViewModel = commissionMemberViewModelFactory();
                         commissionMemberViewModel.Id = commissionMember.Id;
                         commissionMemberViewModel.MemberTypeName = commissionMember.MemberTypeName;
                         commissionMemberViewModel.PersonName = commissionMember.PersonName;
                         commissionMemberViewModel.StaffName = commissionMember.StaffName;
-                        AvailableMembers.Add(commissionMemberViewModel);
+                        commissionMembersToAdd.Add(commissionMemberViewModel);
                     }
+                    if (!token.IsCancellationRequested)
+                        AvailableMembers.AddRange(commissionMembersToAdd);
                 }
                 var commissionDecisionIds = await commissionDecisionsQuery.Select(x => x.Id).ToArrayAsync(token);
                 List<Task> decisionsTask = new List<Task>();
@@ -177,6 +184,7 @@ namespace CommissionsModule.ViewModels
                 SetStagesMenuItems();
                 SetCurrentMembersIsNotLastItem();
                 CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
+                //removeStageCommand.RaiseCanExecuteChanged();
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -243,6 +251,11 @@ namespace CommissionsModule.ViewModels
             CurrentMembers.Add(commissionDecisionViewModel);
         }
 
+        private bool CanRemoveCurrentMember(CommissionDecisionViewModel commissionDecisionViewModel)
+        {
+            return commissionDecisionViewModel != null && commissionDecisionViewModel.CanDeleteMember;
+        }
+
         private void RemoveCurrentMember(CommissionDecisionViewModel commissionDecisionViewModel)
         {
             var curStage = commissionDecisionViewModel.Stage;
@@ -264,6 +277,13 @@ namespace CommissionsModule.ViewModels
         {
             foreach (var currentMember in CurrentMembers.Where(x => x.Stage == commissionMemberGroupItem.Stage))
                 currentMember.NeedAllMembers = commissionMemberGroupItem.NeedAllMembers;
+        }
+
+        private bool CanRemoveStage(CommissionMemberGroupItem сommissionMemberGroupItem)
+        {
+            if (сommissionMemberGroupItem == null || CurrentMembers == null)
+                return false;
+            return !CurrentMembers.Any(x => x.Stage == сommissionMemberGroupItem.Stage && !x.CanDeleteMember);
         }
 
         private void RemoveStage(CommissionMemberGroupItem commissionMemberGroupItem)

@@ -83,9 +83,9 @@ namespace CommissionsModule
             container.RegisterType<CommissionDecisionEditorViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionDecisionViewModel>(new TransientLifetimeManager());
             container.RegisterType<CommissionProtocolViewModel>(new TransientLifetimeManager());
-            container.RegisterType<PreliminaryProtocolViewModel>(new TransientLifetimeManager());
-            container.RegisterType<CommissionСonductViewModel>(new TransientLifetimeManager());
-            container.RegisterType<CommissionСonclusionViewModel>(new TransientLifetimeManager());
+            container.RegisterType<PreliminaryProtocolViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommissionСonductViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<CommissionСonclusionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<CommissionMemberViewModel>(new TransientLifetimeManager());
 
             container.RegisterType<AddressViewModel>(new TransientLifetimeManager());

@@ -72,7 +72,7 @@ namespace CommissionsModule.ViewModels
             this.dialogService = dialogService;
             this.mkbTreeViewModel = mkbTreeViewModel;
             selectMKBCommand = new DelegateCommand(SelectMKB);
-            reInitializeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => Initialize(CommissionProtocolId)), CommandName = "Повторить" };
+            reInitializeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => Initialize(CommissionProtocolId, PersonId)), CommandName = "Повторить" };
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
@@ -100,6 +100,7 @@ namespace CommissionsModule.ViewModels
         #region Properties
 
         public int CommissionProtocolId { get; private set; }
+        public int PersonId { get; private set; }
 
         private int selectedCommissionTypeId;
         public int SelectedCommissionTypeId
@@ -253,7 +254,7 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private async Task<bool> LoadDataSources(DateTime onDate, int personId)
+        private async Task<bool> LoadDataSources(DateTime onDate, int personId, CancellationToken token)
         {
             CommissionTypes.Clear();
             CommissionSources.Clear();
@@ -291,22 +292,29 @@ namespace CommissionsModule.ViewModels
                 var commissionHelpTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<MedicalHelpType>>)commissionService.GetCommissionMedicalHelpTypes, onDate);
                 await Task.WhenAll(commissionTypesTask, commissionSourcesTask, commissionQuestionsTask, commissionSentLPUsTask, commissionHelpTypesTask, talonQueryTask, personAddressesTask);
                 IEnumerable<CommissionType> commissionTypes = new CommissionType[] { unselectedCommissionType }.Concat(commissionTypesTask.Result);
-                CommissionTypes.AddRange(commissionTypes);
-                CommissionSources.AddRange(new CommissionSource[] { unselectedCommissionSource }.Concat(commissionSourcesTask.Result));
-                CommissionQuestions.AddRange(new CommissionQuestion[] { unselectedCommissionQuestion }.Concat(commissionQuestionsTask.Result));
+                if (!token.IsCancellationRequested)
+                    CommissionTypes.AddRange(commissionTypes);
+                if (!token.IsCancellationRequested)
+                    CommissionSources.AddRange(new CommissionSource[] { unselectedCommissionSource }.Concat(commissionSourcesTask.Result));
+                if (!token.IsCancellationRequested)
+                    CommissionQuestions.AddRange(new CommissionQuestion[] { unselectedCommissionQuestion }.Concat(commissionQuestionsTask.Result));
                 var selfLPU = new CommonIdName { Id = 0, Name = "Самообращение" };
-                SentLPUs.AddRange(new CommonIdName[] { unselectedSentLPU, selfLPU }.Concat(commissionSentLPUsTask.Result));
-                HelpTypes.AddRange(new MedicalHelpType[] { unselectedHelpType }.Concat(commissionHelpTypesTask.Result));
-                Talons.AddRange(new CommonIdName[] { unselectedTalon }.Concat(talonQueryTask.Result.Select(x => new CommonIdName
-                {
-                    Id = x.Id,
-                    Name = x.Name + " от " + x.date.ToShortDateString()
-                })));
-                PersonAddresses.AddRange(new CommonIdName[] { unselectedPersonAddress }.Concat(personAddressesTask.Result.Select(x => new CommonIdName
-                {
-                    Id = x.Id,
-                    Name = x.Name + " ( действ. с " + x.BeginDateTime.ToShortDateString() + (x.EndDateTime != SpecialValues.MaxDate ? " по " + x.EndDateTime.ToShortDateString() : string.Empty) + ")"
-                })));
+                if (!token.IsCancellationRequested)
+                    SentLPUs.AddRange(new CommonIdName[] { unselectedSentLPU, selfLPU }.Concat(commissionSentLPUsTask.Result));
+                if (!token.IsCancellationRequested)
+                    HelpTypes.AddRange(new MedicalHelpType[] { unselectedHelpType }.Concat(commissionHelpTypesTask.Result));
+                if (!token.IsCancellationRequested)
+                    Talons.AddRange(new CommonIdName[] { unselectedTalon }.Concat(talonQueryTask.Result.Select(x => new CommonIdName
+                    {
+                        Id = x.Id,
+                        Name = x.Name + " от " + x.date.ToShortDateString()
+                    })));
+                if (!token.IsCancellationRequested)
+                    PersonAddresses.AddRange(new CommonIdName[] { unselectedPersonAddress }.Concat(personAddressesTask.Result.Select(x => new CommonIdName
+                    {
+                        Id = x.Id,
+                        Name = x.Name + " ( действ. с " + x.BeginDateTime.ToShortDateString() + (x.EndDateTime != SpecialValues.MaxDate ? " по " + x.EndDateTime.ToShortDateString() : string.Empty) + ")"
+                    })));
                 logService.InfoFormat("Loaded data sources  for PreliminaryProtocol for commission protocol with id={0}", CommissionProtocolId);
                 dataloaded = true;
                 this.onDate = DateTime.MaxValue;
@@ -333,7 +341,13 @@ namespace CommissionsModule.ViewModels
 
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
+            if (currentOperationToken != null)
+            {
+                currentOperationToken.Cancel();
+                currentOperationToken.Dispose();
+            }
             CommissionProtocolId = commissionProtocolId;
+            PersonId = personId;
             SelectedCommissionTypeId = SpecialValues.NonExistingId;
             SelectedCommissionQuestionId = SpecialValues.NonExistingId;
             SelectedCommissionSourceId = SpecialValues.NonExistingId;
@@ -343,19 +357,14 @@ namespace CommissionsModule.ViewModels
             SelectedPersonAddressId = SpecialValues.NonExistingId;
             SelectedHelpTypeId = SpecialValues.NonExistingId;
             IncomeDateTime = DateTime.Now;
-            if (currentOperationToken != null)
-            {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
-            }
+
             var loadingIsCompleted = false;
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
             BusyMediator.Activate("Загрузка протокола комиссии...");
-            logService.InfoFormat("Loading commission protocol with id ={0}", commissionProtocolId);
+            logService.InfoFormat("Loading commission protocol with id ={0} for person with id={1}", commissionProtocolId, personId);
             var commissionProtocolQuery = commissionService.GetCommissionProtocolById(commissionProtocolId);
             var curDate = DateTime.Now;
-            var persId = personId;
             try
             {
                 var commissionProtocolData = await commissionProtocolQuery.Select(x => new
@@ -373,13 +382,13 @@ namespace CommissionsModule.ViewModels
                 }).FirstOrDefaultAsync(token);
                 if (commissionProtocolData != null)
                 {
-                    persId = commissionProtocolData.PersonId;
+                    PersonId = commissionProtocolData.PersonId;
                     curDate = commissionProtocolData.IncomeDateTime;
                 }
-                var res = await LoadDataSources(curDate, persId);
+                var res = await LoadDataSources(curDate, PersonId, token);
                 if (!res)
                 {
-                    logService.ErrorFormatEx(null, "Failed to load commission data sources with commission id ={0}", commissionProtocolId);
+                    logService.ErrorFormatEx(null, "Failed to load commission data sources with commission id ={0} for person with id={1}", commissionProtocolId, personId);
                     FailureMediator.Activate("Не удалость загрузить справочники. Попробуйте еще раз или обратитесь в службу поддержки", reInitializeCommandWrapper);
                     return;
                 }
@@ -416,7 +425,7 @@ namespace CommissionsModule.ViewModels
             }
             catch (Exception ex)
             {
-                logService.ErrorFormatEx(ex, "Failed to load commission protocol with id ={0}", commissionProtocolId);
+                logService.ErrorFormatEx(ex, "Failed to load commission protocol with id ={0} for person with id={1}", commissionProtocolId, personId);
                 FailureMediator.Activate("Не удалость загрузить протокол комиссии. Попробуйте еще раз или обратитесь в службу поддержки", reInitializeCommandWrapper, ex);
                 loadingIsCompleted = true;
             }
