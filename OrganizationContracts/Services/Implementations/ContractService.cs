@@ -6,6 +6,9 @@ using Core.Data.Services;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections;
+using Core.Misc;
+using Core.Wpf.Mvvm;
 
 namespace OrganizationContractsModule.Services
 {
@@ -22,7 +25,7 @@ namespace OrganizationContractsModule.Services
             this.contextProvider = contextProvider;
         }
 
-        public int SaveContractData(RecordContract contract)
+        public int SaveContractData(RecordContract contract, int[] limitedRecordTypes)
         {           
             using (var db = contextProvider.CreateNewContext())
             {
@@ -46,6 +49,22 @@ namespace OrganizationContractsModule.Services
                 saveContract.InDateTime = contract.InDateTime;
                 db.Entry(saveContract).State = saveContract.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                 db.SaveChanges();
+
+                if (limitedRecordTypes.Any())
+                {
+                    foreach (var item in saveContract.RecordContractLimits.ToList())
+                        db.Entry(item).State = EntityState.Deleted;
+                    foreach (var recordTypeId in limitedRecordTypes)
+                    {
+                        var limitedItem = new RecordContractLimit();
+                        limitedItem.RecordContractId = saveContract.Id;
+                        limitedItem.RecordTypeId = recordTypeId;
+                        limitedItem.Count = 0;
+                        db.Entry(limitedItem).State = EntityState.Added;                       
+                    }
+                    db.SaveChanges();
+                }
+
                 return saveContract.Id;
             }                 
         }
@@ -124,9 +143,13 @@ namespace OrganizationContractsModule.Services
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonStaff>(context.Set<RecordTypeRolePermission>()
-                .Where(x => x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.RecordTypeMemberRoleId == memberRoleId)
-                    .SelectMany(x => x.Permission.PermissionGroupMemberships.SelectMany(y => y.PermissionGroup.UserPermissionGroups)
-                        .SelectMany(z => z.User.Person.PersonStaffs)), context);
+                                                               .Where(
+                                                                      x =>
+                                                                      x.RecordTypeId == recordTypeId && onDate >= x.BeginDateTime && onDate < x.EndDateTime && x.RecordTypeMemberRoleId == memberRoleId)
+                                                               .SelectMany(x => x.Permission.PermissionGroupMemberships)
+                                                               .Select(x => x.PermissionGroup)
+                                                               .SelectMany(x => x.UserPermissionGroups)
+                                                               .SelectMany(x => x.User.Person.PersonStaffs), context);
         }
 
         public IDisposableQueryable<Visit> GetVisitsByContractId(int contractId)
@@ -142,6 +165,48 @@ namespace OrganizationContractsModule.Services
                 db.Entry<Org>(org).State = org.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;  
                 await db.SaveChangesAsync();
                 return org.Id;
+            }
+        }
+
+        public IDisposableQueryable<FinancingSource> GetFinancingSourceById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().Where(x => x.Id == id), context);
+        }
+
+        public IEnumerable GetPersonsByFullName(string filter)
+        {
+            filter = (filter ?? string.Empty).Trim();
+            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            {
+                return new FieldValue[0];
+            }
+            var words = (filter.Contains(',') ? filter.Split(',')[0] : filter).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            using (var context = contextProvider.CreateNewContext())
+                return context.Set<Person>().AsNoTracking()
+                    .Select(x => new FieldValue() { Value = x.Id, Field = x.FullName + ", " + x.BirthDate.Year + " г.р." })
+                    .ToArray()
+                    .Where(x => words.All(y => x.Field.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
+                    .ToArray();
+        }
+
+        public IDisposableQueryable<Person> GetPersonById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Person>(context.Set<Person>().Where(x => x.Id == id), context);
+        }
+
+
+        public void RemoveRecord(int contractId, int recordTypeId)
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var item = db.Set<RecordContractLimit>().FirstOrDefault(x => x.RecordContractId == contractId && x.RecordTypeId == recordTypeId);
+                if (item != null)
+                {
+                    db.Entry(item).State = EntityState.Deleted;
+                    db.SaveChanges();
+                }
             }
         }
     }

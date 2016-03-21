@@ -117,7 +117,10 @@
     </Compile>
     <Compile Include="Services\Implementations\ContractService.cs" />
     <Compile Include="Services\Interfaces\IContractService.cs" />
+    <Compile Include="SuggestionProviders\PersonSuggestionsProvider.cs" />
     <Compile Include="ViewModels\AddContractOrganizationViewModel.cs" />
+    <Compile Include="ViewModels\AddRecordViewModel.cs" />
+    <Compile Include="ViewModels\RecordTypeViewModel.cs" />
     <Compile Include="ViewModels\ContractViewModel.cs" />
     <Compile Include="ViewModels\OrgContractsHeaderViewModel.cs" />
     <Compile Include="ViewModels\OrgContractsViewModel.cs" />
@@ -167,6 +170,10 @@
     <Page Include="Views\AddContractOrganizationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddRecordView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\OrgContractsView.xaml">
       <SubType>Designer</SubType>

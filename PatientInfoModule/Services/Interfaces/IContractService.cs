@@ -22,6 +22,8 @@ namespace PatientInfoModule.Services
 
         void DeleteContract(int contractId);
               
-        void DeleteContractItemById(int id);  
+        void DeleteContractItemById(int id);
+
+        IDisposableQueryable<FinancingSource> GetFinancingSourceByOptions(string options);
     }
 }

@@ -126,5 +126,11 @@ namespace PatientInfoModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<RecordContractItem>(context.Set<RecordContractItem>().Where(x => x.Id == id), context);
         }
+
+        public IDisposableQueryable<FinancingSource> GetFinancingSourceByOptions(string options)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().Where(x => x.Options.Contains(options)), context);
+        }
     }
 }

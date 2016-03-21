@@ -33,6 +33,8 @@ namespace Core.Data.Misc
         public static readonly string Organization = "|org|";
         public static readonly string HMH = "|hmh|";
         public static readonly string Donations = "|donations|";
+        public static readonly string DMS = "|dms|";
+        public static readonly string IndividualContaract = "|individual|";
 
     }
 }

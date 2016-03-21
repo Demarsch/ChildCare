@@ -61,6 +61,8 @@ namespace PatientInfoModule.ViewModels
 
         private int patientId;
 
+        private int finSourceId;
+
         public PatientContractsViewModel(IPatientService personService,
                                          IContractService contractService,
                                          IRecordService recordService,
@@ -222,6 +224,7 @@ namespace PatientInfoModule.ViewModels
         public async void LoadDataSources()
         {
             FailureMediator.Deactivate();
+            finSourceId = contractService.GetFinancingSourceByOptions(OptionValues.IndividualContaract).First().Id;
             var contractRecord = await recordService.GetRecordTypesByOptions(OptionValues.Contract).FirstOrDefaultAsync();
             var reliableStaff = await recordService.GetRecordTypeRolesByOptions(OptionValues.ResponsibleForContract).FirstOrDefaultAsync();
             if (contractRecord == null || reliableStaff == null)
@@ -244,13 +247,7 @@ namespace PatientInfoModule.ViewModels
             elements.Add(new FieldValue { Value = -1, Field = "- все -" });
             elements.AddRange(personStaffs.Select(x => new FieldValue { Value = x.Id, Field = x.Person.ShortName }));
             Registrators = new ObservableCollectionEx<FieldValue>(elements);
-
-            var finSources = new List<FieldValue>();
-            var fSources = await recordService.GetActiveFinancingSources().ToArrayAsync();
-            finSources.Add(new FieldValue { Value = -1, Field = "- выберите ист. финансирования -" });
-            finSources.AddRange(fSources.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
-            FinancingSources = new ObservableCollectionEx<FieldValue>(finSources);
-
+                     
             var paymentTypesSource = new List<FieldValue>();
             var paymentSources = await recordService.GetPaymentTypes().ToArrayAsync();
             paymentTypesSource.Add(new FieldValue { Value = -1, Field = "- выберите метод оплаты -" });
@@ -260,7 +257,6 @@ namespace PatientInfoModule.ViewModels
             IsCashless = false;
             SelectedRegistratorId = SpecialValues.NonExistingId;
             SelectedPaymentTypeId = SpecialValues.NonExistingId;
-            SelectedFinancingSourceId = SpecialValues.NonExistingId;
         }
 
         private async void LoadContractsAsync(int patientId)
@@ -363,7 +359,6 @@ namespace PatientInfoModule.ViewModels
             ContractEndDateTime = SelectedContract.ContractEndDate;
             ContractName = SelectedContract.ContractName;
 
-            SelectedFinancingSourceId = SelectedContract.FinancingSourceId;
             SelectedRegistratorId = SelectedContract.RegistratorId;
             SelectedPaymentTypeId = SelectedContract.PaymentTypeId;
             SelectedClient = SelectedContract.Client;
@@ -397,7 +392,7 @@ namespace PatientInfoModule.ViewModels
 
         private void AddContractItemRow(RecordContractItem item)
         {
-            var contractItem = new ContractItemViewModel(recordService, personService, patientId, selectedFinancingSourceId, contractBeginDateTime)
+            var contractItem = new ContractItemViewModel(recordService, personService, patientId, finSourceId, contractBeginDateTime)
                                {
                                    Id = item.Id,
                                    RecordContractId = item.RecordContractId,
@@ -414,7 +409,7 @@ namespace PatientInfoModule.ViewModels
 
         private void AddSectionRow(int appendix, Color backColor, HorizontalAlignment alignment, int insertPosition = -1)
         {
-            var item = new ContractItemViewModel(recordService, personService, patientId, selectedFinancingSourceId, contractBeginDateTime)
+            var item = new ContractItemViewModel(recordService, personService, patientId, finSourceId, contractBeginDateTime)
                        {
                            IsSection = true,
                            SectionName = appendix != -1 ? "Доп. соглашение № " + appendix.ToSafeString() :
@@ -531,23 +526,7 @@ namespace PatientInfoModule.ViewModels
             get { return selectedRegistratorId; }
             set { SetTrackedProperty(ref selectedRegistratorId, value); }
         }
-
-        private ObservableCollectionEx<FieldValue> financingSources;
-
-        public ObservableCollectionEx<FieldValue> FinancingSources
-        {
-            get { return financingSources; }
-            set { SetProperty(ref financingSources, value); }
-        }
-
-        private int selectedFinancingSourceId;
-
-        public int SelectedFinancingSourceId
-        {
-            get { return selectedFinancingSourceId; }
-            set { SetTrackedProperty(ref selectedFinancingSourceId, value); }
-        }
-
+       
         private ObservableCollectionEx<FieldValue> paymentTypes;
 
         public ObservableCollectionEx<FieldValue> PaymentTypes
@@ -816,7 +795,7 @@ namespace PatientInfoModule.ViewModels
             }
 
             var addContractRecordsViewModel = addContractRecordsViewModelFactory();
-            addContractRecordsViewModel.Intialize(patientId, selectedFinancingSourceId, contractBeginDateTime, false, false);
+            addContractRecordsViewModel.Intialize(patientId, finSourceId, contractBeginDateTime, false, false);
             var result = await dialogService.ShowDialogAsync(addContractRecordsViewModel);
             if (addContractRecordsViewModel.RecordsWasSelected)
             {
@@ -826,7 +805,7 @@ namespace PatientInfoModule.ViewModels
                     foreach (var assignment in addContractRecordsViewModel.Assignments.Where(x => x.IsSelected))
                     {
                         var insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
-                        var contractItem = new ContractItemViewModel(recordService, personService, patientId, selectedFinancingSourceId, contractBeginDateTime);
+                        var contractItem = new ContractItemViewModel(recordService, personService, patientId, finSourceId, contractBeginDateTime);
                         contractItem.ChangeTracker.IsEnabled = true;
                         contractItem.Id = 0;
                         contractItem.RecordContractId = null;
@@ -847,7 +826,7 @@ namespace PatientInfoModule.ViewModels
                         return;
                     }
                     var insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
-                    var contractItem = new ContractItemViewModel(recordService, personService, patientId, selectedFinancingSourceId, contractBeginDateTime);
+                    var contractItem = new ContractItemViewModel(recordService, personService, patientId, finSourceId, contractBeginDateTime);
                     contractItem.ChangeTracker.IsEnabled = true;
                     contractItem.Id = 0;
                     contractItem.RecordContractId = null;
@@ -981,7 +960,7 @@ namespace PatientInfoModule.ViewModels
             }
             contract.BeginDateTime = contractBeginDateTime;
             contract.EndDateTime = contractEndDateTime;
-            contract.FinancingSourceId = selectedFinancingSourceId;
+            contract.FinancingSourceId = finSourceId;
             contract.ClientId = selectedClient.Value;
             contract.ConsumerId = patientId;
             contract.ContractName = personService.GetPatientQuery(selectedClient.Value).First().ShortName;
@@ -1112,10 +1091,7 @@ namespace PatientInfoModule.ViewModels
                 }
                 var result = string.Empty;
                 switch (columnName)
-                {
-                    case "SelectedFinancingSourceId":
-                        result = SelectedFinancingSourceId == SpecialValues.NonExistingId ? "Укажите источник финансирования" : string.Empty;
-                        break;
+                {                   
                     case "SelectedRegistratorId":
                         result = SelectedRegistratorId == SpecialValues.NonExistingId ? "Укажите ответственного за договор" : string.Empty;
                         break;

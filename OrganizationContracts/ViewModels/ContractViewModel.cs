@@ -1,4 +1,5 @@
 ﻿using Core.Wpf.Events;
+using Core.Wpf.Mvvm;
 using OrganizationContractsModule.Services;
 using Prism.Mvvm;
 using System;
@@ -25,14 +26,7 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return contractName; }
             set { SetProperty(ref contractName, value); }
-        }
-
-        private string contractNumber;
-        public string ContractNumber
-        {
-            get { return contractNumber; }
-            set { SetProperty(ref contractNumber, value); }
-        }
+        }       
 
         private DateTime contractBeginDate;
         public DateTime ContractBeginDate
@@ -53,6 +47,13 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return financingSourceId; }
             set { SetProperty(ref financingSourceId, value); }
+        }
+
+        private string contractFinSource;
+        public string ContractFinSource
+        {
+            get { return contractFinSource; }
+            set { SetProperty(ref contractFinSource, value); }
         }
 
         private int paymentTypeId;
@@ -95,6 +96,20 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return orgId; }
             set { SetProperty(ref orgId, value); }
+        }
+
+        private FieldValue patient;
+        public FieldValue Patient
+        {
+            get { return patient; }
+            set { SetProperty(ref patient, value); }
+        }
+
+        private RecordTypeViewModel[] records;
+        public RecordTypeViewModel[] Records
+        {
+            get { return records; }
+            set { SetProperty(ref records, value); }
         }
     }
 }

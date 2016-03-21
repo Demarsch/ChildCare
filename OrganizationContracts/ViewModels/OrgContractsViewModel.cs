@@ -23,6 +23,8 @@ using Prism.Events;
 using System.ComponentModel;
 using Prism.Interactivity.InteractionRequest;
 using Core.Wpf.Services;
+using OrganizationContractsModule.SuggestionsProviders;
+using System.Collections.Specialized;
 
 namespace OrganizationContractsModule.ViewModels
 {
@@ -33,15 +35,18 @@ namespace OrganizationContractsModule.ViewModels
         private readonly IDialogServiceAsync dialogService;   
         private readonly IDialogService messageService;   
         private readonly Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory;
+        private readonly Func<AddRecordViewModel> addRecordViewModelFactory;
         private readonly CommandWrapper reloadContractsDataCommandWrapper;
         private readonly CommandWrapper reloadDataSourcesCommandWrapper;
         private readonly ChangeTracker changeTracker;
+        private readonly CompositeChangeTracker recordsChangeTracker;
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; private set; }
         private CancellationTokenSource currentLoadingToken;
 
         public OrgContractsViewModel(IContractService contractService, ILog log, IDialogServiceAsync dialogService, IDialogService messageService,
-                                     Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory)
+                                     Func<AddContractOrganizationViewModel> addContractOrganizationViewModelFactory,
+                                     Func<AddRecordViewModel> addRecordViewModelFactory)
         {    
             if (contractService == null)
             {
@@ -68,10 +73,17 @@ namespace OrganizationContractsModule.ViewModels
             this.dialogService = dialogService;
             this.messageService = messageService;
             this.addContractOrganizationViewModelFactory = addContractOrganizationViewModelFactory;
+            this.addRecordViewModelFactory = addRecordViewModelFactory;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            Records = new ObservableCollectionEx<RecordTypeViewModel>();
             changeTracker = new ChangeTracker();
             changeTracker.PropertyChanged += OnChangesTracked;
+            Records.BeforeCollectionChanged += Records_BeforeCollectionChanged;
+
+            recordsChangeTracker = new CompositeChangeTracker(new ObservableCollectionChangeTracker<RecordTypeViewModel>(Records));
+
+            PersonSuggestionsProvider = new PersonSuggestionsProvider(contractService);
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadContractsAsync), CommandName = "Повторить" };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources), CommandName = "Повторить" };
             
@@ -79,12 +91,30 @@ namespace OrganizationContractsModule.ViewModels
             saveContractCommand = new DelegateCommand(SaveContract, CanSaveChanges);
             removeContractCommand = new DelegateCommand(RemoveContract, CanRemoveContract);
             addOrganizationCommand = new DelegateCommand(AddOrganization);
+
+            addRecordCommand = new DelegateCommand(AddRecord);
+            removeRecordCommand = new DelegateCommand(RemoveRecord);
+
             IsContractSelected = false;
 
             saveChangesCommandWrapper = new CommandWrapper { Command = saveContractCommand };
             LoadDataSources();
         }
 
+        void Records_BeforeCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (var newItem in e.NewItems.Cast<RecordTypeViewModel>())
+                    recordsChangeTracker.AddTracker(newItem.ChangeTracker);
+            }
+            if (e.OldItems != null)
+            {
+                foreach (var oldItem in e.OldItems.Cast<RecordTypeViewModel>())
+                    recordsChangeTracker.RemoveTracker(oldItem.ChangeTracker);
+            }
+        }
+        
         #region Properties
 
         private DateTime filterBeginDate;
@@ -146,8 +176,10 @@ namespace OrganizationContractsModule.ViewModels
                     {
                         IsContractSelected = true;
                         changeTracker.IsEnabled = false;
+                        recordsChangeTracker.IsEnabled = false;
                         LoadContractData();
-                        changeTracker.IsEnabled = true;                       
+                        changeTracker.IsEnabled = true;
+                        recordsChangeTracker.IsEnabled = true;
                     }
                     else
                         IsContractSelected = false;
@@ -160,6 +192,13 @@ namespace OrganizationContractsModule.ViewModels
         {
             get { return contractName; }
             set { SetProperty(ref contractName, value); }
+        }
+
+        private string contractFinSource;
+        public string ContractFinSource
+        {
+            get { return contractFinSource; }
+            set { SetProperty(ref contractFinSource, value); }
         }
 
         private ObservableCollectionEx<FieldValue> organizations;
@@ -194,7 +233,10 @@ namespace OrganizationContractsModule.ViewModels
             set 
             {
                 changeTracker.Track(selectedFinSourceId, value); 
-                SetProperty(ref selectedFinSourceId, value);
+                if (SetProperty(ref selectedFinSourceId, value) && value != SpecialValues.NonExistingId)
+                {
+                    IsDMSContract = contractService.GetFinancingSourceById(value).First().Options.Contains(OptionValues.DMS);
+                }
             }
         }
 
@@ -266,6 +308,47 @@ namespace OrganizationContractsModule.ViewModels
             get { return isContractSelected; }
             set { SetProperty(ref isContractSelected, value); }
         }
+
+        private bool isDMSContract;
+        public bool IsDMSContract
+        {
+            get { return isDMSContract; }
+            set { SetProperty(ref isDMSContract, value); }
+        }
+
+        private FieldValue selectedPatient;
+        public FieldValue SelectedPatient
+        {
+            get { return selectedPatient; }
+            set
+            {
+                if (value != null)
+                {
+                    changeTracker.Track(selectedPatient, value); 
+                    SetProperty(ref selectedPatient, value);
+                }
+            }
+        }
+
+        private PersonSuggestionsProvider personSuggestionsProvider;
+        public PersonSuggestionsProvider PersonSuggestionsProvider
+        {
+            get { return personSuggestionsProvider; }
+            set { SetProperty(ref personSuggestionsProvider, value); }
+        }
+
+        public ObservableCollectionEx<RecordTypeViewModel> Records { get; private set; }
+
+        private RecordTypeViewModel selectedRecord;
+        public RecordTypeViewModel SelectedRecord
+        {
+            get { return selectedRecord; }
+            set
+            {
+                SetProperty(ref selectedRecord, value);
+            }
+        }
+
         #endregion
 
         private async void LoadDataSources()
@@ -336,17 +419,19 @@ namespace OrganizationContractsModule.ViewModels
                     return contractsQuery.Select(x => new
                     {
                         Id = x.Id,
-                        ContractNumber = x.Number,
-                        ContractName = (x.Number.HasValue ? "№" + x.Number.ToString() + " - " : string.Empty) + x.ContractName,
+                        ContractName = (x.Number.HasValue ? "№" + x.Number.ToString() : string.Empty) + " - " + x.ContractName,
+                        Patient = x.Person1,
                         OrgId = x.OrgId,
                         OrgDetails = x.OrgDetails,
                         ContractBeginDate = x.BeginDateTime,
                         ContractEndDate = x.EndDateTime,
+                        FinancingSourceName = x.FinancingSource.ShortName,
                         FinancingSourceId = x.FinancingSourceId,
                         PaymentTypeId = x.PaymentTypeId,
                         RegistratorId = x.InUserId,
                         IsCashless = x.PaymentType.Options.Contains(OptionValues.Cashless),
-                        ContractCost = x.ContractCost
+                        ContractCost = x.ContractCost,
+                        Records = x.RecordContractLimits
                     }).ToArray();
                 }, token);          
 
@@ -354,8 +439,9 @@ namespace OrganizationContractsModule.ViewModels
                     result.Select(x => new ContractViewModel()
                     {
                         Id = x.Id,
-                        ContractNumber = x.ContractNumber.ToSafeString(),
                         ContractName = x.ContractName,
+                        ContractFinSource = x.FinancingSourceName,
+                        Patient = x.Patient != null ? new FieldValue { Field = x.Patient.FullName + ", " + x.Patient.BirthYear, Value = x.Patient.Id } : null,
                         OrgId = x.OrgId.Value,
                         OrgDetails = x.OrgDetails,
                         ContractCost = x.ContractCost,
@@ -364,7 +450,8 @@ namespace OrganizationContractsModule.ViewModels
                         FinancingSourceId = x.FinancingSourceId,
                         PaymentTypeId = x.PaymentTypeId,
                         RegistratorId = x.RegistratorId,
-                        IsCashless = x.IsCashless
+                        IsCashless = x.IsCashless,
+                        Records = x.Records.Select(a => new RecordTypeViewModel() { Id = a.RecordTypeId, Name = a.RecordType.Name }).ToArray()
                     }));
                 if (contracts.Any())
                     SelectedContract = contracts.OrderByDescending(x => x.ContractBeginDate).First();
@@ -396,13 +483,18 @@ namespace OrganizationContractsModule.ViewModels
         private void LoadContractData()
         {            
             ContractName = SelectedContract.ContractName;
+            ContractFinSource = SelectedContract.ContractFinSource;
             SelectedFinSourceId = SelectedContract.FinancingSourceId;
             SelectedOrganizationId = SelectedContract.OrgId;
+            SelectedPatient = SelectedContract.Patient;
             ContractBeginDate = SelectedContract.ContractBeginDate;
             ContractEndDate = SelectedContract.ContractEndDate;
             ContractCost = SelectedContract.ContractCost;
             OrgDetails = SelectedContract.OrgDetails;
-            SelectedRegistratorId = SelectedContract.RegistratorId;                      
+            SelectedRegistratorId = SelectedContract.RegistratorId;
+            Records.Clear();
+            if (SelectedContract.Records != null)
+                Records.AddRange(new ObservableCollectionEx<RecordTypeViewModel>(SelectedContract.Records));            
         }
 
         private bool CanSaveChanges()
@@ -411,7 +503,7 @@ namespace OrganizationContractsModule.ViewModels
             {
                 return false;
             }
-            return changeTracker.HasChanges;
+            return changeTracker.HasChanges || (Records.Any() && recordsChangeTracker.HasChanges);
         }
 
         private bool CanRemoveContract()
@@ -429,8 +521,8 @@ namespace OrganizationContractsModule.ViewModels
             Contracts.Add(new ContractViewModel()
             {
                 Id = 0,
-                ContractNumber = string.Empty,
                 ContractName = "НОВЫЙ ДОГОВОР",
+                ContractFinSource = string.Empty,
                 OrgDetails = string.Empty,
                 ContractCost = 0,
                 ContractBeginDate = DateTime.Now,
@@ -482,8 +574,16 @@ namespace OrganizationContractsModule.ViewModels
             contract.EndDateTime = contractEndDate;
             contract.FinancingSourceId = selectedFinSourceId;
             contract.ClientId = (int?)null;
-            contract.ConsumerId = (int?)null;
-            contract.ContractName = contractService.GetOrganizationById(selectedOrganizationId).First().Name;
+            if (IsDMSContract)
+            {
+                contract.ConsumerId = selectedPatient.Value;
+                contract.ContractName = contractService.GetPersonById(selectedPatient.Value).First().ShortName + " (" + contractService.GetOrganizationById(selectedOrganizationId).First().Name + ")";
+            }
+            else
+            {
+                contract.ConsumerId = (int?)null;
+                contract.ContractName = contractService.GetOrganizationById(selectedOrganizationId).First().Name;
+            }
             contract.PaymentTypeId = contractService.GetPaymentTypes().First(x => x.Options.Contains(OptionValues.Cashless)).Id;
             contract.TransactionNumber = string.Empty;
             contract.TransactionDate = string.Empty;            
@@ -493,11 +593,11 @@ namespace OrganizationContractsModule.ViewModels
             contract.OrgId = selectedOrganizationId;
             contract.OrgDetails = orgDetails;
             contract.ContractCost = contractCost;
-            contract.Options = string.Empty;
+            contract.Options = string.Empty;            
 
             try
             {
-                contract.Id = contractService.SaveContractData(contract);
+                contract.Id = contractService.SaveContractData(contract, Records.Select(x => x.Id).ToArray());
                 saveSuccesfull = true;
             }
             catch (Exception ex)
@@ -511,13 +611,25 @@ namespace OrganizationContractsModule.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
+                    contract = contractService.GetContractById(contract.Id).First(); 
                     SelectedContract.Id = contract.Id;
-                    SelectedContract.ContractNumber = contract.Number.ToSafeString();
+                    SelectedContract.ContractFinSource = contract.FinancingSource.ShortName;
                     SelectedContract.ContractName = contract.DisplayName;
                     SelectedContract.ContractBeginDate = contract.BeginDateTime;
                     SelectedContract.ContractEndDate = contract.EndDateTime;
+                    SelectedContract.OrgId = contract.OrgId.Value;
+                    SelectedContract.OrgDetails = contract.OrgDetails;
+                    SelectedContract.RegistratorId = contract.InUserId;
+                    SelectedContract.ContractCost = contract.ContractCost;
+                    SelectedContract.Records = contract.RecordContractLimits.Select(x => new RecordTypeViewModel() { Id = x.RecordTypeId, Name = x.RecordType.Name }).ToArray();
+                    if (IsDMSContract)
+                    {
+                        var patient = contractService.GetPersonById(selectedPatient.Value).First();
+                        SelectedContract.Patient = new FieldValue { Field = patient.FullName + ", " + patient.BirthYear, Value = patient.Id };
+                    }                       
                     ContractName = contract.DisplayName;
                     changeTracker.UntrackAll();
+                    recordsChangeTracker.AcceptChanges();
                     saveContractCommand.RaiseCanExecuteChanged();
                     removeContractCommand.RaiseCanExecuteChanged();
                 }
@@ -557,17 +669,48 @@ namespace OrganizationContractsModule.ViewModels
                 if (SelectedContract.Id == SpecialValues.NewId)
                     SelectedOrganizationId = addContractOrganizationViewModel.orgId;
             }
-        }              
+        }
+
+        private void RemoveRecord()
+        {
+            if (SelectedRecord != null)
+            {
+                if (messageService.AskUser("Удалить услугу '" + SelectedRecord.Name + "' из договора ?") == true)
+                {
+                    if (!SpecialValues.IsNewOrNonExisting(SelectedContract.Id))
+                        contractService.RemoveRecord(SelectedContract.Id, SelectedRecord.Id);
+                    Records.Remove(SelectedRecord);
+                }
+            }
+        }
+
+        private async void AddRecord()
+        {
+            var addRecordViewModel = addRecordViewModelFactory();
+            addRecordViewModel.Initialize();
+            var result = await dialogService.ShowDialogAsync(addRecordViewModel);
+            if (result == true)
+            {
+                foreach (var item in addRecordViewModel.RecordTypes.Where(x => x.IsChecked))
+                    Records.Add(new RecordTypeViewModel() { Id = item.Id, Name = item.Name });
+                saveContractCommand.RaiseCanExecuteChanged();
+            }
+        }
 
         private readonly DelegateCommand addContractCommand;
         private readonly DelegateCommand saveContractCommand;
         private readonly DelegateCommand removeContractCommand;
         private readonly DelegateCommand addOrganizationCommand;
-        
+                
         public ICommand AddContractCommand { get { return addContractCommand; } }
         public ICommand SaveContractCommand { get { return saveContractCommand; } }
         public ICommand RemoveContractCommand { get { return removeContractCommand; } }
         public ICommand AddOrganizationCommand { get { return addOrganizationCommand; } }
+
+        private readonly DelegateCommand addRecordCommand;
+        private readonly DelegateCommand removeRecordCommand;
+        public ICommand AddRecordCommand { get { return addRecordCommand; } }
+        public ICommand RemoveRecordCommand { get { return removeRecordCommand; } }
                 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {

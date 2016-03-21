@@ -3,6 +3,7 @@
                     xmlns:views="clr-namespace:OrganizationContractsModule.Views"
                     xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="../Views/AddContractOrganizationView.xaml" />        
+        <ResourceDictionary Source="../Views/AddContractOrganizationView.xaml" />
+        <ResourceDictionary Source="../Views/AddRecordView.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
