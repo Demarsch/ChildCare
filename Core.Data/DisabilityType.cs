@@ -22,8 +22,11 @@ namespace Core.Data
     
         public int Id { get; set; }
         public string Name { get; set; }
+        public string ShortName { get; set; }
+        public int BenefitCode { get; set; }
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
+        public bool IsDisability { get; set; }
     
         [NonSerialized]
     	protected ICollection<PersonDisability> personDisabilities;

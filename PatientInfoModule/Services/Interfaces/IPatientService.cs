@@ -42,6 +42,8 @@ namespace PatientInfoModule.Services
 
         void DeletePersonOuterDocument(int documentId);
 
+        IDisposableQueryable<Person> GetPersonById(int id);
+
         bool SavePersonDocument(PersonOuterDocument document);
 
         IEnumerable<InsuranceCompany> GetInsuranceCompanies(string filter);
@@ -57,5 +59,7 @@ namespace PatientInfoModule.Services
         Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId);
 
         Task<Person> CheckIfSimilarPatientExistsAsync(DuplicatePersonCheckParameters param);
+
+        string GetDBSettingValue(string parameter);
     }
 }

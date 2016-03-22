@@ -173,8 +173,7 @@ namespace Core.Reports
             {
                 for (int mark = FindFirstKey(temp, sectionKey, 0); mark >= 0; mark = FindFirstKey(temp, sectionKey, 0))
                 {
-                    int inpara = temp.LastIndexOf(parabegin, mark);
-                    if (inpara < 0) inpara = temp.LastIndexOf(parabeginfull, mark);
+                    int inpara = Math.Max(temp.LastIndexOf(parabegin, mark), temp.LastIndexOf(parabeginfull, mark));
                     if (inpara < 0) continue;
 
                     int outpara = temp.IndexOf(paraend, mark);
@@ -183,8 +182,7 @@ namespace Core.Reports
                     int mark1 = FindFirstKey(temp, sectionKey, outpara);
                     if (mark1 < 0) continue;
 
-                    int inpara1 = temp.LastIndexOf(parabegin, mark1);
-                    if (inpara1 < 0) inpara1 = temp.LastIndexOf(parabeginfull, mark1);
+                    int inpara1 = Math.Max(temp.LastIndexOf(parabegin, mark1), temp.LastIndexOf(parabeginfull, mark1));
                     if (inpara1 < 0) continue;
 
                     int outpara1 = temp.IndexOf(paraend, mark1);
@@ -205,8 +203,7 @@ namespace Core.Reports
             {
                 for (int mark = FindFirstKey(temp, tableKey, 0); mark >= 0; mark = FindFirstKey(temp, tableKey, 0))
                 {
-                    int inrow = temp.LastIndexOf(rowbegin, mark);
-                    if (inrow < 0) inrow = temp.LastIndexOf(rowbeginfull, mark);
+                    int inrow = Math.Max(temp.LastIndexOf(rowbegin, mark), temp.LastIndexOf(rowbeginfull, mark));
                     if (inrow < 0) continue;
 
                     int outrow = temp.IndexOf(rowend, mark);
@@ -240,9 +237,11 @@ namespace Core.Reports
 
             foreach (var fieldKey in data.GetUsedFields().OrderByDescending(x => x.Length))
             {
-                for (int mark = FindFirstKey(temp, fieldKey, 0); mark >= 0; mark = FindFirstKey(temp, fieldKey, 0))
+                for (int begin = 0, mark = FindFirstKey(temp, fieldKey, 0); mark >= 0; mark = FindFirstKey(temp, fieldKey, begin))
                 {
-                    temp = temp.Substring(0, mark) + GetValueText(data[fieldKey]) + temp.Substring(mark + fieldKey.Length);
+                    string text = GetValueText(data[fieldKey]);
+                    temp = temp.Substring(0, mark) + text + temp.Substring(mark + fieldKey.Length);
+                    begin = mark + text.Length;
                 }
             }
 
@@ -254,8 +253,7 @@ namespace Core.Reports
             int mark = template.IndexOf(key, start, StringComparison.CurrentCultureIgnoreCase);
             if (mark < 0) return -1;
 
-            int intext = template.LastIndexOf(textbegin, mark);
-            if (intext < 0) intext = template.LastIndexOf(textbeginfull, mark);
+            int intext = Math.Max(template.LastIndexOf(textbeginfull, mark), template.LastIndexOf(textbegin, mark));
             if (intext < 0) return -1;
 
             int wrong = template.IndexOf(tagbegin, intext + 1, mark - intext);

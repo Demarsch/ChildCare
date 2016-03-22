@@ -168,6 +168,12 @@ namespace PatientInfoModule.Services
             return result;
         }
 
+        public IDisposableQueryable<Person> GetPersonById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Person>(context.Set<Person>().Where(x => x.Id == id), context);
+        }
+
         public async Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId)
         {
             using (var context = contextProvider.CreateNewContext())
@@ -245,6 +251,7 @@ namespace PatientInfoModule.Services
                 person.Year = year;
                 person.AmbNumber = maxNumber;
                 person.AmbNumberString = maxNumber + "-" + DateTime.Now.ToString("yy");
+                person.AmbNumberCreationDate = DateTime.Now;
                 await context.SaveChangesAsync();
                 return person.AmbNumberString;
             }
@@ -259,6 +266,7 @@ namespace PatientInfoModule.Services
                 person.Year = 0;
                 person.AmbNumber = 0;
                 person.AmbNumberString = string.Empty;
+                person.AmbNumberCreationDate = null;
                 await context.SaveChangesAsync();
                 return true;
             }
@@ -730,6 +738,14 @@ namespace PatientInfoModule.Services
                     return false;
                 }
             }
+        }
+        
+        public string GetDBSettingValue(string parameter)
+        {
+            var setting = contextProvider.CreateNewContext().Set<DBSetting>().FirstOrDefault(x => x.Name == parameter);
+            if (setting != null)
+                return setting.Value;
+            return string.Empty;
         }
     }
 }

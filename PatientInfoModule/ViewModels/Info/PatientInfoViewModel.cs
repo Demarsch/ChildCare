@@ -867,7 +867,6 @@ namespace PatientInfoModule.ViewModels
                                              },
                                    CurrentPerson = new Person
                                                    {
-                                                       AmbNumberString = currentPerson == null ? string.Empty : currentPerson.AmbNumberString,
                                                        Id = currentPerson == null ? SpecialValues.NewId : currentPerson.Id,
                                                        BirthDate = BirthDate.Value.Date,
                                                        Snils = Snils,
@@ -875,7 +874,9 @@ namespace PatientInfoModule.ViewModels
                                                        IsMale = IsMale,
                                                        Phones = Phones,
                                                        Email = Email,
-                                                       PhotoId = currentPerson == null ? SpecialValues.NewId : currentPerson.PhotoId
+                                                       PhotoId = currentPerson == null ? SpecialValues.NewId : currentPerson.PhotoId,
+                                                       AmbNumberString = currentPerson == null ? string.Empty : currentPerson.AmbNumberString,
+                                                       AmbNumberCreationDate = currentPerson == null ? null : currentPerson.AmbNumberCreationDate
                                                    },
                                    IsIncorrectName = IsIncorrectName,
                                    IsNewName = IsNewName || currentName == null,

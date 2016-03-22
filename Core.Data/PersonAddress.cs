@@ -33,14 +33,6 @@ namespace Core.Data
         public string Apartment { get; set; }
     
         [NonSerialized]
-    	protected AddressType addressType;
-    
-    	public virtual AddressType AddressType
-    	{
-     		get { return addressType; }
-     		set { addressType = value; }
-    	}
-        [NonSerialized]
     	protected Okato okato;
     
     	public virtual Okato Okato
@@ -71,6 +63,14 @@ namespace Core.Data
     	{
      		get { return personTalons; }
      		set { personTalons = value; }
+    	}
+        [NonSerialized]
+    	protected AddressType addressType;
+    
+    	public virtual AddressType AddressType
+    	{
+     		get { return addressType; }
+     		set { addressType = value; }
     	}
     
     	public object Clone()

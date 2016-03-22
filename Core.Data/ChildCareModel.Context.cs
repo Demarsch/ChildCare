@@ -25,10 +25,8 @@ namespace Core.Data
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<Branch> Branches { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<Document> Documents { get; set; }
         public virtual DbSet<Education> Educations { get; set; }
         public virtual DbSet<HealthGroup> HealthGroups { get; set; }
@@ -117,5 +115,7 @@ namespace Core.Data
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
+        public virtual DbSet<AddressType> AddressTypes { get; set; }
+        public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
     }
 }

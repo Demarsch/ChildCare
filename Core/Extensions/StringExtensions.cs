@@ -123,5 +123,19 @@ namespace Core.Extensions
             }
             return source.IndexOf(value, StringComparison.CurrentCultureIgnoreCase) != -1;
         }
+
+        /// <summary>
+        /// Проверяет наличие в указанной строке любого образца
+        /// </summary>
+        /// <param name="currentString"></param>
+        /// <param name="strings">массив образцов</param>
+        /// <returns></returns>
+        public static bool ContainsAny(this string currentString, params string[] strings)
+        {
+            foreach (string item in strings)
+                if (currentString.Contains(item))
+                    return true;
+            return false;
+        }
     }
 }

@@ -328,7 +328,7 @@ namespace PatientInfoModule.ViewModels
                 talon.TalonNumber = TalonNumber;
                 talon.MKB = CodeMKB;
                 talon.Comment = Comment;
-                talon.RecordContractId = commissionService.GetRecordContractsByOptions(OptionValues.HMHContract, talon.TalonDateTime).First().Id;
+                talon.RecordContractId = commissionService.GetRecordContractsByOptions(OptionValues.HMH, talon.TalonDateTime).First().Id;
                 talon.MedicalHelpTypeId = SelectedMedicalHelpTypeId;
                 talon.IsCompleted = SpecialValues.IsNewOrNonExisting(talon.Id) ? (IsCompleted == false ? (bool?)null : true) : IsCompleted;
                 var talonAddress = new PersonAddress() 
@@ -375,7 +375,7 @@ namespace PatientInfoModule.ViewModels
             var talon = commissionService.GetTalonById(TalonId).FirstOrDefault();
             if (talon != null)
                 onDate = talon.TalonDateTime;
-            var HMHContract = commissionService.GetRecordContractsByOptions(OptionValues.HMHContract, onDate).FirstOrDefault();
+            var HMHContract = commissionService.GetRecordContractsByOptions(OptionValues.HMH, onDate).FirstOrDefault();
             if (HMHContract == null)
             {
                 messageService.ShowError("Отсутствует договор на оказание ВМП.");

@@ -60,6 +60,7 @@ namespace Core.Data
         public int AmbCardFirstListHashCode { get; set; }
         public int PersonHospListHashCode { get; set; }
         public int RadiationListHashCode { get; set; }
+        public Nullable<System.DateTime> AmbNumberCreationDate { get; set; }
     
         [NonSerialized]
     	protected Document document;

@@ -81,13 +81,19 @@ namespace PatientInfoModule
         {
             RegisterLogger();
             log.InfoFormat("{0} module init start", WellKnownModuleNames.PatientInfoModule);
+            RegisterModules();
             RegisterServices();
             RegisterViewModels();
-            RegisterViews();
+            RegisterViews();            
             InitiateLongRunningOperations();
             var patientRecords = container.Resolve<PatientRecords>();
             patientRecords.Initialize();
             log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientInfoModule);
+        }
+
+        private void RegisterModules()
+        {
+            Core.Reports.CoreReports.Initialize(container);
         }
 
         private void RegisterViewModels()

@@ -24,6 +24,7 @@ using Prism.Regions;
 using Shared.Patient.ViewModels;
 using Shell.Shared;
 using Core.Services;
+using Core.Reports;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -45,6 +46,8 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
+        private readonly IReportGeneratorHelper reportGenerator;
+
         private readonly Func<PatientInfoViewModel> relativeInfoFactory;
 
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
@@ -59,7 +62,8 @@ namespace PatientInfoModule.ViewModels
                                     IRegionManager regionManager,
                                     IViewNameResolver viewNameResolver,
                                     Func<PatientInfoViewModel> relativeInfoFactory,
-                                    Func<PersonSearchDialogViewModel> relativeSearchFactory)
+                                    Func<PersonSearchDialogViewModel> relativeSearchFactory,
+                                    IReportGeneratorHelper reportGenerator)
         {
             if (patientService == null)
             {
@@ -105,6 +109,10 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("securityService");
             }
+            if (reportGenerator == null)
+            {
+                throw new ArgumentNullException("reportGenerator");
+            }
             this.securityService = securityService;
             this.patientService = patientService;
             this.eventAggregator = eventAggregator;
@@ -116,6 +124,7 @@ namespace PatientInfoModule.ViewModels
             this.relativeInfoFactory = relativeInfoFactory;
             this.relativeSearchFactory = relativeSearchFactory;
             PatientAssignmentListViewModel = patientAssignmentList;
+            this.reportGenerator = reportGenerator;
             currentPatientId = PatientAssignmentListViewModel.PatientId = SpecialValues.NonExistingId;
             Relatives = new ObservableCollectionEx<PatientInfoViewModel>();
             Relatives.BeforeCollectionChanged += RelativesOnBeforeCollectionChanged;
@@ -383,7 +392,94 @@ namespace PatientInfoModule.ViewModels
 
         private void PrintAmbCardAsync()
         {
+            if (SpecialValues.IsNewOrNonExisting(currentPatientId)) return;
+            var patient = patientService.GetPersonById(currentPatientId).First();
+            if (string.IsNullOrEmpty(patient.AmbNumberString))
+            {
+                FailureMediator.Activate("Отсутствует номер А/К", true);
+                return;
+            }
+            var report = reportGenerator.CreateDocX("AmbulatoryCard");
+            string emptyValue = "";
+            string defValue = "____________";
+            string nonExistValue = "отсутствует";
+            report.Data["OrgName"] = patientService.GetDBSettingValue(DBSetting.OrgName);
+            report.Data["OrgAddress"] = patientService.GetDBSettingValue(DBSetting.OrgAddress);
+            report.Data["OrgOKPO"] = patientService.GetDBSettingValue(DBSetting.OrgOKPO);
 
+            report.Data["CardNumber"] = patient.AmbNumberString;
+            report.Data["CardDate"] = patient.AmbNumberCreationDate.Value.ToShortDateString();
+            report.Data["PatientFIO"] = patient.FullName;
+            report.Data["BirthDate"] = patient.BirthDate.ToShortDateString();
+            report.Data["Gender"] = patient.IsMale ? "муж. - 1" : "жен. - 2";
+            if (patient.PersonAddresses.Any(x => x.AddressType.Options.Contains(OptionValues.AddressForAmbCard)))
+            {
+                var address = patient.PersonAddresses.Where(x => x.AddressType.Options.Contains(OptionValues.AddressForAmbCard)).OrderByDescending(x => x.BeginDateTime).First();
+                report.Data["Address"] = address.UserText +
+                                         (!string.IsNullOrEmpty(address.House) ? " д." + address.House : string.Empty) +
+                                         (!string.IsNullOrEmpty(address.Building) ? " корп." + address.Building : string.Empty) +
+                                         (!string.IsNullOrEmpty(address.Apartment) ? " кв." + address.Apartment : string.Empty);
+                report.Data["Registration"] = address.UserText.ContainsAny(", г ", ", пгт ") ? "городская - 1" : "сельская – 2";
+            }
+            else
+            {
+                report.Data["Address"] = nonExistValue;
+                report.Data["Registration"] = nonExistValue;
+            }
+            report.Data["ContactPhone"] = patient.Phones;
+            report.Data["SNILS"] = patient.Snils;
+
+            var omsDocument = patient.InsuranceDocuments.OrderByDescending(x => x.BeginDate).FirstOrDefault();
+            if (omsDocument != null)
+            {
+                report.Data["InsuranceDocument"] = omsDocument.InsuranceDocumentType.Name + ": серия " + omsDocument.Series + " № " + omsDocument.Number;
+                report.Data["InsuranceCompany"] = omsDocument.InsuranceCompany.NameSMOK;
+            }
+            else
+            {
+                report.Data["OMSDocument"] = nonExistValue;
+                report.Data["InsuranceCompany"] = nonExistValue;                
+            }          
+
+            if (patient.PersonDisabilities.Any(x => !x.DisabilityType.IsDisability))
+            {
+                var benefit = patient.PersonDisabilities.Where(x => !x.DisabilityType.IsDisability).OrderByDescending(x => x.BeginDate).First();
+                report.Data["BenefitCode"] = benefit.DisabilityType.BenefitCode;
+                report.Data["BenefitDocument"] = benefit.DisabilityType.Name + " (серия " + benefit.Series + " № " + benefit.Number + ")"; 
+            }   
+            else
+            {
+                report.Data["BenefitCode"] = defValue;
+                report.Data["BenefitDocument"] = defValue;
+            }
+
+            report.Data["MaritalStatus"] = patient.PersonMaritalStatuses.Any() ? patient.PersonMaritalStatuses.OrderByDescending(x => x.BeginDateTime).First().MaritalStatus.Name : defValue;
+            report.Data["Education"] = patient.PersonEducations.Any() ? patient.PersonEducations.OrderByDescending(x => x.BeginDateTime).First().Education.Name : defValue;
+            report.Data["Employment"] = patient.PersonSocialStatuses.Any() ? patient.PersonSocialStatuses.OrderByDescending(x => x.BeginDateTime).First().SocialStatusType.Name : defValue;
+            if (patient.PersonSocialStatuses.Any(x => x.OrgId.HasValue))
+            {
+                var business = patient.PersonSocialStatuses.Where(x => x.OrgId.HasValue).OrderByDescending(x => x.BeginDateTime).First();
+                report.Data["Business"] = business.Org.Name + (!string.IsNullOrEmpty(business.Office) + (", " + business.Office) + string.Empty);
+            }
+            else
+                report.Data["Business"] = defValue;
+
+            if (patient.PersonDisabilities.Any(x => x.DisabilityType.IsDisability))
+            {
+                var disability = patient.PersonDisabilities.Where(x => x.DisabilityType.IsDisability).OrderByDescending(x => x.BeginDate).First();
+                report.Data["Disability"] = disability.DisabilityType.Name + " (серия " + disability.Series + " № " + disability.Number + ")";
+            }
+            else
+                report.Data["Disability"] = defValue;
+
+            report.Data["BloodGroup"] = defValue;
+            report.Data["BloodRh"] = defValue;
+            report.Data["Allergy"] = defValue;
+
+            report.Data.Tables["hospdata"].AddRow(emptyValue, emptyValue, emptyValue);
+            report.Data.Tables["radiationdata"].AddRow(emptyValue, emptyValue, emptyValue);
+            report.Editable = false;
+            report.Show();
         }
 
         private bool CanAddRelative()

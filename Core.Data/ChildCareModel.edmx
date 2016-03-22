@@ -14,6 +14,7 @@
           <Property Name="WithoutEndDate" Type="bit" Nullable="false" />
           <Property Name="PriorityForOKATO" Type="int" Nullable="false" />
           <Property Name="Category" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Options" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="AnalyseRefferences">
           <Key>
@@ -315,8 +316,11 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="ShortName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="BenefitCode" Type="int" Nullable="false" />
           <Property Name="BeginDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
+          <Property Name="IsDisability" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Documents">
           <Key>
@@ -696,6 +700,7 @@
           <Property Name="AmbNumberString" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="AmbNumber" Type="int" Nullable="false" />
           <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="AmbNumberCreationDate" Type="datetime" />
           <Property Name="AmbCardFirstListHashCode" Type="int" Nullable="false" />
           <Property Name="PersonHospListHashCode" Type="int" Nullable="false" />
           <Property Name="RadiationListHashCode" Type="int" Nullable="false" />
@@ -2418,7 +2423,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_RecordContractLimits_RecordContracts">
-          <End Role="RecordContracts" Type="Self.RecordContracts" Multiplicity="1" />
+          <End Role="RecordContracts" Type="Self.RecordContracts" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="RecordContractLimits" Type="Self.RecordContractLimits" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RecordContracts">
@@ -3926,10 +3933,8 @@
     <edmx:ConceptualModels>
       <Schema Namespace="DataLib" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="ModelContext" annotation:LazyLoadingEnabled="true" >
-          <EntitySet Name="AddressTypes" EntityType="DataLib.AddressType" />
           <EntitySet Name="Branches" EntityType="DataLib.Branch" />
           <EntitySet Name="Countries" EntityType="DataLib.Country" />
-          <EntitySet Name="DisabilityTypes" EntityType="DataLib.DisabilityType" />
           <EntitySet Name="Documents" EntityType="DataLib.Document" />
           <EntitySet Name="Educations" EntityType="DataLib.Education" />
           <EntitySet Name="HealthGroups" EntityType="DataLib.HealthGroup" />
@@ -3968,10 +3973,6 @@
           <EntitySet Name="VisitOutcomes" EntityType="DataLib.VisitOutcome" />
           <EntitySet Name="VisitResults" EntityType="DataLib.VisitResult" />
           <EntitySet Name="Visits" EntityType="DataLib.Visit" />
-          <AssociationSet Name="FK_PersonAddresses_AddressTypes" Association="DataLib.FK_PersonAddresses_AddressTypes">
-            <End Role="AddressType" EntitySet="AddressTypes" />
-            <End Role="PersonAddress" EntitySet="PersonAddresses" />
-          </AssociationSet>
           <AssociationSet Name="FK_Branches_Branches" Association="DataLib.FK_Branches_Branches">
             <End Role="Branch" EntitySet="Branches" />
             <End Role="Branch1" EntitySet="Branches" />
@@ -3983,10 +3984,6 @@
           <AssociationSet Name="FK_PersonNationalities_Countries" Association="DataLib.FK_PersonNationalities_Countries">
             <End Role="Country" EntitySet="Countries" />
             <End Role="PersonNationality" EntitySet="PersonNationalities" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonDisabilities_DisabilityTypes" Association="DataLib.FK_PersonDisabilities_DisabilityTypes">
-            <End Role="DisabilityType" EntitySet="DisabilityTypes" />
-            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
           </AssociationSet>
           <AssociationSet Name="FK_PersonOuterDocuments_Documents" Association="DataLib.FK_PersonOuterDocuments_Documents">
             <End Role="Document" EntitySet="Documents" />
@@ -4686,18 +4683,17 @@
             <End Role="IdentityDocumentType" EntitySet="IdentityDocumentTypes" />
             <End Role="PersonIdentityDocument" EntitySet="PersonIdentityDocuments" />
           </AssociationSet>
+          <EntitySet Name="AddressTypes" EntityType="DataLib.AddressType" />
+          <AssociationSet Name="FK_PersonAddresses_AddressTypes" Association="DataLib.FK_PersonAddresses_AddressTypes">
+            <End Role="AddressType" EntitySet="AddressTypes" />
+            <End Role="PersonAddress" EntitySet="PersonAddresses" />
+          </AssociationSet>
+          <EntitySet Name="DisabilityTypes" EntityType="DataLib.DisabilityType" />
+          <AssociationSet Name="FK_PersonDisabilities_DisabilityTypes" Association="DataLib.FK_PersonDisabilities_DisabilityTypes">
+            <End Role="DisabilityType" EntitySet="DisabilityTypes" />
+            <End Role="PersonDisability" EntitySet="PersonDisabilities" />
+          </AssociationSet>
           </EntityContainer>
-        <EntityType Name="AddressType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="WithoutEndDate" Type="Boolean" Nullable="false" />
-          <Property Name="PriorityForOKATO" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="AddressType" ToRole="PersonAddress" />
-          <Property Name="Category" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="Branch">
           <Key>
             <PropertyRef Name="Id" />
@@ -4723,16 +4719,6 @@
           <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="PersonNationalities" Relationship="DataLib.FK_PersonNationalities_Countries" FromRole="Country" ToRole="PersonNationality" />
-        </EntityType>
-        <EntityType Name="DisabilityType">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_DisabilityTypes" FromRole="DisabilityType" ToRole="PersonDisability" />
         </EntityType>
         <EntityType Name="Document">
           <Key>
@@ -4889,11 +4875,11 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Building" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Apartment" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="AddressType" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="PersonAddress" ToRole="AddressType" />
           <NavigationProperty Name="Okato" Relationship="DataLib.FK_PersonAddresses_Okatos" FromRole="PersonAddress" ToRole="Okato" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Addresses_Persons" FromRole="PersonAddress" ToRole="Person" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_PersonAddresses" FromRole="PersonAddress" ToRole="CommissionProtocol" />
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_PersonAddresses" FromRole="PersonAddress" ToRole="PersonTalon" />
+          <NavigationProperty Name="AddressType" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="PersonAddress" ToRole="AddressType" />
         </EntityType>
         <EntityType Name="PersonDisability">
           <Key>
@@ -4907,8 +4893,8 @@
           <Property Name="GivenOrg" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="DisabilityType" Relationship="DataLib.FK_PersonDisabilities_DisabilityTypes" FromRole="PersonDisability" ToRole="DisabilityType" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonDisabilities_Persons" FromRole="PersonDisability" ToRole="Person" />
+          <NavigationProperty Name="DisabilityType" Relationship="DataLib.FK_PersonDisabilities_DisabilityTypes" FromRole="PersonDisability" ToRole="DisabilityType" />
         </EntityType>
         <EntityType Name="PersonEducation">
           <Key>
@@ -5057,6 +5043,7 @@
           <NavigationProperty Name="Users" Relationship="DataLib.FK_Users_Persons" FromRole="Person" ToRole="User" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Persons" FromRole="Person" ToRole="CommissionProtocol" />
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_Persons" FromRole="Person" ToRole="PersonTalon" />
+          <Property Name="AmbNumberCreationDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="PersonSocialStatus">
           <Key>
@@ -5319,18 +5306,6 @@
           <NavigationProperty Name="User" Relationship="DataLib.FK_Visits_Users_RemovedByUser" FromRole="Visit" ToRole="User" />
           <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="Visit" ToRole="FinancingSource" />
         </EntityType>
-        <Association Name="FK_PersonAddresses_AddressTypes">
-          <End Type="DataLib.AddressType" Role="AddressType" Multiplicity="1" />
-          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AddressType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonAddress">
-              <PropertyRef Name="AddressTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Branches_Branches">
           <End Type="DataLib.Branch" Role="Branch" Multiplicity="0..1" />
           <End Type="DataLib.Branch" Role="Branch1" Multiplicity="*" />
@@ -5364,18 +5339,6 @@
             </Principal>
             <Dependent Role="PersonNationality">
               <PropertyRef Name="CountryId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonDisabilities_DisabilityTypes">
-          <End Type="DataLib.DisabilityType" Role="DisabilityType" Multiplicity="1" />
-          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DisabilityType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonDisability">
-              <PropertyRef Name="DisabilityTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8173,23 +8136,61 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="AddressType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="WithoutEndDate" Type="Boolean" Nullable="false" />
+          <Property Name="PriorityForOKATO" Type="Int32" Nullable="false" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PersonAddresses" Relationship="DataLib.FK_PersonAddresses_AddressTypes" FromRole="AddressType" ToRole="PersonAddress" />
+        </EntityType>
+        <Association Name="FK_PersonAddresses_AddressTypes">
+          <End Type="DataLib.AddressType" Role="AddressType" Multiplicity="1" />
+          <End Type="DataLib.PersonAddress" Role="PersonAddress" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AddressType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonAddress">
+              <PropertyRef Name="AddressTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DisabilityType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="BenefitCode" Type="Int32" Nullable="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDisability" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="PersonDisabilities" Relationship="DataLib.FK_PersonDisabilities_DisabilityTypes" FromRole="DisabilityType" ToRole="PersonDisability" />
+        </EntityType>
+        <Association Name="FK_PersonDisabilities_DisabilityTypes">
+          <End Type="DataLib.DisabilityType" Role="DisabilityType" Multiplicity="1" />
+          <End Type="DataLib.PersonDisability" Role="PersonDisability" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DisabilityType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonDisability">
+              <PropertyRef Name="DisabilityTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="DataLibStoreContainer" CdmEntityContainer="ModelContext" >
-          <EntitySetMapping Name="AddressTypes">
-            <EntityTypeMapping TypeName="DataLib.AddressType">
-              <MappingFragment StoreEntitySet="AddressTypes">
-                <ScalarProperty Name="Category" ColumnName="Category" />
-                <ScalarProperty Name="PriorityForOKATO" ColumnName="PriorityForOKATO" />
-                <ScalarProperty Name="WithoutEndDate" ColumnName="WithoutEndDate" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Branches">
             <EntityTypeMapping TypeName="DataLib.Branch">
               <MappingFragment StoreEntitySet="Branches">
@@ -8208,16 +8209,6 @@
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="IsDefaultNationality" ColumnName="IsDefaultNationality" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="DisabilityTypes">
-            <EntityTypeMapping TypeName="DataLib.DisabilityType">
-              <MappingFragment StoreEntitySet="DisabilityTypes">
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -8481,6 +8472,7 @@
           <EntitySetMapping Name="Persons">
             <EntityTypeMapping TypeName="DataLib.Person">
               <MappingFragment StoreEntitySet="Persons">
+                <ScalarProperty Name="AmbNumberCreationDate" ColumnName="AmbNumberCreationDate" />
                 <ScalarProperty Name="RadiationListHashCode" ColumnName="RadiationListHashCode" />
                 <ScalarProperty Name="PersonHospListHashCode" ColumnName="PersonHospListHashCode" />
                 <ScalarProperty Name="AmbCardFirstListHashCode" ColumnName="AmbCardFirstListHashCode" />
@@ -9394,6 +9386,31 @@
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AddressTypes">
+            <EntityTypeMapping TypeName="DataLib.AddressType">
+              <MappingFragment StoreEntitySet="AddressTypes">
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="PriorityForOKATO" ColumnName="PriorityForOKATO" />
+                <ScalarProperty Name="WithoutEndDate" ColumnName="WithoutEndDate" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DisabilityTypes">
+            <EntityTypeMapping TypeName="DataLib.DisabilityType">
+              <MappingFragment StoreEntitySet="DisabilityTypes">
+                <ScalarProperty Name="IsDisability" ColumnName="IsDisability" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="BenefitCode" ColumnName="BenefitCode" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

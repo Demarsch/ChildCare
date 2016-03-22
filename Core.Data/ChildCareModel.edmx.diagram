@@ -5,10 +5,8 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="371fef52405343a5acb51c22f2bc1545" Name="Diagram1" ZoomLevel="81" ShowGrid="true" >
-        <EntityTypeShape EntityType="DataLib.AddressType" Width="1.5" PointX="6" PointY="34.125" />
         <EntityTypeShape EntityType="DataLib.Branch" Width="1.5" PointX="6" PointY="37.875" />
         <EntityTypeShape EntityType="DataLib.Country" Width="1.5" PointX="3" PointY="63.625" />
-        <EntityTypeShape EntityType="DataLib.DisabilityType" Width="1.5" PointX="6" PointY="64.625" />
         <EntityTypeShape EntityType="DataLib.Document" Width="1.5" PointX="0.75" PointY="47" />
         <EntityTypeShape EntityType="DataLib.Education" Width="1.5" PointX="9" PointY="42.875" />
         <EntityTypeShape EntityType="DataLib.HealthGroup" Width="1.5" PointX="9" PointY="62.625" />
@@ -47,11 +45,9 @@
         <EntityTypeShape EntityType="DataLib.VisitOutcome" Width="1.5" PointX="15.75" PointY="74" />
         <EntityTypeShape EntityType="DataLib.VisitResult" Width="1.5" PointX="15.75" PointY="77.5" />
         <EntityTypeShape EntityType="DataLib.Visit" Width="1.5" PointX="18" PointY="73.625" />
-        <AssociationConnector Association="DataLib.FK_PersonAddresses_AddressTypes" />
         <AssociationConnector Association="DataLib.FK_Branches_Branches" />
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Branches" />
         <AssociationConnector Association="DataLib.FK_PersonNationalities_Countries" />
-        <AssociationConnector Association="DataLib.FK_PersonDisabilities_DisabilityTypes" />
         <AssociationConnector Association="DataLib.FK_PersonOuterDocuments_Documents" />
         <AssociationConnector Association="DataLib.FK_Persons_Documents" />
         <AssociationConnector Association="DataLib.FK_PersonEducations_Educations" />
@@ -264,6 +260,10 @@
         <AssociationConnector Association="DataLib.FK_Visits_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" />
+        <EntityTypeShape EntityType="DataLib.AddressType" Width="1.5" PointX="10.375" PointY="5" />
+        <AssociationConnector Association="DataLib.FK_PersonAddresses_AddressTypes" />
+        <EntityTypeShape EntityType="DataLib.DisabilityType" Width="1.5" PointX="11.375" PointY="1" />
+        <AssociationConnector Association="DataLib.FK_PersonDisabilities_DisabilityTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

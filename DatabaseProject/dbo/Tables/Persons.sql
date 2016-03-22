@@ -3,7 +3,7 @@
     [FullName]                 VARCHAR (300) NOT NULL,
     [ShortName]                VARCHAR (110) NOT NULL,
     [BirthDate]                DATETIME      NOT NULL,
-	[IsMale]                   BIT           CONSTRAINT [DF_Persons_IsMale] DEFAULT ((1)) NOT NULL,
+    [IsMale]                   BIT           CONSTRAINT [DF_Persons_IsMale] DEFAULT ((1)) NOT NULL,
     [Snils]                    VARCHAR (50)  NOT NULL,
     [MedNumber]                VARCHAR (50)  NOT NULL,
     [PhotoId]                  INT           NULL,
@@ -13,12 +13,15 @@
     [AmbNumberString]          VARCHAR (50)  NOT NULL,
     [AmbNumber]                INT           CONSTRAINT [DF_Persons_AmbNumber] DEFAULT ((0)) NOT NULL,
     [Year]                     INT           CONSTRAINT [DF_Persons_Year] DEFAULT ((0)) NOT NULL,
+    [AmbNumberCreationDate]    DATETIME      NULL,
     [AmbCardFirstListHashCode] INT           CONSTRAINT [DF_Persons_AmbCardFirstList] DEFAULT ((0)) NOT NULL,
     [PersonHospListHashCode]   INT           CONSTRAINT [DF_Persons_PersonHospList] DEFAULT ((0)) NOT NULL,
     [RadiationListHashCode]    INT           CONSTRAINT [DF_Persons_RadiationList] DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Persons] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Persons_Documents] FOREIGN KEY ([PhotoId]) REFERENCES [dbo].[Documents] ([Id])
 );
+
+
 
 
 

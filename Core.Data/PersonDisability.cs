@@ -25,20 +25,20 @@ namespace Core.Data
         public System.DateTime EndDate { get; set; }
     
         [NonSerialized]
-    	protected DisabilityType disabilityType;
-    
-    	public virtual DisabilityType DisabilityType
-    	{
-     		get { return disabilityType; }
-     		set { disabilityType = value; }
-    	}
-        [NonSerialized]
     	protected Person person;
     
     	public virtual Person Person
     	{
      		get { return person; }
      		set { person = value; }
+    	}
+        [NonSerialized]
+    	protected DisabilityType disabilityType;
+    
+    	public virtual DisabilityType DisabilityType
+    	{
+     		get { return disabilityType; }
+     		set { disabilityType = value; }
     	}
     
     	public object Clone()

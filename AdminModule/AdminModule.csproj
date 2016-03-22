@@ -133,6 +133,7 @@
     <Compile Include="Model\DatabaseValidators\PaymentTypeValidator.cs" />
     <Compile Include="Model\DatabaseValidators\StaticDataPresenceValidator.cs" />
     <Compile Include="Model\DatabaseValidators\RecordContractValidator.cs" />
+    <Compile Include="Model\DatabaseValidators\FinancingSourceValidator.cs" />
     <Compile Include="Model\SaveUserInput.cs" />
     <Compile Include="Model\SecurityObjectType.cs" />
     <Compile Include="Model\UserDTO.cs" />

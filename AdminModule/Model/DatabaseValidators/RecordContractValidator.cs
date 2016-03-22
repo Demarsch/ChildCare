@@ -26,8 +26,8 @@ namespace AdminModule.Model
             using (var context = contextProvider.CreateLightweightContext())
             {
                 var result = new List<ValidationResult>();
-                if (!context.Set<RecordContract>().Any(x => !string.IsNullOrEmpty(x.Options) && x.Options.Contains(OptionValues.HMHContract)))
-                    result.Add(new ValidationResult(false, string.Format("В таблице RecordContracts отсутствует информация о договоре на оказание ВМП. В его поле Options должно содержаться значение '{0}'", OptionValues.HMHContract)));
+                if (!context.Set<RecordContract>().Any(x => !string.IsNullOrEmpty(x.Options) && x.Options.Contains(OptionValues.HMH)))
+                    result.Add(new ValidationResult(false, string.Format("В таблице RecordContracts отсутствует информация о договоре на оказание ВМП. В его поле Options должно содержаться значение '{0}'", OptionValues.HMH)));
 
                 return result;
             }
