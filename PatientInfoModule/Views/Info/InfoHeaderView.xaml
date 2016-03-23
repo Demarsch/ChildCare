@@ -139,4 +139,12 @@
                             MaxHeight="300" />
         </fluent:DropDownButton>
     </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Док-ты леч-диагн процесса" 
+                           MinWidth="150"
+                           HorizontalContentAlignment="Center">
+        <fluent:Button Size="Large"
+                       Header="Документы"
+                       Command="{Binding ContentViewModel.ShowAgreementsCommand, Mode=OneTime}"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" />
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

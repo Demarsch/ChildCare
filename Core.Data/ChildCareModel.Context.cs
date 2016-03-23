@@ -55,7 +55,6 @@ namespace Core.Data
         public virtual DbSet<RecordContractLimit> RecordContractLimits { get; set; }
         public virtual DbSet<RecordContract> RecordContracts { get; set; }
         public virtual DbSet<RecordTypeRole> RecordTypeRoles { get; set; }
-        public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<SocialStatusType> SocialStatusTypes { get; set; }
@@ -117,5 +116,6 @@ namespace Core.Data
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
+        public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
     }
 }

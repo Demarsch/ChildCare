@@ -35,7 +35,6 @@
         <EntityTypeShape EntityType="DataLib.RecordContractLimit" Width="1.5" PointX="15.75" PointY="51.875" />
         <EntityTypeShape EntityType="DataLib.RecordContract" Width="1.5" PointX="13.5" PointY="50.5" />
         <EntityTypeShape EntityType="DataLib.RecordTypeRole" Width="1.5" PointX="13.5" PointY="81.75" />
-        <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="18" PointY="70" />
         <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="20.25" PointY="65.75" />
         <EntityTypeShape EntityType="DataLib.SocialStatusType" Width="1.5" PointX="6" PointY="67.625" />
@@ -264,6 +263,7 @@
         <AssociationConnector Association="DataLib.FK_PersonAddresses_AddressTypes" />
         <EntityTypeShape EntityType="DataLib.DisabilityType" Width="1.5" PointX="11.375" PointY="1" />
         <AssociationConnector Association="DataLib.FK_PersonDisabilities_DisabilityTypes" />
+        <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="0.75" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

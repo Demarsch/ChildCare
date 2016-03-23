@@ -44,11 +44,15 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IRegionManager regionManager;
 
+        private readonly IRecordService recordService;
+
         private readonly IViewNameResolver viewNameResolver;
 
         private readonly IReportGeneratorHelper reportGenerator;
 
         private readonly Func<PatientInfoViewModel> relativeInfoFactory;
+
+        private readonly Func<AgreementsCollectionViewModel> agreementsCollectionFactory;
 
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
 
@@ -57,11 +61,13 @@ namespace PatientInfoModule.ViewModels
                                     IEventAggregator eventAggregator,
                                     ILog log,
                                     IDialogServiceAsync dialogService,
+                                    IRecordService recordService,
                                     PatientInfoViewModel patientInfo,
                                     PatientAssignmentListViewModel patientAssignmentList,
                                     IRegionManager regionManager,
                                     IViewNameResolver viewNameResolver,
                                     Func<PatientInfoViewModel> relativeInfoFactory,
+                                    Func<AgreementsCollectionViewModel> agreementsCollectionFactory,
                                     Func<PersonSearchDialogViewModel> relativeSearchFactory,
                                     IReportGeneratorHelper reportGenerator)
         {
@@ -81,14 +87,22 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("dialogService");
             }
+            if (recordService == null)
+            {
+                throw new ArgumentNullException("recordService");
+            }
             if (patientInfo == null)
             {
                 throw new ArgumentNullException("patientInfo");
             }
+            if (agreementsCollectionFactory == null)
+            {
+                throw new ArgumentNullException("agreementsCollectionFactory");
+            }
             if (patientAssignmentList == null)
             {
                 throw new ArgumentNullException("patientAssignmentList");
-            }
+            }           
             if (relativeInfoFactory == null)
             {
                 throw new ArgumentNullException("relativeInfoFactory");
@@ -118,14 +132,16 @@ namespace PatientInfoModule.ViewModels
             this.eventAggregator = eventAggregator;
             this.log = log;
             this.dialogService = dialogService;
+            this.recordService = recordService;
             this.patientInfo = patientInfo;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.agreementsCollectionFactory = agreementsCollectionFactory;
             this.relativeInfoFactory = relativeInfoFactory;
             this.relativeSearchFactory = relativeSearchFactory;
             PatientAssignmentListViewModel = patientAssignmentList;
             this.reportGenerator = reportGenerator;
-            currentPatientId = PatientAssignmentListViewModel.PatientId = SpecialValues.NonExistingId;
+            currentPatientId = PatientAssignmentListViewModel.PatientId = SpecialValues.NonExistingId;            
             Relatives = new ObservableCollectionEx<PatientInfoViewModel>();
             Relatives.BeforeCollectionChanged += RelativesOnBeforeCollectionChanged;
             changeTracker = new CompositeChangeTracker(patientInfo.ChangeTracker, new ObservableCollectionChangeTracker<PatientInfoViewModel>(Relatives));
@@ -141,6 +157,7 @@ namespace PatientInfoModule.ViewModels
             createAmbCardCommand = new DelegateCommand(CreateAmbCardAsync, CanCreateAmbCard);
             deleteAmbCardCommand = new DelegateCommand(DeleteAmbCardAsync, CanDeleteAmbCard);
             printAmbCardCommand = new DelegateCommand(PrintAmbCardAsync, CanPrintAmbCard);
+            showAgreementsCommand = new DelegateCommand(ShowAgreementsAsync, CanShowAgreements);
             saveChangesCommandWrapper = new CommandWrapper { Command = SaveChangesCommand };
             recreateAmbCardWrapper = new CommandWrapper { Command = CreateAmbCardCommand };
             redeleteAmbCardWrapper = new CommandWrapper { Command = DeleteAmbCardCommand };
@@ -178,6 +195,7 @@ namespace PatientInfoModule.ViewModels
             cancelChangesCommand.RaiseCanExecuteChanged();
             addRelativeCommand.RaiseCanExecuteChanged();
             searchRelativeCommand.RaiseCanExecuteChanged();
+            showAgreementsCommand.RaiseCanExecuteChanged();
         }
 
         private void UpdateAmbCardCommandsState()
@@ -207,6 +225,8 @@ namespace PatientInfoModule.ViewModels
 
         private readonly DelegateCommand printAmbCardCommand;
 
+        private readonly DelegateCommand showAgreementsCommand;
+
         private readonly CommandWrapper saveChangesCommandWrapper;
 
         private readonly CommandWrapper loadRelativeListWrapper;
@@ -228,6 +248,11 @@ namespace PatientInfoModule.ViewModels
         public ICommand PrintAmbCardCommand
         {
             get { return printAmbCardCommand; }
+        }
+
+        public ICommand ShowAgreementsCommand
+        {
+            get { return showAgreementsCommand; }
         }
 
         public ICommand CreateNewPatientCommand
@@ -390,6 +415,14 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
+        private async void ShowAgreementsAsync()
+        {
+            if (SpecialValues.IsNewOrNonExisting(currentPatientId)) return;
+            var agreementsViewModel = agreementsCollectionFactory();
+            agreementsViewModel.LoadAgreementsAsync(currentPatientId);
+            var result = await dialogService.ShowDialogAsync(agreementsViewModel);
+        }
+
         private void PrintAmbCardAsync()
         {
             if (SpecialValues.IsNewOrNonExisting(currentPatientId)) return;
@@ -400,12 +433,12 @@ namespace PatientInfoModule.ViewModels
                 return;
             }
             var report = reportGenerator.CreateDocX("AmbulatoryCard");
-            string emptyValue = "";
+            string emptyValue = string.Empty;
             string defValue = "____________";
             string nonExistValue = "отсутствует";
-            report.Data["OrgName"] = patientService.GetDBSettingValue(DBSetting.OrgName);
-            report.Data["OrgAddress"] = patientService.GetDBSettingValue(DBSetting.OrgAddress);
-            report.Data["OrgOKPO"] = patientService.GetDBSettingValue(DBSetting.OrgOKPO);
+            report.Data["NIKIName"] = recordService.GetDBSettingValue(DBSetting.NIKIName);
+            report.Data["NIKIAddress"] = recordService.GetDBSettingValue(DBSetting.NIKIAddress);
+            report.Data["OrgOKPO"] = recordService.GetDBSettingValue(DBSetting.OrgOKPO);
 
             report.Data["CardNumber"] = patient.AmbNumberString;
             report.Data["CardDate"] = patient.AmbNumberCreationDate.Value.ToShortDateString();
@@ -506,6 +539,11 @@ namespace PatientInfoModule.ViewModels
             return currentPatientId > 0 && !string.IsNullOrEmpty(patientInfo.AmbNumber) && selectedPatientOrRelative == patientInfo;
         }
 
+        private bool CanShowAgreements()
+        {
+            return currentPatientId > 0 && selectedPatientOrRelative == patientInfo;
+        }
+        
         public ICommand SearchRelativeCommand
         {
             get { return searchRelativeCommand; }

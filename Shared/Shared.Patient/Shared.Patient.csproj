@@ -169,9 +169,12 @@
     <Compile Include="Services\Interfaces\IPersonSearchService.cs" />
     <Compile Include="ViewModels\AddressViewModel.cs" />
     <Compile Include="ViewModels\FoundPersonViewModel.cs" />
+    <Compile Include="ViewModels\IReportGeneratorHelper.cs" />
     <Compile Include="ViewModels\MediaInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AgreementsCollectionViewModel.cs" />
     <Compile Include="ViewModels\PatientAssignmentListViewModel.cs" />
+    <Compile Include="ViewModels\AgreementViewModel.cs" />
     <Compile Include="ViewModels\PatientAssignmentViewModel.cs" />
     <Compile Include="ViewModels\PersonSearchDialogViewModel.cs" />
     <Compile Include="ViewModels\PersonSearchViewModel.cs" />
@@ -198,6 +201,10 @@
       <Project>{304F5AEB-4189-4C9F-96DA-C32E57E5E1BE}</Project>
       <Name>Core.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Core.Reports\Core.Reports.csproj">
+      <Project>{59668b9b-3ebe-4524-92ef-043fa2c9c898}</Project>
+      <Name>Core.Reports</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core.Wpf\Core.Wpf.csproj">
       <Project>{62515044-F9C0-4D93-8B55-1407CCF8D3F2}</Project>
       <Name>Core.Wpf</Name>
@@ -216,6 +223,10 @@
     <Page Include="Views\AddressView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AgreementsCollectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PatientAssignmentListView.xaml">
       <SubType>Designer</SubType>

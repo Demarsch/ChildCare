@@ -21,6 +21,7 @@ namespace Core.Data
         public string Description { get; set; }
         public bool IsDocXTemplate { get; set; }
         public string Template { get; set; }
+        public bool IsAgreementDocument { get; set; }
     
     	public object Clone()
     	{

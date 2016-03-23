@@ -59,7 +59,5 @@ namespace PatientInfoModule.Services
         Task<IEnumerable<PersonRelative>> GetRelativesAsync(int patientId);
 
         Task<Person> CheckIfSimilarPatientExistsAsync(DuplicatePersonCheckParameters param);
-
-        string GetDBSettingValue(string parameter);
     }
 }

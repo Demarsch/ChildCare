@@ -739,13 +739,5 @@ namespace PatientInfoModule.Services
                 }
             }
         }
-        
-        public string GetDBSettingValue(string parameter)
-        {
-            var setting = contextProvider.CreateNewContext().Set<DBSetting>().FirstOrDefault(x => x.Name == parameter);
-            if (setting != null)
-                return setting.Value;
-            return string.Empty;
-        }
     }
 }

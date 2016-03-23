@@ -1,0 +1,28 @@
+﻿<ResourceDictionary x:Class="Shared.Patient.Views.AgreementsCollectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:Shared.Patient.ViewModels">
+    <DataTemplate DataType="{x:Type viewModels:AgreementsCollectionViewModel}">
+        <Grid MinHeight="400" MinWidth="600" MaxHeight="400" MaxWidth="700" 
+              ScrollViewer.VerticalScrollBarVisibility="Auto"
+              ScrollViewer.HorizontalScrollBarVisibility="Auto">
+
+            <ListBox ItemsSource="{Binding Agreements, Mode=TwoWay}" 
+                     SelectedItem="{Binding SelectedAgreement}"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding Title}" IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" />
+                    </DataTemplate>
+                   
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

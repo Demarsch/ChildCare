@@ -92,5 +92,13 @@ namespace PatientInfoModule.Services
             }
             return cost;
         }
+
+        public string GetDBSettingValue(string parameter, bool useDisplayName = false)
+        {
+            var setting = contextProvider.CreateNewContext().Set<DBSetting>().FirstOrDefault(x => x.Name == parameter);
+            if (setting != null)
+                return (useDisplayName ? setting.DisplayName : setting.Value);
+            return string.Empty;
+        }
     }
 }

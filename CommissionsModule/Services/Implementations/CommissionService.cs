@@ -73,9 +73,9 @@ namespace CommissionsModule.Services
             if (option.Contains(OptionValues.ProtocolsOnCommission))
                 query = query.Where(x => x.IsCompleted == false && x.IsExecuting == true);
             if (option.Contains(OptionValues.ProtocolsOnDate))
-                query = query.Where(x => x.ProtocolDate == date.Value);
+                query = query.Where(x => DbFunctions.TruncateTime(x.ProtocolDate) == DbFunctions.TruncateTime(date.Value));
             if (option.Contains(OptionValues.ProtocolsAdded))
-                query = query.Where(x => x.IncomeDateTime == date.Value);
+                query = query.Where(x => DbFunctions.TruncateTime(x.IncomeDateTime) == DbFunctions.TruncateTime(date.Value));
             if (option.Contains(OptionValues.ProtocolsAwaiting))
                 query = query.Where(x => x.IsCompleted == true && DbFunctions.TruncateTime(x.ToDoDateTime) > DbFunctions.TruncateTime(DateTime.Now));
 

@@ -276,9 +276,9 @@ namespace CommissionsModule.ViewModels
             if (filter.Options.Contains(OptionValues.ProtocolsOnCommission))
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false && x.IsExecuting == true);
             if (filter.Options.Contains(OptionValues.ProtocolsOnDate) && FilterDate.HasValue)
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.ProtocolDate == FilterDate.Value);
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.ProtocolDate) == DbFunctions.TruncateTime(FilterDate.Value));
             if (filter.Options.Contains(OptionValues.ProtocolsAdded) && FilterDate.HasValue)
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IncomeDateTime == FilterDate.Value);
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.IncomeDateTime) == DbFunctions.TruncateTime(FilterDate.Value));
             if (filter.Options.Contains(OptionValues.ProtocolsAwaiting))
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == true && DbFunctions.TruncateTime(x.ToDoDateTime) > DbFunctions.TruncateTime(DateTime.Now));
 

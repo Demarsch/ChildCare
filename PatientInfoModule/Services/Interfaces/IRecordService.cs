@@ -16,5 +16,7 @@ namespace PatientInfoModule.Services
         IDisposableQueryable<PaymentType> GetPaymentTypes();
         IDisposableQueryable<PaymentType> GetPaymentTypeById(int id);
         IDisposableQueryable<Visit> GetVisitsByContractId(int contractId);
+
+        string GetDBSettingValue(string parameter, bool useDisplayName = false);
     }
 }

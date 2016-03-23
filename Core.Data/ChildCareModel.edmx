@@ -969,6 +969,7 @@
           <Property Name="Description" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="IsDocXTemplate" Type="bit" Nullable="false" />
           <Property Name="Template" Type="text" />
+          <Property Name="IsAgreementDocument" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Rooms">
           <Key>
@@ -3963,7 +3964,6 @@
           <EntitySet Name="RecordContractLimits" EntityType="DataLib.RecordContractLimit" />
           <EntitySet Name="RecordContracts" EntityType="DataLib.RecordContract" />
           <EntitySet Name="RecordTypeRoles" EntityType="DataLib.RecordTypeRole" />
-          <EntitySet Name="ReportTemplates" EntityType="DataLib.ReportTemplate" />
           <EntitySet Name="Rooms" EntityType="DataLib.Room" />
           <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
           <EntitySet Name="SocialStatusTypes" EntityType="DataLib.SocialStatusType" />
@@ -4693,6 +4693,7 @@
             <End Role="DisabilityType" EntitySet="DisabilityTypes" />
             <End Role="PersonDisability" EntitySet="PersonDisabilities" />
           </AssociationSet>
+          <EntitySet Name="ReportTemplates" EntityType="DataLib.ReportTemplate" />
           </EntityContainer>
         <EntityType Name="Branch">
           <Key>
@@ -5153,17 +5154,6 @@
           <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Options" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" FromRole="RecordTypeRole" ToRole="RecordTypeRolePermission" />
-        </EntityType>
-        <EntityType Name="ReportTemplate">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ReportTitle" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="IsDocXTemplate" Type="Boolean" Nullable="false" />
-          <Property Name="Template" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Room">
           <Key>
@@ -8185,6 +8175,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ReportTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ReportTitle" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="IsDocXTemplate" Type="Boolean" Nullable="false" />
+          <Property Name="Template" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsAgreementDocument" Type="Boolean" Nullable="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -8573,18 +8575,6 @@
               <MappingFragment StoreEntitySet="RecordTypeRoles">
                 <ScalarProperty Name="Options" ColumnName="Options" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ReportTemplates">
-            <EntityTypeMapping TypeName="DataLib.ReportTemplate">
-              <MappingFragment StoreEntitySet="ReportTemplates">
-                <ScalarProperty Name="Template" ColumnName="Template" />
-                <ScalarProperty Name="IsDocXTemplate" ColumnName="IsDocXTemplate" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="ReportTitle" ColumnName="ReportTitle" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -9411,6 +9401,19 @@
                 <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
                 <ScalarProperty Name="BenefitCode" ColumnName="BenefitCode" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportTemplates">
+            <EntityTypeMapping TypeName="DataLib.ReportTemplate">
+              <MappingFragment StoreEntitySet="ReportTemplates">
+                <ScalarProperty Name="IsAgreementDocument" ColumnName="IsAgreementDocument" />
+                <ScalarProperty Name="Template" ColumnName="Template" />
+                <ScalarProperty Name="IsDocXTemplate" ColumnName="IsDocXTemplate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ReportTitle" ColumnName="ReportTitle" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
