@@ -1,5 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
+                    xmlns:views="clr-namespace:CommissionsModule.Views">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/Decisions/CommissionDecisionView.xaml" />
         <ResourceDictionary Source="../Views/Protocols/PreliminaryProtocolView.xaml" />
@@ -9,5 +11,10 @@
         <ResourceDictionary Source="../Views/Protocols/EditorCommissionMembersView.xaml" />
 
         <ResourceDictionary Source="pack://application:,,,/Shared.PatientRecords;component/Views/Diagnoses/MKBTreeView.xaml" />
-    </ResourceDictionary.MergedDictionaries>    
+    </ResourceDictionary.MergedDictionaries>
+
+    <DataTemplate DataType="{x:Type viewModels:CommissionDecisionEditorViewModel}">
+        <views:CommissionDecisionEditorView/>
+    </DataTemplate>
+    
 </ResourceDictionary>
