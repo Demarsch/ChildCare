@@ -17,15 +17,15 @@ namespace Core.Data
     {
         public Record()
         {
-            this.DefaultProtocols = new HashSet<DefaultProtocol>();
-            this.PersonDiagnoses = new HashSet<PersonDiagnos>();
-            this.RecordDocuments = new HashSet<RecordDocument>();
-            this.RecordMembers = new HashSet<RecordMember>();
-            this.Records1 = new HashSet<Record>();
-            this.RecordEquipments = new HashSet<RecordEquipment>();
             this.AnalyseResults = new HashSet<AnalyseResult>();
             this.Assignments = new HashSet<Assignment>();
             this.Assignments1 = new HashSet<Assignment>();
+            this.DefaultProtocols = new HashSet<DefaultProtocol>();
+            this.PersonDiagnoses = new HashSet<PersonDiagnos>();
+            this.RecordDocuments = new HashSet<RecordDocument>();
+            this.RecordEquipments = new HashSet<RecordEquipment>();
+            this.RecordMembers = new HashSet<RecordMember>();
+            this.Records1 = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -36,13 +36,15 @@ namespace Core.Data
         public int RoomId { get; set; }
         public int RecordTypeId { get; set; }
         public int RecordPeriodId { get; set; }
+        public int RecordContractId { get; set; }
         public int UrgentlyId { get; set; }
+        public Nullable<int> MKBId { get; set; }
+        public string MKB { get; set; }
+        public bool IsCompleted { get; set; }
         public int Number { get; set; }
         public string NumberType { get; set; }
         public int NumberYear { get; set; }
         public string NumberTypeYear { get; set; }
-        public bool IsCompleted { get; set; }
-        public string MKB { get; set; }
         public System.DateTime BeginDateTime { get; set; }
         public Nullable<System.DateTime> EndDateTime { get; set; }
         public System.DateTime ActualDateTime { get; set; }
@@ -50,12 +52,52 @@ namespace Core.Data
         public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
+    	protected ICollection<AnalyseResult> analyseResults;
+    
+    	public virtual ICollection<AnalyseResult> AnalyseResults
+    	{
+     		get { return analyseResults; }
+     		set { analyseResults = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments1;
+    
+    	public virtual ICollection<Assignment> Assignments1
+    	{
+     		get { return assignments1; }
+     		set { assignments1 = value; }
+    	}
+        [NonSerialized]
+    	protected Assignment assignment;
+    
+    	public virtual Assignment Assignment
+    	{
+     		get { return assignment; }
+     		set { assignment = value; }
+    	}
+        [NonSerialized]
     	protected ICollection<DefaultProtocol> defaultProtocols;
     
     	public virtual ICollection<DefaultProtocol> DefaultProtocols
     	{
      		get { return defaultProtocols; }
      		set { defaultProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected MKB mKB1;
+    
+    	public virtual MKB MKB1
+    	{
+     		get { return mKB1; }
+     		set { mKB1 = value; }
     	}
         [NonSerialized]
     	protected ICollection<PersonDiagnos> personDiagnoses;
@@ -74,12 +116,28 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
+    	protected RecordContract recordContract;
+    
+    	public virtual RecordContract RecordContract
+    	{
+     		get { return recordContract; }
+     		set { recordContract = value; }
+    	}
+        [NonSerialized]
     	protected ICollection<RecordDocument> recordDocuments;
     
     	public virtual ICollection<RecordDocument> RecordDocuments
     	{
      		get { return recordDocuments; }
      		set { recordDocuments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<RecordEquipment> recordEquipments;
+    
+    	public virtual ICollection<RecordEquipment> RecordEquipments
+    	{
+     		get { return recordEquipments; }
+     		set { recordEquipments = value; }
     	}
         [NonSerialized]
     	protected ICollection<RecordMember> recordMembers;
@@ -114,30 +172,6 @@ namespace Core.Data
      		set { record1 = value; }
     	}
         [NonSerialized]
-    	protected Room room;
-    
-    	public virtual Room Room
-    	{
-     		get { return room; }
-     		set { room = value; }
-    	}
-        [NonSerialized]
-    	protected Visit visit;
-    
-    	public virtual Visit Visit
-    	{
-     		get { return visit; }
-     		set { visit = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<RecordEquipment> recordEquipments;
-    
-    	public virtual ICollection<RecordEquipment> RecordEquipments
-    	{
-     		get { return recordEquipments; }
-     		set { recordEquipments = value; }
-    	}
-        [NonSerialized]
     	protected RecordType recordType;
     
     	public virtual RecordType RecordType
@@ -146,12 +180,12 @@ namespace Core.Data
      		set { recordType = value; }
     	}
         [NonSerialized]
-    	protected ICollection<AnalyseResult> analyseResults;
+    	protected Room room;
     
-    	public virtual ICollection<AnalyseResult> AnalyseResults
+    	public virtual Room Room
     	{
-     		get { return analyseResults; }
-     		set { analyseResults = value; }
+     		get { return room; }
+     		set { room = value; }
     	}
         [NonSerialized]
     	protected Urgently urgently;
@@ -162,36 +196,20 @@ namespace Core.Data
      		set { urgently = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments1;
-    
-    	public virtual ICollection<Assignment> Assignments1
-    	{
-     		get { return assignments1; }
-     		set { assignments1 = value; }
-    	}
-        [NonSerialized]
-    	protected Assignment assignment;
-    
-    	public virtual Assignment Assignment
-    	{
-     		get { return assignment; }
-     		set { assignment = value; }
-    	}
-        [NonSerialized]
     	protected User user;
     
     	public virtual User User
     	{
      		get { return user; }
      		set { user = value; }
+    	}
+        [NonSerialized]
+    	protected Visit visit;
+    
+    	public virtual Visit Visit
+    	{
+     		get { return visit; }
+     		set { visit = value; }
     	}
     
     	public object Clone()

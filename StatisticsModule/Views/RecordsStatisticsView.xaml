@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="StatisticsModule.Views.RecordsStatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="600">
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Left">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Временной интервал:" Margin="5" />
+                <DatePicker Grid.Row="1" Grid.Column="0" SelectedDate="{Binding BeginDate, Mode=TwoWay}" Width="115" Margin="5,2"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="-" Margin="5"/>
+                <DatePicker Grid.Row="1" Grid.Column="2" SelectedDate="{Binding EndDate, Mode=TwoWay}" Width="115" Margin="5,2"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Text="Источник финансирования:" Margin="5,2" />
+                <ComboBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                          ItemsSource="{Binding FinSources}" 
+                            DisplayMemberPath="Field" 
+                            SelectedValuePath="Value"
+                            SelectedValue="{Binding SelectedFinSourceId, Mode=TwoWay}"
+                            Margin="5,2"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Статус услуги:" Margin="5,2" />
+                <CheckBox  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Content="Уже завершенные" IsChecked="{Binding IsCompleted}"  Margin="5,2"/>
+                <CheckBox  Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="Еще в работе" IsChecked="{Binding IsInProgress}"  Margin="5,2"/>
+                <CheckBox  Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Content="Запланированные" IsChecked="{Binding IsPlanned}" Margin="5,2"/>
+
+                <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Command="{Binding LoadResultCommand}" Margin="5,10">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Stretch="Uniform" Height="24" Width="24"/>
+                        <TextBlock Text="Показать результат" Margin="5,10" FontWeight="SemiBold" FontSize="14"/>
+                    </StackPanel>
+                    </Button>
+            </Grid>
+
+            <DataGrid RowHeaderWidth="0" GridLinesVisibility="None" AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
+                      ItemsSource="{Binding Results}" 
+                      SelectedItem="{Binding SelectedResult, Mode=TwoWay}">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="" Width="Auto" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    
+                    
+                </DataGrid.Columns>
+            </DataGrid>
+            
+        </DockPanel>
+
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+    </Grid>
+</UserControl>

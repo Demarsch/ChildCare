@@ -338,6 +338,9 @@
     <Resource Include="Resources\Images\ArrowDown24x24.png" />
     <Resource Include="Resources\Images\ArrowUp24x24.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Chart256x256.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

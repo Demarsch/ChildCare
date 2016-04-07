@@ -41,12 +41,20 @@ namespace Core.Data
         public Nullable<int> MedicalHelpTypeId { get; set; }
         public Nullable<int> RecordContractId { get; set; }
         public int PersonAddressId { get; set; }
+        public string WaitingFor { get; set; }
         public string Diagnos { get; set; }
         public Nullable<int> SentLPUId { get; set; }
         public int InUserId { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
-        public string WaitingFor { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
         [NonSerialized]
     	protected CommissionSource commissionSource;
     
@@ -104,6 +112,14 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
+    	protected PersonTalon personTalon;
+    
+    	public virtual PersonTalon PersonTalon
+    	{
+     		get { return personTalon; }
+     		set { personTalon = value; }
+    	}
+        [NonSerialized]
     	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
@@ -118,22 +134,6 @@ namespace Core.Data
     	{
      		get { return user1; }
      		set { user1 = value; }
-    	}
-        [NonSerialized]
-    	protected PersonTalon personTalon;
-    
-    	public virtual PersonTalon PersonTalon
-    	{
-     		get { return personTalon; }
-     		set { personTalon = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
     	}
     
     	public object Clone()

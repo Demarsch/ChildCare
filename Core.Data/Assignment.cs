@@ -89,22 +89,6 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
-    	protected Record record;
-    
-    	public virtual Record Record
-    	{
-     		get { return record; }
-     		set { record = value; }
-    	}
-        [NonSerialized]
-    	protected Record record1;
-    
-    	public virtual Record Record1
-    	{
-     		get { return record1; }
-     		set { record1 = value; }
-    	}
-        [NonSerialized]
     	protected RecordType recordType;
     
     	public virtual RecordType RecordType
@@ -153,14 +137,6 @@ namespace Core.Data
      		set { recordDocuments = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Record> records;
-    
-    	public virtual ICollection<Record> Records
-    	{
-     		get { return records; }
-     		set { records = value; }
-    	}
-        [NonSerialized]
     	protected User user;
     
     	public virtual User User
@@ -191,6 +167,30 @@ namespace Core.Data
     	{
      		get { return financingSource; }
      		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	protected Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
+        [NonSerialized]
+    	protected Record record1;
+    
+    	public virtual Record Record1
+    	{
+     		get { return record1; }
+     		set { record1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
     	}
     
     	public object Clone()

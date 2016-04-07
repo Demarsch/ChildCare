@@ -19,7 +19,6 @@ namespace Core.Data
         {
             this.RecordContractItems = new HashSet<RecordContractItem>();
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
-            this.Records = new HashSet<Record>();
             this.RecordTypeCosts = new HashSet<RecordTypeCost>();
             this.RecordTypeEditors = new HashSet<RecordTypeEditor>();
             this.RecordTypeRolePermissions = new HashSet<RecordTypeRolePermission>();
@@ -30,6 +29,7 @@ namespace Core.Data
             this.AnalyseRefferences1 = new HashSet<AnalyseRefference>();
             this.AnalyseResults = new HashSet<AnalyseResult>();
             this.Assignments = new HashSet<Assignment>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -65,14 +65,6 @@ namespace Core.Data
     	{
      		get { return recordContractLimits; }
      		set { recordContractLimits = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<Record> records;
-    
-    	public virtual ICollection<Record> Records
-    	{
-     		get { return records; }
-     		set { records = value; }
     	}
         [NonSerialized]
     	protected ICollection<RecordTypeCost> recordTypeCosts;
@@ -161,6 +153,14 @@ namespace Core.Data
     	{
      		get { return assignments; }
      		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
     	}
     
     	public object Clone()

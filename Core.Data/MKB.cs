@@ -18,6 +18,7 @@ namespace Core.Data
         public MKB()
         {
             this.MKB1 = new HashSet<MKB>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -49,6 +50,14 @@ namespace Core.Data
     	{
      		get { return mKBGroup; }
      		set { mKBGroup = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
     	}
     
     	public object Clone()

@@ -17,8 +17,8 @@ namespace Core.Data
     {
         public Visit()
         {
-            this.Records = new HashSet<Record>();
             this.Assignments = new HashSet<Assignment>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -81,14 +81,6 @@ namespace Core.Data
      		set { executionPlace = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Record> records;
-    
-    	public virtual ICollection<Record> Records
-    	{
-     		get { return records; }
-     		set { records = value; }
-    	}
-        [NonSerialized]
     	protected VisitTemplate visitTemplate;
     
     	public virtual VisitTemplate VisitTemplate
@@ -135,6 +127,14 @@ namespace Core.Data
     	{
      		get { return financingSource; }
      		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
     	}
     
     	public object Clone()

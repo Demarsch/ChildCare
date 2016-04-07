@@ -17,10 +17,10 @@ namespace Core.Data
     {
         public Urgently()
         {
-            this.Records = new HashSet<Record>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
             this.Assignments = new HashSet<Assignment>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -32,14 +32,6 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<Record> records;
-    
-    	public virtual ICollection<Record> Records
-    	{
-     		get { return records; }
-     		set { records = value; }
-    	}
         [NonSerialized]
     	protected ICollection<Visit> visits;
     
@@ -63,6 +55,14 @@ namespace Core.Data
     	{
      		get { return assignments; }
      		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
     	}
     
     	public object Clone()

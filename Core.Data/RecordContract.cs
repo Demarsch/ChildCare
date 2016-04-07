@@ -22,8 +22,9 @@ namespace Core.Data
             this.RecordContractLimits = new HashSet<RecordContractLimit>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
-            this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.PersonTalons = new HashSet<PersonTalon>();
+            this.Records = new HashSet<Record>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
         }
     
         public int Id { get; set; }
@@ -126,14 +127,6 @@ namespace Core.Data
      		set { org = value; }
     	}
         [NonSerialized]
-    	protected ICollection<CommissionProtocol> commissionProtocols;
-    
-    	public virtual ICollection<CommissionProtocol> CommissionProtocols
-    	{
-     		get { return commissionProtocols; }
-     		set { commissionProtocols = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<PersonTalon> personTalons;
     
     	public virtual ICollection<PersonTalon> PersonTalons
@@ -148,6 +141,22 @@ namespace Core.Data
     	{
      		get { return financingSource; }
      		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
     
     	public object Clone()

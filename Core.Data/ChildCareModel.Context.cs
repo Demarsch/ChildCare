@@ -85,7 +85,6 @@ namespace Core.Data
         public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RecordTypeUnit> RecordTypeUnits { get; set; }
         public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
@@ -109,7 +108,6 @@ namespace Core.Data
         public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
-        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<FinancingSource> FinancingSources { get; set; }
@@ -117,5 +115,7 @@ namespace Core.Data
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
+        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
     }
 }
