@@ -11,6 +11,7 @@ using Shell.Shared;
 using System.Windows;
 using StatisticsModule.ViewModels;
 using StatisticsModule.Views;
+using StatisticsModule.Services;
 
 namespace StatisticsModule
 {
@@ -86,6 +87,7 @@ namespace StatisticsModule
 
         private void RegisterViewModels()
         {
+            container.RegisterType<StatisticsHeaderViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<StatisticsEmptyViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordsStatisticsViewModel>(new ContainerControlledLifetimeManager());
         }
@@ -100,13 +102,13 @@ namespace StatisticsModule
 
             container.RegisterType<object, RecordsStatisticsView>(viewNameResolver.Resolve<RecordsStatisticsViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<RecordsStatisticsView>());
-
+            
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/StatisticsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
        
         private void RegisterServices()
         {
-            
+            container.RegisterType<IStatisticsService, StatisticsService>(new ContainerControlledLifetimeManager());
         }
         #endregion
 

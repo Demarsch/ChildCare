@@ -17,9 +17,9 @@ namespace Core.Data
     {
         public CommissionType()
         {
-            this.CommissionMembers = new HashSet<CommissionMember>();
             this.CommissionQuestions = new HashSet<CommissionQuestion>();
             this.CommissionSources = new HashSet<CommissionSource>();
+            this.CommissionMembers = new HashSet<CommissionMember>();
         }
     
         public int Id { get; set; }
@@ -28,14 +28,6 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<CommissionMember> commissionMembers;
-    
-    	public virtual ICollection<CommissionMember> CommissionMembers
-    	{
-     		get { return commissionMembers; }
-     		set { commissionMembers = value; }
-    	}
         [NonSerialized]
     	protected ICollection<CommissionQuestion> commissionQuestions;
     
@@ -51,6 +43,14 @@ namespace Core.Data
     	{
      		get { return commissionSources; }
      		set { commissionSources = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionMember> commissionMembers;
+    
+    	public virtual ICollection<CommissionMember> CommissionMembers
+    	{
+     		get { return commissionMembers; }
+     		set { commissionMembers = value; }
     	}
     
     	public object Clone()

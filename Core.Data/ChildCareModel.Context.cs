@@ -103,13 +103,11 @@ namespace Core.Data
         public virtual DbSet<ColorsSetting> ColorsSettings { get; set; }
         public virtual DbSet<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
         public virtual DbSet<CommissionFilter> CommissionFilters { get; set; }
-        public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
         public virtual DbSet<CommissionMemberType> CommissionMemberTypes { get; set; }
         public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
         public virtual DbSet<CommissionSource> CommissionSources { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
         public virtual DbSet<PersonTalon> PersonTalons { get; set; }
-        public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<FinancingSource> FinancingSources { get; set; }
         public virtual DbSet<IdentityDocumentType> IdentityDocumentTypes { get; set; }
         public virtual DbSet<AddressType> AddressTypes { get; set; }
@@ -117,5 +115,7 @@ namespace Core.Data
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
+        public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
     }
 }
