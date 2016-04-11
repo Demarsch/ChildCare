@@ -21,15 +21,15 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref id, value); }
         }
 
-        private string commissionNumber;
-        public string CommissionNumber
+        private int commissionNumber;
+        public int CommissionNumber
         {
             get { return commissionNumber; }
             set { SetProperty(ref commissionNumber, value); }
         }
 
-        private string protocolNumber;
-        public string ProtocolNumber
+        private int protocolNumber;
+        public int ProtocolNumber
         {
             get { return protocolNumber; }
             set { SetProperty(ref protocolNumber, value); }

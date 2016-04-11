@@ -22,6 +22,7 @@ using System.Collections.ObjectModel;
 using CommissionsModule.Services;
 using Core.Wpf.Misc;
 using Shared.Patient.ViewModels;
+using Core.Reports;
 
 namespace CommissionsModule.ViewModels
 {
@@ -30,6 +31,7 @@ namespace CommissionsModule.ViewModels
         #region Fields
         private readonly ICommissionService commissionService;
         private readonly IDialogServiceAsync dialogService;
+        private readonly IReportGeneratorHelper reportGenerator;
         private readonly ILog logService;        
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
@@ -40,7 +42,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionJournalViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, Func<PersonSearchDialogViewModel> patientSearchFactory)
+        public CommissionJournalViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IReportGeneratorHelper reportGenerator, Func<PersonSearchDialogViewModel> patientSearchFactory)
         {
             if (commissionService == null)
             {
@@ -57,11 +59,17 @@ namespace CommissionsModule.ViewModels
             if (patientSearchFactory == null)
             {
                 throw new ArgumentNullException("patientSearchFactory");
-            }  
+            }
+            if (reportGenerator == null)
+            {
+                throw new ArgumentNullException("reportGenerator");
+            }
             this.dialogService = dialogService;
             this.commissionService = commissionService;
             this.logService = logService;
+            this.reportGenerator = reportGenerator;
             this.patientSearchFactory = patientSearchFactory;
+
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             CommissionTypes = new ObservableCollectionEx<FieldValue>();
@@ -70,6 +78,10 @@ namespace CommissionsModule.ViewModels
             searchPatientCommand = new DelegateCommand(SearchPatient);
             removePatientFilterCommand = new DelegateCommand(RemovePatientFilter);
             loadJournalCommand = new DelegateCommand(LoadJournal);
+
+            printVKAssignmentCommand = new DelegateCommand(PrintVKAssignment);
+            printVKProtocolCommand = new DelegateCommand(PrintVKProtocol);
+            printVKJournalCommand = new DelegateCommand(PrintVKJournal);
         }
 
         #endregion
@@ -84,6 +96,15 @@ namespace CommissionsModule.ViewModels
 
         private readonly DelegateCommand removePatientFilterCommand;
         public ICommand RemovePatientFilterCommand { get { return removePatientFilterCommand; } }
+
+        private readonly DelegateCommand printVKAssignmentCommand;
+        public ICommand PrintVKAssignmentCommand { get { return printVKAssignmentCommand; } }
+
+        private readonly DelegateCommand printVKProtocolCommand;
+        public ICommand PrintVKProtocolCommand { get { return printVKProtocolCommand; } }
+
+        private readonly DelegateCommand printVKJournalCommand;
+        public ICommand PrintVKJournalCommand { get { return printVKJournalCommand; } }
 
         #region Filters
 
@@ -250,9 +271,9 @@ namespace CommissionsModule.ViewModels
                 return result.Select(x => new
                 {
                     Id = x.Id,
-                    CommissionNumber = "??",
-                    ProtocolNumber = "??",
-                    ProtocolDate = x.ProtocolDate,
+                    CommissionNumber = x.CommissionNumber,
+                    ProtocolNumber = x.ProtocolNumber,
+                    ProtocolDate = x.CommissionDate,
                     AssignPerson = x.User.Person.ShortName,
                     PatientFIO = x.Person.FullName,
                     PatientBirthDate = x.Person.BirthDate,
@@ -261,7 +282,7 @@ namespace CommissionsModule.ViewModels
                     PatientSocialStatus = x.Person.PersonSocialStatuses.Select(a => new { a.SocialStatusType.Name, OrgName = a.OrgId.HasValue ? a.Org.Name : string.Empty, a.Office }),
                     PatientDiagnos = x.MKB,
                     CommissionType = x.CommissionType.Name,
-                    CommissionName = "??",
+                    CommissionName = x.CommissionQuestion.Name,
                     Decision = x.Decision.Name,
                     Recommendations = "??",
                     Details = "??",
@@ -293,6 +314,29 @@ namespace CommissionsModule.ViewModels
 
             VKItems.Clear();
             VKItems.AddRange(journalItems);
+        }
+
+        private void PrintVKAssignment()
+        {
+
+        }
+
+        private void PrintVKProtocol()
+        {
+
+        }
+
+        private void PrintVKJournal()
+        {            
+            var report = reportGenerator.CreateDocX("CommissionsJournal");
+            string emptyValue = string.Empty;
+            string nonExistValue = "отсутствует";
+            report.Data["OrgName"] = commissionService.GetDBSettingValue(DBSetting.OrgName);
+
+            /*report.Data.Tables["hospdata"].AddRow(emptyValue, emptyValue, emptyValue);
+            report.Data.Tables["radiationdata"].AddRow(emptyValue, emptyValue, emptyValue);*/
+            report.Editable = false;
+            report.Show();
         }
 
         public void Dispose()

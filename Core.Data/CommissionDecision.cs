@@ -37,6 +37,15 @@ namespace Core.Data
      		set { commissionMember = value; }
     	}
         [NonSerialized]
+    	protected CommissionProtocol commissionProtocol;
+    
+    	public virtual CommissionProtocol CommissionProtocol
+    	{
+     		get { return commissionProtocol; }
+     		set { commissionProtocol = value; }
+    	}
+
+    [NonSerialized]
     	protected Decision decision;
     
     	public virtual Decision Decision
@@ -61,13 +70,14 @@ namespace Core.Data
      		set { user1 = value; }
     	}
         [NonSerialized]
-    	protected CommissionProtocol commissionProtocol;
+     	protected CommissionProtocol commissionProtocol;
     
     	public virtual CommissionProtocol CommissionProtocol
     	{
      		get { return commissionProtocol; }
      		set { commissionProtocol = value; }
     	}
+    
     
     	public object Clone()
     	{

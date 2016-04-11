@@ -63,11 +63,11 @@ namespace CommissionsModule.ViewModels
 
         #region Properties
 
-        private DateTime protocolDate;
-        public DateTime ProtocolDate
+        private DateTime commissionDate;
+        public DateTime CommissionDate
         {
-            get { return protocolDate; }
-            set { SetTrackedProperty(ref protocolDate, value); }
+            get { return commissionDate; }
+            set { SetTrackedProperty(ref commissionDate, value); }
         }
 
         private int? protocolNumber;
@@ -175,7 +175,7 @@ namespace CommissionsModule.ViewModels
             }
             CommissionProtocolId = commissionProtocolId;
             PersonId = personId;
-            ProtocolDate = DateTime.Now;
+            CommissionDate = DateTime.Now;
             ProtocolNumber = null;
             WaitingFor = string.Empty;
             Diagnosis = string.Empty;
@@ -195,14 +195,14 @@ namespace CommissionsModule.ViewModels
                 var commissionProtocolData = await commissionProtocolQuery.Select(x => new
                 {
                     x.Decision,
-                    x.ProtocolDate,
+                    x.CommissionDate,
                     x.ProtocolNumber,
                     x.Comment,
                     x.WaitingFor,
                     x.Diagnos,
                     x.ToDoDateTime,
                     x.PersonId,
-                    ActualDateTime = x.ProtocolDate,
+                    ActualDateTime = x.CommissionDate,
                     x.CommissionQuestionId
                 }).FirstOrDefaultAsync(token);
                 if (commissionProtocolData != null)
@@ -220,7 +220,7 @@ namespace CommissionsModule.ViewModels
 
                 if (commissionProtocolData != null)
                 {
-                    ProtocolDate = commissionProtocolData.ProtocolDate;
+                    CommissionDate = commissionProtocolData.CommissionDate;
                     ProtocolNumber = commissionProtocolData.ProtocolNumber > 0 ? commissionProtocolData.ProtocolNumber : (int?)null;
                     WaitingFor = commissionProtocolData.WaitingFor;
                     Diagnosis = commissionProtocolData.Diagnos;
@@ -299,7 +299,7 @@ namespace CommissionsModule.ViewModels
                 if (commissionProtocol != null)
                 {
                     commissionProtocol.ProtocolNumber = ProtocolNumber.ToInt();
-                    commissionProtocol.ProtocolDate = ProtocolDate;
+                    commissionProtocol.CommissionDate = CommissionDate;
                     commissionProtocol.WaitingFor = WaitingFor;
                     commissionProtocol.Diagnos = Diagnosis;
                     commissionProtocol.DecisionId = SelectedDecision.Id;
@@ -349,7 +349,7 @@ namespace CommissionsModule.ViewModels
                 {
                     ValidateProtocolNumber();
                 }
-                else if (PropertyNameEquals(propertyName, x => x.ProtocolDate))
+                else if (PropertyNameEquals(propertyName, x => x.CommissionDate))
                 {
                     ValidateProtocolDate();
                 }
@@ -389,7 +389,7 @@ namespace CommissionsModule.ViewModels
 
             private void ValidateProtocolNumber()
             {
-                SetError(x => x.ProtocolDate, AssociatedItem.ProtocolDate == null ? "Укажите дату протокола" : string.Empty);
+                SetError(x => x.CommissionDate, AssociatedItem.CommissionDate == null ? "Укажите дату комиссии" : string.Empty);
             }
 
 

@@ -24,11 +24,13 @@ namespace Core.Data
             this.PersonTalons = new HashSet<PersonTalon>();
             this.PersonTalons1 = new HashSet<PersonTalon>();
             this.Records = new HashSet<Record>();
-            this.CommissionDecisions = new HashSet<CommissionDecision>();
-            this.CommissionDecisions1 = new HashSet<CommissionDecision>();
             this.Assignments = new HashSet<Assignment>();
             this.Assignments1 = new HashSet<Assignment>();
             this.Assignments2 = new HashSet<Assignment>();
+        this.CommissionDecisions = new HashSet<CommissionDecision>();
+
+        this.CommissionDecisions1 = new HashSet<CommissionDecision>();
+
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.CommissionProtocols1 = new HashSet<CommissionProtocol>();
         }
@@ -106,21 +108,14 @@ namespace Core.Data
      		set { records = value; }
     	}
         [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
+            	protected ICollection<CommissionDecision> commissionDecisions;
     
     	public virtual ICollection<CommissionDecision> CommissionDecisions
     	{
      		get { return commissionDecisions; }
      		set { commissionDecisions = value; }
     	}
-        [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions1;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions1
-    	{
-     		get { return commissionDecisions1; }
-     		set { commissionDecisions1 = value; }
-    	}
+
         [NonSerialized]
     	protected ICollection<Assignment> assignments;
     
@@ -144,6 +139,26 @@ namespace Core.Data
     	{
      		get { return assignments2; }
      		set { assignments2 = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions1;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions1
+    	{
+     		get { return commissionDecisions1; }
+     		set { commissionDecisions1 = value; }
     	}
         [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;

@@ -60,6 +60,7 @@ namespace CommissionsModule
         {
             RegisterLogger();
             log.InfoFormat("{0} module init start", WellKnownModuleNames.CommissionsModule);
+            RegisterModules();
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
@@ -70,6 +71,11 @@ namespace CommissionsModule
         {
             log = LogManager.GetLogger("COMMISSIONS");
             container.RegisterInstance(log);
+        }
+
+        private void RegisterModules()
+        {
+            Core.Reports.CoreReports.Initialize(container);
         }
 
         private void RegisterViewModels()

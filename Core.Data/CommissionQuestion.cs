@@ -18,6 +18,8 @@ namespace Core.Data
         public CommissionQuestion()
         {
             this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
+        this.CommissionProtocols = new HashSet<CommissionProtocol>();
+
         }
     
         public int Id { get; set; }
@@ -42,6 +44,16 @@ namespace Core.Data
     	{
      		get { return commissionType; }
      		set { commissionType = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
     
     	public object Clone()

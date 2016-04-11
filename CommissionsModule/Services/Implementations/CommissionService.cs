@@ -73,7 +73,7 @@ namespace CommissionsModule.Services
             if (option.Contains(OptionValues.ProtocolsOnCommission))
                 query = query.Where(x => x.IsCompleted == false && x.IsExecuting == true);
             if (option.Contains(OptionValues.ProtocolsOnDate))
-                query = query.Where(x => DbFunctions.TruncateTime(x.ProtocolDate) == DbFunctions.TruncateTime(date.Value));
+                query = query.Where(x => DbFunctions.TruncateTime(x.CommissionDate) == DbFunctions.TruncateTime(date.Value));
             if (option.Contains(OptionValues.ProtocolsAdded))
                 query = query.Where(x => DbFunctions.TruncateTime(x.IncomeDateTime) == DbFunctions.TruncateTime(date.Value));
             if (option.Contains(OptionValues.ProtocolsAwaiting))
@@ -213,7 +213,7 @@ namespace CommissionsModule.Services
                     {
                         PersonId = newProtocol.PersonId,
                         ProtocolNumber = 0,
-                        ProtocolDate = DateTime.Now,
+                        CommissionDate = DateTime.Now,
                         InUserId = curUserId
                     };
                     //db.Set<CommissionProtocol>().Add(curCommissionProtocol);
@@ -231,7 +231,7 @@ namespace CommissionsModule.Services
                 originalProtocol.PersonAddressId = newProtocol.PersonAddressId;
 
                 originalProtocol.ProtocolNumber = newProtocol.ProtocolNumber;
-                originalProtocol.ProtocolDate = newProtocol.ProtocolDate;
+                originalProtocol.CommissionDate = newProtocol.CommissionDate;
                 originalProtocol.WaitingFor = newProtocol.WaitingFor;
                 originalProtocol.Diagnos = newProtocol.Diagnos;
                 originalProtocol.DecisionId = newProtocol.DecisionId;
@@ -291,7 +291,7 @@ namespace CommissionsModule.Services
             {
                 var originalProtocol = await dataContext.NoTrackingSet<CommissionProtocol>().FirstAsync(x => x.Id == protocolId);
                 var newProtocol = (CommissionProtocol)originalProtocol.Clone();
-                newProtocol.ProtocolDate = protocolDate;
+                newProtocol.CommissionDate = protocolDate;
 
                 dataContext.Entry(newProtocol).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync(token);
@@ -594,15 +594,53 @@ namespace CommissionsModule.Services
         public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter)
         {
             var context = contextProvider.CreateNewContext();
-            var query = context.Set<CommissionProtocol>().Where(x => x.ProtocolDate >= beginDate.Date && x.ProtocolDate <= endDate.Date);
+            var query = context.Set<CommissionProtocol>().Where(x => x.CommissionDate >= beginDate.Date && x.CommissionDate <= endDate.Date);
             if (selectedPatientId != SpecialValues.NonExistingId)
                 query = query.Where(x => x.PersonId == selectedPatientId);
             if (selectedCommissionTypeId != SpecialValues.NonExistingId)
                 query = query.Where(x => x.CommissionTypeId == selectedCommissionTypeId);
 
-            // TODO: commissionNumberFilter and protocolNumberFilter
+            int[] commissionNumbers = FilterVKNumber(commissionNumberFilter.ToSafeString());
+            int[] protocolNumbers = FilterVKNumber(protocolNumberFilter.ToSafeString());
+
+            if (commissionNumbers.Any())
+                query = query.Where(x => commissionNumbers.Contains(x.CommissionNumber));
+            if (protocolNumbers.Any())
+                query = query.Where(x => protocolNumbers.Contains(x.ProtocolNumber));
 
             return new DisposableQueryable<CommissionProtocol>(query, context);
         }
+
+        public static int[] FilterVKNumber(string input)
+        {
+            List<int> numbers = new List<int>();
+            input = input.Replace(';',',');
+            if (input.Contains(','))
+            {
+                foreach (var item in input.Split(','))
+                {
+                    if (item.Contains('-'))
+                    {
+                        string[] range = item.Split('-');
+                        for (int i = range[0].ToInt(); i <= range[1].ToInt(); i++)
+                            numbers.Add(i);
+                    }
+                    else
+                        numbers.Add(item.ToInt());
+                }
+            }
+            else
+                numbers.Add(input.ToInt());
+            return numbers.Where(x => x != 0).OrderBy(x => x).ToArray();
+        }
+
+        public string GetDBSettingValue(string parameter, bool useDisplayName = false)
+        {
+            var setting = contextProvider.CreateNewContext().Set<DBSetting>().FirstOrDefault(x => x.Name == parameter);
+            if (setting != null)
+                return (useDisplayName ? setting.DisplayName : setting.Value);
+            return string.Empty;
+        }
+
     }
 }

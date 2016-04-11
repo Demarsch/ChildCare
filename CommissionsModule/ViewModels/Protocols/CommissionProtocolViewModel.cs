@@ -558,7 +558,7 @@ namespace CommissionsModule.ViewModels
                      Id = SelectedCommissionProtocolId,
                      PersonId = SelectedPersonId,
                      ProtocolNumber = 0,
-                     ProtocolDate = DateTime.Now,
+                     CommissionDate = DateTime.Now,
                      IsCompleted = CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? false :
                         CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? true : (bool?)null,
                      InUserId = userService.GetCurrentUserId(),

@@ -86,4 +86,23 @@
                        Header="Сформировать журнал"
                        Command="{Binding CommissionJournalViewModel.LoadJournalCommand, Mode=OneTime}"/>
     </fluent:RibbonGroupBox>
+
+    <fluent:RibbonGroupBox HorizontalAlignment="Right">
+        <fluent:Button Size="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentPrint48x48.png"
+                       ToolTip="Печать направления"
+                       Header="Печать направления"
+                       Command="{Binding CommissionJournalViewModel.PrintVKAssignmentCommand, Mode=OneTime}"/>
+        <fluent:Button Size="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordPrint48x48.png"
+                       ToolTip="Печать протокола"
+                       Header="Печать протокола"
+                       Command="{Binding CommissionJournalViewModel.PrintVKProtocolCommand, Mode=OneTime}"/>
+        <fluent:Button Size="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitPrint48x48.png"
+                       ToolTip="Печать журнала"
+                       Header="Печать журнала"
+                       Command="{Binding CommissionJournalViewModel.PrintVKJournalCommand, Mode=OneTime}"/>
+    </fluent:RibbonGroupBox>
+
 </fluent:RibbonTabItem>

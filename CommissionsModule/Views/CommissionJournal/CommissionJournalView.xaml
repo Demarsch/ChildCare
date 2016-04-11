@@ -8,7 +8,7 @@
              d:DesignWidth="600">
     
     <Grid>
-        <DataGrid RowHeaderWidth="0" GridLinesVisibility="None" 
+        <DataGrid RowHeaderWidth="0" 
                   AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
                   FrozenColumnCount ="5" HorizontalScrollBarVisibility="Auto"
                   ItemsSource="{Binding VKItems}" 
