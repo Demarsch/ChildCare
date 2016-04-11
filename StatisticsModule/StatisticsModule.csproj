@@ -98,6 +98,8 @@
   <ItemGroup>
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Implementations\StatisticsService.cs" />
+    <Compile Include="Services\Interfaces\IStatisticsService.cs" />
     <Compile Include="ViewModels\RecordsStatisticsViewModel.cs" />
     <Compile Include="ViewModels\StatisticsEmptyViewModel.cs" />
     <Compile Include="ViewModels\StatisticsHeaderViewModel.cs" />
@@ -129,9 +131,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Core.Data\Core.Data.csproj">
       <Project>{304f5aeb-4189-4c9f-96da-c32e57e5e1be}</Project>

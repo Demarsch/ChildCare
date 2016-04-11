@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using StatisticsModule.ViewModels;
+using Microsoft.Practices.Unity;
 
 namespace StatisticsModule.Views
 {
     /// <summary>
     /// Interaction logic for RecordsStatisticsView.xaml
     /// </summary>
-    public partial class RecordsStatisticsView : UserControl
+    public partial class RecordsStatisticsView
     {
         public RecordsStatisticsView()
         {
             InitializeComponent();
+        }
+
+        [Dependency]
+        public RecordsStatisticsViewModel RecordsStatisticsViewModel
+        {
+            get { return DataContext as RecordsStatisticsViewModel; }
+            set { DataContext = value; }
         }
     }
 }
