@@ -8,6 +8,7 @@
     [RecordTypeId]       INT          NOT NULL,
     [RecordPeriodId]     INT          NOT NULL,
     [RecordContractId]   INT          NOT NULL,
+    [ExecutionPlaceId]   INT          NOT NULL,
     [UrgentlyId]         INT          NOT NULL,
     [MKBId]              INT          NULL,
     [MKB]                VARCHAR (10) CONSTRAINT [DF_Records_MKB] DEFAULT ('') NOT NULL,
@@ -23,6 +24,7 @@
     [RemovedByUserId]    INT          NULL,
     CONSTRAINT [PK_Records] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Records_Assignments_ParentAssignment] FOREIGN KEY ([ParentAssignmentId]) REFERENCES [dbo].[Assignments] ([Id]),
+    CONSTRAINT [FK_Records_ExecutionPlaces] FOREIGN KEY ([ExecutionPlaceId]) REFERENCES [dbo].[ExecutionPlaces] ([Id]),
     CONSTRAINT [FK_Records_MKB] FOREIGN KEY ([MKBId]) REFERENCES [dbo].[MKB] ([Id]),
     CONSTRAINT [FK_Records_Persons] FOREIGN KEY ([PersonId]) REFERENCES [dbo].[Persons] ([Id]),
     CONSTRAINT [FK_Records_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
@@ -34,6 +36,8 @@
     CONSTRAINT [FK_Records_Users] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Records_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 

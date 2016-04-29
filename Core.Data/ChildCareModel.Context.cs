@@ -115,7 +115,7 @@ namespace Core.Data
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
-        public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual DbSet<Record> Records { get; set; }
     }
 }

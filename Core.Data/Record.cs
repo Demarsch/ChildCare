@@ -37,6 +37,7 @@ namespace Core.Data
         public int RecordTypeId { get; set; }
         public int RecordPeriodId { get; set; }
         public int RecordContractId { get; set; }
+        public int ExecutionPlaceId { get; set; }
         public int UrgentlyId { get; set; }
         public Nullable<int> MKBId { get; set; }
         public string MKB { get; set; }
@@ -90,6 +91,14 @@ namespace Core.Data
     	{
      		get { return defaultProtocols; }
      		set { defaultProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
     	}
         [NonSerialized]
     	protected MKB mKB1;

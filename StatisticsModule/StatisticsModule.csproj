@@ -96,10 +96,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\DataGridRowDefinition.cs" />
+    <Compile Include="DTO\RecordDTO.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\StatisticsService.cs" />
     <Compile Include="Services\Interfaces\IStatisticsService.cs" />
+    <Compile Include="ViewModels\RecordViewModel.cs" />
     <Compile Include="ViewModels\RecordsStatisticsViewModel.cs" />
     <Compile Include="ViewModels\StatisticsEmptyViewModel.cs" />
     <Compile Include="ViewModels\StatisticsHeaderViewModel.cs" />

@@ -115,6 +115,8 @@
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
     <Compile Include="Converters\AllMembersToImageConverter.cs" />
     <Compile Include="Converters\AllMembersToTextConverter.cs" />
+    <Compile Include="Converters\GridLengthConverter.cs" />
+    <Compile Include="Converters\LevelToMarginConverter.cs" />
     <Compile Include="Converters\TalonStateToImageConverter.cs" />
     <Compile Include="Converters\CommissionStatusToImageConverter.cs" />
     <Compile Include="Converters\DateToUserFriendlyStringConverter.cs" />

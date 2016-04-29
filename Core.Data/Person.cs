@@ -39,8 +39,8 @@ namespace Core.Data
             this.Assignments = new HashSet<Assignment>();
             this.Users = new HashSet<User>();
             this.PersonTalons = new HashSet<PersonTalon>();
-            this.Records = new HashSet<Record>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
+            this.Records = new HashSet<Record>();
         }
     
         public int Id { get; set; }
@@ -247,20 +247,20 @@ namespace Core.Data
      		set { personTalons = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Record> records;
-    
-    	public virtual ICollection<Record> Records
-    	{
-     		get { return records; }
-     		set { records = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Record> records;
+    
+    	public virtual ICollection<Record> Records
+    	{
+     		get { return records; }
+     		set { records = value; }
     	}
     
     	public object Clone()

@@ -11,6 +11,7 @@ namespace Core.Data.Services
     public class RecordTypesTree : IRecordTypesTree
     {
         public int Id { get; set; }
+        public int? ParentId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public string Lvl { get; set; }
@@ -34,6 +35,7 @@ namespace Core.Data.Services
             list.Add(new RecordTypesTree(contextProvider)
             {
                 Id = rtype.Id,
+                ParentId = rtype.ParentId,
                 Lvl = txtlevel,
                 Level = numlevel,
                 Name = rtype.Name,
@@ -62,7 +64,7 @@ namespace Core.Data.Services
         {
             using (var context = contextProvider.CreateNewContext())
             {
-                var alltypes = context.Set<RecordType>().Select(x => new RecordTypesTreeQueryItem() { Id = x.Id, Code = x.Code, Name = (x.ShortName != "" ? x.ShortName : x.Name), ParentId = x.ParentId, Priority = x.Priority }).ToArray();
+                var alltypes = context.Set<RecordType>().Where(x => x.IsRecord).Select(x => new RecordTypesTreeQueryItem() { Id = x.Id, Code = x.Code, Name = (x.ShortName != "" ? x.ShortName : x.Name), ParentId = x.ParentId, Priority = x.Priority }).ToArray();
                 return alltypes.Where(x => !x.ParentId.HasValue).OrderBy(x => x.Priority).ThenBy(x => x.Name).SelectMany(x => GetRecordTypesTreeChilds(x, alltypes)).ToList();
             }
         }

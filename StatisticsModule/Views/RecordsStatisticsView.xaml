@@ -3,12 +3,161 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:data="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Data" 
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="600">
+             d:DesignHeight="500" d:DesignWidth="900">
+    <UserControl.Resources>
+        <converters:LevelToMarginConverter x:Key="ConvertToThickness" LeftMargin="12" OtherMargin="4" />        
+        <Style x:Key="TreeExpanderStyle" TargetType="CheckBox">
+            <Setter Property="Background" Value="#FF448DCA"/>
+            <Setter Property="Foreground" Value="#FF000000"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid HorizontalAlignment="Left">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="IsExpandedIcon" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unchecked">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames BeginTime="00:00:00" Duration="00:00:00.0010000" Storyboard.TargetName="IsCollapsedIcon" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                <DiscreteObjectKeyFrame KeyTime="00:00:00">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Indeterminate">
+                                        <!--<Storyboard>
+											<DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateIcon" Storyboard.TargetProperty="(UIElement.Opacity)">
+												<SplineDoubleKeyFrame KeyTime="0" Value="1"/>
+											</DoubleAnimationUsingKeyFrames>
+										</Storyboard>-->
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Path x:Name="IsCollapsedIcon" Data="M2,2 L14,7 L2,14 z" Fill="{TemplateBinding BorderBrush}" UseLayoutRounding="False" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" />
+                            <Path x:Name="IsExpandedIcon" Data="M2,2 L14,2 L7,14 z" Fill="{TemplateBinding BorderBrush}" UseLayoutRounding="False" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" />
+                            <Rectangle x:Name="IndeterminateIcon" Fill="#FF333333" Height="16" Width="16" Opacity="0"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="GridSplitterStyle" TargetType="GridSplitter">
+            <Setter Property="Background" Value="#FFFFFFFF" />
+            <Setter Property="IsTabStop" Value="true" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="PreviewStyle">
+                <Setter.Value>
+                    <Style TargetType="Control">
+                        <Setter Property="Background" Value="#FF868686" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <Grid x:Name="Root" Opacity=".5">
+
+                                        <!-- Background -->
+                                        <Rectangle Fill="{TemplateBinding Background}" />
+
+                                        <!-- Horizontal Template -->
+                                        <Grid x:Name="HorizontalTemplate" Height="6">
+                                            <!-- Just show the faint gray grid splitter rectangle with no other details -->
+                                        </Grid>
+
+                                        <!-- Vertical Template -->
+                                        <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Width="6">
+                                            <!-- Just show the faint gray grid splitter rectangle with no other details -->
+                                        </Grid>
+
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Grid x:Name="Root" IsHitTestVisible="{TemplateBinding IsEnabled}">
+
+                            <!-- VSM -->
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="MouseOver" />
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Root" Storyboard.TargetProperty="Opacity" To="0.5" Duration="0" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition GeneratedDuration="0" />
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState x:Name="Unfocused" />
+                                    <VisualState x:Name="Focused">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <!-- Background -->
+                            <Rectangle Fill="{TemplateBinding Background}" StrokeThickness="0" />
+
+                            <!-- Horizontal Template -->
+                            <Grid x:Name="HorizontalTemplate" Height="10">
+                                <StackPanel Height="6" VerticalAlignment="Center">
+                                    <Rectangle Height="1" Margin="1" Width="10" StrokeThickness="0" Fill="#FF868686" />
+                                    <Rectangle Height="1" Margin="1" Width="10" StrokeThickness="0" Fill="#FF868686" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Vertical Template -->
+                            <Grid x:Name="VerticalTemplate" Visibility="Collapsed" Width="10">
+                                <StackPanel Width="6" VerticalAlignment="Center" Orientation="Horizontal">
+                                    <Rectangle Width="1" Margin="1" Height="10" StrokeThickness="0" Fill="#FF868686" />
+                                    <Rectangle Width="1" Margin="1" Height="10" StrokeThickness="0" Fill="#FF868686" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Focus Visual -->
+                            <Rectangle x:Name="FocusVisual" Stroke="#FF6DBDD1" StrokeThickness="1" Opacity="0" IsHitTestVisible="false" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <DockPanel LastChildFill="True">
             <Grid DockPanel.Dock="Left">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -38,12 +187,17 @@
                             SelectedValue="{Binding SelectedFinSourceId, Mode=TwoWay}"
                             Margin="5,2"/>
 
-                <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Статус услуги:" Margin="5,2" />
-                <CheckBox  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Content="Уже завершенные" IsChecked="{Binding IsCompleted}"  Margin="5,2"/>
-                <CheckBox  Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="Еще в работе" IsChecked="{Binding IsInProgress}"  Margin="5,2"/>
-                <CheckBox  Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Content="Запланированные" IsChecked="{Binding IsPlanned}" Margin="5,2"/>
+                <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Статус услуги:" Margin="5,20,5,2"/>
+                <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Content="завершенные" IsChecked="{Binding IsCompleted}"  Margin="5,2"/>
+                <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="в работе" IsChecked="{Binding IsInProgress}"  Margin="5,2"/>
+                <CheckBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Content="запланированные" IsChecked="{Binding IsPlanned}" Margin="5,2"/>
 
-                <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Command="{Binding LoadResultCommand}" Margin="5,10">
+                <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Text="Место выполнения:" Margin="5,20,5,2" />
+                <CheckBox Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" Content="амбулаторно" IsChecked="{Binding IsAmbulatory}"  Margin="5,2"/>
+                <CheckBox Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Content="в условиях стационара" IsChecked="{Binding IsStationary}"  Margin="5,2"/>
+                <CheckBox Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" Content="в условиях дневного стационара" IsChecked="{Binding IsDayStationary}" Margin="5,2"/>
+                
+                <Button Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Command="{Binding LoadResultCommand}" Margin="5,10">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Stretch="Uniform" Height="24" Width="24"/>
                         <TextBlock Text="Показать результат" Margin="5,10" FontWeight="SemiBold" FontSize="14"/>
@@ -51,36 +205,126 @@
                     </Button>
             </Grid>
 
-            <DataGrid RowHeaderWidth="0" GridLinesVisibility="None" AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
-                      ItemsSource="{Binding Results}" 
-                      SelectedItem="{Binding SelectedResult, Mode=TwoWay}">
-                <DataGrid.Resources>
-                    <Style TargetType="{x:Type DataGridCell}">
-                        <Style.Triggers>
-                            <Trigger Property="DataGridCell.IsSelected" Value="True">
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="Foreground" Value="Black" />
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="FontWeight" Value="Medium"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.Resources>
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="" Width="Auto" IsReadOnly="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                <DataGrid Grid.Row="0" AutoGenerateColumns="False" CanUserAddRows="False" 
+                          ItemsSource="{Binding Source, Mode=TwoWay}" 
+                          SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
+                          SelectionMode="Extended"   
+                          ScrollViewer.CanContentScroll="True" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={x:Static converters:BoolToCollapsedConverter.Instance}}" />
+                        </Style>
+                    </DataGrid.RowStyle>
                     
-                    
-                    
-                </DataGrid.Columns>
-            </DataGrid>
-            
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Наименование услуги" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" >
+                                        <CheckBox Style="{StaticResource TreeExpanderStyle}" 
+                                                  IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                  Margin="{Binding Path=Level, Converter={StaticResource ConvertToThickness}}"
+                                                  Visibility="{Binding HasChildren, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}"/>
+                                        <TextBlock Text="{Binding Cells[0]}" Margin="4" IsEnabled="false"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Код услуги" Binding="{Binding Cells[1]}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Всего услуг" Binding="{Binding Cells[2]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Амбулаторно" Binding="{Binding Cells[3]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Стационар" Binding="{Binding Cells[4]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Днев. стационар" Binding="{Binding Cells[5]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Сумма, руб" Binding="{Binding Cells[6]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <GridSplitter Grid.Row="1" Style="{StaticResource GridSplitterStyle}" 
+                              ResizeDirection="Rows" ShowsPreview="True"/>
+
+                <DataGrid Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" 
+                          ItemsSource="{Binding Details, Mode=TwoWay}" 
+                          SelectionMode="Extended" MinHeight="250"
+                          ScrollViewer.CanContentScroll="True" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Дата выполнения" Binding="{Binding Cells[0]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="МКБ-10" Binding="{Binding Cells[1]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Мед. карта" Binding="{Binding Cells[2]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Ф.И.О. пациента, г.р." Width="*" Binding="{Binding Cells[3]}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Ф.И.О. представителя, г.р." Width="*" Binding="{Binding Cells[4]}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Договор" Binding="{Binding Cells[5]}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Место выполнения" Binding="{Binding Cells[6]}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Отделение" Binding="{Binding Cells[7]}" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Исполнитель" Binding="{Binding Cells[8]}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Стоимость, руб" Binding="{Binding Cells[9]}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Способ оплаты" Binding="{Binding Cells[10]}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
         </DockPanel>
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>

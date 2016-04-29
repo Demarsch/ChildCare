@@ -5,6 +5,7 @@ using Core.Data;
 using Core.Data.Misc;
 using Core.Data.Services;
 using Core.Misc;
+using Core.Extensions;
 
 namespace PatientInfoModule.Services
 {
@@ -78,19 +79,35 @@ namespace PatientInfoModule.Services
 
         public double GetRecordTypeCost(int recordTypeId, int financingSourceId, DateTime onDate, bool? isChild = null, bool isIncome = true)
         {
-            var context = contextProvider.CreateNewContext();
-            var cost = 0.0;
-            var recordCost = context.Set<RecordTypeCost>()
-                                    .Where(x => x.RecordTypeId == recordTypeId && x.FinancingSourceId == financingSourceId &&
-                                                DbFunctions.TruncateTime(onDate) >= DbFunctions.TruncateTime(x.BeginDate) && DbFunctions.TruncateTime(onDate) < DbFunctions.TruncateTime(x.EndDate) &&
-                                                x.IsIncome == isIncome)
-                                    .OrderByDescending(x => x.InDateTime)
-                                    .FirstOrDefault(x => (x.IsChild != null ? x.IsChild == isChild : true));
-            if (recordCost != null)
+            using (var context = contextProvider.CreateNewContext())
             {
-                cost = recordCost.FullPrice * recordCost.Profitability;
+                var cost = 0.0;
+                var recordType = context.Set<RecordType>().FirstOrDefault(x => x.Id == recordTypeId);
+                if (recordType == null) return cost;
+
+                var recordCost = context.Set<RecordTypeCost>()
+                                        .Where(x => x.RecordTypeId == recordTypeId && x.FinancingSourceId == financingSourceId &&
+                                                    DbFunctions.TruncateTime(onDate) >= DbFunctions.TruncateTime(x.BeginDate) && DbFunctions.TruncateTime(onDate) < DbFunctions.TruncateTime(x.EndDate) &&
+                                                    x.IsIncome == isIncome)
+                                        .OrderByDescending(x => x.InDateTime)
+                                        .FirstOrDefault(x => (x.IsChild != null ? x.IsChild == isChild : true));
+                if (recordCost != null)
+                    cost = recordCost.FullPrice * recordCost.Profitability;
+                else if (recordType.IsAnalyse)
+                {
+                    foreach (var parameter in recordType.RecordTypes1)
+                    {
+                        var parameterCost = recordType.RecordTypeCosts
+                                                    .Where(x => x.FinancingSourceId == financingSourceId &&
+                                                                DbFunctions.TruncateTime(onDate) >= DbFunctions.TruncateTime(x.BeginDate) && DbFunctions.TruncateTime(onDate) < DbFunctions.TruncateTime(x.EndDate) &&
+                                                                x.IsIncome == isIncome)
+                                                    .OrderByDescending(x => x.InDateTime)
+                                                    .FirstOrDefault(x => (x.IsChild != null ? x.IsChild == isChild : true));
+                        cost += parameterCost.ToDouble();
+                    }
+                }
+                return cost;
             }
-            return cost;
         }
 
         public string GetDBSettingValue(string parameter, bool useDisplayName = false)

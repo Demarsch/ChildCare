@@ -109,6 +109,7 @@ namespace StatisticsModule
         private void RegisterServices()
         {
             container.RegisterType<IStatisticsService, StatisticsService>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IRecordTypesTree, RecordTypesTree>(new ContainerControlledLifetimeManager());
         }
         #endregion
 

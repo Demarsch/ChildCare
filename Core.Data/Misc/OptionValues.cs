@@ -38,5 +38,10 @@ namespace Core.Data.Misc
         public static readonly string DMS = "|dms|";
         public static readonly string IndividualContaract = "|individual|";
 
+        //Execution Places
+        public static readonly string Ambulatory = "|Polyclinic|";
+        public static readonly string Stationary = "|Stationary|";
+        public static readonly string DayStationary = "|DayStationary|";
+
     }
 }
