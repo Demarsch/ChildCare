@@ -18,14 +18,16 @@ using Core.Misc;
 using System.Windows.Input;
 using Core.Services;
 using CommissionsModule.ViewModels.Protocols;
+using Core.Data.Services;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionСonductViewModel : BindableBase, IDisposable
+    public class CommissionСonductViewModel : TrackableBindableBase, IChangeTrackerMediator, IDisposable
     {
         #region Fields
         private readonly ICommissionService commissionService;
         private readonly ISecurityService securityService;
+        private readonly IUserService userService;
         private readonly ILog logService;
 
         private readonly Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory;
@@ -38,7 +40,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Constructors
-        public CommissionСonductViewModel(ICommissionService commissionService, ISecurityService securityService, ILog logService,
+        public CommissionСonductViewModel(ICommissionService commissionService, ISecurityService securityService, IUserService userService, ILog logService,
             Func<CommissionDecisionViewModel> commissionDecisionViewModelFactory, Func<CommissionMemberViewModel> commissionMemberViewModelFactory)
         {
             if (commissionService == null)
@@ -61,6 +63,11 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("securityService");
             }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
+            this.userService = userService;
             this.securityService = securityService;
             this.commissionDecisionViewModelFactory = commissionDecisionViewModelFactory;
             this.commissionMemberViewModelFactory = commissionMemberViewModelFactory;
@@ -80,6 +87,7 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            ChangeTracker = new ChangeTrackerEx<CommissionСonductViewModel>(this);
         }
 
         #endregion
@@ -106,6 +114,7 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; private set; }
         public FailureMediator FailureMediator { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
 
         public int CommissionProtocolId { get; private set; }
         public int PersonId { get; private set; }
@@ -114,6 +123,7 @@ namespace CommissionsModule.ViewModels
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
+            ChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -186,6 +196,7 @@ namespace CommissionsModule.ViewModels
                 CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
                 //removeStageCommand.RaiseCanExecuteChanged();
                 loadingIsCompleted = true;
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -241,7 +252,33 @@ namespace CommissionsModule.ViewModels
 
         public void GetСonductionCommissionProtocolData(ref CommissionProtocol commissionProtocol)
         {
-            throw new NotImplementedException();
+            var newDecisionIds = CurrentMembers.Select(x => x.CommissionDecisionId).ToArray();
+            var curUserId = userService.GetCurrentUserId();
+            foreach (var curDecision in commissionProtocol.CommissionDecisions.Where(x => x.RemovedByUserId == null))
+            {
+                if (!newDecisionIds.Contains(curDecision.Id))
+                    curDecision.RemovedByUserId = curUserId;
+                else
+                {
+                    var changedDecision = CurrentMembers.FirstOrDefault(x => x.CommissionDecisionId == curDecision.Id);
+                    curDecision.CommissionStage = changedDecision.Stage;
+                    curDecision.NeedAllMembersInStage = changedDecision.NeedAllMembers;
+                }
+            }
+            var existDecisionIds = commissionProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
+            CommissionDecision decision;
+            foreach (var newDecision in CurrentMembers.Where(x => !existDecisionIds.Contains(x.CommissionDecisionId)))
+            {
+                decision = new CommissionDecision()
+                {
+                    CommissionProtocol = commissionProtocol,
+                    CommissionStage = newDecision.Stage,
+                    NeedAllMembersInStage = newDecision.NeedAllMembers,
+                    CommissionMemberId = newDecision.CommissionMemberId,
+                    InitiatorUserId = curUserId,
+                };
+                //commissionProtocol.CommissionDecisions.Add(decision);
+            }
         }
 
         private async void AddSelectedAvailableMember(CommissionMemberStageViewModel selectedCommissionMemberStageViewModel)

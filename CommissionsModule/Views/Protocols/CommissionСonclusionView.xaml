@@ -38,20 +38,22 @@
                          FontWeight="SemiBold"
                          Foreground="Red" />
                 </TextBlock>
-                <TextBox Grid.Row="0" Grid.Column="1"  Text="{Binding ProtocolNumber}"/>
+                <TextBox Grid.Row="0" Grid.Column="1"  Text="{Binding ProtocolNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"/>
                 <TextBlock Grid.Row="0" Grid.Column="2" Margin="2, 2, 2, 0">
                     <Run Text=" от " />
                     <Run Text="*"
                          FontWeight="SemiBold"
                          Foreground="Red" />
                 </TextBlock>
-                <DatePicker Grid.Row="0" Grid.Column="3" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding ProtocolDate}"/>
+                <DatePicker Grid.Row="0" Grid.Column="3" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding ProtocolDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                            Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
                 <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding NeedWaitingFor}">Протокол в ожидании</CheckBox>
-                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" IsEnabled="{Binding NeedWaitingFor}" Text="{Binding WaitingFor}" />
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" IsEnabled="{Binding NeedWaitingFor}" Text="{Binding WaitingFor, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0">Диагноз</TextBlock>
-                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Diagnosis}"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Diagnosis, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0">
                     <Run Text="Решение" />
@@ -74,7 +76,8 @@
                 <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Comment}"/>
 
                 <CheckBox Grid.Row="5" Grid.Column="0" IsChecked="{Binding NeedToDoDateTime}">Дата выполнения решения</CheckBox>
-                <DatePicker Grid.Row="5" Grid.Column="1" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" IsEnabled="{Binding NeedToDoDateTime}" SelectedDate="{Binding ToDoDateTime}"/>
+                <DatePicker Grid.Row="5" Grid.Column="1" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" IsEnabled="{Binding NeedToDoDateTime}" 
+                            SelectedDate="{Binding ToDoDateTime, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
 
             </Grid>
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />

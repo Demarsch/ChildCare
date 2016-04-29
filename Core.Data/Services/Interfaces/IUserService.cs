@@ -5,6 +5,8 @@ namespace Core.Data.Services
     {
         User GetCurrentUser();
 
+        int GetCurrentUserId();
+
         string GetCurrentUserSID();
 
         IEnumerable<int> GetCurrentUserPersonStaffIds();

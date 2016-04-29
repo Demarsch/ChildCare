@@ -14,10 +14,11 @@ using System.Threading.Tasks;
 using System.Data.Entity;
 using Core.Extensions;
 using Prism.Commands;
+using System.ComponentModel;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionСonclusionViewModel : TrackableBindableBase
+    public class CommissionСonclusionViewModel : TrackableBindableBase, IChangeTrackerMediator, IDataErrorInfo
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -28,6 +29,8 @@ namespace CommissionsModule.ViewModels
         private CommandWrapper reInitializeCommandWrapper;
 
         private CancellationTokenSource currentOperationToken;
+
+        private ValidationMediator validationMediator;
         #endregion
 
         #region Constructors
@@ -52,6 +55,8 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            ChangeTracker = new ChangeTrackerEx<CommissionСonclusionViewModel>(this);
+            validationMediator = new ValidationMediator(this);
         }
 
         #endregion
@@ -162,6 +167,7 @@ namespace CommissionsModule.ViewModels
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
+            ChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -223,6 +229,7 @@ namespace CommissionsModule.ViewModels
                     ToDoDateTime = commissionProtocolData.ToDoDateTime;
                 }
                 loadingIsCompleted = true;
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -287,8 +294,114 @@ namespace CommissionsModule.ViewModels
 
         public void GetСonclusionCommissionProtocolData(ref CommissionProtocol commissionProtocol)
         {
+            if (commissionProtocol != null)
+            {
+                commissionProtocol.ProtocolNumber = ProtocolNumber.ToInt();
+                commissionProtocol.ProtocolDate = ProtocolDate;
+                commissionProtocol.WaitingFor = WaitingFor;
+                commissionProtocol.Diagnos = Diagnosis;
+                commissionProtocol.DecisionId = SelectedDecision.Id;
+                commissionProtocol.Comment = Comment;
+                commissionProtocol.ToDoDateTime = ToDoDateTime;
+            }
+        }
+        #endregion
+
+        #region IDataErrorInfo implementation
+        public string Error
+        {
+            get { return validationMediator.Error; }
+        }
+
+        public string this[string columnName]
+        {
+            get { return validationMediator[columnName]; }
+        }
+
+        public bool Validate()
+        {
+            return validationMediator.Validate();
+        }
+
+        public void CancelValidation()
+        {
+            validationMediator.CancelValidation();
+        }
+
+        public class ValidationMediator : ValidationMediator<CommissionСonclusionViewModel>
+        {
+
+            public ValidationMediator(CommissionСonclusionViewModel associatedItem)
+                : base(associatedItem)
+            {
+            }
+
+            protected override void OnValidateProperty(string propertyName)
+            {
+                if (PropertyNameEquals(propertyName, x => x.ProtocolNumber))
+                {
+                    ValidateProtocolNumber();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.ProtocolDate))
+                {
+                    ValidateProtocolDate();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.WaitingFor))
+                {
+                    ValidateWaitingFor();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.SelectedDecision))
+                {
+                    ValidateSelectedDecision();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.ToDoDateTime))
+                {
+                    ValidateToDoDateTime();
+                }
+            }
+
+            private void ValidateToDoDateTime()
+            {
+                SetError(x => x.ToDoDateTime, AssociatedItem.NeedToDoDateTime && AssociatedItem.ToDoDateTime == null ? "Укажите дату, когда предполагается выполнения решения" : string.Empty);
+            }
+
+            private void ValidateSelectedDecision()
+            {
+                SetError(x => x.SelectedDecision, AssociatedItem.SelectedDecision != null && SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedDecision.Id) ? "Укажите решение комиссии" : string.Empty);
+            }
+
+            private void ValidateWaitingFor()
+            {
+                SetError(x => x.WaitingFor, AssociatedItem.NeedWaitingFor && string.IsNullOrEmpty(AssociatedItem.WaitingFor) ? "Укажите условие, выполнение которого ожидает результат протокола" : string.Empty);
+            }
+
+            private void ValidateProtocolDate()
+            {
+                SetError(x => x.ProtocolNumber, AssociatedItem.ProtocolNumber.ToInt() < 1 ? "Укажите номер протокола" : string.Empty);
+            }
+
+            private void ValidateProtocolNumber()
+            {
+                SetError(x => x.ProtocolDate, AssociatedItem.ProtocolDate == null ? "Укажите дату протокола" : string.Empty);
+            }
+
+
+            protected override void RaiseAssociatedObjectPropertyChanged()
+            {
+                AssociatedItem.OnPropertyChanged(string.Empty);
+            }
+
+            protected override void OnValidate()
+            {
+                ValidateProtocolNumber();
+                ValidateProtocolDate();
+                ValidateWaitingFor();
+                ValidateSelectedDecision();
+                ValidateToDoDateTime();
+            }
 
         }
+
         #endregion
     }
 }
