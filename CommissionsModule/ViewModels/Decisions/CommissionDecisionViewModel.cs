@@ -265,13 +265,15 @@ namespace CommissionsModule.ViewModels
                     x.Comment,
                     ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : emptyDecisionColor,
                     x.NeedAllMembersInStage,
-                    x.CommissionProtocolId
+                    x.CommissionProtocolId,
+                    x.CommissionMemberId
                 }).FirstOrDefaultAsync(token);
                 commissionProtocolId = commissionDecision.CommissionProtocolId;
                 DecisionDate = commissionDecision.DecisionDate;
                 Stage = commissionDecision.Stage;
                 NeedAllMembers = commissionDecision.NeedAllMembersInStage;
                 MemberName = commissionDecision.MemberName;
+                CommissionMemberId = commissionDecision.CommissionMemberId;
                 Decision = commissionDecision.DecisionName;
                 ColorType = commissionDecision.ColorType;
                 Comment = commissionDecision.Comment;

@@ -20,10 +20,12 @@ using Core.Misc;
 using Core.Data;
 using Core.Wpf.Misc;
 using Core.Services;
+using Core.Data.Services;
+using Core.Notification;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionProtocolViewModel : BindableBase, IChangeTrackerMediator, IDisposable
+    public class CommissionProtocolViewModel : TrackableBindableBase, IChangeTrackerMediator, IDisposable
     {
         #region Fields
 
@@ -32,11 +34,16 @@ namespace CommissionsModule.ViewModels
         private readonly IDialogServiceAsync dialogService;
         private readonly ILog logService;
         private readonly ISecurityService securityService;
+        private readonly IUserService userService;
+        private readonly INotificationService notificationService;
 
         private readonly Func<PersonSearchDialogViewModel> relativeSearchFactory;
         private readonly Func<EditorCommissionMembersViewModel> editorCommissionMembersFactory;
 
+        private INotificationServiceSubscription<CommissionProtocol> comissionsProtocolsChangeSubscription;
+
         private CancellationTokenSource currentOperationToken;
+        private TaskCompletionSource<bool> completionTaskSource;
 
         private CommandWrapper reSaveCommissionProtocol;
         #endregion
@@ -44,7 +51,7 @@ namespace CommissionsModule.ViewModels
         #region Constructiors
         public CommissionProtocolViewModel(ICommissionService commissionService, IEventAggregator eventAggregator, IDialogServiceAsync dialogService, ILog logService,
             PreliminaryProtocolViewModel preliminaryProtocolViewModel, CommissionСonductViewModel commissionСonductViewModel, CommissionСonclusionViewModel commissionСonclusionViewModel,
-            ISecurityService securityService,
+            ISecurityService securityService, IUserService userService, INotificationService notificationService,
              Func<PersonSearchDialogViewModel> relativeSearchFactory, Func<EditorCommissionMembersViewModel> editorCommissionMembersFactory)
         {
             if (preliminaryProtocolViewModel == null)
@@ -87,6 +94,16 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("commissionService");
             }
+            if (userService == null)
+            {
+                throw new ArgumentNullException("userService");
+            }
+            if (notificationService == null)
+            {
+                throw new ArgumentNullException("notificationService");
+            }
+            this.notificationService = notificationService;
+            this.userService = userService;
             this.commissionService = commissionService;
             this.logService = logService;
             this.dialogService = dialogService;
@@ -100,7 +117,7 @@ namespace CommissionsModule.ViewModels
             createCommissionCommand = new DelegateCommand(CreateCommission);
             saveCommissionProtocolCommand = new DelegateCommand(SaveCommissionProtocol, CanSaveCommissionProtocol);
             editCommissionMembersCommand = new DelegateCommand(EditCommissionMembers, CanEditCommissionMembers);
-           
+
             addCommissionConductionCommand = new DelegateCommand<bool?>(AddCommissionConduction);
             addCommissionConclusionCommand = new DelegateCommand<bool?>(AddCommissionConclusion);
 
@@ -109,7 +126,7 @@ namespace CommissionsModule.ViewModels
 
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
-            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker/*,CommissionСonductViewModel.ChangeTracker, addCommissionConclusionCommand.ChangeTracker */);
+            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker, CommissionСonductViewModel.ChangeTracker, CommissionСonclusionViewModel.ChangeTracker);
             ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
         }
 
@@ -133,6 +150,7 @@ namespace CommissionsModule.ViewModels
                     SetCommissionProtocolState();
                     ShowCommissionProtocol = selectedCommissionProtocolId > 0;
                 }
+                SubscribeToCommissionsProtocolsChangesAsync();
             }
         }
 
@@ -242,7 +260,7 @@ namespace CommissionsModule.ViewModels
 
         #region Methods
 
-      
+
 
         private bool CanEditCommissionMembers()
         {
@@ -377,6 +395,7 @@ namespace CommissionsModule.ViewModels
 
         private async void SaveCommissionProtocol()
         {
+            FailureMediator.Deactivate();
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -385,17 +404,20 @@ namespace CommissionsModule.ViewModels
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
             logService.InfoFormat("Saving commission protocol with id = {0} for patient with id = {1}", SelectedCommissionProtocolId, SelectedPersonId);
+            IDisposableQueryable<CommissionDecision> commissionDecisionQuery = commissionService.GetCommissionDecisions(SelectedCommissionProtocolId);
             try
             {
                 var commissionProtocol = new CommissionProtocol()
-                {
-                    Id = SelectedCommissionProtocolId,
-                    PersonId = SelectedPersonId,
-                    ProtocolNumber = 0,
-                    ProtocolDate = DateTime.Now,
-                    IsCompleted = CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? false :
-                    CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? true : (bool?)null,
-                };
+                 {
+                     Id = SelectedCommissionProtocolId,
+                     PersonId = SelectedPersonId,
+                     ProtocolNumber = 0,
+                     ProtocolDate = DateTime.Now,
+                     IsCompleted = CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? false :
+                     CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? true : (bool?)null,
+                     InUserId = userService.GetCurrentUserId(),
+                     //CommissionDecisions = await commissionDecisionQuery.ToArrayAsync(token)
+                 };
                 //ToDo: Maybe change on better decision!
                 switch (CommissionProtocolState)
                 {
@@ -414,7 +436,8 @@ namespace CommissionsModule.ViewModels
                     default:
                         break;
                 }
-                await commissionService.SaveCommissionProtocol(commissionProtocol, token);
+                await commissionService.SaveCommissionProtocolAsync(commissionProtocol, comissionsProtocolsChangeSubscription);
+                ChangeTracker.AcceptChanges();
             }
             catch (OperationCanceledException) {/*Do nothing. Cancelled operation means that user selected different patient before previous one was loaded  */}
             catch (Exception ex)
@@ -425,6 +448,27 @@ namespace CommissionsModule.ViewModels
             finally
             {
             }
+        }
+        private async void SubscribeToCommissionsProtocolsChangesAsync()
+        {
+            await SubscribeToCommissionsProtocolsChanges();
+        }
+
+        private async Task<bool> SubscribeToCommissionsProtocolsChanges()
+        {
+            if (completionTaskSource != null)
+                return await completionTaskSource.Task;
+            completionTaskSource = new TaskCompletionSource<bool>();
+            comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.Id == SelectedCommissionProtocolId);
+            if (comissionsProtocolsChangeSubscription != null)
+                comissionsProtocolsChangeSubscription.Notified += OnCommissionProtocolNotificationRecievedAsync;
+            completionTaskSource.SetResult(true);
+            return true;
+        }
+
+        private void OnCommissionProtocolNotificationRecievedAsync(object sender, NotificationEventArgs<CommissionProtocol> e)
+        {
+
         }
 
         private async void EditCommissionMembers()

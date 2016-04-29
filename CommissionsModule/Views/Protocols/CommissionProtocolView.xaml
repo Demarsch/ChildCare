@@ -22,5 +22,8 @@
             <ContentControl HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{Binding NotificationMediator}"/>
         </Grid>
         <view:CommissionEmptyView Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}" />
+
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
     </Grid>
 </UserControl>

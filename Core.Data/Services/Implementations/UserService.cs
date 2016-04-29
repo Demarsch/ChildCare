@@ -23,6 +23,15 @@ namespace Core.Data.Services
             return WindowsIdentity.GetCurrent().User.Value;
         }
 
+        public int GetCurrentUserId()
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var curSID = GetCurrentUserSID();
+                return db.Set<User>().Where(x => x.SID != null && x.SID.ToLower() == curSID).Select(x => x.Id).FirstOrDefault();
+            }
+        }
+
         public User GetCurrentUser()
         {
             using (var db = contextProvider.CreateNewContext())

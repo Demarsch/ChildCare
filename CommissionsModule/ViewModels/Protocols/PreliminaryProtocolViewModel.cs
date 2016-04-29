@@ -341,6 +341,7 @@ namespace CommissionsModule.ViewModels
 
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
+            ChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -348,15 +349,15 @@ namespace CommissionsModule.ViewModels
             }
             CommissionProtocolId = commissionProtocolId;
             PersonId = personId;
-            SelectedCommissionTypeId = SpecialValues.NonExistingId;
-            SelectedCommissionQuestionId = SpecialValues.NonExistingId;
-            SelectedCommissionSourceId = SpecialValues.NonExistingId;
-            MKB = string.Empty;
-            SelectedSentLPUId = SpecialValues.NonExistingId;
-            SelectedTalonId = SpecialValues.NonExistingId;
-            SelectedPersonAddressId = SpecialValues.NonExistingId;
-            SelectedHelpTypeId = SpecialValues.NonExistingId;
-            IncomeDateTime = DateTime.Now;
+            //SelectedCommissionTypeId = SpecialValues.NonExistingId;
+            //SelectedCommissionQuestionId = SpecialValues.NonExistingId;
+            //SelectedCommissionSourceId = SpecialValues.NonExistingId;
+            //MKB = string.Empty;
+            //SelectedSentLPUId = SpecialValues.NonExistingId;
+            //SelectedTalonId = SpecialValues.NonExistingId;
+            //SelectedPersonAddressId = SpecialValues.NonExistingId;
+            //SelectedHelpTypeId = SpecialValues.NonExistingId;
+            //IncomeDateTime = DateTime.Now;
 
             var loadingIsCompleted = false;
             currentOperationToken = new CancellationTokenSource();
@@ -418,6 +419,7 @@ namespace CommissionsModule.ViewModels
                     IncomeDateTime = DateTime.Now;
                 }
                 loadingIsCompleted = true;
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
