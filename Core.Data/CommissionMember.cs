@@ -18,7 +18,6 @@ namespace Core.Data
         public CommissionMember()
         {
             this.CommissionDecisions = new HashSet<CommissionDecision>();
-            this.CommissionDecisions1 = new HashSet<CommissionDecision>();
         }
     
         public int Id { get; set; }
@@ -29,6 +28,14 @@ namespace Core.Data
         public System.DateTime BeginDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
+    	public virtual ICollection<CommissionDecision> CommissionDecisions
+    	{
+     		get { return commissionDecisions; }
+     		set { commissionDecisions = value; }
+    	}
         [NonSerialized]
     	protected CommissionMemberType commissionMemberType;
     
@@ -60,22 +67,6 @@ namespace Core.Data
     	{
      		get { return staff; }
      		set { staff = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionDecision> commissionDecisions1;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions1
-    	{
-     		get { return commissionDecisions1; }
-     		set { commissionDecisions1 = value; }
     	}
     
     	public object Clone()

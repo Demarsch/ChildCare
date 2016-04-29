@@ -483,7 +483,7 @@ namespace CommissionsModule.Services
                 }
                 foreach (var member in removed)
                 {
-                    if (!member.CommissionDecisions.Any() && !member.CommissionDecisions1.Any()) //decisionMaker and initiator
+                    if (!member.CommissionDecisions.Any()/* && !member.CommissionDecisions1.Any()*/) //decisionMaker and initiator
                         context.Entry(member).State = EntityState.Deleted;
                 }
                 foreach (var member in existed.Where(x => x.IsChanged))

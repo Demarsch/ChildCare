@@ -138,7 +138,7 @@ namespace CommissionsModule.ViewModels
             if (!SpecialValues.IsNewOrNonExisting(member.Id))
             { 
                 var commissionMember = commissionService.CommissionMemberById(member.Id).FirstOrDefault();
-                if (commissionMember != null && !commissionMember.CommissionDecisions.Any() && !commissionMember.CommissionDecisions1.Any())
+                if (commissionMember != null && !commissionMember.CommissionDecisions.Any()/* && !commissionMember.CommissionDecisions1.Any()*/)
                     Members.Remove(member);
                 else
                     FailureMediator.Activate("Удаление невозможно. Данный участник уже выносил решения в комиссиях или являлся инициатором комиссии. Вы можете скорректировать срок действия его полномочий.", true);
