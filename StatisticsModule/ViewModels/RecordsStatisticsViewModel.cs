@@ -187,7 +187,8 @@ namespace StatisticsModule.ViewModels
                     Executor = "???", // из бригады
                     ExecutionPlaceId = x.ExecutionPlaceId,
                     ExecutionPlace = x.ExecutionPlace.Name,
-                    ExecutionPlaceOption = x.ExecutionPlace.Options
+                    ExecutionPlaceOption = x.ExecutionPlace.Options,
+                    IsAnalyse = x.RecordType.IsAnalyse,
                 })
                 .OrderBy(x => x.ActualDateTime)
                 .ToArray();
@@ -220,7 +221,8 @@ namespace StatisticsModule.ViewModels
                         Executor = "???", // из бригады
                         ExecutionPlaceId = x.ExecutionPlaceId,
                         ExecutionPlace = x.ExecutionPlace.Name,
-                        ExecutionPlaceOption = x.ExecutionPlace.Options
+                        ExecutionPlaceOption = x.ExecutionPlace.Options,
+                        IsAnalyse = x.RecordType.IsAnalyse,
                     })
                     .OrderBy(x => x.ActualDateTime)
                     .ToArray();
@@ -231,6 +233,7 @@ namespace StatisticsModule.ViewModels
             #endregion
 
             #region Fill Grid
+
             Source.Clear();
             Details.Clear();
             
@@ -240,29 +243,21 @@ namespace StatisticsModule.ViewModels
                 if (records.Any())
                 {
                     DataGridRowDefinition row = new DataGridRowDefinition()
-                    { 
-                        Id = rtc.Id, 
+                    {
+                        Id = rtc.Id,
                         ParentId = rtc.ParentId,
                         Level = rtc.Level,
                         Children = rtc.Childs,
                         IsExpanded = false,
                         HasChildren = rtc.Childs.Count(x => x != rtc.Id) > 0,
-                        IsVisible = !rtc.ParentId.HasValue,                         
-                        Cells = new ObservableCollectionEx<string>() 
-                        { 
-                            rtc.Name, 
-                            rtc.Code, 
-                            records.Count.ToSafeString(),
-                            records.Count(x => x.ExecutionPlaceOption == OptionValues.Ambulatory).ToSafeString(),
-                            records.Count(x => x.ExecutionPlaceOption == OptionValues.Stationary).ToSafeString(),
-                            records.Count(x => x.ExecutionPlaceOption == OptionValues.DayStationary).ToSafeString(),
-                            records.Sum(x => statisticsService.GetRecordTypeCost(x.RecordTypeId, x.FinancingSourceId, x.ActualDateTime, x.PersonBirthDate.AddYears(18) > x.ActualDateTime)).ToSafeString()
-                        },
+                        IsVisible = !rtc.ParentId.HasValue,
                         Details = new List<DataGridRowDefinition>()
-                    };                   
+                    };
 
+                    double totalCost = 0.0;
                     foreach (var record in records)
                     {
+                        var recordCost = statisticsService.GetRecordTypeCost(record.RecordTypeId, record.FinancingSourceId, record.ActualDateTime, record.PersonBirthDate.AddYears(18) > record.ActualDateTime);
                         DataGridRowDefinition detailRow = new DataGridRowDefinition()
                         {
                             Id = record.Id,
@@ -278,12 +273,25 @@ namespace StatisticsModule.ViewModels
                                 record.ExecutionPlace,
                                 record.BranchName,
                                 record.Executor,
-                                statisticsService.GetRecordTypeCost(record.RecordTypeId, record.FinancingSourceId, record.ActualDateTime, record.PersonBirthDate.AddYears(18) > record.ActualDateTime).ToSafeString(),
+                                recordCost.ToString(),
                                 record.PaymentType
                             }
                         };
                         row.Details.Add(detailRow);
+                        totalCost += recordCost;
                     }
+
+                    row.Cells = new ObservableCollectionEx<string>() 
+                        { 
+                            rtc.Name, 
+                            rtc.Code, 
+                            records.Count.ToSafeString(),
+                            records.Count(x => x.ExecutionPlaceOption == OptionValues.Ambulatory).ToString(),
+                            records.Count(x => x.ExecutionPlaceOption == OptionValues.Stationary).ToString(),
+                            records.Count(x => x.ExecutionPlaceOption == OptionValues.DayStationary).ToString(),
+                            totalCost.ToString()
+                        };
+
                     Source.Add(row);
                 }
             }

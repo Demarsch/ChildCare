@@ -873,7 +873,7 @@
           <Property Name="FinancingSourceId" Type="int" Nullable="false" />
           <Property Name="BeginDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
-          <Property Name="IsChild" Type="bit" />
+          <Property Name="IsChild" Type="bit" Nullable="false" />
           <Property Name="IsIncome" Type="bit" Nullable="false" />
           <Property Name="AccountMaterials" Type="float" Nullable="false" />
           <Property Name="Amortisation" Type="float" Nullable="false" />
@@ -4198,7 +4198,6 @@
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
           <EntitySet Name="RecordDocuments" EntityType="DataLib.RecordDocument" />
-          <EntitySet Name="RecordTypeCosts" EntityType="DataLib.RecordTypeCost" />
           <AssociationSet Name="FK_RecordDocuments_Documents" Association="DataLib.FK_RecordDocuments_Documents">
             <End Role="Document" EntitySet="Documents" />
             <End Role="RecordDocument" EntitySet="RecordDocuments" />
@@ -4309,10 +4308,6 @@
           <AssociationSet Name="FK_RecordContractLimits_RecordTypes" Association="DataLib.FK_RecordContractLimits_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="RecordContractLimit" EntitySet="RecordContractLimits" />
-          </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="DataLib.FK_RecordTypeCosts_RecordTypes">
-            <End Role="RecordType" EntitySet="RecordTypes" />
-            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordTypeEditors_RecordTypes" Association="DataLib.FK_RecordTypeEditors_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
@@ -4546,10 +4541,6 @@
             <End Role="FinancingSource" EntitySet="FinancingSources" />
             <End Role="RecordContract" EntitySet="RecordContracts" />
           </AssociationSet>
-          <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="DataLib.FK_RecordTypeCosts_FinancingSources">
-            <End Role="FinancingSource" EntitySet="FinancingSources" />
-            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
-          </AssociationSet>
           <AssociationSet Name="FK_Visits_FinancingSources" Association="DataLib.FK_Visits_FinancingSources">
             <End Role="FinancingSource" EntitySet="FinancingSources" />
             <End Role="Visit" EntitySet="Visits" />
@@ -4757,6 +4748,15 @@
           <AssociationSet Name="FK_CommissionDecisions_Users1" Association="DataLib.FK_CommissionDecisions_Users1">
             <End Role="User" EntitySet="Users" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
+          </AssociationSet>
+          <EntitySet Name="RecordTypeCosts" EntityType="DataLib.RecordTypeCost" />
+          <AssociationSet Name="FK_RecordTypeCosts_FinancingSources" Association="DataLib.FK_RecordTypeCosts_FinancingSources">
+            <End Role="FinancingSource" EntitySet="FinancingSources" />
+            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RecordTypeCosts_RecordTypes" Association="DataLib.FK_RecordTypeCosts_RecordTypes">
+            <End Role="RecordType" EntitySet="RecordTypes" />
+            <End Role="RecordTypeCost" EntitySet="RecordTypeCosts" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Branch">
@@ -5893,28 +5893,6 @@
           <NavigationProperty Name="Assignment" Relationship="DataLib.FK_RecordDocuments_Assignments" FromRole="RecordDocument" ToRole="Assignment" />
           <NavigationProperty Name="Record" Relationship="DataLib.FK_RecordDocuments_Records" FromRole="RecordDocument" ToRole="Record" />
         </EntityType>
-        <EntityType Name="RecordTypeCost">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
-          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
-          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="IsChild" Type="Boolean" />
-          <Property Name="IsIncome" Type="Boolean" Nullable="false" />
-          <Property Name="AccountMaterials" Type="Double" Nullable="false" />
-          <Property Name="Amortisation" Type="Double" Nullable="false" />
-          <Property Name="Salary" Type="Double" Nullable="false" />
-          <Property Name="SoftInventory" Type="Double" Nullable="false" />
-          <Property Name="Profitability" Type="Double" Nullable="false" />
-          <Property Name="FullPrice" Type="Double" Nullable="false" />
-          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="InUserLogin" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordTypeCost" ToRole="RecordType" />
-          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="RecordTypeCost" ToRole="FinancingSource" />
-        </EntityType>
         <Association Name="FK_RecordDocuments_Documents">
           <End Type="DataLib.Document" Role="Document" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -6437,7 +6415,6 @@
           <Property Name="Priority" Type="Int32" Nullable="false" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_RecordTypes" FromRole="RecordType" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContractLimits" Relationship="DataLib.FK_RecordContractLimits_RecordTypes" FromRole="RecordType" ToRole="RecordContractLimit" />
-          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
           <NavigationProperty Name="RecordTypeEditors" Relationship="DataLib.FK_RecordTypeEditors_RecordTypes" FromRole="RecordType" ToRole="RecordTypeEditor" />
           <NavigationProperty Name="RecordTypeRolePermissions" Relationship="DataLib.FK_RecordTypeRolePermissions_RecordTypes" FromRole="RecordType" ToRole="RecordTypeRolePermission" />
           <NavigationProperty Name="RecordTypes1" Relationship="DataLib.FK_RecordTypes_RecordTypes" FromRole="RecordType" ToRole="RecordType1" />
@@ -6449,6 +6426,7 @@
           <NavigationProperty Name="AnalyseResults" Relationship="DataLib.FK_AnalyseResults_RecordTypes" FromRole="RecordType" ToRole="AnalyseResult" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_RecordTypes" FromRole="RecordType" ToRole="Assignment" />
           <NavigationProperty Name="Records" Relationship="DataLib.FK_Records_RecordTypes" FromRole="RecordType" ToRole="Record" />
+          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordType" ToRole="RecordTypeCost" />
           </EntityType>
         <Association Name="FK_RecordContractItems_RecordTypes">
           <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1" />
@@ -6470,20 +6448,6 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="RecordContractLimit">
-              <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeCosts_RecordTypes">
-          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RecordType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeCost">
               <PropertyRef Name="RecordTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -7459,9 +7423,9 @@
           <Property Name="Options" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Assignments" Relationship="DataLib.FK_Assignments_FinancingSources" FromRole="FinancingSource" ToRole="Assignment" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_FinancingSources" FromRole="FinancingSource" ToRole="RecordContract" />
-          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="FinancingSource" ToRole="RecordTypeCost" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_FinancingSources" FromRole="FinancingSource" ToRole="Visit" />
           <NavigationProperty Name="VisitTemplates" Relationship="DataLib.FK_VisitTemplates_FinancingSources" FromRole="FinancingSource" ToRole="VisitTemplate" />
+          <NavigationProperty Name="RecordTypeCosts" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="FinancingSource" ToRole="RecordTypeCost" />
         </EntityType>
         <EntityType Name="IdentityDocumentType">
           <Key>
@@ -7496,18 +7460,6 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="RecordContract">
-              <PropertyRef Name="FinancingSourceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_RecordTypeCosts_FinancingSources">
-          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
-          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="FinancingSource">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="RecordTypeCost">
               <PropertyRef Name="FinancingSourceId" />
             </Dependent>
           </ReferentialConstraint>
@@ -8297,6 +8249,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RecordTypeCost">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RecordTypeId" Type="Int32" Nullable="false" />
+          <Property Name="FinancingSourceId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsChild" Type="Boolean" Nullable="false" />
+          <Property Name="IsIncome" Type="Boolean" Nullable="false" />
+          <Property Name="AccountMaterials" Type="Double" Nullable="false" />
+          <Property Name="Amortisation" Type="Double" Nullable="false" />
+          <Property Name="Salary" Type="Double" Nullable="false" />
+          <Property Name="SoftInventory" Type="Double" Nullable="false" />
+          <Property Name="Profitability" Type="Double" Nullable="false" />
+          <Property Name="FullPrice" Type="Double" Nullable="false" />
+          <Property Name="InDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InUserLogin" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="FinancingSource" Relationship="DataLib.FK_RecordTypeCosts_FinancingSources" FromRole="RecordTypeCost" ToRole="FinancingSource" />
+          <NavigationProperty Name="RecordType" Relationship="DataLib.FK_RecordTypeCosts_RecordTypes" FromRole="RecordTypeCost" ToRole="RecordType" />
+        </EntityType>
+        <Association Name="FK_RecordTypeCosts_FinancingSources">
+          <End Type="DataLib.FinancingSource" Role="FinancingSource" Multiplicity="1" />
+          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FinancingSource">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeCost">
+              <PropertyRef Name="FinancingSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RecordTypeCosts_RecordTypes">
+          <End Type="DataLib.RecordType" Role="RecordType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataLib.RecordTypeCost" Role="RecordTypeCost" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RecordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RecordTypeCost">
+              <PropertyRef Name="RecordTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -8817,27 +8817,6 @@
                 <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
                 <ScalarProperty Name="RecordId" ColumnName="RecordId" />
                 <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="RecordTypeCosts">
-            <EntityTypeMapping TypeName="DataLib.RecordTypeCost">
-              <MappingFragment StoreEntitySet="RecordTypeCosts">
-                <ScalarProperty Name="InUserLogin" ColumnName="InUserLogin" />
-                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
-                <ScalarProperty Name="FullPrice" ColumnName="FullPrice" />
-                <ScalarProperty Name="Profitability" ColumnName="Profitability" />
-                <ScalarProperty Name="SoftInventory" ColumnName="SoftInventory" />
-                <ScalarProperty Name="Salary" ColumnName="Salary" />
-                <ScalarProperty Name="Amortisation" ColumnName="Amortisation" />
-                <ScalarProperty Name="AccountMaterials" ColumnName="AccountMaterials" />
-                <ScalarProperty Name="IsIncome" ColumnName="IsIncome" />
-                <ScalarProperty Name="IsChild" ColumnName="IsChild" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
-                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
-                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -9529,6 +9508,27 @@
                 <ScalarProperty Name="IsOfficial" ColumnName="IsOfficial" />
                 <ScalarProperty Name="CommissionMemberId" ColumnName="CommissionMemberId" />
                 <ScalarProperty Name="CommissionProtocolId" ColumnName="CommissionProtocolId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RecordTypeCosts">
+            <EntityTypeMapping TypeName="DataLib.RecordTypeCost">
+              <MappingFragment StoreEntitySet="RecordTypeCosts">
+                <ScalarProperty Name="InUserLogin" ColumnName="InUserLogin" />
+                <ScalarProperty Name="InDateTime" ColumnName="InDateTime" />
+                <ScalarProperty Name="FullPrice" ColumnName="FullPrice" />
+                <ScalarProperty Name="Profitability" ColumnName="Profitability" />
+                <ScalarProperty Name="SoftInventory" ColumnName="SoftInventory" />
+                <ScalarProperty Name="Salary" ColumnName="Salary" />
+                <ScalarProperty Name="Amortisation" ColumnName="Amortisation" />
+                <ScalarProperty Name="AccountMaterials" ColumnName="AccountMaterials" />
+                <ScalarProperty Name="IsIncome" ColumnName="IsIncome" />
+                <ScalarProperty Name="IsChild" ColumnName="IsChild" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="FinancingSourceId" ColumnName="FinancingSourceId" />
+                <ScalarProperty Name="RecordTypeId" ColumnName="RecordTypeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

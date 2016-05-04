@@ -42,5 +42,7 @@ namespace StatisticsModule.DTO
         public string ExecutionPlace { get; set; }
         public string ExecutionPlaceOption { get; set; }
 
+        public bool IsAnalyse { get; set; }
+
     }
 }

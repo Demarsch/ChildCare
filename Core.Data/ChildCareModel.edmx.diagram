@@ -88,7 +88,6 @@
         <AssociationConnector Association="DataLib.FK_Visits_VisitOutcomes" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitResults" />
         <EntityTypeShape EntityType="DataLib.RecordDocument" Width="1.5" PointX="22.5" PointY="63.25" />
-        <EntityTypeShape EntityType="DataLib.RecordTypeCost" Width="1.5" PointX="13.5" PointY="32.5" />
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Documents" />
         <EntityTypeShape EntityType="DataLib.RecordTypeRolePermission" Width="1.5" PointX="18.75" PointY="47" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypeRolePermissions" />
@@ -131,7 +130,6 @@
         <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="0.75" PointY="51.5" />
         <AssociationConnector Association="DataLib.FK_RecordContractItems_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordTypes" />
-        <AssociationConnector Association="DataLib.FK_RecordTypeCosts_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeEditors_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
@@ -208,7 +206,6 @@
         <EntityTypeShape EntityType="DataLib.IdentityDocumentType" Width="1.5" PointX="9.375" PointY="1" />
         <AssociationConnector Association="DataLib.FK_Assignments_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_RecordContracts_FinancingSources" />
-        <AssociationConnector Association="DataLib.FK_RecordTypeCosts_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_Visits_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_VisitTemplates_FinancingSources" />
         <AssociationConnector Association="DataLib.FK_PersonIdentityDocuments_IdentityDocumentTypes" />
@@ -267,6 +264,9 @@
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users1" />
+        <EntityTypeShape EntityType="DataLib.RecordTypeCost" Width="1.5" PointX="13.75" PointY="59.125" />
+        <AssociationConnector Association="DataLib.FK_RecordTypeCosts_FinancingSources" />
+        <AssociationConnector Association="DataLib.FK_RecordTypeCosts_RecordTypes" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

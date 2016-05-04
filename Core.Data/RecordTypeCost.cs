@@ -20,7 +20,7 @@ namespace Core.Data
         public int FinancingSourceId { get; set; }
         public System.DateTime BeginDate { get; set; }
         public System.DateTime EndDate { get; set; }
-        public Nullable<bool> IsChild { get; set; }
+        public bool IsChild { get; set; }
         public bool IsIncome { get; set; }
         public double AccountMaterials { get; set; }
         public double Amortisation { get; set; }
@@ -32,20 +32,20 @@ namespace Core.Data
         public string InUserLogin { get; set; }
     
         [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
-    	}
-        [NonSerialized]
     	protected FinancingSource financingSource;
     
     	public virtual FinancingSource FinancingSource
     	{
      		get { return financingSource; }
      		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	protected RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
     	}
     
     	public object Clone()

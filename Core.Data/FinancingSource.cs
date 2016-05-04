@@ -19,9 +19,9 @@ namespace Core.Data
         {
             this.Assignments = new HashSet<Assignment>();
             this.RecordContracts = new HashSet<RecordContract>();
-            this.RecordTypeCosts = new HashSet<RecordTypeCost>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
+            this.RecordTypeCosts = new HashSet<RecordTypeCost>();
         }
     
         public int Id { get; set; }
@@ -48,14 +48,6 @@ namespace Core.Data
      		set { recordContracts = value; }
     	}
         [NonSerialized]
-    	protected ICollection<RecordTypeCost> recordTypeCosts;
-    
-    	public virtual ICollection<RecordTypeCost> RecordTypeCosts
-    	{
-     		get { return recordTypeCosts; }
-     		set { recordTypeCosts = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<Visit> visits;
     
     	public virtual ICollection<Visit> Visits
@@ -70,6 +62,14 @@ namespace Core.Data
     	{
      		get { return visitTemplates; }
      		set { visitTemplates = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<RecordTypeCost> recordTypeCosts;
+    
+    	public virtual ICollection<RecordTypeCost> RecordTypeCosts
+    	{
+     		get { return recordTypeCosts; }
+     		set { recordTypeCosts = value; }
     	}
     
     	public object Clone()

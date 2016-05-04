@@ -4,7 +4,7 @@
     [FinancingSourceId] INT           NOT NULL,
     [BeginDate]         DATETIME      NOT NULL,
     [EndDate]           DATETIME      NOT NULL,
-    [IsChild]           BIT           NULL,
+    [IsChild]           BIT           NOT NULL,
     [IsIncome]          BIT           CONSTRAINT [DF_RecordTypeCosts_IsIncome] DEFAULT ((1)) NOT NULL,
     [AccountMaterials]  FLOAT (53)    CONSTRAINT [DF_RecordTypeCosts_AccountMaterials] DEFAULT ((0)) NOT NULL,
     [Amortisation]      FLOAT (53)    CONSTRAINT [DF_RecordTypeCosts_AccountMaterials1] DEFAULT ((0)) NOT NULL,
@@ -18,6 +18,8 @@
     CONSTRAINT [FK_RecordTypeCosts_FinancingSources] FOREIGN KEY ([FinancingSourceId]) REFERENCES [dbo].[FinancingSources] ([Id]),
     CONSTRAINT [FK_RecordTypeCosts_RecordTypes] FOREIGN KEY ([RecordTypeId]) REFERENCES [dbo].[RecordTypes] ([Id]) ON DELETE CASCADE
 );
+
+
 
 
 
