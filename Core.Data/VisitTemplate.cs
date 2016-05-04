@@ -31,14 +31,6 @@ namespace Core.Data
         public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	protected ExecutionPlace executionPlace;
-    
-    	public virtual ExecutionPlace ExecutionPlace
-    	{
-     		get { return executionPlace; }
-     		set { executionPlace = value; }
-    	}
-        [NonSerialized]
     	protected RecordContract recordContract;
     
     	public virtual RecordContract RecordContract
@@ -69,6 +61,14 @@ namespace Core.Data
     	{
      		get { return financingSource; }
      		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	protected ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
     	}
     
     	public object Clone()

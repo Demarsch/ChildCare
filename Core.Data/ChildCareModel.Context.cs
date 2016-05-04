@@ -73,7 +73,6 @@ namespace Core.Data
         public virtual DbSet<PersonDiagnos> PersonDiagnoses { get; set; }
         public virtual DbSet<RecordMember> RecordMembers { get; set; }
         public virtual DbSet<DiagnosType> DiagnosTypes { get; set; }
-        public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<RecordPeriod> RecordPeriods { get; set; }
         public virtual DbSet<DefaultProtocol> DefaultProtocols { get; set; }
         public virtual DbSet<MKB> MKBs { get; set; }
@@ -114,8 +113,9 @@ namespace Core.Data
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
         public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
+        public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
-        public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
     }
 }

@@ -29,6 +29,14 @@ namespace Core.Data
         public Nullable<int> RemovedByUserId { get; set; }
     
         [NonSerialized]
+    	protected CommissionMember commissionMember;
+    
+    	public virtual CommissionMember CommissionMember
+    	{
+     		get { return commissionMember; }
+     		set { commissionMember = value; }
+    	}
+        [NonSerialized]
     	protected CommissionProtocol commissionProtocol;
     
     	public virtual CommissionProtocol CommissionProtocol
@@ -59,14 +67,6 @@ namespace Core.Data
     	{
      		get { return user1; }
      		set { user1 = value; }
-    	}
-        [NonSerialized]
-    	protected CommissionMember commissionMember;
-    
-    	public virtual CommissionMember CommissionMember
-    	{
-     		get { return commissionMember; }
-     		set { commissionMember = value; }
     	}
     
     	public object Clone()

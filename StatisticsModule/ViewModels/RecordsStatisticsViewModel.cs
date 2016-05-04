@@ -155,7 +155,8 @@ namespace StatisticsModule.ViewModels
             }
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
-                                   
+
+            #region Get Data
             var recordsQuery = statisticsService.GetRecords(beginDate, endDate, selectedFinSourceId, isCompleted, isInProgress, isAmbulatory, isStationary, isDayStationary);
             RecordDTO[] recordsResult = await Task.Factory.StartNew(() =>
             {
@@ -227,7 +228,9 @@ namespace StatisticsModule.ViewModels
 
                 recordsResult = recordsResult.Union(assignmentsResult).ToArray();
             }
+            #endregion
 
+            #region Fill Grid
             Source.Clear();
             Details.Clear();
             
@@ -282,11 +285,12 @@ namespace StatisticsModule.ViewModels
                         row.Details.Add(detailRow);
                     }
                     Source.Add(row);
-                }                
-            }                                  
-            
+                }
+            }
+
             DataGridRowDefinition.RowExpanding += new Action<DataGridRowDefinition>(RowDef_RowExpanding);
             DataGridRowDefinition.RowCollapsing += new Action<DataGridRowDefinition>(RowDef_RowCollapsing);
+            #endregion            
         }      
 
         #region Properties

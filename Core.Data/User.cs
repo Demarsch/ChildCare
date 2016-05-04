@@ -139,11 +139,15 @@ namespace Core.Data
     	}
         [NonSerialized]
     	protected ICollection<Record> records;
+    
     	public virtual ICollection<Record> Records
     	{
      		get { return records; }
      		set { records = value; }
-     	}
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionDecision> commissionDecisions;
+    
     	public virtual ICollection<CommissionDecision> CommissionDecisions
     	{
      		get { return commissionDecisions; }

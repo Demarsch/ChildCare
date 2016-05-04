@@ -65,14 +65,6 @@ namespace Core.Data
      		set { assignment1 = value; }
     	}
         [NonSerialized]
-    	protected ExecutionPlace executionPlace;
-    
-    	public virtual ExecutionPlace ExecutionPlace
-    	{
-     		get { return executionPlace; }
-     		set { executionPlace = value; }
-    	}
-        [NonSerialized]
     	protected Org org;
     
     	public virtual Org Org
@@ -167,6 +159,14 @@ namespace Core.Data
     	{
      		get { return financingSource; }
      		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	protected ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
     	}
         [NonSerialized]
     	protected Record record;

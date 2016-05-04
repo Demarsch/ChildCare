@@ -73,14 +73,6 @@ namespace Core.Data
      		set { visitResult = value; }
     	}
         [NonSerialized]
-    	protected ExecutionPlace executionPlace;
-    
-    	public virtual ExecutionPlace ExecutionPlace
-    	{
-     		get { return executionPlace; }
-     		set { executionPlace = value; }
-    	}
-        [NonSerialized]
     	protected VisitTemplate visitTemplate;
     
     	public virtual VisitTemplate VisitTemplate
@@ -127,6 +119,14 @@ namespace Core.Data
     	{
      		get { return financingSource; }
      		set { financingSource = value; }
+    	}
+        [NonSerialized]
+    	protected ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
     	}
         [NonSerialized]
     	protected ICollection<Record> records;

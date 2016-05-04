@@ -64,7 +64,7 @@ namespace Core.Data.Services
         {
             using (var context = contextProvider.CreateNewContext())
             {
-                var alltypes = context.Set<RecordType>().Where(x => x.IsRecord).Select(x => new RecordTypesTreeQueryItem() { Id = x.Id, Code = x.Code, Name = (x.ShortName != "" ? x.ShortName : x.Name), ParentId = x.ParentId, Priority = x.Priority }).ToArray();
+                var alltypes = context.Set<RecordType>().Select(x => new RecordTypesTreeQueryItem() { Id = x.Id, ParentId = x.ParentId, Code = x.Code, Name = (x.ShortName != "" ? x.ShortName : x.Name), Priority = x.Priority }).ToArray();
                 return alltypes.Where(x => !x.ParentId.HasValue).OrderBy(x => x.Priority).ThenBy(x => x.Name).SelectMany(x => GetRecordTypesTreeChilds(x, alltypes)).ToList();
             }
         }
