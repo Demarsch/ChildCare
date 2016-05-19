@@ -364,6 +364,9 @@
     <Compile Include="Staff.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="StaffCategory.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Unit.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

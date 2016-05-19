@@ -157,5 +157,6 @@
     <Build Include="dbo\Tables\UserPermissionGroups.sql" />
     <Build Include="dbo\Tables\ColorsSettings.sql" />
     <Build Include="dbo\Tables\CommissionFilters.sql" />
+    <Build Include="dbo\Tables\StaffCategories.sql" />
   </ItemGroup>
 </Project>

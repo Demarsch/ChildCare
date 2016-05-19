@@ -17,16 +17,25 @@ namespace Core.Data
     {
         public Staff()
         {
-            this.PersonStaffs = new HashSet<PersonStaff>();
             this.CommissionMembers = new HashSet<CommissionMember>();
+            this.PersonStaffs = new HashSet<PersonStaff>();
         }
     
         public int Id { get; set; }
         public Nullable<int> ParentId { get; set; }
         public string Name { get; set; }
         public string ShortName { get; set; }
+        public int CategoryId { get; set; }
         public bool IsSenior { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<CommissionMember> commissionMembers;
+    
+    	public virtual ICollection<CommissionMember> CommissionMembers
+    	{
+     		get { return commissionMembers; }
+     		set { commissionMembers = value; }
+    	}
         [NonSerialized]
     	protected ICollection<PersonStaff> personStaffs;
     
@@ -36,12 +45,12 @@ namespace Core.Data
      		set { personStaffs = value; }
     	}
         [NonSerialized]
-    	protected ICollection<CommissionMember> commissionMembers;
+    	protected StaffCategory staffCategory;
     
-    	public virtual ICollection<CommissionMember> CommissionMembers
+    	public virtual StaffCategory StaffCategory
     	{
-     		get { return commissionMembers; }
-     		set { commissionMembers = value; }
+     		get { return staffCategory; }
+     		set { staffCategory = value; }
     	}
     
     	public object Clone()

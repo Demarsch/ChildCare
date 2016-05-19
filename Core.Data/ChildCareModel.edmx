@@ -1019,6 +1019,13 @@
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="NeedPlace" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="StaffCategories">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <EntityType Name="Staffs">
           <Key>
             <PropertyRef Name="Id" />
@@ -1027,6 +1034,7 @@
           <Property Name="ParentId" Type="int" />
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CategoryId" Type="int" Nullable="false" />
           <Property Name="IsSenior" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Units">
@@ -2951,6 +2959,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Staffs_StaffCategories">
+          <End Role="StaffCategories" Type="Self.StaffCategories" Multiplicity="1" />
+          <End Role="Staffs" Type="Self.Staffs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StaffCategories">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Staffs">
+              <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserMessages_RecieverUsers1">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="UserMessages" Type="Self.UserMessages" Multiplicity="*" />
@@ -3299,6 +3319,7 @@
           <EntitySet Name="Rooms" EntityType="Self.Rooms" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ScheduleItem" EntityType="Self.ScheduleItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SocialStatusTypes" EntityType="Self.SocialStatusTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StaffCategories" EntityType="Self.StaffCategories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Staffs" EntityType="Self.Staffs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Units" EntityType="Self.Units" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Urgentlies" EntityType="Self.Urgentlies" Schema="dbo" store:Type="Tables" />
@@ -3902,6 +3923,10 @@
             <End Role="Rooms" EntitySet="Rooms" />
             <End Role="ScheduleItem" EntitySet="ScheduleItem" />
           </AssociationSet>
+          <AssociationSet Name="FK_Staffs_StaffCategories" Association="Self.FK_Staffs_StaffCategories">
+            <End Role="StaffCategories" EntitySet="StaffCategories" />
+            <End Role="Staffs" EntitySet="Staffs" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserMessages_RecieverUsers1" Association="Self.FK_UserMessages_RecieverUsers1">
             <End Role="Users" EntitySet="Users" />
             <End Role="UserMessages" EntitySet="UserMessages" />
@@ -4029,7 +4054,6 @@
           <EntitySet Name="Rooms" EntityType="DataLib.Room" />
           <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
           <EntitySet Name="SocialStatusTypes" EntityType="DataLib.SocialStatusType" />
-          <EntitySet Name="Staffs" EntityType="DataLib.Staff" />
           <EntitySet Name="UserMessages" EntityType="DataLib.UserMessage" />
           <EntitySet Name="UserMessageTypes" EntityType="DataLib.UserMessageType" />
           <EntitySet Name="VisitOutcomes" EntityType="DataLib.VisitOutcome" />
@@ -4166,10 +4190,6 @@
           <AssociationSet Name="FK_PersonSocialStatuses_SocialStatusTypes" Association="DataLib.FK_PersonSocialStatuses_SocialStatusTypes">
             <End Role="SocialStatusType" EntitySet="SocialStatusTypes" />
             <End Role="PersonSocialStatus" EntitySet="PersonSocialStatuses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonStaffs_Staffs" Association="DataLib.FK_PersonStaffs_Staffs">
-            <End Role="Staff" EntitySet="Staffs" />
-            <End Role="PersonStaff" EntitySet="PersonStaffs" />
           </AssociationSet>
           <AssociationSet Name="FK_RecordContractItems_PersonStaffs" Association="DataLib.FK_RecordContractItems_PersonStaffs">
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
@@ -4583,10 +4603,6 @@
             <End Role="PersonStaff" EntitySet="PersonStaffs" />
             <End Role="CommissionMember" EntitySet="CommissionMembers" />
           </AssociationSet>
-          <AssociationSet Name="FK_CommissionMembers_Staffs" Association="DataLib.FK_CommissionMembers_Staffs">
-            <End Role="Staff" EntitySet="Staffs" />
-            <End Role="CommissionMember" EntitySet="CommissionMembers" />
-          </AssociationSet>
           <EntitySet Name="ExecutionPlaces" EntityType="DataLib.ExecutionPlace" />
           <EntitySet Name="Records" EntityType="DataLib.Record" />
           <AssociationSet Name="FK_AnalyseResults_Records" Association="DataLib.FK_AnalyseResults_Records">
@@ -4767,6 +4783,20 @@
           <AssociationSet Name="FK_ScheduleItem_RecordTypes" Association="DataLib.FK_ScheduleItem_RecordTypes">
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="ScheduleItem" EntitySet="ScheduleItems" />
+          </AssociationSet>
+          <EntitySet Name="StaffCategories" EntityType="DataLib.StaffCategory" />
+          <EntitySet Name="Staffs" EntityType="DataLib.Staff" />
+          <AssociationSet Name="FK_CommissionMembers_Staffs" Association="DataLib.FK_CommissionMembers_Staffs">
+            <End Role="Staff" EntitySet="Staffs" />
+            <End Role="CommissionMember" EntitySet="CommissionMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonStaffs_Staffs" Association="DataLib.FK_PersonStaffs_Staffs">
+            <End Role="Staff" EntitySet="Staffs" />
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Staffs_StaffCategories" Association="DataLib.FK_Staffs_StaffCategories">
+            <End Role="StaffCategory" EntitySet="StaffCategories" />
+            <End Role="Staff" EntitySet="Staffs" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Branch">
@@ -5147,11 +5177,11 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Branch" Relationship="DataLib.FK_PersonStaffs_Branches" FromRole="PersonStaff" ToRole="Branch" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_PersonStaffs_Persons" FromRole="PersonStaff" ToRole="Person" />
-          <NavigationProperty Name="Staff" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="PersonStaff" ToRole="Staff" />
           <NavigationProperty Name="RecordContractItems" Relationship="DataLib.FK_RecordContractItems_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContractItem" />
           <NavigationProperty Name="RecordContracts" Relationship="DataLib.FK_RecordContracts_PersonStaffs" FromRole="PersonStaff" ToRole="RecordContract" />
           <NavigationProperty Name="RecordMembers" Relationship="DataLib.FK_RecordMembers_PersonStaffs" FromRole="PersonStaff" ToRole="RecordMember" />
           <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_PersonStaffs" FromRole="PersonStaff" ToRole="CommissionMember" />
+          <NavigationProperty Name="Staff" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="PersonStaff" ToRole="Staff" />
         </EntityType>
         <EntityType Name="RecordContractItem">
           <Key>
@@ -5270,18 +5300,6 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="NeedPlace" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_SocialStatusTypes" FromRole="SocialStatusType" ToRole="PersonSocialStatus" />
-        </EntityType>
-        <EntityType Name="Staff">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="IsSenior" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="Staff" ToRole="PersonStaff" />
-          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="Staff" ToRole="CommissionMember" />
         </EntityType>
         <EntityType Name="UserMessage">
           <Key>
@@ -5766,18 +5784,6 @@
             </Principal>
             <Dependent Role="PersonSocialStatus">
               <PropertyRef Name="SocialStatusTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonStaffs_Staffs">
-          <End Type="DataLib.Staff" Role="Staff" Multiplicity="1" />
-          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Staff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonStaff">
-              <PropertyRef Name="StaffId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7575,8 +7581,8 @@
           <NavigationProperty Name="CommissionMemberType" Relationship="DataLib.FK_CommissionMembers_CommissionMemberTypes" FromRole="CommissionMember" ToRole="CommissionMemberType" />
           <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionMember" ToRole="CommissionType" />
           <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_CommissionMembers_PersonStaffs" FromRole="CommissionMember" ToRole="PersonStaff" />
-          <NavigationProperty Name="Staff" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="CommissionMember" ToRole="Staff" />
           <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers" FromRole="CommissionMember" ToRole="CommissionDecision" />
+          <NavigationProperty Name="Staff" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="CommissionMember" ToRole="Staff" />
           </EntityType>
         <Association Name="FK_CommissionMembers_CommissionMemberTypes">
           <End Type="DataLib.CommissionMemberType" Role="CommissionMemberType" Multiplicity="1" />
@@ -7611,18 +7617,6 @@
             </Principal>
             <Dependent Role="CommissionMember">
               <PropertyRef Name="PersonStaffId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionMembers_Staffs">
-          <End Type="DataLib.Staff" Role="Staff" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Staff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionMember">
-              <PropertyRef Name="StaffId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8317,6 +8311,64 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="StaffCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Staffs" Relationship="DataLib.FK_Staffs_StaffCategories" FromRole="StaffCategory" ToRole="Staff" />
+        </EntityType>
+        <EntityType Name="Staff">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CategoryId" Type="Int32" Nullable="false" />
+          <Property Name="IsSenior" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="Staff" ToRole="CommissionMember" />
+          <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="Staff" ToRole="PersonStaff" />
+          <NavigationProperty Name="StaffCategory" Relationship="DataLib.FK_Staffs_StaffCategories" FromRole="Staff" ToRole="StaffCategory" />
+        </EntityType>
+        <Association Name="FK_CommissionMembers_Staffs">
+          <End Type="DataLib.Staff" Role="Staff" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Staff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionMember">
+              <PropertyRef Name="StaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonStaffs_Staffs">
+          <End Type="DataLib.Staff" Role="Staff" Multiplicity="1" />
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Staff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonStaff">
+              <PropertyRef Name="StaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Staffs_StaffCategories">
+          <End Type="DataLib.StaffCategory" Role="StaffCategory" Multiplicity="1" />
+          <End Type="DataLib.Staff" Role="Staff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StaffCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Staff">
+              <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -8743,17 +8795,6 @@
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Staffs">
-            <EntityTypeMapping TypeName="DataLib.Staff">
-              <MappingFragment StoreEntitySet="Staffs">
-                <ScalarProperty Name="IsSenior" ColumnName="IsSenior" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -9558,6 +9599,26 @@
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StaffCategories">
+            <EntityTypeMapping TypeName="DataLib.StaffCategory">
+              <MappingFragment StoreEntitySet="StaffCategories">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Staffs">
+            <EntityTypeMapping TypeName="DataLib.Staff">
+              <MappingFragment StoreEntitySet="Staffs">
+                <ScalarProperty Name="IsSenior" ColumnName="IsSenior" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
