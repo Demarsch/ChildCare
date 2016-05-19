@@ -20,20 +20,20 @@ namespace Core.Data
         public int UnitId { get; set; }
     
         [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
-    	}
-        [NonSerialized]
     	protected Unit unit;
     
     	public virtual Unit Unit
     	{
      		get { return unit; }
      		set { unit = value; }
+    	}
+        [NonSerialized]
+    	protected RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
     	}
     
     	public object Clone()

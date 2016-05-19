@@ -83,7 +83,6 @@ namespace Core.Data
         public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
-        public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RecordTypeUnit> RecordTypeUnits { get; set; }
         public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
         public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
@@ -117,5 +116,6 @@ namespace Core.Data
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
+        public virtual DbSet<RecordType> RecordTypes { get; set; }
     }
 }

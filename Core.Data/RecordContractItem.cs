@@ -43,20 +43,20 @@ namespace Core.Data
      		set { recordContract = value; }
     	}
         [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
-    	}
-        [NonSerialized]
     	protected Assignment assignment;
     
     	public virtual Assignment Assignment
     	{
      		get { return assignment; }
      		set { assignment = value; }
+    	}
+        [NonSerialized]
+    	protected RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
     	}
     
     	public object Clone()
