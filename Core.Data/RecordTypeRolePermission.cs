@@ -46,20 +46,20 @@ namespace Core.Data
      		set { recordMembers = value; }
     	}
         [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
-    	}
-        [NonSerialized]
     	protected Permission permission;
     
     	public virtual Permission Permission
     	{
      		get { return permission; }
      		set { permission = value; }
+    	}
+        [NonSerialized]
+    	protected RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
     	}
     
     	public object Clone()

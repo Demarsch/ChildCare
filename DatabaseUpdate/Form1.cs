@@ -27,7 +27,7 @@ namespace UpdateDB
 
         private void button4_Click(object sender, EventArgs e)
         {
-            Fill();
+            Fill();  
         }
 
         private const string ConnectionStringTemplate = "data source=@source@;initial catalog=ChildCare;integrated security=True";
@@ -180,8 +180,8 @@ namespace UpdateDB
 
         public bool SaveToTable(string tbl)
         {
-            string filePath = textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx";
-            //string filePath = "D:\\spr_mkb10.xlsx";
+            //string filePath = textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx";
+            string filePath = "D:\\price.xlsx";
             if (!System.IO.File.Exists(filePath)) return false;
 
             string fields = "";
@@ -234,7 +234,7 @@ namespace UpdateDB
             {
                 return false;
             }
-                
+            /*    
             var constr = ConnectionStringTemplate.Replace("@source@", textBox1.Text);
             System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(constr);
             try
@@ -262,9 +262,10 @@ namespace UpdateDB
             {
                 ret = false;
             }
-            
-            con.Close();
-            return ret;
+           
+            con.Close(); */
+
+            return true; //ret;
         }
     }
 }

@@ -13,27 +13,23 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordTypeUnit : ICloneable
+    public partial class StaffCategory : ICloneable
     {
+        public StaffCategory()
+        {
+            this.Staffs = new HashSet<Staff>();
+        }
+    
         public int Id { get; set; }
-        public int RecordTypeId { get; set; }
-        public int UnitId { get; set; }
+        public string Name { get; set; }
     
         [NonSerialized]
-    	protected Unit unit;
+    	protected ICollection<Staff> staffs;
     
-    	public virtual Unit Unit
+    	public virtual ICollection<Staff> Staffs
     	{
-     		get { return unit; }
-     		set { unit = value; }
-    	}
-        [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
+     		get { return staffs; }
+     		set { staffs = value; }
     	}
     
     	public object Clone()

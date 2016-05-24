@@ -58,7 +58,6 @@ namespace Core.Data
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<ScheduleItem> ScheduleItems { get; set; }
         public virtual DbSet<SocialStatusType> SocialStatusTypes { get; set; }
-        public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<UserMessage> UserMessages { get; set; }
         public virtual DbSet<UserMessageType> UserMessageTypes { get; set; }
         public virtual DbSet<VisitOutcome> VisitOutcomes { get; set; }
@@ -83,7 +82,6 @@ namespace Core.Data
         public virtual DbSet<RecordEquipment> RecordEquipments { get; set; }
         public virtual DbSet<RecordTypeEditor> RecordTypeEditors { get; set; }
         public virtual DbSet<Unit> Units { get; set; }
-        public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<RecordTypeUnit> RecordTypeUnits { get; set; }
         public virtual DbSet<AnalyseRefference> AnalyseRefferences { get; set; }
         public virtual DbSet<AnalyseResult> AnalyseResults { get; set; }
@@ -117,5 +115,8 @@ namespace Core.Data
         public virtual DbSet<Record> Records { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
+        public virtual DbSet<RecordType> RecordTypes { get; set; }
+        public virtual DbSet<StaffCategory> StaffCategories { get; set; }
+        public virtual DbSet<Staff> Staffs { get; set; }
     }
 }

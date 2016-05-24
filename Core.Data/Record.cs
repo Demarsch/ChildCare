@@ -181,14 +181,6 @@ namespace Core.Data
      		set { record1 = value; }
     	}
         [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
-    	}
-        [NonSerialized]
     	protected Room room;
     
     	public virtual Room Room
@@ -219,6 +211,14 @@ namespace Core.Data
     	{
      		get { return visit; }
      		set { visit = value; }
+    	}
+        [NonSerialized]
+    	protected RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
     	}
     
     	public object Clone()
