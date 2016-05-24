@@ -148,6 +148,7 @@ namespace CommissionsModule.ViewModels
                 if (value != SpecialValues.NewId)
                 {
                     SetCommissionProtocolState();
+                    SetPatientName();
                     ShowCommissionProtocol = selectedCommissionProtocolId > 0;
                 }
                 SubscribeToCommissionsProtocolsChangesAsync();
@@ -189,34 +190,10 @@ namespace CommissionsModule.ViewModels
                 SetProperty(ref commissionProtocolState, value);
                 CommissionСonclusionVisible = false;
                 CommissionСonductVisible = false;
-                if (SelectedCommissionProtocolId == SpecialValues.NewId)
-                {
-                    PreliminaryProtocolViewModel.Initialize(personId: SelectedPersonId);
-                    if ((int)CommissionProtocolState > 0)
-                    {
-                        CommissionСonductVisible = true;
-                        CommissionСonductViewModel.Initialize(personId: SelectedPersonId);
-                    }
-                    if ((int)CommissionProtocolState > 1)
-                    {
-                        CommissionСonclusionVisible = true;
-                        CommissionСonclusionViewModel.Initialize(personId: SelectedPersonId);
-                    }
-                }
-                else
-                {
-                    PreliminaryProtocolViewModel.Initialize(SelectedCommissionProtocolId);
-                    if ((int)CommissionProtocolState > 0)
-                    {
-                        CommissionСonductVisible = true;
-                        CommissionСonductViewModel.Initialize(SelectedCommissionProtocolId);
-                    }
-                    if ((int)CommissionProtocolState > 1)
-                    {
-                        CommissionСonclusionVisible = true;
-                        CommissionСonclusionViewModel.Initialize(SelectedCommissionProtocolId);
-                    }
-                }
+                if ((int)CommissionProtocolState > 0)
+                    CommissionСonductVisible = true;
+                if ((int)CommissionProtocolState > 1)
+                    CommissionСonclusionVisible = true;
             }
         }
 
@@ -274,6 +251,7 @@ namespace CommissionsModule.ViewModels
                 CommissionProtocolState = ViewModels.CommissionProtocolState.Сonduction;
             else
                 CommissionProtocolState = ViewModels.CommissionProtocolState.Preliminary;
+            CommissionСonductViewModel.Initialize(SelectedCommissionProtocolId, SelectedPersonId);
         }
 
         private void AddCommissionConclusion(bool? select)
@@ -283,6 +261,7 @@ namespace CommissionsModule.ViewModels
                 CommissionProtocolState = ViewModels.CommissionProtocolState.Сonclusion;
             else
                 CommissionProtocolState = ViewModels.CommissionProtocolState.Сonduction;
+            CommissionСonclusionViewModel.Initialize(SelectedCommissionProtocolId, SelectedPersonId);
         }
 
         private async void SetCommissionProtocolState()
@@ -311,12 +290,18 @@ namespace CommissionsModule.ViewModels
                     {
                         case false:
                             CommissionProtocolState = CommissionProtocolState.Сonduction;
+                            PreliminaryProtocolViewModel.Initialize(SelectedCommissionProtocolId);
+                            CommissionСonductViewModel.Initialize(SelectedCommissionProtocolId);
                             break;
                         case true:
                             CommissionProtocolState = CommissionProtocolState.Сonclusion;
+                            PreliminaryProtocolViewModel.Initialize(SelectedCommissionProtocolId);
+                            CommissionСonductViewModel.Initialize(SelectedCommissionProtocolId);
+                            CommissionСonclusionViewModel.Initialize(SelectedCommissionProtocolId);
                             break;
                         default:
                             CommissionProtocolState = CommissionProtocolState.Preliminary;
+                            PreliminaryProtocolViewModel.Initialize(SelectedCommissionProtocolId);
                             break;
                     }
                 }
@@ -340,6 +325,7 @@ namespace CommissionsModule.ViewModels
 
         private async void SetPatientName()
         {
+            Patient = string.Empty;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -349,18 +335,35 @@ namespace CommissionsModule.ViewModels
             var token = currentOperationToken.Token;
             logService.InfoFormat("Loading patient name with  person id ={0}", SelectedPersonId);
             var personQuery = commissionService.GetPerson(SelectedPersonId);
+            var commissionprotocolQuery = commissionService.GetCommissionProtocolById(SelectedCommissionProtocolId);
             try
             {
-                var person = await personQuery.Select(x => new
+                if (SelectedCommissionProtocolId > 0)
                 {
-                    x.ShortName,
-                    x.BirthDate
-                }).FirstOrDefaultAsync(token);
-                if (person != null)
-                {
-                    Patient = person.ShortName + person.BirthDate.ToShortDateString();
+                    var person = await commissionprotocolQuery.Select(x => new
+                    {
+                        x.Person.ShortName,
+                        x.Person.BirthDate
+                    }).FirstOrDefaultAsync(token);
+                    if (person != null)
+                    {
+                        Patient = person.ShortName + " " + person.BirthDate.ToShortDateString() + "г.р.";
+                    }
                 }
                 else
+                {
+                    var person = await personQuery.Select(x => new
+                    {
+                        x.ShortName,
+                        x.BirthDate
+                    }).FirstOrDefaultAsync(token);
+                    if (person != null)
+                    {
+                        Patient = person.ShortName + " " + person.BirthDate.ToShortDateString() + "г.р.";
+                    }
+                }
+
+                if (Patient == string.Empty)
                 {
                     FailureMediator.Activate("Не удалось загрузить данные пациента");
                 }
@@ -375,6 +378,8 @@ namespace CommissionsModule.ViewModels
             {
                 if (personQuery != null)
                     personQuery.Dispose();
+                if (commissionprotocolQuery != null)
+                    commissionprotocolQuery.Dispose();
             }
         }
 
@@ -390,6 +395,7 @@ namespace CommissionsModule.ViewModels
                 SelectedCommissionProtocolId = SpecialValues.NewId;
                 CommissionProtocolState = CommissionProtocolState.Preliminary;
                 SelectedPersonId = searchViewModel.PersonSearchViewModel.SelectedPersonId;
+                PreliminaryProtocolViewModel.Initialize(SelectedCommissionProtocolId, SelectedPersonId);
             }
         }
 
@@ -499,7 +505,7 @@ namespace CommissionsModule.ViewModels
 
         private void OnCommissionProtocolSelected(int protocolId)
         {
-            SelectedCommissionProtocolId = protocolId;
+            //SelectedCommissionProtocolId = protocolId;
             if (!SpecialValues.IsNewOrNonExisting(protocolId))
                 SelectedCommissionProtocolId = protocolId;
         }

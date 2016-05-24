@@ -11,7 +11,7 @@
     <Grid>
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
             <StackPanel>
-                <TextBlock Text="{Binding Patient}"/>
+                <TextBlock Text="{Binding Patient}" HorizontalAlignment="Stretch" TextAlignment="Center" FontSize="18" FontWeight="Bold"/>
                 <ContentControl VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Content="{Binding PreliminaryProtocolViewModel}"/>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding CommissionСonductVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                     <ContentControl Content="{Binding CommissionСonductViewModel}" />
@@ -21,7 +21,7 @@
             <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding FailureMediator}"/>
             <ContentControl HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{Binding NotificationMediator}"/>
         </Grid>
-        <view:CommissionEmptyView Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}" />
+        <!--<view:CommissionEmptyView Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}" />-->
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
