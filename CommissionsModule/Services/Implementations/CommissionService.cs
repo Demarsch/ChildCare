@@ -200,46 +200,74 @@ namespace CommissionsModule.Services
             }
         }
 
-        public async Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
+        public async Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
         {
-            CommissionProtocol originalProtocol = null;
-            using (var dataContext = contextProvider.CreateLightweightContext())
+            using (var db = contextProvider.CreateNewContext())
             {
-                dataContext.Configuration.ProxyCreationEnabled = false;
-                if (newProtocol.Id == SpecialValues.NewId)
+                var curUserId = userService.GetCurrentUserId();
+                var curCommissionProtocol = await db.Set<CommissionProtocol>().FirstOrDefaultAsync(x => x.Id == newProtocol.Id);
+                if (curCommissionProtocol == null)
                 {
-                    dataContext.Entry(newProtocol).State = EntityState.Added;
+                    curCommissionProtocol = new CommissionProtocol
+                    {
+                        PersonId = newProtocol.PersonId,
+                        ProtocolNumber = 0,
+                        ProtocolDate = DateTime.Now,
+                        IsCompleted = newProtocol.IsCompleted,
+                        InUserId = curUserId
+                    };
+                    db.Set<CommissionProtocol>().Add(curCommissionProtocol);
                 }
-                else
+                curCommissionProtocol.CommissionTypeId = newProtocol.CommissionTypeId;
+                curCommissionProtocol.CommissionQuestionId = newProtocol.CommissionQuestionId;
+                curCommissionProtocol.CommissionSourceId = newProtocol.CommissionSourceId;
+                curCommissionProtocol.SentLPUId = newProtocol.SentLPUId;
+                curCommissionProtocol.PersonTalonId = newProtocol.PersonTalonId;
+                curCommissionProtocol.MedicalHelpTypeId = newProtocol.MedicalHelpTypeId;
+                curCommissionProtocol.MKB = newProtocol.MKB;
+                curCommissionProtocol.IncomeDateTime = newProtocol.IncomeDateTime;
+                curCommissionProtocol.PersonAddressId = newProtocol.PersonAddressId;
+
+                curCommissionProtocol.ProtocolNumber = newProtocol.ProtocolNumber;
+                curCommissionProtocol.ProtocolDate = newProtocol.ProtocolDate;
+                curCommissionProtocol.WaitingFor = newProtocol.WaitingFor;
+                curCommissionProtocol.Diagnos = newProtocol.Diagnos;
+                curCommissionProtocol.DecisionId = newProtocol.DecisionId;
+                curCommissionProtocol.Comment = newProtocol.Comment;
+                curCommissionProtocol.ToDoDateTime = newProtocol.ToDoDateTime;
+
+                var newDecisionIds = newProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
+
+                foreach (var curDecision in curCommissionProtocol.CommissionDecisions.Where(x => x.RemovedByUserId == null))
                 {
-                    originalProtocol = await dataContext.NoTrackingSet<CommissionProtocol>().FirstAsync(x => x.Id == newProtocol.Id);
-                    dataContext.Entry(newProtocol).State = EntityState.Modified;
+                    if (!newDecisionIds.Contains(curDecision.Id))
+                        curDecision.RemovedByUserId = curUserId;
+                    else
+                    {
+                        var changedDecision = newProtocol.CommissionDecisions.FirstOrDefault(x => x.Id == curDecision.Id);
+                        curDecision.CommissionStage = changedDecision.CommissionStage;
+                        curDecision.NeedAllMembersInStage = changedDecision.NeedAllMembersInStage;
+                    }
                 }
-                await dataContext.SaveChangesAsync();
-                if (protocolChangeSubscription != null)
+                var existDecisionIds = curCommissionProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
+                CommissionDecision decision;
+                foreach (var newDecision in newProtocol.CommissionDecisions.Where(x => !existDecisionIds.Contains(x.Id)))
                 {
-                    protocolChangeSubscription.Notify(originalProtocol, newProtocol);
+                    decision = new CommissionDecision()
+                    {
+                        CommissionProtocol = curCommissionProtocol,
+                        CommissionStage = newDecision.CommissionStage,
+                        NeedAllMembersInStage = newDecision.NeedAllMembersInStage,
+                        CommissionMemberId = newDecision.CommissionMemberId,
+                        InitiatorUserId = curUserId,
+                    };
+                    //commissionProtocol.CommissionDecisions.Add(decision);
                 }
+                await db.SaveChangesAsync(token);
             }
         }
 
-        public async Task DeleteCommissionProtocolAsync(int protocolId, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
-        {
-            using (var dataContext = contextProvider.CreateLightweightContext())
-            {
-                dataContext.Configuration.ProxyCreationEnabled = false;
-                var originalProtocol = await dataContext.NoTrackingSet<CommissionProtocol>().FirstAsync(x => x.Id == protocolId);
-                originalProtocol.RemovedByUserId = userService.GetCurrentUser().Id;
-                dataContext.Entry(originalProtocol).State = EntityState.Modified;
-                await dataContext.SaveChangesAsync();
-                if (protocolChangeSubscription != null)
-                {
-                    protocolChangeSubscription.NotifyDelete(originalProtocol);
-                }
-            }
-        }
-
-        public async Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate,
+        public async Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, CancellationToken token,
                                                 INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
         {
             using (var dataContext = contextProvider.CreateLightweightContext())
@@ -249,7 +277,7 @@ namespace CommissionsModule.Services
                 newProtocol.ProtocolDate = protocolDate;
 
                 dataContext.Entry(newProtocol).State = EntityState.Modified;
-                await dataContext.SaveChangesAsync();
+                await dataContext.SaveChangesAsync(token);
                 if (protocolChangeSubscription != null)
                 {
                     protocolChangeSubscription.Notify(originalProtocol, newProtocol);

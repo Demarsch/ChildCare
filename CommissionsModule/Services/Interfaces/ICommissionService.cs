@@ -40,11 +40,9 @@ namespace CommissionsModule.Services
 
         Task<string> SaveDecision(int commissionDecisionId, int decisionId, string comment, DateTime? decisionDateTime, CancellationToken token);
 
-        Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
+        Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
-        Task DeleteCommissionProtocolAsync(int protocolId, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
-
-        Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
+        Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
         IEnumerable<CommissionType> GetCommissionTypes(object onDate);
 

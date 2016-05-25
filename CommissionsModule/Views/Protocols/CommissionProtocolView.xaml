@@ -25,5 +25,6 @@
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+        <ContentControl Content="{Binding NotificationMediator}" VerticalAlignment="Bottom" />
     </Grid>
 </UserControl>

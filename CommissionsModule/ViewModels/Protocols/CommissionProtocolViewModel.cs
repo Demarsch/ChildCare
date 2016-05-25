@@ -420,8 +420,13 @@ namespace CommissionsModule.ViewModels
                      ProtocolNumber = 0,
                      ProtocolDate = DateTime.Now,
                      IsCompleted = CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? false :
-                     CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? true : (bool?)null,
+                        CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? true : (bool?)null,
                      InUserId = userService.GetCurrentUserId(),
+                     Comment = string.Empty,
+                     MKB = string.Empty,
+                     Diagnos = string.Empty,
+                     WaitingFor = string.Empty,
+                     IsExecuting = false
                      //CommissionDecisions = await commissionDecisionQuery.ToArrayAsync(token)
                  };
                 //ToDo: Maybe change on better decision!
@@ -442,7 +447,7 @@ namespace CommissionsModule.ViewModels
                     default:
                         break;
                 }
-                await commissionService.SaveCommissionProtocolAsync(commissionProtocol, comissionsProtocolsChangeSubscription);
+                await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
                 ChangeTracker.AcceptChanges();
             }
             catch (OperationCanceledException) {/*Do nothing. Cancelled operation means that user selected different patient before previous one was loaded  */}
@@ -453,6 +458,7 @@ namespace CommissionsModule.ViewModels
             }
             finally
             {
+                NotificationMediator.Activate("Данные сохранены...");
             }
         }
         private async void SubscribeToCommissionsProtocolsChangesAsync()

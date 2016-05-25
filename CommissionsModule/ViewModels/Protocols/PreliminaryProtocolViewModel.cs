@@ -237,8 +237,8 @@ namespace CommissionsModule.ViewModels
             commissionProtocol.CommissionQuestionId = SelectedCommissionQuestionId;
             commissionProtocol.CommissionSourceId = SelectedCommissionSourceId;
             commissionProtocol.SentLPUId = selectedSentLPUId == 0 ? (int?)null : selectedSentLPUId;
-            commissionProtocol.PersonTalonId = SelectedTalonId;
-            commissionProtocol.MedicalHelpTypeId = SelectedHelpTypeId;
+            commissionProtocol.PersonTalonId = !SpecialValues.IsNewOrNonExisting(SelectedTalonId) ? SelectedTalonId : (int?)null;
+            commissionProtocol.MedicalHelpTypeId = !SpecialValues.IsNewOrNonExisting(SelectedHelpTypeId) ? SelectedHelpTypeId : (int?)null;
             commissionProtocol.MKB = MKB;
             commissionProtocol.IncomeDateTime = IncomeDateTime;
             commissionProtocol.PersonAddressId = SelectedPersonAddressId;

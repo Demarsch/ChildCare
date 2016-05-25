@@ -252,32 +252,20 @@ namespace CommissionsModule.ViewModels
 
         public void GetСonductionCommissionProtocolData(ref CommissionProtocol commissionProtocol)
         {
-            var newDecisionIds = CurrentMembers.Select(x => x.CommissionDecisionId).ToArray();
-            var curUserId = userService.GetCurrentUserId();
-            foreach (var curDecision in commissionProtocol.CommissionDecisions.Where(x => x.RemovedByUserId == null))
-            {
-                if (!newDecisionIds.Contains(curDecision.Id))
-                    curDecision.RemovedByUserId = curUserId;
-                else
-                {
-                    var changedDecision = CurrentMembers.FirstOrDefault(x => x.CommissionDecisionId == curDecision.Id);
-                    curDecision.CommissionStage = changedDecision.Stage;
-                    curDecision.NeedAllMembersInStage = changedDecision.NeedAllMembers;
-                }
-            }
-            var existDecisionIds = commissionProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
             CommissionDecision decision;
-            foreach (var newDecision in CurrentMembers.Where(x => !existDecisionIds.Contains(x.CommissionDecisionId)))
+            commissionProtocol.CommissionDecisions.Clear();
+            foreach (var item in CurrentMembers)
             {
-                decision = new CommissionDecision()
+                decision = new CommissionDecision
                 {
+                    Id = item.CommissionDecisionId,
                     CommissionProtocol = commissionProtocol,
-                    CommissionStage = newDecision.Stage,
-                    NeedAllMembersInStage = newDecision.NeedAllMembers,
-                    CommissionMemberId = newDecision.CommissionMemberId,
-                    InitiatorUserId = curUserId,
+                    CommissionStage = item.Stage,
+                    NeedAllMembersInStage = item.NeedAllMembers,
+                    CommissionMemberId = item.CommissionMemberId,
+                    InitiatorUserId = userService.GetCurrentUserId()
                 };
-                //commissionProtocol.CommissionDecisions.Add(decision);
+                commissionProtocol.CommissionDecisions.Add(decision);
             }
         }
 
