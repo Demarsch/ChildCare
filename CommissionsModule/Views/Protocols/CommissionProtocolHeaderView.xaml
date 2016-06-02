@@ -19,7 +19,7 @@
     <fluent:RibbonGroupBox Header="Состояние комиссии">
         <fluent:ToggleButton Header="Предварит. протокол"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionPreliminary.png"/>
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionPreliminary.png" IsEnabled="False"/>
         <fluent:ToggleButton Header="Проведение комиссии" x:Name="btnCommissionConduction"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionConduct.png"
