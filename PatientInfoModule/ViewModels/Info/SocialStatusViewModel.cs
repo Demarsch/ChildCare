@@ -56,6 +56,10 @@ namespace PatientInfoModule.ViewModels
             get { return selectedSocialStatusType; }
             set
             {
+                SelectedOrganization = null;
+                OrganizationText = string.Empty;
+                Position = string.Empty;
+
                 var oldNeedPlace = selectedSocialStatusType != null && selectedSocialStatusType.NeedPlace;
                 if (SetTrackedProperty(ref selectedSocialStatusType, value))
                 {

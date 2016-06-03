@@ -82,6 +82,8 @@ namespace OrganizationContractsModule.ViewModels
                 org.Details = Details.ToSafeString();
                 org.IsLpu = false;
                 org.UseInContract = true;
+                org.BeginDateTime = DateTime.Now;
+                org.EndDateTime = DateTime.MaxValue;
                 var result = await contractService.SaveOrgAsync(org);
                 orgId = result;
                 SaveSuccesfull = true;

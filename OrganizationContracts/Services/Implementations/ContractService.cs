@@ -9,6 +9,7 @@ using System.Threading;
 using System.Collections;
 using Core.Misc;
 using Core.Wpf.Mvvm;
+using Shared.Patient.Services;
 
 namespace OrganizationContractsModule.Services
 {
@@ -16,13 +17,20 @@ namespace OrganizationContractsModule.Services
     {
         private readonly IDbContextProvider contextProvider;
 
-        public ContractService(IDbContextProvider contextProvider)
+        private readonly IPersonSearchService personSearchService;
+
+        public ContractService(IDbContextProvider contextProvider, IPersonSearchService personSearchService)
         {
             if (contextProvider == null)
             {
                 throw new ArgumentNullException("contextProvider");
             }
+            if (personSearchService == null)
+            {
+                throw new ArgumentNullException("personSearchService");
+            }
             this.contextProvider = contextProvider;
+            this.personSearchService = personSearchService;
         }
 
         public int SaveContractData(RecordContract contract, int[] limitedRecordTypes)
@@ -176,18 +184,13 @@ namespace OrganizationContractsModule.Services
 
         public IEnumerable GetPersonsByFullName(string filter)
         {
-            filter = (filter ?? string.Empty).Trim();
-            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            using (var query = personSearchService.GetPatientSearchQuery(filter))
             {
-                return new FieldValue[0];
+                var result = query.PersonsQuery
+                                  .Select(x => new FieldValue() { Value = x.Id, Field = x.FullName + ", " + x.BirthDate.Year + " г.р." })
+                                  .ToArray();
+                return result;
             }
-            var words = (filter.Contains(',') ? filter.Split(',')[0] : filter).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            using (var context = contextProvider.CreateNewContext())
-                return context.Set<Person>().AsNoTracking()
-                    .Select(x => new FieldValue() { Value = x.Id, Field = x.FullName + ", " + x.BirthDate.Year + " г.р." })
-                    .ToArray()
-                    .Where(x => words.All(y => x.Field.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
-                    .ToArray();
         }
 
         public IDisposableQueryable<Person> GetPersonById(int id)

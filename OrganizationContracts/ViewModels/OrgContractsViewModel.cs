@@ -614,6 +614,7 @@ namespace OrganizationContractsModule.ViewModels
                     contract = contractService.GetContractById(contract.Id).First(); 
                     SelectedContract.Id = contract.Id;
                     SelectedContract.ContractFinSource = contract.FinancingSource.ShortName;
+                    SelectedContract.FinancingSourceId = contract.FinancingSourceId;
                     SelectedContract.ContractName = contract.DisplayName;
                     SelectedContract.ContractBeginDate = contract.BeginDateTime;
                     SelectedContract.ContractEndDate = contract.EndDateTime;

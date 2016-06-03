@@ -157,6 +157,10 @@
       <Project>{cf75cde2-002c-4113-824a-03a3b7c6847b}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Shared\Shared.Patient\Shared.Patient.csproj">
+      <Project>{5d4698bd-6256-4bc5-a566-be7cd9a840bb}</Project>
+      <Name>Shared.Patient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shell.Shared\Shell.Shared.csproj">
       <Project>{4e0d997f-374e-43be-9617-8da82504b7c8}</Project>
       <Name>Shell.Shared</Name>
