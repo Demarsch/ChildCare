@@ -43,6 +43,8 @@ namespace CommissionsModule.ViewModels
         private INotificationServiceSubscription<CommissionProtocol> comissionsProtocolsChangeSubscription;
 
         private CancellationTokenSource currentOperationToken;
+        private CancellationTokenSource setPatientOperationToken;
+        private CancellationTokenSource setStateOperationToken;
         private TaskCompletionSource<bool> completionTaskSource;
 
         private CommandWrapper reSaveCommissionProtocol;
@@ -268,13 +270,13 @@ namespace CommissionsModule.ViewModels
         {
             if (SelectedCommissionProtocolId < 1)
                 return;
-            if (currentOperationToken != null)
+            if (setStateOperationToken != null)
             {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
+                setStateOperationToken.Cancel();
+                setStateOperationToken.Dispose();
             }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
+            setStateOperationToken = new CancellationTokenSource();
+            var token = setStateOperationToken.Token;
             logService.InfoFormat("Loading commission protocol state with protocol id ={0}", SelectedCommissionProtocolId);
             var commissionProtocolQuery = commissionService.GetCommissionProtocolById(SelectedCommissionProtocolId);
             try
@@ -326,13 +328,13 @@ namespace CommissionsModule.ViewModels
         private async void SetPatientName()
         {
             Patient = string.Empty;
-            if (currentOperationToken != null)
+            if (setPatientOperationToken != null)
             {
-                currentOperationToken.Cancel();
-                currentOperationToken.Dispose();
+                setPatientOperationToken.Cancel();
+                setPatientOperationToken.Dispose();
             }
-            currentOperationToken = new CancellationTokenSource();
-            var token = currentOperationToken.Token;
+            setPatientOperationToken = new CancellationTokenSource();
+            var token = setPatientOperationToken.Token;
             logService.InfoFormat("Loading patient name with  person id ={0}", SelectedPersonId);
             var personQuery = commissionService.GetPerson(SelectedPersonId);
             var commissionprotocolQuery = commissionService.GetCommissionProtocolById(SelectedCommissionProtocolId);
@@ -411,6 +413,7 @@ namespace CommissionsModule.ViewModels
             var token = currentOperationToken.Token;
             logService.InfoFormat("Saving commission protocol with id = {0} for patient with id = {1}", SelectedCommissionProtocolId, SelectedPersonId);
             IDisposableQueryable<CommissionDecision> commissionDecisionQuery = commissionService.GetCommissionDecisions(SelectedCommissionProtocolId);
+            var saveSuccessfull = false;
             try
             {
                 var commissionProtocol = new CommissionProtocol()
@@ -430,25 +433,36 @@ namespace CommissionsModule.ViewModels
                      //CommissionDecisions = await commissionDecisionQuery.ToArrayAsync(token)
                  };
                 //ToDo: Maybe change on better decision!
+                var validated = true;
                 switch (CommissionProtocolState)
                 {
                     case CommissionProtocolState.Сonclusion:
-                        PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
+                        validated &= PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
                         CommissionСonductViewModel.GetСonductionCommissionProtocolData(ref commissionProtocol);
-                        CommissionСonclusionViewModel.GetСonclusionCommissionProtocolData(ref commissionProtocol);
+                        validated &= CommissionСonclusionViewModel.GetСonclusionCommissionProtocolData(ref commissionProtocol);
                         break;
                     case CommissionProtocolState.Сonduction:
-                        PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
+                        validated &= PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
                         CommissionСonductViewModel.GetСonductionCommissionProtocolData(ref commissionProtocol);
                         break;
                     case CommissionProtocolState.Preliminary:
-                        PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
+                        validated &= PreliminaryProtocolViewModel.GetPreliminaryCommissionProtocolData(ref commissionProtocol);
                         break;
                     default:
                         break;
                 }
-                await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
-                ChangeTracker.AcceptChanges();
+                if (!validated)
+                {
+                    saveSuccessfull = false;
+                    logService.ErrorFormatEx(null, "Failed to save commission protocol with id = {0} for patient with id = {1}. Nested parts are not validated", SelectedCommissionProtocolId, SelectedPersonId);
+                    NotificationMediator.Activate("Заполните все обязательные поля!", NotificationMediator.DefaultHideTime);
+                }
+                else
+                {
+                    await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
+                    ChangeTracker.AcceptChanges();
+                    saveSuccessfull = true;
+                }
             }
             catch (OperationCanceledException) {/*Do nothing. Cancelled operation means that user selected different patient before previous one was loaded  */}
             catch (Exception ex)
@@ -458,7 +472,10 @@ namespace CommissionsModule.ViewModels
             }
             finally
             {
-                NotificationMediator.Activate("Данные сохранены...");
+                if (commissionDecisionQuery != null)
+                    commissionDecisionQuery.Dispose();
+                if (saveSuccessfull)
+                    NotificationMediator.Activate("Данные сохранены...", NotificationMediator.DefaultHideTime);
             }
         }
         private async void SubscribeToCommissionsProtocolsChangesAsync()

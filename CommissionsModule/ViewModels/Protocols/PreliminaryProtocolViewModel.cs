@@ -44,8 +44,6 @@ namespace CommissionsModule.ViewModels
         private CommonIdName unselectedTalon;
         private CommonIdName unselectedPersonAddress;
         private MedicalHelpType unselectedHelpType;
-
-        private DateTime onDate;
         #endregion
 
         #region Constructors
@@ -231,17 +229,22 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region Methods
-        public void GetPreliminaryCommissionProtocolData(ref CommissionProtocol commissionProtocol)
+        public bool GetPreliminaryCommissionProtocolData(ref CommissionProtocol commissionProtocol)
         {
-            commissionProtocol.CommissionTypeId = SelectedCommissionTypeId;
-            commissionProtocol.CommissionQuestionId = SelectedCommissionQuestionId;
-            commissionProtocol.CommissionSourceId = SelectedCommissionSourceId;
-            commissionProtocol.SentLPUId = selectedSentLPUId == 0 ? (int?)null : selectedSentLPUId;
-            commissionProtocol.PersonTalonId = !SpecialValues.IsNewOrNonExisting(SelectedTalonId) ? SelectedTalonId : (int?)null;
-            commissionProtocol.MedicalHelpTypeId = !SpecialValues.IsNewOrNonExisting(SelectedHelpTypeId) ? SelectedHelpTypeId : (int?)null;
-            commissionProtocol.MKB = MKB;
-            commissionProtocol.IncomeDateTime = IncomeDateTime;
-            commissionProtocol.PersonAddressId = SelectedPersonAddressId;
+            if (validationMediator.Validate())
+            {
+                commissionProtocol.CommissionTypeId = SelectedCommissionTypeId;
+                commissionProtocol.CommissionQuestionId = SelectedCommissionQuestionId;
+                commissionProtocol.CommissionSourceId = SelectedCommissionSourceId;
+                commissionProtocol.SentLPUId = selectedSentLPUId == 0 ? (int?)null : selectedSentLPUId;
+                commissionProtocol.PersonTalonId = !SpecialValues.IsNewOrNonExisting(SelectedTalonId) ? SelectedTalonId : (int?)null;
+                commissionProtocol.MedicalHelpTypeId = !SpecialValues.IsNewOrNonExisting(SelectedHelpTypeId) ? SelectedHelpTypeId : (int?)null;
+                commissionProtocol.MKB = MKB;
+                commissionProtocol.IncomeDateTime = IncomeDateTime;
+                commissionProtocol.PersonAddressId = SelectedPersonAddressId;
+                return true;
+            }
+            return false;
         }
 
         public async void SelectMKB()
@@ -254,91 +257,6 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private async Task<bool> LoadDataSources(DateTime onDate, int personId, CancellationToken token)
-        {
-            CommissionTypes.Clear();
-            CommissionSources.Clear();
-            CommissionQuestions.Clear();
-            PersonAddresses.Clear();
-            SentLPUs.Clear();
-            HelpTypes.Clear();
-            Talons.Clear();
-            BusyMediator.Activate("Загрузка справочников...");
-            logService.InfoFormat("Loading data sources for PreliminaryProtocol for commission protocol with id={0}", CommissionProtocolId);
-            this.onDate = onDate;
-            var commissionSentLPUquery = commissionService.GetCommissionSentLPUs(onDate);
-            var talonQuery = commissionService.GetPatientTalons(personId);
-            var personAddressesQuery = commissionService.GetPatientAddresses(personId);
-            var dataloaded = false;
-            try
-            {
-                var commissionTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionType>>)commissionService.GetCommissionTypes, onDate);
-                var commissionSourcesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionSource>>)commissionService.GetCommissionSource, onDate);
-                var commissionQuestionsTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionQuestion>>)commissionService.GetCommissionQuestions, onDate);
-                var commissionSentLPUsTask = commissionSentLPUquery.Select(x => new CommonIdName { Id = x.Id, Name = x.Name }).ToArrayAsync();
-                var talonQueryTask = talonQuery.Select(x => new
-                {
-                    Id = x.Id,
-                    Name = x.TalonNumber + ":" + x.MedicalHelpType.ShortName,
-                    date = x.TalonDateTime
-                }).ToArrayAsync();
-                var personAddressesTask = personAddressesQuery.Select(x => new
-                {
-                    x.Id,
-                    Name = x.AddressType.Name + ": " + x.UserText,
-                    x.BeginDateTime,
-                    x.EndDateTime
-                }).OrderBy(x => x.BeginDateTime).ToArrayAsync();
-                var commissionHelpTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<MedicalHelpType>>)commissionService.GetCommissionMedicalHelpTypes, onDate);
-                await Task.WhenAll(commissionTypesTask, commissionSourcesTask, commissionQuestionsTask, commissionSentLPUsTask, commissionHelpTypesTask, talonQueryTask, personAddressesTask);
-                IEnumerable<CommissionType> commissionTypes = new CommissionType[] { unselectedCommissionType }.Concat(commissionTypesTask.Result);
-                if (!token.IsCancellationRequested)
-                    CommissionTypes.AddRange(commissionTypes);
-                if (!token.IsCancellationRequested)
-                    CommissionSources.AddRange(new CommissionSource[] { unselectedCommissionSource }.Concat(commissionSourcesTask.Result));
-                if (!token.IsCancellationRequested)
-                    CommissionQuestions.AddRange(new CommissionQuestion[] { unselectedCommissionQuestion }.Concat(commissionQuestionsTask.Result));
-                var selfLPU = new CommonIdName { Id = 0, Name = "Самообращение" };
-                if (!token.IsCancellationRequested)
-                    SentLPUs.AddRange(new CommonIdName[] { unselectedSentLPU, selfLPU }.Concat(commissionSentLPUsTask.Result));
-                if (!token.IsCancellationRequested)
-                    HelpTypes.AddRange(new MedicalHelpType[] { unselectedHelpType }.Concat(commissionHelpTypesTask.Result));
-                if (!token.IsCancellationRequested)
-                    Talons.AddRange(new CommonIdName[] { unselectedTalon }.Concat(talonQueryTask.Result.Select(x => new CommonIdName
-                    {
-                        Id = x.Id,
-                        Name = x.Name + " от " + x.date.ToShortDateString()
-                    })));
-                if (!token.IsCancellationRequested)
-                    PersonAddresses.AddRange(new CommonIdName[] { unselectedPersonAddress }.Concat(personAddressesTask.Result.Select(x => new CommonIdName
-                    {
-                        Id = x.Id,
-                        Name = x.Name + " ( действ. с " + x.BeginDateTime.ToShortDateString() + (x.EndDateTime != SpecialValues.MaxDate ? " по " + x.EndDateTime.ToShortDateString() : string.Empty) + ")"
-                    })));
-                logService.InfoFormat("Loaded data sources  for PreliminaryProtocol for commission protocol with id={0}", CommissionProtocolId);
-                dataloaded = true;
-                this.onDate = DateTime.MaxValue;
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to load data sources  for PreliminaryProtocol for commission protocol with id={0}", CommissionProtocolId);
-                dataloaded = false;
-            }
-            finally
-            {
-                if (commissionSentLPUquery != null)
-                {
-                    commissionSentLPUquery.Dispose();
-                }
-                if (talonQuery != null)
-                {
-                    talonQuery.Dispose();
-                }
-                BusyMediator.Deactivate();
-            }
-            return dataloaded;
-        }
-
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
             ChangeTracker.IsEnabled = false;
@@ -349,22 +267,22 @@ namespace CommissionsModule.ViewModels
             }
             CommissionProtocolId = commissionProtocolId;
             PersonId = personId;
-            //SelectedCommissionTypeId = SpecialValues.NonExistingId;
-            //SelectedCommissionQuestionId = SpecialValues.NonExistingId;
-            //SelectedCommissionSourceId = SpecialValues.NonExistingId;
-            //MKB = string.Empty;
-            //SelectedSentLPUId = SpecialValues.NonExistingId;
-            //SelectedTalonId = SpecialValues.NonExistingId;
-            //SelectedPersonAddressId = SpecialValues.NonExistingId;
-            //SelectedHelpTypeId = SpecialValues.NonExistingId;
-            //IncomeDateTime = DateTime.Now;
-
+            CommissionTypes.Clear();
+            CommissionSources.Clear();
+            CommissionQuestions.Clear();
+            PersonAddresses.Clear();
+            SentLPUs.Clear();
+            HelpTypes.Clear();
+            Talons.Clear();
             var loadingIsCompleted = false;
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
             BusyMediator.Activate("Загрузка протокола комиссии...");
             logService.InfoFormat("Loading commission protocol with id ={0} for person with id={1}", commissionProtocolId, personId);
             var commissionProtocolQuery = commissionService.GetCommissionProtocolById(commissionProtocolId);
+            IDisposableQueryable<Org> commissionSentLPUquery = null;
+            IDisposableQueryable<PersonTalon> talonQuery = null;
+            IDisposableQueryable<PersonAddress> personAddressesQuery = null;
             var curDate = DateTime.Now;
             try
             {
@@ -386,13 +304,52 @@ namespace CommissionsModule.ViewModels
                     PersonId = commissionProtocolData.PersonId;
                     curDate = commissionProtocolData.IncomeDateTime;
                 }
-                var res = await LoadDataSources(curDate, PersonId, token);
-                if (!res)
+                // comboBox loading...
+                commissionSentLPUquery = commissionService.GetCommissionSentLPUs(curDate);
+                talonQuery = commissionService.GetPatientTalons(PersonId);
+                personAddressesQuery = commissionService.GetPatientAddresses(PersonId);
+                var commissionTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionType>>)commissionService.GetCommissionTypes, curDate);
+                var commissionSourcesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionSource>>)commissionService.GetCommissionSource, curDate);
+                var commissionQuestionsTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionQuestion>>)commissionService.GetCommissionQuestions, curDate);
+                var commissionHelpTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<MedicalHelpType>>)commissionService.GetCommissionMedicalHelpTypes, curDate);
+                var commissionSentLPUsTask = commissionSentLPUquery.Select(x => new CommonIdName { Id = x.Id, Name = x.Name }).ToArrayAsync();
+                var talonQueryTask = talonQuery.Select(x => new
                 {
-                    logService.ErrorFormatEx(null, "Failed to load commission data sources with commission id ={0} for person with id={1}", commissionProtocolId, personId);
-                    FailureMediator.Activate("Не удалость загрузить справочники. Попробуйте еще раз или обратитесь в службу поддержки", reInitializeCommandWrapper);
-                    return;
-                }
+                    Id = x.Id,
+                    Name = x.TalonNumber + ":" + x.MedicalHelpType.ShortName,
+                    date = x.TalonDateTime
+                }).ToArrayAsync();
+                var personAddressesTask = personAddressesQuery.Select(x => new
+                {
+                    x.Id,
+                    Name = x.AddressType.Name + ": " + x.UserText,
+                    x.BeginDateTime,
+                    x.EndDateTime
+                }).OrderBy(x => x.BeginDateTime).ToArrayAsync();
+                IEnumerable<CommissionType> commissionTypes = new CommissionType[] { unselectedCommissionType }.Concat(await commissionTypesTask);
+                if (!token.IsCancellationRequested)
+                    CommissionTypes.AddRange(commissionTypes);
+                if (!token.IsCancellationRequested)
+                    CommissionSources.AddRange(new CommissionSource[] { unselectedCommissionSource }.Concat(await commissionSourcesTask));
+                if (!token.IsCancellationRequested)
+                    CommissionQuestions.AddRange(new CommissionQuestion[] { unselectedCommissionQuestion }.Concat(await commissionQuestionsTask));
+                var selfLPU = new CommonIdName { Id = 0, Name = "Самообращение" };
+                if (!token.IsCancellationRequested)
+                    SentLPUs.AddRange(new CommonIdName[] { unselectedSentLPU, selfLPU }.Concat(await commissionSentLPUsTask));
+                if (!token.IsCancellationRequested)
+                    HelpTypes.AddRange(new MedicalHelpType[] { unselectedHelpType }.Concat(await commissionHelpTypesTask));
+                if (!token.IsCancellationRequested)
+                    Talons.AddRange(new CommonIdName[] { unselectedTalon }.Concat((await talonQueryTask).Select(x => new CommonIdName
+                    {
+                        Id = x.Id,
+                        Name = x.Name + " от " + x.date.ToShortDateString()
+                    })));
+                if (!token.IsCancellationRequested)
+                    PersonAddresses.AddRange(new CommonIdName[] { unselectedPersonAddress }.Concat((await personAddressesTask).Select(x => new CommonIdName
+                    {
+                        Id = x.Id,
+                        Name = x.Name + " ( действ. с " + x.BeginDateTime.ToShortDateString() + (x.EndDateTime != SpecialValues.MaxDate ? " по " + x.EndDateTime.ToShortDateString() : string.Empty) + ")"
+                    })));
 
                 if (commissionProtocolData != null)
                 {
@@ -440,6 +397,18 @@ namespace CommissionsModule.ViewModels
                 }
                 if (commissionProtocolQuery != null)
                     commissionProtocolQuery.Dispose();
+                if (commissionSentLPUquery != null)
+                {
+                    commissionSentLPUquery.Dispose();
+                }
+                if (talonQuery != null)
+                {
+                    talonQuery.Dispose();
+                }
+                if (personAddressesQuery != null)
+                {
+                    personAddressesQuery.Dispose();
+                }
             }
         }
         #endregion
@@ -503,7 +472,7 @@ namespace CommissionsModule.ViewModels
 
             private void ValidatePersonAddress()
             {
-                SetError(x => x.SelectedSentLPUId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedPersonAddressId) ? "Укажите адрес пациента" : string.Empty);
+                SetError(x => x.SelectedPersonAddressId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedPersonAddressId) ? "Укажите адрес пациента" : string.Empty);
             }
 
             private void ValidateMKB()

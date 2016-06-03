@@ -292,18 +292,25 @@ namespace CommissionsModule.ViewModels
             return returnDecision;
         }
 
-        public void GetСonclusionCommissionProtocolData(ref CommissionProtocol commissionProtocol)
+        public bool GetСonclusionCommissionProtocolData(ref CommissionProtocol commissionProtocol)
         {
-            if (commissionProtocol != null)
+            if (validationMediator.Validate())
             {
-                commissionProtocol.ProtocolNumber = ProtocolNumber.ToInt();
-                commissionProtocol.ProtocolDate = ProtocolDate;
-                commissionProtocol.WaitingFor = WaitingFor;
-                commissionProtocol.Diagnos = Diagnosis;
-                commissionProtocol.DecisionId = SelectedDecision.Id;
-                commissionProtocol.Comment = Comment;
-                commissionProtocol.ToDoDateTime = ToDoDateTime;
+                if (commissionProtocol != null)
+                {
+                    commissionProtocol.ProtocolNumber = ProtocolNumber.ToInt();
+                    commissionProtocol.ProtocolDate = ProtocolDate;
+                    commissionProtocol.WaitingFor = WaitingFor;
+                    commissionProtocol.Diagnos = Diagnosis;
+                    commissionProtocol.DecisionId = SelectedDecision.Id;
+                    commissionProtocol.Comment = Comment;
+                    commissionProtocol.ToDoDateTime = ToDoDateTime;
+                    return true;
+                }
+                else
+                    return false;
             }
+            return false;
         }
         #endregion
 

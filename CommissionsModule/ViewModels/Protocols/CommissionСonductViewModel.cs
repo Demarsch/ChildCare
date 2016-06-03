@@ -183,14 +183,17 @@ namespace CommissionsModule.ViewModels
                 }
                 var commissionDecisionIds = await commissionDecisionsQuery.Select(x => x.Id).ToArrayAsync(token);
                 List<Task> decisionsTask = new List<Task>();
+                List<CommissionDecisionViewModel> list = new List<CommissionDecisionViewModel>();
                 foreach (var commissionDecisionId in commissionDecisionIds)
                 {
                     var commissionDecisionViewModel = commissionDecisionViewModelFactory();
+                    commissionDecisionViewModel.PropertyChanged += commissionDecisionViewModel_PropertyChanged;
                     //await commissionDecisionViewModel.Initialize(commissionDecisionId);
                     decisionsTask.Add(commissionDecisionViewModel.Initialize(commissionDecisionId, true));
-                    CurrentMembers.Add(commissionDecisionViewModel);
+                    list.Add(commissionDecisionViewModel);
                 }
                 await Task.WhenAll(decisionsTask);
+                CurrentMembers.AddRange(list);
                 SetStagesMenuItems();
                 SetCurrentMembersIsNotLastItem();
                 CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
@@ -221,6 +224,14 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        void commissionDecisionViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            //if (e.PropertyName == "Stage" || e.PropertyName == "CommissionMemberGroupItem")
+            //{
+            //    OnPropertyChanged(() => CurrentMembers);
+            //}
+        }
+
         void CurrentMembers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             SetStagesMenuItems();
@@ -229,6 +240,7 @@ namespace CommissionsModule.ViewModels
 
         private void SetCurrentMembersIsNotLastItem()
         {
+            if (CurrentMembers.Count < 1) return;
             var maxStage = CurrentMembers.Max(x => x.Stage);
             foreach (var member in CurrentMembers)
             {
