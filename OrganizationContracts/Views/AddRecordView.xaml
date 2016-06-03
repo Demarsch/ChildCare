@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:OrganizationContractsModule.ViewModels">
              
     <DataTemplate DataType="{x:Type viewModels:AddRecordViewModel}" >
-        <Grid MinHeight="550" MinWidth="450" MaxHeight="550" MaxWidth="450" 
+        <Grid MinHeight="550" MinWidth="600" MaxHeight="550" MaxWidth="600" 
               ScrollViewer.VerticalScrollBarVisibility="Auto"
               ScrollViewer.HorizontalScrollBarVisibility="Auto">
             

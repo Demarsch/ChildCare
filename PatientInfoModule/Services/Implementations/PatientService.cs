@@ -24,7 +24,9 @@ namespace PatientInfoModule.Services
 
         private readonly IDocumentService documentService;
 
-        public PatientService(IDbContextProvider contextProvider, ICacheService cacheService, IDocumentService documentService)
+        private readonly IPersonSearchService personSearchService;
+
+        public PatientService(IDbContextProvider contextProvider, ICacheService cacheService, IDocumentService documentService, IPersonSearchService personSearchService)
         {
             if (contextProvider == null)
             {
@@ -37,10 +39,16 @@ namespace PatientInfoModule.Services
             if (documentService == null)
             {
                 throw new ArgumentNullException("documentService");
+            } 
+            if (personSearchService == null)
+            {
+                throw new ArgumentNullException("personSearchService");
             }
+            
             this.contextProvider = contextProvider;
             this.cacheService = cacheService;
             this.documentService = documentService;
+            this.personSearchService = personSearchService;
         }
 
         public IDisposableQueryable<Person> GetPatientQuery(int patientId)
@@ -334,6 +342,7 @@ namespace PatientInfoModule.Services
                     }
                     else
                     {
+                        context.Entry(symmetricalRelative).State = EntityState.Detached;
                         context.Entry(symmetricalRelative).State = EntityState.Deleted;
                     }
                 }
@@ -375,6 +384,7 @@ namespace PatientInfoModule.Services
             }
             foreach (var document in removed)
             {
+                context.Entry(document).State = EntityState.Detached;
                 context.Entry(document).State = EntityState.Deleted;
             }
             foreach (var document in existed.Where(x => x.IsChanged))
@@ -406,6 +416,7 @@ namespace PatientInfoModule.Services
             }
             foreach (var document in removed)
             {
+                context.Entry(document).State = EntityState.Detached;
                 context.Entry(document).State = EntityState.Deleted;
             }
             foreach (var document in existed.Where(x => x.IsChanged))
@@ -433,6 +444,7 @@ namespace PatientInfoModule.Services
             }
             foreach (var address in removed)
             {
+                context.Entry(address).State = EntityState.Detached;
                 context.Entry(address).State = EntityState.Deleted;
             }
             foreach (var address in existed.Where(x => x.IsChanged))
@@ -460,6 +472,7 @@ namespace PatientInfoModule.Services
             }
             foreach (var document in removed)
             {
+                context.Entry(document).State = EntityState.Detached;
                 context.Entry(document).State = EntityState.Deleted;
             }
             foreach (var document in existed.Where(x => x.IsChanged))
@@ -487,6 +500,7 @@ namespace PatientInfoModule.Services
             }
             foreach (var document in removed)
             {
+                context.Entry(document).State = EntityState.Detached;
                 context.Entry(document).State = EntityState.Deleted;
             }
             foreach (var document in existed.Where(x => x.IsChanged))
@@ -657,18 +671,13 @@ namespace PatientInfoModule.Services
 
         public IEnumerable GetPersonsByFullName(string filter)
         {
-            filter = (filter ?? string.Empty).Trim();
-            if (filter.Length < AppConfiguration.UserInputSearchThreshold)
+            using (var query = personSearchService.GetPatientSearchQuery(filter))
             {
-                return new FieldValue[0];
+                var result = query.PersonsQuery
+                                  .Select(x => new FieldValue() { Value = x.Id, Field = x.FullName + ", " + x.BirthDate.Year + " г.р." })
+                                  .ToArray();
+                return result;
             }
-            var words = (filter.Contains(',') ? filter.Split(',')[0] : filter).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-            using (var context = contextProvider.CreateNewContext())
-                return context.Set<Person>().AsNoTracking()
-                    .Select(x => new FieldValue() { Value = x.Id, Field = x.FullName + ", " + x.BirthDate.Year + " г.р." })
-                    .ToArray()
-                    .Where(x => words.All(y => x.Field.IndexOf(y, StringComparison.CurrentCultureIgnoreCase) != -1))
-                    .ToArray();
         }
 
         public Org GetOrganization(int orgId)
@@ -714,6 +723,7 @@ namespace PatientInfoModule.Services
             var personOuterDocument = context.Set<PersonOuterDocument>().FirstOrDefault(x => x.DocumentId == documentId);
             if (personOuterDocument != null)
             {
+                context.Entry(personOuterDocument).State = EntityState.Detached;
                 context.Entry(personOuterDocument).State = EntityState.Deleted;
                 context.SaveChanges();
             }

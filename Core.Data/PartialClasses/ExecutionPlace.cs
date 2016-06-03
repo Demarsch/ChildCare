@@ -4,7 +4,7 @@ namespace Core.Data
 {
     public partial class ExecutionPlace
     {
-        public static readonly string PoliclynicKey = "|Polyclinic|";
+        public static readonly string PoliclynicKey = "|Ambulatory|";
 
         public bool IsPolyclynic
         {

@@ -180,8 +180,7 @@ namespace UpdateDB
 
         public bool SaveToTable(string tbl)
         {
-            //string filePath = textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx";
-            string filePath = "D:\\price.xlsx";
+            string filePath = textBox2.Text + System.IO.Path.DirectorySeparatorChar + tbl + ".xlsx";
             if (!System.IO.File.Exists(filePath)) return false;
 
             string fields = "";
@@ -223,7 +222,7 @@ namespace UpdateDB
                     string val = "";
                     for (int col = 1; col <= cols; col++)
                     {
-                        var vl = sheet.Cell(row, col).DataType != XLCellValues.DateTime ? sheet.Cell(row, col).GetString().Replace("'", "''") : sheet.Cell(row, col).GetDateTime().ToString("yyyy-MM-dd HH:mm:ss");
+                        var vl = sheet.Cell(row, col).DataType != XLCellValues.DateTime ? sheet.Cell(row, col).GetString().Replace("'", "''") : sheet.Cell(row, col).GetDateTime().ToString("dd-MM-yyyy HH:mm:ss");
                         if (vl.ToLower() != "null" && idcol != col) vl = "'" + vl + "'";
                         val += ((col > 1 ? "," : "") + vl);
                     }
@@ -234,7 +233,7 @@ namespace UpdateDB
             {
                 return false;
             }
-            /*    
+               
             var constr = ConnectionStringTemplate.Replace("@source@", textBox1.Text);
             System.Data.SqlClient.SqlConnection con = new System.Data.SqlClient.SqlConnection(constr);
             try
@@ -263,9 +262,9 @@ namespace UpdateDB
                 ret = false;
             }
            
-            con.Close(); */
+            con.Close();
 
-            return true; //ret;
+            return ret;
         }
     }
 }

@@ -162,7 +162,7 @@
                             <Run Text="*" FontWeight="SemiBold" Foreground="Red" />
                         </TextBlock>
                         <controls:AutoCompleteTextBox Name="autocomplete" Grid.Row="3" 
-                                                Grid.Column="1" 
+                                                Grid.Column="1"
                                                 Margin="2,2,25,2" 
                                                 Background="White" MinHeight="23"
                                                 SuggestionsProvider="{Binding PersonSuggestionsProvider}"

@@ -1088,6 +1088,7 @@ namespace PatientInfoModule.ViewModels
                     saveWasRequested = false;
                     OnPropertyChanged(string.Empty);
                     LoadContractItems();
+                    ContractName = contract.DisplayName;
                     SelectedContract.ContractNumber = contract.Number.ToSafeString();
                     SelectedContract.ContractName = contract.DisplayName;
                     SelectedContract.Client = new FieldValue { Field = client.FullName + ", " + client.BirthYear, Value = client.Id };
