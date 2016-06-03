@@ -23,83 +23,90 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"  Grid.Column="0">
+                    <ListView ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" HorizontalContentAlignment="Stretch"/>
+                </ScrollViewer>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"  Grid.Column="1" >
+                    <ListView x:Name="DecissionsList" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}" HorizontalContentAlignment="Stretch">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Margin" Value="0,0,0,5"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                    <Expander IsExpanded="True" BorderBrush="#FFB0B0B3" BorderThickness="0,0,0,1">
+                                                        <Expander.Header>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                                                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Height="20" Width="20" ToolTip="Завершенный этап"
+                                                                           Visibility="{Binding Name.IsPrevStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                                                                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/InProgress32x32.png" Height="20" Width="20" ToolTip="Текущий этап"
+                                                                           Visibility="{Binding Name.IsCurStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                                                                    <TextBlock FontWeight="Bold" Text="{Binding Name.StageText}"/>
 
-                <ListView Grid.Column="0" ItemsSource="{Binding AvailableMembers}" SelectedItem="{Binding SelectedAvailableMember}" HorizontalContentAlignment="Stretch"/>
-                <ListView x:Name="DecissionsList" Grid.Column="1" ItemsSource="{Binding Source={StaticResource DecisionStageGrouped}}" SelectedItem="{Binding SelectedCurrentMember}" HorizontalContentAlignment="Stretch">
-                    <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.ContainerStyle>
-                                <Style TargetType="{x:Type GroupItem}">
-                                    <Setter Property="Margin" Value="0,0,0,5"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                <Expander IsExpanded="True" BorderBrush="#FFB0B0B3" BorderThickness="0,0,0,1">
-                                                    <Expander.Header>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*"/>
-                                                                <ColumnDefinition/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <StackPanel Orientation="Horizontal" Grid.Column="0">
-                                                                <TextBlock FontWeight="Bold" Text="{Binding Name.StageText}"/>
-
-                                                                <ToggleButton Background="Transparent" IsChecked="{Binding Name.NeedAllMembers}" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.ChangeNeedAllMembersCommand}" CommandParameter="{Binding Name}">
-                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                                                                        <TextBlock Text="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToTextConverter.Instance}}" />
-                                                                        <Image Source="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToImageConverter.Instance}}" Width="24" Height="24" Stretch="Fill" />
-                                                                    </StackPanel>
-                                                                </ToggleButton>
-                                                            </StackPanel>
-                                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                                                <Button Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.UpStageCommand}" CommandParameter="{Binding Name}"
+                                                                    <ToggleButton Background="Transparent" IsChecked="{Binding Name.NeedAllMembers}" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.ChangeNeedAllMembersCommand}" CommandParameter="{Binding Name}">
+                                                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                                                                            <TextBlock Text="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToTextConverter.Instance}}" />
+                                                                            <Image Source="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToImageConverter.Instance}}" Width="24" Height="24" Stretch="Fill" />
+                                                                        </StackPanel>
+                                                                    </ToggleButton>
+                                                                </StackPanel>
+                                                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                                    <Button Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.UpStageCommand}" CommandParameter="{Binding Name}"
                                                                         Visibility="{Binding Name.IsNotFirstItem, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}">
-                                                                    <Button.ContentTemplate>
-                                                                        <DataTemplate>
-                                                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/ArrowUp24x24.png" Height="20" Width="20"/>
-                                                                        </DataTemplate>
-                                                                    </Button.ContentTemplate>
-                                                                    <Button.ToolTip>
-                                                                        <TextBlock Text="Выполнить до предыдущего этапа"/>
-                                                                    </Button.ToolTip>
-                                                                </Button>
-                                                                <Button Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.DownStageCommand}" CommandParameter="{Binding Name}"
+                                                                        <Button.ContentTemplate>
+                                                                            <DataTemplate>
+                                                                                <Image Source="pack://application:,,,/Core;Component/Resources/Images/ArrowUp24x24.png" Height="20" Width="20"/>
+                                                                            </DataTemplate>
+                                                                        </Button.ContentTemplate>
+                                                                        <Button.ToolTip>
+                                                                            <TextBlock Text="Выполнить до предыдущего этапа"/>
+                                                                        </Button.ToolTip>
+                                                                    </Button>
+                                                                    <Button Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.DownStageCommand}" CommandParameter="{Binding Name}"
                                                                         Visibility="{Binding Name.IsNotLastItem, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}">
-                                                                    <Button.ContentTemplate>
-                                                                        <DataTemplate>
-                                                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/ArrowDown24x24.png" Height="20" Width="20"/>
-                                                                        </DataTemplate>
-                                                                    </Button.ContentTemplate>
-                                                                    <Button.ToolTip>
-                                                                        <TextBlock Text="Выполнить после следующего этапа"/>
-                                                                    </Button.ToolTip>
-                                                                </Button>
-                                                                <Button Name="btnRemoveStage" Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.RemoveStageCommand}" CommandParameter="{Binding Name}"
-                                                                        Visibility="{Binding ElementName=btnRemoveStage, Path=IsEnabled, Converter={x:Static converters:BoolToInvisibilityConverter.Instance}}">
-                                                                    <Button.ContentTemplate>
-                                                                        <DataTemplate>
-                                                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" Height="20" Width="20"/>
-                                                                        </DataTemplate>
-                                                                    </Button.ContentTemplate>
-                                                                    <Button.ToolTip>
-                                                                        <TextBlock Text="Удалить этап целиком"/>
-                                                                    </Button.ToolTip>
-                                                                </Button>
-                                                            </StackPanel>
-                                                        </Grid>
-                                                    </Expander.Header>
-                                                    <Expander.Content>
-                                                        <ItemsPresenter />
-                                                    </Expander.Content>
-                                                </Expander>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </GroupStyle.ContainerStyle>
-                        </GroupStyle>
-                    </ListView.GroupStyle>
-                </ListView>
+                                                                        <Button.ContentTemplate>
+                                                                            <DataTemplate>
+                                                                                <Image Source="pack://application:,,,/Core;Component/Resources/Images/ArrowDown24x24.png" Height="20" Width="20"/>
+                                                                            </DataTemplate>
+                                                                        </Button.ContentTemplate>
+                                                                        <Button.ToolTip>
+                                                                            <TextBlock Text="Выполнить после следующего этапа"/>
+                                                                        </Button.ToolTip>
+                                                                    </Button>
+                                                                    <Button Name="btnRemoveStage" Background="Transparent" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.RemoveStageCommand}" CommandParameter="{Binding Name}"
+                                                                       Visibility="{Binding ElementName=btnRemoveStage, Path=IsEnabled, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                                                                        <Button.ContentTemplate>
+                                                                            <DataTemplate>
+                                                                                <Image Source="pack://application:,,,/Core;Component/Resources/Images/Trash-icon48x48.png" Height="20" Width="20"/>
+                                                                            </DataTemplate>
+                                                                        </Button.ContentTemplate>
+                                                                        <Button.ToolTip>
+                                                                            <TextBlock Text="Удалить этап целиком"/>
+                                                                        </Button.ToolTip>
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Expander.Header>
+                                                        <Expander.Content>
+                                                            <ItemsPresenter />
+                                                        </Expander.Content>
+                                                    </Expander>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+                    </ListView>
+                </ScrollViewer>
             </Grid>
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />

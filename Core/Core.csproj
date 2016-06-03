@@ -341,6 +341,15 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Chart256x256.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Trash-icon16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Trash-icon48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\InProgress32x32.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

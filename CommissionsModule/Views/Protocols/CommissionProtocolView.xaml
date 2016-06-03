@@ -10,14 +10,12 @@
              d:DataContext="{d:DesignInstance viewModels:CommissionProtocolViewModel}">
     <Grid>
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-            <StackPanel>
-                <TextBlock Text="{Binding Patient}" HorizontalAlignment="Stretch" TextAlignment="Center" FontSize="18" FontWeight="Bold"/>
-                <ContentControl VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Content="{Binding PreliminaryProtocolViewModel}"/>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding CommissionСonductVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-                    <ContentControl Content="{Binding CommissionСonductViewModel}" />
-                </ScrollViewer>
-                <ContentControl Content="{Binding CommissionСonclusionViewModel}" Visibility="{Binding CommissionСonclusionVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
-            </StackPanel>
+            <DockPanel LastChildFill="True">
+                <TextBlock DockPanel.Dock="Top" Text="{Binding Patient}" HorizontalAlignment="Stretch" TextAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                <ContentControl DockPanel.Dock="Top" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Content="{Binding PreliminaryProtocolViewModel}"/>
+                <ContentControl DockPanel.Dock="Bottom" Content="{Binding CommissionСonclusionViewModel}" Visibility="{Binding CommissionСonclusionVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                <ContentControl DockPanel.Dock="Top" Content="{Binding CommissionСonductViewModel}" Visibility="{Binding CommissionСonductVisible, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            </DockPanel>
             <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding FailureMediator}"/>
             <ContentControl HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{Binding NotificationMediator}"/>
         </Grid>

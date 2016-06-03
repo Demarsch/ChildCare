@@ -96,6 +96,32 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        private bool isPrevStage;
+        public bool IsPrevStage
+        {
+            get { return isPrevStage; }
+            set
+            {
+                SetProperty(ref isPrevStage, value);
+                if (CommissionMemberGroupItem != null)
+                    CommissionMemberGroupItem.IsPrevStage = isPrevStage;
+            }
+        }
+
+        private bool isCurStage;
+         public bool IsCurStage
+        {
+            get { return isCurStage; }
+            set
+            {
+                SetProperty(ref isCurStage, value);
+                if (CommissionMemberGroupItem != null)
+                    CommissionMemberGroupItem.IsCurStage = isCurStage;
+            }
+        }
+
+        
+
         private bool needAllMembers;
         public bool NeedAllMembers
         {
@@ -108,7 +134,7 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private CommissionMemberGroupItem commissionMemberGroupItem;
+        private CommissionMemberGroupItem commissionMemberGroupItem = new CommissionMemberGroupItem();
         public CommissionMemberGroupItem CommissionMemberGroupItem
         {
             get { return commissionMemberGroupItem; }
@@ -172,13 +198,18 @@ namespace CommissionsModule.ViewModels
             ColorType = emptyDecisionColor;
             Comment = string.Empty;
             CommissionMemberGroupItem = new CommissionMemberGroupItem();
+            CommissionMemberGroupItem.PropertyChanged += CommissionMemberGroupItem_PropertyChanged;
+        }
+
+        void CommissionMemberGroupItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(() => CommissionMemberGroupItem);
         }
 
         public async Task InitializeNew(int commissionMemberId, int stage, int commissionProtocolId, bool canDeleteMember)
         {
             EraseProperties();
             var commMemberId = commissionMemberId.ToInt();
-            CanDeleteMember = canDeleteMember && (canDeleteMember || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision));
             if (commMemberId < 1)
                 return;
 
@@ -200,10 +231,12 @@ namespace CommissionsModule.ViewModels
             {
                 var commissionDecisionTask = commissionMemberQuery.Select(x => new
                 {
-                    MemberName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.ShortName + " - " + x.PersonStaff.Person.ShortName : x.StaffId.HasValue ? x.Staff.ShortName : string.Empty
+                    MemberName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.ShortName + " - " + x.PersonStaff.Person.ShortName : x.StaffId.HasValue ? x.Staff.ShortName : string.Empty,
+
                 }).FirstOrDefaultAsync(token);
                 var commissionProtocolAllMemberTask = commissionProtocolQuery.SelectMany(x => x.CommissionDecisions.Where(y => y.CommissionStage == stage)).Select(x => x.NeedAllMembersInStage).FirstOrDefaultAsync(token);
                 await Task.WhenAll(commissionDecisionTask, commissionProtocolAllMemberTask);
+                CanDeleteMember = true;
                 MemberName = commissionDecisionTask.Result.MemberName;
                 NeedAllMembers = commissionProtocolAllMemberTask.Result;
                 Stage = stage;
@@ -232,11 +265,10 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        public async Task Initialize(int? commissionDecisionId, bool canDeleteMember)
+        public async Task Initialize(int? commissionDecisionId)
         {
             var commDecisionId = commissionDecisionId.ToInt();
             EraseProperties();
-            CanDeleteMember = canDeleteMember && (canDeleteMember || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision));
             if (commDecisionId < 1)
                 return;
 
@@ -266,8 +298,10 @@ namespace CommissionsModule.ViewModels
                     ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : emptyDecisionColor,
                     x.NeedAllMembersInStage,
                     x.CommissionProtocolId,
-                    x.CommissionMemberId
+                    x.CommissionMemberId,
+                    CommissionIsCompleted = x.CommissionProtocol.IsCompleted
                 }).FirstOrDefaultAsync(token);
+                CanDeleteMember = (commissionDecision.CommissionIsCompleted != true && commissionDecision.DecisionName == string.Empty) || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision);
                 commissionProtocolId = commissionDecision.CommissionProtocolId;
                 DecisionDate = commissionDecision.DecisionDate;
                 Stage = commissionDecision.Stage;

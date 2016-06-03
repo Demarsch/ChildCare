@@ -189,15 +189,16 @@ namespace CommissionsModule.ViewModels
                     var commissionDecisionViewModel = commissionDecisionViewModelFactory();
                     commissionDecisionViewModel.PropertyChanged += commissionDecisionViewModel_PropertyChanged;
                     //await commissionDecisionViewModel.Initialize(commissionDecisionId);
-                    decisionsTask.Add(commissionDecisionViewModel.Initialize(commissionDecisionId, true));
+                    decisionsTask.Add(commissionDecisionViewModel.Initialize(commissionDecisionId));
                     list.Add(commissionDecisionViewModel);
                 }
                 await Task.WhenAll(decisionsTask);
                 CurrentMembers.AddRange(list);
                 SetStagesMenuItems();
-                SetCurrentMembersIsNotLastItem();
+                SetCurrentMembersIsNotLastItem(); 
+                SetStageState();
+                removeStageCommand.RaiseCanExecuteChanged();
                 CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
-                //removeStageCommand.RaiseCanExecuteChanged();
                 loadingIsCompleted = true;
                 ChangeTracker.IsEnabled = true;
             }
@@ -230,12 +231,19 @@ namespace CommissionsModule.ViewModels
             //{
             //    OnPropertyChanged(() => CurrentMembers);
             //}
+            if (e.PropertyName == "CommissionMemberGroupItem")
+            {
+                removeStageCommand.RaiseCanExecuteChanged();
+            }
+            removeCurrentMemberCommand.RaiseCanExecuteChanged();
         }
 
         void CurrentMembers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             SetStagesMenuItems();
+            SetStageState();
             SetCurrentMembersIsNotLastItem();
+            removeStageCommand.RaiseCanExecuteChanged();
         }
 
         private void SetCurrentMembersIsNotLastItem()
@@ -247,6 +255,16 @@ namespace CommissionsModule.ViewModels
                 member.IsNotLastItem = (member.Stage != maxStage);
             }
         }
+
+        private void SetStageState()
+        {
+            if (CurrentMembers.Count < 1) return;
+            foreach (var member in CurrentMembers)
+            {
+                member.IsPrevStage = member.NeedAllMembers ? CurrentMembers.Where(x => x.Stage == member.Stage).All(x => x.Decision != string.Empty) : CurrentMembers.Where(x => x.Stage == member.Stage).Any(x => x.Decision != string.Empty);
+            }
+        }
+
 
         private void SetStagesMenuItems()
         {
@@ -354,6 +372,9 @@ namespace CommissionsModule.ViewModels
                 member.Stage = curStage;
             }
             SetCurrentMembersIsNotLastItem();
+            var list = CurrentMembers.OrderBy(x => x.Stage).ToArray();
+            CurrentMembers.Clear();
+            CurrentMembers.AddRange(list);
         }
         #endregion
 
