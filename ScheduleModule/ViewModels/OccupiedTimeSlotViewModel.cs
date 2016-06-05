@@ -45,6 +45,29 @@ namespace ScheduleModule.ViewModels
             CancelOrDeleteCommand = new DelegateCommand(CancelOrDelete, CanCancelOrDelete);
             UpdateCommand = new DelegateCommand(Update, CanUpdateOrMove);
             MoveCommand = new DelegateCommand(Move, CanUpdateOrMove);
+            MarkAsCompletedCommand = new DelegateCommand(MarkAsCompleted, CanMarkAsCompleted)
+                .ObservesProperty(() => IsCompleted)
+                .ObservesProperty(() => IsTemporary);
+        }
+
+        public DelegateCommand MarkAsCompletedCommand { get; private set; }
+
+        private void MarkAsCompleted()
+        {
+            OnCompleteRequested();
+        }
+
+        private bool CanMarkAsCompleted()
+        {
+            if (IsCompleted)
+            {
+                return false;
+            }
+            if (IsTemporary)
+            {
+                return false;
+            }
+            return securityService.HasPermission(Permission.CompleteAssignments);
         }
 
         public DelegateCommand CancelOrDeleteCommand { get; private set; }
@@ -109,7 +132,18 @@ namespace ScheduleModule.ViewModels
 
         public string PersonShortName { get { return assignment.PersonShortName; } }
 
-        public bool IsCompleted { get { return assignment.IsCompleted; } }
+        public bool IsCompleted
+        {
+            get { return assignment.IsCompleted; }
+            set
+            {
+                if (assignment.IsCompleted != value)
+                {
+                    assignment.IsCompleted = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public int RoomId
         {
@@ -140,6 +174,17 @@ namespace ScheduleModule.ViewModels
             UpdateCommand.RaiseCanExecuteChanged();
             MoveCommand.RaiseCanExecuteChanged();
             return true;
+        }
+
+        public event EventHandler CompleteRequested;
+
+        protected virtual void OnCompleteRequested()
+        {
+            var handler = CompleteRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
         public event EventHandler CancelOrDeleteRequested;
