@@ -36,5 +36,7 @@ namespace ScheduleModule.Services
         IDisposableQueryable<Person> GetPatientQuery(int currentPatient);
 
         IEnumerable<Org> GetLpus();
+
+        Task MarkAssignmentCompletedAsync(int id, DateTime selectedDateTime);
     }
 }

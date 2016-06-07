@@ -200,6 +200,7 @@ namespace ScheduleModule.ViewModels
                         occupiedTimeSlot.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                         occupiedTimeSlot.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                         occupiedTimeSlot.MoveRequested -= RoomOnAssignmentMoveRequested;
+                        occupiedTimeSlot.CompleteRequested -= RoomOnCompleteRequested;
                     }
                     roomViewModel.TimeSlots.Replace(assignments[roomViewModel.Room.Id].Select(x => new OccupiedTimeSlotViewModel(x, environment, securityService, cacheService)));
                     foreach (var occupiedTimeSlot in roomViewModel.TimeSlots.OfType<OccupiedTimeSlotViewModel>())
@@ -207,6 +208,7 @@ namespace ScheduleModule.ViewModels
                         occupiedTimeSlot.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
                         occupiedTimeSlot.UpdateRequested += RoomOnAssignmentUpdateRequested;
                         occupiedTimeSlot.MoveRequested += RoomOnAssignmentMoveRequested;
+                        occupiedTimeSlot.CompleteRequested += RoomOnCompleteRequested;
                     }
                     roomViewModel.WorkingTimes = workingTimes[roomViewModel.Room.Id].Select(x => new WorkingTimeViewModel(x, date, cacheService)).ToArray();
                 }
@@ -265,6 +267,7 @@ namespace ScheduleModule.ViewModels
                         occupiedTimeSlot.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                         occupiedTimeSlot.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                         occupiedTimeSlot.MoveRequested -= RoomOnAssignmentMoveRequested;
+                        occupiedTimeSlot.CompleteRequested -= RoomOnCompleteRequested;
                         oldAssignmentRoom.TimeSlots.Remove(occupiedTimeSlot);
                     }
                 }
@@ -503,6 +506,7 @@ namespace ScheduleModule.ViewModels
             newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
             newAssignment.UpdateRequested += RoomOnAssignmentUpdateRequested;
             newAssignment.MoveRequested += RoomOnAssignmentMoveRequested;
+            newAssignment.CompleteRequested += RoomOnCompleteRequested;
             selectedRoom.TimeSlots.Remove(freeTimeSlot);
             selectedRoom.TimeSlots.Add(newAssignment);
             var dialogViewModel = new ScheduleAssignmentUpdateViewModel(scheduleService, cacheService, true);
@@ -520,6 +524,7 @@ namespace ScheduleModule.ViewModels
                     newAssignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                     newAssignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                     newAssignment.MoveRequested -= RoomOnAssignmentMoveRequested;
+                    newAssignment.CompleteRequested -= RoomOnCompleteRequested;
                     log.Info("New assignment was successfully deleted");
                     if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
                     {
@@ -650,6 +655,7 @@ namespace ScheduleModule.ViewModels
                     assignment.CancelOrDeleteRequested -= RoomOnAssignmentCancelOrDeleteRequested;
                     assignment.UpdateRequested -= RoomOnAssignmentUpdateRequested;
                     assignment.MoveRequested -= RoomOnAssignmentMoveRequested;
+                    assignment.CompleteRequested -= RoomOnCompleteRequested;
                     rooms.First(x => x.Room == assignment.Room).TimeSlots.Remove(assignment);
                     RebuildScheduleGrid();
                     log.Info("Temporary assignment was manually deleted");
@@ -781,6 +787,29 @@ namespace ScheduleModule.ViewModels
             return (SelectedRecordType != unselectedRecordType
                     || SelectedRoom != unseletedRoom)
                    && !IsMovingAssignment;
+        }
+
+        private async void RoomOnCompleteRequested(object sender, EventArgs e)
+        {
+            var assignment = (OccupiedTimeSlotViewModel)sender;
+            var dialogViewModel = new DateTimeSelectionDialogViewModel();
+            var dialogResult = await dialogService.ShowDialogAsync(dialogViewModel);
+            if (dialogResult != true)
+            {
+                return;
+            }
+            try
+            {
+                log.InfoFormat("Trying to mark assignment (Id = {0}) as completed", assignment.Id);
+                await scheduleService.MarkAssignmentCompletedAsync(assignment.Id, dialogViewModel.SelectedDateTime);
+                assignment.IsCompleted = true;
+                log.Info("Successfully completed assignment");
+            }
+            catch (Exception ex)
+            {
+                log.Error(string.Format("Failed to mark assignment (Id ={0}) as completed", assignment.Id), ex);
+                FailureMediator.Activate("Не удалось пометить назначение как выполненное. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки");
+            }
         }
 
         private async void RoomOnAssignmentUpdateRequested(object sender, EventArgs e)

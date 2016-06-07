@@ -41,6 +41,8 @@
                                       Command="{Binding UpdateCommand}" />
                             <MenuItem Header="Перенести назначение"
                                       Command="{Binding MoveCommand}" />
+                            <MenuItem Header="Пометить как выполненное"
+                                      Command="{Binding MarkAsCompletedCommand}" />
                         </ContextMenu>
                     </converters:ConverterItem.To>
                 </converters:ConverterItem>

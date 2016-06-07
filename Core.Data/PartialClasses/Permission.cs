@@ -33,6 +33,8 @@
 
         public static readonly string DeleteTemporaryAssignments = "Удаление временных назначений";
 
+        public static readonly string CompleteAssignments = "Выполнение назначений";
+
         #endregion
 
         #region Commissions

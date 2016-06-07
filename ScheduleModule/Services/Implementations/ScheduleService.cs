@@ -293,6 +293,31 @@ namespace ScheduleModule.Services
             }
         }
 
+        public async Task MarkAssignmentCompletedAsync(int assignmentId, DateTime completeDataTime)
+        {
+            using (var dataContext = contextProvider.CreateNewContext())
+            {
+                var assignment = await dataContext.Set<Assignment>().FirstAsync(x => x.Id == assignmentId);
+                if (assignment.Record == null)
+                {
+                    assignment.Record = new Record
+                    {
+                        ActualDateTime = completeDataTime,
+                        BeginDateTime = assignment.AssignDateTime,
+                    };
+                }
+                assignment.Record.BillingDateTime = assignment.BillingDateTime;
+                assignment.Record.EndDateTime = completeDataTime;
+                assignment.Record.ExecutionPlaceId = assignment.ExecutionPlaceId;
+                assignment.Record.IsCompleted = true;
+                assignment.Record.RecordTypeId = assignment.RecordTypeId;
+                assignment.Record.RoomId = assignment.RoomId;
+                assignment.Record.UrgentlyId = assignment.UrgentlyId;
+                assignment.Record.PersonId = assignment.PersonId;
+                await dataContext.SaveChangesAsync();
+            }
+        }
+
         public async Task MoveAssignmentAsync(int assignmentId, DateTime newTime, int newDuration, Room newRoom, INotificationServiceSubscription<Assignment> assignmentChangeSubscription)
         {
             using (var dataContext = contextProvider.CreateLightweightContext())
