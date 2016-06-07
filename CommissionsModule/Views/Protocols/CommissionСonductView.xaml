@@ -46,8 +46,8 @@
                                                                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                                                                     <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Height="20" Width="20" ToolTip="Завершенный этап"
                                                                            Visibility="{Binding Name.IsPrevStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
-                                                                    <Image Source="pack://application:,,,/Core;Component/Resources/Images/InProgress32x32.png" Height="20" Width="20" ToolTip="Текущий этап"
-                                                                           Visibility="{Binding Name.IsCurStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                                                                    <!--<Image Source="pack://application:,,,/Core;Component/Resources/Images/InProgress32x32.png" Height="20" Width="20" ToolTip="Текущий этап"
+                                                                           Visibility="{Binding Name.IsCurStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>-->
                                                                     <TextBlock FontWeight="Bold" Text="{Binding Name.StageText}"/>
 
                                                                     <ToggleButton Background="Transparent" IsChecked="{Binding Name.NeedAllMembers}" BorderThickness="0" Command="{Binding ElementName=DecissionsList, Path=DataContext.ChangeNeedAllMembersCommand}" CommandParameter="{Binding Name}">

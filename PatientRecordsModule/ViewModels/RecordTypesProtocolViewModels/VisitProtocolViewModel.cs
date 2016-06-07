@@ -19,8 +19,8 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
         {
             CurrentMode = ProtocolMode.View;
 
-            ChangeTracker = new ChangeTrackerEx<VisitProtocolViewModel>(this);
-            ChangeTracker.PropertyChanged += ChangeTracker_PropertyChanged;
+            CompositeChangeTracker = new ChangeTrackerEx<VisitProtocolViewModel>(this);
+            CompositeChangeTracker.PropertyChanged += ChangeTracker_PropertyChanged;
         }
 
         void ChangeTracker_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -66,6 +66,6 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 
         #endregion
         
-        public IChangeTracker ChangeTracker { get; set; }
+        public IChangeTracker CompositeChangeTracker { get; set; }
     }
 }

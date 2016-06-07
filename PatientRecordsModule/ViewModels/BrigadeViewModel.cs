@@ -47,7 +47,7 @@ namespace Shared.PatientRecords.ViewModels
             }
             this.logService = logService;
             this.patientRecordsService = patientRecordsService;
-            ChangeTracker = new ChangeTrackerEx<BrigadeViewModel>(this);
+            CompositeChangeTracker = new ChangeTrackerEx<BrigadeViewModel>(this);
             RemoveRecordMemberCommand = new DelegateCommand(RemoveRecordMember);
             this.brigadeDTO = brigadeDTO;
             PersonStaffs = new ObservableCollectionEx<CommonIdName>();
@@ -63,7 +63,7 @@ namespace Shared.PatientRecords.ViewModels
             PersonName = brigadeDTO.PersonName;
             StaffName = brigadeDTO.StaffName;
             PersonStaffId = brigadeDTO.PersonStaffId;
-            ChangeTracker.IsEnabled = true;
+            CompositeChangeTracker.IsEnabled = true;
         }
         #endregion
 
@@ -154,7 +154,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public ObservableCollectionEx<CommonIdName> PersonStaffs { get; set; }
 
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
         #endregion
 
         #region Methods
@@ -245,7 +245,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
         }
         #endregion
 

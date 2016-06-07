@@ -5,6 +5,7 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:fluent="urn:fluent-ribbon"
                       xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
+                      xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
@@ -15,19 +16,35 @@
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionAdd.png"
                        Command="{Binding CommissionProtocolViewModel.CreateCommissionCommand}" />
+        <fluent:Button Header="Удалить комиссию"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionRemove.png"
+                       Command="{Binding CommissionProtocolViewModel.RemoveCommissionCommand}" />
     </fluent:RibbonGroupBox>
-    <fluent:RibbonGroupBox Header="Состояние комиссии">
-        <fluent:ToggleButton Header="Предварит. протокол"
+    <fluent:RibbonGroupBox Header="Состояние комиссии" IsEnabled="{Binding CommissionProtocolViewModel.ShowCommissionProtocol}">
+      
+            <fluent:ToggleButton Header="Предварит. протокол"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionPreliminary.png" IsEnabled="False"/>
-        <fluent:ToggleButton Header="Проведение комиссии" x:Name="btnCommissionConduction"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionPreliminary.png" Click="ToggleButton_Click" 
+                                 IsChecked="True"/>
+            <fluent:ToggleButton Header="Проведение комиссии" x:Name="btnCommissionConduction"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionConduct.png"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionConduct.png" IsChecked="{Binding CommissionProtocolViewModel.CommissionСonductVisible}"
                        Command="{Binding CommissionProtocolViewModel.AddCommissionConductionCommand}" CommandParameter="{Binding ElementName=btnCommissionConduction, Path=IsChecked}"/>
-        <fluent:ToggleButton Header="Комиссия завершена" x:Name="btnCommissionConclusion"
+            <fluent:ToggleButton Header="Комиссия завершена" x:Name="btnCommissionConclusion"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionConclusion.png"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionConclusion.png" IsChecked="{Binding CommissionProtocolViewModel.CommissionСonclusionVisible}"
                        Command="{Binding CommissionProtocolViewModel.AddCommissionConclusionCommand}" CommandParameter="{Binding ElementName=btnCommissionConclusion, Path=IsChecked}"/>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox IsEnabled="{Binding CommissionProtocolViewModel.ShowCommissionProtocol}">
+        <fluent:Button Header="Начать выполнение"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionStart.png" 
+                       Command="{Binding CommissionProtocolViewModel.StartCommissionCommand}" Visibility="{Binding CommissionProtocolViewModel.RunWork, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}"/>
+        <fluent:Button Header="Остановить выполнение"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/CommissionStop.png" 
+                       Command="{Binding CommissionProtocolViewModel.StopCommissionCommand}"  Visibility="{Binding CommissionProtocolViewModel.RunWork, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Состав комиссии">
         <fluent:Button Header="Редактировать"

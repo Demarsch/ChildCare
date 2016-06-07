@@ -75,7 +75,7 @@ namespace CommissionsModule.ViewModels
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             validationMediator = new ValidationMediator(this);
-            ChangeTracker = new ChangeTrackerEx<PreliminaryProtocolViewModel>(this);
+            CompositeChangeTracker = new ChangeTrackerEx<PreliminaryProtocolViewModel>(this);
 
             CommissionQuestions = new ObservableCollectionEx<CommissionQuestion>();
             CommissionTypes = new ObservableCollectionEx<CommissionType>();
@@ -216,7 +216,7 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; private set; }
         public FailureMediator FailureMediator { get; private set; }
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
 
         public PersonSearchViewModel PersonSearchViewModel { get; set; }
 
@@ -259,7 +259,7 @@ namespace CommissionsModule.ViewModels
 
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
-            ChangeTracker.IsEnabled = false;
+            CompositeChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -376,7 +376,7 @@ namespace CommissionsModule.ViewModels
                     IncomeDateTime = DateTime.Now;
                 }
                 loadingIsCompleted = true;
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -393,7 +393,7 @@ namespace CommissionsModule.ViewModels
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
-                    ChangeTracker.IsEnabled = true;
+                    CompositeChangeTracker.IsEnabled = true;
                 }
                 if (commissionProtocolQuery != null)
                     commissionProtocolQuery.Dispose();

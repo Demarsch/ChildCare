@@ -34,7 +34,7 @@ namespace Shared.Patient.ViewModels
             validator = new ValidationMediator(this);
             AddressTypeCategory = AddressTypeCategory.Registry;
             DeleteCommand = new DelegateCommand(Delete);
-            ChangeTracker = new ChangeTrackerEx<AddressViewModel>(this);
+            CompositeChangeTracker = new ChangeTrackerEx<AddressViewModel>(this);
             CanDeleteAddress = true;
         }
 
@@ -230,7 +230,7 @@ namespace Shared.Patient.ViewModels
             }
             set
             {
-                ChangeTracker.IsEnabled = false;
+                CompositeChangeTracker.IsEnabled = false;
                 if (value == null)
                 {
                     addressTypeId = null;
@@ -275,7 +275,7 @@ namespace Shared.Patient.ViewModels
                     personId = value.PersonId;
                 }
                 OnPropertyChanged(string.Empty);
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
         }
 
@@ -288,7 +288,7 @@ namespace Shared.Patient.ViewModels
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
         }
 
         public ICommand DeleteCommand { get; private set; }
@@ -309,7 +309,7 @@ namespace Shared.Patient.ViewModels
             }
         }
 
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
 
         public string StringRepresentation
         {

@@ -2,6 +2,6 @@
 {
     public interface IChangeTrackerMediator
     {
-        IChangeTracker ChangeTracker { get; }
+        IChangeTracker CompositeChangeTracker { get; }
     }
 }

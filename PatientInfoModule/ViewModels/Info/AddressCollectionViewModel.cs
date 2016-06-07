@@ -56,7 +56,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     newItem.DeleteRequested += OnAddressDeleteRequested;
                     newItem.PropertyChanged += OnAddressPropertyChanged;
-                    changeTracker.AddTracker(newItem.ChangeTracker);
+                    changeTracker.AddTracker(newItem.CompositeChangeTracker);
                 }
             }
             if (e.OldItems != null)
@@ -65,7 +65,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     oldItem.DeleteRequested -= OnAddressDeleteRequested;
                     oldItem.PropertyChanged -= OnAddressPropertyChanged;
-                    changeTracker.RemoveTracker(oldItem.ChangeTracker);
+                    changeTracker.RemoveTracker(oldItem.CompositeChangeTracker);
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace PatientInfoModule.ViewModels
             set
             {
                 value = value ?? new PersonAddress[0];
-                ChangeTracker.IsEnabled = false;
+                CompositeChangeTracker.IsEnabled = false;
                 Addresses.Clear();
                 foreach (var newModel in value)
                 {
@@ -94,13 +94,13 @@ namespace PatientInfoModule.ViewModels
                     newDocument.Model = newModel;
                     Addresses.Add(newDocument);
                 }
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
         }
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
             foreach (var address in Addresses)
             {
                 address.DeleteRequested -= OnAddressDeleteRequested;
@@ -115,7 +115,7 @@ namespace PatientInfoModule.ViewModels
             Addresses.Remove(sender as AddressViewModel);
         }
 
-        public IChangeTracker ChangeTracker
+        public IChangeTracker CompositeChangeTracker
         {
             get { return changeTracker; }
         }

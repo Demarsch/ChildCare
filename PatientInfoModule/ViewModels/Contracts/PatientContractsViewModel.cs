@@ -133,8 +133,8 @@ namespace PatientInfoModule.ViewModels
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
 
-            ChangeTracker = new ChangeTrackerEx<PatientContractsViewModel>(this);
-            ChangeTracker.PropertyChanged += OnChangesTracked;
+            CompositeChangeTracker = new ChangeTrackerEx<PatientContractsViewModel>(this);
+            CompositeChangeTracker.PropertyChanged += OnChangesTracked;
 
             reloadContractsDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadContractsAsync(patientId)), CommandName = "Повторить" };
             reloadDataSourcesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(LoadDataSources), CommandName = "Повторить" };
@@ -143,7 +143,7 @@ namespace PatientInfoModule.ViewModels
 
             ContractItems = new ObservableCollectionEx<ContractItemViewModel>();
 
-            contractItemsTracker = new CompositeChangeTracker(ChangeTracker);
+            contractItemsTracker = new CompositeChangeTracker(CompositeChangeTracker);
 
             addContractCommand = new DelegateCommand(AddContract, CanAddContract);
             saveContractCommand = new DelegateCommand(() => SaveContract(), CanSaveChanges);
@@ -163,7 +163,7 @@ namespace PatientInfoModule.ViewModels
 
         private void OnBeforePatientSelected(BeforeSelectionChangedEventData data)
         {
-            if (patientId == SpecialValues.NewId || ChangeTracker.HasChanges)
+            if (patientId == SpecialValues.NewId || CompositeChangeTracker.HasChanges)
             {
                 data.AddActionToPerform(async () => await Task<bool>.Factory.StartNew(SaveContract), () => regionManager.RequestNavigate(RegionNames.ModuleList, viewNameResolver.Resolve<ContractsHeaderViewModel>()));
             }
@@ -175,12 +175,12 @@ namespace PatientInfoModule.ViewModels
             {
                 foreach (var newItem in e.NewItems.Cast<ContractItemViewModel>())
                 {
-                    if (!newItem.ChangeTracker.IsEnabled)
+                    if (!newItem.CompositeChangeTracker.IsEnabled)
                     {
-                        newItem.ChangeTracker.IsEnabled = true;
+                        newItem.CompositeChangeTracker.IsEnabled = true;
                     }
                     newItem.PropertyChanged += contractItem_PropertyChanged;
-                    contractItemsTracker.AddTracker(newItem.ChangeTracker);
+                    contractItemsTracker.AddTracker(newItem.CompositeChangeTracker);
                 }
             }
             if (e.OldItems != null)
@@ -188,7 +188,7 @@ namespace PatientInfoModule.ViewModels
                 foreach (var oldItem in e.OldItems.Cast<ContractItemViewModel>())
                 {
                     oldItem.PropertyChanged -= contractItem_PropertyChanged;
-                    contractItemsTracker.RemoveTracker(oldItem.ChangeTracker);
+                    contractItemsTracker.RemoveTracker(oldItem.CompositeChangeTracker);
                 }
             }
         }
@@ -199,7 +199,7 @@ namespace PatientInfoModule.ViewModels
             UpdateChangeCommandsState();
         }
 
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
 
         private readonly CompositeChangeTracker contractItemsTracker;
 
@@ -815,7 +815,7 @@ namespace PatientInfoModule.ViewModels
                     {
                         var insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
                         var contractItem = new ContractItemViewModel(recordService, personService, patientId, finSourceId, contractBeginDateTime);
-                        contractItem.ChangeTracker.IsEnabled = true;
+                        contractItem.CompositeChangeTracker.IsEnabled = true;
                         contractItem.Id = 0;
                         contractItem.RecordContractId = null;
                         contractItem.AssignmentId = assignment.Id;
@@ -836,7 +836,7 @@ namespace PatientInfoModule.ViewModels
                     }
                     var insertPosition = contractItems.Any() ? contractItems.Count - 1 : 0;
                     var contractItem = new ContractItemViewModel(recordService, personService, patientId, finSourceId, contractBeginDateTime);
-                    contractItem.ChangeTracker.IsEnabled = true;
+                    contractItem.CompositeChangeTracker.IsEnabled = true;
                     contractItem.Id = 0;
                     contractItem.RecordContractId = null;
                     contractItem.AssignmentId = null;

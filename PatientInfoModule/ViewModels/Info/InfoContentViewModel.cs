@@ -144,7 +144,7 @@ namespace PatientInfoModule.ViewModels
             currentPatientId = PatientAssignmentListViewModel.PatientId = SpecialValues.NonExistingId;            
             Relatives = new ObservableCollectionEx<PatientInfoViewModel>();
             Relatives.BeforeCollectionChanged += RelativesOnBeforeCollectionChanged;
-            changeTracker = new CompositeChangeTracker(patientInfo.ChangeTracker, new ObservableCollectionChangeTracker<PatientInfoViewModel>(Relatives));
+            changeTracker = new CompositeChangeTracker(patientInfo.CompositeChangeTracker, new ObservableCollectionChangeTracker<PatientInfoViewModel>(Relatives));
             changeTracker.PropertyChanged += OnChangesTracked;
             selectedPatientOrRelative = patientInfo;
             FailureMediator = new FailureMediator();
@@ -171,7 +171,7 @@ namespace PatientInfoModule.ViewModels
 
         private void OnBeforePatientSelected(BeforeSelectionChangedEventData data)
         {
-            if (currentPatientId == SpecialValues.NewId || ChangeTracker.HasChanges)
+            if (currentPatientId == SpecialValues.NewId || CompositeChangeTracker.HasChanges)
             {
                 data.AddActionToPerform(async () => await SaveChangesAsync(), () => regionManager.RequestNavigate(RegionNames.ModuleList, viewNameResolver.Resolve<InfoHeaderViewModel>()));
             }
@@ -292,15 +292,15 @@ namespace PatientInfoModule.ViewModels
                     currentPatientId = PatientAssignmentListViewModel.PatientId = patientInfo.CurrentPerson.Id;
                     eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Publish(currentPatientId);
                 }
-                foreach (var relative in Relatives.Where(x => x.CurrentPerson.Id.IsNewOrNonExisting() || x.ChangeTracker.HasChanges))
+                foreach (var relative in Relatives.Where(x => x.CurrentPerson.Id.IsNewOrNonExisting() || x.CompositeChangeTracker.HasChanges))
                 {
                     personToSave = relative;
                     await relative.SaveChangesAsync(patientInfo.CurrentPerson);
                 }
                 personToSave = null;
                 CancelValidation();
-                ChangeTracker.AcceptChanges();
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.AcceptChanges();
+                CompositeChangeTracker.IsEnabled = true;
                 UpdateCommandsState();
                 UpdateAmbCardCommandsState();
                 return true;
@@ -332,7 +332,7 @@ namespace PatientInfoModule.ViewModels
             {
                 return true;
             }
-            return ChangeTracker.HasChanges;
+            return CompositeChangeTracker.HasChanges;
         }
 
         public ICommand CancelChangesCommand
@@ -343,7 +343,7 @@ namespace PatientInfoModule.ViewModels
         private void CancelChanges()
         {
             FailureMediator.Deactivate();
-            ChangeTracker.RestoreChanges();
+            CompositeChangeTracker.RestoreChanges();
             CancelValidation();
             if (SelectedPatientOrRelative.IsRelative && SelectedPatientOrRelative.CurrentPerson.Id.IsNewOrNonExisting())
             {
@@ -357,7 +357,7 @@ namespace PatientInfoModule.ViewModels
             {
                 return false;
             }
-            return ChangeTracker.HasChanges;
+            return CompositeChangeTracker.HasChanges;
         }
 
         public ICommand AddRelativeCommand
@@ -607,7 +607,7 @@ namespace PatientInfoModule.ViewModels
                 foreach (var oldItem in e.OldItems.Cast<PatientInfoViewModel>())
                 {
                     oldItem.PropertyChanged -= OnRelativeIsRepresentiveChanged;
-                    changeTracker.RemoveTracker(oldItem.ChangeTracker);
+                    changeTracker.RemoveTracker(oldItem.CompositeChangeTracker);
                     oldItem.CurrentPatientHasRelativeCheckRequired -= OnCurrentPatientHasRelativeCheckRequired;
                     oldItem.RelativeNavigationRequested -= OnRelativeNavigationRequested;
                     oldItem.RelativeRemoveRequested -= OnRelativeRemoveRequested;
@@ -619,7 +619,7 @@ namespace PatientInfoModule.ViewModels
                 foreach (var newItem in e.NewItems.Cast<PatientInfoViewModel>())
                 {
                     newItem.PropertyChanged += OnRelativeIsRepresentiveChanged;
-                    changeTracker.AddTracker(newItem.ChangeTracker);
+                    changeTracker.AddTracker(newItem.CompositeChangeTracker);
                     newItem.CurrentPatientHasRelativeCheckRequired += OnCurrentPatientHasRelativeCheckRequired;
                     newItem.RelativeNavigationRequested += OnRelativeNavigationRequested;
                     newItem.RelativeRemoveRequested += OnRelativeRemoveRequested;
@@ -703,12 +703,12 @@ namespace PatientInfoModule.ViewModels
             try
             {
                 log.InfoFormat("Loading patient and relative info for patient with Id {0}...", targetPatientId);
-                ChangeTracker.IsEnabled = false;
+                CompositeChangeTracker.IsEnabled = false;
                 patientIdBeingLoaded = targetPatientId;
                 await Task.WhenAll(patientInfo.LoadPatientInfoAsync(targetPatientId), LoadRelativesAsync(targetPatientId));
                 currentPatientId = PatientAssignmentListViewModel.PatientId = targetPatientId;
                 patientIdBeingLoaded = SpecialValues.NonExistingId;
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
                 UpdateCommandsState();
                 SelectedPatientOrRelative = patientInfo;
             }
@@ -801,11 +801,11 @@ namespace PatientInfoModule.ViewModels
 
         private readonly CompositeChangeTracker changeTracker;
 
-        public IChangeTracker ChangeTracker { get { return changeTracker; } }
+        public IChangeTracker CompositeChangeTracker { get { return changeTracker; } }
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
             Relatives.BeforeCollectionChanged -= RelativesOnBeforeCollectionChanged;
             eventAggregator.GetEvent<BeforeSelectionChangedEvent<Person>>().Unsubscribe(OnBeforePatientSelected);
         }

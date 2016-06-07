@@ -16,13 +16,13 @@ namespace Shared.PatientRecords.ViewModels
 {
     public class AnalyseResultViewModel: TrackableBindableBase, IDisposable, IChangeTrackerMediator
     {
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
         private IPatientRecordsService recordService;
 
         public AnalyseResultViewModel(IPatientRecordsService recordService)
         {
             this.recordService = recordService;
-            ChangeTracker = new ChangeTrackerEx<AnalyseResultViewModel>(this);
+            CompositeChangeTracker = new ChangeTrackerEx<AnalyseResultViewModel>(this);
         }
 
         private int id;
@@ -201,7 +201,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
         }
     }
 }

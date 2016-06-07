@@ -37,7 +37,7 @@ namespace PatientInfoModule.ViewModels
             validator = new ValidationMediator(this);
             SocialStatusTypes = cacheService.GetItems<SocialStatusType>();
             DeleteCommand = new DelegateCommand(Delete);
-            ChangeTracker = new ChangeTrackerEx<SocialStatusViewModel>(this);
+            CompositeChangeTracker = new ChangeTrackerEx<SocialStatusViewModel>(this);
         }
 
         private ISuggestionsProvider organizationSuggestionsProvider;
@@ -222,7 +222,7 @@ namespace PatientInfoModule.ViewModels
             }
             set
             {
-                ChangeTracker.IsEnabled = false;
+                CompositeChangeTracker.IsEnabled = false;
                 if (value == null)
                 {
                     selectedSocialStatusType = null;
@@ -246,7 +246,7 @@ namespace PatientInfoModule.ViewModels
                     personId = value.PersonId;
                 }
                 OnPropertyChanged(string.Empty);
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
         }
 
@@ -259,7 +259,7 @@ namespace PatientInfoModule.ViewModels
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
         }
 
         public ICommand DeleteCommand { get; private set; }
@@ -280,7 +280,7 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
 
         public string StringRepresentation
         {

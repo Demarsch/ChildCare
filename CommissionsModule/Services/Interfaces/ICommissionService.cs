@@ -76,7 +76,9 @@ namespace CommissionsModule.Services
 
         Task<bool> RemoveTalon(int talonId);
 
-        Task<bool> RemoveCommissionProtocol(int protocolId);
+        Task<string> RemoveCommissionProtocol(int protocolId, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
+
+        Task<string> ChangeIsExecutingCommissionProtocol(int protocolId, bool isExecuting, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
         IDisposableQueryable<CommissionMemberType> GetCommissionMemberTypes();
 

@@ -183,7 +183,7 @@ namespace PatientInfoModule.ViewModels
             }
             if (messageService.AskUser("Удалить комиссию ?") == true)
             {
-                if (!securityService.HasPermission(Permission.DeleteCommissionProtocol))
+                if (!securityService.HasPermission(Permission.RemoveCommissionProtocol))
                 {
                     messageService.ShowWarning("У вас нет прав на удаление комиссии.");
                     return;

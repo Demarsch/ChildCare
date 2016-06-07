@@ -55,7 +55,7 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            ChangeTracker = new ChangeTrackerEx<CommissionСonclusionViewModel>(this);
+            CompositeChangeTracker = new ChangeTrackerEx<CommissionСonclusionViewModel>(this);
             validationMediator = new ValidationMediator(this);
         }
 
@@ -136,7 +136,7 @@ namespace CommissionsModule.ViewModels
             set
             {
                 SetTrackedProperty(ref toDoDateTime, value);
-                NeedToDoDateTime = toDoDateTime != null;
+                NeedToDoDateTime = value != null;
             }
         }
 
@@ -161,13 +161,13 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
-        public IChangeTracker ChangeTracker { get; set; }
+        public IChangeTracker CompositeChangeTracker { get; set; }
         #endregion
 
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
-            ChangeTracker.IsEnabled = false;
+            CompositeChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -200,7 +200,7 @@ namespace CommissionsModule.ViewModels
                     x.Comment,
                     x.WaitingFor,
                     x.Diagnos,
-                    ToDoDateTime,
+                    x.ToDoDateTime,
                     x.PersonId,
                     ActualDateTime = x.ProtocolDate,
                     x.CommissionQuestionId
@@ -229,7 +229,7 @@ namespace CommissionsModule.ViewModels
                     ToDoDateTime = commissionProtocolData.ToDoDateTime;
                 }
                 loadingIsCompleted = true;
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {

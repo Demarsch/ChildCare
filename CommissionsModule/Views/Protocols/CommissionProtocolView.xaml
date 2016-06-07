@@ -19,7 +19,7 @@
             <ContentControl HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding FailureMediator}"/>
             <ContentControl HorizontalAlignment="Center" VerticalAlignment="Bottom" Content="{Binding NotificationMediator}"/>
         </Grid>
-        <!--<view:CommissionEmptyView Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}" />-->
+        <view:CommissionEmptyView Visibility="{Binding ShowCommissionProtocol, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}" />
 
         <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />

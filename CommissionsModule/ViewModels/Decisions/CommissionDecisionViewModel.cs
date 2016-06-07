@@ -18,7 +18,7 @@ using Core.Services;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionDecisionViewModel : BindableBase
+    public class CommissionDecisionViewModel : BindableBase, IDisposable
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -108,20 +108,6 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private bool isCurStage;
-         public bool IsCurStage
-        {
-            get { return isCurStage; }
-            set
-            {
-                SetProperty(ref isCurStage, value);
-                if (CommissionMemberGroupItem != null)
-                    CommissionMemberGroupItem.IsCurStage = isCurStage;
-            }
-        }
-
-        
-
         private bool needAllMembers;
         public bool NeedAllMembers
         {
@@ -186,7 +172,7 @@ namespace CommissionsModule.ViewModels
 
         public void EraseProperties()
         {
-
+            CommissionMemberGroupItem.PropertyChanged -= CommissionMemberGroupItem_PropertyChanged;
             CommissionDecisionId = SpecialValues.NonExistingId;
             CommissionMemberId = SpecialValues.NonExistingId;
             commissionProtocolId = SpecialValues.NonExistingId;
@@ -201,9 +187,18 @@ namespace CommissionsModule.ViewModels
             CommissionMemberGroupItem.PropertyChanged += CommissionMemberGroupItem_PropertyChanged;
         }
 
+        public void Dispose()
+        {
+            if (CommissionMemberGroupItem != null)
+                CommissionMemberGroupItem.PropertyChanged -= CommissionMemberGroupItem_PropertyChanged;
+        }
+
         void CommissionMemberGroupItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            OnPropertyChanged(() => CommissionMemberGroupItem);
+            if (e.PropertyName == "NeedAllMembers")
+                NeedAllMembers = CommissionMemberGroupItem.NeedAllMembers;
+            if (e.PropertyName == "Stage")
+                Stage = CommissionMemberGroupItem.Stage;
         }
 
         public async Task InitializeNew(int commissionMemberId, int stage, int commissionProtocolId, bool canDeleteMember)

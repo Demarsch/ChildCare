@@ -87,7 +87,7 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            ChangeTracker = new ChangeTrackerEx<CommissionСonductViewModel>(this);
+            CompositeChangeTracker = new ChangeTrackerEx<CommissionСonductViewModel>(this);
         }
 
         #endregion
@@ -114,7 +114,7 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; private set; }
         public FailureMediator FailureMediator { get; private set; }
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
 
         public int CommissionProtocolId { get; private set; }
         public int PersonId { get; private set; }
@@ -123,7 +123,7 @@ namespace CommissionsModule.ViewModels
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
-            ChangeTracker.IsEnabled = false;
+            CompositeChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -200,7 +200,7 @@ namespace CommissionsModule.ViewModels
                 removeStageCommand.RaiseCanExecuteChanged();
                 CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
                 loadingIsCompleted = true;
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -290,7 +290,7 @@ namespace CommissionsModule.ViewModels
                 {
                     Id = item.CommissionDecisionId,
                     CommissionProtocol = commissionProtocol,
-                    CommissionStage = item.Stage,
+                    CommissionStage = item.Stage,                  
                     NeedAllMembersInStage = item.NeedAllMembers,
                     CommissionMemberId = item.CommissionMemberId,
                     InitiatorUserId = userService.GetCurrentUserId()

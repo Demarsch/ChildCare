@@ -119,7 +119,7 @@ namespace Shared.PatientRecords.ViewModels
                     }
                     currentLoadingToken = new CancellationTokenSource();
                     var token = currentLoadingToken.Token;
-                    ChangeTracker.IsEnabled = false;
+                    CompositeChangeTracker.IsEnabled = false;
                     diagnosesQuery = diagnosService.GetRecordDiagnos(recordId);
                     var result = await Task.Factory.StartNew(() =>
                     {
@@ -159,7 +159,7 @@ namespace Shared.PatientRecords.ViewModels
                     diagnosLevelsQuery.Dispose();
                 if (diagnosesQuery != null)
                     diagnosesQuery.Dispose();
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
         }
 
@@ -256,7 +256,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
             foreach (var diagnos in Diagnoses)
             {
                 diagnos.PropertyChanged -= OnTrackedPropertyChanged;
@@ -315,7 +315,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly DelegateCommand makeClarificationCommand;
         public ICommand MakeClarificationCommand { get { return makeClarificationCommand; } }
 
-        public IChangeTracker ChangeTracker
+        public IChangeTracker CompositeChangeTracker
         {
             get { return changeTracker; }
         }
@@ -332,7 +332,7 @@ namespace Shared.PatientRecords.ViewModels
                 {
                     newItem.BeforeTrackedPropertyChanged += OnBeforeTrackedPropertyChanged;
                     newItem.PropertyChanged += OnTrackedPropertyChanged;
-                    changeTracker.AddTracker(newItem.ChangeTracker);
+                    changeTracker.AddTracker(newItem.CompositeChangeTracker);
                 }
             }
             if (e.OldItems != null)
@@ -341,7 +341,7 @@ namespace Shared.PatientRecords.ViewModels
                 {
                     oldItem.BeforeTrackedPropertyChanged += OnBeforeTrackedPropertyChanged;
                     oldItem.PropertyChanged -= OnTrackedPropertyChanged;
-                    changeTracker.RemoveTracker(oldItem.ChangeTracker);
+                    changeTracker.RemoveTracker(oldItem.CompositeChangeTracker);
                 }
             }
         }
@@ -393,8 +393,8 @@ namespace Shared.PatientRecords.ViewModels
                         string mkbCode = Diagnoses.First(x => x.IsMainDiagnos).MKB;
                         recordService.UpdateMKBRecord(recordId, mkbCode);
                     }
-                    ChangeTracker.AcceptChanges();
-                    ChangeTracker.IsEnabled = true;
+                    CompositeChangeTracker.AcceptChanges();
+                    CompositeChangeTracker.IsEnabled = true;
                     return true;
                 }
                 else

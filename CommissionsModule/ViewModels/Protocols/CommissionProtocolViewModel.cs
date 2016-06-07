@@ -45,7 +45,17 @@ namespace CommissionsModule.ViewModels
         private CancellationTokenSource currentOperationToken;
         private CancellationTokenSource setPatientOperationToken;
         private CancellationTokenSource setStateOperationToken;
+        private CancellationTokenSource removeCommissionToken;
+        private CancellationTokenSource changeIsExecutingCommissionToken;
+
         private TaskCompletionSource<bool> completionTaskSource;
+
+        private CommandWrapper reRemoveCommissionProtocol;
+        private int removeCommissionProtocolId;
+
+        private CommandWrapper reChangeIsExecutingCommissionProtocol;
+        private int changeIsExecutingCommissionProtocolId;
+        private bool? changeIsExecutingCommission;
 
         private CommandWrapper reSaveCommissionProtocol;
         #endregion
@@ -117,19 +127,27 @@ namespace CommissionsModule.ViewModels
             CommissionСonductViewModel = commissionСonductViewModel;
             CommissionСonclusionViewModel = commissionСonclusionViewModel;
             createCommissionCommand = new DelegateCommand(CreateCommission);
+            removeCommissionCommand = new DelegateCommand(removeCommission, CanRemoveCommission);
             saveCommissionProtocolCommand = new DelegateCommand(SaveCommissionProtocol, CanSaveCommissionProtocol);
             editCommissionMembersCommand = new DelegateCommand(EditCommissionMembers, CanEditCommissionMembers);
 
             addCommissionConductionCommand = new DelegateCommand<bool?>(AddCommissionConduction);
             addCommissionConclusionCommand = new DelegateCommand<bool?>(AddCommissionConclusion);
 
+            startCommissionCommand = new DelegateCommand(StartCommission, CanStartCommission);
+            stopCommissionCommand = new DelegateCommand(StopCommission);
+
             reSaveCommissionProtocol = new CommandWrapper() { Command = saveCommissionProtocolCommand, CommandName = "Повторить" };
+            reRemoveCommissionProtocol = new CommandWrapper() { Command = removeCommissionCommand, CommandName = "Повторить" };
+            reChangeIsExecutingCommissionProtocol = new CommandWrapper() { Command = reChangeIsExecutingCommissionProtocol, CommandName = "Повторить" };
+
             SubscribeToEvents();
 
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
-            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker, CommissionСonductViewModel.ChangeTracker, CommissionСonclusionViewModel.ChangeTracker);
-            ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
+            ChangeTracker = new ChangeTrackerEx<CommissionProtocolViewModel>(this);
+            CompositeChangeTracker = new CompositeChangeTracker(ChangeTracker, PreliminaryProtocolViewModel.CompositeChangeTracker, CommissionСonductViewModel.CompositeChangeTracker, CommissionСonclusionViewModel.CompositeChangeTracker);
+            CompositeChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
         }
 
         #endregion
@@ -152,7 +170,9 @@ namespace CommissionsModule.ViewModels
                     SetCommissionProtocolState();
                     SetPatientName();
                     ShowCommissionProtocol = selectedCommissionProtocolId > 0;
+                    ChangeTracker.IsEnabled = true;
                 }
+                removeCommissionCommand.RaiseCanExecuteChanged();
                 SubscribeToCommissionsProtocolsChangesAsync();
             }
         }
@@ -166,6 +186,7 @@ namespace CommissionsModule.ViewModels
                 SetProperty(ref selectedPersonId, value);
                 SetPatientName();
                 ShowCommissionProtocol = selectedPersonId > 0;
+                ChangeTracker.IsEnabled = true;
             }
         }
 
@@ -196,6 +217,9 @@ namespace CommissionsModule.ViewModels
                     CommissionСonductVisible = true;
                 if ((int)CommissionProtocolState > 1)
                     CommissionСonclusionVisible = true;
+                if ((int)CommissionProtocolState == 0)
+                    RunWork = false;
+                startCommissionCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -213,8 +237,16 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref showCommissionProtocol, value); }
         }
 
+        private bool runWork;
+        public bool RunWork
+        {
+            get { return runWork; }
+            set { SetTrackedProperty(ref runWork, value); }
+        }
+
         public FailureMediator FailureMediator { get; private set; }
         public NotificationMediator NotificationMediator { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
         public IChangeTracker ChangeTracker { get; private set; }
 
         #endregion
@@ -222,6 +254,9 @@ namespace CommissionsModule.ViewModels
         #region Commands
         private DelegateCommand createCommissionCommand;
         public ICommand CreateCommissionCommand { get { return createCommissionCommand; } }
+
+        private DelegateCommand removeCommissionCommand;
+        public ICommand RemoveCommissionCommand { get { return removeCommissionCommand; } }
 
         private DelegateCommand saveCommissionProtocolCommand;
         public ICommand SaveCommissionProtocolCommand { get { return saveCommissionProtocolCommand; } }
@@ -235,11 +270,52 @@ namespace CommissionsModule.ViewModels
         private DelegateCommand editCommissionMembersCommand;
         public ICommand EditCommissionMembersCommand { get { return editCommissionMembersCommand; } }
 
+        private DelegateCommand startCommissionCommand;
+        public ICommand StartCommissionCommand { get { return startCommissionCommand; } }
+
+        private DelegateCommand stopCommissionCommand;
+        public ICommand StopCommissionCommand { get { return stopCommissionCommand; } }
+
         #endregion
 
         #region Methods
 
+        private bool CanRemoveCommission()
+        {
+            return securityService.HasPermission(Permission.RemoveCommissionProtocol) && SelectedCommissionProtocolId > 0;
+        }
 
+        private async void removeCommission()
+        {
+            removeCommissionProtocolId = SelectedCommissionProtocolId;
+            if (removeCommissionProtocolId < 1)
+            {
+                logService.InfoFormat("Can't remove commission protocol with id ={0}", removeCommissionProtocolId);
+                FailureMediator.Activate("Невозможно удалить протокол комиссии!", true);
+                return;
+            }
+            if (removeCommissionToken != null)
+            {
+                removeCommissionToken.Cancel();
+                removeCommissionToken.Dispose();
+            }
+            removeCommissionToken = new CancellationTokenSource();
+            var token = removeCommissionToken.Token;
+            logService.InfoFormat("Removing commission protocol with id ={0}", removeCommissionProtocolId);
+            var res = await commissionService.RemoveCommissionProtocol(removeCommissionProtocolId, token, comissionsProtocolsChangeSubscription);
+            if (!string.IsNullOrEmpty(res))
+            {
+                logService.ErrorFormatEx(null, "Failed to remove commission protocol with id ={0}", removeCommissionProtocolId);
+                FailureMediator.Activate("Во время удаления протокола возникла ошибка! " + res, reRemoveCommissionProtocol, canBeDeactivated: true);
+            }
+            else
+            {
+                NotificationMediator.Activate("Протокол комиссии удален!", NotificationMediator.DefaultHideTime);
+                removeCommissionProtocolId = 0;
+                SelectedCommissionProtocolId = SpecialValues.NonExistingId;
+                SelectedPersonId = SpecialValues.NonExistingId;
+            }
+        }
 
         private bool CanEditCommissionMembers()
         {
@@ -266,6 +342,66 @@ namespace CommissionsModule.ViewModels
             CommissionСonclusionViewModel.Initialize(SelectedCommissionProtocolId, SelectedPersonId);
         }
 
+        private void StartCommission()
+        {
+            RunWork = true;
+            ChangeIsExecitingCommissionProtocol(true);
+        }
+
+        private async void ChangeIsExecitingCommissionProtocol(bool isExecuting)
+        {
+            string notification = string.Empty;
+            if (SelectedCommissionProtocolId > 0)
+            {
+                changeIsExecutingCommissionProtocolId = SelectedCommissionProtocolId;
+                changeIsExecutingCommission = isExecuting;
+                if (changeIsExecutingCommissionToken != null)
+                {
+                    changeIsExecutingCommissionToken.Cancel();
+                    changeIsExecutingCommissionToken.Dispose();
+                }
+                changeIsExecutingCommissionToken = new CancellationTokenSource();
+                var token = changeIsExecutingCommissionToken.Token;
+                logService.InfoFormat("Change IsExeciting commission protocol with id ={0} and value = {1}", changeIsExecutingCommissionProtocolId, isExecuting);
+                var res = await commissionService.ChangeIsExecutingCommissionProtocol(changeIsExecutingCommissionProtocolId, isExecuting, token, comissionsProtocolsChangeSubscription);
+                if (!string.IsNullOrEmpty(res))
+                {
+                    logService.ErrorFormatEx(null, "Failed to change IsExeciting for commission protocol with id ={0} and value = {1}", removeCommissionProtocolId, isExecuting);
+                    FailureMediator.Activate("Во время изменения состояния выполнения протокола возникла ошибка! " + res, reChangeIsExecutingCommissionProtocol, canBeDeactivated: true);
+                }
+                else
+                {
+                    if (isExecuting)
+                        notification = "Протокол комиссии запущен в работу";
+                    else
+                        notification = "Выполнение протокол комиссии временно приостановлено";
+                    NotificationMediator.Activate(notification, NotificationMediator.DefaultHideTime);
+
+                    changeIsExecutingCommissionProtocolId = 0;
+                    changeIsExecutingCommission = null;
+                }
+            }
+            else
+            {
+                if (isExecuting)
+                    notification = "Протокол комиссии будет запущен в работу после его сохранения!";
+                else
+                    notification = "Протокол комиссии будет сохранен без запуска выполнения после его сохранения!";
+                NotificationMediator.Activate(notification, NotificationMediator.DefaultHideTime);
+            }
+        }
+
+        private bool CanStartCommission()
+        {
+            return (int)CommissionProtocolState > 0;
+        }
+
+        private void StopCommission()
+        {
+            RunWork = false;
+            ChangeIsExecitingCommissionProtocol(false);
+        }
+
         private async void SetCommissionProtocolState()
         {
             if (SelectedCommissionProtocolId < 1)
@@ -284,6 +420,7 @@ namespace CommissionsModule.ViewModels
                 var commissionProtocol = await commissionProtocolQuery.Select(x => new
                 {
                     x.IsCompleted,
+                    x.IsExecuting,
                     x.Id
                 }).FirstOrDefaultAsync(token);
                 if (commissionProtocol != null)
@@ -306,6 +443,7 @@ namespace CommissionsModule.ViewModels
                             PreliminaryProtocolViewModel.Initialize(SelectedCommissionProtocolId);
                             break;
                     }
+                    RunWork = commissionProtocol.IsExecuting;
                 }
                 else
                 {
@@ -365,10 +503,10 @@ namespace CommissionsModule.ViewModels
                     }
                 }
 
-                if (Patient == string.Empty)
-                {
-                    FailureMediator.Activate("Не удалось загрузить данные пациента");
-                }
+                //if (Patient == string.Empty)
+                //{
+                //    FailureMediator.Activate("Не удалось загрузить данные пациента");
+                //}
             }
             catch (OperationCanceledException) {/*Do nothing. Cancelled operation means that user selected different patient before previous one was loaded  */}
             catch (Exception ex)
@@ -429,7 +567,7 @@ namespace CommissionsModule.ViewModels
                      MKB = string.Empty,
                      Diagnos = string.Empty,
                      WaitingFor = string.Empty,
-                     IsExecuting = false
+                     IsExecuting = RunWork
                      //CommissionDecisions = await commissionDecisionQuery.ToArrayAsync(token)
                  };
                 //ToDo: Maybe change on better decision!
@@ -460,7 +598,7 @@ namespace CommissionsModule.ViewModels
                 else
                 {
                     await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
-                    ChangeTracker.AcceptChanges();
+                    CompositeChangeTracker.AcceptChanges();
                     saveSuccessfull = true;
                 }
             }
@@ -535,7 +673,7 @@ namespace CommissionsModule.ViewModels
 
         private bool CanSaveCommissionProtocol()
         {
-            return ChangeTracker.HasChanges;
+            return CompositeChangeTracker.HasChanges;
         }
 
         #endregion

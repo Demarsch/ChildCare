@@ -90,8 +90,8 @@ namespace CommissionsModule.ViewModels
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
-            ChangeTracker = new ChangeTrackerEx<CommissionDecisionEditorViewModel>(CommissionDecisionEditorViewModel);
-            ChangeTracker.PropertyChanged += ChangeTracker_PropertyChanged;
+            CompositeChangeTracker = new ChangeTrackerEx<CommissionDecisionEditorViewModel>(CommissionDecisionEditorViewModel);
+            CompositeChangeTracker.PropertyChanged += ChangeTracker_PropertyChanged;
             CommissionDecisions = new ObservableCollectionEx<CommissionDecisionViewModel>();
             saveDecisionCommand = new DelegateCommand(SaveDecision, CanSaveDecision);
         }
@@ -118,7 +118,7 @@ namespace CommissionsModule.ViewModels
             {
                 if (SetProperty(ref selectedCommissionDecision, value) && SelectedCommissionDecision != null)
                 {
-                    CommissionDecisionEditorViewModel.ChangeTracker = ChangeTracker;
+                    CommissionDecisionEditorViewModel.CompositeChangeTracker = CompositeChangeTracker;
                     CommissionDecisionEditorViewModel.Initialize(SelectedCommissionDecision.CommissionDecisionId);
                 }
             }
@@ -130,7 +130,7 @@ namespace CommissionsModule.ViewModels
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
         public NotificationMediator NotificationMediator { get; set; }
-        public IChangeTracker ChangeTracker { get; set; }
+        public IChangeTracker CompositeChangeTracker { get; set; }
         #endregion
 
         #region Methods
@@ -223,7 +223,7 @@ namespace CommissionsModule.ViewModels
             {
                 return false;
             }
-            return ChangeTracker.HasChanges;
+            return CompositeChangeTracker.HasChanges;
         }
 
         private async void SaveDecision()
@@ -260,7 +260,7 @@ namespace CommissionsModule.ViewModels
             {
                 if (savedSuccessfull)
                 {
-                    ChangeTracker.AcceptChanges();
+                    CompositeChangeTracker.AcceptChanges();
                     NotificationMediator.Activate("Данные сохранены.", NotificationMediator.DefaultHideTime);
                 }
                 BusyMediator.Deactivate();

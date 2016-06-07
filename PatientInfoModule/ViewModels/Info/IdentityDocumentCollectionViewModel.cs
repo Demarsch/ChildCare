@@ -55,7 +55,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     newItem.DeleteRequested += OnIdentityDocumentDeleteRequested;
                     newItem.PropertyChanged += OnIdentityDocumentPropertyChanged;
-                    changeTracker.AddTracker(newItem.ChangeTracker);
+                    changeTracker.AddTracker(newItem.CompositeChangeTracker);
                 }
             }
             if (e.OldItems != null)
@@ -64,7 +64,7 @@ namespace PatientInfoModule.ViewModels
                 {
                     oldItem.DeleteRequested -= OnIdentityDocumentDeleteRequested;
                     oldItem.PropertyChanged -= OnIdentityDocumentPropertyChanged;
-                    changeTracker.RemoveTracker(oldItem.ChangeTracker);
+                    changeTracker.RemoveTracker(oldItem.CompositeChangeTracker);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace PatientInfoModule.ViewModels
             set
             {
                 value = value ?? new PersonIdentityDocument[0];
-                ChangeTracker.IsEnabled = false;
+                CompositeChangeTracker.IsEnabled = false;
                 IdentityDocuments.Clear();
                 foreach (var newModel in value)
                 {
@@ -93,13 +93,13 @@ namespace PatientInfoModule.ViewModels
                     newDocument.Model = newModel;
                     IdentityDocuments.Add(newDocument);
                 }
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
         }
 
         public void Dispose()
         {
-            ChangeTracker.Dispose();
+            CompositeChangeTracker.Dispose();
             foreach (var identityDocument in IdentityDocuments)
             {
                 identityDocument.DeleteRequested -= OnIdentityDocumentDeleteRequested;
@@ -114,7 +114,7 @@ namespace PatientInfoModule.ViewModels
             IdentityDocuments.Remove(sender as IdentityDocumentViewModel);
         }
 
-        public IChangeTracker ChangeTracker
+        public IChangeTracker CompositeChangeTracker
         {
             get { return changeTracker; }
         }

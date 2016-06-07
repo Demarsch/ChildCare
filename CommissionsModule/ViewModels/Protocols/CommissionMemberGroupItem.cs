@@ -47,13 +47,6 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref isPrevStage, value); }
         }
 
-        private bool isCurStage;
-        public bool IsCurStage
-        {
-            get { return isCurStage; }
-            set { SetProperty(ref isCurStage, value); }
-        }
-
         public string StageText
         {
             get { return Stage + "-й этап"; }

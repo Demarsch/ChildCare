@@ -133,16 +133,16 @@ namespace PatientInfoModule.ViewModels
             patientIdBeingLoaded = SpecialValues.NonExistingId;
             currentInstanceChangeTracker = new ChangeTrackerEx<PatientInfoViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker,
-                                                           IdentityDocuments.ChangeTracker,
-                                                           InsuranceDocuments.ChangeTracker,
-                                                           Addresses.ChangeTracker,
-                                                           DisabilityDocuments.ChangeTracker,
-                                                           SocialStatuses.ChangeTracker);
+                                                           IdentityDocuments.CompositeChangeTracker,
+                                                           InsuranceDocuments.CompositeChangeTracker,
+                                                           Addresses.CompositeChangeTracker,
+                                                           DisabilityDocuments.CompositeChangeTracker,
+                                                           SocialStatuses.CompositeChangeTracker);
             currentInstanceChangeTracker.RegisterComparer(() => LastName, StringComparer.CurrentCultureIgnoreCase);
             currentInstanceChangeTracker.RegisterComparer(() => FirstName, StringComparer.CurrentCultureIgnoreCase);
             currentInstanceChangeTracker.RegisterComparer(() => MiddleName, StringComparer.CurrentCultureIgnoreCase);
             changeTracker.PropertyChanged += OnChangesTracked;
-            ChangeTracker = changeTracker;
+            CompositeChangeTracker = changeTracker;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
@@ -337,7 +337,7 @@ namespace PatientInfoModule.ViewModels
             }
             set
             {
-                ChangeTracker.IsEnabled = false;
+                CompositeChangeTracker.IsEnabled = false;
                 personRelative = value;
                 if (value == null)
                 {
@@ -351,7 +351,7 @@ namespace PatientInfoModule.ViewModels
                     SelectedRelationship = Relationships.FirstOrDefault(x => x.Id == value.RelativeRelationshipId);
                     IsRepresentative = value.IsRepresentative;
                 }
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
         }
 
@@ -755,7 +755,7 @@ namespace PatientInfoModule.ViewModels
 
         private async void CheckForDuplicatePersonAsync(DuplicatePersonCheckParameters param)
         {
-            if (currentPerson == null || currentPerson.Id.IsNewOrNonExisting() || !ChangeTracker.HasChanges)
+            if (currentPerson == null || currentPerson.Id.IsNewOrNonExisting() || !CompositeChangeTracker.HasChanges)
             {
                 return;
             }
@@ -824,7 +824,7 @@ namespace PatientInfoModule.ViewModels
         public async Task SaveChangesAsync(Person relativeToPerson = null)
         {
             //If there are no changes then there is nothing to save
-            if (currentPerson != null && currentPerson.Id != SpecialValues.NewId && !ChangeTracker.HasChanges)
+            if (currentPerson != null && currentPerson.Id != SpecialValues.NewId && !CompositeChangeTracker.HasChanges)
             {
                 return;
             }
@@ -900,7 +900,7 @@ namespace PatientInfoModule.ViewModels
                                    CurrentSocialStatuses = currentSocialStatuses ?? new PersonSocialStatus[0],
                                    NewSocialStatuses = SocialStatuses.Model,
                                    Relative = personRelative,
-                                   NewPhoto = ChangeTracker.PropertyHasChanges(() => PhotoSource) ? fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource) : null
+                                   NewPhoto = CompositeChangeTracker.PropertyHasChanges(() => PhotoSource) ? fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource) : null
                                };
 
                 var result = await patientService.SavePatientAsync(saveData);
@@ -917,8 +917,8 @@ namespace PatientInfoModule.ViewModels
                 SocialStatuses.Model = currentSocialStatuses = result.SocialStatuses;
                 PersonRelative = result.Relative;
                 CancelValidation();
-                ChangeTracker.AcceptChanges();
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.AcceptChanges();
+                CompositeChangeTracker.IsEnabled = true;
                 UpdateNameIsChanged();
                 NotificationMediator.Activate("Изменения сохранены", NotificationMediator.DefaultHideTime);
             }
@@ -943,7 +943,7 @@ namespace PatientInfoModule.ViewModels
         public void CancelChanges()
         {
             FailureMediator.Deactivate();
-            ChangeTracker.RestoreChanges();
+            CompositeChangeTracker.RestoreChanges();
             CancelValidation();
             UpdateNameIsChanged();
         }
@@ -970,7 +970,7 @@ namespace PatientInfoModule.ViewModels
             if (patientId == SpecialValues.NewId || patientId == SpecialValues.NonExistingId)
             {
                 currentPerson = new Person { Id = SpecialValues.NewId, AmbNumberString = string.Empty };
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
                 return;
             }
             currentOperation = new TaskCompletionSource<object>();
@@ -1032,7 +1032,7 @@ namespace PatientInfoModule.ViewModels
                 EducationId = currentEducation == null ? SpecialValues.NonExistingId : currentEducation.EducationId;
                 MaritalStatusId = currentMaritalStatus == null ? SpecialValues.NonExistingId : currentMaritalStatus.MaritalStatusId;
 
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -1059,7 +1059,7 @@ namespace PatientInfoModule.ViewModels
 
         private void ClearData()
         {
-            ChangeTracker.IsEnabled = false;
+            CompositeChangeTracker.IsEnabled = false;
             currentPerson = null;
             currentEducation = null;
             currentHealthGroup = null;
@@ -1278,7 +1278,7 @@ namespace PatientInfoModule.ViewModels
 
         private readonly IChangeTracker currentInstanceChangeTracker;
 
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
 
         public void Dispose()
         {

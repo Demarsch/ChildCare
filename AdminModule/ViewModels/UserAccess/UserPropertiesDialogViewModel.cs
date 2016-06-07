@@ -82,8 +82,8 @@ namespace AdminModule.ViewModels
             SyncUserCommand = new DelegateCommand<UserInfo>(SyncUser);
             UnsyncUserCommand = new DelegateCommand(UnsyncUser);
             TakePhotoCommand = new DelegateCommand(TakePhotoAsync);
-            ChangeTracker = new ChangeTrackerEx<UserPropertiesDialogViewModel>(this);
-            ChangeTracker.PropertyChanged += OnChangesTracked;
+            CompositeChangeTracker = new ChangeTrackerEx<UserPropertiesDialogViewModel>(this);
+            CompositeChangeTracker.PropertyChanged += OnChangesTracked;
             currentPersonId = SpecialValues.NonExistingId;
             loadPatientInfoCommandWrapper = new CommandWrapper
                                             {
@@ -118,9 +118,9 @@ namespace AdminModule.ViewModels
         private void UpdateNameIsChanged()
         {
             IsNameChanged = !currentPersonId.IsNewOrNonExisting()
-                            && (ChangeTracker.PropertyHasChanges(() => LastName)
-                                || ChangeTracker.PropertyHasChanges(() => FirstName)
-                                || ChangeTracker.PropertyHasChanges(() => MiddleName));
+                            && (CompositeChangeTracker.PropertyHasChanges(() => LastName)
+                                || CompositeChangeTracker.PropertyHasChanges(() => FirstName)
+                                || CompositeChangeTracker.PropertyHasChanges(() => MiddleName));
         }
 
         private bool isIncorrectName;
@@ -396,22 +396,22 @@ namespace AdminModule.ViewModels
 
         public SaveUserInput PrepareDataForSave()
         {
-            if (!ChangeTracker.HasChanges && !currentPersonId.IsNewOrNonExisting())
+            if (!CompositeChangeTracker.HasChanges && !currentPersonId.IsNewOrNonExisting())
             {
                 return null;
             }
             return new SaveUserInput
                    {
                        PersonId = currentPersonId,
-                       LastName = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => LastName) ? LastName : null,
-                       FirstName = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => FirstName) ? FirstName : null,
-                       MiddleName = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => MiddleName) ? MiddleName : null,
-                       IsMale = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => IsMale) ? IsMale : (bool?)null,
-                       BirthDate = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => BirthDate) ? BirthDate : null,
-                       Snils = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => Snils) ? Snils : null,
-                       MedNumber = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => MedNumber) ? MedNumber : null,
-                       Photo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => PhotoSource) ? new ValueOf<byte[]>(fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource)) : ValueOf<byte[]>.Empty,
-                       UserInfo = currentPersonId.IsNewOrNonExisting() || ChangeTracker.PropertyHasChanges(() => CurrentUser) ? new ValueOf<UserInfo>(CurrentUser) : ValueOf<UserInfo>.Empty,
+                       LastName = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => LastName) ? LastName : null,
+                       FirstName = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => FirstName) ? FirstName : null,
+                       MiddleName = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => MiddleName) ? MiddleName : null,
+                       IsMale = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => IsMale) ? IsMale : (bool?)null,
+                       BirthDate = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => BirthDate) ? BirthDate : null,
+                       Snils = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => Snils) ? Snils : null,
+                       MedNumber = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => MedNumber) ? MedNumber : null,
+                       Photo = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => PhotoSource) ? new ValueOf<byte[]>(fileService.GetBinaryDataFromImage(new JpegBitmapEncoder(), PhotoSource)) : ValueOf<byte[]>.Empty,
+                       UserInfo = currentPersonId.IsNewOrNonExisting() || CompositeChangeTracker.PropertyHasChanges(() => CurrentUser) ? new ValueOf<UserInfo>(CurrentUser) : ValueOf<UserInfo>.Empty,
                        NewNameStartDate = IsNewName ? NewNameStartDate : null
                    };
         }
@@ -442,7 +442,7 @@ namespace AdminModule.ViewModels
                                                         Login = user.Login,
                                                         Sid = user.SID
                                                     };
-                ChangeTracker.IsEnabled = true;
+                CompositeChangeTracker.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -458,7 +458,7 @@ namespace AdminModule.ViewModels
 
         private void ClearData()
         {
-            ChangeTracker.IsEnabled = false;
+            CompositeChangeTracker.IsEnabled = false;
             currentPersonId = SpecialValues.NonExistingId;
             currentNameStartDate = null;
             lastName = string.Empty;
@@ -511,11 +511,11 @@ namespace AdminModule.ViewModels
             }
         }
 
-        public IChangeTracker ChangeTracker { get; private set; }
+        public IChangeTracker CompositeChangeTracker { get; private set; }
 
         public void Dispose()
         {
-            ChangeTracker.PropertyChanged -= OnChangesTracked;
+            CompositeChangeTracker.PropertyChanged -= OnChangesTracked;
         }
 
         #region Validation
