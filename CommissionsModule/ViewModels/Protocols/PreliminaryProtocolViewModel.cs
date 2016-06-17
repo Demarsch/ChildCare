@@ -106,6 +106,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedCommissionTypeId; }
             set
             {
+                selectedCommissionTypeId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedCommissionTypeId, value);
@@ -118,6 +119,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedCommissionQuestionId; }
             set
             {
+                selectedCommissionQuestionId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedCommissionQuestionId, value);
@@ -130,6 +132,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedCommissionSourceId; }
             set
             {
+                selectedCommissionSourceId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedCommissionSourceId, value);
@@ -142,6 +145,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedSentLPUId; }
             set
             {
+                selectedSentLPUId = 0;
                 if (value < 0)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedSentLPUId, value);
@@ -154,6 +158,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedTalonId; }
             set
             {
+                selectedTalonId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedTalonId, value);
@@ -166,6 +171,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedPersonAddressId; }
             set
             {
+                selectedPersonAddressId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedPersonAddressId, value);
@@ -178,6 +184,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedHelpTypeId; }
             set
             {
+                selectedHelpTypeId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedHelpTypeId, value);

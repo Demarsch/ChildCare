@@ -124,6 +124,7 @@ namespace CommissionsModule.ViewModels
             this.editorCommissionMembersFactory = editorCommissionMembersFactory;
             this.eventAggregator = eventAggregator;
             PreliminaryProtocolViewModel = preliminaryProtocolViewModel;
+            PreliminaryProtocolViewModel.PropertyChanged += PreliminaryProtocolViewModel_PropertyChanged;
             CommissionСonductViewModel = commissionСonductViewModel;
             CommissionСonclusionViewModel = commissionСonclusionViewModel;
             createCommissionCommand = new DelegateCommand(CreateCommission);
@@ -170,7 +171,7 @@ namespace CommissionsModule.ViewModels
                     SetCommissionProtocolState();
                     SetPatientName();
                     ShowCommissionProtocol = selectedCommissionProtocolId > 0;
-                    ChangeTracker.IsEnabled = true;
+                    //ChangeTracker.IsEnabled = true;
                 }
                 removeCommissionCommand.RaiseCanExecuteChanged();
                 SubscribeToCommissionsProtocolsChangesAsync();
@@ -186,7 +187,7 @@ namespace CommissionsModule.ViewModels
                 SetProperty(ref selectedPersonId, value);
                 SetPatientName();
                 ShowCommissionProtocol = selectedPersonId > 0;
-                ChangeTracker.IsEnabled = true;
+                //ChangeTracker.IsEnabled = true;
             }
         }
 
@@ -638,6 +639,14 @@ namespace CommissionsModule.ViewModels
 
         }
 
+        void PreliminaryProtocolViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedCommissionTypeId" && CommissionСonductViewModel != null)
+            {
+                CommissionСonductViewModel.LoadAvailableMembers(PreliminaryProtocolViewModel.SelectedCommissionTypeId, DateTime.Now);
+            }
+        }
+
         private async void EditCommissionMembers()
         {
             var editCommisionMembersViewModel = editorCommissionMembersFactory();
@@ -652,6 +661,7 @@ namespace CommissionsModule.ViewModels
         public void Dispose()
         {
             UnsubscriveFromEvents();
+            PreliminaryProtocolViewModel.PropertyChanged -= PreliminaryProtocolViewModel_PropertyChanged;
         }
 
         private void UnsubscriveFromEvents()

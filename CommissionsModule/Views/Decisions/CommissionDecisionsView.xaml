@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <CollectionViewSource x:Key="DecisionStageGrouped" Source="{Binding CommissionDecisions}">
             <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="StageText" />
+                <PropertyGroupDescription PropertyName="CommissionMemberGroupItem" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>
@@ -37,10 +37,27 @@
                                         <ControlTemplate TargetType="{x:Type GroupItem}">
                                             <Expander IsExpanded="True" BorderBrush="#FFB0B0B3" BorderThickness="0,0,0,1">
                                                 <Expander.Header>
-                                                    <DockPanel>
-                                                        <TextBlock FontWeight="Bold" Text="{Binding Path=Name}"/>
-                                                        <!--<TextBlock Text="{Binding ItemCount}" Margin="5,0,0,0" FontWeight="Bold" Foreground="#FFB0B0B3"/>-->
-                                                    </DockPanel>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                                                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Height="20" Width="20" ToolTip="Завершенный этап"
+                                                                           Visibility="{Binding Name.IsExecutedStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                                                            <!--<Image Source="pack://application:,,,/Core;Component/Resources/Images/InProgress32x32.png" Height="20" Width="20" ToolTip="Текущий этап"
+                                                                           Visibility="{Binding Name.IsCurStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>-->
+                                                            <TextBlock FontWeight="Bold" Text="{Binding Name.StageText}"/>
+
+                                                            <ToggleButton Background="Transparent" IsChecked="{Binding Name.NeedAllMembers}" BorderThickness="0" 
+                                                                          Command="{Binding ElementName=DecissionsList, Path=DataContext.ChangeNeedAllMembersCommand}" CommandParameter="{Binding Name}" IsEnabled="False">
+                                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                                                                    <TextBlock Text="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToTextConverter.Instance}}" />
+                                                                    <Image Source="{Binding Name.NeedAllMembers, Converter={x:Static converters:AllMembersToImageConverter.Instance}}" Width="24" Height="24" Stretch="Fill" />
+                                                                </StackPanel>
+                                                            </ToggleButton>
+                                                        </StackPanel>
+                                                    </Grid>
                                                 </Expander.Header>
                                                 <Expander.Content>
                                                     <ItemsPresenter />

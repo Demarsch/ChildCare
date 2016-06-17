@@ -25,7 +25,11 @@ namespace CommissionsModule.ViewModels
         public bool NeedAllMembers
         {
             get { return needAllMembers; }
-            set { SetProperty(ref needAllMembers, value); }
+            set
+            {
+                SetProperty(ref needAllMembers, value);
+                OnPropertyChanged(() => IsExecutedStage);
+            }
         }
 
         public bool IsNotFirstItem
@@ -40,11 +44,23 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref isNotLastItem, value); }
         }
 
-        private bool isPrevStage;
-        public bool IsPrevStage
+        public bool IsExecutedStage
         {
-            get { return isPrevStage; }
-            set { SetProperty(ref isPrevStage, value); }
+            get { return NeedAllMembers ? IsHaveAllDecisions : IsHaveAnyDecisions; }
+        }
+
+        private bool isHaveAllDecisions;
+        public bool IsHaveAllDecisions
+        {
+            get { return isHaveAllDecisions; }
+            set { SetProperty(ref isHaveAllDecisions, value); }
+        }
+
+        private bool isHaveAnyDecisions;
+        public bool IsHaveAnyDecisions
+        {
+            get { return isHaveAnyDecisions; }
+            set { SetProperty(ref isHaveAnyDecisions, value); }
         }
 
         public string StageText
