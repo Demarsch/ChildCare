@@ -206,7 +206,7 @@ namespace CommissionsModule.Services
             {
                 var curUserId = userService.GetCurrentUserId();
                 var originalProtocol = await db.NoTrackingSet<CommissionProtocol>().FirstOrDefaultAsync(x => x.Id == newProtocol.Id);
-                var curCommissionProtocol = (CommissionProtocol)originalProtocol.Clone();
+                var curCommissionProtocol = (originalProtocol != null) ? (CommissionProtocol)originalProtocol.Clone() : null;
                 if (curCommissionProtocol == null)
                 {
                     curCommissionProtocol = new CommissionProtocol
@@ -217,7 +217,7 @@ namespace CommissionsModule.Services
                         IsCompleted = newProtocol.IsCompleted,
                         InUserId = curUserId
                     };
-                    db.Set<CommissionProtocol>().Add(curCommissionProtocol);
+                    //db.Set<CommissionProtocol>().Add(curCommissionProtocol);
                 }
                 curCommissionProtocol.CommissionTypeId = newProtocol.CommissionTypeId;
                 curCommissionProtocol.CommissionQuestionId = newProtocol.CommissionQuestionId;
@@ -269,7 +269,7 @@ namespace CommissionsModule.Services
                     db.Entry(decision).State = EntityState.Modified;
                     //commissionProtocol.CommissionDecisions.Add(decision);
                 }
-                db.Entry(curCommissionProtocol).State = EntityState.Modified;
+                db.Entry(curCommissionProtocol).State = curCommissionProtocol.Id == 0 ? EntityState.Added : EntityState.Modified;
                 await db.SaveChangesAsync(token);
                 if (protocolChangeSubscription != null)
                 {
