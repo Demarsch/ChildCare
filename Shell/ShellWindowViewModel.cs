@@ -146,7 +146,7 @@ namespace Shell
                 {
                     return;
                 }
-                throw new ApplicationException("База данных не существует");
+                 throw new ApplicationException("База данных не существует");
             }
         }
 

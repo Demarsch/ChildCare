@@ -13,9 +13,9 @@
                     <CollectionViewSource.GroupDescriptions>
                         <PropertyGroupDescription PropertyName="CommissionMemberGroupItem" />
                     </CollectionViewSource.GroupDescriptions>
-                    <CollectionViewSource.SortDescriptions>
+                    <!--<CollectionViewSource.SortDescriptions>
                         <scm:SortDescription PropertyName="Stage" Direction="Ascending"/>
-                    </CollectionViewSource.SortDescriptions>
+                    </CollectionViewSource.SortDescriptions>-->
                 </CollectionViewSource>
             </Grid.Resources>
             <Grid x:Name="AvailableMembersContainer">
@@ -45,7 +45,7 @@
                                                                 </Grid.ColumnDefinitions>
                                                                 <StackPanel Orientation="Horizontal" Grid.Column="0">
                                                                     <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Height="20" Width="20" ToolTip="Завершенный этап"
-                                                                           Visibility="{Binding Name.IsPrevStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                                                                           Visibility="{Binding Name.IsExecutedStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
                                                                     <!--<Image Source="pack://application:,,,/Core;Component/Resources/Images/InProgress32x32.png" Height="20" Width="20" ToolTip="Текущий этап"
                                                                            Visibility="{Binding Name.IsCurStage, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>-->
                                                                     <TextBlock FontWeight="Bold" Text="{Binding Name.StageText}"/>

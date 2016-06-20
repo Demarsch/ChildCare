@@ -96,18 +96,6 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private bool isPrevStage;
-        public bool IsPrevStage
-        {
-            get { return isPrevStage; }
-            set
-            {
-                SetProperty(ref isPrevStage, value);
-                if (CommissionMemberGroupItem != null)
-                    CommissionMemberGroupItem.IsPrevStage = isPrevStage;
-            }
-        }
-
         private bool needAllMembers;
         public bool NeedAllMembers
         {
@@ -117,6 +105,30 @@ namespace CommissionsModule.ViewModels
                 SetProperty(ref needAllMembers, value);
                 if (CommissionMemberGroupItem != null)
                     CommissionMemberGroupItem.NeedAllMembers = needAllMembers;
+            }
+        }
+
+        private bool isHaveAllDecisions;
+        public bool IsHaveAllDecisions
+        {
+            get { return isHaveAllDecisions; }
+            set
+            {
+                SetProperty(ref isHaveAllDecisions, value);
+                if (CommissionMemberGroupItem != null)
+                    CommissionMemberGroupItem.IsHaveAllDecisions = isHaveAllDecisions;
+            }
+        }
+
+        private bool isHaveAnyDecisions;
+        public bool IsHaveAnyDecisions
+        {
+            get { return isHaveAnyDecisions; }
+            set
+            {
+                SetProperty(ref isHaveAnyDecisions, value);
+                if (CommissionMemberGroupItem != null)
+                    CommissionMemberGroupItem.IsHaveAnyDecisions = isHaveAnyDecisions;
             }
         }
 
@@ -162,7 +174,12 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref colorType, value); }
         }
 
-        public bool CanDeleteMember { get; private set; }
+        private bool canDeleteMember;
+        public bool CanDeleteMember
+        {
+            get { return canDeleteMember; }
+            private set { SetProperty(ref canDeleteMember, value); }
+        }
 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
@@ -179,6 +196,8 @@ namespace CommissionsModule.ViewModels
             DecisionDate = null;
             Stage = 0;
             NeedAllMembers = false;
+            IsHaveAllDecisions = false;
+            IsHaveAnyDecisions = false;
             MemberName = string.Empty;
             Decision = string.Empty;
             ColorType = emptyDecisionColor;
@@ -195,13 +214,20 @@ namespace CommissionsModule.ViewModels
 
         void CommissionMemberGroupItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "NeedAllMembers")
+            if (e.PropertyName == "NeedAllMembers" && NeedAllMembers != CommissionMemberGroupItem.NeedAllMembers)
+            {
                 NeedAllMembers = CommissionMemberGroupItem.NeedAllMembers;
-            if (e.PropertyName == "Stage")
+                OnPropertyChanged(() => e.PropertyName);
+            }
+            if (e.PropertyName == "Stage" && Stage != CommissionMemberGroupItem.Stage)
+            {
                 Stage = CommissionMemberGroupItem.Stage;
+                OnPropertyChanged(() => e.PropertyName);
+            }
+            //OnPropertyChanged(() => CommissionMemberGroupItem);
         }
 
-        public async Task InitializeNew(int commissionMemberId, int stage, int commissionProtocolId, bool canDeleteMember)
+        public async Task InitializeNew(int commissionMemberId, int stage, int commissionProtocolId)
         {
             EraseProperties();
             var commMemberId = commissionMemberId.ToInt();
@@ -227,11 +253,12 @@ namespace CommissionsModule.ViewModels
                 var commissionDecisionTask = commissionMemberQuery.Select(x => new
                 {
                     MemberName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.ShortName + " - " + x.PersonStaff.Person.ShortName : x.StaffId.HasValue ? x.Staff.ShortName : string.Empty,
-
-                }).FirstOrDefaultAsync(token);
+                })
+                .FirstOrDefaultAsync(token);
+                var commissionProtocolIsCompletedTask = commissionProtocolQuery.Select(x => x.IsCompleted).FirstOrDefaultAsync(token);
                 var commissionProtocolAllMemberTask = commissionProtocolQuery.SelectMany(x => x.CommissionDecisions.Where(y => y.CommissionStage == stage)).Select(x => x.NeedAllMembersInStage).FirstOrDefaultAsync(token);
-                await Task.WhenAll(commissionDecisionTask, commissionProtocolAllMemberTask);
-                CanDeleteMember = true;
+                await Task.WhenAll(commissionDecisionTask, commissionProtocolAllMemberTask, commissionProtocolIsCompletedTask);
+                CanDeleteMember = commissionProtocolIsCompletedTask.Result != true || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision);
                 MemberName = commissionDecisionTask.Result.MemberName;
                 NeedAllMembers = commissionProtocolAllMemberTask.Result;
                 Stage = stage;
@@ -306,6 +333,7 @@ namespace CommissionsModule.ViewModels
                 Decision = commissionDecision.DecisionName;
                 ColorType = commissionDecision.ColorType;
                 Comment = commissionDecision.Comment;
+                this.OnPropertyChanged();
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
