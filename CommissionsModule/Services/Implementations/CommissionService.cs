@@ -206,10 +206,10 @@ namespace CommissionsModule.Services
             {
                 var curUserId = userService.GetCurrentUserId();
                 var originalProtocol = await db.NoTrackingSet<CommissionProtocol>().FirstOrDefaultAsync(x => x.Id == newProtocol.Id);
-                var curCommissionProtocol = (originalProtocol != null) ? (CommissionProtocol)originalProtocol.Clone() : null;
-                if (curCommissionProtocol == null)
+                var oldProtocol = (originalProtocol != null) ? (CommissionProtocol)originalProtocol.Clone() : null;
+                if (originalProtocol == null)
                 {
-                    curCommissionProtocol = new CommissionProtocol
+                    originalProtocol = new CommissionProtocol
                     {
                         PersonId = newProtocol.PersonId,
                         ProtocolNumber = 0,
@@ -219,31 +219,31 @@ namespace CommissionsModule.Services
                     };
                     //db.Set<CommissionProtocol>().Add(curCommissionProtocol);
                 }
-                curCommissionProtocol.CommissionTypeId = newProtocol.CommissionTypeId;
-                curCommissionProtocol.CommissionQuestionId = newProtocol.CommissionQuestionId;
-                curCommissionProtocol.CommissionSourceId = newProtocol.CommissionSourceId;
-                curCommissionProtocol.SentLPUId = newProtocol.SentLPUId;
-                curCommissionProtocol.PersonTalonId = newProtocol.PersonTalonId;
-                curCommissionProtocol.MedicalHelpTypeId = newProtocol.MedicalHelpTypeId;
-                curCommissionProtocol.MKB = newProtocol.MKB;
-                curCommissionProtocol.IncomeDateTime = newProtocol.IncomeDateTime;
-                curCommissionProtocol.PersonAddressId = newProtocol.PersonAddressId;
+                originalProtocol.CommissionTypeId = newProtocol.CommissionTypeId;
+                originalProtocol.CommissionQuestionId = newProtocol.CommissionQuestionId;
+                originalProtocol.CommissionSourceId = newProtocol.CommissionSourceId;
+                originalProtocol.SentLPUId = newProtocol.SentLPUId;
+                originalProtocol.PersonTalonId = newProtocol.PersonTalonId;
+                originalProtocol.MedicalHelpTypeId = newProtocol.MedicalHelpTypeId;
+                originalProtocol.MKB = newProtocol.MKB;
+                originalProtocol.IncomeDateTime = newProtocol.IncomeDateTime;
+                originalProtocol.PersonAddressId = newProtocol.PersonAddressId;
 
-                curCommissionProtocol.ProtocolNumber = newProtocol.ProtocolNumber;
-                curCommissionProtocol.ProtocolDate = newProtocol.ProtocolDate;
-                curCommissionProtocol.WaitingFor = newProtocol.WaitingFor;
-                curCommissionProtocol.Diagnos = newProtocol.Diagnos;
-                curCommissionProtocol.DecisionId = newProtocol.DecisionId;
-                curCommissionProtocol.Comment = newProtocol.Comment;
-                curCommissionProtocol.ToDoDateTime = newProtocol.ToDoDateTime;
+                originalProtocol.ProtocolNumber = newProtocol.ProtocolNumber;
+                originalProtocol.ProtocolDate = newProtocol.ProtocolDate;
+                originalProtocol.WaitingFor = newProtocol.WaitingFor;
+                originalProtocol.Diagnos = newProtocol.Diagnos;
+                originalProtocol.DecisionId = newProtocol.DecisionId;
+                originalProtocol.Comment = newProtocol.Comment;
+                originalProtocol.ToDoDateTime = newProtocol.ToDoDateTime;
 
-                curCommissionProtocol.IsExecuting = newProtocol.IsExecuting;
-                if (curCommissionProtocol.BeginDateTime == null && curCommissionProtocol.IsExecuting)
-                    curCommissionProtocol.BeginDateTime = DateTime.Now;
+                originalProtocol.IsExecuting = newProtocol.IsExecuting;
+                if (originalProtocol.BeginDateTime == null && originalProtocol.IsExecuting)
+                    originalProtocol.BeginDateTime = DateTime.Now;
 
                 var newDecisionIds = newProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
 
-                foreach (var curDecision in curCommissionProtocol.CommissionDecisions.Where(x => x.RemovedByUserId == null))
+                foreach (var curDecision in originalProtocol.CommissionDecisions.Where(x => x.RemovedByUserId == null))
                 {
                     if (!newDecisionIds.Contains(curDecision.Id))
                         curDecision.RemovedByUserId = curUserId;
@@ -254,13 +254,13 @@ namespace CommissionsModule.Services
                         curDecision.NeedAllMembersInStage = changedDecision.NeedAllMembersInStage;
                     }
                 }
-                var existDecisionIds = curCommissionProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
+                var existDecisionIds = originalProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
                 CommissionDecision decision;
                 foreach (var newDecision in newProtocol.CommissionDecisions.Where(x => !existDecisionIds.Contains(x.Id)))
                 {
                     decision = new CommissionDecision()
                     {
-                        CommissionProtocol = curCommissionProtocol,
+                        CommissionProtocol = originalProtocol,
                         CommissionStage = newDecision.CommissionStage,
                         NeedAllMembersInStage = newDecision.NeedAllMembersInStage,
                         CommissionMemberId = newDecision.CommissionMemberId,
@@ -269,11 +269,11 @@ namespace CommissionsModule.Services
                     db.Entry(decision).State = EntityState.Modified;
                     //commissionProtocol.CommissionDecisions.Add(decision);
                 }
-                db.Entry(curCommissionProtocol).State = curCommissionProtocol.Id == 0 ? EntityState.Added : EntityState.Modified;
+                db.Entry(originalProtocol).State = originalProtocol.Id == 0 ? EntityState.Added : EntityState.Modified;
                 await db.SaveChangesAsync(token);
                 if (protocolChangeSubscription != null)
                 {
-                    protocolChangeSubscription.Notify(originalProtocol, curCommissionProtocol);
+                    protocolChangeSubscription.Notify(oldProtocol, originalProtocol);
                 }
             }
         }

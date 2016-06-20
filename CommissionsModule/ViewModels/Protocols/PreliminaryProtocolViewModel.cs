@@ -145,7 +145,7 @@ namespace CommissionsModule.ViewModels
             get { return selectedSentLPUId; }
             set
             {
-                selectedSentLPUId = 0;
+                selectedSentLPUId = -2;
                 if (value < 0)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedSentLPUId, value);
@@ -489,7 +489,7 @@ namespace CommissionsModule.ViewModels
 
             private void ValidateSentLPU()
             {
-                SetError(x => x.SelectedSentLPUId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedSentLPUId) ? "Укажите направившее ЛПУ" : string.Empty);
+                SetError(x => x.SelectedSentLPUId,AssociatedItem.SelectedSentLPUId == SpecialValues.NonExistingId ? "Укажите направившее ЛПУ" : string.Empty);
             }
 
             private void ValidateCommissionSource()
