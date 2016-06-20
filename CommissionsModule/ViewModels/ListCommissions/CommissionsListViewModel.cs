@@ -270,22 +270,22 @@ namespace CommissionsModule.ViewModels
             var filter = commissionService.GetCommissionFilterById(SelectedFilter);
 
             if (filter.Options.Contains(OptionValues.ProtocolsInProcess))
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false);
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsPreliminary))
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == null);
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == null && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsOnCommission))
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false && x.IsExecuting == true);
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false && x.IsExecuting == true && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsOnDate) && FilterDate.HasValue)
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.ProtocolDate) == DbFunctions.TruncateTime(FilterDate.Value));
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.ProtocolDate) == DbFunctions.TruncateTime(FilterDate.Value) && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsAdded) && FilterDate.HasValue)
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.IncomeDateTime) == DbFunctions.TruncateTime(FilterDate.Value));
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.IncomeDateTime) == DbFunctions.TruncateTime(FilterDate.Value) && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsAwaiting))
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == true && DbFunctions.TruncateTime(x.ToDoDateTime) > DbFunctions.TruncateTime(DateTime.Now));
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == true && DbFunctions.TruncateTime(x.ToDoDateTime) > DbFunctions.TruncateTime(DateTime.Now) && !x.RemovedByUserId.HasValue);
 
             if (OnlyMyCommissions)
             {
                 int currentPersonId = userService.GetCurrentUser().PersonId;
-                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.CommissionDecisions.Any(a => a.CommissionMember.PersonStaff.PersonId == currentPersonId));
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.CommissionDecisions.Any(a => a.CommissionMember.PersonStaff.PersonId == currentPersonId) && !x.RemovedByUserId.HasValue);
             }
             
             if (comissionsProtocolsChangeSubscription != null)
