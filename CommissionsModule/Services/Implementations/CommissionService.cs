@@ -65,7 +65,7 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             var option = context.Set<CommissionFilter>().First(x => x.Id == filterId).Options;
 
-            IQueryable<CommissionProtocol> query = context.Set<CommissionProtocol>();
+            IQueryable<CommissionProtocol> query = context.Set<CommissionProtocol>().Where(x => !x.RemovedByUserId.HasValue);
             if (option.Contains(OptionValues.ProtocolsInProcess))
                 query = query.Where(x => x.IsCompleted == false);
             if (option.Contains(OptionValues.ProtocolsPreliminary))
