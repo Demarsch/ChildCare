@@ -10,12 +10,12 @@
                       d:DesignWidth="300"
                       d:DataContext="{d:DesignInstance viewModels:CommissionDecisionHeaderViewModel}" 
                       Header="Решения">
-    <fluent:RibbonGroupBox>
+    <!--<fluent:RibbonGroupBox>
         <fluent:Button Header="Запрос участника"
                        SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RelativesSearch48x48.png"
                        Command="{Binding CommissionDecisionsViewModel.AddNewMemberCommand}" />
-    </fluent:RibbonGroupBox>
+    </fluent:RibbonGroupBox>-->
     <fluent:RibbonGroupBox>
         <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
