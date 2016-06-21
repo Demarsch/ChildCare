@@ -200,7 +200,7 @@ namespace CommissionsModule.Services
             }
         }
 
-        public async Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
+        public async Task<int> SaveCommissionProtocolAsync(CommissionProtocol newProtocol, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription)
         {
             using (var db = contextProvider.CreateNewContext())
             {
@@ -214,11 +214,12 @@ namespace CommissionsModule.Services
                         PersonId = newProtocol.PersonId,
                         ProtocolNumber = 0,
                         ProtocolDate = DateTime.Now,
-                        IsCompleted = newProtocol.IsCompleted,
                         InUserId = curUserId
                     };
                     //db.Set<CommissionProtocol>().Add(curCommissionProtocol);
                 }
+                originalProtocol.IsCompleted = newProtocol.IsCompleted;
+
                 originalProtocol.CommissionTypeId = newProtocol.CommissionTypeId;
                 originalProtocol.CommissionQuestionId = newProtocol.CommissionQuestionId;
                 originalProtocol.CommissionSourceId = newProtocol.CommissionSourceId;
@@ -253,6 +254,7 @@ namespace CommissionsModule.Services
                         curDecision.CommissionStage = changedDecision.CommissionStage;
                         curDecision.NeedAllMembersInStage = changedDecision.NeedAllMembersInStage;
                     }
+                    db.Entry(curDecision).State = EntityState.Modified;
                 }
                 var existDecisionIds = originalProtocol.CommissionDecisions.Select(x => x.Id).ToArray();
                 CommissionDecision decision;
@@ -260,21 +262,25 @@ namespace CommissionsModule.Services
                 {
                     decision = new CommissionDecision()
                     {
+                        Id = newDecision.Id,
                         CommissionProtocol = originalProtocol,
                         CommissionStage = newDecision.CommissionStage,
                         NeedAllMembersInStage = newDecision.NeedAllMembersInStage,
                         CommissionMemberId = newDecision.CommissionMemberId,
                         InitiatorUserId = curUserId,
+                        Comment = string.Empty,
+                        IsOfficial = false
                     };
-                    db.Entry(decision).State = EntityState.Modified;
+                    db.Entry(decision).State = decision.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                     //commissionProtocol.CommissionDecisions.Add(decision);
                 }
-                db.Entry(originalProtocol).State = originalProtocol.Id == 0 ? EntityState.Added : EntityState.Modified;
+                db.Entry(originalProtocol).State = originalProtocol.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                 await db.SaveChangesAsync(token);
                 if (protocolChangeSubscription != null)
                 {
                     protocolChangeSubscription.Notify(oldProtocol, originalProtocol);
                 }
+                return originalProtocol.Id;
             }
         }
 
@@ -507,10 +513,9 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.Id == commissionMemberId), context);
         }
 
-        public IDisposableQueryable<CommissionMemberType> GetCommissionMemberTypes()
+        public IEnumerable<CommissionMemberType> GetCommissionMemberTypes()
         {
-            var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<CommissionMemberType>(context.Set<CommissionMemberType>(), context);
+            return cacheService.GetItems<CommissionMemberType>();
         }
 
         public IDisposableQueryable<PersonStaff> GetPersonStaffs(object onDate)
@@ -521,10 +526,9 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<PersonStaff>(context.Set<PersonStaff>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime), context);
         }
 
-        public IDisposableQueryable<Staff> GetStaffs()
+        public IEnumerable<Staff> GetStaffs()
         {
-            var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<Staff>(context.Set<Staff>(), context);
+            return cacheService.GetItems<Staff>();
         }
 
 

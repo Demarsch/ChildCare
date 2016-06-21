@@ -154,7 +154,7 @@ namespace Shared.PatientRecords.ViewModels
                 {
                     PersonRecordEditorViewModel = childItemViewModelRepository.GetEditor(this.Item);
                     eventAggregator.GetEvent<PubSubEvent<IPersonRecordEditor>>().Publish(PersonRecordEditorViewModel);
-                }
+                }   
                 //    eventAggregator.GetEvent<SelectionChangedEvent<Record>>().Publish(this.Id);
             }
         }

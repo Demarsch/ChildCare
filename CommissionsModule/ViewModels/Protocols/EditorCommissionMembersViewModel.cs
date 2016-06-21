@@ -150,7 +150,7 @@ namespace CommissionsModule.ViewModels
         private async void AddMember()
         {
             var memberViewModel = commissionMemberViewModelFactory();
-            await memberViewModel.Initialize();
+            await memberViewModel.Initialize(DateTime.Now);
             Members.Add(memberViewModel);
         } 
     
@@ -334,7 +334,7 @@ namespace CommissionsModule.ViewModels
                 foreach (var member in commissionMembersSelectedQuery.OrderByDescending(x => x.IsChief).ThenByDescending(x => x.IsSecretary).ThenByDescending(x => x.IsMember))
                 {
                     var memberViewModel = new CommissionMemberViewModel(commissionService, logService);
-                    await memberViewModel.Initialize();
+                    await memberViewModel.Initialize(OnDate);
                     memberViewModel.Id = member.Id;
                     memberViewModel.SelectedMemberTypeId = member.MemberTypeId;
                     memberViewModel.BeginDateTime = member.BeginDateTime.Date;

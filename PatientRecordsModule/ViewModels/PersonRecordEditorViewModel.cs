@@ -211,6 +211,7 @@ namespace Shared.PatientRecords.ViewModels
                     LoadProtocolCommonData(VisitId, AssignmentId, RecordId);
                 }
                 OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
+                //IsViewModeInCurrentProtocolEditor = (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View) && !IsVisit;
                 OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
                 OnPropertyChanged(() => ShowProtocol);
             }
@@ -220,6 +221,13 @@ namespace Shared.PatientRecords.ViewModels
         {
             get { return (ProtocolEditor != null && ProtocolEditor.CurrentMode == ProtocolMode.View) && !IsVisit; }
         }
+
+        //private bool isViewModeInCurrentProtocolEditor;
+        //public bool IsViewModeInCurrentProtocolEditor
+        //{
+        //    get { return isViewModeInCurrentProtocolEditor; }
+        //    set { SetProperty(ref isViewModeInCurrentProtocolEditor, value); }
+        //}
 
         public bool IsEditModeInCurrentProtocolEditor
         {

@@ -598,7 +598,7 @@ namespace CommissionsModule.ViewModels
                 }
                 else
                 {
-                    await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
+                    SelectedCommissionProtocolId = await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
                     CompositeChangeTracker.AcceptChanges();
                     saveSuccessfull = true;
                 }
