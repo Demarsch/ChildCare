@@ -29,20 +29,20 @@ namespace Core.Data
      		set { document = value; }
     	}
         [NonSerialized]
-    	protected Assignment assignment;
-    
-    	public virtual Assignment Assignment
-    	{
-     		get { return assignment; }
-     		set { assignment = value; }
-    	}
-        [NonSerialized]
     	protected Record record;
     
     	public virtual Record Record
     	{
      		get { return record; }
      		set { record = value; }
+    	}
+        [NonSerialized]
+    	protected Assignment assignment;
+    
+    	public virtual Assignment Assignment
+    	{
+     		get { return assignment; }
+     		set { assignment = value; }
     	}
     
     	public object Clone()

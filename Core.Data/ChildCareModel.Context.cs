@@ -89,7 +89,6 @@ namespace Core.Data
         public virtual DbSet<Org> Orgs { get; set; }
         public virtual DbSet<Urgently> Urgentlies { get; set; }
         public virtual DbSet<DBSetting> DBSettings { get; set; }
-        public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<PermissionGroupMembership> PermissionGroupMemberships { get; set; }
         public virtual DbSet<PermissionGroup> PermissionGroups { get; set; }
         public virtual DbSet<Permission> Permissions { get; set; }
@@ -118,5 +117,6 @@ namespace Core.Data
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<StaffCategory> StaffCategories { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
+        public virtual DbSet<Assignment> Assignments { get; set; }
     }
 }

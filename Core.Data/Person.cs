@@ -36,11 +36,11 @@ namespace Core.Data
             this.Visits = new HashSet<Visit>();
             this.Diagnoses = new HashSet<Diagnosis>();
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
-            this.Assignments = new HashSet<Assignment>();
             this.Users = new HashSet<User>();
             this.PersonTalons = new HashSet<PersonTalon>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.Records = new HashSet<Record>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -223,14 +223,6 @@ namespace Core.Data
      		set { personDiagnoses = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<User> users;
     
     	public virtual ICollection<User> Users
@@ -261,6 +253,14 @@ namespace Core.Data
     	{
      		get { return records; }
      		set { records = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
     	}
     
     	public object Clone()

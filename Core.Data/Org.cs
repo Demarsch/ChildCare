@@ -20,8 +20,8 @@ namespace Core.Data
             this.PersonSocialStatuses = new HashSet<PersonSocialStatus>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.Visits = new HashSet<Visit>();
-            this.Assignments = new HashSet<Assignment>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -57,20 +57,20 @@ namespace Core.Data
      		set { visits = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
     	}
     
     	public object Clone()

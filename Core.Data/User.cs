@@ -17,9 +17,6 @@ namespace Core.Data
     {
         public User()
         {
-            this.Assignments = new HashSet<Assignment>();
-            this.Assignments1 = new HashSet<Assignment>();
-            this.Assignments2 = new HashSet<Assignment>();
             this.UserMessages = new HashSet<UserMessage>();
             this.UserMessages1 = new HashSet<UserMessage>();
             this.UserPermissionGroups = new HashSet<UserPermissionGroup>();
@@ -31,6 +28,9 @@ namespace Core.Data
             this.Records = new HashSet<Record>();
             this.CommissionDecisions = new HashSet<CommissionDecision>();
             this.CommissionDecisions1 = new HashSet<CommissionDecision>();
+            this.Assignments = new HashSet<Assignment>();
+            this.Assignments1 = new HashSet<Assignment>();
+            this.Assignments2 = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -41,30 +41,6 @@ namespace Core.Data
         public string Login { get; set; }
         public string SystemName { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments1;
-    
-    	public virtual ICollection<Assignment> Assignments1
-    	{
-     		get { return assignments1; }
-     		set { assignments1 = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments2;
-    
-    	public virtual ICollection<Assignment> Assignments2
-    	{
-     		get { return assignments2; }
-     		set { assignments2 = value; }
-    	}
         [NonSerialized]
     	protected Person person;
     
@@ -160,6 +136,30 @@ namespace Core.Data
     	{
      		get { return commissionDecisions1; }
      		set { commissionDecisions1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments1;
+    
+    	public virtual ICollection<Assignment> Assignments1
+    	{
+     		get { return assignments1; }
+     		set { assignments1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments2;
+    
+    	public virtual ICollection<Assignment> Assignments2
+    	{
+     		get { return assignments2; }
+     		set { assignments2 = value; }
     	}
     
     	public object Clone()

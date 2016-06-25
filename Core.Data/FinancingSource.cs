@@ -17,11 +17,11 @@ namespace Core.Data
     {
         public FinancingSource()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.RecordContracts = new HashSet<RecordContract>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
             this.RecordTypeCosts = new HashSet<RecordTypeCost>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -31,14 +31,6 @@ namespace Core.Data
         public bool IsActive { get; set; }
         public string Options { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
         [NonSerialized]
     	protected ICollection<RecordContract> recordContracts;
     
@@ -70,6 +62,14 @@ namespace Core.Data
     	{
      		get { return recordTypeCosts; }
      		set { recordTypeCosts = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
     	}
     
     	public object Clone()

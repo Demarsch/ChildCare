@@ -801,7 +801,7 @@ namespace ScheduleModule.ViewModels
             try
             {
                 log.InfoFormat("Trying to mark assignment (Id = {0}) as completed", assignment.Id);
-                await scheduleService.MarkAssignmentCompletedAsync(assignment.Id, dialogViewModel.SelectedDateTime);
+                await scheduleService.MarkAssignmentCompletedAsync(assignment.Id, dialogViewModel.SelectedDateTime, assignmentChangeSubscription);
                 assignment.IsCompleted = true;
                 log.Info("Successfully completed assignment");
             }

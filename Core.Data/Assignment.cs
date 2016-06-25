@@ -47,6 +47,7 @@ namespace Core.Data
         public Nullable<System.DateTime> BillingDateTime { get; set; }
         public double Cost { get; set; }
         public Nullable<int> RemovedByUserId { get; set; }
+        public bool IsCompleted { get; set; }
     
         [NonSerialized]
     	protected ICollection<Assignment> assignments1;
@@ -65,6 +66,22 @@ namespace Core.Data
      		set { assignment1 = value; }
     	}
         [NonSerialized]
+    	protected ExecutionPlace executionPlace;
+    
+    	public virtual ExecutionPlace ExecutionPlace
+    	{
+     		get { return executionPlace; }
+     		set { executionPlace = value; }
+    	}
+        [NonSerialized]
+    	protected FinancingSource financingSource;
+    
+    	public virtual FinancingSource FinancingSource
+    	{
+     		get { return financingSource; }
+     		set { financingSource = value; }
+    	}
+        [NonSerialized]
     	protected Org org;
     
     	public virtual Org Org
@@ -81,6 +98,30 @@ namespace Core.Data
      		set { person = value; }
     	}
         [NonSerialized]
+    	protected Record record;
+    
+    	public virtual Record Record
+    	{
+     		get { return record; }
+     		set { record = value; }
+    	}
+        [NonSerialized]
+    	protected Record record1;
+    
+    	public virtual Record Record1
+    	{
+     		get { return record1; }
+     		set { record1 = value; }
+    	}
+        [NonSerialized]
+    	protected RecordType recordType;
+    
+    	public virtual RecordType RecordType
+    	{
+     		get { return recordType; }
+     		set { recordType = value; }
+    	}
+        [NonSerialized]
     	protected Room room;
     
     	public virtual Room Room
@@ -95,30 +136,6 @@ namespace Core.Data
     	{
      		get { return urgently; }
      		set { urgently = value; }
-    	}
-        [NonSerialized]
-    	protected Visit visit;
-    
-    	public virtual Visit Visit
-    	{
-     		get { return visit; }
-     		set { visit = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<RecordContractItem> recordContractItems;
-    
-    	public virtual ICollection<RecordContractItem> RecordContractItems
-    	{
-     		get { return recordContractItems; }
-     		set { recordContractItems = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<RecordDocument> recordDocuments;
-    
-    	public virtual ICollection<RecordDocument> RecordDocuments
-    	{
-     		get { return recordDocuments; }
-     		set { recordDocuments = value; }
     	}
         [NonSerialized]
     	protected User user;
@@ -145,36 +162,28 @@ namespace Core.Data
      		set { user2 = value; }
     	}
         [NonSerialized]
-    	protected FinancingSource financingSource;
+    	protected Visit visit;
     
-    	public virtual FinancingSource FinancingSource
+    	public virtual Visit Visit
     	{
-     		get { return financingSource; }
-     		set { financingSource = value; }
+     		get { return visit; }
+     		set { visit = value; }
     	}
         [NonSerialized]
-    	protected ExecutionPlace executionPlace;
+    	protected ICollection<RecordContractItem> recordContractItems;
     
-    	public virtual ExecutionPlace ExecutionPlace
+    	public virtual ICollection<RecordContractItem> RecordContractItems
     	{
-     		get { return executionPlace; }
-     		set { executionPlace = value; }
+     		get { return recordContractItems; }
+     		set { recordContractItems = value; }
     	}
         [NonSerialized]
-    	protected Record record;
+    	protected ICollection<RecordDocument> recordDocuments;
     
-    	public virtual Record Record
+    	public virtual ICollection<RecordDocument> RecordDocuments
     	{
-     		get { return record; }
-     		set { record = value; }
-    	}
-        [NonSerialized]
-    	protected Record record1;
-    
-    	public virtual Record Record1
-    	{
-     		get { return record1; }
-     		set { record1 = value; }
+     		get { return recordDocuments; }
+     		set { recordDocuments = value; }
     	}
         [NonSerialized]
     	protected ICollection<Record> records;
@@ -183,14 +192,6 @@ namespace Core.Data
     	{
      		get { return records; }
      		set { records = value; }
-    	}
-        [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
     	}
     
     	public object Clone()

@@ -17,13 +17,13 @@ namespace Core.Data
     {
         public ExecutionPlace()
         {
-            this.Assignments = new HashSet<Assignment>();
             this.RecordPeriods = new HashSet<RecordPeriod>();
             this.Records = new HashSet<Record>();
             this.VisitOutcomes = new HashSet<VisitOutcome>();
             this.VisitResults = new HashSet<VisitResult>();
             this.Visits = new HashSet<Visit>();
             this.VisitTemplates = new HashSet<VisitTemplate>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -33,14 +33,6 @@ namespace Core.Data
         public bool IsActive { get; set; }
         public string Options { get; set; }
     
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
         [NonSerialized]
     	protected ICollection<RecordPeriod> recordPeriods;
     
@@ -88,6 +80,14 @@ namespace Core.Data
     	{
      		get { return visitTemplates; }
      		set { visitTemplates = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
     	}
     
     	public object Clone()

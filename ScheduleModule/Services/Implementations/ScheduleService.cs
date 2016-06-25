@@ -52,7 +52,7 @@ namespace ScheduleModule.Services
                                                    Id = x.Id,
                                                    StartTime = x.AssignDateTime,
                                                    Duration = x.Duration,
-                                                   IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
+                                                   IsCompleted = x.IsCompleted || (x.RecordId.HasValue && x.Record.IsCompleted),
                                                    RecordTypeId = x.RecordTypeId,
                                                    RoomId = x.RoomId,
                                                    PersonShortName = x.Person.ShortName,
@@ -293,28 +293,19 @@ namespace ScheduleModule.Services
             }
         }
 
-        public async Task MarkAssignmentCompletedAsync(int assignmentId, DateTime completeDataTime)
+        public async Task MarkAssignmentCompletedAsync(int assignmentId, DateTime completeDataTime, INotificationServiceSubscription<Assignment> assignmentChangeSubscription)
         {
-            using (var dataContext = contextProvider.CreateNewContext())
+            using (var dataContext = contextProvider.CreateLightweightContext())
             {
-                var assignment = await dataContext.Set<Assignment>().FirstAsync(x => x.Id == assignmentId);
-                if (assignment.Record == null)
-                {
-                    assignment.Record = new Record
-                    {
-                        ActualDateTime = completeDataTime,
-                        BeginDateTime = assignment.AssignDateTime,
-                    };
-                }
-                assignment.Record.BillingDateTime = assignment.BillingDateTime;
-                assignment.Record.EndDateTime = completeDataTime;
-                assignment.Record.ExecutionPlaceId = assignment.ExecutionPlaceId;
-                assignment.Record.IsCompleted = true;
-                assignment.Record.RecordTypeId = assignment.RecordTypeId;
-                assignment.Record.RoomId = assignment.RoomId;
-                assignment.Record.UrgentlyId = assignment.UrgentlyId;
-                assignment.Record.PersonId = assignment.PersonId;
+                var originalAssignment = await dataContext.NoTrackingSet<Assignment>().FirstAsync(x => x.Id == assignmentId);
+                var newAssignment = (Assignment)originalAssignment.Clone();
+                newAssignment.IsCompleted = true;
+                dataContext.Entry(newAssignment).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync();
+                if (assignmentChangeSubscription != null)
+                {
+                    assignmentChangeSubscription.Notify(originalAssignment, newAssignment);
+                }
             }
         }
 
@@ -346,7 +337,7 @@ namespace ScheduleModule.Services
                                                {
                                                    Id = x.Id,
                                                    StartTime = x.AssignDateTime,
-                                                   IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
+                                                   IsCompleted = x.IsCompleted || (x.RecordId.HasValue && x.Record.IsCompleted),
                                                    IsTemporary = x.IsTemporary,
                                                    RecordTypeId = x.RecordTypeId,
                                                    RoomId = x.RoomId,
@@ -372,7 +363,7 @@ namespace ScheduleModule.Services
                                                {
                                                    Id = x.Id,
                                                    StartTime = x.AssignDateTime,
-                                                   IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
+                                                   IsCompleted = x.IsCompleted || (x.RecordId.HasValue && x.Record.IsCompleted),
                                                    IsTemporary = x.IsTemporary,
                                                    RecordTypeId = x.RecordTypeId,
                                                    RoomId = x.RoomId,
@@ -399,7 +390,7 @@ namespace ScheduleModule.Services
                                                {
                                                    Id = x.Id,
                                                    StartTime = x.AssignDateTime,
-                                                   IsCompleted = x.RecordId.HasValue && x.Record.IsCompleted,
+                                                   IsCompleted = x.IsCompleted || (x.RecordId.HasValue && x.Record.IsCompleted),
                                                    IsTemporary = x.IsTemporary,
                                                    RecordTypeId = x.RecordTypeId,
                                                    RoomId = x.RoomId,

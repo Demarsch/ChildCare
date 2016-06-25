@@ -18,14 +18,14 @@ namespace Core.Data
         public Record()
         {
             this.AnalyseResults = new HashSet<AnalyseResult>();
-            this.Assignments = new HashSet<Assignment>();
-            this.Assignments1 = new HashSet<Assignment>();
             this.DefaultProtocols = new HashSet<DefaultProtocol>();
             this.PersonDiagnoses = new HashSet<PersonDiagnos>();
             this.RecordDocuments = new HashSet<RecordDocument>();
             this.RecordEquipments = new HashSet<RecordEquipment>();
             this.RecordMembers = new HashSet<RecordMember>();
             this.Records1 = new HashSet<Record>();
+            this.Assignments = new HashSet<Assignment>();
+            this.Assignments1 = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -59,30 +59,6 @@ namespace Core.Data
     	{
      		get { return analyseResults; }
      		set { analyseResults = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<Assignment> assignments1;
-    
-    	public virtual ICollection<Assignment> Assignments1
-    	{
-     		get { return assignments1; }
-     		set { assignments1 = value; }
-    	}
-        [NonSerialized]
-    	protected Assignment assignment;
-    
-    	public virtual Assignment Assignment
-    	{
-     		get { return assignment; }
-     		set { assignment = value; }
     	}
         [NonSerialized]
     	protected ICollection<DefaultProtocol> defaultProtocols;
@@ -219,6 +195,30 @@ namespace Core.Data
     	{
      		get { return recordType; }
      		set { recordType = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments1;
+    
+    	public virtual ICollection<Assignment> Assignments1
+    	{
+     		get { return assignments1; }
+     		set { assignments1 = value; }
+    	}
+        [NonSerialized]
+    	protected Assignment assignment;
+    
+    	public virtual Assignment Assignment
+    	{
+     		get { return assignment; }
+     		set { assignment = value; }
     	}
     
     	public object Clone()

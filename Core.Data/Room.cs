@@ -19,8 +19,8 @@ namespace Core.Data
         {
             this.ScheduleItems = new HashSet<ScheduleItem>();
             this.Eqiupments = new HashSet<Eqiupment>();
-            this.Assignments = new HashSet<Assignment>();
             this.Records = new HashSet<Record>();
+            this.Assignments = new HashSet<Assignment>();
         }
     
         public int Id { get; set; }
@@ -47,20 +47,20 @@ namespace Core.Data
      		set { eqiupments = value; }
     	}
         [NonSerialized]
-    	protected ICollection<Assignment> assignments;
-    
-    	public virtual ICollection<Assignment> Assignments
-    	{
-     		get { return assignments; }
-     		set { assignments = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<Record> records;
     
     	public virtual ICollection<Record> Records
     	{
      		get { return records; }
      		set { records = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<Assignment> assignments;
+    
+    	public virtual ICollection<Assignment> Assignments
+    	{
+     		get { return assignments; }
+     		set { assignments = value; }
     	}
     
     	public object Clone()
