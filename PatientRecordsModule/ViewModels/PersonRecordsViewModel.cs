@@ -215,6 +215,8 @@ namespace Shared.PatientRecords.ViewModels
             UnsubscriveFromEvents();
             completeVisitCommandWrapper.Dispose();
             deleteVisitCommandWrapper.Dispose();
+            if (personRecordEditorViewModel != null)
+                personRecordEditorViewModel.PropertyChanged -= personRecordEditorViewModel_PropertyChanged;
         }
 
         private void SubscribeToEvents()

@@ -141,6 +141,11 @@ namespace ScheduleModule.ViewModels
                 {
                     assignment.IsCompleted = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(() => State);
+                    CancelOrDeleteCommand.RaiseCanExecuteChanged();
+                    MarkAsCompletedCommand.RaiseCanExecuteChanged();
+                    UpdateCommand.RaiseCanExecuteChanged();
+                    MoveCommand.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -171,6 +176,7 @@ namespace ScheduleModule.ViewModels
             this.assignment = assignment;
             OnPropertyChanged(string.Empty);
             CancelOrDeleteCommand.RaiseCanExecuteChanged();
+            MarkAsCompletedCommand.RaiseCanExecuteChanged();
             UpdateCommand.RaiseCanExecuteChanged();
             MoveCommand.RaiseCanExecuteChanged();
             return true;
@@ -280,6 +286,7 @@ namespace ScheduleModule.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(() => State);
                     CancelOrDeleteCommand.RaiseCanExecuteChanged();
+                    MarkAsCompletedCommand.RaiseCanExecuteChanged();
                     UpdateCommand.RaiseCanExecuteChanged();
                     MoveCommand.RaiseCanExecuteChanged();
                 }

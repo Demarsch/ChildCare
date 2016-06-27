@@ -30,6 +30,8 @@ namespace CommissionsModule.ViewModels
         private readonly ICommissionService commissionService;
         private readonly ILog logService;
 
+        private CancellationTokenSource cancellationToken;
+
         public CommissionMemberViewModel(ICommissionService commissionService, ILog logService)
         {
             if (logService == null)
@@ -245,7 +247,7 @@ namespace CommissionsModule.ViewModels
 
         #endregion
 
-        internal async Task Initialize()
+        internal async Task Initialize(DateTime onDate)
         {
             MemberTypes.Clear();
             PersonStaffs.Clear();
@@ -253,29 +255,36 @@ namespace CommissionsModule.ViewModels
             CanSelectPersonStaff = true;
             CanSelectStaff = true;
             saveWasRequested = false;
+
+            if (cancellationToken != null)
+            {
+                cancellationToken.Cancel();
+                cancellationToken.Dispose();
+            }
+
+            cancellationToken = new CancellationTokenSource();
+            var token = cancellationToken.Token;
+
             BusyMediator.Activate("Загрузка данных...");
             logService.Info("Loading data sources for members...");
             try
             {
-                var memberTypesTask = Task.Factory.StartNew((Func<IDisposableQueryable<CommissionMemberType>>)commissionService.GetCommissionMemberTypes);
-                var personStaffsTask = Task.Factory.StartNew((Func<object, IDisposableQueryable<PersonStaff>>)commissionService.GetPersonStaffs, DateTime.Now);
-                var staffsTask = Task.Factory.StartNew((Func<IDisposableQueryable<Staff>>)commissionService.GetStaffs);
-
-                await Task.WhenAll(memberTypesTask, personStaffsTask, staffsTask);
-
-                var memberTypesQuery = memberTypesTask.Result.Select(x => new { x.Id, x.Name }).ToArray();
+                var memberTypesList = await Task.Factory.StartNew((Func<IEnumerable<CommissionMemberType>>)commissionService.GetCommissionMemberTypes);
                 MemberTypes.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите тип участника -" });
-                MemberTypes.AddRange(memberTypesQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
+                if (!token.IsCancellationRequested)
+                    MemberTypes.AddRange(memberTypesList.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
                 SelectedMemberTypeId = SpecialValues.NonExistingId;
 
-                var personStaffsQuery = personStaffsTask.Result.Select(x => new { Id = x.Id, StaffName = x.Staff.Name, PersonName = x.Person.ShortName }).ToArray();
+
+                var personStaffsQuery = await commissionService.GetPersonStaffs(onDate).Select(x => new { Id = x.Id, StaffName = x.Staff.Name, PersonName = x.Person.ShortName }).ToArrayAsync(token);
                 PersonStaffs.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите участника-" });
                 PersonStaffs.AddRange(personStaffsQuery.Select(x => new FieldValue { Value = x.Id, Field = x.StaffName + ": " + x.PersonName }));
                 SelectedPersonStaffId = SpecialValues.NonExistingId;
 
-                var staffsQuery = staffsTask.Result.Select(x => new { x.Id, x.Name }).ToArray();
+                var staffsList = await Task.Factory.StartNew((Func<IEnumerable<Staff>>)commissionService.GetStaffs);
                 Staffs.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- укажите должность участника -" });
-                Staffs.AddRange(staffsQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
+                if (!token.IsCancellationRequested)
+                    Staffs.AddRange(staffsList.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
                 SelectedStaffId = SpecialValues.NonExistingId;
 
                 BeginDateTime = DateTime.Now.Date;
@@ -295,11 +304,6 @@ namespace CommissionsModule.ViewModels
         {
             ContextMenuItems.Clear();
             ContextMenuItems.AddRange(stages.Select(x => new CommissionMemberStageViewModel { Stage = x, CommissionMemberId = Id }));
-            var maxStage = 0;
-            if (ContextMenuItems.Any())
-                maxStage = ContextMenuItems.Max(x => x.Stage);
-            var nextStage = ++maxStage;
-            ContextMenuItems.Add(new CommissionMemberStageViewModel { Stage = nextStage, CommissionMemberId = Id });
         }
     }
 }

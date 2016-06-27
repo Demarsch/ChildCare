@@ -154,9 +154,10 @@ namespace CommissionsModule.ViewModels
                 {
                     PersonId = commissionProtocolData.PersonId;
                     curDate = commissionProtocolData.IncomeDateTime;
+                    LoadAvailableMembers(commissionProtocolData.CommissionTypeId, curDate);
                 }
                 LoadCurrentMembers(commissionProtocolId, token);
-                LoadAvailableMembers(commissionProtocolData.CommissionTypeId, curDate);
+
             }
             catch (OperationCanceledException)
             {
@@ -183,7 +184,7 @@ namespace CommissionsModule.ViewModels
             try
             {
                 DateTime maxDate = SpecialValues.MaxDate;
-                var commissionDecisionIds = await commissionDecisionsQuery.OrderBy(x => x.CommissionStage).ThenBy(x => x.DecisionDateTime == null ? maxDate : x.DecisionDateTime).Select(x => x.Id).ToArrayAsync(token);
+                var commissionDecisionIds = await commissionDecisionsQuery.Where(x => x.RemovedByUserId == null).OrderBy(x => x.CommissionStage).ThenBy(x => x.DecisionDateTime == null ? maxDate : x.DecisionDateTime).Select(x => x.Id).ToArrayAsync(token);
                 List<Task> decisionsTask = new List<Task>();
                 List<CommissionDecisionViewModel> list = new List<CommissionDecisionViewModel>();
                 foreach (var commissionDecisionId in commissionDecisionIds)
@@ -323,9 +324,15 @@ namespace CommissionsModule.ViewModels
         private void SetStagesMenuItems()
         {
             var stages = CurrentMembers.Select(x => x.Stage).Distinct().OrderBy(x => x).ToArray();
+            int[] existedInStages;
             foreach (var availableMember in AvailableMembers)
             {
-                availableMember.CommissionStagesChanged(stages);
+                existedInStages = CurrentMembers.Where(x => x.CommissionMemberId == availableMember.Id).Select(x => x.Stage).ToArray();
+                int maxStage = 0;
+                if (stages.Any())
+                    maxStage = stages.Max();
+                var nextStage = ++maxStage;
+                availableMember.CommissionStagesChanged(stages.Except<int>(existedInStages).Union(new int[] { nextStage }).ToArray());
             }
         }
 
@@ -355,9 +362,13 @@ namespace CommissionsModule.ViewModels
 
         private async void AddSelectedAvailableMember(CommissionMemberStageViewModel selectedCommissionMemberStageViewModel)
         {
-            var commissionDecisionViewModel = commissionDecisionViewModelFactory();
-            await commissionDecisionViewModel.InitializeNew(selectedCommissionMemberStageViewModel.CommissionMemberId, selectedCommissionMemberStageViewModel.Stage, CommissionProtocolId);
-            CurrentMembers.Add(commissionDecisionViewModel);
+            if (!CurrentMembers.Any(x => x.CommissionMemberId == selectedCommissionMemberStageViewModel.CommissionMemberId && x.Stage == selectedCommissionMemberStageViewModel.Stage))
+            {
+                var commissionDecisionViewModel = commissionDecisionViewModelFactory();
+                await commissionDecisionViewModel.InitializeNew(selectedCommissionMemberStageViewModel.CommissionMemberId, selectedCommissionMemberStageViewModel.Stage, CommissionProtocolId);
+                CurrentMembers.Add(commissionDecisionViewModel);
+                SetStagesMenuItems();
+            }
         }
 
         private bool CanRemoveCurrentMember(CommissionDecisionViewModel commissionDecisionViewModel)

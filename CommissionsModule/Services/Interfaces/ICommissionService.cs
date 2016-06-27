@@ -42,7 +42,7 @@ namespace CommissionsModule.Services
 
         Task<string> SaveDecision(int commissionDecisionId, int decisionId, string comment, DateTime? decisionDateTime, CancellationToken token);
 
-        Task SaveCommissionProtocolAsync(CommissionProtocol newProtocol, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
+        Task<int> SaveCommissionProtocolAsync(CommissionProtocol newProtocol, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
         Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
@@ -84,11 +84,11 @@ namespace CommissionsModule.Services
 
         Task<string> ChangeIsExecutingCommissionProtocol(int protocolId, bool isExecuting, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
-        IDisposableQueryable<CommissionMemberType> GetCommissionMemberTypes();
+        IEnumerable<CommissionMemberType> GetCommissionMemberTypes();
 
         IDisposableQueryable<PersonStaff> GetPersonStaffs(object onDate);
 
-        IDisposableQueryable<Staff> GetStaffs();
+        IEnumerable<Staff> GetStaffs();
 
         Task SaveCommissionMembersAsync(CommissionMember[] commissionMembers, DateTime commissionOnDate);
 

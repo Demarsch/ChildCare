@@ -250,19 +250,20 @@ namespace CommissionsModule.ViewModels
             IDisposableQueryable<CommissionProtocol> commissionProtocolQuery = commissionService.GetCommissionProtocolById(commissionProtocolId);
             try
             {
-                var commissionDecisionTask = commissionMemberQuery.Select(x => new
+                Stage = stage;
+                CommissionDecisionId = SpecialValues.NewId;
+                var commissionDecision = await commissionMemberQuery.Select(x => new
                 {
                     MemberName = x.PersonStaffId.HasValue ? x.PersonStaff.Staff.ShortName + " - " + x.PersonStaff.Person.ShortName : x.StaffId.HasValue ? x.Staff.ShortName : string.Empty,
                 })
                 .FirstOrDefaultAsync(token);
-                var commissionProtocolIsCompletedTask = commissionProtocolQuery.Select(x => x.IsCompleted).FirstOrDefaultAsync(token);
-                var commissionProtocolAllMemberTask = commissionProtocolQuery.SelectMany(x => x.CommissionDecisions.Where(y => y.CommissionStage == stage)).Select(x => x.NeedAllMembersInStage).FirstOrDefaultAsync(token);
-                await Task.WhenAll(commissionDecisionTask, commissionProtocolAllMemberTask, commissionProtocolIsCompletedTask);
-                CanDeleteMember = commissionProtocolIsCompletedTask.Result != true || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision);
-                MemberName = commissionDecisionTask.Result.MemberName;
-                NeedAllMembers = commissionProtocolAllMemberTask.Result;
-                Stage = stage;
-                CommissionDecisionId = SpecialValues.NewId;
+                MemberName = commissionDecision.MemberName;
+
+                var commissionProtocolIsCompleted = await commissionProtocolQuery.Select(x => x.IsCompleted).FirstOrDefaultAsync(token);
+                CanDeleteMember = commissionProtocolIsCompleted != true || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision);
+
+                NeedAllMembers = await commissionProtocolQuery.SelectMany(x => x.CommissionDecisions.Where(y => y.CommissionStage == stage)).Select(x => x.NeedAllMembersInStage).FirstOrDefaultAsync(token);
+                
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
