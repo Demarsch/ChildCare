@@ -19,6 +19,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int filterId, DateTime? date = null, bool onlyMyCommissions = false);
 
+        IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter);
+
         IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
 
         IDisposableQueryable<CommissionMember> GetCommissionMembers(int commissionTypeId, DateTime onDate);
@@ -45,6 +47,8 @@ namespace CommissionsModule.Services
         Task UpdateCommissionProtocolAsync(int protocolId, DateTime protocolDate, CancellationToken token, INotificationServiceSubscription<CommissionProtocol> protocolChangeSubscription);
 
         IEnumerable<CommissionType> GetCommissionTypes(object onDate);
+
+        IDisposableQueryable<CommissionType> GetCommissionTypes(DateTime beginDate, DateTime endDate);
 
         IEnumerable<CommissionSource> GetCommissionSource(object onDate);
 
@@ -89,5 +93,7 @@ namespace CommissionsModule.Services
         Task SaveCommissionMembersAsync(CommissionMember[] commissionMembers, DateTime commissionOnDate);
 
         IDisposableQueryable<CommissionMember> CommissionMemberById(int id);
+
+        
     }
 }

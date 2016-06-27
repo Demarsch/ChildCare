@@ -27,6 +27,7 @@
     [RemovedByUserId]      INT            NULL,
     CONSTRAINT [PK_CommissionProtocols] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_CommissionProtocols_CommissionSources] FOREIGN KEY ([CommissionSourceId]) REFERENCES [dbo].[CommissionSources] ([Id]),
+    CONSTRAINT [FK_CommissionProtocols_CommissionTypes] FOREIGN KEY ([CommissionTypeId]) REFERENCES [dbo].[CommissionTypes] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_CreateUsers] FOREIGN KEY ([InUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_Decisions] FOREIGN KEY ([DecisionId]) REFERENCES [dbo].[Decisions] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_MedicalHelpTypes] FOREIGN KEY ([MedicalHelpTypeId]) REFERENCES [dbo].[MedicalHelpTypes] ([Id]),
@@ -37,6 +38,8 @@
     CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

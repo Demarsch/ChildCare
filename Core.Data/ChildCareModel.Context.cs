@@ -109,7 +109,6 @@ namespace Core.Data
         public virtual DbSet<AddressType> AddressTypes { get; set; }
         public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
-        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<Record> Records { get; set; }
@@ -118,5 +117,6 @@ namespace Core.Data
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<StaffCategory> StaffCategories { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
+        public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
     }
 }

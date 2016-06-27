@@ -303,6 +303,12 @@ namespace CommissionsModule.Services
             return cacheService.GetItems<CommissionType>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
         }
 
+        public IDisposableQueryable<CommissionType> GetCommissionTypes(DateTime beginDate, DateTime endDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionType>(context.Set<CommissionType>().Where(x => x.BeginDateTime <= endDate && x.EndDateTime >= beginDate), context);
+        }
+
         public IEnumerable<CommissionSource> GetCommissionSource(object onDate)
         {
             DateTime dt = SpecialValues.MinDate;
@@ -573,6 +579,19 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.Id == id), context);
         }
+        
+        public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter)
+        {
+            var context = contextProvider.CreateNewContext();
+            var query = context.Set<CommissionProtocol>().Where(x => x.ProtocolDate >= beginDate.Date && x.ProtocolDate <= endDate.Date);
+            if (selectedPatientId != SpecialValues.NonExistingId)
+                query = query.Where(x => x.PersonId == selectedPatientId);
+            if (selectedCommissionTypeId != SpecialValues.NonExistingId)
+                query = query.Where(x => x.CommissionTypeId == selectedCommissionTypeId);
 
+            // TODO: commissionNumberFilter and protocolNumberFilter
+
+            return new DisposableQueryable<CommissionProtocol>(query, context);
+        }
     }
 }

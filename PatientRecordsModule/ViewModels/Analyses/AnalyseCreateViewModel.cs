@@ -132,7 +132,7 @@ namespace Shared.PatientRecords.ViewModels
                 SelectedAnalyseId = SpecialValues.NonExistingId;
 
                 finSourcesQuery = recordService.GetActualFinancingSources();
-                var finSourcesSelectQuery = await finSourcesQuery.Select(x => new { x.Id, x.Name }).ToArrayAsync();
+                var finSourcesSelectQuery = await finSourcesQuery.Where(x => x.Options != string.Empty).Select(x => new { x.Id, x.Name }).ToArrayAsync();
                 FinSources.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- выберите ист. финансирования -" });
                 FinSources.AddRange(finSourcesSelectQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
 

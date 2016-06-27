@@ -26,11 +26,11 @@ namespace Core.Data
             this.Visits = new HashSet<Visit>();
             this.PersonTalons = new HashSet<PersonTalon>();
             this.PersonTalons1 = new HashSet<PersonTalon>();
-            this.CommissionProtocols = new HashSet<CommissionProtocol>();
-            this.CommissionProtocols1 = new HashSet<CommissionProtocol>();
             this.Records = new HashSet<Record>();
             this.CommissionDecisions = new HashSet<CommissionDecision>();
             this.CommissionDecisions1 = new HashSet<CommissionDecision>();
+            this.CommissionProtocols = new HashSet<CommissionProtocol>();
+            this.CommissionProtocols1 = new HashSet<CommissionProtocol>();
         }
     
         public int Id { get; set; }
@@ -122,22 +122,6 @@ namespace Core.Data
      		set { personTalons1 = value; }
     	}
         [NonSerialized]
-    	protected ICollection<CommissionProtocol> commissionProtocols;
-    
-    	public virtual ICollection<CommissionProtocol> CommissionProtocols
-    	{
-     		get { return commissionProtocols; }
-     		set { commissionProtocols = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionProtocol> commissionProtocols1;
-    
-    	public virtual ICollection<CommissionProtocol> CommissionProtocols1
-    	{
-     		get { return commissionProtocols1; }
-     		set { commissionProtocols1 = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<Record> records;
     
     	public virtual ICollection<Record> Records
@@ -160,6 +144,22 @@ namespace Core.Data
     	{
      		get { return commissionDecisions1; }
      		set { commissionDecisions1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols1;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols1
+    	{
+     		get { return commissionProtocols1; }
+     		set { commissionProtocols1 = value; }
     	}
     
     	public object Clone()

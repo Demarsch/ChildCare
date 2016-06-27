@@ -149,7 +149,6 @@ namespace Shared.PatientRecords.ViewModels
             get { return isSelected; }
             set
             {
-
                 if (SetProperty(ref isSelected, value) && value)
                 {
                     PersonRecordEditorViewModel = childItemViewModelRepository.GetEditor(this.Item);
