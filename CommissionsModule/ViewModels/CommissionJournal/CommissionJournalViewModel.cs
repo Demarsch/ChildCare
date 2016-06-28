@@ -73,6 +73,7 @@ namespace CommissionsModule.ViewModels
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             CommissionTypes = new ObservableCollectionEx<FieldValue>();
+            CommissionQuestions = new ObservableCollectionEx<FieldValue>();
             VKItems = new ObservableCollectionEx<CommissionJournalItemViewModel>();
 
             searchPatientCommand = new DelegateCommand(SearchPatient);
@@ -133,7 +134,32 @@ namespace CommissionsModule.ViewModels
         public int SelectedCommissionTypeId
         {
             get { return selectedCommissionTypeId; }
-            set { SetProperty(ref selectedCommissionTypeId, value); }
+            set
+            { 
+                if (SetProperty(ref selectedCommissionTypeId, value))
+                {
+                    var commissionQuestionsQuery = commissionService.GetCommissionQuestions(beginDate, endDate, selectedCommissionTypeId);
+                    var commissionSelectQuestionsQuery = commissionQuestionsQuery.Select(x => new { x.Id, x.Name }).ToArray();
+                    CommissionQuestions.Clear();
+                    CommissionQuestions.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- выберите вопрос комиссии -" });
+                    CommissionQuestions.AddRange(commissionSelectQuestionsQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
+                    SelectedCommissionQuestionId = SpecialValues.NonExistingId;
+                }            
+            }
+        }
+
+        private ObservableCollectionEx<FieldValue> commissionQuestions;
+        public ObservableCollectionEx<FieldValue> CommissionQuestions
+        {
+            get { return commissionQuestions; }
+            set { SetProperty(ref commissionQuestions, value); }
+        }
+
+        private int selectedCommissionQuestionId;
+        public int SelectedCommissionQuestionId
+        {
+            get { return selectedCommissionQuestionId; }
+            set { SetProperty(ref selectedCommissionQuestionId, value); }
         }
 
         private int selectedPatientId;
@@ -207,7 +233,7 @@ namespace CommissionsModule.ViewModels
             FailureMediator.Deactivate();
             BusyMediator.Activate("Загрузка общих данных...");
             IDisposableQueryable<CommissionType> commissionTypesQuery = null;
-            
+           
             try
             {
                 BeginDate = DateTime.Now;
@@ -216,10 +242,10 @@ namespace CommissionsModule.ViewModels
                 commissionTypesQuery = commissionService.GetCommissionTypes(beginDate, endDate);
                 var commissionSelectTypesQuery = await commissionTypesQuery.Select(x => new { x.Id, x.Name }).ToArrayAsync();
                 CommissionTypes.Clear();
-                CommissionTypes.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- выберите подкомиссию ВК -" });
+                CommissionTypes.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- выберите тип комиссии -" });
                 CommissionTypes.AddRange(commissionSelectTypesQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
                 SelectedCommissionTypeId = SpecialValues.NonExistingId;
-
+                
                 SelectedPatientId = SpecialValues.NonExistingId;
                 initialLoadingTaskSource.SetResult(true);
                 return true;
@@ -235,6 +261,8 @@ namespace CommissionsModule.ViewModels
             finally
             {
                 BusyMediator.Deactivate();
+                if (commissionTypesQuery != null)
+                    commissionTypesQuery.Dispose();
             }
         }       
 
@@ -264,7 +292,7 @@ namespace CommissionsModule.ViewModels
             currentLoadingToken = new CancellationTokenSource();
             var token = currentLoadingToken.Token;
             
-            var result = commissionService.GetCommissionProtocols(selectedPatientId, beginDate, endDate, selectedCommissionTypeId, commissionNumberFilter, protocolNumberFilter);
+            var result = commissionService.GetCommissionProtocols(selectedPatientId, beginDate, endDate, selectedCommissionTypeId, selectedCommissionQuestionId, commissionNumberFilter, protocolNumberFilter);
 
             var query = await Task.Factory.StartNew(() =>
             {
@@ -273,7 +301,7 @@ namespace CommissionsModule.ViewModels
                     Id = x.Id,
                     CommissionNumber = x.CommissionNumber,
                     ProtocolNumber = x.ProtocolNumber,
-                    ProtocolDate = x.CommissionDate,
+                    CommissionDate = x.CommissionDate,
                     AssignPerson = x.User.Person.ShortName,
                     PatientFIO = x.Person.FullName,
                     PatientBirthDate = x.Person.BirthDate,
@@ -296,7 +324,7 @@ namespace CommissionsModule.ViewModels
                     Id = x.Id,
                     CommissionNumber = x.CommissionNumber,
                     ProtocolNumber = x.ProtocolNumber,
-                    ProtocolDate = x.ProtocolDate.ToShortDateString(),
+                    CommissionDate = x.CommissionDate.ToShortDateString(),
                     AssignPerson = x.AssignPerson,
                     PatientFIO = x.PatientFIO,
                     PatientBirthDate = x.PatientBirthDate.ToShortDateString(),
@@ -333,8 +361,27 @@ namespace CommissionsModule.ViewModels
             string nonExistValue = "отсутствует";
             report.Data["OrgName"] = commissionService.GetDBSettingValue(DBSetting.OrgName);
 
-            /*report.Data.Tables["hospdata"].AddRow(emptyValue, emptyValue, emptyValue);
-            report.Data.Tables["radiationdata"].AddRow(emptyValue, emptyValue, emptyValue);*/
+            foreach (var item in VKItems)
+            {
+                report.Data.Tables["tblval"].AddRow(
+                    item.CommissionNumber,
+                    item.ProtocolNumber,
+                    item.CommissionDate,
+                    item.AssignPerson,
+                    item.PatientFIO,
+                    item.PatientBirthDate,
+                    item.CardNumber,
+                    item.PatientGender,
+                    item.PatientSocialStatus,
+                    item.PatientDiagnos,
+                    item.CommissionType,
+                    item.CommissionName,
+                    item.Decision,
+                    item.Recommendations,
+                    item.Details,
+                    item.Experts);
+            }
+                       
             report.Editable = false;
             report.Show();
         }

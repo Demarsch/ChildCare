@@ -72,13 +72,15 @@ namespace CommissionsModule.Services
                 query = query.Where(x => x.IsCompleted == null);
             if (option.Contains(OptionValues.ProtocolsOnCommission))
                 query = query.Where(x => x.IsCompleted == false && x.IsExecuting == true);
+            //if (option.Contains(OptionValues.SentOnCommission))
+            //    query = query.Where(x => x.IsSended);
             if (option.Contains(OptionValues.ProtocolsOnDate))
                 query = query.Where(x => DbFunctions.TruncateTime(x.CommissionDate) == DbFunctions.TruncateTime(date.Value));
             if (option.Contains(OptionValues.ProtocolsAdded))
                 query = query.Where(x => DbFunctions.TruncateTime(x.IncomeDateTime) == DbFunctions.TruncateTime(date.Value));
             if (option.Contains(OptionValues.ProtocolsAwaiting))
                 query = query.Where(x => x.IsCompleted == true && DbFunctions.TruncateTime(x.ToDoDateTime) > DbFunctions.TruncateTime(DateTime.Now));
-
+            
             if (onlyMyCommissions)
             {
                 int currentPersonId = userService.GetCurrentUser().PersonId;
@@ -354,6 +356,12 @@ namespace CommissionsModule.Services
             return cacheService.GetItems<CommissionQuestion>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
         }
 
+        public IDisposableQueryable<CommissionQuestion> GetCommissionQuestions(DateTime beginDate, DateTime endDate, int commissionTypeId = -1)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionQuestion>(context.Set<CommissionQuestion>().Where(x => x.BeginDateTime <= endDate && x.EndDateTime >= beginDate 
+                                                            && (commissionTypeId == SpecialValues.NonExistingId || x.CommissionTypeId == commissionTypeId)), context);
+        }
 
         public IDisposableQueryable<PersonAddress> GetPatientAddresses(int personId)
         {
@@ -584,7 +592,7 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.Id == id), context);
         }
         
-        public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter)
+        public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, int selectedCommissionQuestionId, string commissionNumberFilter, string protocolNumberFilter)
         {
             var context = contextProvider.CreateNewContext();
             var query = context.Set<CommissionProtocol>().Where(x => x.CommissionDate >= beginDate.Date && x.CommissionDate <= endDate.Date);
@@ -592,6 +600,8 @@ namespace CommissionsModule.Services
                 query = query.Where(x => x.PersonId == selectedPatientId);
             if (selectedCommissionTypeId != SpecialValues.NonExistingId)
                 query = query.Where(x => x.CommissionTypeId == selectedCommissionTypeId);
+            if (selectedCommissionQuestionId != SpecialValues.NonExistingId)
+                query = query.Where(x => x.CommissionQuestionId == selectedCommissionQuestionId);
 
             int[] commissionNumbers = FilterVKNumber(commissionNumberFilter.ToSafeString());
             int[] protocolNumbers = FilterVKNumber(protocolNumberFilter.ToSafeString());
@@ -634,6 +644,5 @@ namespace CommissionsModule.Services
                 return (useDisplayName ? setting.DisplayName : setting.Value);
             return string.Empty;
         }
-
     }
 }

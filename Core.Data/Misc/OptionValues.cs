@@ -28,6 +28,7 @@ namespace Core.Data.Misc
         public static readonly string ProtocolsAdded = "|added|";
         public static readonly string ProtocolsAwaiting = "|awaiting|";
         public static readonly string CommissionFilterHasDate = "|hasDate|";
+        public static readonly string SentOnCommission = "|sentOnCommission|";
 
         //Financing Sources
         public static readonly string OMS = "|oms|";

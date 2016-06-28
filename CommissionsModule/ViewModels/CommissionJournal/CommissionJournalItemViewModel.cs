@@ -35,11 +35,11 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref protocolNumber, value); }
         }
 
-        private string protocolDate;
-        public string ProtocolDate
+        private string commissionDate;
+        public string CommissionDate
         {
-            get { return protocolDate; }
-            set { SetProperty(ref protocolDate, value); }
+            get { return commissionDate; }
+            set { SetProperty(ref commissionDate, value); }
         }
 
         private string assignPerson;

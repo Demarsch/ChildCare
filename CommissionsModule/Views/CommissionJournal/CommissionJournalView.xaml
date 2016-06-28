@@ -96,14 +96,14 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Случай экспертизы" Width="Auto" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Тип комиссии" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding CommissionType}"  VerticalAlignment="Center" Margin="5,0"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Предмет экспертизы" Width="Auto" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Вопрос комиссии" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding CommissionName}"  VerticalAlignment="Center" Margin="5,0"/>

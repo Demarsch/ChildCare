@@ -37,6 +37,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -52,13 +53,21 @@
                             SelectedDate="{Binding CommissionJournalViewModel.EndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
             
-            <TextBlock Grid.Row="1" Grid.Column="0" Margin="5 0" Text="Подкомиссия" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="5 0" Text="Тип комиссии" VerticalAlignment="Center" HorizontalAlignment="Left"/>
             <fluent:ComboBox Grid.Row="1" Grid.Column="1" IsEditable="False"
                              Width="400" VerticalAlignment="Bottom" HorizontalAlignment="Left"
                              ItemsSource="{Binding CommissionJournalViewModel.CommissionTypes}"
                              DisplayMemberPath="Field" 
                              SelectedValuePath="Value"
-                             SelectedValue="{Binding CommissionJournalViewModel.SelectedCommissionTypeId, Mode=TwoWay}" />            
+                             SelectedValue="{Binding CommissionJournalViewModel.SelectedCommissionTypeId, Mode=TwoWay}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="5 0" Text="Вопрос комиссии" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            <fluent:ComboBox Grid.Row="2" Grid.Column="1" IsEditable="False"
+                             Width="400" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                             ItemsSource="{Binding CommissionJournalViewModel.CommissionQuestions}"
+                             DisplayMemberPath="Field" 
+                             SelectedValuePath="Value"
+                             SelectedValue="{Binding CommissionJournalViewModel.SelectedCommissionQuestionId, Mode=TwoWay}" />
         </Grid>
     </fluent:RibbonGroupBox>
     

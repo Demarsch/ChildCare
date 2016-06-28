@@ -19,7 +19,7 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int filterId, DateTime? date = null, bool onlyMyCommissions = false);
 
-        IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter);
+        IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, int selectedCommissionQuestionId, string commissionNumberFilter, string protocolNumberFilter);
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
 
@@ -65,6 +65,8 @@ namespace CommissionsModule.Services
         IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate);
 
         IEnumerable<CommissionQuestion> GetCommissionQuestions(object onDate);
+
+        IDisposableQueryable<CommissionQuestion> GetCommissionQuestions(DateTime beginDate, DateTime endDate, int commissionTypeId = -1);
 
         IDisposableQueryable<Person> GetPerson(int personId);
 
