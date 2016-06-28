@@ -94,6 +94,6 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionMember> CommissionMemberById(int id);
 
-        
+        string GetDBSettingValue(string parameter, bool useDisplayName = false);
     }
 }

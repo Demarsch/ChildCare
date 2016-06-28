@@ -214,11 +214,6 @@
         <AssociationConnector Association="DataLib.FK_Records_Urgentlies" />
         <AssociationConnector Association="DataLib.FK_Records_Users" />
         <AssociationConnector Association="DataLib.FK_Records_Visits" />
-        <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="28.5" PointY="26.625" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users1" />
         <EntityTypeShape EntityType="DataLib.RecordTypeCost" Width="1.5" PointX="13.75" PointY="59.125" />
         <AssociationConnector Association="DataLib.FK_RecordTypeCosts_FinancingSources" />
         <EntityTypeShape EntityType="DataLib.RecordType" Width="1.5" PointX="0.75" PointY="48.75" />
@@ -257,8 +252,14 @@
         <AssociationConnector Association="DataLib.FK_RecordContractItems_Assignments" />
         <AssociationConnector Association="DataLib.FK_RecordDocuments_Assignments" />
         <AssociationConnector Association="DataLib.FK_Records_Assignments_ParentAssignment" />
-        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="26.25" PointY="35.125" />
+        <EntityTypeShape EntityType="DataLib.CommissionDecision" Width="1.5" PointX="28.5" PointY="26.625" />
+        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="26.25" PointY="34.875" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users1" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionQuestions" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionSources" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CreateUsers" />

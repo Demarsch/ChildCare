@@ -55,6 +55,15 @@ public partial class CommissionDecision : ICloneable
     	}
 
     [NonSerialized]
+    	protected CommissionProtocol commissionProtocol;
+    
+    	public virtual CommissionProtocol CommissionProtocol
+    	{
+     		get { return commissionProtocol; }
+     		set { commissionProtocol = value; }
+    	}
+
+    [NonSerialized]
     	protected Decision decision;
     
     	public virtual Decision Decision
@@ -79,15 +88,6 @@ public partial class CommissionDecision : ICloneable
     	{
      		get { return user1; }
      		set { user1 = value; }
-    	}
-
-    [NonSerialized]
-    	protected CommissionProtocol commissionProtocol;
-    
-    	public virtual CommissionProtocol CommissionProtocol
-    	{
-     		get { return commissionProtocol; }
-     		set { commissionProtocol = value; }
     	}
 
 

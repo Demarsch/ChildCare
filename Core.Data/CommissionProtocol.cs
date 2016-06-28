@@ -35,9 +35,11 @@ public partial class CommissionProtocol : ICloneable
 
     public Nullable<int> DecisionId { get; set; }
 
-    public int ProtocolNumber { get; set; }
+    public System.DateTime CommissionDate { get; set; }
 
-    public System.DateTime ProtocolDate { get; set; }
+    public int CommissionNumber { get; set; }
+
+    public int ProtocolNumber { get; set; }
 
     public Nullable<bool> IsCompleted { get; set; }
 
@@ -89,6 +91,15 @@ public partial class CommissionProtocol : ICloneable
     	{
      		get { return commissionDecisions; }
      		set { commissionDecisions = value; }
+    	}
+
+    [NonSerialized]
+    	protected CommissionQuestion commissionQuestion;
+    
+    	public virtual CommissionQuestion CommissionQuestion
+    	{
+     		get { return commissionQuestion; }
+     		set { commissionQuestion = value; }
     	}
 
     [NonSerialized]

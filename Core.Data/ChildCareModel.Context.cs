@@ -204,8 +204,6 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<Record> Records { get; set; }
 
-    public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
-
     public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
 
     public virtual DbSet<RecordType> RecordTypes { get; set; }
@@ -215,6 +213,8 @@ public partial class ModelContext : DbContext
     public virtual DbSet<Staff> Staffs { get; set; }
 
     public virtual DbSet<Assignment> Assignments { get; set; }
+
+    public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
 
     public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
 

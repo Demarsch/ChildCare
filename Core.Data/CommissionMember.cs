@@ -70,6 +70,15 @@ public partial class CommissionMember : ICloneable
      		set { personStaff = value; }
     	}
 
+    [NonSerialized]
+    	protected Staff staff;
+    
+    	public virtual Staff Staff
+    	{
+     		get { return staff; }
+     		set { staff = value; }
+    	}
+
 
     [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;
@@ -78,15 +87,6 @@ public partial class CommissionMember : ICloneable
     	{
      		get { return commissionDecisions; }
      		set { commissionDecisions = value; }
-    	}
-
-    [NonSerialized]
-    	protected Staff staff;
-    
-    	public virtual Staff Staff
-    	{
-     		get { return staff; }
-     		set { staff = value; }
     	}
 
 

@@ -133,7 +133,7 @@ namespace PatientInfoModule.ViewModels
                     {
                         Id = x.Id,
                         Number = x.ProtocolNumber,
-                        ProtocolDate = x.ProtocolDate,
+                        ProtocolDate = x.CommissionDate,
                         Talon = x.PersonTalon != null ? new { TalonNumber = x.PersonTalon.TalonNumber, TalonDate = x.PersonTalon.TalonDateTime } : null,
                         MKB = x.MKB,
                         HelpType = x.MedicalHelpTypeId.HasValue ? x.MedicalHelpType.Code : string.Empty,

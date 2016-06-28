@@ -24,6 +24,8 @@ public partial class CommissionQuestion : ICloneable
 
         this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
 
+        this.CommissionProtocols = new HashSet<CommissionProtocol>();
+
     }
 
 
@@ -58,6 +60,16 @@ public partial class CommissionQuestion : ICloneable
     	{
      		get { return commissionType; }
      		set { commissionType = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected ICollection<CommissionProtocol> commissionProtocols;
+    
+    	public virtual ICollection<CommissionProtocol> CommissionProtocols
+    	{
+     		get { return commissionProtocols; }
+     		set { commissionProtocols = value; }
     	}
 
 
