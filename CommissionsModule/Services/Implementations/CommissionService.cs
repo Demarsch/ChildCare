@@ -231,6 +231,7 @@ namespace CommissionsModule.Services
                 originalProtocol.PersonAddressId = newProtocol.PersonAddressId;
 
                 originalProtocol.ProtocolNumber = newProtocol.ProtocolNumber;
+                originalProtocol.CommissionNumber = newProtocol.CommissionNumber;
                 originalProtocol.CommissionDate = newProtocol.CommissionDate;
                 originalProtocol.WaitingFor = newProtocol.WaitingFor;
                 originalProtocol.Diagnos = newProtocol.Diagnos;
