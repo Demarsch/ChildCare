@@ -34,7 +34,7 @@ namespace PatientInfoModule.ViewModels
             this.contractDate = contractDate;
             this.isChild = personService.GetPatientQuery(personId).First<Person>().BirthDate.Date.AddYears(18) >= contractDate.Date;
 
-            CompositeChangeTracker = new ChangeTrackerEx<ContractItemViewModel>(this);
+            ChangeTracker = new ChangeTrackerEx<ContractItemViewModel>(this);
         }
 
         private int id;
@@ -135,11 +135,11 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref sectionAlignment, value); }
         }
 
-        public IChangeTracker CompositeChangeTracker { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
 
         public void Dispose()
         {
-            CompositeChangeTracker.Dispose();
+            ChangeTracker.Dispose();
         }
     }
 }

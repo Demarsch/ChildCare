@@ -103,7 +103,7 @@ namespace Shared.PatientRecords.ViewModels
             this.documentsViewer = documentsViewer;
             this.documentsViewer.PropertyChanged += documentsViewer_PropertyChanged;
 
-            CompositeChangeTracker = new CompositeChangeTracker();
+            ChangeTracker = new CompositeChangeTracker();
             //ChangeTracker = new ChangeTrackerEx<PersonRecordEditorViewModel>(this);
             //ChangeTracker.PropertyChanged += OnChangesTracked;
 
@@ -134,7 +134,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private readonly IChangeTracker currentInstanceChangeTracker;
 
-        public IChangeTracker CompositeChangeTracker { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
 
         private void OnChangesTracked(object sender, PropertyChangedEventArgs e)
         {
@@ -151,7 +151,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private bool CanSaveChanges()
         {
-            return CompositeChangeTracker != null && CompositeChangeTracker.HasChanges;
+            return ChangeTracker != null && ChangeTracker.HasChanges;
         }
 
         #endregion
@@ -801,9 +801,9 @@ namespace Shared.PatientRecords.ViewModels
         {
             RecordPeriods.Clear();
             ParentVisits.Clear();
-            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, ProtocolEditor.CompositeChangeTracker);
+            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, ProtocolEditor.ChangeTracker);
             changeTracker.PropertyChanged += OnChangesTracked;
-            CompositeChangeTracker = changeTracker;
+            ChangeTracker = changeTracker;
 
             if (currentOperationToken != null)
             {
@@ -936,7 +936,7 @@ namespace Shared.PatientRecords.ViewModels
                     IsAssignment = data.IsAssignment;
                 }
 
-                CompositeChangeTracker.IsEnabled = true;
+                ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -1104,8 +1104,8 @@ namespace Shared.PatientRecords.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
-                    CompositeChangeTracker.AcceptChanges();
-                    CompositeChangeTracker.IsEnabled = true;
+                    ChangeTracker.AcceptChanges();
+                    ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
                 }
             }
@@ -1176,14 +1176,14 @@ namespace Shared.PatientRecords.ViewModels
             {
                 foreach (var newItem in e.NewItems.Cast<BrigadeViewModel>())
                 {
-                    (CompositeChangeTracker as CompositeChangeTracker).AddTracker(newItem.CompositeChangeTracker);
+                    (ChangeTracker as CompositeChangeTracker).AddTracker(newItem.ChangeTracker);
                 }
             }
             if (e.OldItems != null)
             {
                 foreach (var oldItem in e.OldItems.Cast<BrigadeViewModel>())
                 {
-                    (CompositeChangeTracker as CompositeChangeTracker).RemoveTracker(oldItem.CompositeChangeTracker);
+                    (ChangeTracker as CompositeChangeTracker).RemoveTracker(oldItem.ChangeTracker);
                 }
             }
         }

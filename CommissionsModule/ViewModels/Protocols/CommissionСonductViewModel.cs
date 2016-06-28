@@ -38,6 +38,8 @@ namespace CommissionsModule.ViewModels
         private CancellationTokenSource currentOperationToken;
         private CancellationTokenSource loadAvailiableMembersOperationToken;
 
+        private ObservableCollectionChangeTracker<CommissionDecisionViewModel> currentMembersChangeTracker;
+
         #endregion
 
         #region Constructors
@@ -89,7 +91,9 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            CompositeChangeTracker = new ChangeTrackerEx<CommissionСonductViewModel>(this);
+            currentMembersChangeTracker = new ObservableCollectionChangeTracker<CommissionDecisionViewModel>(CurrentMembers);
+            ChangeTracker = new CompositeChangeTracker(currentMembersChangeTracker);
+            
         }
 
         #endregion
@@ -110,13 +114,17 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref selectedCurrentMember, value); }
         }
 
-
-        public ObservableCollectionEx<CommissionDecisionViewModel> CurrentMembers { get; set; }
+        private ObservableCollectionEx<CommissionDecisionViewModel> currentMembers;
+        public ObservableCollectionEx<CommissionDecisionViewModel> CurrentMembers
+        {
+            get { return currentMembers; }
+            set { SetTrackedProperty(ref currentMembers, value); }
+        }
         public ObservableCollectionEx<CommissionMemberViewModel> AvailableMembers { get; set; }
 
         public BusyMediator BusyMediator { get; private set; }
         public FailureMediator FailureMediator { get; private set; }
-        public IChangeTracker CompositeChangeTracker { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
 
         public int CommissionProtocolId { get; private set; }
         public int PersonId { get; private set; }
@@ -125,7 +133,7 @@ namespace CommissionsModule.ViewModels
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
-            CompositeChangeTracker.IsEnabled = false;
+            ChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -157,7 +165,7 @@ namespace CommissionsModule.ViewModels
                     LoadAvailableMembers(commissionProtocolData.CommissionTypeId, curDate);
                 }
                 LoadCurrentMembers(commissionProtocolId, token);
-
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -178,6 +186,7 @@ namespace CommissionsModule.ViewModels
 
         public async void LoadCurrentMembers(int commissionProtocolId, CancellationToken token)
         {
+            
             CurrentMembers.CollectionChanged -= CurrentMembers_CollectionChanged;
             CurrentMembers.Clear();
             var commissionDecisionsQuery = commissionService.GetCommissionDecisions(commissionProtocolId);
@@ -191,6 +200,7 @@ namespace CommissionsModule.ViewModels
                 {
                     var commissionDecisionViewModel = commissionDecisionViewModelFactory();
                     commissionDecisionViewModel.PropertyChanged += commissionDecisionViewModel_PropertyChanged;
+                    //(ChangeTracker as CompositeChangeTracker).AddTracker(commissionDecisionViewModel.ChangeTracker);
                     //await commissionDecisionViewModel.Initialize(commissionDecisionId);
                     decisionsTask.Add(commissionDecisionViewModel.Initialize(commissionDecisionId));
                     list.Add(commissionDecisionViewModel);
@@ -205,6 +215,8 @@ namespace CommissionsModule.ViewModels
                     removeStageCommand.RaiseCanExecuteChanged();
                     CurrentMembers.CollectionChanged += CurrentMembers_CollectionChanged;
                 }
+                ChangeTracker.IsEnabled = false;
+                ChangeTracker.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -299,6 +311,7 @@ namespace CommissionsModule.ViewModels
             SetCurrentMembersIsNotLastItem();
             removeStageCommand.RaiseCanExecuteChanged();
         }
+
 
         private void SetCurrentMembersIsNotLastItem()
         {

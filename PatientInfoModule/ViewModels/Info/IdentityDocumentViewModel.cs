@@ -31,7 +31,7 @@ namespace PatientInfoModule.ViewModels
             validator = new ValidationMediatorBase(this);
             DocumentTypes = cacheService.GetItems<IdentityDocumentType>();
             DeleteCommand = new DelegateCommand(Delete);
-            CompositeChangeTracker = new ChangeTrackerEx<IdentityDocumentViewModel>(this);
+            ChangeTracker = new ChangeTrackerEx<IdentityDocumentViewModel>(this);
         }
 
         private ISuggestionsProvider givenOrgSuggestionsProvider;
@@ -253,7 +253,7 @@ namespace PatientInfoModule.ViewModels
             }
             set
             {
-                CompositeChangeTracker.IsEnabled = false;
+                ChangeTracker.IsEnabled = false;
                 if (value == null)
                 {
                     documentTypeId = null;
@@ -279,7 +279,7 @@ namespace PatientInfoModule.ViewModels
                     personId = value.PersonId;
                 }
                 OnPropertyChanged(string.Empty);
-                CompositeChangeTracker.IsEnabled = true;
+                ChangeTracker.IsEnabled = true;
             }
         }
 
@@ -292,7 +292,7 @@ namespace PatientInfoModule.ViewModels
 
         public void Dispose()
         {
-            CompositeChangeTracker.Dispose();
+            ChangeTracker.Dispose();
         }
 
         public ICommand DeleteCommand { get; private set; }
@@ -313,7 +313,7 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        public IChangeTracker CompositeChangeTracker { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
 
         public string StringRepresentation
         {

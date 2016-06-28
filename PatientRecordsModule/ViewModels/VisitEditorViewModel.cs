@@ -54,8 +54,8 @@ namespace Shared.PatientRecords.ViewModels
             }
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
-            CompositeChangeTracker = new ChangeTrackerEx<VisitEditorViewModel>(this);
-            CompositeChangeTracker.PropertyChanged += OnChangesTracked;
+            ChangeTracker = new ChangeTrackerEx<VisitEditorViewModel>(this);
+            ChangeTracker.PropertyChanged += OnChangesTracked;
             CreateVisitCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
             CancelCommand = new DelegateCommand(Cancel);
             VisitTemplates = new ObservableCollectionEx<CommonIdName>();
@@ -221,7 +221,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public FailureMediator FailureMediator { get; private set; }
 
-        public IChangeTracker CompositeChangeTracker { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
         #endregion
 
         #region Commands
@@ -265,7 +265,7 @@ namespace Shared.PatientRecords.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
-                    CompositeChangeTracker.AcceptChanges();
+                    ChangeTracker.AcceptChanges();
                     /////ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
                     HostWindow.Close();
@@ -278,7 +278,7 @@ namespace Shared.PatientRecords.ViewModels
         private void Cancel()
         {
             FailureMediator.Deactivate();
-            CompositeChangeTracker.RestoreChanges();
+            ChangeTracker.RestoreChanges();
             visitId = -1;
             HostWindow.Close();
         }
@@ -322,7 +322,7 @@ namespace Shared.PatientRecords.ViewModels
             FinancingSourceSetByVisitTemplate = false;
             UrgentlySetByVisitTemplate = false;
             ExecutionPlaceSetByVisitTemplate = false;
-            CompositeChangeTracker.IsEnabled = false;
+            ChangeTracker.IsEnabled = false;
             if (!dataSourcesLoaded)
             {
                 return;
@@ -564,7 +564,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-            CompositeChangeTracker.Dispose();
+            ChangeTracker.Dispose();
             reloadDataSourceCommandWrapper.Dispose();
             reloadVisitDataCommandWrapper.Dispose();
             reloadVisitTemplateDataFillingCommandWrapper.Dispose();

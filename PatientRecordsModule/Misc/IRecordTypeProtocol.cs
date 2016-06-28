@@ -22,7 +22,7 @@ namespace Shared.PatientRecords.Misc
 
         string CanComplete();
 
-        IChangeTracker CompositeChangeTracker { get; set; }
+        IChangeTracker ChangeTracker { get; set; }
     }
 
     public enum ProtocolMode

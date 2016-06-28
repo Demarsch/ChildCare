@@ -92,7 +92,7 @@ namespace Shared.PatientRecords.ViewModels
 
             currentInstanceChangeTracker = new ChangeTrackerEx<AnalyseProtocolViewModel>(this);
             var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker);
-            CompositeChangeTracker = changeTracker;
+            ChangeTracker = changeTracker;
         }
        
         #endregion
@@ -102,18 +102,18 @@ namespace Shared.PatientRecords.ViewModels
             if (e.NewItems != null)
             {
                 foreach (var newItem in e.NewItems.Cast<AnalyseResultViewModel>())
-                    (CompositeChangeTracker as CompositeChangeTracker).AddTracker(newItem.CompositeChangeTracker);
+                    (ChangeTracker as CompositeChangeTracker).AddTracker(newItem.ChangeTracker);
             }
             if (e.OldItems != null)
             {
                 foreach (var oldItem in e.OldItems.Cast<AnalyseResultViewModel>())
-                    (CompositeChangeTracker as CompositeChangeTracker).RemoveTracker(oldItem.CompositeChangeTracker);
+                    (ChangeTracker as CompositeChangeTracker).RemoveTracker(oldItem.ChangeTracker);
             }
         }
 
         #region Properties
 
-        public IChangeTracker CompositeChangeTracker { get; set; }
+        public IChangeTracker ChangeTracker { get; set; }
 
         public ObservableCollectionEx<AnalyseResultViewModel> AnalyseResults { get; private set; }
 
@@ -214,8 +214,8 @@ namespace Shared.PatientRecords.ViewModels
                                         }).ToArray());
             if (ids.Any())
             {
-                CompositeChangeTracker.AcceptChanges();
-                CompositeChangeTracker.IsEnabled = true;
+                ChangeTracker.AcceptChanges();
+                ChangeTracker.IsEnabled = true;
                 for (int i = 0; i < AnalyseResults.Count; i++)
                     AnalyseResults[i].Id = ids[i];
                 LoadAnalyseResultView(recordId);
@@ -227,12 +227,12 @@ namespace Shared.PatientRecords.ViewModels
         public void LoadProtocol(int assignmentId, int recordId, int visitId)
         {
             if (visitId > 0) return;
-            CompositeChangeTracker.IsEnabled = false;
+            ChangeTracker.IsEnabled = false;
             if (assignmentId > 0)
                 LoadAssignmentData(assignmentId);
             else if (recordId > 0)
                 LoadRecordData(recordId);
-            CompositeChangeTracker.IsEnabled = true;
+            ChangeTracker.IsEnabled = true;
         }
 
         #endregion
@@ -443,7 +443,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public void Dispose()
         {
-            CompositeChangeTracker.Dispose();
+            ChangeTracker.Dispose();
             AnalyseResults.BeforeCollectionChanged -= OnBeforeDiagnosCollectionChanged;
         }
         #endregion

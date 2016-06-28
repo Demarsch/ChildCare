@@ -55,7 +55,7 @@ namespace CommissionsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            CompositeChangeTracker = new ChangeTrackerEx<CommissionСonclusionViewModel>(this);
+            ChangeTracker = new ChangeTrackerEx<CommissionСonclusionViewModel>(this);
             validationMediator = new ValidationMediator(this);
         }
 
@@ -161,13 +161,13 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
-        public IChangeTracker CompositeChangeTracker { get; set; }
+        public IChangeTracker ChangeTracker { get; set; }
         #endregion
 
         #region Methods
         public async void Initialize(int commissionProtocolId = SpecialValues.NonExistingId, int personId = SpecialValues.NonExistingId)
         {
-            CompositeChangeTracker.IsEnabled = false;
+            ChangeTracker.IsEnabled = false;
             if (currentOperationToken != null)
             {
                 currentOperationToken.Cancel();
@@ -229,7 +229,7 @@ namespace CommissionsModule.ViewModels
                     ToDoDateTime = commissionProtocolData.ToDoDateTime;
                 }
                 loadingIsCompleted = true;
-                CompositeChangeTracker.IsEnabled = true;
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
