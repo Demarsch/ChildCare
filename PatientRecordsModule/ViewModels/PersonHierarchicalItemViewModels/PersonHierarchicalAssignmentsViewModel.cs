@@ -123,9 +123,13 @@ namespace Shared.PatientRecords.ViewModels
             get { return isSelected; }
             set
             {
-                SetProperty(ref isSelected, value);
-                //    if ( && value)
-                //        eventAggregator.GetEvent<SelectionChangedEvent<Assignment>>().Publish(this.Id);
+                if (SetProperty(ref isSelected, value) && value)
+                {
+                    PersonRecordEditorViewModel = childItemViewModelRepository.GetEditor(this.Item);
+                    eventAggregator.GetEvent<PubSubEvent<IPersonRecordEditor>>().Publish(PersonRecordEditorViewModel);
+                }
+
+                //eventAggregator.GetEvent<SelectionChangedEvent<Record>>().Publish(item.Id); ;
             }
         }
 

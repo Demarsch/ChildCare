@@ -23,6 +23,7 @@
     [BillingDateTime]    DATETIME       NULL,
     [Cost]               FLOAT (53)     CONSTRAINT [DF_Assignments_Cost] DEFAULT ((0)) NOT NULL,
     [RemovedByUserId]    INT            NULL,
+    [IsCompleted]        BIT            DEFAULT ((0)) NOT NULL,
     CONSTRAINT [PK_Assignments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Assignments_Assignments] FOREIGN KEY ([ParentAssignmentId]) REFERENCES [dbo].[Assignments] ([Id]),
     CONSTRAINT [FK_Assignments_ExecutionPlaces] FOREIGN KEY ([ExecutionPlaceId]) REFERENCES [dbo].[ExecutionPlaces] ([Id]),
@@ -39,6 +40,8 @@
     CONSTRAINT [FK_Assignments_Users2_RemovedByUser] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id]),
     CONSTRAINT [FK_Assignments_Visits] FOREIGN KEY ([VisitId]) REFERENCES [dbo].[Visits] ([Id])
 );
+
+
 
 
 

@@ -86,7 +86,6 @@ namespace ScheduleModule.ViewModels
             }
         }
 
-
         private void ActivateContent()
         {
             var navigationParameters = new NavigationParameters { { ParameterNames.PatientId, patientId  } };
