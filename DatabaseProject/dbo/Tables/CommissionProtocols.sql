@@ -4,8 +4,8 @@
     [CommissionTypeId]     INT            NOT NULL,
     [DecisionId]           INT            NULL,
     [CommissionDate]       DATETIME       NOT NULL,
-    [CommissionNumber]     INT            NOT NULL,
-    [ProtocolNumber]       INT            NOT NULL,
+    [CommissionNumber]     INT            CONSTRAINT [DF_CommissionProtocols_CommissionNumber] DEFAULT ((0)) NOT NULL,
+    [ProtocolNumber]       INT            CONSTRAINT [DF_CommissionProtocols_ProtocolNumber] DEFAULT ((0)) NOT NULL,
     [IsCompleted]          BIT            NULL,
     [IsExecuting]          BIT            NOT NULL,
     [IncomeDateTime]       DATETIME       NOT NULL,
@@ -27,7 +27,6 @@
     [InUserId]             INT            NOT NULL,
     [RemovedByUserId]      INT            NULL,
     CONSTRAINT [PK_CommissionProtocols] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_CommissionProtocols_CommissionQuestions] FOREIGN KEY ([CommissionQuestionId]) REFERENCES [dbo].[CommissionQuestions] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_CommissionSources] FOREIGN KEY ([CommissionSourceId]) REFERENCES [dbo].[CommissionSources] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_CommissionTypes] FOREIGN KEY ([CommissionTypeId]) REFERENCES [dbo].[CommissionTypes] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_CreateUsers] FOREIGN KEY ([InUserId]) REFERENCES [dbo].[Users] ([Id]),
@@ -40,6 +39,8 @@
     CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

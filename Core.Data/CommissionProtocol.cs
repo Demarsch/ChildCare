@@ -24,10 +24,9 @@ namespace Core.Data
         public int PersonId { get; set; }
         public int CommissionTypeId { get; set; }
         public Nullable<int> DecisionId { get; set; }
-    public System.DateTime CommissionDate { get; set; }
-    public int CommissionNumber { get; set; }
-
-    public int ProtocolNumber { get; set; }
+        public System.DateTime CommissionDate { get; set; }
+        public int CommissionNumber { get; set; }
+        public int ProtocolNumber { get; set; }
         public Nullable<bool> IsCompleted { get; set; }
         public bool IsExecuting { get; set; }
         public System.DateTime IncomeDateTime { get; set; }
@@ -57,8 +56,7 @@ namespace Core.Data
      		get { return commissionDecisions; }
      		set { commissionDecisions = value; }
     	}
-
-    [NonSerialized]
+        [NonSerialized]
     	protected CommissionQuestion commissionQuestion;
     
     	public virtual CommissionQuestion CommissionQuestion

@@ -60,7 +60,6 @@ namespace Core.Data
      		get { return staff; }
      		set { staff = value; }
     	}
-
         [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;
     

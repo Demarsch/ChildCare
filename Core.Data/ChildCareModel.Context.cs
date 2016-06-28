@@ -111,12 +111,12 @@ namespace Core.Data
         public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
         public virtual DbSet<ExecutionPlace> ExecutionPlaces { get; set; }
         public virtual DbSet<Record> Records { get; set; }
-        public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<RecordTypeCost> RecordTypeCosts { get; set; }
         public virtual DbSet<RecordType> RecordTypes { get; set; }
         public virtual DbSet<StaffCategory> StaffCategories { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
+        public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<CommissionTypeGroup> CommissionTypeGroups { get; set; }
     }

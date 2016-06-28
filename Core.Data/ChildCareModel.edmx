@@ -1559,18 +1559,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CommissionProtocols_CommissionQuestions">
-          <End Role="CommissionQuestions" Type="Self.CommissionQuestions" Multiplicity="1" />
-          <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionQuestions">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocols">
-              <PropertyRef Name="CommissionQuestionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CommissionProtocols_CommissionSources">
           <End Role="CommissionSources" Type="Self.CommissionSources" Multiplicity="1" />
           <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
@@ -3507,10 +3495,6 @@
           <AssociationSet Name="FK_CommissionMembers_Staffs" Association="Self.FK_CommissionMembers_Staffs">
             <End Role="Staffs" EntitySet="Staffs" />
             <End Role="CommissionMembers" EntitySet="CommissionMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_CommissionQuestions" Association="Self.FK_CommissionProtocols_CommissionQuestions">
-            <End Role="CommissionQuestions" EntitySet="CommissionQuestions" />
-            <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_CommissionSources" Association="Self.FK_CommissionProtocols_CommissionSources">
             <End Role="CommissionSources" EntitySet="CommissionSources" />

@@ -27,10 +27,8 @@ namespace Core.Data
             this.Assignments = new HashSet<Assignment>();
             this.Assignments1 = new HashSet<Assignment>();
             this.Assignments2 = new HashSet<Assignment>();
-        this.CommissionDecisions = new HashSet<CommissionDecision>();
-
-        this.CommissionDecisions1 = new HashSet<CommissionDecision>();
-
+            this.CommissionDecisions = new HashSet<CommissionDecision>();
+            this.CommissionDecisions1 = new HashSet<CommissionDecision>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.CommissionProtocols1 = new HashSet<CommissionProtocol>();
         }
@@ -108,15 +106,6 @@ namespace Core.Data
      		set { records = value; }
     	}
         [NonSerialized]
-            	protected ICollection<CommissionDecision> commissionDecisions;
-    
-    	public virtual ICollection<CommissionDecision> CommissionDecisions
-    	{
-     		get { return commissionDecisions; }
-     		set { commissionDecisions = value; }
-    	}
-
-        [NonSerialized]
     	protected ICollection<Assignment> assignments;
     
     	public virtual ICollection<Assignment> Assignments
@@ -140,9 +129,7 @@ namespace Core.Data
      		get { return assignments2; }
      		set { assignments2 = value; }
     	}
-
-
-    [NonSerialized]
+        [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;
     
     	public virtual ICollection<CommissionDecision> CommissionDecisions
@@ -150,9 +137,7 @@ namespace Core.Data
      		get { return commissionDecisions; }
      		set { commissionDecisions = value; }
     	}
-
-
-    [NonSerialized]
+        [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions1;
     
     	public virtual ICollection<CommissionDecision> CommissionDecisions1
