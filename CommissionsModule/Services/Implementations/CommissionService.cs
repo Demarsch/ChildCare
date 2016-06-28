@@ -302,6 +302,13 @@ namespace CommissionsModule.Services
             }
         }
 
+        public IEnumerable<CommissionTypeGroup> GetCommissionTypeGroups(object onDate)
+        {
+            DateTime dt = SpecialValues.MinDate;
+            DateTime.TryParse(onDate.ToSafeString(), out dt);
+            return cacheService.GetItems<CommissionTypeGroup>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
+        }
+
         public IEnumerable<CommissionType> GetCommissionTypes(object onDate)
         {
             DateTime dt = SpecialValues.MinDate;

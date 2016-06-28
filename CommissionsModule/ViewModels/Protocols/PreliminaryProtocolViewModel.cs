@@ -19,6 +19,7 @@ using System.Data.Entity;
 using Core.Data.Misc;
 using System.ComponentModel;
 using Core.Misc;
+using System.Windows.Data;
 
 namespace CommissionsModule.ViewModels
 {
@@ -37,6 +38,7 @@ namespace CommissionsModule.ViewModels
 
         private ValidationMediator validationMediator;
 
+        private CommissionTypeGroup unselectedCommissionTypeGroup;
         private CommissionType unselectedCommissionType;
         private CommissionQuestion unselectedCommissionQuestion;
         private CommissionSource unselectedCommissionSource;
@@ -44,6 +46,9 @@ namespace CommissionsModule.ViewModels
         private CommonIdName unselectedTalon;
         private CommonIdName unselectedPersonAddress;
         private MedicalHelpType unselectedHelpType;
+
+        private ObservableCollectionEx<CommissionType> commissionTypes;
+        private ObservableCollectionEx<CommissionQuestion> commissionQuestions;
         #endregion
 
         #region Constructors
@@ -77,16 +82,18 @@ namespace CommissionsModule.ViewModels
             validationMediator = new ValidationMediator(this);
             ChangeTracker = new ChangeTrackerEx<PreliminaryProtocolViewModel>(this);
 
-            CommissionQuestions = new ObservableCollectionEx<CommissionQuestion>();
-            CommissionTypes = new ObservableCollectionEx<CommissionType>();
+            CommissionTypeGroups = new ObservableCollectionEx<CommissionTypeGroup>();
+            commissionQuestions = new ObservableCollectionEx<CommissionQuestion>();
+            commissionTypes = new ObservableCollectionEx<CommissionType>();
             CommissionSources = new ObservableCollectionEx<CommissionSource>();
             SentLPUs = new ObservableCollectionEx<CommonIdName>();
             Talons = new ObservableCollectionEx<CommonIdName>();
             PersonAddresses = new ObservableCollectionEx<CommonIdName>();
             HelpTypes = new ObservableCollectionEx<MedicalHelpType>();
 
-            unselectedCommissionType = new CommissionType { Id = SpecialValues.NonExistingId, Name = "Выберите вид комиссии" };
-            unselectedCommissionQuestion = new CommissionQuestion { Id = SpecialValues.NonExistingId, Name = "Выберите вопрос комиссии" };
+            unselectedCommissionTypeGroup = new CommissionTypeGroup { Id = SpecialValues.NonExistingId, Name = "Выберите вид комиссии" };
+            unselectedCommissionType = new CommissionType { Id = SpecialValues.NonExistingId, Name = "Выберите вид подкомиссии" };
+            unselectedCommissionQuestion = new CommissionQuestion { Id = SpecialValues.NonExistingId, Name = "Выберите вопрос подкомиссии" };
             unselectedCommissionSource = new CommissionSource { Id = SpecialValues.NonExistingId, Name = "Выберите источник обращения" };
             unselectedSentLPU = new CommonIdName { Id = SpecialValues.NonExistingId, Name = "Выберите направившее ЛПУ/самообращение" };
             unselectedTalon = new CommonIdName { Id = SpecialValues.NonExistingId, Name = "Выберите талон пациента" };
@@ -100,6 +107,20 @@ namespace CommissionsModule.ViewModels
         public int CommissionProtocolId { get; private set; }
         public int PersonId { get; private set; }
 
+        private int selectedCommissionTypeGroupId;
+        public int SelectedCommissionTypeGroupId
+        {
+            get { return selectedCommissionTypeGroupId; }
+            set
+            {
+                selectedCommissionTypeGroupId = 0;
+                if (value < 1)
+                    value = SpecialValues.NonExistingId;
+                SetTrackedProperty(ref selectedCommissionTypeGroupId, value);
+                FilteredCommissionTypes.Refresh();
+            }
+        }
+
         private int selectedCommissionTypeId;
         public int SelectedCommissionTypeId
         {
@@ -110,6 +131,7 @@ namespace CommissionsModule.ViewModels
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedCommissionTypeId, value);
+                FilteredCommissionQuestions.Refresh();
             }
         }
 
@@ -213,13 +235,15 @@ namespace CommissionsModule.ViewModels
         }
 
         //DataSources
-        public ObservableCollectionEx<CommissionType> CommissionTypes { get; private set; }
-        public ObservableCollectionEx<CommissionQuestion> CommissionQuestions { get; private set; }
+        public ObservableCollectionEx<CommissionTypeGroup> CommissionTypeGroups { get; private set; }
         public ObservableCollectionEx<CommissionSource> CommissionSources { get; private set; }
         public ObservableCollectionEx<CommonIdName> SentLPUs { get; private set; }
         public ObservableCollectionEx<CommonIdName> Talons { get; private set; }
         public ObservableCollectionEx<CommonIdName> PersonAddresses { get; private set; }
         public ObservableCollectionEx<MedicalHelpType> HelpTypes { get; private set; }
+
+        public ListCollectionView FilteredCommissionQuestions { get; private set; }
+        public ListCollectionView FilteredCommissionTypes { get; private set; }
 
         public BusyMediator BusyMediator { get; private set; }
         public FailureMediator FailureMediator { get; private set; }
@@ -274,9 +298,10 @@ namespace CommissionsModule.ViewModels
             }
             CommissionProtocolId = commissionProtocolId;
             PersonId = personId;
-            CommissionTypes.Clear();
+            CommissionTypeGroups.Clear();
+            commissionTypes.Clear();
             CommissionSources.Clear();
-            CommissionQuestions.Clear();
+            commissionQuestions.Clear();
             PersonAddresses.Clear();
             SentLPUs.Clear();
             HelpTypes.Clear();
@@ -296,6 +321,7 @@ namespace CommissionsModule.ViewModels
                 var commissionProtocolData = await commissionProtocolQuery.Select(x => new
                 {
                     x.CommissionTypeId,
+                    CommissionTypeGroupId = x.CommissionType.CommissionTypeGroupId,
                     x.CommissionQuestionId,
                     x.CommissionSourceId,
                     x.MKB,
@@ -315,6 +341,7 @@ namespace CommissionsModule.ViewModels
                 commissionSentLPUquery = commissionService.GetCommissionSentLPUs(curDate);
                 talonQuery = commissionService.GetPatientTalons(PersonId);
                 personAddressesQuery = commissionService.GetPatientAddresses(PersonId);
+                var commissionTypeGroupTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionTypeGroup>>)commissionService.GetCommissionTypeGroups, curDate);
                 var commissionTypesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionType>>)commissionService.GetCommissionTypes, curDate);
                 var commissionSourcesTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionSource>>)commissionService.GetCommissionSource, curDate);
                 var commissionQuestionsTask = Task.Factory.StartNew((Func<object, IEnumerable<CommissionQuestion>>)commissionService.GetCommissionQuestions, curDate);
@@ -333,13 +360,23 @@ namespace CommissionsModule.ViewModels
                     x.BeginDateTime,
                     x.EndDateTime
                 }).OrderBy(x => x.BeginDateTime).ToArrayAsync();
-                IEnumerable<CommissionType> commissionTypes = new CommissionType[] { unselectedCommissionType }.Concat(await commissionTypesTask);
+                IEnumerable<CommissionTypeGroup> commissionTypeGroups = new CommissionTypeGroup[] { unselectedCommissionTypeGroup }.Concat(await commissionTypeGroupTask);
                 if (!token.IsCancellationRequested)
-                    CommissionTypes.AddRange(commissionTypes);
+                    CommissionTypeGroups.AddRange(commissionTypeGroups);
+                if (!token.IsCancellationRequested)
+                {
+                    commissionTypes.AddRange(new CommissionType[] { unselectedCommissionType }.Concat(await commissionTypesTask));
+                    FilteredCommissionTypes = new ListCollectionView(commissionTypes);
+                    FilteredCommissionTypes.Filter = x => ((x as CommissionType).CommissionTypeGroupId == SelectedCommissionTypeGroupId) || (x as CommissionType).Id == SpecialValues.NonExistingId;
+                }
+                if (!token.IsCancellationRequested)
+                {
+                    commissionQuestions.AddRange(new CommissionQuestion[] { unselectedCommissionQuestion }.Concat(await commissionQuestionsTask));
+                    FilteredCommissionQuestions = new ListCollectionView(commissionQuestions);
+                    FilteredCommissionQuestions.Filter = x => ((x as CommissionQuestion).CommissionTypeId == SelectedCommissionTypeId) || (x as CommissionQuestion).Id == SpecialValues.NonExistingId;
+                }
                 if (!token.IsCancellationRequested)
                     CommissionSources.AddRange(new CommissionSource[] { unselectedCommissionSource }.Concat(await commissionSourcesTask));
-                if (!token.IsCancellationRequested)
-                    CommissionQuestions.AddRange(new CommissionQuestion[] { unselectedCommissionQuestion }.Concat(await commissionQuestionsTask));
                 var selfLPU = new CommonIdName { Id = 0, Name = "Самообращение" };
                 if (!token.IsCancellationRequested)
                     SentLPUs.AddRange(new CommonIdName[] { unselectedSentLPU, selfLPU }.Concat(await commissionSentLPUsTask));
@@ -360,6 +397,7 @@ namespace CommissionsModule.ViewModels
 
                 if (commissionProtocolData != null)
                 {
+                    SelectedCommissionTypeGroupId = commissionProtocolData.CommissionTypeGroupId;
                     SelectedCommissionTypeId = commissionProtocolData.CommissionTypeId;
                     SelectedCommissionQuestionId = commissionProtocolData.CommissionQuestionId;
                     SelectedCommissionSourceId = commissionProtocolData.CommissionSourceId;
@@ -372,6 +410,7 @@ namespace CommissionsModule.ViewModels
                 }
                 else
                 {
+                    SelectedCommissionTypeGroupId = SpecialValues.NonExistingId; 
                     SelectedCommissionTypeId = SpecialValues.NonExistingId;
                     SelectedCommissionQuestionId = SpecialValues.NonExistingId;
                     SelectedCommissionSourceId = SpecialValues.NonExistingId;
@@ -382,6 +421,7 @@ namespace CommissionsModule.ViewModels
                     SelectedHelpTypeId = SpecialValues.NonExistingId;
                     IncomeDateTime = DateTime.Now;
                 }
+
                 loadingIsCompleted = true;
                 ChangeTracker.IsEnabled = true;
             }
@@ -489,7 +529,7 @@ namespace CommissionsModule.ViewModels
 
             private void ValidateSentLPU()
             {
-                SetError(x => x.SelectedSentLPUId,AssociatedItem.SelectedSentLPUId == SpecialValues.NonExistingId ? "Укажите направившее ЛПУ" : string.Empty);
+                SetError(x => x.SelectedSentLPUId, AssociatedItem.SelectedSentLPUId == SpecialValues.NonExistingId ? "Укажите направившее ЛПУ" : string.Empty);
             }
 
             private void ValidateCommissionSource()

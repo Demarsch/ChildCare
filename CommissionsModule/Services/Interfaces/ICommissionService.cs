@@ -48,6 +48,8 @@ namespace CommissionsModule.Services
 
         IEnumerable<CommissionType> GetCommissionTypes(object onDate);
 
+        IEnumerable<CommissionTypeGroup> GetCommissionTypeGroups(object onDate);        
+
         IDisposableQueryable<CommissionType> GetCommissionTypes(DateTime beginDate, DateTime endDate);
 
         IEnumerable<CommissionSource> GetCommissionSource(object onDate);
