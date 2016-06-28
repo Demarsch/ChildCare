@@ -54,8 +54,8 @@ namespace Shared.PatientRecords.ViewModels
             }
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
-            CompositeChangeTracker = new ChangeTrackerEx<VisitCloseViewModel>(this);
-            CompositeChangeTracker.PropertyChanged += OnChangesTracked;
+            ChangeTracker = new ChangeTrackerEx<VisitCloseViewModel>(this);
+            ChangeTracker.PropertyChanged += OnChangesTracked;
             VisitResults = new ObservableCollectionEx<CommonIdName>();
             VisitOutcomes = new ObservableCollectionEx<CommonIdName>();
             CloseVisitCommand = new DelegateCommand(CloseVisitAsync, CanSaveChanges);
@@ -114,7 +114,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public FailureMediator FailureMediator { get; private set; }
 
-        public IChangeTracker CompositeChangeTracker { get; private set; }
+        public IChangeTracker ChangeTracker { get; private set; }
         #endregion
 
         #region Commands
@@ -156,8 +156,8 @@ namespace Shared.PatientRecords.ViewModels
                 BusyMediator.Deactivate();
                 if (saveSuccesfull)
                 {
-                    CompositeChangeTracker.AcceptChanges();
-                    CompositeChangeTracker.IsEnabled = true;
+                    ChangeTracker.AcceptChanges();
+                    ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
                     HostWindow.Close();
                 }
@@ -168,7 +168,7 @@ namespace Shared.PatientRecords.ViewModels
         private void Cancel()
         {
             FailureMediator.Deactivate();
-            CompositeChangeTracker.RestoreChanges();
+            ChangeTracker.RestoreChanges();
             visitId = -1;
             HostWindow.Close();
         }
@@ -188,7 +188,7 @@ namespace Shared.PatientRecords.ViewModels
 
         void IDisposable.Dispose()
         {
-            CompositeChangeTracker.Dispose();
+            ChangeTracker.Dispose();
             reloadVisitDataCommandWrapper.Dispose();
             saveChangesCommandWrapper.Dispose();
         }
@@ -202,7 +202,7 @@ namespace Shared.PatientRecords.ViewModels
         }
         private bool CanSaveChanges()
         {
-            return CompositeChangeTracker.HasChanges;
+            return ChangeTracker.HasChanges;
         }
 
 
@@ -216,7 +216,7 @@ namespace Shared.PatientRecords.ViewModels
                 currentOperationToken.Dispose();
             }
             var loadingIsCompleted = false;
-            CompositeChangeTracker.IsEnabled = false;
+            ChangeTracker.IsEnabled = false;
             currentOperationToken = new CancellationTokenSource();
             var token = currentOperationToken.Token;
             BusyMediator.Activate("Заполнение данных закрытия случая...");
@@ -240,7 +240,7 @@ namespace Shared.PatientRecords.ViewModels
                 Date = visit.BeginDateTime;
                 SelectedVisitOutcomeId = visit.VisitOutcomeId.ToInt();
                 SelectedVisitResultId = visit.VisitResultId.ToInt();
-                CompositeChangeTracker.IsEnabled = true;
+                ChangeTracker.IsEnabled = true;
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)

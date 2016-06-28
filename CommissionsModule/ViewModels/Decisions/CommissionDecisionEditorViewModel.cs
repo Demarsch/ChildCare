@@ -135,7 +135,7 @@ namespace CommissionsModule.ViewModels
 
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
-        public IChangeTracker CompositeChangeTracker { get; set; }
+        public IChangeTracker ChangeTracker { get; set; }
 
         #endregion
 
@@ -230,8 +230,8 @@ namespace CommissionsModule.ViewModels
                 if (loadingIsCompleted)
                 {
                     BusyMediator.Deactivate();
-                    if (CompositeChangeTracker != null)
-                        CompositeChangeTracker.IsEnabled = true;
+                    if (ChangeTracker != null)
+                        ChangeTracker.IsEnabled = true;
                 }
                 if (commissionDecisionsQuery != null)
                 {

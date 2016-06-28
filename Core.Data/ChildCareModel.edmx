@@ -208,6 +208,15 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="CommissionTypeGroups">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="CommissionTypes">
           <Key>
             <PropertyRef Name="Id" />
@@ -215,6 +224,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CommissionTypeGroupId" Type="int" Nullable="false" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
@@ -1549,18 +1559,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CommissionProtocols_CommissionQuestions">
-          <End Role="CommissionQuestions" Type="Self.CommissionQuestions" Multiplicity="1" />
-          <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CommissionQuestions">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocols">
-              <PropertyRef Name="CommissionQuestionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CommissionProtocols_CommissionSources">
           <End Role="CommissionSources" Type="Self.CommissionSources" Multiplicity="1" />
           <End Role="CommissionProtocols" Type="Self.CommissionProtocols" Multiplicity="*" />
@@ -1714,6 +1712,18 @@
             </Principal>
             <Dependent Role="CommissionSources">
               <PropertyRef Name="CommissionTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionTypes_CommissionTypeGroups">
+          <End Role="CommissionTypeGroups" Type="Self.CommissionTypeGroups" Multiplicity="1" />
+          <End Role="CommissionTypes" Type="Self.CommissionTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionTypeGroups">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionTypes">
+              <PropertyRef Name="CommissionTypeGroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3278,6 +3288,7 @@
           <EntitySet Name="CommissionProtocols" EntityType="Self.CommissionProtocols" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionQuestions" EntityType="Self.CommissionQuestions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionSources" EntityType="Self.CommissionSources" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CommissionTypeGroups" EntityType="Self.CommissionTypeGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionTypes" EntityType="Self.CommissionTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Complications" EntityType="Self.Complications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Countries" EntityType="Self.Countries" Schema="dbo" store:Type="Tables" />
@@ -3485,10 +3496,6 @@
             <End Role="Staffs" EntitySet="Staffs" />
             <End Role="CommissionMembers" EntitySet="CommissionMembers" />
           </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_CommissionQuestions" Association="Self.FK_CommissionProtocols_CommissionQuestions">
-            <End Role="CommissionQuestions" EntitySet="CommissionQuestions" />
-            <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
-          </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_CommissionSources" Association="Self.FK_CommissionProtocols_CommissionSources">
             <End Role="CommissionSources" EntitySet="CommissionSources" />
             <End Role="CommissionProtocols" EntitySet="CommissionProtocols" />
@@ -3540,6 +3547,10 @@
           <AssociationSet Name="FK_CommissionSources_CommissionTypes" Association="Self.FK_CommissionSources_CommissionTypes">
             <End Role="CommissionTypes" EntitySet="CommissionTypes" />
             <End Role="CommissionSources" EntitySet="CommissionSources" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionTypes_CommissionTypeGroups" Association="Self.FK_CommissionTypes_CommissionTypeGroups">
+            <End Role="CommissionTypeGroups" EntitySet="CommissionTypeGroups" />
+            <End Role="CommissionTypes" EntitySet="CommissionTypes" />
           </AssociationSet>
           <AssociationSet Name="FK_Complications_Complications" Association="Self.FK_Complications_Complications">
             <End Role="Complications" EntitySet="Complications" />
@@ -4839,6 +4850,11 @@
           <AssociationSet Name="FK_CommissionProtocols_RemovedUsers" Association="DataLib.FK_CommissionProtocols_RemovedUsers">
             <End Role="User" EntitySet="Users" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
+          <EntitySet Name="CommissionTypeGroups" EntityType="DataLib.CommissionTypeGroup" />
+          <AssociationSet Name="FK_CommissionTypes_CommissionTypeGroups" Association="DataLib.FK_CommissionTypes_CommissionTypeGroups">
+            <End Role="CommissionTypeGroup" EntitySet="CommissionTypeGroups" />
+            <End Role="CommissionType" EntitySet="CommissionTypes" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Branch">
@@ -6961,6 +6977,8 @@
           <NavigationProperty Name="CommissionSources" Relationship="DataLib.FK_CommissionSources_CommissionTypes" FromRole="CommissionType" ToRole="CommissionSource" />
           <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionType" ToRole="CommissionMember" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_CommissionTypes" FromRole="CommissionType" ToRole="CommissionProtocol" />
+          <Property Name="CommissionTypeGroupId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CommissionTypeGroup" Relationship="DataLib.FK_CommissionTypes_CommissionTypeGroups" FromRole="CommissionType" ToRole="CommissionTypeGroup" />
         </EntityType>
         <Association Name="FK_CommissionDecisionsLinks_CommissionMemberTypes">
           <End Type="DataLib.CommissionMemberType" Role="CommissionMemberType" Multiplicity="1" />
@@ -8441,6 +8459,28 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="CommissionTypeGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CommissionTypes" Relationship="DataLib.FK_CommissionTypes_CommissionTypeGroups" FromRole="CommissionTypeGroup" ToRole="CommissionType" />
+        </EntityType>
+        <Association Name="FK_CommissionTypes_CommissionTypeGroups">
+          <End Type="DataLib.CommissionTypeGroup" Role="CommissionTypeGroup" Multiplicity="1" />
+          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionTypeGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionType">
+              <PropertyRef Name="CommissionTypeGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -9399,6 +9439,7 @@
           <EntitySetMapping Name="CommissionTypes">
             <EntityTypeMapping TypeName="DataLib.CommissionType">
               <MappingFragment StoreEntitySet="CommissionTypes">
+                <ScalarProperty Name="CommissionTypeGroupId" ColumnName="CommissionTypeGroupId" />
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
@@ -9694,6 +9735,16 @@
                 <ScalarProperty Name="DecisionId" ColumnName="DecisionId" />
                 <ScalarProperty Name="CommissionTypeId" ColumnName="CommissionTypeId" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommissionTypeGroups">
+            <EntityTypeMapping TypeName="DataLib.CommissionTypeGroup">
+              <MappingFragment StoreEntitySet="CommissionTypeGroups">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

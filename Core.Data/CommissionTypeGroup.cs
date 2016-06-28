@@ -13,28 +13,25 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class RecordContractLimit : ICloneable
+    public partial class CommissionTypeGroup : ICloneable
     {
+        public CommissionTypeGroup()
+        {
+            this.CommissionTypes = new HashSet<CommissionType>();
+        }
+    
         public int Id { get; set; }
-        public int RecordContractId { get; set; }
-        public int RecordTypeId { get; set; }
-        public int Count { get; set; }
+        public string Name { get; set; }
+        public System.DateTime BeginDateTime { get; set; }
+        public System.DateTime EndDateTime { get; set; }
     
         [NonSerialized]
-    	protected RecordContract recordContract;
+    	protected ICollection<CommissionType> commissionTypes;
     
-    	public virtual RecordContract RecordContract
+    	public virtual ICollection<CommissionType> CommissionTypes
     	{
-     		get { return recordContract; }
-     		set { recordContract = value; }
-    	}
-        [NonSerialized]
-    	protected RecordType recordType;
-    
-    	public virtual RecordType RecordType
-    	{
-     		get { return recordType; }
-     		set { recordType = value; }
+     		get { return commissionTypes; }
+     		set { commissionTypes = value; }
     	}
     
     	public object Clone()

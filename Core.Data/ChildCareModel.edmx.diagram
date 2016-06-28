@@ -271,6 +271,8 @@
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonTalons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RemovedUsers" />
+        <EntityTypeShape EntityType="DataLib.CommissionTypeGroup" Width="1.5" PointX="14.5" PointY="40.625" />
+        <AssociationConnector Association="DataLib.FK_CommissionTypes_CommissionTypeGroups" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

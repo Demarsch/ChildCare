@@ -115,6 +115,9 @@
     <Compile Include="CommissionType.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CommissionTypeGroup.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Complication.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

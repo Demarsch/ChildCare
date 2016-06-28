@@ -15,10 +15,11 @@ using Core.Extensions;
 using Core.Wpf.Misc;
 using Prism.Commands;
 using Core.Services;
+using Core.Misc;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionDecisionViewModel : BindableBase, IDisposable
+    public class CommissionDecisionViewModel : TrackableBindableBase, IDisposable, IChangeTrackerMediator
     {
         #region Fields
         private readonly ICommissionService commissionService;
@@ -52,6 +53,7 @@ namespace CommissionsModule.ViewModels
             this.securityService = securityService;
             this.commissionService = commissionService;
             this.logService = logService;
+            ChangeTracker = new ChangeTrackerEx<CommissionDecisionViewModel>(this);
             BusyMediator = new BusyMediator();
         }
 
@@ -78,7 +80,7 @@ namespace CommissionsModule.ViewModels
             get { return stage; }
             set
             {
-                SetProperty(ref stage, value);
+                SetTrackedProperty(ref stage, value);
                 if (CommissionMemberGroupItem != null)
                     CommissionMemberGroupItem.Stage = stage;
             }
@@ -102,7 +104,7 @@ namespace CommissionsModule.ViewModels
             get { return needAllMembers; }
             set
             {
-                SetProperty(ref needAllMembers, value);
+                SetTrackedProperty(ref needAllMembers, value);
                 if (CommissionMemberGroupItem != null)
                     CommissionMemberGroupItem.NeedAllMembers = needAllMembers;
             }
@@ -181,6 +183,8 @@ namespace CommissionsModule.ViewModels
             private set { SetProperty(ref canDeleteMember, value); }
         }
 
+        public IChangeTracker ChangeTracker { get; private set; }
+
         public BusyMediator BusyMediator { get; set; }
         public FailureMediator FailureMediator { get; set; }
         #endregion
@@ -229,6 +233,7 @@ namespace CommissionsModule.ViewModels
 
         public async Task InitializeNew(int commissionMemberId, int stage, int commissionProtocolId)
         {
+            ChangeTracker.IsEnabled = false;
             EraseProperties();
             var commMemberId = commissionMemberId.ToInt();
             if (commMemberId < 1)
@@ -263,8 +268,9 @@ namespace CommissionsModule.ViewModels
                 CanDeleteMember = commissionProtocolIsCompleted != true || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision);
 
                 NeedAllMembers = await commissionProtocolQuery.SelectMany(x => x.CommissionDecisions.Where(y => y.CommissionStage == stage)).Select(x => x.NeedAllMembersInStage).FirstOrDefaultAsync(token);
-                
+
                 loadingIsCompleted = true;
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {
@@ -290,6 +296,7 @@ namespace CommissionsModule.ViewModels
 
         public async Task Initialize(int? commissionDecisionId)
         {
+            ChangeTracker.IsEnabled = false;
             var commDecisionId = commissionDecisionId.ToInt();
             EraseProperties();
             if (commDecisionId < 1)
@@ -336,6 +343,7 @@ namespace CommissionsModule.ViewModels
                 Comment = commissionDecision.Comment;
                 this.OnPropertyChanged();
                 loadingIsCompleted = true;
+                ChangeTracker.IsEnabled = true;
             }
             catch (OperationCanceledException)
             {

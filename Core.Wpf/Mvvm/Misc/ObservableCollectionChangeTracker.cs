@@ -23,6 +23,27 @@ namespace Core.Wpf.Mvvm
             this.collection = collection;
             collection.BeforeCollectionChanged += OnBeforeCollectionChanged;
             collection.CollectionChanged += OnCollectionChanged;
+            collection.ItemPropertyChanged += OnItemPropertyChanged;
+        }
+
+        private void OnItemPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+            if (originalItems == null)
+            {
+                originalItems = collection.ToArray();
+            }
+            if (originalItems.Length == 0 && collection.Count == 0)
+            {
+                AcceptChanges();
+            }
+            else
+            {
+                HasChanges = true;
+            }
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -84,6 +105,7 @@ namespace Core.Wpf.Mvvm
         {
             collection.BeforeCollectionChanged -= OnBeforeCollectionChanged;
             collection.CollectionChanged -= OnCollectionChanged;
+            collection.ItemPropertyChanged -= OnItemPropertyChanged;
         }
 
         private bool isEnabled;

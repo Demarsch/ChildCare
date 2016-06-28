@@ -52,15 +52,15 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
             DiagnosesEditor = new DiagnosesCollectionViewModel(diagnosService, recordService, cacheService, dialogService, messageService, logService, userService);
 
             currentInstanceChangeTracker = new ChangeTrackerEx<DefaultProtocolViewModel>(this);
-            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, DiagnosesEditor.CompositeChangeTracker);
+            var changeTracker = new CompositeChangeTracker(currentInstanceChangeTracker, DiagnosesEditor.ChangeTracker);
             changeTracker.PropertyChanged += OnChangesTracked;
-            CompositeChangeTracker = changeTracker;
+            ChangeTracker = changeTracker;
         }
         #endregion
 
         private readonly IChangeTracker currentInstanceChangeTracker;
 
-        public IChangeTracker CompositeChangeTracker { get; set; }
+        public IChangeTracker ChangeTracker { get; set; }
 
         public void Dispose()
         {
@@ -143,8 +143,8 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 
             if (!SpecialValues.IsNewOrNonExisting(saveProtocolId) && DiagnosesEditor.Save(recordId))
             {
-                CompositeChangeTracker.AcceptChanges();
-                CompositeChangeTracker.IsEnabled = true;
+                ChangeTracker.AcceptChanges();
+                ChangeTracker.IsEnabled = true;
                 return saveProtocolId;
             }
             return SpecialValues.NonExistingId;
@@ -152,7 +152,7 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 
         public void LoadProtocol(int assignmentId, int recordId, int visitId)
         {
-            CompositeChangeTracker.IsEnabled = false;
+            ChangeTracker.IsEnabled = false;
             if (assignmentId > 0)
             {
                 LoadAssignmentData(assignmentId);
@@ -166,7 +166,7 @@ namespace Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels
 
             DiagnosesEditor.Load(OptionValues.DiagnosSpecialistExamination, recordId);
 
-            CompositeChangeTracker.IsEnabled = true;
+            ChangeTracker.IsEnabled = true;
         }
 
         public string CanComplete()

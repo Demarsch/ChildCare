@@ -25,23 +25,34 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="2, 2, 2, 0">
                     <Run Text="Тип комиссии" />
                     <Run Text="*"
                          FontWeight="SemiBold"
                          Foreground="Red" />
                 </TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0, 2, 22, 0" ItemsSource="{Binding CommissionTypes}" 
-                          SelectedValue="{Binding SelectedCommissionTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id" />
-                <TextBlock Grid.Row="1" Grid.Column="2" Margin="2, 2, 2, 0">
-                    <Run Text="Вопрос комиссии" />
+                <ComboBox Grid.Row="0" Grid.Column="1" Margin="0, 2, 22, 0" ItemsSource="{Binding CommissionTypeGroups}" 
+                          SelectedValue="{Binding SelectedCommissionTypeGroupId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id" />
+
+                <TextBlock Grid.Row="0" Grid.Column="2" Margin="2, 2, 2, 0">
+                    <Run Text="Тип подкомиссии" />
                     <Run Text="*"
                          FontWeight="SemiBold"
                          Foreground="Red" />
                 </TextBlock>
-                <ComboBox Grid.Row="1" Grid.Column="3" Margin="0, 2, 22, 0" ItemsSource="{Binding CommissionQuestions}" 
+                <ComboBox Grid.Row="0" Grid.Column="3"  Margin="0, 2, 22, 0" ItemsSource="{Binding FilteredCommissionTypes}" 
+                          SelectedValue="{Binding SelectedCommissionTypeId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id" />
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">
+                    <Run Text="Вопрос подкомиссии" />
+                    <Run Text="*"
+                         FontWeight="SemiBold"
+                         Foreground="Red" />
+                </TextBlock>
+                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="0, 2, 22, 0" ItemsSource="{Binding FilteredCommissionQuestions}" 
                           SelectedValue="{Binding SelectedCommissionQuestionId, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplate}" SelectedValuePath="Id"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Margin="2, 2, 2, 0">

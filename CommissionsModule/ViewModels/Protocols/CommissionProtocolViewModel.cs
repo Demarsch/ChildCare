@@ -146,9 +146,8 @@ namespace CommissionsModule.ViewModels
 
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
-            ChangeTracker = new ChangeTrackerEx<CommissionProtocolViewModel>(this);
-            CompositeChangeTracker = new CompositeChangeTracker(ChangeTracker, PreliminaryProtocolViewModel.CompositeChangeTracker, CommissionСonductViewModel.CompositeChangeTracker, CommissionСonclusionViewModel.CompositeChangeTracker);
-            CompositeChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
+            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker, CommissionСonductViewModel.ChangeTracker, CommissionСonclusionViewModel.ChangeTracker);
+            ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
         }
 
         #endregion
@@ -247,7 +246,6 @@ namespace CommissionsModule.ViewModels
 
         public FailureMediator FailureMediator { get; private set; }
         public NotificationMediator NotificationMediator { get; private set; }
-        public IChangeTracker CompositeChangeTracker { get; private set; }
         public IChangeTracker ChangeTracker { get; private set; }
 
         #endregion
@@ -599,7 +597,7 @@ namespace CommissionsModule.ViewModels
                 else
                 {
                     SelectedCommissionProtocolId = await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
-                    CompositeChangeTracker.AcceptChanges();
+                    ChangeTracker.AcceptChanges();
                     saveSuccessfull = true;
                 }
             }
@@ -683,7 +681,7 @@ namespace CommissionsModule.ViewModels
 
         private bool CanSaveCommissionProtocol()
         {
-            return CompositeChangeTracker.HasChanges;
+            return ChangeTracker.HasChanges;
         }
 
         #endregion
