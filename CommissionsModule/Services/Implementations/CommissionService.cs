@@ -254,6 +254,7 @@ namespace CommissionsModule.Services
                         var changedDecision = newProtocol.CommissionDecisions.FirstOrDefault(x => x.Id == curDecision.Id);
                         curDecision.CommissionStage = changedDecision.CommissionStage;
                         curDecision.NeedAllMembersInStage = changedDecision.NeedAllMembersInStage;
+                        curDecision.IsOfficial = changedDecision.IsOfficial;
                     }
                     db.Entry(curDecision).State = EntityState.Modified;
                 }
@@ -270,7 +271,7 @@ namespace CommissionsModule.Services
                         CommissionMemberId = newDecision.CommissionMemberId,
                         InitiatorUserId = curUserId,
                         Comment = string.Empty,
-                        IsOfficial = false
+                        IsOfficial = newDecision.IsOfficial
                     };
                     db.Entry(decision).State = decision.Id == SpecialValues.NewId ? EntityState.Added : EntityState.Modified;
                     //commissionProtocol.CommissionDecisions.Add(decision);

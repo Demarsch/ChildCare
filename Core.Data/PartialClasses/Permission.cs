@@ -45,6 +45,8 @@
         
         public readonly static string DeleteCommissionDecisionWithDecision = "Удалять решение комиссии";
 
+        public readonly static string CanChangeCommissionDecisionIsOfficial = "Использовать решение в протоколе комиссии";
+
         public readonly static string EditCommissionMembers = "Редактировать состав комиссии";
 
         #endregion
