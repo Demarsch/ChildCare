@@ -94,7 +94,7 @@ namespace CommissionsModule.Services
                 string defColor = HexConverter(System.Drawing.Color.White);
                 if (!decisionId.HasValue) return defColor;
                 var decision = context.Set<Decision>().FirstOrDefault(x => x.Id == decisionId.Value);
-                return (decision != null && decision.ColorsSetting != null && !string.IsNullOrEmpty(decision.ColorsSetting.Hex)) ? decision.ColorsSetting.Hex : defColor;
+                return (decision != null && decision.DecisionKind != null && !string.IsNullOrEmpty(decision.DecisionKind.ColorsSetting.Hex)) ? decision.DecisionKind.ColorsSetting.Hex : defColor;
             }
         }
 
@@ -591,7 +591,7 @@ namespace CommissionsModule.Services
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.Id == id), context);
         }
-        
+
         public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter)
         {
             var context = contextProvider.CreateNewContext();
@@ -615,7 +615,7 @@ namespace CommissionsModule.Services
         public static int[] FilterVKNumber(string input)
         {
             List<int> numbers = new List<int>();
-            input = input.Replace(';',',');
+            input = input.Replace(';', ',');
             if (input.Contains(','))
             {
                 foreach (var item in input.Split(','))

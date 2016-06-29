@@ -89,14 +89,6 @@ namespace Core.Data
      		set { user = value; }
     	}
         [NonSerialized]
-    	protected Decision decision;
-    
-    	public virtual Decision Decision
-    	{
-     		get { return decision; }
-     		set { decision = value; }
-    	}
-        [NonSerialized]
     	protected MedicalHelpType medicalHelpType;
     
     	public virtual MedicalHelpType MedicalHelpType
@@ -151,6 +143,14 @@ namespace Core.Data
     	{
      		get { return user1; }
      		set { user1 = value; }
+    	}
+        [NonSerialized]
+    	protected Decision decision;
+    
+    	public virtual Decision Decision
+    	{
+     		get { return decision; }
+     		set { decision = value; }
     	}
     
     	public object Clone()

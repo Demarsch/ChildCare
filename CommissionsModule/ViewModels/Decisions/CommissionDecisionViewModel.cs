@@ -325,7 +325,7 @@ namespace CommissionsModule.ViewModels
                         x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
                     DecisionName = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
                     x.Comment,
-                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : emptyDecisionColor,
+                    ColorType = x.DecisionId.HasValue && x.Decision.DecisionKindId.HasValue ? x.Decision.DecisionKind.ColorsSetting.Hex : emptyDecisionColor,
                     x.NeedAllMembersInStage,
                     x.CommissionProtocolId,
                     x.CommissionMemberId,

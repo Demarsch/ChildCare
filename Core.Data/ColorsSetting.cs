@@ -17,7 +17,7 @@ namespace Core.Data
     {
         public ColorsSetting()
         {
-            this.Decisions = new HashSet<Decision>();
+            this.DecisionKinds = new HashSet<DecisionKind>();
         }
     
         public int Id { get; set; }
@@ -27,12 +27,12 @@ namespace Core.Data
         public string Hex { get; set; }
     
         [NonSerialized]
-    	protected ICollection<Decision> decisions;
+    	protected ICollection<DecisionKind> decisionKinds;
     
-    	public virtual ICollection<Decision> Decisions
+    	public virtual ICollection<DecisionKind> DecisionKinds
     	{
-     		get { return decisions; }
-     		set { decisions = value; }
+     		get { return decisionKinds; }
+     		set { decisionKinds = value; }
     	}
     
     	public object Clone()

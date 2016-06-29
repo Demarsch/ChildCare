@@ -154,10 +154,7 @@
         <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
         <AssociationConnector Association="DataLib.FK_UserPermissionGroups_Users" />
         <AssociationConnector Association="DataLib.FK_Visits_Users_RemovedByUser" />
-        <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="0.75" PointY="11" />
-        <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
         <EntityTypeShape EntityType="DataLib.ColorsSetting" Width="1.5" PointX="0.75" PointY="15.625" />
-        <AssociationConnector Association="DataLib.FK_Decisions_ColorsSettings" />
         <EntityTypeShape EntityType="DataLib.CommissionDecisionsLink" Width="2.375" PointX="21.25" PointY="21.875" />
         <EntityTypeShape EntityType="DataLib.CommissionFilter" Width="1.5" PointX="8.375" PointY="4.75" />
         <EntityTypeShape EntityType="DataLib.CommissionMemberType" Width="2.375" PointX="19" PointY="26.125" />
@@ -166,7 +163,6 @@
         <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="16.75" PointY="40" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
         <EntityTypeShape EntityType="DataLib.PersonTalon" Width="1.5" PointX="24" PointY="42.875" />
@@ -256,14 +252,12 @@
         <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="26.25" PointY="34.875" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
-        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users1" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionQuestions" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionSources" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CreateUsers" />
-        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Decisions" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_MedicalHelpTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_Orgs" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonAddresses" />
@@ -273,6 +267,14 @@
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RemovedUsers" />
         <EntityTypeShape EntityType="DataLib.CommissionTypeGroup" Width="1.5" PointX="14.5" PointY="40.625" />
         <AssociationConnector Association="DataLib.FK_CommissionTypes_CommissionTypeGroups" />
+        <EntityTypeShape EntityType="DataLib.DecisionKind" Width="1.5" PointX="3" PointY="16.5" />
+        <AssociationConnector Association="DataLib.FK_DecisionKinds_ColorsSettings" />
+        <EntityTypeShape EntityType="DataLib.Decision" Width="1.5" PointX="5.25" PointY="17" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisions_Decisions" />
+        <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
+        <AssociationConnector Association="DataLib.FK_CommissionProtocols_Decisions" />
+        <AssociationConnector Association="DataLib.FK_Decisions_DecisionKinds" />
+        <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

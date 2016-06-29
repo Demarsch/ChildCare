@@ -182,7 +182,7 @@ namespace CommissionsModule.ViewModels
                 var currentUserPersonStaffIds = currentUserPersonStaffIdsTask.Result;
                 var currentUserStaffIds = currentUserStaffIdsTask.Result;
                 var commissionDecisionIds = await commissionDecisionsQuery
-                    .Where(x => showAllCommissionDecisions || (x.DecisionId.HasValue || (currentUserPersonStaffIds.Contains(x.CommissionMember.PersonStaffId ?? 0) || currentUserStaffIds.Contains(x.CommissionMember.StaffId ?? 0))))
+                    .Where(x => x.RemovedByUserId == null && showAllCommissionDecisions || (x.DecisionId.HasValue || (currentUserPersonStaffIds.Contains(x.CommissionMember.PersonStaffId ?? 0) || currentUserStaffIds.Contains(x.CommissionMember.StaffId ?? 0))))
                     .OrderBy(x => x.CommissionStage).ThenBy(x => x.DecisionDateTime ?? SpecialValues.MaxDate)
                     .Select(x => x.Id).ToArrayAsync(token);
                 foreach (var commissionDecisionId in commissionDecisionIds)

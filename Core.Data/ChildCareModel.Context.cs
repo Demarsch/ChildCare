@@ -94,7 +94,6 @@ namespace Core.Data
         public virtual DbSet<Permission> Permissions { get; set; }
         public virtual DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<ColorsSetting> ColorsSettings { get; set; }
         public virtual DbSet<CommissionDecisionsLink> CommissionDecisionsLinks { get; set; }
         public virtual DbSet<CommissionFilter> CommissionFilters { get; set; }
@@ -119,5 +118,7 @@ namespace Core.Data
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
         public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
         public virtual DbSet<CommissionTypeGroup> CommissionTypeGroups { get; set; }
+        public virtual DbSet<DecisionKind> DecisionKinds { get; set; }
+        public virtual DbSet<Decision> Decisions { get; set; }
     }
 }
