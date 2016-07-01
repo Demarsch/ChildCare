@@ -883,7 +883,7 @@ namespace PatientInfoModule.ViewModels
                 FailureMediator.Activate("Не выбран договор. Печать невозможна.", true);
                 return;
             }
-            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AmbCard, new FieldValue() { Field = "ContractId", Value = selectedContract.Id }, false);                        
+            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.PayContract, new FieldValue() { Field = "ContractId", Value = selectedContract.Id });                        
         }
 
         private void RemoveContract()

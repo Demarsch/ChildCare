@@ -21,7 +21,8 @@ namespace Core.Reports
     {
         private readonly IDocumentService documentService;
         private readonly ILog log;
-        private object parameter;
+        private object obj;
+        private FieldValue parameter;
         private bool canEdit;
         private readonly IReportGeneratorHelper reportGenerator;
 
@@ -79,10 +80,11 @@ namespace Core.Reports
             set { SetProperty(ref patientIsSelected, value); }
         }
 
-        public void LoadPrintedDocumentsAsync(int printedDocumentId, object parameter, bool canEdit)
+        public void LoadPrintedDocumentsAsync(int printedDocumentId, FieldValue parameter, object obj = null, bool canEdit = false)
         {
             FailureMediator.Deactivate();
             this.parameter = parameter;
+            this.obj = obj;
             this.canEdit = canEdit;
             try
             {
@@ -107,11 +109,12 @@ namespace Core.Reports
             }            
         }
         
-        public async void LoadPrintedDocumentsAsync(string documentOption, object parameter, bool canEdit)
+        public async void LoadPrintedDocumentsAsync(string documentOption, FieldValue parameter, object obj = null, bool canEdit = false)
         {
             FailureMediator.Deactivate();
             BusyMediator.Activate("Загрузка списка...");
             this.parameter = parameter;
+            this.obj = obj;
             this.canEdit = canEdit;
             PrintedDocuments.Clear();
             try
@@ -143,7 +146,7 @@ namespace Core.Reports
         }
 
         string emptyValue = string.Empty;
-        string defValue = "____________________________________________";
+        string defValue = "_____________________________________";
         string nonExistValue = "отсутствует";
         int childAge = 0;
 
@@ -165,13 +168,21 @@ namespace Core.Reports
             #endregion
 
             var patient = (parameter != null && (parameter is FieldValue) && (parameter as FieldValue).Field == "PersonId") ? documentService.GetPersonById((parameter as FieldValue).Value).First() : null;
+            var assignmentId = (parameter != null && (parameter is FieldValue) && (parameter as FieldValue).Field == "AssignmentId") ? documentService.GetAssignmentById((parameter as FieldValue).Value).First() : null;
+            var recordId = (parameter != null && (parameter is FieldValue) && (parameter as FieldValue).Field == "RecordId") ? documentService.GetRecordById((parameter as FieldValue).Value).First() : null;
+            var visitId = (parameter != null && (parameter is FieldValue) && (parameter as FieldValue).Field == "VisitId") ? documentService.GetVisitById((parameter as FieldValue).Value).First() : null;
             var contract = (parameter != null && (parameter is FieldValue) && (parameter as FieldValue).Field == "ContractId") ? documentService.GetContractById((parameter as FieldValue).Value).First() : null;
 
             if (patient != null)
             {
                 #region Common Patient Data
-                report.Data["PatientCardNumber"] = patient.AmbNumberString;
+                report.Data["PatientCardNumber"] = patient.AmbNumberString;  //TODO: or CaseNumber
                 report.Data["PatientFullName"] = patient.FullName;
+                report.Data["PatientShortName"] = patient.ShortName;
+                var personNames = patient.PersonNames.OrderByDescending(x => x.BeginDateTime).First();
+                report.Data["PatientLastName"] = personNames.LastName;
+                report.Data["PatientFirstName"] = personNames.FirstName;
+                report.Data["PatientMiddleName"] = personNames.MiddleName;
                 report.Data["PatientBirthDate"] = patient.BirthDate.ToShortDateString() + " г.р.";
                 report.Data["PatientGender"] = patient.IsMale ? "муж." : "жен.";
                 report.Data["PatientContactPhone"] = patient.Phones;
@@ -197,6 +208,18 @@ namespace Core.Reports
                 }
                 else
                     report.Data["PatientIdentityDocument"] = defValue;
+
+                string diagnos = defValue;
+                string mkb = defValue;
+                if (patient.PersonDiagnoses.Any())
+                {
+                    var lastDiagnos = patient.PersonDiagnoses.OrderByDescending(x => x.Record.ActualDateTime).First().Diagnoses
+                                                            .Select(x => new { Level = x.DiagnosLevel.ShortName, Diagnos = x.DiagnosText, MKB = x.MKB, x.DiagnosLevel.Priority}).ToArray();
+                    diagnos = lastDiagnos.Select(x => x.Level + ": " + x.Diagnos + (!string.IsNullOrEmpty(x.MKB) ? " " + x.MKB : string.Empty)).Aggregate((x, y) => x + "\r\n" + y);
+                    mkb = lastDiagnos.OrderBy(x => x.Priority).First().MKB;
+                }
+                report.Data["PatientLastDiagnos"] = diagnos;
+                report.Data["PatientMKB"] = mkb;
                 #endregion
             }
 
@@ -210,25 +233,25 @@ namespace Core.Reports
                 report = GetPayContractPartReport(ref report, contract);
 
             if (SelectedPrintedDocument.Options == OptionValues.CommonCommissionJournal)
-                report = GetCommissionJournalPartReport(ref report, (parameter as CommissionJournalDTO[]));
+                report = GetCommissionJournalPartReport(ref report, (obj as CommissionJournalDTO[]));
 
             if (SelectedPrintedDocument.Options == OptionValues.HospitalisationCommissionJournal)
-                report = GetHospitalisationCommissionJournalPartReport(ref report, (parameter as CommissionJournalDTO[]));
+                report = GetHospitalisationCommissionJournalPartReport(ref report, (obj as CommissionJournalDTO[]));
 
             if (SelectedPrintedDocument.Options == OptionValues.KILIJournal)
-                report = GetKILIJournalPartReport(ref report, (parameter as CommissionJournalDTO[]));
+                report = GetKILIJournalPartReport(ref report, (obj as CommissionJournalDTO[]));
 
             if (SelectedPrintedDocument.Options == OptionValues.CommonCommissionProtocol)
-                report = GetCommonCommissionProtocolPartReport(ref report, (parameter as CommissionJournalDTO));
+                report = GetCommonCommissionProtocolPartReport(ref report, (obj as CommissionJournalDTO));
 
             if (SelectedPrintedDocument.Options == OptionValues.ReferralToHospitalisationCommission)
-                report = GetReferralHospitalisationCommissionPartReport(ref report, (parameter as CommissionJournalDTO));
+                report = GetReferralHospitalisationCommissionPartReport(ref report, (obj as CommissionJournalDTO));
 
             if (SelectedPrintedDocument.Options == OptionValues.ReferralToCommonCommission)
-                report = GetReferralToCommonCommissionPartReport(ref report, (parameter as CommissionJournalDTO));
+                report = GetReferralToCommonCommissionPartReport(ref report, (obj as CommissionJournalDTO));
 
             if (SelectedPrintedDocument.Options == OptionValues.CommonConsiliumProtocol)
-                report = GetCommonConsiliumProtocolPartReport(ref report, (parameter as CommissionJournalDTO));
+                report = GetCommonConsiliumProtocolPartReport(ref report, (obj as CommissionJournalDTO));
 
             if (SelectedPrintedDocument.Options == OptionValues.NoticeSideEffects)
                 report = GetNoticeSideEffectsPartReport(ref report, patient);
@@ -237,7 +260,7 @@ namespace Core.Reports
                 report = GetSanCurCardPartReport(ref report, patient);
 
             if (SelectedPrintedDocument.Options == OptionValues.ExcerptCommissionProtocol)
-                report = GetExcerptCommissionProtocolPartReport(ref report, (parameter as CommissionJournalDTO));
+                report = GetExcerptCommissionProtocolPartReport(ref report, (obj as CommissionJournalDTO));
             
             report.Editable = this.canEdit;
             report.Show();
@@ -253,7 +276,7 @@ namespace Core.Reports
             return report;
         }
 
-        private IReportGenerator GetHospitalisationCommissionJournalPartReport(ref IReportGenerator report, CommissionJournalDTO[] observableCollectionEx)
+        private IReportGenerator GetHospitalisationCommissionJournalPartReport(ref IReportGenerator report, CommissionJournalDTO[] collection)
         {
             return report;
         }
@@ -283,17 +306,17 @@ namespace Core.Reports
             return report;
         }
 
-        private IReportGenerator GetKILIJournalPartReport(ref IReportGenerator report, CommissionJournalDTO[] observableCollectionEx)
+        private IReportGenerator GetKILIJournalPartReport(ref IReportGenerator report, CommissionJournalDTO[] collection)
         {
             return report;
         }
 
-        private IReportGenerator GetCommissionJournalPartReport(ref IReportGenerator report, CommissionJournalDTO[] commissionItems)
+        private IReportGenerator GetCommissionJournalPartReport(ref IReportGenerator report, CommissionJournalDTO[] collection)
         {
-            if (!commissionItems.Any())
+            if (!collection.Any())
                 report.Data.Tables["tblval"].AddRow();
 
-            foreach (var item in commissionItems)
+            foreach (var item in collection)
             {
                 report.Data.Tables["tblval"].AddRow(
                     item.CommissionNumber,

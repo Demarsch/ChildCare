@@ -10,6 +10,7 @@ namespace Core.Reports.DTO
     public class CommissionJournalDTO
     {
         public int Id;
+        public int PersonId;
         public int CommissionNumber;
         public int ProtocolNumber;
         public string CommissionDate;

@@ -297,6 +297,7 @@ namespace CommissionsModule.ViewModels
                 return result.Select(x => new
                 {
                     Id = x.Id,
+                    PersonId = x.PersonId,
                     CommissionNumber = x.CommissionNumber,
                     ProtocolNumber = x.ProtocolNumber,
                     CommissionDate = x.CommissionDate,
@@ -324,6 +325,7 @@ namespace CommissionsModule.ViewModels
             CommissionJournalItemViewModel[] journalItems = query.Select(x => new CommissionJournalItemViewModel()
                 {
                     Id = x.Id,
+                    PersonId = x.PersonId,
                     CommissionNumber = x.CommissionNumber,
                     ProtocolNumber = x.ProtocolNumber,
                     CommissionDate = x.CommissionDate.ToShortDateString(),
@@ -357,6 +359,7 @@ namespace CommissionsModule.ViewModels
             CommissionJournalDTO item = new CommissionJournalDTO()
             {
                 Id = SelectedCommissionItem.Id,
+                PersonId = SelectedCommissionItem.PersonId,
                 CommissionNumber = SelectedCommissionItem.CommissionNumber,
                 ProtocolNumber = SelectedCommissionItem.ProtocolNumber,
                 CommissionDate = SelectedCommissionItem.CommissionDate,
@@ -380,9 +383,9 @@ namespace CommissionsModule.ViewModels
             };
 
             if (SelectedCommissionItem.CommissionGroup == OptionValues.HospitalisationCommission)
-                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.ReferralToHospitalisationCommission, item, false);
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.ReferralToHospitalisationCommission, new FieldValue() { Field = "PersonId", Value = item.PersonId }, item);
             else
-                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.ReferralToCommonCommission, item, false);
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.ReferralToCommonCommission, new FieldValue() { Field = "PersonId", Value = item.PersonId }, item);
         }
 
         private void PrintCommissionProtocol()
@@ -395,6 +398,7 @@ namespace CommissionsModule.ViewModels
                 CommissionJournalDTO item = new CommissionJournalDTO()
                 {
                     Id = SelectedCommissionItem.Id,
+                    PersonId = SelectedCommissionItem.PersonId,
                     CommissionNumber = SelectedCommissionItem.CommissionNumber,
                     ProtocolNumber = SelectedCommissionItem.ProtocolNumber,
                     CommissionDate = SelectedCommissionItem.CommissionDate,
@@ -416,7 +420,7 @@ namespace CommissionsModule.ViewModels
                     Details = SelectedCommissionItem.Recommendations,
                     Experts = SelectedCommissionItem.Experts
                 };
-                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(commissionQuestion.PrintedDocumentId.Value, item, false);
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(commissionQuestion.PrintedDocumentId.Value, new FieldValue() { Field = "PersonId", Value = item.PersonId }, item);
             }
         }
 
@@ -433,6 +437,7 @@ namespace CommissionsModule.ViewModels
                 CommissionJournalDTO[] items = CommissionItems.Select(x => new CommissionJournalDTO()
                     {
                         Id = x.Id,
+                        PersonId = SelectedCommissionItem.PersonId,
                         CommissionNumber = x.CommissionNumber,
                         ProtocolNumber = x.ProtocolNumber,
                         CommissionDate = x.CommissionDate,
@@ -454,7 +459,7 @@ namespace CommissionsModule.ViewModels
                         Details = x.Recommendations,
                         Experts = x.Experts
                     }).ToArray();
-                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(commissionType.PrintedDocumentId.Value, items, false);
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(commissionType.PrintedDocumentId.Value, null, items);
             }
         }
 

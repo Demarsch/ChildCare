@@ -106,6 +106,24 @@ namespace Core.Reports.Services
             return new DisposableQueryable<RecordContract>(context.Set<RecordContract>().Where(x => x.Id == id), context);
         }
 
+        public IDisposableQueryable<Assignment> GetAssignmentById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Assignment>(context.Set<Assignment>().Where(x => x.Id == id), context);
+        }
+
+        public IDisposableQueryable<Record> GetRecordById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Record>(context.Set<Record>().Where(x => x.Id == id), context);
+        }
+
+        public IDisposableQueryable<Visit> GetVisitById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<Visit>(context.Set<Visit>().Where(x => x.Id == id), context);
+        }
+
         public string GetDBSettingValue(string parameter, bool useDisplayName = false)
         {
             var setting = contextProvider.CreateNewContext().Set<DBSetting>().FirstOrDefault(x => x.Name == parameter);

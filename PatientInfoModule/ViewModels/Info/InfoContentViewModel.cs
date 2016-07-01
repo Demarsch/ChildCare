@@ -419,7 +419,7 @@ namespace PatientInfoModule.ViewModels
         {
             if (SpecialValues.IsNewOrNonExisting(currentPatientId)) return;
             var printedDocumentsViewModel = printedDocumentsCollectionFactory();
-            printedDocumentsViewModel.LoadPrintedDocumentsAsync(OptionValues.Agreements, new FieldValue() { Field = "PersonId", Value = currentPatientId }, false);
+            printedDocumentsViewModel.LoadPrintedDocumentsAsync(OptionValues.Agreements, new FieldValue() { Field = "PersonId", Value = currentPatientId });
             var result = await dialogService.ShowDialogAsync(printedDocumentsViewModel);
         }
 
@@ -432,7 +432,7 @@ namespace PatientInfoModule.ViewModels
                 FailureMediator.Activate("Отсутствует номер А/К. Печать невозможна.", true);
                 return;
             }
-            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AmbCard, new FieldValue() { Field = "PersonId", Value = currentPatientId }, false);            
+            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AmbCard, new FieldValue() { Field = "PersonId", Value = currentPatientId });            
         }
 
         private bool CanAddRelative()

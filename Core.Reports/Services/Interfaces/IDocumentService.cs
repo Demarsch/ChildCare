@@ -16,5 +16,11 @@ namespace Core.Reports.Services
         string GetDBSettingValue(string parameter, bool useDisplayName = false);
 
         IDisposableQueryable<RecordContract> GetContractById(int id);
+
+        IDisposableQueryable<Assignment> GetAssignmentById(int id);
+
+        IDisposableQueryable<Record> GetRecordById(int id);
+
+        IDisposableQueryable<Visit> GetVisitById(int id);
     }
 }
