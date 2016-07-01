@@ -170,7 +170,6 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<Decision> Decisions { get; set; }
 
     public virtual DbSet<ColorsSetting> ColorsSettings { get; set; }
 
@@ -221,7 +220,8 @@ public partial class ModelContext : DbContext
     public virtual DbSet<CommissionType> CommissionTypes { get; set; }
 
     public virtual DbSet<CommissionTypeGroup> CommissionTypeGroups { get; set; }
-
+        public virtual DbSet<DecisionKind> DecisionKinds { get; set; }
+        public virtual DbSet<Decision> Decisions { get; set; }
 }
 
 }

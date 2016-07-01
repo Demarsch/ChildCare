@@ -21,8 +21,7 @@ public partial class ColorsSetting : ICloneable
 
     public ColorsSetting()
     {
-
-        this.Decisions = new HashSet<Decision>();
+            this.DecisionKinds = new HashSet<DecisionKind>();
 
     }
 
@@ -41,12 +40,12 @@ public partial class ColorsSetting : ICloneable
 
 
     [NonSerialized]
-    	protected ICollection<Decision> decisions;
+    	protected ICollection<DecisionKind> decisionKinds;
     
-    	public virtual ICollection<Decision> Decisions
+    	public virtual ICollection<DecisionKind> DecisionKinds
     	{
-     		get { return decisions; }
-     		set { decisions = value; }
+     		get { return decisionKinds; }
+     		set { decisionKinds = value; }
     	}
 
 

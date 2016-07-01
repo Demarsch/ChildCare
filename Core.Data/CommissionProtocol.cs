@@ -114,15 +114,6 @@ public partial class CommissionProtocol : ICloneable
     	}
 
     [NonSerialized]
-    	protected Decision decision;
-    
-    	public virtual Decision Decision
-    	{
-     		get { return decision; }
-     		set { decision = value; }
-    	}
-
-    [NonSerialized]
     	protected MedicalHelpType medicalHelpType;
     
     	public virtual MedicalHelpType MedicalHelpType
@@ -183,6 +174,14 @@ public partial class CommissionProtocol : ICloneable
     	{
      		get { return user1; }
      		set { user1 = value; }
+    	}
+        [NonSerialized]
+    	protected Decision decision;
+    
+    	public virtual Decision Decision
+    	{
+     		get { return decision; }
+     		set { decision = value; }
     	}
 
     [NonSerialized]

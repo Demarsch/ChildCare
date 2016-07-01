@@ -93,7 +93,7 @@ namespace CommissionsModule.ViewModels
             FailureMediator = new FailureMediator();
             currentMembersChangeTracker = new ObservableCollectionChangeTracker<CommissionDecisionViewModel>(CurrentMembers);
             ChangeTracker = new CompositeChangeTracker(currentMembersChangeTracker);
-            
+
         }
 
         #endregion
@@ -186,7 +186,7 @@ namespace CommissionsModule.ViewModels
 
         public async void LoadCurrentMembers(int commissionProtocolId, CancellationToken token)
         {
-            
+
             CurrentMembers.CollectionChanged -= CurrentMembers_CollectionChanged;
             CurrentMembers.Clear();
             var commissionDecisionsQuery = commissionService.GetCommissionDecisions(commissionProtocolId);
@@ -365,6 +365,7 @@ namespace CommissionsModule.ViewModels
                     Id = item.CommissionDecisionId,
                     CommissionProtocol = commissionProtocol,
                     CommissionStage = item.Stage,
+                    IsOfficial = item.IsOfficial,
                     NeedAllMembersInStage = item.NeedAllMembers,
                     CommissionMemberId = item.CommissionMemberId,
                     InitiatorUserId = userService.GetCurrentUserId()

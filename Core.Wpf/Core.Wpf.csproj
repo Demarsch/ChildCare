@@ -115,6 +115,7 @@
     <Compile Include="Controls\TreeViewComboBox.xaml.cs">
       <DependentUpon>TreeViewComboBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\CommissionDecisionIsOfficialToImageConverter.cs" />
     <Compile Include="Converters\BoolToCollapsedConverter.cs" />
     <Compile Include="Converters\BoolToInvisibilityConverter.cs" />
     <Compile Include="Converters\AllMembersToImageConverter.cs" />

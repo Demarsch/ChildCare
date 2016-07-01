@@ -77,6 +77,13 @@ namespace CommissionsModule.ViewModels
             set { SetTrackedProperty(ref protocolNumber, value); }
         }
 
+        private int? commissionNumber;
+        public int? CommissionNumber
+        {
+            get { return commissionNumber; }
+            set { SetTrackedProperty(ref commissionNumber, value); }
+        }
+
         private string waitingFor;
         public string WaitingFor
         {
@@ -175,6 +182,7 @@ namespace CommissionsModule.ViewModels
             }
             CommissionProtocolId = commissionProtocolId;
             PersonId = personId;
+            CommissionNumber = null;
             CommissionDate = DateTime.Now;
             ProtocolNumber = null;
             WaitingFor = string.Empty;
@@ -197,6 +205,7 @@ namespace CommissionsModule.ViewModels
                     x.Decision,
                     x.CommissionDate,
                     x.ProtocolNumber,
+                    x.CommissionNumber,
                     x.Comment,
                     x.WaitingFor,
                     x.Diagnos,
@@ -221,6 +230,7 @@ namespace CommissionsModule.ViewModels
                 if (commissionProtocolData != null)
                 {
                     CommissionDate = commissionProtocolData.CommissionDate;
+                    CommissionNumber = commissionProtocolData.CommissionNumber > 0 ? commissionProtocolData.CommissionNumber : (int?)null;
                     ProtocolNumber = commissionProtocolData.ProtocolNumber > 0 ? commissionProtocolData.ProtocolNumber : (int?)null;
                     WaitingFor = commissionProtocolData.WaitingFor;
                     Diagnosis = commissionProtocolData.Diagnos;
@@ -299,6 +309,7 @@ namespace CommissionsModule.ViewModels
                 if (commissionProtocol != null)
                 {
                     commissionProtocol.ProtocolNumber = ProtocolNumber.ToInt();
+                    commissionProtocol.CommissionNumber = CommissionNumber.ToInt();
                     commissionProtocol.CommissionDate = CommissionDate;
                     commissionProtocol.WaitingFor = WaitingFor;
                     commissionProtocol.Diagnos = Diagnosis;
@@ -345,13 +356,17 @@ namespace CommissionsModule.ViewModels
 
             protected override void OnValidateProperty(string propertyName)
             {
-                if (PropertyNameEquals(propertyName, x => x.ProtocolNumber))
+                if (PropertyNameEquals(propertyName, x => x.CommissionNumber))
+                {
+                    ValidateCommissionNumber();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.ProtocolNumber))
                 {
                     ValidateProtocolNumber();
                 }
                 else if (PropertyNameEquals(propertyName, x => x.CommissionDate))
                 {
-                    ValidateProtocolDate();
+                    ValidateCommissionDate();
                 }
                 else if (PropertyNameEquals(propertyName, x => x.WaitingFor))
                 {
@@ -382,14 +397,19 @@ namespace CommissionsModule.ViewModels
                 SetError(x => x.WaitingFor, AssociatedItem.NeedWaitingFor && string.IsNullOrEmpty(AssociatedItem.WaitingFor) ? "Укажите условие, выполнение которого ожидает результат протокола" : string.Empty);
             }
 
-            private void ValidateProtocolDate()
+            private void ValidateCommissionDate()
             {
-                SetError(x => x.ProtocolNumber, AssociatedItem.ProtocolNumber.ToInt() < 1 ? "Укажите номер протокола" : string.Empty);
+                SetError(x => x.CommissionDate, AssociatedItem.CommissionDate == null ? "Укажите дату комиссии" : string.Empty);
             }
 
             private void ValidateProtocolNumber()
             {
-                SetError(x => x.CommissionDate, AssociatedItem.CommissionDate == null ? "Укажите дату комиссии" : string.Empty);
+                SetError(x => x.ProtocolNumber, AssociatedItem.ProtocolNumber.ToInt() < 1 ? "Укажите номер протокола" : string.Empty);
+            }
+
+            private void ValidateCommissionNumber()
+            {
+                SetError(x => x.CommissionNumber, AssociatedItem.CommissionNumber.ToInt() < 1 ? "Укажите номер комиссии" : string.Empty);
             }
 
 
@@ -401,7 +421,8 @@ namespace CommissionsModule.ViewModels
             protected override void OnValidate()
             {
                 ValidateProtocolNumber();
-                ValidateProtocolDate();
+                ValidateCommissionDate();
+                ValidateCommissionNumber();
                 ValidateWaitingFor();
                 ValidateSelectedDecision();
                 ValidateToDoDateTime();

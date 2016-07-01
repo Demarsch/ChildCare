@@ -64,15 +64,6 @@ public partial class CommissionDecision : ICloneable
     	}
 
     [NonSerialized]
-    	protected Decision decision;
-    
-    	public virtual Decision Decision
-    	{
-     		get { return decision; }
-     		set { decision = value; }
-    	}
-
-    [NonSerialized]
     	protected User user;
     
     	public virtual User User
@@ -88,6 +79,14 @@ public partial class CommissionDecision : ICloneable
     	{
      		get { return user1; }
      		set { user1 = value; }
+    	}
+        [NonSerialized]
+    	protected Decision decision;
+    
+    	public virtual Decision Decision
+    	{
+     		get { return decision; }
+     		set { decision = value; }
     	}
 
 

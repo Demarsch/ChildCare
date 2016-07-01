@@ -110,6 +110,20 @@ namespace CommissionsModule.ViewModels
             }
         }
 
+        private bool isOfficial;
+        public bool IsOfficial
+        {
+            get { return isOfficial; }
+            set { SetTrackedProperty(ref isOfficial, value); }
+        }
+
+        private bool сanChangeIsOfficial;
+        public bool CanChangeIsOfficial
+        {
+            get { return сanChangeIsOfficial; }
+            set { SetProperty(ref сanChangeIsOfficial, value); }
+        }
+
         private bool isHaveAllDecisions;
         public bool IsHaveAllDecisions
         {
@@ -199,6 +213,8 @@ namespace CommissionsModule.ViewModels
             commissionProtocolId = SpecialValues.NonExistingId;
             DecisionDate = null;
             Stage = 0;
+            IsOfficial = false;
+            CanChangeIsOfficial = false;
             NeedAllMembers = false;
             IsHaveAllDecisions = false;
             IsHaveAnyDecisions = false;
@@ -325,17 +341,20 @@ namespace CommissionsModule.ViewModels
                         x.CommissionMember.StaffId.HasValue ? x.CommissionMember.Staff.ShortName : string.Empty,
                     DecisionName = x.DecisionId.HasValue ? x.Decision.Name : string.Empty,
                     x.Comment,
-                    ColorType = x.DecisionId.HasValue && x.Decision.ColorSettingsId.HasValue ? x.Decision.ColorsSetting.Hex : emptyDecisionColor,
+                    ColorType = x.DecisionId.HasValue && x.Decision.DecisionKindId.HasValue ? x.Decision.DecisionKind.ColorsSetting.Hex : emptyDecisionColor,
                     x.NeedAllMembersInStage,
                     x.CommissionProtocolId,
                     x.CommissionMemberId,
+                    x.IsOfficial,
                     CommissionIsCompleted = x.CommissionProtocol.IsCompleted
                 }).FirstOrDefaultAsync(token);
                 CanDeleteMember = (commissionDecision.CommissionIsCompleted != true && commissionDecision.DecisionName == string.Empty) || securityService.HasPermission(Permission.DeleteCommissionDecisionWithDecision);
+                CanChangeIsOfficial = commissionDecision.DecisionName != string.Empty && securityService.HasPermission(Permission.CanChangeCommissionDecisionIsOfficial);
                 commissionProtocolId = commissionDecision.CommissionProtocolId;
                 DecisionDate = commissionDecision.DecisionDate;
                 Stage = commissionDecision.Stage;
                 NeedAllMembers = commissionDecision.NeedAllMembersInStage;
+                IsOfficial = commissionDecision.IsOfficial;
                 MemberName = commissionDecision.MemberName;
                 CommissionMemberId = commissionDecision.CommissionMemberId;
                 Decision = commissionDecision.DecisionName;

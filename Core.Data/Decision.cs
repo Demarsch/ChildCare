@@ -24,10 +24,9 @@ public partial class Decision : ICloneable
 
         this.Decisions1 = new HashSet<Decision>();
 
-        this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
 
         this.CommissionDecisions = new HashSet<CommissionDecision>();
-
+            this.CommissionDecisionsLinks = new HashSet<CommissionDecisionsLink>();
         this.CommissionProtocols = new HashSet<CommissionProtocol>();
 
     }
@@ -40,52 +39,13 @@ public partial class Decision : ICloneable
     public string Name { get; set; }
 
     public string ShortName { get; set; }
-
+        public Nullable<int> DecisionKindId { get; set; }
     public System.DateTime BeginDateTime { get; set; }
 
     public System.DateTime EndDateTime { get; set; }
 
-    public Nullable<int> ColorSettingsId { get; set; }
 
 
-
-
-    [NonSerialized]
-    	protected ICollection<Decision> decisions1;
-    
-    	public virtual ICollection<Decision> Decisions1
-    	{
-     		get { return decisions1; }
-     		set { decisions1 = value; }
-    	}
-
-    [NonSerialized]
-    	protected Decision decision1;
-    
-    	public virtual Decision Decision1
-    	{
-     		get { return decision1; }
-     		set { decision1 = value; }
-    	}
-
-    [NonSerialized]
-    	protected ColorsSetting colorsSetting;
-    
-    	public virtual ColorsSetting ColorsSetting
-    	{
-     		get { return colorsSetting; }
-     		set { colorsSetting = value; }
-    	}
-
-
-    [NonSerialized]
-    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
-    
-    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
-    	{
-     		get { return commissionDecisionsLinks; }
-     		set { commissionDecisionsLinks = value; }
-    	}
 
 
     [NonSerialized]
@@ -97,6 +57,14 @@ public partial class Decision : ICloneable
      		set { commissionDecisions = value; }
     	}
 
+    [NonSerialized]
+    	protected ICollection<CommissionDecisionsLink> commissionDecisionsLinks;
+    
+    	public virtual ICollection<CommissionDecisionsLink> CommissionDecisionsLinks
+    	{
+     		get { return commissionDecisionsLinks; }
+     		set { commissionDecisionsLinks = value; }
+    	}
 
     [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
@@ -105,6 +73,36 @@ public partial class Decision : ICloneable
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected DecisionKind decisionKind;
+    
+    	public virtual DecisionKind DecisionKind
+    	{
+     		get { return decisionKind; }
+     		set { decisionKind = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected ICollection<Decision> decisions1;
+    
+    	public virtual ICollection<Decision> Decisions1
+    	{
+     		get { return decisions1; }
+     		set { decisions1 = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected Decision decision1;
+    
+    	public virtual Decision Decision1
+    	{
+     		get { return decision1; }
+     		set { decision1 = value; }
     	}
 
 

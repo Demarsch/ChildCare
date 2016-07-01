@@ -560,7 +560,7 @@ namespace CommissionsModule.ViewModels
                      ProtocolNumber = 0,
                      CommissionDate = DateTime.Now,
                      IsCompleted = CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? false :
-                        CommissionProtocolState == ViewModels.CommissionProtocolState.Сonduction ? true : (bool?)null,
+                        CommissionProtocolState == ViewModels.CommissionProtocolState.Сonclusion ? true : (bool?)null,
                      InUserId = userService.GetCurrentUserId(),
                      Comment = string.Empty,
                      MKB = string.Empty,

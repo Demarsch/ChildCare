@@ -265,6 +265,17 @@
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="DecisionKinds">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Type" Type="bit" />
+          <Property Name="ColorSettingsId" Type="int" Nullable="false" />
+          <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EndDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Decisions">
           <Key>
             <PropertyRef Name="Id" />
@@ -273,9 +284,9 @@
           <Property Name="ParentId" Type="int" />
           <Property Name="Name" Type="varchar" MaxLength="2000" Nullable="false" />
           <Property Name="ShortName" Type="varchar" MaxLength="1000" Nullable="false" />
+          <Property Name="DecisionKindId" Type="int" />
           <Property Name="BeginDateTime" Type="datetime" Nullable="false" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
-          <Property Name="ColorSettingsId" Type="int" />
         </EntityType>
         <EntityType Name="DefaultProtocols">
           <Key>
@@ -1789,15 +1800,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Decisions_ColorsSettings">
-          <End Role="ColorsSettings" Type="Self.ColorsSettings" Multiplicity="0..1" />
-          <End Role="Decisions" Type="Self.Decisions" Multiplicity="*" />
+        <Association Name="FK_DecisionKinds_ColorsSettings">
+          <End Role="ColorsSettings" Type="Self.ColorsSettings" Multiplicity="1" />
+          <End Role="DecisionKinds" Type="Self.DecisionKinds" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ColorsSettings">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Decisions">
+            <Dependent Role="DecisionKinds">
               <PropertyRef Name="ColorSettingsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Decisions_DecisionKinds">
+          <End Role="DecisionKinds" Type="Self.DecisionKinds" Multiplicity="0..1" />
+          <End Role="Decisions" Type="Self.Decisions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DecisionKinds">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Decisions">
+              <PropertyRef Name="DecisionKindId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3367,6 +3390,7 @@
           <EntitySet Name="Complications" EntityType="Self.Complications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Countries" EntityType="Self.Countries" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DBSettings" EntityType="Self.DBSettings" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DecisionKinds" EntityType="Self.DecisionKinds" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Decisions" EntityType="Self.Decisions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DefaultProtocols" EntityType="Self.DefaultProtocols" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Diagnoses" EntityType="Self.Diagnoses" Schema="dbo" store:Type="Tables" />
@@ -3643,8 +3667,12 @@
             <End Role="Complications" EntitySet="Complications" />
             <End Role="Complications1" EntitySet="Complications" />
           </AssociationSet>
-          <AssociationSet Name="FK_Decisions_ColorsSettings" Association="Self.FK_Decisions_ColorsSettings">
+          <AssociationSet Name="FK_DecisionKinds_ColorsSettings" Association="Self.FK_DecisionKinds_ColorsSettings">
             <End Role="ColorsSettings" EntitySet="ColorsSettings" />
+            <End Role="DecisionKinds" EntitySet="DecisionKinds" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Decisions_DecisionKinds" Association="Self.FK_Decisions_DecisionKinds">
+            <End Role="DecisionKinds" EntitySet="DecisionKinds" />
             <End Role="Decisions" EntitySet="Decisions" />
           </AssociationSet>
           <AssociationSet Name="FK_Decisions_Decisions" Association="Self.FK_Decisions_Decisions">
@@ -4550,26 +4578,13 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Visit" EntitySet="Visits" />
           </AssociationSet>
-          <EntitySet Name="Decisions" EntityType="DataLib.Decision" />
-          <AssociationSet Name="FK_Decisions_Decisions" Association="DataLib.FK_Decisions_Decisions">
-            <End Role="Decision" EntitySet="Decisions" />
-            <End Role="Decision1" EntitySet="Decisions" />
-          </AssociationSet>
           <EntitySet Name="ColorsSettings" EntityType="DataLib.ColorsSetting" />
-          <AssociationSet Name="FK_Decisions_ColorsSettings" Association="DataLib.FK_Decisions_ColorsSettings">
-            <End Role="ColorsSetting" EntitySet="ColorsSettings" />
-            <End Role="Decision" EntitySet="Decisions" />
-          </AssociationSet>
           <EntitySet Name="CommissionDecisionsLinks" EntityType="DataLib.CommissionDecisionsLink" />
           <EntitySet Name="CommissionFilters" EntityType="DataLib.CommissionFilter" />
           <EntitySet Name="CommissionMemberTypes" EntityType="DataLib.CommissionMemberType" />
           <EntitySet Name="CommissionSources" EntityType="DataLib.CommissionSource" />
           <AssociationSet Name="FK_CommissionDecisionsLinks_CommissionMemberTypes" Association="DataLib.FK_CommissionDecisionsLinks_CommissionMemberTypes">
             <End Role="CommissionMemberType" EntitySet="CommissionMemberTypes" />
-            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionDecisionsLinks_Decisions" Association="DataLib.FK_CommissionDecisionsLinks_Decisions">
-            <End Role="Decision" EntitySet="Decisions" />
             <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
           </AssociationSet>
           <EntitySet Name="PersonTalons" EntityType="DataLib.PersonTalon" />
@@ -4867,10 +4882,6 @@
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
           </AssociationSet>
-          <AssociationSet Name="FK_CommissionDecisions_Decisions" Association="DataLib.FK_CommissionDecisions_Decisions">
-            <End Role="Decision" EntitySet="Decisions" />
-            <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
-          </AssociationSet>
           <AssociationSet Name="FK_CommissionDecisions_Users" Association="DataLib.FK_CommissionDecisions_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
@@ -4885,10 +4896,6 @@
           </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_CreateUsers" Association="DataLib.FK_CommissionProtocols_CreateUsers">
             <End Role="User" EntitySet="Users" />
-            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionProtocols_Decisions" Association="DataLib.FK_CommissionProtocols_Decisions">
-            <End Role="Decision" EntitySet="Decisions" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionProtocols_MedicalHelpTypes" Association="DataLib.FK_CommissionProtocols_MedicalHelpTypes">
@@ -4967,6 +4974,32 @@
           <AssociationSet Name="FK_CommissionTypes_CommissionTypeGroups" Association="DataLib.FK_CommissionTypes_CommissionTypeGroups">
             <End Role="CommissionTypeGroup" EntitySet="CommissionTypeGroups" />
             <End Role="CommissionType" EntitySet="CommissionTypes" />
+          </AssociationSet>
+          <EntitySet Name="DecisionKinds" EntityType="DataLib.DecisionKind" />
+          <AssociationSet Name="FK_DecisionKinds_ColorsSettings" Association="DataLib.FK_DecisionKinds_ColorsSettings">
+            <End Role="ColorsSetting" EntitySet="ColorsSettings" />
+            <End Role="DecisionKind" EntitySet="DecisionKinds" />
+          </AssociationSet>
+          <EntitySet Name="Decisions" EntityType="DataLib.Decision" />
+          <AssociationSet Name="FK_CommissionDecisions_Decisions" Association="DataLib.FK_CommissionDecisions_Decisions">
+            <End Role="Decision" EntitySet="Decisions" />
+            <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionDecisionsLinks_Decisions" Association="DataLib.FK_CommissionDecisionsLinks_Decisions">
+            <End Role="Decision" EntitySet="Decisions" />
+            <End Role="CommissionDecisionsLink" EntitySet="CommissionDecisionsLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionProtocols_Decisions" Association="DataLib.FK_CommissionProtocols_Decisions">
+            <End Role="Decision" EntitySet="Decisions" />
+            <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Decisions_DecisionKinds" Association="DataLib.FK_Decisions_DecisionKinds">
+            <End Role="DecisionKind" EntitySet="DecisionKinds" />
+            <End Role="Decision" EntitySet="Decisions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Decisions_Decisions" Association="DataLib.FK_Decisions_Decisions">
+            <End Role="Decision" EntitySet="Decisions" />
+            <End Role="Decision1" EntitySet="Decisions" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Branch">
@@ -6961,36 +6994,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Decision">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="2000" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ColorSettingsId" Type="Int32" />
-          <NavigationProperty Name="Decisions1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision" ToRole="Decision1" />
-          <NavigationProperty Name="Decision1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision1" ToRole="Decision" />
-          <NavigationProperty Name="ColorsSetting" Relationship="DataLib.FK_Decisions_ColorsSettings" FromRole="Decision" ToRole="ColorsSetting" />
-          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_Decisions" FromRole="Decision" ToRole="CommissionDecisionsLink" />
-          <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="Decision" ToRole="CommissionDecision" />
-          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Decisions" FromRole="Decision" ToRole="CommissionProtocol" />
-        </EntityType>
-        <Association Name="FK_Decisions_Decisions">
-          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
-          <End Type="DataLib.Decision" Role="Decision1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Decision">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Decision1">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="ColorsSetting">
           <Key>
             <PropertyRef Name="Id" />
@@ -7000,20 +7003,8 @@
           <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="Hex" Type="String" Nullable="false" MaxLength="7" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Decisions" Relationship="DataLib.FK_Decisions_ColorsSettings" FromRole="ColorsSetting" ToRole="Decision" />
+          <NavigationProperty Name="DecisionKinds" Relationship="DataLib.FK_DecisionKinds_ColorsSettings" FromRole="ColorsSetting" ToRole="DecisionKind" />
         </EntityType>
-        <Association Name="FK_Decisions_ColorsSettings">
-          <End Type="DataLib.ColorsSetting" Role="ColorsSetting" Multiplicity="0..1" />
-          <End Type="DataLib.Decision" Role="Decision" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ColorsSetting">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Decision">
-              <PropertyRef Name="ColorSettingsId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="CommissionDecisionsLink">
           <Key>
             <PropertyRef Name="Id" />
@@ -7071,18 +7062,6 @@
             </Principal>
             <Dependent Role="CommissionDecisionsLink">
               <PropertyRef Name="CommissionTypeMemberId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionDecisionsLinks_Decisions">
-          <End Type="DataLib.Decision" Role="Decision" Multiplicity="1" />
-          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Decision">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecisionsLink">
-              <PropertyRef Name="DecisionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8228,9 +8207,9 @@
           <Property Name="RemovedByUserId" Type="Int32" />
           <NavigationProperty Name="CommissionMember" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers" FromRole="CommissionDecision" ToRole="CommissionMember" />
           <NavigationProperty Name="CommissionProtocol" Relationship="DataLib.FK_CommissionDecisions_CommissionProtocols" FromRole="CommissionDecision" ToRole="CommissionProtocol" />
-          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="CommissionDecision" ToRole="Decision" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_CommissionDecisions_Users" FromRole="CommissionDecision" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DataLib.FK_CommissionDecisions_Users1" FromRole="CommissionDecision" ToRole="User" />
+          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="CommissionDecision" ToRole="Decision" />
         </EntityType>
         <EntityType Name="CommissionProtocol">
           <Key>
@@ -8267,7 +8246,6 @@
           <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_CommissionProtocols" FromRole="CommissionProtocol" ToRole="CommissionDecision" />
           <NavigationProperty Name="CommissionSource" Relationship="DataLib.FK_CommissionProtocols_CommissionSources" FromRole="CommissionProtocol" ToRole="CommissionSource" />
           <NavigationProperty Name="User" Relationship="DataLib.FK_CommissionProtocols_CreateUsers" FromRole="CommissionProtocol" ToRole="User" />
-          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionProtocols_Decisions" FromRole="CommissionProtocol" ToRole="Decision" />
           <NavigationProperty Name="MedicalHelpType" Relationship="DataLib.FK_CommissionProtocols_MedicalHelpTypes" FromRole="CommissionProtocol" ToRole="MedicalHelpType" />
           <NavigationProperty Name="Org" Relationship="DataLib.FK_CommissionProtocols_Orgs" FromRole="CommissionProtocol" ToRole="Org" />
           <NavigationProperty Name="PersonAddress" Relationship="DataLib.FK_CommissionProtocols_PersonAddresses" FromRole="CommissionProtocol" ToRole="PersonAddress" />
@@ -8276,6 +8254,7 @@
           <NavigationProperty Name="RecordContract" Relationship="DataLib.FK_CommissionProtocols_RecordContracts" FromRole="CommissionProtocol" ToRole="RecordContract" />
           <NavigationProperty Name="User1" Relationship="DataLib.FK_CommissionProtocols_RemovedUsers" FromRole="CommissionProtocol" ToRole="User" />
           <NavigationProperty Name="CommissionQuestion" Relationship="DataLib.FK_CommissionProtocols_CommissionQuestions" FromRole="CommissionProtocol" ToRole="CommissionQuestion" />
+          <NavigationProperty Name="Decision" Relationship="DataLib.FK_CommissionProtocols_Decisions" FromRole="CommissionProtocol" ToRole="Decision" />
           <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionProtocols_CommissionTypes" FromRole="CommissionProtocol" ToRole="CommissionType" />
         </EntityType>
         <Association Name="FK_CommissionDecisions_CommissionMembers">
@@ -8299,18 +8278,6 @@
             </Principal>
             <Dependent Role="CommissionDecision">
               <PropertyRef Name="CommissionProtocolId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionDecisions_Decisions">
-          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Decision">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionDecision">
-              <PropertyRef Name="DecisionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8359,18 +8326,6 @@
             </Principal>
             <Dependent Role="CommissionProtocol">
               <PropertyRef Name="InUserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionProtocols_Decisions">
-          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Decision">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionProtocol">
-              <PropertyRef Name="DecisionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8660,6 +8615,109 @@
             </Principal>
             <Dependent Role="CommissionType">
               <PropertyRef Name="CommissionTypeGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DecisionKind">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="Boolean" />
+          <Property Name="ColorSettingsId" Type="Int32" Nullable="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="ColorsSetting" Relationship="DataLib.FK_DecisionKinds_ColorsSettings" FromRole="DecisionKind" ToRole="ColorsSetting" />
+          <NavigationProperty Name="Decisions" Relationship="DataLib.FK_Decisions_DecisionKinds" FromRole="DecisionKind" ToRole="Decision" />
+        </EntityType>
+        <Association Name="FK_DecisionKinds_ColorsSettings">
+          <End Type="DataLib.ColorsSetting" Role="ColorsSetting" Multiplicity="1" />
+          <End Type="DataLib.DecisionKind" Role="DecisionKind" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ColorsSetting">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DecisionKind">
+              <PropertyRef Name="ColorSettingsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Decision">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="2000" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="DecisionKindId" Type="Int32" />
+          <Property Name="BeginDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_Decisions" FromRole="Decision" ToRole="CommissionDecision" />
+          <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_Decisions" FromRole="Decision" ToRole="CommissionDecisionsLink" />
+          <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_Decisions" FromRole="Decision" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="DecisionKind" Relationship="DataLib.FK_Decisions_DecisionKinds" FromRole="Decision" ToRole="DecisionKind" />
+          <NavigationProperty Name="Decisions1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision" ToRole="Decision1" />
+          <NavigationProperty Name="Decision1" Relationship="DataLib.FK_Decisions_Decisions" FromRole="Decision1" ToRole="Decision" />
+        </EntityType>
+        <Association Name="FK_CommissionDecisions_Decisions">
+          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionDecision" Role="CommissionDecision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecision">
+              <PropertyRef Name="DecisionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionDecisionsLinks_Decisions">
+          <End Type="DataLib.Decision" Role="Decision" Multiplicity="1" />
+          <End Type="DataLib.CommissionDecisionsLink" Role="CommissionDecisionsLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionDecisionsLink">
+              <PropertyRef Name="DecisionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionProtocols_Decisions">
+          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionProtocol" Role="CommissionProtocol" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionProtocol">
+              <PropertyRef Name="DecisionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Decisions_DecisionKinds">
+          <End Type="DataLib.DecisionKind" Role="DecisionKind" Multiplicity="0..1" />
+          <End Type="DataLib.Decision" Role="Decision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DecisionKind">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Decision">
+              <PropertyRef Name="DecisionKindId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Decisions_Decisions">
+          <End Type="DataLib.Decision" Role="Decision" Multiplicity="0..1" />
+          <End Type="DataLib.Decision" Role="Decision1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Decision">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Decision1">
+              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9537,19 +9595,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Decisions">
-            <EntityTypeMapping TypeName="DataLib.Decision">
-              <MappingFragment StoreEntitySet="Decisions">
-                <ScalarProperty Name="ColorSettingsId" ColumnName="ColorSettingsId" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ColorsSettings">
             <EntityTypeMapping TypeName="DataLib.ColorsSetting">
               <MappingFragment StoreEntitySet="ColorsSettings">
@@ -9942,6 +9987,31 @@
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="Options" ColumnName="Options" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DecisionKinds">
+            <EntityTypeMapping TypeName="DataLib.DecisionKind">
+              <MappingFragment StoreEntitySet="DecisionKinds">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="ColorSettingsId" ColumnName="ColorSettingsId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Decisions">
+            <EntityTypeMapping TypeName="DataLib.Decision">
+              <MappingFragment StoreEntitySet="Decisions">
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="DecisionKindId" ColumnName="DecisionKindId" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

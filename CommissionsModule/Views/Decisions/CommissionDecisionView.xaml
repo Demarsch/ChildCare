@@ -10,6 +10,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
@@ -18,14 +19,22 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding DecisionDate}"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MemberName}" FontWeight="Bold"/>
+                    <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <ToggleButton Name="btnUseDecision" Background="Transparent" IsChecked="{Binding IsOfficial}" BorderThickness="0"  IsEnabled="{Binding CanChangeIsOfficial}" ToolTip="Учитывать/использовать в протоколе комиссии">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                                <Image Source="{Binding IsOfficial, Converter={x:Static converters:CommissionDecisionIsOfficialToImageConverter.Instance}}" Width="20" Height="20" Stretch="Fill" />
+                            </StackPanel>
+                        </ToggleButton>
+                    </StackPanel>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Decision}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DecisionDate}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding MemberName}" FontWeight="Bold"/>
 
-                    <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Name="btn" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding ElementName=AvailableMembersContainer, Path=DataContext.RemoveCurrentMemberCommand}" CommandParameter="{Binding}"
-                                Visibility="{Binding ElementName=btn, Path=IsEnabled, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Decision}"/>
+
+                    <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Name="btnRemove" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding ElementName=AvailableMembersContainer, Path=DataContext.RemoveCurrentMemberCommand}" CommandParameter="{Binding}"
+                                Visibility="{Binding ElementName=btnRemove, Path=IsEnabled, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                             <Button.ContentTemplate>
                                 <DataTemplate>
                                     <Image Source="pack://application:,,,/Core;Component/Resources/Images/Trash-icon48x48.png" Height="20" Width="20"/>

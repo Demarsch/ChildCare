@@ -130,6 +130,9 @@
     <Compile Include="Decision.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DecisionKind.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DefaultProtocol.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

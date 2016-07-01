@@ -491,7 +491,11 @@ namespace CommissionsModule.ViewModels
 
             protected override void OnValidateProperty(string propertyName)
             {
-                if (PropertyNameEquals(propertyName, x => x.SelectedCommissionTypeId))
+                if (PropertyNameEquals(propertyName, x => x.SelectedCommissionTypeGroupId))
+                {
+                    ValidateCommissionTypeGroup();
+                }
+                else if (PropertyNameEquals(propertyName, x => x.SelectedCommissionTypeId))
                 {
                     ValidateCommissionType();
                 }
@@ -539,12 +543,17 @@ namespace CommissionsModule.ViewModels
 
             private void ValidateCommissionQuestion()
             {
-                SetError(x => x.SelectedCommissionQuestionId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionQuestionId) ? "Укажите рассматриваемый комиссией вопрос" : string.Empty);
+                SetError(x => x.SelectedCommissionQuestionId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionQuestionId) ? "Укажите рассматриваемый подкомиссией вопрос" : string.Empty);
             }
 
             private void ValidateCommissionType()
             {
-                SetError(x => x.SelectedCommissionTypeId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionTypeId) ? "Укажите вид комиссии" : string.Empty);
+                SetError(x => x.SelectedCommissionTypeId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionTypeId) ? "Укажите вид подкомиссии" : string.Empty);
+            }
+
+            private void ValidateCommissionTypeGroup()
+            {
+                SetError(x => x.SelectedCommissionTypeGroupId, SpecialValues.IsNewOrNonExisting(AssociatedItem.SelectedCommissionTypeGroupId) ? "Укажите вид комиссии" : string.Empty);
             }
 
             protected override void RaiseAssociatedObjectPropertyChanged()
@@ -554,6 +563,7 @@ namespace CommissionsModule.ViewModels
 
             protected override void OnValidate()
             {
+                ValidateCommissionTypeGroup();
                 ValidateCommissionType();
                 ValidateCommissionQuestion();
                 ValidateCommissionSource();
