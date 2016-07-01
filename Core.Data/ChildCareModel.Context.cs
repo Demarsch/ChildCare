@@ -182,8 +182,6 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<CommissionSource> CommissionSources { get; set; }
 
-    public virtual DbSet<CommissionType> CommissionTypes { get; set; }
-
     public virtual DbSet<PersonTalon> PersonTalons { get; set; }
 
     public virtual DbSet<FinancingSource> FinancingSources { get; set; }
@@ -193,8 +191,6 @@ public partial class ModelContext : DbContext
     public virtual DbSet<AddressType> AddressTypes { get; set; }
 
     public virtual DbSet<DisabilityType> DisabilityTypes { get; set; }
-
-    public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
 
     public virtual DbSet<CommissionMember> CommissionMembers { get; set; }
 
@@ -216,7 +212,13 @@ public partial class ModelContext : DbContext
 
     public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
 
+    public virtual DbSet<PrintedDocument> PrintedDocuments { get; set; }
+
+    public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
+
     public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
+
+    public virtual DbSet<CommissionType> CommissionTypes { get; set; }
 
     public virtual DbSet<CommissionTypeGroup> CommissionTypeGroups { get; set; }
 

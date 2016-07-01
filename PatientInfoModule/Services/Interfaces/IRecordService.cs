@@ -18,5 +18,7 @@ namespace PatientInfoModule.Services
         IDisposableQueryable<Visit> GetVisitsByContractId(int contractId);
 
         string GetDBSettingValue(string parameter, bool useDisplayName = false);
+
+        string GetPrintedDocument(string option);
     }
 }

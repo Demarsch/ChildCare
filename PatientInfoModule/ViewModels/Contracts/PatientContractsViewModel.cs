@@ -25,6 +25,7 @@ using Prism.Events;
 using Prism.Regions;
 using Shell.Shared;
 using Core.Reports;
+using Shared.Patient.ViewModels;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -62,6 +63,8 @@ namespace PatientInfoModule.ViewModels
 
         private readonly Func<AddContractRecordsViewModel> addContractRecordsViewModelFactory;
 
+        private readonly Func<PrintedDocumentsCollectionViewModel> printedDocumentsCollectionFactory;
+
         private int patientId;
 
         private int finSourceId;
@@ -76,7 +79,8 @@ namespace PatientInfoModule.ViewModels
                                          IDialogService messageService,
                                          IDialogServiceAsync dialogService,
                                          IReportGeneratorHelper reportGenerator,
-                                         Func<AddContractRecordsViewModel> addContractRecordsViewModelFactory)
+                                         Func<AddContractRecordsViewModel> addContractRecordsViewModelFactory,
+                                         Func<PrintedDocumentsCollectionViewModel> printedDocumentsCollectionFactory)
         {
             if (personService == null)
             {
@@ -118,6 +122,10 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("reportGenerator");
             }
+            if (printedDocumentsCollectionFactory == null)
+            {
+                throw new ArgumentNullException("printedDocumentsCollectionFactory");
+            }
             this.personService = personService;
             this.contractService = contractService;
             this.recordService = recordService;
@@ -129,6 +137,7 @@ namespace PatientInfoModule.ViewModels
             this.dialogService = dialogService;
             this.messageService = messageService;
             this.addContractRecordsViewModelFactory = addContractRecordsViewModelFactory;
+            this.printedDocumentsCollectionFactory = printedDocumentsCollectionFactory;
             patientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
@@ -871,65 +880,10 @@ namespace PatientInfoModule.ViewModels
         {
             if (selectedContract == null)
             {
-                messageService.ShowWarning("Не выбран договор. Печать невозможна.");
+                FailureMediator.Activate("Не выбран договор. Печать невозможна.", true);
+                return;
             }
-            var client = personService.GetPersonById(selectedClient.Value).First();
-            var patient = personService.GetPersonById(patientId).First();            
-            var report = reportGenerator.CreateDocX("PayContract");
-            string defValue = string.Empty;
-
-            report.Data["CurrentDate"] = DateTime.Now.ToShortDateString();
-            report.Data["OrgName"] = recordService.GetDBSettingValue(DBSetting.OrgName);
-            report.Data["OrgShortName"] = recordService.GetDBSettingValue(DBSetting.OrgShortName);
-            report.Data["OrgAddress"] = recordService.GetDBSettingValue(DBSetting.OrgAddress);
-
-            report.Data["NIKINameGenitive"] = recordService.GetDBSettingValue(DBSetting.NIKIName, true);
-            report.Data["NIKIName"] = recordService.GetDBSettingValue(DBSetting.NIKIName);            
-            report.Data["NIKIAddress"] = recordService.GetDBSettingValue(DBSetting.NIKIAddress);
-            report.Data["DirectorGenitive"] = recordService.GetDBSettingValue(DBSetting.DirectorFullName, true);
-            report.Data["DirectorShortName"] = recordService.GetDBSettingValue(DBSetting.DirectorShortName);
-
-            var contract = contractService.GetContractById(selectedContract.Id).First();
-            report.Data["PayContractLicense"] = recordService.GetDBSettingValue(DBSetting.PayContractLicense);
-            report.Data["ContractNumber"] = contract.Number.ToSafeString();
-            report.Data["ContractBeginDate"] = contract.BeginDateTime.ToShortDateString();
-            report.Data["ContractEndDate"] = contract.EndDateTime.ToShortDateString();
-            report.Data["ClientName"] = contract.Person.ToString();
-            report.Data["ClientShortName"] = contract.Person.ShortName;
-            report.Data["PatientShortName"] = contract.Person1.ShortName;
-            if (contract.Person.PersonIdentityDocuments.Any())
-            {
-                var document = contract.Person.PersonIdentityDocuments.OrderByDescending(x => x.BeginDate).First();
-                report.Data["ClientPassport"] = document.IdentityDocumentType.Name + ": " + document.SeriesAndNumber + ";<br>Выдан: " + document.GivenOrg + " " + document.BeginDate.ToShortDateString();
-            }
-            else
-                report.Data["ClientPassport"] = defValue;
-
-            if (contract.Person.PersonAddresses.Any())
-            {
-                var address = contract.Person.PersonAddresses.OrderByDescending(x => x.BeginDateTime).First();
-                report.Data["ClientAddress"] = address.UserText +
-                                             (!string.IsNullOrEmpty(address.House) ? " д." + address.House : string.Empty) +
-                                             (!string.IsNullOrEmpty(address.Building) ? " корп." + address.Building : string.Empty) +
-                                             (!string.IsNullOrEmpty(address.Apartment) ? " кв." + address.Apartment : string.Empty);
-            }
-            else
-                report.Data["ClientAddress"] = defValue;
-
-            int index = 0;
-            if (contract.RecordContractItems.Any())
-            { 
-                foreach (var item in contract.RecordContractItems)
-                    report.Data.Tables["tbldata"].AddRow(++index, item.RecordType.Name, item.Cost + " руб.");
-                report.Data["TotalSum"] = contract.RecordContractItems.Sum(x => x.Cost) + " руб.";
-            }
-            else
-            {
-                report.Data.Tables["tbldata"].AddRow(defValue, defValue, defValue);
-                report.Data["TotalSum"] = defValue;
-            }
-
-            report.Show();
+            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AmbCard, new FieldValue() { Field = "ContractId", Value = selectedContract.Id }, false);                        
         }
 
         private void RemoveContract()

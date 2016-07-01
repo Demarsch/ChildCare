@@ -31,6 +31,8 @@ public partial class CommissionTypeGroup : ICloneable
 
     public string Name { get; set; }
 
+    public string Options { get; set; }
+
     public System.DateTime BeginDateTime { get; set; }
 
     public System.DateTime EndDateTime { get; set; }

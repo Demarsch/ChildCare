@@ -651,5 +651,19 @@ namespace CommissionsModule.Services
                 return (useDisplayName ? setting.DisplayName : setting.Value);
             return string.Empty;
         }
+
+
+        public IDisposableQueryable<CommissionType> GetCommissionTypeById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionType>(context.Set<CommissionType>().Where(x => x.Id == id), context);
+        }
+
+
+        public IDisposableQueryable<CommissionQuestion> GetCommissionQuestionById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionQuestion>(context.Set<CommissionQuestion>().Where(x => x.Id == id), context);
+        }
     }
 }

@@ -60,6 +60,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<PersonTalon> GetTalonById(int id);
 
+        IDisposableQueryable<CommissionType> GetCommissionTypeById(int id);
+
         IDisposableQueryable<RecordContract> GetRecordContractsByOptions(string options, DateTime onDate);
 
         IDisposableQueryable<PersonAddress> GetPatientAddresses(int personId);
@@ -99,5 +101,7 @@ namespace CommissionsModule.Services
         IDisposableQueryable<CommissionMember> CommissionMemberById(int id);
 
         string GetDBSettingValue(string parameter, bool useDisplayName = false);
+
+        IDisposableQueryable<CommissionQuestion> GetCommissionQuestionById(int id);
     }
 }

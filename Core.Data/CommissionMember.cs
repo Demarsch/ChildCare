@@ -53,15 +53,6 @@ public partial class CommissionMember : ICloneable
     	}
 
     [NonSerialized]
-    	protected CommissionType commissionType;
-    
-    	public virtual CommissionType CommissionType
-    	{
-     		get { return commissionType; }
-     		set { commissionType = value; }
-    	}
-
-    [NonSerialized]
     	protected PersonStaff personStaff;
     
     	public virtual PersonStaff PersonStaff
@@ -87,6 +78,15 @@ public partial class CommissionMember : ICloneable
     	{
      		get { return commissionDecisions; }
      		set { commissionDecisions = value; }
+    	}
+
+    [NonSerialized]
+    	protected CommissionType commissionType;
+    
+    	public virtual CommissionType CommissionType
+    	{
+     		get { return commissionType; }
+     		set { commissionType = value; }
     	}
 
 

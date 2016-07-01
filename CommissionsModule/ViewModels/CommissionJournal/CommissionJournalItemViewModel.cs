@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommissionsModule.ViewModels  
+namespace CommissionsModule.ViewModels
 {
     public class CommissionJournalItemViewModel : BindableBase
     {
@@ -70,6 +70,13 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref cardNumber, value); }
         }
 
+        private string branchName;
+        public string BranchName
+        {
+            get { return branchName; }
+            set { SetProperty(ref branchName, value); }
+        }
+
         private string patientGender;
         public string PatientGender
         {
@@ -91,11 +98,32 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref patientDiagnos, value); }
         }
 
+        private string commissionGroup;
+        public string CommissionGroup
+        {
+            get { return commissionGroup; }
+            set { SetProperty(ref commissionGroup, value); }
+        }
+
+        private int commissionTypeId;
+        public int CommissionTypeId
+        {
+            get { return commissionTypeId; }
+            set { SetProperty(ref commissionTypeId, value); }
+        }
+
         private string commissionType;
         public string CommissionType
         {
             get { return commissionType; }
             set { SetProperty(ref commissionType, value); }
+        }
+
+        private int commissionQuestionId;
+        public int CommissionQuestionId
+        {
+            get { return commissionQuestionId; }
+            set { SetProperty(ref commissionQuestionId, value); }
         }
 
         private string commissionName;

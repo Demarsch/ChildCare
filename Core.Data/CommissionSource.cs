@@ -41,15 +41,6 @@ public partial class CommissionSource : ICloneable
 
 
 
-    [NonSerialized]
-    	protected CommissionType commissionType;
-    
-    	public virtual CommissionType CommissionType
-    	{
-     		get { return commissionType; }
-     		set { commissionType = value; }
-    	}
-
 
     [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
@@ -58,6 +49,15 @@ public partial class CommissionSource : ICloneable
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+
+    [NonSerialized]
+    	protected CommissionType commissionType;
+    
+    	public virtual CommissionType CommissionType
+    	{
+     		get { return commissionType; }
+     		set { commissionType = value; }
     	}
 
 

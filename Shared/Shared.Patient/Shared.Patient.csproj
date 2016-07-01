@@ -172,9 +172,7 @@
     <Compile Include="ViewModels\IReportGeneratorHelper.cs" />
     <Compile Include="ViewModels\MediaInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\AgreementsCollectionViewModel.cs" />
     <Compile Include="ViewModels\PatientAssignmentListViewModel.cs" />
-    <Compile Include="ViewModels\AgreementViewModel.cs" />
     <Compile Include="ViewModels\PatientAssignmentViewModel.cs" />
     <Compile Include="ViewModels\PersonSearchDialogViewModel.cs" />
     <Compile Include="ViewModels\PersonSearchViewModel.cs" />
@@ -223,10 +221,6 @@
     <Page Include="Views\AddressView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\AgreementsCollectionView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PatientAssignmentListView.xaml">
       <SubType>Designer</SubType>

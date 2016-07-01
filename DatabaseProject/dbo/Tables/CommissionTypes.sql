@@ -5,9 +5,13 @@
     [CommissionTypeGroupId] INT           NOT NULL,
     [BeginDateTime]         DATETIME      NOT NULL,
     [EndDateTime]           DATETIME      NOT NULL,
+    [PrintedDocumentId]     INT           NULL,
     CONSTRAINT [PK_CommissionTypes] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_CommissionTypes_CommissionTypeGroups] FOREIGN KEY ([CommissionTypeGroupId]) REFERENCES [dbo].[CommissionTypeGroups] ([Id])
+    CONSTRAINT [FK_CommissionTypes_CommissionTypeGroups] FOREIGN KEY ([CommissionTypeGroupId]) REFERENCES [dbo].[CommissionTypeGroups] ([Id]),
+    CONSTRAINT [FK_CommissionTypes_PrintedDocuments] FOREIGN KEY ([PrintedDocumentId]) REFERENCES [dbo].[PrintedDocuments] ([Id])
 );
+
+
 
 
 

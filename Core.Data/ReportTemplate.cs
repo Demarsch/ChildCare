@@ -19,6 +19,14 @@ using System;
 public partial class ReportTemplate : ICloneable
 {
 
+    public ReportTemplate()
+    {
+
+        this.PrintedDocuments = new HashSet<PrintedDocument>();
+
+    }
+
+
     public int Id { get; set; }
 
     public string Name { get; set; }
@@ -31,7 +39,17 @@ public partial class ReportTemplate : ICloneable
 
     public string Template { get; set; }
 
-    public bool IsAgreementDocument { get; set; }
+
+
+
+    [NonSerialized]
+    	protected ICollection<PrintedDocument> printedDocuments;
+    
+    	public virtual ICollection<PrintedDocument> PrintedDocuments
+    	{
+     		get { return printedDocuments; }
+     		set { printedDocuments = value; }
+    	}
 
 
 	public object Clone()

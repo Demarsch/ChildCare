@@ -37,6 +37,8 @@ public partial class CommissionQuestion : ICloneable
 
     public string ShortName { get; set; }
 
+    public Nullable<int> PrintedDocumentId { get; set; }
+
     public System.DateTime BeginDateTime { get; set; }
 
     public System.DateTime EndDateTime { get; set; }
@@ -70,6 +72,15 @@ public partial class CommissionQuestion : ICloneable
     	{
      		get { return commissionType; }
      		set { commissionType = value; }
+    	}
+
+    [NonSerialized]
+    	protected PrintedDocument printedDocument;
+    
+    	public virtual PrintedDocument PrintedDocument
+    	{
+     		get { return printedDocument; }
+     		set { printedDocument = value; }
     	}
 
 

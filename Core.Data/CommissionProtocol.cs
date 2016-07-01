@@ -96,30 +96,12 @@ public partial class CommissionProtocol : ICloneable
     	}
 
     [NonSerialized]
-    	protected CommissionQuestion commissionQuestion;
-    
-    	public virtual CommissionQuestion CommissionQuestion
-    	{
-     		get { return commissionQuestion; }
-     		set { commissionQuestion = value; }
-    	}
-
-    [NonSerialized]
     	protected CommissionSource commissionSource;
     
     	public virtual CommissionSource CommissionSource
     	{
      		get { return commissionSource; }
      		set { commissionSource = value; }
-    	}
-
-    [NonSerialized]
-    	protected CommissionType commissionType;
-    
-    	public virtual CommissionType CommissionType
-    	{
-     		get { return commissionType; }
-     		set { commissionType = value; }
     	}
 
     [NonSerialized]
@@ -201,6 +183,24 @@ public partial class CommissionProtocol : ICloneable
     	{
      		get { return user1; }
      		set { user1 = value; }
+    	}
+
+    [NonSerialized]
+    	protected CommissionQuestion commissionQuestion;
+    
+    	public virtual CommissionQuestion CommissionQuestion
+    	{
+     		get { return commissionQuestion; }
+     		set { commissionQuestion = value; }
+    	}
+
+    [NonSerialized]
+    	protected CommissionType commissionType;
+    
+    	public virtual CommissionType CommissionType
+    	{
+     		get { return commissionType; }
+     		set { commissionType = value; }
     	}
 
 

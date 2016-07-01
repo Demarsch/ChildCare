@@ -269,6 +269,9 @@
     <Compile Include="PersonTalon.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PrintedDocument.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Record.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

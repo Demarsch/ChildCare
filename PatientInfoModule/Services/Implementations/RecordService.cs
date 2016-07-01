@@ -112,10 +112,19 @@ namespace PatientInfoModule.Services
 
         public string GetDBSettingValue(string parameter, bool useDisplayName = false)
         {
-            var setting = contextProvider.CreateNewContext().Set<DBSetting>().FirstOrDefault(x => x.Name == parameter);
+            var setting = contextProvider.CreateLightweightContext().Set<DBSetting>().FirstOrDefault(x => x.Name == parameter);
             if (setting != null)
                 return (useDisplayName ? setting.DisplayName : setting.Value);
             return string.Empty;
+        }
+
+
+        public string GetPrintedDocument(string option)
+        {
+            var document = contextProvider.CreateNewContext().Set<PrintedDocument>().FirstOrDefault(x => x.Options == option);
+            if (document != null && document.ReportTemplateId.HasValue)
+                return document.ReportTemplate.Name;
+            return string.Empty; 
         }
     }
 }

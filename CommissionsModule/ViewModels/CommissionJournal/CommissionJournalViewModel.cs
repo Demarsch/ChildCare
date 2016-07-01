@@ -23,6 +23,7 @@ using CommissionsModule.Services;
 using Core.Wpf.Misc;
 using Shared.Patient.ViewModels;
 using Core.Reports;
+using Core.Reports.DTO;
 
 namespace CommissionsModule.ViewModels
 {
@@ -39,10 +40,12 @@ namespace CommissionsModule.ViewModels
         private TaskCompletionSource<bool> initialLoadingTaskSource;
         private readonly CommandWrapper initialLoadingCommandWrapper;
         private readonly Func<PersonSearchDialogViewModel> patientSearchFactory;
+        private readonly Func<PrintedDocumentsCollectionViewModel> printedDocumentsCollectionFactory;
         #endregion
 
         #region Constructors
-        public CommissionJournalViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IReportGeneratorHelper reportGenerator, Func<PersonSearchDialogViewModel> patientSearchFactory)
+        public CommissionJournalViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IReportGeneratorHelper reportGenerator,
+            Func<PersonSearchDialogViewModel> patientSearchFactory, Func<PrintedDocumentsCollectionViewModel> printedDocumentsCollectionFactory)
         {
             if (commissionService == null)
             {
@@ -64,25 +67,30 @@ namespace CommissionsModule.ViewModels
             {
                 throw new ArgumentNullException("reportGenerator");
             }
+            if (printedDocumentsCollectionFactory == null)
+            {
+                throw new ArgumentNullException("printedDocumentsCollectionFactory");
+            }
             this.dialogService = dialogService;
             this.commissionService = commissionService;
             this.logService = logService;
             this.reportGenerator = reportGenerator;
             this.patientSearchFactory = patientSearchFactory;
+            this.printedDocumentsCollectionFactory = printedDocumentsCollectionFactory;
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             CommissionTypes = new ObservableCollectionEx<FieldValue>();
             CommissionQuestions = new ObservableCollectionEx<FieldValue>();
-            VKItems = new ObservableCollectionEx<CommissionJournalItemViewModel>();
+            CommissionItems = new ObservableCollectionEx<CommissionJournalItemViewModel>();
 
             searchPatientCommand = new DelegateCommand(SearchPatient);
             removePatientFilterCommand = new DelegateCommand(RemovePatientFilter);
             loadJournalCommand = new DelegateCommand(LoadJournal);
 
-            printVKAssignmentCommand = new DelegateCommand(PrintVKAssignment);
-            printVKProtocolCommand = new DelegateCommand(PrintVKProtocol);
-            printVKJournalCommand = new DelegateCommand(PrintVKJournal);
+            printCommissionAssignmentCommand = new DelegateCommand(PrintCommissionAssignment);
+            printCommissionProtocolCommand = new DelegateCommand(PrintCommissionProtocol);
+            printCommissionJournalCommand = new DelegateCommand(PrintCommissionJournal);
         }
 
         #endregion
@@ -98,14 +106,14 @@ namespace CommissionsModule.ViewModels
         private readonly DelegateCommand removePatientFilterCommand;
         public ICommand RemovePatientFilterCommand { get { return removePatientFilterCommand; } }
 
-        private readonly DelegateCommand printVKAssignmentCommand;
-        public ICommand PrintVKAssignmentCommand { get { return printVKAssignmentCommand; } }
+        private readonly DelegateCommand printCommissionAssignmentCommand;
+        public ICommand PrintCommissionAssignmentCommand { get { return printCommissionAssignmentCommand; } }
 
-        private readonly DelegateCommand printVKProtocolCommand;
-        public ICommand PrintVKProtocolCommand { get { return printVKProtocolCommand; } }
+        private readonly DelegateCommand printCommissionProtocolCommand;
+        public ICommand PrintCommissionProtocolCommand { get { return printCommissionProtocolCommand; } }
 
-        private readonly DelegateCommand printVKJournalCommand;
-        public ICommand PrintVKJournalCommand { get { return printVKJournalCommand; } }
+        private readonly DelegateCommand printCommissionJournalCommand;
+        public ICommand PrintCommissionJournalCommand { get { return printCommissionJournalCommand; } }
 
         #region Filters
 
@@ -123,12 +131,7 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref endDate, value); }
         }
 
-        private ObservableCollectionEx<FieldValue> commissionTypes;
-        public ObservableCollectionEx<FieldValue> CommissionTypes
-        {
-            get { return commissionTypes; }
-            set { SetProperty(ref commissionTypes, value); }
-        }
+        public ObservableCollectionEx<FieldValue> CommissionTypes { get; set; }
 
         private int selectedCommissionTypeId;
         public int SelectedCommissionTypeId
@@ -148,18 +151,13 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private ObservableCollectionEx<FieldValue> commissionQuestions;
-        public ObservableCollectionEx<FieldValue> CommissionQuestions
-        {
-            get { return commissionQuestions; }
-            set { SetProperty(ref commissionQuestions, value); }
-        }
+        public ObservableCollectionEx<FieldValue> CommissionQuestions { get; set; }
 
         private int selectedCommissionQuestionId;
         public int SelectedCommissionQuestionId
         {
             get { return selectedCommissionQuestionId; }
-            set { SetProperty(ref selectedCommissionQuestionId, value); }
+            set { selectedCommissionQuestionId = 0; SetProperty(ref selectedCommissionQuestionId, value); }
         }
 
         private int selectedPatientId;
@@ -204,18 +202,18 @@ namespace CommissionsModule.ViewModels
 
         #endregion
 
-        private ObservableCollectionEx<CommissionJournalItemViewModel> vkItems;
-        public ObservableCollectionEx<CommissionJournalItemViewModel> VKItems
+        private ObservableCollectionEx<CommissionJournalItemViewModel> commissionItems;
+        public ObservableCollectionEx<CommissionJournalItemViewModel> CommissionItems
         {
-            get { return vkItems; }
-            set { SetProperty(ref vkItems, value); }
+            get { return commissionItems; }
+            set { SetProperty(ref commissionItems, value); }
         }
 
-        private CommissionJournalItemViewModel selectedVK;
-        public CommissionJournalItemViewModel SelectedVK
+        private CommissionJournalItemViewModel selectedCommissionItem;
+        public CommissionJournalItemViewModel SelectedCommissionItem
         {
-            get { return selectedVK; }
-            set { SetProperty(ref selectedVK, value); }
+            get { return selectedCommissionItem; }
+            set { SetProperty(ref selectedCommissionItem, value); }
         }
 
         #endregion
@@ -305,11 +303,15 @@ namespace CommissionsModule.ViewModels
                     AssignPerson = x.User.Person.ShortName,
                     PatientFIO = x.Person.FullName,
                     PatientBirthDate = x.Person.BirthDate,
-                    CardNumber = x.Person.AmbNumberString != string.Empty ? x.Person.AmbNumberString : "??",
+                    CardNumber = x.Person.AmbNumberString != string.Empty ? "А/К №" + x.Person.AmbNumberString : "И/Б № ??",
+                    BranchName = "??",
                     PatientGender = x.Person.IsMale ? "муж" : "жен",
                     PatientSocialStatus = x.Person.PersonSocialStatuses.Select(a => new { a.SocialStatusType.Name, OrgName = a.OrgId.HasValue ? a.Org.Name : string.Empty, a.Office }),
                     PatientDiagnos = x.MKB,
+                    CommissionGroup = x.CommissionType.CommissionTypeGroup.Options,
+                    CommissionTypeId = x.CommissionTypeId,
                     CommissionType = x.CommissionType.Name,
+                    CommissionQuestionId = x.CommissionQuestionId,
                     CommissionName = x.CommissionQuestion.Name,
                     Decision = x.Decision.Name,
                     Recommendations = "??",
@@ -329,61 +331,131 @@ namespace CommissionsModule.ViewModels
                     PatientFIO = x.PatientFIO,
                     PatientBirthDate = x.PatientBirthDate.ToShortDateString(),
                     CardNumber = x.CardNumber,
+                    BranchName = x.BranchName,
                     PatientGender = x.PatientGender,
                     PatientSocialStatus = x.PatientSocialStatus.Select(a => a.Name + " " + a.Office + " " + a.OrgName).Aggregate((a, b) => a + "\r\n" + b),
                     PatientDiagnos = x.PatientDiagnos,
+                    CommissionGroup = x.CommissionGroup,
+                    CommissionTypeId = x.CommissionTypeId,
                     CommissionType = x.CommissionType,
+                    CommissionQuestionId = x.CommissionQuestionId,
                     CommissionName = x.CommissionName,
                     Decision = x.Decision,
                     Recommendations = x.Recommendations,
                     Details = x.Details,
-                    Experts = x.Experts != null ? x.Experts.Aggregate((a, b) => a + "\r\n" + b) : string.Empty
+                    Experts = x.Experts != null && x.Experts.Any() ? x.Experts.Aggregate((a, b) => a + "\r\n" + b) : string.Empty
                 }).ToArray();
 
-            VKItems.Clear();
-            VKItems.AddRange(journalItems);
+            CommissionItems.Clear();
+            CommissionItems.AddRange(journalItems);
         }
 
-        private void PrintVKAssignment()
+        private void PrintCommissionAssignment()
         {
-
-        }
-
-        private void PrintVKProtocol()
-        {
-
-        }
-
-        private void PrintVKJournal()
-        {            
-            var report = reportGenerator.CreateDocX("CommissionsJournal");
-            string emptyValue = string.Empty;
-            string nonExistValue = "отсутствует";
-            report.Data["OrgName"] = commissionService.GetDBSettingValue(DBSetting.OrgName);
-
-            foreach (var item in VKItems)
+            if (SelectedCommissionItem == null)
+                return;
+            CommissionJournalDTO item = new CommissionJournalDTO()
             {
-                report.Data.Tables["tblval"].AddRow(
-                    item.CommissionNumber,
-                    item.ProtocolNumber,
-                    item.CommissionDate,
-                    item.AssignPerson,
-                    item.PatientFIO,
-                    item.PatientBirthDate,
-                    item.CardNumber,
-                    item.PatientGender,
-                    item.PatientSocialStatus,
-                    item.PatientDiagnos,
-                    item.CommissionType,
-                    item.CommissionName,
-                    item.Decision,
-                    item.Recommendations,
-                    item.Details,
-                    item.Experts);
+                Id = SelectedCommissionItem.Id,
+                CommissionNumber = SelectedCommissionItem.CommissionNumber,
+                ProtocolNumber = SelectedCommissionItem.ProtocolNumber,
+                CommissionDate = SelectedCommissionItem.CommissionDate,
+                AssignPerson = SelectedCommissionItem.AssignPerson,
+                PatientFIO = SelectedCommissionItem.PatientFIO,
+                PatientBirthDate = SelectedCommissionItem.PatientBirthDate,
+                CardNumber = SelectedCommissionItem.CardNumber,
+                BranchName = SelectedCommissionItem.BranchName,
+                PatientGender = SelectedCommissionItem.PatientGender,
+                PatientSocialStatus = SelectedCommissionItem.PatientSocialStatus,
+                PatientDiagnos = SelectedCommissionItem.PatientDiagnos,
+                CommissionGroup = SelectedCommissionItem.CommissionGroup,
+                CommissionTypeId = SelectedCommissionItem.CommissionTypeId,
+                CommissionType = SelectedCommissionItem.CommissionType,
+                CommissionQuestionId = SelectedCommissionItem.CommissionQuestionId,
+                CommissionName = SelectedCommissionItem.CommissionName,
+                Decision = SelectedCommissionItem.Decision,
+                Recommendations = SelectedCommissionItem.Recommendations,
+                Details = SelectedCommissionItem.Recommendations,
+                Experts = SelectedCommissionItem.Experts
+            };
+
+            if (SelectedCommissionItem.CommissionGroup == OptionValues.HospitalisationCommission)
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.ReferralToHospitalisationCommission, item, false);
+            else
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.ReferralToCommonCommission, item, false);
+        }
+
+        private void PrintCommissionProtocol()
+        {
+            if (SelectedCommissionItem == null)
+                return;
+            var commissionQuestion = commissionService.GetCommissionQuestionById(SelectedCommissionItem.CommissionQuestionId).First();
+            if (commissionQuestion.PrintedDocumentId.HasValue)
+            {
+                CommissionJournalDTO item = new CommissionJournalDTO()
+                {
+                    Id = SelectedCommissionItem.Id,
+                    CommissionNumber = SelectedCommissionItem.CommissionNumber,
+                    ProtocolNumber = SelectedCommissionItem.ProtocolNumber,
+                    CommissionDate = SelectedCommissionItem.CommissionDate,
+                    AssignPerson = SelectedCommissionItem.AssignPerson,
+                    PatientFIO = SelectedCommissionItem.PatientFIO,
+                    PatientBirthDate = SelectedCommissionItem.PatientBirthDate,
+                    CardNumber = SelectedCommissionItem.CardNumber,
+                    BranchName = SelectedCommissionItem.BranchName,
+                    PatientGender = SelectedCommissionItem.PatientGender,
+                    PatientSocialStatus = SelectedCommissionItem.PatientSocialStatus,
+                    PatientDiagnos = SelectedCommissionItem.PatientDiagnos,
+                    CommissionGroup = SelectedCommissionItem.CommissionGroup,
+                    CommissionTypeId = SelectedCommissionItem.CommissionTypeId,
+                    CommissionType = SelectedCommissionItem.CommissionType,
+                    CommissionQuestionId = SelectedCommissionItem.CommissionQuestionId,
+                    CommissionName = SelectedCommissionItem.CommissionName,
+                    Decision = SelectedCommissionItem.Decision,
+                    Recommendations = SelectedCommissionItem.Recommendations,
+                    Details = SelectedCommissionItem.Recommendations,
+                    Experts = SelectedCommissionItem.Experts
+                };
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(commissionQuestion.PrintedDocumentId.Value, item, false);
             }
-                       
-            report.Editable = false;
-            report.Show();
+        }
+
+        private void PrintCommissionJournal()
+        {
+            if (SelectedCommissionTypeId == SpecialValues.NonExistingId)
+            {
+                FailureMediator.Activate("Не выбран тип комиссии. Печать журнала невозможна.", true);
+                return;
+            }
+            var commissionType = commissionService.GetCommissionTypeById(SelectedCommissionTypeId).First();
+            if (commissionType.PrintedDocumentId.HasValue)
+            {
+                CommissionJournalDTO[] items = CommissionItems.Select(x => new CommissionJournalDTO()
+                    {
+                        Id = x.Id,
+                        CommissionNumber = x.CommissionNumber,
+                        ProtocolNumber = x.ProtocolNumber,
+                        CommissionDate = x.CommissionDate,
+                        AssignPerson = x.AssignPerson,
+                        PatientFIO = x.PatientFIO,
+                        PatientBirthDate = x.PatientBirthDate,
+                        CardNumber = x.CardNumber,
+                        BranchName = x.BranchName,
+                        PatientGender = x.PatientGender,
+                        PatientSocialStatus = x.PatientSocialStatus,
+                        PatientDiagnos = x.PatientDiagnos,
+                        CommissionGroup = x.CommissionGroup,
+                        CommissionTypeId = x.CommissionTypeId,
+                        CommissionType = x.CommissionType,
+                        CommissionQuestionId = x.CommissionQuestionId,
+                        CommissionName = x.CommissionName,
+                        Decision = x.Decision,
+                        Recommendations = x.Recommendations,
+                        Details = x.Recommendations,
+                        Experts = x.Experts
+                    }).ToArray();
+                printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(commissionType.PrintedDocumentId.Value, items, false);
+            }
         }
 
         public void Dispose()

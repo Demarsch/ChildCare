@@ -55,19 +55,29 @@
             
             <TextBlock Grid.Row="1" Grid.Column="0" Margin="5 0" Text="Тип комиссии" VerticalAlignment="Center" HorizontalAlignment="Left"/>
             <fluent:ComboBox Grid.Row="1" Grid.Column="1" IsEditable="False"
-                             Width="400" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                             Width="400" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                              ItemsSource="{Binding CommissionJournalViewModel.CommissionTypes}"
-                             DisplayMemberPath="Field" 
                              SelectedValuePath="Value"
-                             SelectedValue="{Binding CommissionJournalViewModel.SelectedCommissionTypeId, Mode=TwoWay}" />
+                             SelectedValue="{Binding CommissionJournalViewModel.SelectedCommissionTypeId, Mode=TwoWay}">
+                <fluent:ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Field}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                </fluent:ComboBox.ItemTemplate>
+            </fluent:ComboBox>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Margin="5 0" Text="Вопрос комиссии" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-            <fluent:ComboBox Grid.Row="2" Grid.Column="1" IsEditable="False"
-                             Width="400" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+            <fluent:ComboBox Grid.Row="2" Grid.Column="1" IsEditable="False" ResizeMode="Vertical"
+                             Width="400" VerticalAlignment="Top" HorizontalAlignment="Stretch"
                              ItemsSource="{Binding CommissionJournalViewModel.CommissionQuestions}"
-                             DisplayMemberPath="Field" 
                              SelectedValuePath="Value"
-                             SelectedValue="{Binding CommissionJournalViewModel.SelectedCommissionQuestionId, Mode=TwoWay}" />
+                             SelectedValue="{Binding CommissionJournalViewModel.SelectedCommissionQuestionId, Mode=TwoWay}" >
+                <fluent:ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Field}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                </fluent:ComboBox.ItemTemplate>
+            </fluent:ComboBox>
         </Grid>
     </fluent:RibbonGroupBox>
     
@@ -101,17 +111,17 @@
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentPrint48x48.png"
                        ToolTip="Печать направления"
                        Header="Печать направления"
-                       Command="{Binding CommissionJournalViewModel.PrintVKAssignmentCommand, Mode=OneTime}"/>
+                       Command="{Binding CommissionJournalViewModel.PrintCommissionAssignmentCommand, Mode=OneTime}"/>
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordPrint48x48.png"
                        ToolTip="Печать протокола"
                        Header="Печать протокола"
-                       Command="{Binding CommissionJournalViewModel.PrintVKProtocolCommand, Mode=OneTime}"/>
+                       Command="{Binding CommissionJournalViewModel.PrintCommissionProtocolCommand, Mode=OneTime}"/>
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitPrint48x48.png"
                        ToolTip="Печать журнала"
                        Header="Печать журнала"
-                       Command="{Binding CommissionJournalViewModel.PrintVKJournalCommand, Mode=OneTime}"/>
+                       Command="{Binding CommissionJournalViewModel.PrintCommissionJournalCommand, Mode=OneTime}"/>
     </fluent:RibbonGroupBox>
 
 </fluent:RibbonTabItem>

@@ -8,16 +8,24 @@
              d:DesignWidth="600">
     
     <Grid>
-        <DataGrid RowHeaderWidth="0" 
-                  AutoGenerateColumns="False" CanUserAddRows="False" Height="Auto"
-                  FrozenColumnCount ="5" HorizontalScrollBarVisibility="Auto"
-                  ItemsSource="{Binding VKItems}" 
-                  SelectedItem="{Binding SelectedVK, Mode=TwoWay}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DataGrid Grid.Row="0" RowHeaderWidth="0" 
+                  SelectionMode="Extended"
+                  AutoGenerateColumns="False"      
+                  CanUserAddRows="False"
+                  FrozenColumnCount ="5"
+                  ScrollViewer.CanContentScroll="True" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Visible" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  ItemsSource="{Binding CommissionItems}" 
+                  SelectedItem="{Binding SelectedCommissionItem, Mode=TwoWay}">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridCell}">
                     <Style.Triggers>
                         <Trigger Property="DataGridCell.IsSelected" Value="True">
-                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Background" Value="#FFA9E7FF" />
                             <Setter Property="Foreground" Value="Black" />
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="FontWeight" Value="Medium"/>
@@ -43,7 +51,7 @@
                 <DataGridTemplateColumn Header="Дата проведения" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding ProtocolDate}"  VerticalAlignment="Center" Margin="5,0"/>
+                            <TextBlock Text="{Binding CommissionDate}"  VerticalAlignment="Center" Margin="5,0"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -54,7 +62,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Ф.И.О. пациента" Width="*" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Ф.И.О. пациента" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding PatientFIO}"  VerticalAlignment="Center" Margin="5,0"/>
@@ -68,20 +76,6 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Карта" Width="Auto" IsReadOnly="True">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding CardNumber}"  VerticalAlignment="Center" Margin="5,0"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Пол" Width="Auto" IsReadOnly="True">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding PatientGender}"  VerticalAlignment="Center" Margin="5,0"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Соц. статус" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -89,6 +83,20 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Карта" Width="Auto" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding CardNumber}"  VerticalAlignment="Center" Margin="5,0"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Отделение" Width="Auto" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding BranchName}"  VerticalAlignment="Center" Margin="5,0"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>    
                 <DataGridTemplateColumn Header="Диагноз" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -110,7 +118,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Заключение" Width="Auto" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Решение" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Decision}"  VerticalAlignment="Center" Margin="5,0"/>
@@ -131,7 +139,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Состав экспертов" Width="*" IsReadOnly="True">
+                <DataGridTemplateColumn Header="Состав экспертов" Width="Auto" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Experts}"  VerticalAlignment="Center" Margin="5,0"/>
@@ -139,8 +147,10 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>               
             </DataGrid.Columns>
-
         </DataGrid>
+
+        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding FailureMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
     </Grid>
     
 </UserControl>

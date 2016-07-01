@@ -22,13 +22,13 @@ public partial class CommissionType : ICloneable
     public CommissionType()
     {
 
-        this.CommissionSources = new HashSet<CommissionSource>();
-
         this.CommissionMembers = new HashSet<CommissionMember>();
 
         this.CommissionProtocols = new HashSet<CommissionProtocol>();
 
         this.CommissionQuestions = new HashSet<CommissionQuestion>();
+
+        this.CommissionSources = new HashSet<CommissionSource>();
 
     }
 
@@ -39,23 +39,15 @@ public partial class CommissionType : ICloneable
 
     public string ShortName { get; set; }
 
+    public int CommissionTypeGroupId { get; set; }
+
     public System.DateTime BeginDateTime { get; set; }
 
     public System.DateTime EndDateTime { get; set; }
 
-    public int CommissionTypeGroupId { get; set; }
+    public Nullable<int> PrintedDocumentId { get; set; }
 
 
-
-
-    [NonSerialized]
-    	protected ICollection<CommissionSource> commissionSources;
-    
-    	public virtual ICollection<CommissionSource> CommissionSources
-    	{
-     		get { return commissionSources; }
-     		set { commissionSources = value; }
-    	}
 
 
     [NonSerialized]
@@ -85,6 +77,25 @@ public partial class CommissionType : ICloneable
     	{
      		get { return commissionQuestions; }
      		set { commissionQuestions = value; }
+    	}
+
+
+    [NonSerialized]
+    	protected ICollection<CommissionSource> commissionSources;
+    
+    	public virtual ICollection<CommissionSource> CommissionSources
+    	{
+     		get { return commissionSources; }
+     		set { commissionSources = value; }
+    	}
+
+    [NonSerialized]
+    	protected PrintedDocument printedDocument;
+    
+    	public virtual PrintedDocument PrintedDocument
+    	{
+     		get { return printedDocument; }
+     		set { printedDocument = value; }
     	}
 
     [NonSerialized]

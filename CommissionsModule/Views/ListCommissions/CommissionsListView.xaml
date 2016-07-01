@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
         
         <DockPanel Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch">
-            <ComboBox DockPanel.Dock="Top" Margin="2"
+            <ComboBox DockPanel.Dock="Top" Margin="2" Width="200"
                           ItemsSource="{Binding Filters}" 
                           SelectedValue="{Binding SelectedFilter, Mode=TwoWay}"
                           SelectedValuePath="Value" 
@@ -34,7 +34,7 @@
         
         <ListBox Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="Black" 
                  HorizontalContentAlignment="Stretch" Margin="2"
-                 ItemsSource="{Binding Commissions}"
+                 ItemsSource="{Binding Commissions}" Width="200"
                  SelectedItem="{Binding SelectedCommission}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
