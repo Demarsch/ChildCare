@@ -19,7 +19,7 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int filterId, DateTime? date = null, bool onlyMyCommissions = false);
 
-        IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter);
+        IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, int selectedCommissionQuestionId, string commissionNumberFilter, string protocolNumberFilter);
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecisions(int commissionProtocolId);
 
@@ -48,7 +48,7 @@ namespace CommissionsModule.Services
 
         IEnumerable<CommissionType> GetCommissionTypes(object onDate);
 
-        IEnumerable<CommissionTypeGroup> GetCommissionTypeGroups(object onDate);        
+        IEnumerable<CommissionTypeGroup> GetCommissionTypeGroups(object onDate);
 
         IDisposableQueryable<CommissionType> GetCommissionTypes(DateTime beginDate, DateTime endDate);
 
@@ -60,6 +60,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<PersonTalon> GetTalonById(int id);
 
+        IDisposableQueryable<CommissionType> GetCommissionTypeById(int id);
+
         IDisposableQueryable<RecordContract> GetRecordContractsByOptions(string options, DateTime onDate);
 
         IDisposableQueryable<PersonAddress> GetPatientAddresses(int personId);
@@ -67,6 +69,8 @@ namespace CommissionsModule.Services
         IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate);
 
         IEnumerable<CommissionQuestion> GetCommissionQuestions(object onDate);
+
+        IDisposableQueryable<CommissionQuestion> GetCommissionQuestions(DateTime beginDate, DateTime endDate, int commissionTypeId = -1);
 
         IDisposableQueryable<Person> GetPerson(int personId);
 
@@ -97,5 +101,11 @@ namespace CommissionsModule.Services
         IDisposableQueryable<CommissionMember> CommissionMemberById(int id);
 
         string GetDBSettingValue(string parameter, bool useDisplayName = false);
+
+        IDisposableQueryable<CommissionQuestion> GetCommissionQuestionById(int id);
+
+        Task<int> GetFreeCommissionNumber(int year, CancellationToken token);
+
+        Task<int> GetFreeProtocolNumber(int commissionNumber, int year, CancellationToken token);
     }
 }

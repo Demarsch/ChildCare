@@ -16,9 +16,15 @@
         <converters:BoolToWindowStateConverter x:Key="BoolToState"/>
     </UserControl.Resources>
 
-    <StackPanel Margin="10">
-        <TextBlock FontWeight="Bold" FontSize="16">Шаблоны отчетов</TextBlock>
-        <ScrollViewer Margin="10" HorizontalContentAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="10" Grid.Row="0" FontWeight="Bold" FontSize="16">Шаблоны отчетов</TextBlock>
+        <ScrollViewer Grid.Row="1" Margin="10" HorizontalContentAlignment="Stretch" 
+                      VerticalScrollBarVisibility="Visible">
             <ItemsControl ItemsSource="{Binding Items, Mode=OneWay}" HorizontalContentAlignment="Stretch">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -90,5 +96,5 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>            
         </ScrollViewer>
-    </StackPanel>
+    </Grid>
 </UserControl>

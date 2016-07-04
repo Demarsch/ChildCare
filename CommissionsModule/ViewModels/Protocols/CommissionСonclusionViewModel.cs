@@ -15,6 +15,7 @@ using System.Data.Entity;
 using Core.Extensions;
 using Prism.Commands;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace CommissionsModule.ViewModels
 {
@@ -29,6 +30,8 @@ namespace CommissionsModule.ViewModels
         private CommandWrapper reInitializeCommandWrapper;
 
         private CancellationTokenSource currentOperationToken;
+        private CancellationTokenSource getFreeCommissionNumberToken;
+        private CancellationTokenSource getFreeProtocolNumberToken;
 
         private ValidationMediator validationMediator;
         #endregion
@@ -52,6 +55,10 @@ namespace CommissionsModule.ViewModels
 
             reInitializeCommandWrapper = new CommandWrapper() { Command = new DelegateCommand(() => Initialize(CommissionProtocolId, PersonId)), CommandName = "Повторить" };
             unselectedDecision = new Decision { Name = "Выберите решение" };
+
+            getNextCommissionNumberCommand = new DelegateCommand(GetNextCommissionNumber);
+            getNextProtocolNumberCommand = new DelegateCommand(GetNextProtocolNumber);
+
 
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
@@ -323,6 +330,55 @@ namespace CommissionsModule.ViewModels
             }
             return false;
         }
+
+        private async void GetNextCommissionNumber()
+        {
+            if (getFreeCommissionNumberToken != null)
+            {
+                getFreeCommissionNumberToken.Cancel();
+                getFreeCommissionNumberToken.Dispose();
+            }
+            getFreeCommissionNumberToken = new CancellationTokenSource();
+            var token = getFreeCommissionNumberToken.Token;
+            logService.Info("Geting free commission number...");
+            try
+            {
+                CommissionNumber = await commissionService.GetFreeCommissionNumber(CommissionDate.Year, token);
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to get free commission number");
+            }
+        }
+
+        private async void GetNextProtocolNumber()
+        {
+            if (getFreeProtocolNumberToken != null)
+            {
+                getFreeProtocolNumberToken.Cancel();
+                getFreeProtocolNumberToken.Dispose();
+            }
+            getFreeProtocolNumberToken = new CancellationTokenSource();
+            var token = getFreeProtocolNumberToken.Token;
+            logService.Info("Geting free protocol number...");
+            try
+            {
+                ProtocolNumber = await commissionService.GetFreeProtocolNumber(CommissionNumber.ToInt(), CommissionDate.Year, token);
+            }
+            catch (Exception ex)
+            {
+                logService.ErrorFormatEx(ex, "Failed to get free protocol number");
+            }
+        }
+
+        #endregion
+
+        #region Commands
+        private DelegateCommand getNextCommissionNumberCommand;
+        public ICommand GetNextCommissionNumberCommand { get { return getNextCommissionNumberCommand; } }
+
+        private DelegateCommand getNextProtocolNumberCommand;
+        public ICommand GetNextProtocolNumberCommand { get { return getNextProtocolNumberCommand; } }
         #endregion
 
         #region IDataErrorInfo implementation

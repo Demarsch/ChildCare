@@ -44,18 +44,18 @@ namespace Shared.Patient.Services
                 context.ChangeTracker.DetectChanges();
                 await context.SaveChangesAsync();
             }
-        }
-        
-        public IDisposableQueryable<ReportTemplate> GetAgreementDocuments()
-        {
-            var context = contextProvider.CreateLightweightContext();
-            return new DisposableQueryable<ReportTemplate>(context.Set<ReportTemplate>().Where(x => x.IsAgreementDocument), context);
-        }
+        }     
 
         public IDisposableQueryable<Person> GetPersonById(int id)
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<Person>(context.Set<Person>().Where(x => x.Id == id), context);
+        }
+
+        public IDisposableQueryable<RecordContract> GetContractById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<RecordContract>(context.Set<RecordContract>().Where(x => x.Id == id), context);
         }
 
         public string GetDBSettingValue(string parameter, bool useDisplayName = false)

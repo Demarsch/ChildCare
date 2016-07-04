@@ -159,6 +159,7 @@
     <Build Include="dbo\Tables\CommissionFilters.sql" />
     <Build Include="dbo\Tables\StaffCategories.sql" />
     <Build Include="dbo\Tables\CommissionTypeGroups.sql" />
+    <Build Include="dbo\Tables\PrintedDocuments.sql" />
     <Build Include="dbo\Tables\DecisionKinds.sql" />
   </ItemGroup>
 </Project>

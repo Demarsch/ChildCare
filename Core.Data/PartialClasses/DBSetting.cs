@@ -8,13 +8,7 @@
 
         public const string DirectorFullName = "DirectorFullName";
 
-        public const string DirectorShortName = "DirectorShortName";
-
-        public const string NIKIAddress = "NIKIAddress";
-
-        public const string NIKIName = "NIKIName";
-
-        public const string NIKIShortName = "NIKIShortName";
+        public const string DirectorShortName = "DirectorShortName";       
 
         public const string OrgAddress = "OrgAddress";
 

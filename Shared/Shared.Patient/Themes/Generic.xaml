@@ -5,7 +5,6 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/FoundPersonView.xaml" />
         <ResourceDictionary Source="../Views/PhotoView.xaml" />
-        <ResourceDictionary Source="../Views/AgreementsCollectionView.xaml" />
         <ResourceDictionary Source="../Views/PersonSearchDialogView.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <DataTemplate DataType="{x:Type viewModels:PatientAssignmentListViewModel}">

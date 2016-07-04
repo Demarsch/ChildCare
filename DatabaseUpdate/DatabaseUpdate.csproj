@@ -74,6 +74,66 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="ExcelFiles\AddressTypes.xlsx" />
+    <None Include="ExcelFiles\Assignments.xlsx" />
+    <None Include="ExcelFiles\Branches.xlsx" />
+    <None Include="ExcelFiles\ColorsSettings.xlsx" />
+    <None Include="ExcelFiles\CommissionFilters.xlsx" />
+    <None Include="ExcelFiles\CommissionMemberTypes.xlsx" />
+    <None Include="ExcelFiles\CommissionTypeGroups.xlsx" />
+    <None Include="ExcelFiles\CommissionTypes.xlsx" />
+    <None Include="ExcelFiles\Complications.xlsx" />
+    <None Include="ExcelFiles\Countries.xlsx" />
+    <None Include="ExcelFiles\DBSettings.xlsx" />
+    <None Include="ExcelFiles\Decisions.xlsx" />
+    <None Include="ExcelFiles\DiagnosLevels.xlsx" />
+    <None Include="ExcelFiles\DiagnosTypes.xlsx" />
+    <None Include="ExcelFiles\DisabilityTypes.xlsx" />
+    <None Include="ExcelFiles\Educations.xlsx" />
+    <None Include="ExcelFiles\EqiupmentTypes.xlsx" />
+    <None Include="ExcelFiles\ExecutionPlaces.xlsx" />
+    <None Include="ExcelFiles\FinancingSources.xlsx" />
+    <None Include="ExcelFiles\HealthGroups.xlsx" />
+    <None Include="ExcelFiles\IdentityDocumentTypes.xlsx" />
+    <None Include="ExcelFiles\InsuranceCompanies.xlsx" />
+    <None Include="ExcelFiles\InsuranceDocuments.xlsx" />
+    <None Include="ExcelFiles\InsuranceDocumentTypes.xlsx" />
+    <None Include="ExcelFiles\Lpu.xlsx" />
+    <None Include="ExcelFiles\MaritalStatuses.xlsx" />
+    <None Include="ExcelFiles\MedicalHelpTypes.xlsx" />
+    <None Include="ExcelFiles\MKB.xlsx" />
+    <None Include="ExcelFiles\MKBGroups.xlsx" />
+    <None Include="ExcelFiles\Okatos.xlsx" />
+    <None Include="ExcelFiles\OuterDocumentTypes.xlsx" />
+    <None Include="ExcelFiles\PaymentTypes.xlsx" />
+    <None Include="ExcelFiles\PermissionGroupMemberships.xlsx" />
+    <None Include="ExcelFiles\PermissionGroups.xlsx" />
+    <None Include="ExcelFiles\Permissions.xlsx" />
+    <None Include="ExcelFiles\PersonNames.xlsx" />
+    <None Include="ExcelFiles\PersonRelatives.xlsx" />
+    <None Include="ExcelFiles\Persons.xlsx" />
+    <None Include="ExcelFiles\PersonStaffs.xlsx" />
+    <None Include="ExcelFiles\RecordContracts.xlsx" />
+    <None Include="ExcelFiles\RecordPeriods.xlsx" />
+    <None Include="ExcelFiles\Records.xlsx" />
+    <None Include="ExcelFiles\RecordTypeCosts.xlsx" />
+    <None Include="ExcelFiles\RecordTypeRolePermissions.xlsx" />
+    <None Include="ExcelFiles\RecordTypeRoles.xlsx" />
+    <None Include="ExcelFiles\RecordTypes.xlsx" />
+    <None Include="ExcelFiles\RelativeRelationshipConnections.xlsx" />
+    <None Include="ExcelFiles\RelativeRelationships.xlsx" />
+    <None Include="ExcelFiles\ReportTemplates.xlsx" />
+    <None Include="ExcelFiles\Rooms.xlsx" />
+    <None Include="ExcelFiles\SocialStatusTypes.xlsx" />
+    <None Include="ExcelFiles\StaffCategories.xlsx" />
+    <None Include="ExcelFiles\Staffs.xlsx" />
+    <None Include="ExcelFiles\Units.xlsx" />
+    <None Include="ExcelFiles\Urgentlies.xlsx" />
+    <None Include="ExcelFiles\UserMessageTypes.xlsx" />
+    <None Include="ExcelFiles\UserPermissionGroups.xlsx" />
+    <None Include="ExcelFiles\Users.xlsx" />
+    <None Include="ExcelFiles\VisitOutcomes.xlsx" />
+    <None Include="ExcelFiles\VisitResults.xlsx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -88,9 +148,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ExcelFiles\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -21,6 +21,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -40,13 +41,20 @@
                          Foreground="Red" />
                 </TextBlock>
                 <TextBox Grid.Row="0" Grid.Column="1"  Text="{Binding CommissionNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"/>
-                <TextBlock Grid.Row="0" Grid.Column="2" Margin="2, 2, 2, 0">
+                <Button Grid.Row="0" Grid.Column="2" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding GetNextCommissionNumberCommand}" ToolTip="Получить первый свободный номер комиссии">
+                    <Button.ContentTemplate>
+                        <DataTemplate>
+                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/AddNumber48x48.png" Height="20" Width="20"/>
+                        </DataTemplate>
+                    </Button.ContentTemplate>
+                </Button>
+                <TextBlock Grid.Row="0" Grid.Column="3" Margin="2, 2, 2, 0">
                     <Run Text=" от " />
                     <Run Text="*"
                          FontWeight="SemiBold"
                          Foreground="Red" />
                 </TextBlock>
-                <DatePicker Grid.Row="0" Grid.Column="3" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding CommissionDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                <DatePicker Grid.Row="0" Grid.Column="4" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" SelectedDate="{Binding CommissionDate, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                             Validation.ErrorTemplate="{StaticResource ValidationTemplate}"/>
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="2, 2, 2, 0">
@@ -56,14 +64,20 @@
                          Foreground="Red" />
                 </TextBlock>
                 <TextBox Grid.Row="1" Grid.Column="1"  Text="{Binding ProtocolNumber, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"/>
-               
+                <Button Grid.Row="1" Grid.Column="2" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Command="{Binding GetNextProtocolNumberCommand}" ToolTip="Получить первый свободный номер протокола в рамках номера комиссии">
+                    <Button.ContentTemplate>
+                        <DataTemplate>
+                            <Image Source="pack://application:,,,/Core;Component/Resources/Images/AddNumber48x48.png" Height="20" Width="20"/>
+                        </DataTemplate>
+                    </Button.ContentTemplate>
+                </Button>
 
                 <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding NeedWaitingFor}">Протокол в ожидании</CheckBox>
-                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" IsEnabled="{Binding NeedWaitingFor}" Text="{Binding WaitingFor, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
+                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" IsEnabled="{Binding NeedWaitingFor}" Text="{Binding WaitingFor, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" 
                          Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0">Диагноз</TextBlock>
-                <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Diagnosis, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding Diagnosis, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Grid.Row="4" Grid.Column="0">
                     <Run Text="Решение" />
@@ -73,7 +87,7 @@
                 </TextBlock>
                 <controls:TreeViewComboBox Grid.Row="4"
                                        Grid.Column="1"
-                                       Grid.ColumnSpan="3"
+                                       Grid.ColumnSpan="4"
                                        Margin="0,0,20,0"
                                        ItemsSource="{Binding Decisions}"
                                        SelectedItem="{Binding SelectedDecision, ValidatesOnDataErrors=True}"
@@ -83,7 +97,7 @@
                                        FilterPredicate="{x:Static data:Decision.DecisionFilterPredicate}"/>
 
                 <TextBlock Grid.Row="5" Grid.Column="0">Рекомендации</TextBlock>
-                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Comment}"/>
+                <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding Comment}"/>
 
                 <CheckBox Grid.Row="6" Grid.Column="0" IsChecked="{Binding NeedToDoDateTime}">Дата выполнения решения</CheckBox>
                 <DatePicker Grid.Row="6" Grid.Column="1" Margin="2, 2, 0, 0" Width="190" HorizontalAlignment="Left" VerticalContentAlignment="Center" IsEnabled="{Binding NeedToDoDateTime}" 

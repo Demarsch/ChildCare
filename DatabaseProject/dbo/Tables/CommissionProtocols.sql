@@ -13,8 +13,8 @@
     [CompleteDateTime]     DATETIME       NULL,
     [OutcomeDateTime]      DATETIME       NULL,
     [ToDoDateTime]         DATETIME       NULL,
-    [Comment]              VARCHAR (8000) NOT NULL,
-    [MKB]                  VARCHAR (10)   NOT NULL,
+    [Comment]              VARCHAR (8000) CONSTRAINT [DF_CommissionProtocols_Comment] DEFAULT ('') NOT NULL,
+    [MKB]                  VARCHAR (10)   CONSTRAINT [DF_CommissionProtocols_MKB] DEFAULT ('') NOT NULL,
     [CommissionSourceId]   INT            NOT NULL,
     [CommissionQuestionId] INT            NOT NULL,
     [PersonTalonId]        INT            NULL,
@@ -22,11 +22,13 @@
     [RecordContractId]     INT            NULL,
     [PersonAddressId]      INT            NOT NULL,
     [WaitingFor]           VARCHAR (500)  CONSTRAINT [DF_CommissionProtocols_WaitingFor] DEFAULT ('') NOT NULL,
-    [Diagnos]              VARCHAR (8000) NOT NULL,
+    [Diagnos]              VARCHAR (8000) CONSTRAINT [DF_CommissionProtocols_Diagnos] DEFAULT ('') NOT NULL,
     [SentLPUId]            INT            NULL,
+    [IsSended]             BIT            CONSTRAINT [DF_CommissionProtocols_IsSended] DEFAULT ((0)) NOT NULL,
     [InUserId]             INT            NOT NULL,
     [RemovedByUserId]      INT            NULL,
     CONSTRAINT [PK_CommissionProtocols] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_CommissionProtocols_CommissionQuestions] FOREIGN KEY ([CommissionQuestionId]) REFERENCES [dbo].[CommissionQuestions] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_CommissionSources] FOREIGN KEY ([CommissionSourceId]) REFERENCES [dbo].[CommissionSources] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_CommissionTypes] FOREIGN KEY ([CommissionTypeId]) REFERENCES [dbo].[CommissionTypes] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_CreateUsers] FOREIGN KEY ([InUserId]) REFERENCES [dbo].[Users] ([Id]),
@@ -39,6 +41,10 @@
     CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
+
+
 
 
 

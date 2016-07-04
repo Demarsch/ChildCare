@@ -1,22 +1,22 @@
-﻿<ResourceDictionary x:Class="Shared.Patient.Views.AgreementsCollectionView"
+﻿<ResourceDictionary x:Class="Core.Reports.Views.PrintedDocumentsCollectionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:viewModels="clr-namespace:Shared.Patient.ViewModels">
-    <DataTemplate DataType="{x:Type viewModels:AgreementsCollectionViewModel}">
+             xmlns:viewModels="clr-namespace:Core.Reports">
+    <DataTemplate DataType="{x:Type viewModels:PrintedDocumentsCollectionViewModel}">
         <Grid MinHeight="400" MinWidth="600" MaxHeight="400" MaxWidth="700" 
               ScrollViewer.VerticalScrollBarVisibility="Auto"
               ScrollViewer.HorizontalScrollBarVisibility="Auto">
 
-            <ListBox ItemsSource="{Binding Agreements, Mode=TwoWay}" 
-                     SelectedItem="{Binding SelectedAgreement}"
+            <ListBox ItemsSource="{Binding PrintedDocuments, Mode=TwoWay}" 
+                     SelectedItem="{Binding SelectedPrintedDocument}"
                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <CheckBox Content="{Binding Title}" IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" />
+                        <CheckBox Content="{Binding ReportShortName}" IsChecked="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" />
                     </DataTemplate>
                    
                 </ListBox.ItemTemplate>

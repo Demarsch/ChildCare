@@ -68,7 +68,6 @@
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
     <Compile Include="Attributes\NonCachableAttribute.cs" />
-    <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="Expressions\CompositeSearchExpressionProvider.cs" />
     <Compile Include="Expressions\DateBasedSearchExpressionProvider.cs" />
     <Compile Include="Expressions\ParameterReplacer.cs" />
@@ -370,6 +369,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\CommissionUseDecision.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AddNumber48x48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

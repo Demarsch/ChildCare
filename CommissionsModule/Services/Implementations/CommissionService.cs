@@ -72,6 +72,8 @@ namespace CommissionsModule.Services
                 query = query.Where(x => x.IsCompleted == null);
             if (option.Contains(OptionValues.ProtocolsOnCommission))
                 query = query.Where(x => x.IsCompleted == false && x.IsExecuting == true);
+            if (option.Contains(OptionValues.SentOnCommission))
+                query = query.Where(x => x.IsSended);
             if (option.Contains(OptionValues.ProtocolsOnDate))
                 query = query.Where(x => DbFunctions.TruncateTime(x.CommissionDate) == DbFunctions.TruncateTime(date.Value));
             if (option.Contains(OptionValues.ProtocolsAdded))
@@ -363,6 +365,12 @@ namespace CommissionsModule.Services
             return cacheService.GetItems<CommissionQuestion>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
         }
 
+        public IDisposableQueryable<CommissionQuestion> GetCommissionQuestions(DateTime beginDate, DateTime endDate, int commissionTypeId = -1)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionQuestion>(context.Set<CommissionQuestion>().Where(x => x.BeginDateTime <= endDate && x.EndDateTime >= beginDate
+                                                            && (commissionTypeId == SpecialValues.NonExistingId || x.CommissionTypeId == commissionTypeId)), context);
+        }
 
         public IDisposableQueryable<PersonAddress> GetPatientAddresses(int personId)
         {
@@ -593,7 +601,7 @@ namespace CommissionsModule.Services
             return new DisposableQueryable<CommissionMember>(context.Set<CommissionMember>().Where(x => x.Id == id), context);
         }
 
-        public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, string commissionNumberFilter, string protocolNumberFilter)
+        public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, int selectedCommissionQuestionId, string commissionNumberFilter, string protocolNumberFilter)
         {
             var context = contextProvider.CreateNewContext();
             var query = context.Set<CommissionProtocol>().Where(x => x.CommissionDate >= beginDate.Date && x.CommissionDate <= endDate.Date);
@@ -601,6 +609,8 @@ namespace CommissionsModule.Services
                 query = query.Where(x => x.PersonId == selectedPatientId);
             if (selectedCommissionTypeId != SpecialValues.NonExistingId)
                 query = query.Where(x => x.CommissionTypeId == selectedCommissionTypeId);
+            if (selectedCommissionQuestionId != SpecialValues.NonExistingId)
+                query = query.Where(x => x.CommissionQuestionId == selectedCommissionQuestionId);
 
             int[] commissionNumbers = FilterVKNumber(commissionNumberFilter.ToSafeString());
             int[] protocolNumbers = FilterVKNumber(protocolNumberFilter.ToSafeString());
@@ -644,5 +654,47 @@ namespace CommissionsModule.Services
             return string.Empty;
         }
 
+
+        public IDisposableQueryable<CommissionType> GetCommissionTypeById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionType>(context.Set<CommissionType>().Where(x => x.Id == id), context);
+        }
+
+
+        public IDisposableQueryable<CommissionQuestion> GetCommissionQuestionById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionQuestion>(context.Set<CommissionQuestion>().Where(x => x.Id == id), context);
+        }
+
+
+        public async Task<int> GetFreeCommissionNumber(int year, CancellationToken token)
+        {
+            var context = contextProvider.CreateNewContext();
+            var nums = await context.Set<CommissionProtocol>().Where(x => x.CommissionDate.Year == year && x.RemovedByUserId == null && x.CommissionNumber != 0).Select(x => x.CommissionNumber).OrderBy(x => x).ToArrayAsync(token);
+            int i = 1;
+            foreach (var num in nums)
+            {
+                if (i != num)
+                    return i;
+                i++;
+            }
+            return i;
+        }
+
+        public async Task<int> GetFreeProtocolNumber(int commissionNumber, int year, CancellationToken token)
+        {
+            var context = contextProvider.CreateNewContext();
+            var nums = await context.Set<CommissionProtocol>().Where(x => x.CommissionDate.Year == year && x.CommissionNumber == commissionNumber && x.RemovedByUserId == null && x.ProtocolNumber != 0).Select(x => x.ProtocolNumber).OrderBy(x => x).ToArrayAsync(token);
+            int i = 1;
+            foreach (var num in nums)
+            {
+                if (i != num)
+                    return i;
+                i++;
+            }
+            return i;
+        }
     }
 }

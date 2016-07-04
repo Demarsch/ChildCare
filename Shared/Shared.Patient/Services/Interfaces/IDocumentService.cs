@@ -20,5 +20,6 @@ namespace Shared.Patient.Services
         string GetDocumentFile(int documentId);
         
         BitmapImage GetDocumentThumbnail(int documentId);
+
     }
 }
