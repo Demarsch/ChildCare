@@ -107,17 +107,16 @@ namespace CommissionsModule.ViewModels
         public int CommissionProtocolId { get; private set; }
         public int PersonId { get; private set; }
 
-        private int selectedCommissionTypeGroupId;
-        public int SelectedCommissionTypeGroupId
+        private int selectedCommissionQuestionId;
+        public int SelectedCommissionQuestionId
         {
-            get { return selectedCommissionTypeGroupId; }
+            get { return selectedCommissionQuestionId; }
             set
             {
-                selectedCommissionTypeGroupId = 0;
+                selectedCommissionQuestionId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
-                SetTrackedProperty(ref selectedCommissionTypeGroupId, value);
-                FilteredCommissionTypes.Refresh();
+                SetTrackedProperty(ref selectedCommissionQuestionId, value);
             }
         }
 
@@ -135,16 +134,17 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        private int selectedCommissionQuestionId;
-        public int SelectedCommissionQuestionId
+        private int selectedCommissionTypeGroupId;
+        public int SelectedCommissionTypeGroupId
         {
-            get { return selectedCommissionQuestionId; }
+            get { return selectedCommissionTypeGroupId; }
             set
             {
-                selectedCommissionQuestionId = 0;
+                selectedCommissionTypeGroupId = 0;
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
-                SetTrackedProperty(ref selectedCommissionQuestionId, value);
+                SetTrackedProperty(ref selectedCommissionTypeGroupId, value);
+                FilteredCommissionTypes.Refresh();
             }
         }
 
@@ -410,7 +410,7 @@ namespace CommissionsModule.ViewModels
                 }
                 else
                 {
-                    SelectedCommissionTypeGroupId = SpecialValues.NonExistingId; 
+                    SelectedCommissionTypeGroupId = SpecialValues.NonExistingId;
                     SelectedCommissionTypeId = SpecialValues.NonExistingId;
                     SelectedCommissionQuestionId = SpecialValues.NonExistingId;
                     SelectedCommissionSourceId = SpecialValues.NonExistingId;
@@ -491,17 +491,17 @@ namespace CommissionsModule.ViewModels
 
             protected override void OnValidateProperty(string propertyName)
             {
-                if (PropertyNameEquals(propertyName, x => x.SelectedCommissionTypeGroupId))
+                if (PropertyNameEquals(propertyName, x => x.SelectedCommissionQuestionId))
                 {
-                    ValidateCommissionTypeGroup();
+                    ValidateCommissionQuestion();
                 }
                 else if (PropertyNameEquals(propertyName, x => x.SelectedCommissionTypeId))
                 {
                     ValidateCommissionType();
                 }
-                else if (PropertyNameEquals(propertyName, x => x.SelectedCommissionQuestionId))
+                else if (PropertyNameEquals(propertyName, x => x.SelectedCommissionTypeGroupId))
                 {
-                    ValidateCommissionQuestion();
+                    ValidateCommissionTypeGroup();
                 }
                 else if (PropertyNameEquals(propertyName, x => x.SelectedCommissionSourceId))
                 {
@@ -563,9 +563,9 @@ namespace CommissionsModule.ViewModels
 
             protected override void OnValidate()
             {
-                ValidateCommissionTypeGroup();
-                ValidateCommissionType();
                 ValidateCommissionQuestion();
+                ValidateCommissionType();
+                ValidateCommissionTypeGroup();
                 ValidateCommissionSource();
                 ValidateSentLPU();
                 ValidateMKB();

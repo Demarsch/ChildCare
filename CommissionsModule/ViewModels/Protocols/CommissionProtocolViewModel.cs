@@ -146,7 +146,7 @@ namespace CommissionsModule.ViewModels
 
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
-            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker, CommissionСonductViewModel.ChangeTracker, CommissionСonclusionViewModel.ChangeTracker);
+            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker/*, CommissionСonductViewModel.ChangeTracker*/, CommissionСonclusionViewModel.ChangeTracker);
             ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
         }
 
@@ -596,9 +596,11 @@ namespace CommissionsModule.ViewModels
                 }
                 else
                 {
-                    SelectedCommissionProtocolId = await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
+                    var id = await commissionService.SaveCommissionProtocolAsync(commissionProtocol, token, comissionsProtocolsChangeSubscription);
                     ChangeTracker.AcceptChanges();
+                    //ChangeTracker.IsEnabled = false;
                     saveSuccessfull = true;
+                    SelectedCommissionProtocolId = id;
                 }
             }
             catch (OperationCanceledException) {/*Do nothing. Cancelled operation means that user selected different patient before previous one was loaded  */}

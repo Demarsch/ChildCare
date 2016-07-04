@@ -13,9 +13,9 @@
                     <CollectionViewSource.GroupDescriptions>
                         <PropertyGroupDescription PropertyName="CommissionMemberGroupItem" />
                     </CollectionViewSource.GroupDescriptions>
-                    <!--<CollectionViewSource.SortDescriptions>
+                    <CollectionViewSource.SortDescriptions>
                         <scm:SortDescription PropertyName="Stage" Direction="Ascending"/>
-                    </CollectionViewSource.SortDescriptions>-->
+                    </CollectionViewSource.SortDescriptions>
                 </CollectionViewSource>
             </Grid.Resources>
             <Grid x:Name="AvailableMembersContainer">
