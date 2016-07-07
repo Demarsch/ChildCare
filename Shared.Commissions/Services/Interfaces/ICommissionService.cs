@@ -18,6 +18,6 @@ namespace Shared.Commissions.Services
         
         IDisposableQueryable<Person> GetPerson(int personId);
 
-        Task<int> CreateCommissionAssignment(int personId, DateTime commissionDate, int commissionTypeId, int commissionQuestionId, string codeMKB, CancellationToken token);
+        Task<int> CreateCommissionAssignment(int personId, DateTime commissionDate, int commissionTypeId, int commissionQuestionId, string codeMKB, string details, CancellationToken token);
     }
 }

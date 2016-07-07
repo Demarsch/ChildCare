@@ -38,8 +38,8 @@
                             <Run Text="Дата направления" />
                             <Run Text="*" Foreground="Red"/>
             </TextBlock>
-            <xctk:DateTimePicker Grid.Row="1" Grid.Column="1" Height="23" Margin="5,2,25,2"
-                             HorizontalAlignment="Left"
+            <xctk:DateTimePicker Grid.Row="1" Grid.Column="1" Height="23" Margin="5,2,25,2" TextAlignment="Left"
+                             HorizontalAlignment="Stretch"
                              Watermark="укажите дату/время записи" HorizontalContentAlignment="Left" ShowButtonSpinner="False" Format="Custom" FormatString="dd MMMM yyyy" TimeFormat="ShortDate"
                              Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                              Value="{Binding CommissionDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -78,17 +78,18 @@
                       ItemsSource="{Binding CommissionQuestions}" />
 
             <TextBlock Grid.Row="5" Grid.Column="0" Margin="5,2" FontWeight="Medium" Text="Код МКБ-10"/>
-            <xctk:MaskedTextBox Grid.Row="5" Grid.Column="1" Margin="5,2,25,2" FontWeight="Medium"
+            <xctk:MaskedTextBox Grid.Row="5" Grid.Column="1" Margin="5,2,25,2" FontWeight="Medium" TextAlignment="Left"
                             Mask="L00\.99" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}"
                             Value="{Binding CodeMKB, Mode=TwoWay}"/>
             
             <TextBlock Grid.Row="6" Grid.Column="0" Margin="5,2" FontWeight="Medium" Text="Примечания"/>
-            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="1"
+            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="1" MinHeight="40"
                                Watermark="укажите доп. информацию к записи..."
                                TextWrapping="Wrap" AcceptsReturn="True" Margin="5,2,25,2" VerticalContentAlignment="Center"
                                Text="{Binding CommissionDetails}"/>
             
             <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="6" Grid.ColumnSpan="2" />
+            <ContentControl Content="{Binding NotificationMediator}" Grid.ColumnSpan="2" VerticalAlignment="Bottom" />
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

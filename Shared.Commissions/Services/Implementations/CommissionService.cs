@@ -70,7 +70,7 @@ namespace Shared.Commissions.Services
         }
 
         
-        public async Task<int> CreateCommissionAssignment(int personId, DateTime commissionDate, int commissionTypeId, int commissionQuestionId, string mkb, CancellationToken token)
+        public async Task<int> CreateCommissionAssignment(int personId, DateTime commissionDate, int commissionTypeId, int commissionQuestionId, string mkb, string details, CancellationToken token)
         {
             using (var db = contextProvider.CreateNewContext())
             {
@@ -84,9 +84,10 @@ namespace Shared.Commissions.Services
                 protocol.ProtocolNumber = 0;
                 protocol.CommissionTypeId = commissionTypeId;
                 protocol.CommissionQuestionId = commissionQuestionId;
-                protocol.MKB = mkb;
+                protocol.MKB = mkb.ToSafeString();
                 protocol.InUserId = curUserId;
                 protocol.IsSended = true;
+                protocol.SendingMessage = details;
 
                 protocol.IsCompleted = null;
                 protocol.IsExecuting = false;

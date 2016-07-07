@@ -266,7 +266,7 @@
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_Decisions" />
         <AssociationConnector Association="DataLib.FK_Decisions_DecisionKinds" />
         <AssociationConnector Association="DataLib.FK_Decisions_Decisions" />
-        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="26.25" PointY="29.75" />
+        <EntityTypeShape EntityType="DataLib.CommissionProtocol" Width="1.5" PointX="26.25" PointY="29.625" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionProtocols" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionQuestions" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_CommissionSources" />

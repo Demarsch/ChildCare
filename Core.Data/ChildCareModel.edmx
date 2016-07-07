@@ -173,6 +173,7 @@
           <Property Name="OutcomeDateTime" Type="datetime" />
           <Property Name="ToDoDateTime" Type="datetime" />
           <Property Name="Comment" Type="varchar" MaxLength="8000" Nullable="false" />
+          <Property Name="SendingMessage" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="MKB" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="CommissionSourceId" Type="int" />
           <Property Name="CommissionQuestionId" Type="int" Nullable="false" />
@@ -8538,6 +8539,7 @@
           <Property Name="OutcomeDateTime" Type="DateTime" Precision="3" />
           <Property Name="ToDoDateTime" Type="DateTime" Precision="3" />
           <Property Name="Comment" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="SendingMessage" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
           <Property Name="MKB" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="CommissionSourceId" Type="Int32" />
           <Property Name="CommissionQuestionId" Type="Int32" Nullable="false" />
@@ -9998,6 +10000,7 @@
                 <ScalarProperty Name="CommissionQuestionId" ColumnName="CommissionQuestionId" />
                 <ScalarProperty Name="CommissionSourceId" ColumnName="CommissionSourceId" />
                 <ScalarProperty Name="MKB" ColumnName="MKB" />
+                <ScalarProperty Name="SendingMessage" ColumnName="SendingMessage" />
                 <ScalarProperty Name="Comment" ColumnName="Comment" />
                 <ScalarProperty Name="ToDoDateTime" ColumnName="ToDoDateTime" />
                 <ScalarProperty Name="OutcomeDateTime" ColumnName="OutcomeDateTime" />

@@ -14,6 +14,7 @@
     [OutcomeDateTime]      DATETIME       NULL,
     [ToDoDateTime]         DATETIME       NULL,
     [Comment]              VARCHAR (8000) CONSTRAINT [DF_CommissionProtocols_Comment] DEFAULT ('') NOT NULL,
+    [SendingMessage]       VARCHAR (1000) CONSTRAINT [DF_CommissionProtocols_SendMessage] DEFAULT ('') NOT NULL,
     [MKB]                  VARCHAR (10)   CONSTRAINT [DF_CommissionProtocols_MKB] DEFAULT ('') NOT NULL,
     [CommissionSourceId]   INT            NULL,
     [CommissionQuestionId] INT            NOT NULL,
@@ -41,6 +42,10 @@
     CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
+
+
 
 
 

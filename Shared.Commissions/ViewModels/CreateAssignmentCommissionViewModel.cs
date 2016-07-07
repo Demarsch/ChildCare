@@ -27,6 +27,7 @@ namespace Shared.Commissions.ViewModels
         private CancellationTokenSource currentSavingToken;
 
         public BusyMediator BusyMediator { get; set; }
+        public NotificationMediator NotificationMediator { get; private set; }
 
         public CreateAssignmentCommissionViewModel(ICommissionService commissionService,  ILog logService)
         {
@@ -42,6 +43,7 @@ namespace Shared.Commissions.ViewModels
             this.commissionService = commissionService;
             
             BusyMediator = new BusyMediator();
+            NotificationMediator = new NotificationMediator();
             CloseCommand = new DelegateCommand<bool?>(Close);
 
             CommissionTypeGroups = new ObservableCollectionEx<FieldValue>();
@@ -80,6 +82,7 @@ namespace Shared.Commissions.ViewModels
         private async void CreateAssignmentCommission()
         {
             logService.Info("Create commission assignment ...");
+            saveIsSucceessfull = false; 
             if (currentSavingToken != null)
             {
                 currentSavingToken.Cancel();
@@ -90,15 +93,14 @@ namespace Shared.Commissions.ViewModels
             try
             {    
                 var exception = string.Empty;
-                ProtocolId = await commissionService.CreateCommissionAssignment(personId, commissionDateTime, selectedCommissionTypeId, selectedCommissionQuestionId, codeMKB, token);
-            }
-            catch (OperationCanceledException)
-            {
-                //Nothing to do as it means that we somehow cancelled save operation
-            }
+                ProtocolId = await commissionService.CreateCommissionAssignment(personId, commissionDateTime, selectedCommissionTypeId, selectedCommissionQuestionId, codeMKB, commissionDetails, token);
+                saveIsSucceessfull = true; 
+            }           
             catch (Exception ex)
             {
+                saveIsSucceessfull = false; 
                 logService.ErrorFormatEx(ex, "Failed to create commission assignment for person with Id = {0}", this.personId);
+                NotificationMediator.Activate("Ошибка при направлении на комиссию", NotificationMediator.DefaultHideTime);
             }
             finally
             {
@@ -229,6 +231,7 @@ namespace Shared.Commissions.ViewModels
         }
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
+        private bool saveIsSucceessfull = false;
 
         private void Close(bool? validate)
         {
@@ -237,7 +240,8 @@ namespace Shared.Commissions.ViewModels
                 if (IsValid)
                 {
                     CreateAssignmentCommission();
-                    OnCloseRequested(new ReturnEventArgs<bool>(true));
+                    if (saveIsSucceessfull)
+                        OnCloseRequested(new ReturnEventArgs<bool>(true));
                 }
             }
             else

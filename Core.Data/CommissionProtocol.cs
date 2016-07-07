@@ -35,6 +35,7 @@ namespace Core.Data
         public Nullable<System.DateTime> OutcomeDateTime { get; set; }
         public Nullable<System.DateTime> ToDoDateTime { get; set; }
         public string Comment { get; set; }
+        public string SendingMessage { get; set; }
         public string MKB { get; set; }
         public Nullable<int> CommissionSourceId { get; set; }
         public int CommissionQuestionId { get; set; }
