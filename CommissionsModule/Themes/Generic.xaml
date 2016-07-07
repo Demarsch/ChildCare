@@ -1,7 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewModels="clr-namespace:CommissionsModule.ViewModels"
-                    xmlns:views="clr-namespace:CommissionsModule.Views">
+                    xmlns:views="clr-namespace:CommissionsModule.Views"
+                    xmlns:sharedCommissionViewModels="clr-namespace:Shared.Commissions.ViewModels;assembly=Shared.Commissions"
+                    xmlns:sharedCommissionViews="clr-namespace:Shared.Commissions.Views;assembly=Shared.Commissions">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/Decisions/CommissionDecisionView.xaml" />
         <ResourceDictionary Source="../Views/Protocols/PreliminaryProtocolView.xaml" />
@@ -15,6 +17,10 @@
 
     <DataTemplate DataType="{x:Type viewModels:CommissionDecisionEditorViewModel}">
         <views:CommissionDecisionEditorView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type sharedCommissionViewModels:AssignmentCommissionViewModel}">
+        <sharedCommissionViews:AssignmentCommissionView/>
     </DataTemplate>
     
 </ResourceDictionary>

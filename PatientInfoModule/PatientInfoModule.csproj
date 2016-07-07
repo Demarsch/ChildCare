@@ -133,8 +133,6 @@
     <Compile Include="ViewModels\Contracts\ContractsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractAssignmentsViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ContractViewModel.cs" />
-    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonCommissionViewModel.cs" />
-    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsViewModel.cs" />
     <Compile Include="ViewModels\Documents\DocumentsHeaderViewModel.cs" />
     <Compile Include="ViewModels\Documents\SelectPersonDocumentTypeViewModel.cs" />
     <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
@@ -154,10 +152,12 @@
     <Compile Include="ViewModels\Documents\ThumbnailViewModel.cs" />
     <Compile Include="ViewModels\Info\InsuranceDocumentCollectionViewModel.cs" />
     <Compile Include="ViewModels\Info\InsuranceDocumentViewModel.cs" />
-    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsHeaderViewModel.cs" />
     <Compile Include="ViewModels\TalonsCommissionsHospitalisations\CreateTalonViewModel.cs" />
     <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonCommissionsCollectionViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonCommissionViewModel.cs" />
     <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCollectionViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonsCommissionsHospitalisationsViewModel.cs" />
     <Compile Include="ViewModels\TalonsCommissionsHospitalisations\PersonTalonViewModel.cs" />
     <Compile Include="Views\Contracts\ContractsHeaderView.xaml.cs">
       <DependentUpon>ContractsHeaderView.xaml</DependentUpon>
@@ -255,6 +255,10 @@
     <ProjectReference Include="..\PatientRecordsModule\Shared.PatientRecords.csproj">
       <Project>{5b63c016-181b-49e5-9b91-9120a78ebf72}</Project>
       <Name>Shared.PatientRecords</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared.Commissions\Shared.Commissions.csproj">
+      <Project>{5e20cf2f-6174-4ff7-b1e6-2222958ea4a3}</Project>
+      <Name>Shared.Commissions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.Patient\Shared.Patient.csproj">
       <Project>{5d4698bd-6256-4bc5-a566-be7cd9a840bb}</Project>

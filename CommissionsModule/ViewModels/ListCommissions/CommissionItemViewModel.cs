@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace CommissionsModule.ViewModels
 {
-    public class CommissionItemViewModel: BindableBase
+    public class CommissionItemViewModel : BindableBase
     {
         public CommissionItemViewModel()
         {
@@ -26,6 +26,13 @@ namespace CommissionsModule.ViewModels
         {
             get { return personId; }
             set { SetProperty(ref personId, value); }
+        }
+
+        private string question;
+        public string Question
+        {
+            get { return question; }
+            set { SetProperty(ref question, value); }
         }
 
         private int? decisionId;
@@ -54,7 +61,7 @@ namespace CommissionsModule.ViewModels
         {
             get { return protocolNumber; }
             set { SetProperty(ref protocolNumber, value); }
-        }  
+        }
 
         private bool? isCompleted;
         public bool? IsCompleted
@@ -98,11 +105,11 @@ namespace CommissionsModule.ViewModels
             set { SetProperty(ref mkb, value); }
         }
 
-        private string incomeDateTime;
-        public string IncomeDateTime
+        private string commissionDate;
+        public string CommissionDate
         {
-            get { return incomeDateTime; }
-            set { SetProperty(ref incomeDateTime, value); }
+            get { return commissionDate; }
+            set { SetProperty(ref commissionDate, value); }
         }
     }
 }

@@ -73,7 +73,7 @@ namespace PatientInfoModule.ViewModels
             }
         }
 
-        public ICommand RemoveCommissionProtocolCommand
+        /*public ICommand RemoveCommissionProtocolCommand
         {
             get
             {
@@ -81,7 +81,7 @@ namespace PatientInfoModule.ViewModels
                     PersonCommissionsVM = personCommissionsViewModelFactory();
                 return personCommissionsVM.RemoveCommissionProtocolCommand;
             }
-        }
+        }*/
 
         public ICommand PrintCommissionProtocolCommand
         {

@@ -15,12 +15,12 @@
     [ToDoDateTime]         DATETIME       NULL,
     [Comment]              VARCHAR (8000) CONSTRAINT [DF_CommissionProtocols_Comment] DEFAULT ('') NOT NULL,
     [MKB]                  VARCHAR (10)   CONSTRAINT [DF_CommissionProtocols_MKB] DEFAULT ('') NOT NULL,
-    [CommissionSourceId]   INT            NOT NULL,
+    [CommissionSourceId]   INT            NULL,
     [CommissionQuestionId] INT            NOT NULL,
     [PersonTalonId]        INT            NULL,
     [MedicalHelpTypeId]    INT            NULL,
     [RecordContractId]     INT            NULL,
-    [PersonAddressId]      INT            NOT NULL,
+    [PersonAddressId]      INT            NULL,
     [WaitingFor]           VARCHAR (500)  CONSTRAINT [DF_CommissionProtocols_WaitingFor] DEFAULT ('') NOT NULL,
     [Diagnos]              VARCHAR (8000) CONSTRAINT [DF_CommissionProtocols_Diagnos] DEFAULT ('') NOT NULL,
     [SentLPUId]            INT            NULL,
@@ -41,6 +41,8 @@
     CONSTRAINT [FK_CommissionProtocols_RecordContracts] FOREIGN KEY ([RecordContractId]) REFERENCES [dbo].[RecordContracts] ([Id]),
     CONSTRAINT [FK_CommissionProtocols_RemovedUsers] FOREIGN KEY ([RemovedByUserId]) REFERENCES [dbo].[Users] ([Id])
 );
+
+
 
 
 

@@ -48,6 +48,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             
                             <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
@@ -57,11 +58,14 @@
                                 <TextBlock Text="{Binding PatientFIO}" Margin="0,0,5,0" FontWeight="Medium"/>
                                 <TextBlock Text="{Binding BirthDate}" Margin="0" Foreground="Gray"/>
                             </StackPanel>
-                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Talon}" Margin="0" FontStyle="Italic"/>
-                            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Question}" Margin="0" FontStyle="Italic"/>
+                            <!--<TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Talon}" Margin="0" FontStyle="Italic"/> -->
+                            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding DecisionText}" Margin="0" FontStyle="Italic"/>
+                            <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
                                 <TextBlock Text="{Binding MKB}" Margin="0,0,5,0" FontStyle="Italic"/>
-                                <TextBlock Text="{Binding IncomeDateTime}" Margin="0" FontStyle="Italic"/>
-                            </StackPanel>                            
+                                <TextBlock Text="{Binding CommissionDate}" Margin="0" FontStyle="Italic"/>
+                            </StackPanel>                           
+                            
                         </Grid>
                     </Border>
                 </DataTemplate>

@@ -31,6 +31,8 @@ namespace CommissionsModule.Services
 
         IDisposableQueryable<CommissionDecision> GetCommissionDecision(int commissionDecisionId);
 
+        Decision GetDecisionById(int decisionId);
+
         /// <summary>
         /// 
         /// </summary>

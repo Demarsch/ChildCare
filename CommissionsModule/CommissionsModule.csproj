@@ -119,11 +119,11 @@
     <Compile Include="ViewModels\Protocols\CommissionСonductViewModel.cs" />
     <Compile Include="ViewModels\Protocols\EditorCommissionMembersViewModel.cs" />
     <Compile Include="ViewModels\Protocols\PreliminaryProtocolViewModel.cs" />
-    <Compile Include="Views\CommissionJournal\CommissionJournalView.xaml.cs">
-      <DependentUpon>CommissionJournalView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\CommissionJournal\CommissionJournalHeaderView.xaml.cs">
       <DependentUpon>CommissionJournalHeaderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CommissionJournal\CommissionJournalView.xaml.cs">
+      <DependentUpon>CommissionJournalView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Decisions\CommissionDecisionEditorView.xaml.cs">
       <DependentUpon>CommissionDecisionEditorView.xaml</DependentUpon>
@@ -134,11 +134,11 @@
     <Compile Include="Views\Decisions\CommissionDecisionsView.xaml.cs">
       <DependentUpon>CommissionDecisionsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Protocols\CommissionProtocolHeaderView.xaml.cs">
-      <DependentUpon>CommissionProtocolHeaderView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\ListCommissions\CommissionsListView.xaml.cs">
       <DependentUpon>CommissionsListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Protocols\CommissionProtocolHeaderView.xaml.cs">
+      <DependentUpon>CommissionProtocolHeaderView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CommissionEmptyView.xaml.cs">
       <DependentUpon>CommissionEmptyView.xaml</DependentUpon>
@@ -175,6 +175,10 @@
       <Project>{5b63c016-181b-49e5-9b91-9120a78ebf72}</Project>
       <Name>Shared.PatientRecords</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Shared.Commissions\Shared.Commissions.csproj">
+      <Project>{5e20cf2f-6174-4ff7-b1e6-2222958ea4a3}</Project>
+      <Name>Shared.Commissions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.DataTemplates\Shared.DataTemplates.csproj">
       <Project>{ee5f4410-13f6-477f-8ad6-99e848234331}</Project>
       <Name>Shared.DataTemplates</Name>
@@ -194,11 +198,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\CommissionJournal\CommissionJournalView.xaml">
+    <Page Include="Views\CommissionJournal\CommissionJournalHeaderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\CommissionJournal\CommissionJournalHeaderView.xaml">
+    <Page Include="Views\CommissionJournal\CommissionJournalView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -217,6 +221,10 @@
     <Page Include="Views\Decisions\CommissionDecisionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ListCommissions\CommissionsListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Protocols\CommissionСonclusionView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -239,10 +247,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Protocols\CommissionProtocolHeaderView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ListCommissions\CommissionsListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -40,7 +40,7 @@ namespace PatientInfoModule.Services
             this.contextProvider = contextProvider;
             this.userService = userService;
         }
-       
+
         public string GetDecisionColorHex(int? decisionId)
         {
             using (var context = contextProvider.CreateNewContext())
@@ -56,13 +56,13 @@ namespace PatientInfoModule.Services
         {
             return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
-        
+
         public IDisposableQueryable<CommissionProtocol> GetCommissionProtocolById(int protocolId)
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.Id == protocolId), context);
         }
-               
+
         public IDisposableQueryable<PersonTalon> GetPatientTalons(int personId)
         {
             var context = contextProvider.CreateNewContext();
@@ -74,20 +74,20 @@ namespace PatientInfoModule.Services
             DateTime dt = SpecialValues.MinDate;
             DateTime.TryParse(onDate.ToSafeString(), out dt);
             return cacheService.GetItems<MedicalHelpType>().Where(x => dt >= x.BeginDateTime && dt < x.EndDateTime);
-        }      
-       
+        }
+
         public IDisposableQueryable<CommissionProtocol> GetPersonCommissionProtocols(int personId)
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<CommissionProtocol>(context.Set<CommissionProtocol>().Where(x => x.PersonId == personId && !x.RemovedByUserId.HasValue), context);
         }
-        
+
         public IDisposableQueryable<PersonTalon> GetTalonById(int id)
         {
             var context = contextProvider.CreateNewContext();
             return new DisposableQueryable<PersonTalon>(context.Set<PersonTalon>().Where(x => x.Id == id), context);
         }
-              
+
         public IDisposableQueryable<AddressType> GetAddressTypeByCategory(string category)
         {
             var context = contextProvider.CreateNewContext();
@@ -191,6 +191,18 @@ namespace PatientInfoModule.Services
                     return false;
                 }
             }
+        }
+
+        public Decision GetDecisionById(int decisionId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return context.Set<Decision>().First(x => x.Id == decisionId);
+        }
+
+        public IDisposableQueryable<CommissionQuestion> GetCommissionQuestionById(int id)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<CommissionQuestion>(context.Set<CommissionQuestion>().Where(x => x.Id == id), context);
         }
     }
 }

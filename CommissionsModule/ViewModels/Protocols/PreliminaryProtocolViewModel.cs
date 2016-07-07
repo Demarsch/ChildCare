@@ -400,7 +400,7 @@ namespace CommissionsModule.ViewModels
                     SelectedCommissionTypeGroupId = commissionProtocolData.CommissionTypeGroupId;
                     SelectedCommissionTypeId = commissionProtocolData.CommissionTypeId;
                     SelectedCommissionQuestionId = commissionProtocolData.CommissionQuestionId;
-                    SelectedCommissionSourceId = commissionProtocolData.CommissionSourceId;
+                    SelectedCommissionSourceId = commissionProtocolData.CommissionSourceId.ToInt();
                     MKB = commissionProtocolData.MKB;
                     SelectedSentLPUId = commissionProtocolData.SentLPUId.ToInt();
                     SelectedTalonId = commissionProtocolData.PersonTalonId.ToInt();

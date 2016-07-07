@@ -28,6 +28,13 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref personId, value); }
         }
 
+        private string question;
+        public string Question
+        {
+            get { return question; }
+            set { SetProperty(ref question, value); }
+        }
+        
         private int? decisionId;
         public int? DecisionId
         {
@@ -98,11 +105,11 @@ namespace PatientInfoModule.ViewModels
             set { SetProperty(ref mkb, value); }
         }
 
-        private string incomeDateTime;
-        public string IncomeDateTime
+        private string commissionDate;
+        public string CommissionDate
         {
-            get { return incomeDateTime; }
-            set { SetProperty(ref incomeDateTime, value); }
+            get { return commissionDate; }
+            set { SetProperty(ref commissionDate, value); }
         }
     }
 }

@@ -76,6 +76,7 @@ namespace CommissionsModule
         private void RegisterModules()
         {
             Core.Reports.CoreReports.Initialize(container);
+            Shared.Commissions.CommissionInitializer.Initialize(container);
         }
 
         private void RegisterViewModels()

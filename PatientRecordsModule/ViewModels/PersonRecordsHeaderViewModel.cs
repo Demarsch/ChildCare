@@ -298,7 +298,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (patientId == SpecialValues.NonExistingId)
             {
-                //regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
             }
             else
             {

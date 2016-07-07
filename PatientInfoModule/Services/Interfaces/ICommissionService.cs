@@ -8,17 +8,19 @@ using System.Threading.Tasks;
 namespace PatientInfoModule.Services
 {
     public interface ICommissionService
-    {        
+    {
         string GetDecisionColorHex(int? decisionId);
-      
-        IDisposableQueryable<CommissionProtocol> GetCommissionProtocolById(int protocolId);    
+
+        IDisposableQueryable<CommissionProtocol> GetCommissionProtocolById(int protocolId);
 
         IDisposableQueryable<PersonTalon> GetPatientTalons(int personId);
+
+        Decision GetDecisionById(int decisionId);
 
         IDisposableQueryable<PersonTalon> GetTalonById(int id);
 
         IEnumerable<MedicalHelpType> GetCommissionMedicalHelpTypes(object onDate);
-               
+
         IDisposableQueryable<CommissionProtocol> GetPersonCommissionProtocols(int personId);
 
         IDisposableQueryable<AddressType> GetAddressTypeByCategory(string category);
@@ -32,5 +34,7 @@ namespace PatientInfoModule.Services
         Task<bool> RemoveTalon(int talonId);
 
         Task<bool> RemoveCommissionProtocol(int protocolId);
+
+        IDisposableQueryable<CommissionQuestion> GetCommissionQuestionById(int id);
     }
 }

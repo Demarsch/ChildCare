@@ -12,6 +12,7 @@ using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
 using Shell.Shared;
+using Shared.Commissions.ViewModels;
 
 namespace PatientInfoModule.ViewModels
 {
@@ -23,9 +24,11 @@ namespace PatientInfoModule.ViewModels
         private readonly IRegionManager regionManager;
         private readonly IViewNameResolver viewNameResolver;
         private readonly PersonTalonsCommissionsHospitalisationsViewModel viewModel;
+        private readonly Func<AssignmentCommissionViewModel> assignmentCommissionViewModelFactory;
 
         public PersonTalonsCommissionsHospitalisationsHeaderViewModel(IDbContextProvider contextProvider, ILog log, IEventAggregator eventAggregator, 
-               IRegionManager regionManager, IViewNameResolver viewNameResolver, PersonTalonsCommissionsHospitalisationsViewModel viewModel)
+               IRegionManager regionManager, IViewNameResolver viewNameResolver, PersonTalonsCommissionsHospitalisationsViewModel viewModel,
+               Func<AssignmentCommissionViewModel> assignmentCommissionViewModelFactory)
         {
             if (contextProvider == null)
             {
@@ -47,22 +50,25 @@ namespace PatientInfoModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (assignmentCommissionViewModelFactory == null)
+            {
+                throw new ArgumentNullException("assignmentCommissionViewModelFactory");
+            }
             this.contextProvider = contextProvider;
             this.log = log;
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.viewModel = viewModel;
+            this.assignmentCommissionViewModelFactory = assignmentCommissionViewModelFactory;
             patientId = SpecialValues.NonExistingId;
             SubscribeToEvents();
         }
 
         private int patientId;
         public ICommand EditTalonCommand { get { return viewModel.EditTalonCommand; } }
-        public ICommand RemoveTalonCommand { get { return viewModel.RemoveTalonCommand; } }
+        //public ICommand RemoveTalonCommand { get { return viewModel.RemoveTalonCommand; } }
         public ICommand LinkTalonToHospitalisationCommand { get { return viewModel.LinkTalonToHospitalisationCommand; } }
-
-        public ICommand RemoveCommissionProtocolCommand { get { return viewModel.RemoveCommissionProtocolCommand; } }
         public ICommand PrintCommissionProtocolCommand { get { return viewModel.PrintCommissionProtocolCommand; } }
 
         private int selectedTalonId;
@@ -77,6 +83,13 @@ namespace PatientInfoModule.ViewModels
         {
             get { return selectedCommissionId; }
             set { SetProperty(ref selectedCommissionId, value); }
+        }
+
+        private AssignmentCommissionViewModel assignmentCommissionViewModel;
+        public AssignmentCommissionViewModel AssignmentCommissionViewModel
+        {
+            get { return assignmentCommissionViewModel; }
+            set { SetProperty(ref assignmentCommissionViewModel, value); }
         }
 
         public void Dispose()
@@ -118,12 +131,17 @@ namespace PatientInfoModule.ViewModels
 
         private void ActivateTab()
         {
+            if (assignmentCommissionViewModel == null)
+                AssignmentCommissionViewModel = assignmentCommissionViewModelFactory();
+
             if (patientId == SpecialValues.NonExistingId)
             {
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
+                AssignmentCommissionViewModel.PersonId = SpecialValues.NonExistingId;
             }
             else
             {
+                AssignmentCommissionViewModel.PersonId = patientId;
                 var navigationParameters = new NavigationParameters { { "PatientId", patientId } };
                 regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonTalonsCommissionsHospitalisationsViewModel>(), navigationParameters);
             }

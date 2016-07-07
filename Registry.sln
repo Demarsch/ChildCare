@@ -52,6 +52,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Data.Test", "Core.Data.Test\Core.Data.Test.csproj", "{DD3FE65F-C846-43DF-A3E7-03A2E57C8CA5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientInfoModule", "PatientInfoModule\PatientInfoModule.csproj", "{8D76E630-B26E-4B02-A43E-B0944711C702}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5E20CF2F-6174-4FF7-B1E6-2222958EA4A3} = {5E20CF2F-6174-4FF7-B1E6-2222958EA4A3}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseUpdate", "DatabaseUpdate\DatabaseUpdate.csproj", "{53C0EFF3-2F75-42C3-87C2-F59DD01D02B4}"
 EndProject
@@ -92,6 +95,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommissionsModule", "CommissionsModule\CommissionsModule.csproj", "{200993AC-7387-4B1B-8D6D-FFA89438B686}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatisticsModule", "StatisticsModule\StatisticsModule.csproj", "{A2EE1CC0-D40B-4D79-8A8E-21E1004BFAE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Commissions", "Shared.Commissions\Shared.Commissions.csproj", "{5E20CF2F-6174-4FF7-B1E6-2222958EA4A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +214,10 @@ Global
 		{A2EE1CC0-D40B-4D79-8A8E-21E1004BFAE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2EE1CC0-D40B-4D79-8A8E-21E1004BFAE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2EE1CC0-D40B-4D79-8A8E-21E1004BFAE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E20CF2F-6174-4FF7-B1E6-2222958EA4A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E20CF2F-6174-4FF7-B1E6-2222958EA4A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E20CF2F-6174-4FF7-B1E6-2222958EA4A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E20CF2F-6174-4FF7-B1E6-2222958EA4A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -246,5 +255,6 @@ Global
 		{22AF79B3-0E2C-4C24-862F-E4434008EC7A} = {F8E497F7-B901-4175-B84A-7D235226EAF0}
 		{200993AC-7387-4B1B-8D6D-FFA89438B686} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
 		{A2EE1CC0-D40B-4D79-8A8E-21E1004BFAE8} = {494382A1-EE6A-4AFC-A3F7-B9F811CA376B}
+		{5E20CF2F-6174-4FF7-B1E6-2222958EA4A3} = {69DE00B8-4E4A-461C-9802-BCD53FDA8109}
 	EndGlobalSection
 EndGlobal

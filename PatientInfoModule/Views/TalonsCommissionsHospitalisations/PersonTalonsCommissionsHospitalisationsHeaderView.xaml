@@ -25,13 +25,16 @@
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Link48x48.png" />
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Комиссии" FontWeight="Medium">
-        <fluent:Button Command="{Binding RemoveCommissionProtocolCommand}" CommandParameter="{Binding SelectedCommissionId}"
+        <!--<fluent:Button Command="{Binding RemoveCommissionProtocolCommand}" CommandParameter="{Binding SelectedCommissionId}"
                        Header="Удалить" 
                        Margin="5,2"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" />
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Remove48x48.png" /> -->
         <fluent:Button Command="{Binding PrintCommissionProtocolCommand}" CommandParameter="{Binding SelectedCommissionId}"
                        Header="Печать протокола" 
                        Margin="5,2"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" />
+
+        <ContentControl Content="{Binding AssignmentCommissionViewModel}"/>
+
     </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>

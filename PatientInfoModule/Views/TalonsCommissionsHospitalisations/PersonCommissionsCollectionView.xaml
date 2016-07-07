@@ -31,19 +31,23 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                    Source="{Binding IsCompleted, Converter={x:Static converters:CommissionStatusToImageConverter.Instance}}"
-                                    Width="32" Height="32" Stretch="Uniform" Margin="0,0,2,0"/>
+                            <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
+                                Source="{Binding IsCompleted, Converter={x:Static converters:CommissionStatusToImageConverter.Instance}}"
+                                Width="40" Height="40" Stretch="Fill" Margin="0,0,2,0"/>
                             <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
-                                <TextBlock Text="{Binding ProtocolNumber}" Margin="0,0,5,0" FontWeight="Medium"/>
-                                <TextBlock Text="{Binding DecisionText}" Margin="0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding PatientFIO}" Margin="0,0,5,0" FontWeight="Medium"/>
+                                <TextBlock Text="{Binding BirthDate}" Margin="0" Foreground="Gray"/>
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
-                                <TextBlock Text="{Binding MedHelpType}" Margin="0,0,5,0"/>
-                                <TextBlock Text="{Binding MKB}" Margin="0,0,5,0"/>
-                                <TextBlock Text="{Binding Talon}" Margin="0"/>
+                            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Question}" Margin="0" FontStyle="Italic"/>
+                            <!--<TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Talon}" Margin="0" FontStyle="Italic"/> -->
+                            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding DecisionText}" Margin="0" FontStyle="Italic"/>
+                            <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal">
+                                <TextBlock Text="{Binding MKB}" Margin="0,0,5,0" FontStyle="Italic"/>
+                                <TextBlock Text="{Binding CommissionDate}" Margin="0" FontStyle="Italic"/>
                             </StackPanel>
                         </Grid>
                     </Border>

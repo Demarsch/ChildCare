@@ -314,7 +314,7 @@ namespace CommissionsModule.ViewModels
                     CommissionType = x.CommissionType.Name,
                     CommissionQuestionId = x.CommissionQuestionId,
                     CommissionName = x.CommissionQuestion.Name,
-                    Decision = x.Decision.Name,
+                    Decision = (x.Decision != null ? x.Decision.Name : "не рассмотрено"),
                     Recommendations = "??",
                     Details = "??",
                     Experts = x.CommissionType.CommissionMembers.Where(a => a.BeginDateTime <= endDate && a.EndDateTime >= beginDate && a.PersonStaffId.HasValue).Select(a => a.CommissionMemberType.Name + ": " + a.PersonStaff.Person.ShortName)
@@ -335,7 +335,7 @@ namespace CommissionsModule.ViewModels
                     CardNumber = x.CardNumber,
                     BranchName = x.BranchName,
                     PatientGender = x.PatientGender,
-                    PatientSocialStatus = x.PatientSocialStatus.Select(a => a.Name + " " + a.Office + " " + a.OrgName).Aggregate((a, b) => a + "\r\n" + b),
+                    PatientSocialStatus = x.PatientSocialStatus.Any() ? x.PatientSocialStatus.Select(a => a.Name + " " + a.Office + " " + a.OrgName).Aggregate((a, b) => a + "\r\n" + b) : string.Empty,
                     PatientDiagnos = x.PatientDiagnos,
                     CommissionGroup = x.CommissionGroup,
                     CommissionTypeId = x.CommissionTypeId,
@@ -378,7 +378,7 @@ namespace CommissionsModule.ViewModels
                 CommissionName = SelectedCommissionItem.CommissionName,
                 Decision = SelectedCommissionItem.Decision,
                 Recommendations = SelectedCommissionItem.Recommendations,
-                Details = SelectedCommissionItem.Recommendations,
+                Details = SelectedCommissionItem.Details,
                 Experts = SelectedCommissionItem.Experts
             };
 
@@ -417,7 +417,7 @@ namespace CommissionsModule.ViewModels
                     CommissionName = SelectedCommissionItem.CommissionName,
                     Decision = SelectedCommissionItem.Decision,
                     Recommendations = SelectedCommissionItem.Recommendations,
-                    Details = SelectedCommissionItem.Recommendations,
+                    Details = SelectedCommissionItem.Details,
                     Experts = SelectedCommissionItem.Experts
                 };
                 printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(commissionQuestion.PrintedDocumentId.Value, new FieldValue() { Field = "PersonId", Value = item.PersonId }, item);

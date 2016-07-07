@@ -38,7 +38,7 @@ namespace CommissionsModule.ViewModels
         #endregion
 
         #region  Constructors
-        public CommissionsListViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IDialogService messageService, 
+        public CommissionsListViewModel(ICommissionService commissionService, ILog logService, IDialogServiceAsync dialogService, IDialogService messageService,
                                         IUserService userService, INotificationService notificationService, IEventAggregator eventAggregator)
         {
             if (commissionService == null)
@@ -94,7 +94,7 @@ namespace CommissionsModule.ViewModels
         public int SelectedFilter
         {
             get { return selectedFilter; }
-            set 
+            set
             {
                 if (SetProperty(ref selectedFilter, value))
                 {
@@ -142,8 +142,8 @@ namespace CommissionsModule.ViewModels
         public CommissionItemViewModel SelectedCommission
         {
             get { return selectedCommission; }
-            set 
-            { 
+            set
+            {
                 if (SetProperty(ref selectedCommission, value))
                 {
                     if (value != null)
@@ -160,7 +160,7 @@ namespace CommissionsModule.ViewModels
 
         public void LoadDataSources()
         {
-            Filters.Clear();            
+            Filters.Clear();
             try
             {
                 Filters.AddRange(commissionService.GetCommissionFilters().Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
@@ -186,30 +186,33 @@ namespace CommissionsModule.ViewModels
                 commissionProtocolsQuery = commissionService.GetCommissionProtocols(SelectedFilter, FilterDate, OnlyMyCommissions);
 
                 var commissionProtocolsSelectQuery = await commissionProtocolsQuery.Select(x => new
-                    {
-                        Id = x.Id,
-                        PersonId = x.PersonId,
-                        PatientFIO = x.Person.ShortName,
-                        BirthDate = x.Person.BirthDate.Year,
-                        Talon = x.PersonTalon != null ? new { TalonNumber = x.PersonTalon.TalonNumber, TalonDate = x.PersonTalon.TalonDateTime } : null,
-                        MKB = x.MKB,
-                        IncomeDateTime = x.IncomeDateTime,
-                        IsCompleted = x.IsCompleted,
-                        DecisionId = x.DecisionId
-                    }).ToArrayAsync();
+                {
+                    Id = x.Id,
+                    PersonId = x.PersonId,
+                    PatientFIO = x.Person.ShortName,
+                    BirthDate = x.Person.BirthDate.Year,
+                    Talon = x.PersonTalon != null ? new { TalonNumber = x.PersonTalon.TalonNumber, TalonDate = x.PersonTalon.TalonDateTime } : null,
+                    MKB = x.MKB,
+                    CommissionDate = x.CommissionDate,
+                    IsCompleted = x.IsCompleted,
+                    DecisionId = x.DecisionId,
+                    Question = x.CommissionQuestion.ShortName
+                }).ToArrayAsync();
 
                 var result = commissionProtocolsSelectQuery.Select(x => new CommissionItemViewModel()
-                    {
-                        Id = x.Id,
-                        PersonId = x.PersonId,
-                        PatientFIO = x.PatientFIO,
-                        BirthDate = x.BirthDate + " г.р.",
-                        Talon = x.Talon != null ? x.Talon.TalonNumber + " от " + x.Talon.TalonDate.ToShortDateString() : "талон отсутствует",                       
-                        MKB = !string.IsNullOrEmpty(x.MKB) ? "МКБ: " + x.MKB : string.Empty,
-                        IncomeDateTime = x.IncomeDateTime.ToShortDateString(),
-                        IsCompleted = x.IsCompleted,
-                        DecisionColorHex = commissionService.GetDecisionColorHex(x.DecisionId)
-                    }).ToArray();
+                {
+                    Id = x.Id,
+                    PersonId = x.PersonId,
+                    PatientFIO = x.PatientFIO,
+                    BirthDate = x.BirthDate + " г.р.",
+                    Talon = x.Talon != null ? x.Talon.TalonNumber + " от " + x.Talon.TalonDate.ToShortDateString() : "талон отсутствует",
+                    MKB = !string.IsNullOrEmpty(x.MKB) ? "МКБ: " + x.MKB : string.Empty,
+                    CommissionDate = x.CommissionDate.ToShortDateString(),
+                    IsCompleted = x.IsCompleted,
+                    DecisionText = x.DecisionId.HasValue ? commissionService.GetDecisionById(x.DecisionId.Value).Name : "не рассмотрено",
+                    DecisionColorHex = commissionService.GetDecisionColorHex(x.DecisionId),
+                    Question = x.Question
+                }).ToArray();
 
                 Commissions.AddRange(result);
 
@@ -231,32 +234,6 @@ namespace CommissionsModule.ViewModels
             }
         }
 
-        /*private void TestCreationProtocol()
-        {
-            CommissionProtocol protocol = new CommissionProtocol();
-            protocol.PersonId = 1;
-            protocol.CommissionTypeId = 1;
-            protocol.DecisionId = 1;
-            protocol.ProtocolNumber = 21;
-            protocol.ProtocolDate = DateTime.Now;
-            protocol.IsCompleted = false;
-            protocol.IsExecuting = true;
-            protocol.IncomeDateTime = DateTime.Now;
-            protocol.BeginDateTime = DateTime.Now;
-            protocol.CompleteDateTime = DateTime.Now;
-            protocol.OutcomeDateTime = DateTime.Now;
-            protocol.ToDoDateTime = DateTime.Now;
-            protocol.Comment = string.Empty;
-            protocol.MKB = "I22";
-            protocol.InUserId = 8;
-            protocol.CommissionSourceId = 1;
-            protocol.CommissionQuestionId = 1;
-            protocol.RecordContractId = 51;
-            protocol.Address = string.Empty;
-            protocol.Diagnos = string.Empty;
-            commissionService.SaveCommissionProtocolAsync(protocol, comissionsProtocolsChangeSubscription);
-        }*/
-
         #endregion
 
         private INotificationServiceSubscription<CommissionProtocol> comissionsProtocolsChangeSubscription;
@@ -275,21 +252,21 @@ namespace CommissionsModule.ViewModels
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == null && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsOnCommission))
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == false && x.IsExecuting == true && !x.RemovedByUserId.HasValue);
-            //if (filter.Options.Contains(OptionValues.SentOnCommission))
-            //    comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsSended && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsOnDate) && FilterDate.HasValue)
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.CommissionDate) == DbFunctions.TruncateTime(FilterDate.Value) && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsAdded) && FilterDate.HasValue)
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => DbFunctions.TruncateTime(x.IncomeDateTime) == DbFunctions.TruncateTime(FilterDate.Value) && !x.RemovedByUserId.HasValue);
             if (filter.Options.Contains(OptionValues.ProtocolsAwaiting))
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsCompleted == true && DbFunctions.TruncateTime(x.ToDoDateTime) > DbFunctions.TruncateTime(DateTime.Now) && !x.RemovedByUserId.HasValue);
+            if (filter.Options.Contains(OptionValues.SentOnCommission))
+                comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.IsSended && !x.RemovedByUserId.HasValue);
 
             if (OnlyMyCommissions)
             {
                 int currentPersonId = userService.GetCurrentUser().PersonId;
                 comissionsProtocolsChangeSubscription = notificationService.Subscribe<CommissionProtocol>(x => x.CommissionDecisions.Any(a => a.CommissionMember.PersonStaff.PersonId == currentPersonId) && !x.RemovedByUserId.HasValue);
             }
-            
+
             if (comissionsProtocolsChangeSubscription != null)
                 comissionsProtocolsChangeSubscription.Notified += OnCommissionProtocolNotificationRecievedAsync;
             completionTaskSource.SetResult(true);
@@ -326,9 +303,11 @@ namespace CommissionsModule.ViewModels
             protocol.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
             protocol.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";
             protocol.MKB = (string.IsNullOrEmpty(commissionProtocol.MKB) ? "МКБ: " + commissionProtocol.MKB : string.Empty);
-            protocol.IncomeDateTime = commissionProtocol.IncomeDateTime.ToShortDateString();
+            protocol.CommissionDate = commissionProtocol.IncomeDateTime.ToShortDateString();
             protocol.IsCompleted = commissionProtocol.IsCompleted;
             protocol.DecisionColorHex = commissionService.GetDecisionColorHex(commissionProtocol.DecisionId);
+            protocol.DecisionText = commissionProtocol.DecisionId.HasValue ? commissionService.GetDecisionById(commissionProtocol.DecisionId.Value).Name : "не рассмотрено";
+            protocol.Question = commissionProtocol.CommissionQuestion.ShortName;
 
             Commissions.Add(protocol);
             completionTaskSource.SetResult(true);
@@ -344,9 +323,11 @@ namespace CommissionsModule.ViewModels
             SelectedCommission.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
             SelectedCommission.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";
             SelectedCommission.MKB = (string.IsNullOrEmpty(commissionProtocol.MKB) ? "МКБ: " + commissionProtocol.MKB : string.Empty);
-            SelectedCommission.IncomeDateTime = commissionProtocol.IncomeDateTime.ToShortDateString();
+            SelectedCommission.CommissionDate = commissionProtocol.IncomeDateTime.ToShortDateString();
             SelectedCommission.IsCompleted = commissionProtocol.IsCompleted;
             SelectedCommission.DecisionColorHex = commissionService.GetDecisionColorHex(commissionProtocol.DecisionId);
+            SelectedCommission.DecisionText = commissionProtocol.DecisionId.HasValue ? commissionService.GetDecisionById(commissionProtocol.DecisionId.Value).Name : "не рассмотрено";
+            SelectedCommission.Question = commissionProtocol.CommissionQuestion.ShortName;
             completionTaskSource.SetResult(true);
             return true;
         }
@@ -358,12 +339,12 @@ namespace CommissionsModule.ViewModels
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
-            
+
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            
+
         }
     }
 }

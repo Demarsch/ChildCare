@@ -136,6 +136,7 @@
     <Compile Include="Misc\PersonItem.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseRefferenceCollectionViewModel.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseRefferenceViewModel.cs" />
+    <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\IPersonRecordEditor.cs" />
     <Compile Include="ViewModels\PersonHierarchicalItemViewModels\HierarchicalRepository.cs" />
     <Compile Include="ViewModels\PersonHierarchicalItemViewModels\IHierarchicalRepository.cs" />
@@ -194,6 +195,9 @@
     </Compile>
     <Compile Include="Views\Diagnoses\MKBTreeView.xaml.cs">
       <DependentUpon>MKBTreeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EmptyPatientInfoView.xaml.cs">
+      <DependentUpon>EmptyPatientInfoView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RecordDocuments\RecordDocumentsView.xaml.cs">
       <DependentUpon>RecordDocumentsView.xaml</DependentUpon>
@@ -271,6 +275,10 @@
     <Page Include="Views\Diagnoses\MKBTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EmptyPatientInfoView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RecordDocuments\RecordDocumentsView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -696,5 +696,12 @@ namespace CommissionsModule.Services
             }
             return i;
         }
+
+
+        public Decision GetDecisionById(int decisionId)
+        {
+            var context = contextProvider.CreateNewContext();
+            return context.Set<Decision>().First(x => x.Id == decisionId);
+        }
     }
 }

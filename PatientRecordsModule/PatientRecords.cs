@@ -108,6 +108,7 @@ namespace Shared.PatientRecords
             container.RegisterType<VisitCloseViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordCreateViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<BrigadeViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<EmptyPatientInfoViewModel>(new ContainerControlledLifetimeManager());
             //RecordDocuments
             container.RegisterType<RecordDocumentsCollectionViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordDocumentViewModel>(new ContainerControlledLifetimeManager());
@@ -135,6 +136,9 @@ namespace Shared.PatientRecords
             container.RegisterType<object, VisitEditorView>(viewNameResolver.Resolve<VisitEditorViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, VisitCloseView>(viewNameResolver.Resolve<VisitCloseViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, RecordCreateView>(viewNameResolver.Resolve<RecordCreateViewModel>(), new ContainerControlledLifetimeManager());
+            
+            container.RegisterType<object, EmptyPatientInfoView>(viewNameResolver.Resolve<EmptyPatientInfoViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<EmptyPatientInfoView>());
             //RecordDocuments
             container.RegisterType<object, RecordDocumentsView>(viewNameResolver.Resolve<RecordDocumentsCollectionViewModel>(), new ContainerControlledLifetimeManager());
             //Diagnoses

@@ -1,0 +1,94 @@
+﻿<ResourceDictionary x:Class="Shared.Commissions.Views.CreateAssignmentCommissionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             xmlns:viewModels="clr-namespace:Shared.Commissions.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+>      
+    
+    <DataTemplate DataType="{x:Type viewModels:CreateAssignmentCommissionViewModel}" >
+        <DataTemplate.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </DataTemplate.Resources>
+        <Grid MinWidth="700" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,2" FontWeight="Medium" Text="{Binding PatientFIO}" HorizontalAlignment="Center"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,2" FontWeight="Medium">
+                            <Run Text="Дата направления" />
+                            <Run Text="*" Foreground="Red"/>
+            </TextBlock>
+            <xctk:DateTimePicker Grid.Row="1" Grid.Column="1" Height="23" Margin="5,2,25,2"
+                             HorizontalAlignment="Left"
+                             Watermark="укажите дату/время записи" HorizontalContentAlignment="Left" ShowButtonSpinner="False" Format="Custom" FormatString="dd MMMM yyyy" TimeFormat="ShortDate"
+                             Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
+                             Value="{Binding CommissionDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,2" FontWeight="Medium">
+                            <Run Text="Тип комиссии" />
+                            <Run Text="*" Foreground="Red"/>
+            </TextBlock>
+            <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
+                      SelectedValuePath="Value" 
+                      DisplayMemberPath="Field" 
+                      SelectedValue="{Binding SelectedCommissionTypeGroupId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                      ItemsSource="{Binding CommissionTypeGroups}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,2" FontWeight="Medium">
+                            <Run Text="Тип подкомиссии" />
+                            <Run Text="*" Foreground="Red"/>
+            </TextBlock>
+            <ComboBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
+                      SelectedValuePath="Value" 
+                      DisplayMemberPath="Field" 
+                      SelectedValue="{Binding SelectedCommissionTypeId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                      ItemsSource="{Binding CommissionTypes}" />
+            
+            <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,2" FontWeight="Medium">
+                            <Run Text="Вопрос подкомиссии" />
+                            <Run Text="*" Foreground="Red"/>
+            </TextBlock>
+            <ComboBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,2,25,2" 
+                      SelectedValuePath="Value" 
+                      DisplayMemberPath="Field" 
+                      SelectedValue="{Binding SelectedCommissionQuestionId, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                      Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                      ItemsSource="{Binding CommissionQuestions}" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Margin="5,2" FontWeight="Medium" Text="Код МКБ-10"/>
+            <xctk:MaskedTextBox Grid.Row="5" Grid.Column="1" Margin="5,2,25,2" FontWeight="Medium"
+                            Mask="L00\.99" HorizontalContentAlignment="Center" ValueDataType="{x:Type sys:String}"
+                            Value="{Binding CodeMKB, Mode=TwoWay}"/>
+            
+            <TextBlock Grid.Row="6" Grid.Column="0" Margin="5,2" FontWeight="Medium" Text="Примечания"/>
+            <xctk:WatermarkTextBox Grid.Row="6" Grid.Column="1"
+                               Watermark="укажите доп. информацию к записи..."
+                               TextWrapping="Wrap" AcceptsReturn="True" Margin="5,2,25,2" VerticalContentAlignment="Center"
+                               Text="{Binding CommissionDetails}"/>
+            
+            <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.RowSpan="6" Grid.ColumnSpan="2" />
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>
