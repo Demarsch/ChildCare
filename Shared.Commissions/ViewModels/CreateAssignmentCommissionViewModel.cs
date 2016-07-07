@@ -26,7 +26,6 @@ namespace Shared.Commissions.ViewModels
         private readonly ILog logService;
         private CancellationTokenSource currentSavingToken;
 
-        public bool SaveIsSuccessful { get; set; }
         public BusyMediator BusyMediator { get; set; }
 
         public CreateAssignmentCommissionViewModel(ICommissionService commissionService,  ILog logService)
@@ -88,12 +87,10 @@ namespace Shared.Commissions.ViewModels
             }
             currentSavingToken = new CancellationTokenSource();
             var token = currentSavingToken.Token;
-            AssignIsSuccessful = false;
             try
             {    
                 var exception = string.Empty;
                 ProtocolId = await commissionService.CreateCommissionAssignment(personId, commissionDateTime, selectedCommissionTypeId, selectedCommissionQuestionId, codeMKB, token);
-                AssignIsSuccessful = true;
             }
             catch (OperationCanceledException)
             {
@@ -232,8 +229,6 @@ namespace Shared.Commissions.ViewModels
         }
 
         public DelegateCommand<bool?> CloseCommand { get; private set; }
-
-        public bool AssignIsSuccessful;
 
         private void Close(bool? validate)
         {

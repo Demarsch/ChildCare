@@ -75,7 +75,7 @@ namespace Shared.Commissions.ViewModels
             createAssignmentCommissionViewModel.Initialize(currentPersonId);
             var dialog = await dialogService.ShowDialogAsync(createAssignmentCommissionViewModel);
 
-            if (dialog == true && createAssignmentCommissionViewModel.SaveIsSuccessful)
+            if (dialog == true)
                 eventAggregator.GetEvent<CommissionChangedEvent>().Publish(createAssignmentCommissionViewModel.ProtocolId);
         }
 
