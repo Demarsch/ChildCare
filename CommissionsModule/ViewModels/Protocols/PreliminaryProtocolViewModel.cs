@@ -130,7 +130,8 @@ namespace CommissionsModule.ViewModels
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedCommissionTypeId, value);
-                FilteredCommissionQuestions.Refresh();
+                if (FilteredCommissionQuestions != null)
+                    FilteredCommissionQuestions.Refresh();
             }
         }
 
@@ -144,7 +145,8 @@ namespace CommissionsModule.ViewModels
                 if (value < 1)
                     value = SpecialValues.NonExistingId;
                 SetTrackedProperty(ref selectedCommissionTypeGroupId, value);
-                FilteredCommissionTypes.Refresh();
+                if (FilteredCommissionTypes != null)
+                    FilteredCommissionTypes.Refresh();
             }
         }
 
