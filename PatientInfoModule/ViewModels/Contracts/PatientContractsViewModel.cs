@@ -172,7 +172,7 @@ namespace PatientInfoModule.ViewModels
 
         private void OnBeforePatientSelected(BeforeSelectionChangedEventData data)
         {
-            if (patientId == SpecialValues.NewId || ChangeTracker.HasChanges)
+            if (data.NewId == SpecialValues.NewId || ChangeTracker.HasChanges)
             {
                 data.AddActionToPerform(async () => await Task<bool>.Factory.StartNew(SaveContract), () => regionManager.RequestNavigate(RegionNames.ModuleList, viewNameResolver.Resolve<ContractsHeaderViewModel>()));
             }
@@ -956,6 +956,8 @@ namespace PatientInfoModule.ViewModels
 
         private bool SaveContract()
         {
+            if (selectedContract == null)
+                return false;
             FailureMediator.Deactivate();
             if (!IsValid)
             {

@@ -206,7 +206,9 @@ namespace PatientInfoModule.ViewModels
                                          Details = "Пользовательская организация",
                                          IsLpu = false,
                                          Name = OrganizationText,
-                                         UseInContract = false
+                                         UseInContract = false,
+                                         BeginDateTime = FromDate.GetValueOrDefault(SpecialValues.MinDate),
+                                         EndDateTime = ToDate.GetValueOrDefault(SpecialValues.MaxDate)
                                      };
                     }
                     else
