@@ -20,5 +20,7 @@ namespace PatientInfoModule.Services
         string GetDBSettingValue(string parameter, bool useDisplayName = false);
 
         string GetPrintedDocument(string option);
+
+        IDisposableQueryable<FinancingSource> GetFinancingSources(string option);
     }
 }

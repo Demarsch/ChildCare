@@ -154,8 +154,7 @@
                                  IsChecked="{Binding IsNewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                                  Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  IsTabStop="{Binding IsNameChanged}" />
-                    <TextBlock Text="Новые данные вступают в силу с"
-                               Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+                    <TextBlock Visibility="{Binding IsNewName, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
                         <Run Text="Новые данные вступают в силу с" />
                         <Run Text="*"
                              FontWeight="SemiBold"

@@ -49,7 +49,7 @@ namespace PatientInfoModule.Services
         public IDisposableQueryable<RecordType> GetRecordTypesByName(string name)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Name.ToLower().Trim().Contains(name.ToLower().Trim()))
+            return new DisposableQueryable<RecordType>(context.Set<RecordType>().Where(x => x.Assignable == true && x.Name.ToLower().Trim().Contains(name.ToLower().Trim()))
                                                               .Take(AppConfiguration.SearchResultTakeTopCount), context);
         }
 
@@ -125,6 +125,13 @@ namespace PatientInfoModule.Services
             if (document != null && document.ReportTemplateId.HasValue)
                 return document.ReportTemplate.Name;
             return string.Empty; 
+        }
+
+
+        public IDisposableQueryable<FinancingSource> GetFinancingSources(string option)
+        {
+            var context = contextProvider.CreateNewContext();
+            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().Where(x => !string.IsNullOrEmpty(x.Options) && x.Options.Contains(option) && x.IsActive), context);
         }
     }
 }

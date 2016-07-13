@@ -67,7 +67,7 @@ namespace PatientInfoModule.ViewModels
             this.isChild = personService.GetPatientQuery(personId).First<Person>().BirthDate.Date.AddYears(18) >= contractDate.Date;
             IsAssignRecordsChecked = isAssignRecordsChecked;
             IsNewRecordChecked = isNewRecordChecked;
-            FinancingSources = recordService.GetActiveFinancingSources();
+            FinancingSources = recordService.GetFinancingSources(OptionValues.Pay);
             SelectedFinancingSourceId = financingSourceId;   
         }        
 
