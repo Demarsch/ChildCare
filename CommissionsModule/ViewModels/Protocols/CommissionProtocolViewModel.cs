@@ -146,7 +146,7 @@ namespace CommissionsModule.ViewModels
 
             FailureMediator = new FailureMediator();
             NotificationMediator = new NotificationMediator();
-            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker/*, CommissionСonductViewModel.ChangeTracker*/, CommissionСonclusionViewModel.ChangeTracker);
+            ChangeTracker = new CompositeChangeTracker(PreliminaryProtocolViewModel.ChangeTracker, CommissionСonductViewModel.ChangeTracker, CommissionСonclusionViewModel.ChangeTracker);
             ChangeTracker.PropertyChanged += CompositeChangeTracker_PropertyChanged;
         }
 
