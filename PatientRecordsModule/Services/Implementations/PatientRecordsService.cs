@@ -500,7 +500,7 @@ namespace Shared.PatientRecords.Services
         public IDisposableQueryable<RecordType> GetRecordTypes(bool isAnalyse = false)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<RecordType>(context.Set<RecordType>().AsNoTracking().Where(x => isAnalyse ? x.IsAnalyse == isAnalyse : true), context);
+            return new DisposableQueryable<RecordType>(context.Set<RecordType>().AsNoTracking().Where(x => x.Assignable == true && (isAnalyse ? x.IsAnalyse == isAnalyse : true)), context);
         }
 
         public IDisposableQueryable<RecordType> GetChildRecordTypesQuery(int recordTypeId)
