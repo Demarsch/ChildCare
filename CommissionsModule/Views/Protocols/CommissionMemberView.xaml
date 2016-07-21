@@ -22,6 +22,7 @@
                 <Button Background="Transparent" BorderThickness="0" VerticalAlignment="Center">
                     <Button.Resources>
                         <misc:BindingProxy x:Key="proxy" Data="{Binding}" />
+                        <misc:BindingProxy x:Key="listViewProxy" Data="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType=ListView}}"/>
                     </Button.Resources>
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
@@ -38,18 +39,18 @@
                                     </EventTrigger.Actions>
                                 </EventTrigger>
                             </Style.Triggers>
-                            <!--<Setter Property="ContextMenu">
+                            <Setter Property="ContextMenu">
                                 <Setter.Value>
-                                    <ContextMenu ItemsSource="{Binding ContextMenuItems}">
+                                    <ContextMenu ItemsSource="{Binding Data.ContextMenuItems, Source={StaticResource proxy}, UpdateSourceTrigger=PropertyChanged}">
                                         <ContextMenu.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
-                                                <Setter Property="Command" Value="{Binding  ElementName=AvailableMembersContainer, Path=DataContext.AddSelectedAvailableMemberCommand}"/>
                                                 <Setter Property="CommandParameter" Value="{Binding}"/>
+                                                <Setter Property="Command" Value="{Binding Data.AddSelectedAvailableMemberCommand, Source={StaticResource listViewProxy}}"/>
                                             </Style>
                                         </ContextMenu.ItemContainerStyle>
                                     </ContextMenu>
                                 </Setter.Value>
-                            </Setter>-->
+                            </Setter>
                         </Style>
                     </Button.Style>
 
@@ -59,7 +60,7 @@
                         </DataTemplate>
                     </Button.ContentTemplate>
 
-                    <Button.ContextMenu>
+                    <!--<Button.ContextMenu>
                         <ContextMenu ItemsSource="{Binding ContextMenuItems}">
                             <ContextMenu.ItemContainerStyle>
                                 <Style TargetType="MenuItem">
@@ -68,7 +69,7 @@
                                 </Style>
                             </ContextMenu.ItemContainerStyle>
                         </ContextMenu>
-                    </Button.ContextMenu>
+                    </Button.ContextMenu>-->
                 </Button>
             </StackPanel>
         </Grid>
