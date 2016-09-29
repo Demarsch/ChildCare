@@ -58,6 +58,8 @@ namespace CommissionsModule.ViewModels
         private bool? changeIsExecutingCommission;
 
         private CommandWrapper reSaveCommissionProtocol;
+
+        private bool needUpdate = false;
         #endregion
 
         #region Constructiors
@@ -137,6 +139,8 @@ namespace CommissionsModule.ViewModels
 
             startCommissionCommand = new DelegateCommand(StartCommission, CanStartCommission);
             stopCommissionCommand = new DelegateCommand(StopCommission);
+
+            updateCommissionProtocolCommand = new DelegateCommand(UpdateCommissionProtocol, CanUpdateCommissionProtocol);
 
             reSaveCommissionProtocol = new CommandWrapper() { Command = saveCommissionProtocolCommand, CommandName = "Повторить" };
             reRemoveCommissionProtocol = new CommandWrapper() { Command = removeCommissionCommand, CommandName = "Повторить" };
@@ -244,6 +248,7 @@ namespace CommissionsModule.ViewModels
             set { SetTrackedProperty(ref runWork, value); }
         }
 
+
         public FailureMediator FailureMediator { get; private set; }
         public NotificationMediator NotificationMediator { get; private set; }
         public IChangeTracker ChangeTracker { get; private set; }
@@ -274,6 +279,9 @@ namespace CommissionsModule.ViewModels
 
         private DelegateCommand stopCommissionCommand;
         public ICommand StopCommissionCommand { get { return stopCommissionCommand; } }
+
+        private DelegateCommand updateCommissionProtocolCommand;
+        public ICommand UpdateCommissionProtocolCommand { get { return updateCommissionProtocolCommand; } }
 
         #endregion
 
@@ -443,6 +451,7 @@ namespace CommissionsModule.ViewModels
                             break;
                     }
                     RunWork = commissionProtocol.IsExecuting;
+                    needUpdate = false;
                 }
                 else
                 {
@@ -536,6 +545,16 @@ namespace CommissionsModule.ViewModels
                 SelectedPersonId = searchViewModel.PersonSearchViewModel.SelectedPersonId;
                 PreliminaryProtocolViewModel.Initialize(SelectedCommissionProtocolId, SelectedPersonId);
             }
+        }
+
+        private async void UpdateCommissionProtocol()
+        {
+            this.SelectedCommissionProtocolId = this.SelectedCommissionProtocolId;
+        }
+
+        private bool CanUpdateCommissionProtocol()
+        {
+            return needUpdate;
         }
 
         private async void SaveCommissionProtocol()
@@ -636,7 +655,8 @@ namespace CommissionsModule.ViewModels
 
         private void OnCommissionProtocolNotificationRecievedAsync(object sender, NotificationEventArgs<CommissionProtocol> e)
         {
-
+            needUpdate = true;
+            updateCommissionProtocolCommand.RaiseCanExecuteChanged();
         }
 
         void PreliminaryProtocolViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

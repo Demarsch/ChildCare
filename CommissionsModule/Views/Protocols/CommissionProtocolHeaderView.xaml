@@ -58,4 +58,10 @@
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png" 
                        Command="{Binding CommissionProtocolViewModel.SaveCommissionProtocolCommand}"/>
     </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox HorizontalAlignment="Right">
+        <fluent:Button Header="Обновить"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Refresh48x48.png" 
+                       Command="{Binding CommissionProtocolViewModel.UpdateCommissionProtocolCommand}"/>
+    </fluent:RibbonGroupBox>
 </fluent:RibbonTabItem>
