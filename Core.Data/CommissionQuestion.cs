@@ -46,20 +46,20 @@ namespace Core.Data
      		set { commissionType = value; }
     	}
         [NonSerialized]
-    	protected PrintedDocument printedDocument;
-    
-    	public virtual PrintedDocument PrintedDocument
-    	{
-     		get { return printedDocument; }
-     		set { printedDocument = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<CommissionProtocol> commissionProtocols;
     
     	public virtual ICollection<CommissionProtocol> CommissionProtocols
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected PrintedDocument printedDocument;
+    
+    	public virtual PrintedDocument PrintedDocument
+    	{
+     		get { return printedDocument; }
+     		set { printedDocument = value; }
     	}
     
     	public object Clone()

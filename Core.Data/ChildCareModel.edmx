@@ -784,6 +784,7 @@
           <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="ReportTemplateId" Type="int" />
           <Property Name="Options" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Priority" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="RecordContractItems">
           <Key>
@@ -4886,16 +4887,7 @@
             <End Role="User" EntitySet="Users" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
           </AssociationSet>
-          <EntitySet Name="PrintedDocuments" EntityType="DataLib.PrintedDocument" />
           <EntitySet Name="ReportTemplates" EntityType="DataLib.ReportTemplate" />
-          <AssociationSet Name="FK_PrintedDocuments_PrintedDocuments" Association="DataLib.FK_PrintedDocuments_PrintedDocuments">
-            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
-            <End Role="PrintedDocument1" EntitySet="PrintedDocuments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PrintedDocuments_ReportTemplates" Association="DataLib.FK_PrintedDocuments_ReportTemplates">
-            <End Role="ReportTemplate" EntitySet="ReportTemplates" />
-            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
-          </AssociationSet>
           <EntitySet Name="CommissionQuestions" EntityType="DataLib.CommissionQuestion" />
           <EntitySet Name="CommissionTypes" EntityType="DataLib.CommissionType" />
           <AssociationSet Name="FK_CommissionDecisionsLinks_CommissionQuestions" Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions">
@@ -4910,17 +4902,9 @@
             <End Role="CommissionType" EntitySet="CommissionTypes" />
             <End Role="CommissionQuestion" EntitySet="CommissionQuestions" />
           </AssociationSet>
-          <AssociationSet Name="FK_CommissionQuestions_PrintedDocuments" Association="DataLib.FK_CommissionQuestions_PrintedDocuments">
-            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
-            <End Role="CommissionQuestion" EntitySet="CommissionQuestions" />
-          </AssociationSet>
           <AssociationSet Name="FK_CommissionSources_CommissionTypes" Association="DataLib.FK_CommissionSources_CommissionTypes">
             <End Role="CommissionType" EntitySet="CommissionTypes" />
             <End Role="CommissionSource" EntitySet="CommissionSources" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CommissionTypes_PrintedDocuments" Association="DataLib.FK_CommissionTypes_PrintedDocuments">
-            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
-            <End Role="CommissionType" EntitySet="CommissionTypes" />
           </AssociationSet>
           <EntitySet Name="CommissionTypeGroups" EntityType="DataLib.CommissionTypeGroup" />
           <AssociationSet Name="FK_CommissionTypes_CommissionTypeGroups" Association="DataLib.FK_CommissionTypes_CommissionTypeGroups">
@@ -5001,6 +4985,23 @@
           <AssociationSet Name="FK_CommissionProtocols_RemovedUsers" Association="DataLib.FK_CommissionProtocols_RemovedUsers">
             <End Role="User" EntitySet="Users" />
             <End Role="CommissionProtocol" EntitySet="CommissionProtocols" />
+          </AssociationSet>
+          <EntitySet Name="PrintedDocuments" EntityType="DataLib.PrintedDocument" />
+          <AssociationSet Name="FK_CommissionQuestions_PrintedDocuments" Association="DataLib.FK_CommissionQuestions_PrintedDocuments">
+            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
+            <End Role="CommissionQuestion" EntitySet="CommissionQuestions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionTypes_PrintedDocuments" Association="DataLib.FK_CommissionTypes_PrintedDocuments">
+            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
+            <End Role="CommissionType" EntitySet="CommissionTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PrintedDocuments_PrintedDocuments" Association="DataLib.FK_PrintedDocuments_PrintedDocuments">
+            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
+            <End Role="PrintedDocument1" EntitySet="PrintedDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PrintedDocuments_ReportTemplates" Association="DataLib.FK_PrintedDocuments_ReportTemplates">
+            <End Role="ReportTemplate" EntitySet="ReportTemplates" />
+            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Branch">
@@ -8248,22 +8249,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="PrintedDocument">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ReportTemplateId" Type="Int32" />
-          <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PrintedDocuments1" Relationship="DataLib.FK_PrintedDocuments_PrintedDocuments" FromRole="PrintedDocument" ToRole="PrintedDocument1" />
-          <NavigationProperty Name="PrintedDocument1" Relationship="DataLib.FK_PrintedDocuments_PrintedDocuments" FromRole="PrintedDocument1" ToRole="PrintedDocument" />
-          <NavigationProperty Name="ReportTemplate" Relationship="DataLib.FK_PrintedDocuments_ReportTemplates" FromRole="PrintedDocument" ToRole="ReportTemplate" />
-          <NavigationProperty Name="CommissionQuestions" Relationship="DataLib.FK_CommissionQuestions_PrintedDocuments" FromRole="PrintedDocument" ToRole="CommissionQuestion" />
-          <NavigationProperty Name="CommissionTypes" Relationship="DataLib.FK_CommissionTypes_PrintedDocuments" FromRole="PrintedDocument" ToRole="CommissionType" />
-        </EntityType>
         <EntityType Name="ReportTemplate">
           <Key>
             <PropertyRef Name="Id" />
@@ -8276,30 +8261,6 @@
           <Property Name="Template" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PrintedDocuments" Relationship="DataLib.FK_PrintedDocuments_ReportTemplates" FromRole="ReportTemplate" ToRole="PrintedDocument" />
         </EntityType>
-        <Association Name="FK_PrintedDocuments_PrintedDocuments">
-          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="0..1" />
-          <End Type="DataLib.PrintedDocument" Role="PrintedDocument1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PrintedDocument">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PrintedDocument1">
-              <PropertyRef Name="ParentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PrintedDocuments_ReportTemplates">
-          <End Type="DataLib.ReportTemplate" Role="ReportTemplate" Multiplicity="0..1" />
-          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ReportTemplate">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PrintedDocument">
-              <PropertyRef Name="ReportTemplateId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="CommissionQuestion">
           <Key>
             <PropertyRef Name="Id" />
@@ -8313,8 +8274,8 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="CommissionDecisionsLinks" Relationship="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" FromRole="CommissionQuestion" ToRole="CommissionDecisionsLink" />
           <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionQuestions_CommissionTypes" FromRole="CommissionQuestion" ToRole="CommissionType" />
-          <NavigationProperty Name="PrintedDocument" Relationship="DataLib.FK_CommissionQuestions_PrintedDocuments" FromRole="CommissionQuestion" ToRole="PrintedDocument" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_CommissionQuestions" FromRole="CommissionQuestion" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="PrintedDocument" Relationship="DataLib.FK_CommissionQuestions_PrintedDocuments" FromRole="CommissionQuestion" ToRole="PrintedDocument" />
         </EntityType>
         <EntityType Name="CommissionType">
           <Key>
@@ -8330,9 +8291,9 @@
           <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionType" ToRole="CommissionMember" />
           <NavigationProperty Name="CommissionQuestions" Relationship="DataLib.FK_CommissionQuestions_CommissionTypes" FromRole="CommissionType" ToRole="CommissionQuestion" />
           <NavigationProperty Name="CommissionSources" Relationship="DataLib.FK_CommissionSources_CommissionTypes" FromRole="CommissionType" ToRole="CommissionSource" />
-          <NavigationProperty Name="PrintedDocument" Relationship="DataLib.FK_CommissionTypes_PrintedDocuments" FromRole="CommissionType" ToRole="PrintedDocument" />
           <NavigationProperty Name="CommissionTypeGroup" Relationship="DataLib.FK_CommissionTypes_CommissionTypeGroups" FromRole="CommissionType" ToRole="CommissionTypeGroup" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_CommissionTypes" FromRole="CommissionType" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="PrintedDocument" Relationship="DataLib.FK_CommissionTypes_PrintedDocuments" FromRole="CommissionType" ToRole="PrintedDocument" />
         </EntityType>
         <Association Name="FK_CommissionDecisionsLinks_CommissionQuestions">
           <End Type="DataLib.CommissionQuestion" Role="CommissionQuestion" Multiplicity="1" />
@@ -8370,18 +8331,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CommissionQuestions_PrintedDocuments">
-          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionQuestion" Role="CommissionQuestion" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PrintedDocument">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionQuestion">
-              <PropertyRef Name="PrintedDocumentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CommissionSources_CommissionTypes">
           <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="1" />
           <End Type="DataLib.CommissionSource" Role="CommissionSource" Multiplicity="*" />
@@ -8391,18 +8340,6 @@
             </Principal>
             <Dependent Role="CommissionSource">
               <PropertyRef Name="CommissionTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CommissionTypes_PrintedDocuments">
-          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PrintedDocument">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionType">
-              <PropertyRef Name="PrintedDocumentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8720,6 +8657,71 @@
             </Principal>
             <Dependent Role="CommissionProtocol">
               <PropertyRef Name="RemovedByUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PrintedDocument">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ReportTemplateId" Type="Int32" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CommissionQuestions" Relationship="DataLib.FK_CommissionQuestions_PrintedDocuments" FromRole="PrintedDocument" ToRole="CommissionQuestion" />
+          <NavigationProperty Name="CommissionTypes" Relationship="DataLib.FK_CommissionTypes_PrintedDocuments" FromRole="PrintedDocument" ToRole="CommissionType" />
+          <NavigationProperty Name="PrintedDocuments1" Relationship="DataLib.FK_PrintedDocuments_PrintedDocuments" FromRole="PrintedDocument" ToRole="PrintedDocument1" />
+          <NavigationProperty Name="PrintedDocument1" Relationship="DataLib.FK_PrintedDocuments_PrintedDocuments" FromRole="PrintedDocument1" ToRole="PrintedDocument" />
+          <NavigationProperty Name="ReportTemplate" Relationship="DataLib.FK_PrintedDocuments_ReportTemplates" FromRole="PrintedDocument" ToRole="ReportTemplate" />
+        </EntityType>
+        <Association Name="FK_CommissionQuestions_PrintedDocuments">
+          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionQuestion" Role="CommissionQuestion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PrintedDocument">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionQuestion">
+              <PropertyRef Name="PrintedDocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionTypes_PrintedDocuments">
+          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionType" Role="CommissionType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PrintedDocument">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionType">
+              <PropertyRef Name="PrintedDocumentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PrintedDocuments_PrintedDocuments">
+          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="0..1" />
+          <End Type="DataLib.PrintedDocument" Role="PrintedDocument1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PrintedDocument">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PrintedDocument1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PrintedDocuments_ReportTemplates">
+          <End Type="DataLib.ReportTemplate" Role="ReportTemplate" Multiplicity="0..1" />
+          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ReportTemplate">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PrintedDocument">
+              <PropertyRef Name="ReportTemplateId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9898,18 +9900,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PrintedDocuments">
-            <EntityTypeMapping TypeName="DataLib.PrintedDocument">
-              <MappingFragment StoreEntitySet="PrintedDocuments">
-                <ScalarProperty Name="Options" ColumnName="Options" />
-                <ScalarProperty Name="ReportTemplateId" ColumnName="ReportTemplateId" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ReportTemplates">
             <EntityTypeMapping TypeName="DataLib.ReportTemplate">
               <MappingFragment StoreEntitySet="ReportTemplates">
@@ -10015,6 +10005,19 @@
                 <ScalarProperty Name="DecisionId" ColumnName="DecisionId" />
                 <ScalarProperty Name="CommissionTypeId" ColumnName="CommissionTypeId" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PrintedDocuments">
+            <EntityTypeMapping TypeName="DataLib.PrintedDocument">
+              <MappingFragment StoreEntitySet="PrintedDocuments">
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="ReportTemplateId" ColumnName="ReportTemplateId" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
