@@ -63,7 +63,7 @@ namespace ScheduleModule.ViewModels
                 {
                     return Room.Name;
                 }
-                return string.Format("№{0} - {1}", Room.Number, Room.Name);
+                return string.Format("{0} - {1}", Room.Number, Room.Name);
             }
         }
 

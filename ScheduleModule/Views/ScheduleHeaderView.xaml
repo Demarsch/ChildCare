@@ -119,6 +119,17 @@
             <ContentControl Content="{Binding ScheduleContentViewModel.PatientAssignmentListViewModel, Mode=OneTime}"
                             MaxHeight="300" />
         </fluent:DropDownButton>
+        <StackPanel Orientation="Vertical">
+            <DatePicker VerticalAlignment="Center" 
+                        IsEnabled="{Binding ScheduleContentViewModel.PatientAssignmentListViewModel.PatientIsSelected}"
+                        SelectedDate="{Binding ScheduleContentViewModel.SelectedAssignDate, UpdateSourceTrigger=PropertyChanged}" />
+            <fluent:Button Size="Middle"
+                        IsEnabled="{Binding ScheduleContentViewModel.PatientAssignmentListViewModel.PatientIsSelected}"
+                        Icon="pack://application:,,,/Core;Component/Resources/Images/AssignmentPrint48x48.png"
+                        Header="Печать назначений"
+                        HorizontalAlignment="Center"
+                        Command="{Binding ScheduleContentViewModel.PrintAssignmentsOnDateCommand, Mode=OneTime}"/>
+        </StackPanel>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Перенос"
                            Visibility="{Binding ScheduleContentViewModel.IsMovingAssignment, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">

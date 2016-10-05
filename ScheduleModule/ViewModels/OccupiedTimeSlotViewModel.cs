@@ -132,6 +132,8 @@ namespace ScheduleModule.ViewModels
 
         public string PersonShortName { get { return assignment.PersonShortName; } }
 
+        public string FinancingSourceName { get { return assignment.FinancingSourceName; } }
+
         public bool IsCompleted
         {
             get { return assignment.IsCompleted; }

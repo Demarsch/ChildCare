@@ -102,7 +102,8 @@ namespace Shared.Commissions.Services
                 protocol.Diagnos = string.Empty;
                 protocol.DecisionId = null;
                 protocol.Comment = string.Empty;
-                
+                protocol.SendingMessage = string.Empty;
+
                 protocol.ToDoDateTime = null;                
                 protocol.BeginDateTime = null;
                 

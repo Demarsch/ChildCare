@@ -138,6 +138,23 @@
             <ContentControl Content="{Binding ContentViewModel.PatientAssignmentListViewModel, Mode=OneTime}"
                             MaxHeight="300" />
         </fluent:DropDownButton>
+        <StackPanel Orientation="Vertical">
+            <DatePicker VerticalAlignment="Center" 
+                        IsEnabled="{Binding ContentViewModel.PatientAssignmentListViewModel.PatientIsSelected}"
+                        SelectedDate="{Binding ContentViewModel.SelectedAssignDate, UpdateSourceTrigger=PropertyChanged}" />
+            <fluent:Button Size="Middle"
+                           Icon="pack://application:,,,/Core;Component/Resources/Images/AssignmentPrint48x48.png"
+                           Header="Печать назначений"
+                           HorizontalAlignment="Center"
+                           Command="{Binding ContentViewModel.PrintAssignmentsOnDateCommand, Mode=OneTime}"/>
+        </StackPanel>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Талон пациента" MinWidth="100" HorizontalContentAlignment="Center">
+        <fluent:Button Size="Large"
+                           LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordPrint48x48.png"
+                           Header="Печать талона"
+                           HorizontalAlignment="Center"
+                           Command="{Binding ContentViewModel.PrintAmbTalonCommand, Mode=OneTime}"/>
     </fluent:RibbonGroupBox>
     <fluent:RibbonGroupBox Header="Док-ты леч-диагн процесса" 
                            MinWidth="150"

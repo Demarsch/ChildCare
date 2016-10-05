@@ -60,6 +60,7 @@ namespace ScheduleModule.Services
                                                    AssignUserId = x.AssignUserId,
                                                    AssignLpuId = x.AssignLpuId,
                                                    FinancingSourceId = x.FinancingSourceId,
+                                                   FinancingSourceName = x.FinancingSource.ShortName,
                                                    Note = x.Note
                                                })
                                   .ToLookup(x => x.RoomId);
@@ -345,6 +346,7 @@ namespace ScheduleModule.Services
                                                    AssignLpuId = x.AssignLpuId,
                                                    AssignUserId = x.AssignUserId,
                                                    FinancingSourceId = x.FinancingSourceId,
+                                                   FinancingSourceName = x.FinancingSource.ShortName,
                                                    Note = x.Note,
                                                    PersonShortName = x.Person.ShortName
                                                })
@@ -371,6 +373,7 @@ namespace ScheduleModule.Services
                                                    AssignLpuId = x.AssignLpuId,
                                                    AssignUserId = x.AssignUserId,
                                                    FinancingSourceId = x.FinancingSourceId,
+                                                   FinancingSourceName = x.FinancingSource.ShortName,
                                                    Note = x.Note,
                                                    PersonShortName = x.Person.ShortName
                                                })
@@ -398,6 +401,7 @@ namespace ScheduleModule.Services
                                                    AssignLpuId = x.AssignLpuId,
                                                    AssignUserId = x.AssignUserId,
                                                    FinancingSourceId = x.FinancingSourceId,
+                                                   FinancingSourceName = x.FinancingSource.ShortName,
                                                    Note = x.Note,
                                                    PersonShortName = x.Person.ShortName,
                                                    IsCanceled = x.CancelUserId.HasValue
