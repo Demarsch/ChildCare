@@ -10,6 +10,7 @@
         <ResourceDictionary Source="../Views/TimeTickerView.xaml" />
         <ResourceDictionary Source="../Views/ScheduleAssignmentUpdateView.xaml" />
         <ResourceDictionary Source="../Views/DateTimeSelectionDialogView.xaml" />
+        <ResourceDictionary Source="../Views/MultiAssigns/MultiAssignRecordTypeView.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="{x:Type xctk:TimelinePanel}">
         <Setter Property="UnitSize"

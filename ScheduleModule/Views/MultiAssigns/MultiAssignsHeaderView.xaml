@@ -1,0 +1,72 @@
+﻿<fluent:RibbonTabItem x:Class="ScheduleModule.Views.MultiAssignsHeaderView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:fluent="urn:fluent-ribbon"
+                      xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels"
+                      xmlns:markupExtensions="clr-namespace:Core.Wpf.MarkupExtensions;assembly=Core.Wpf"
+                      xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                      xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
+                      xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
+                      mc:Ignorable="d"
+                      d:DesignHeight="300"
+                      d:DesignWidth="300"
+                      d:DataContext="{d:DesignInstance viewModels:MultiAssignsHeaderViewModel}"
+                      Header="Множ. назначения">
+    <fluent:RibbonTabItem.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Shared.DataTemplates;Component/Core.Data.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin"
+                    Value="0" />
+            </Style>
+            <converters:Converter x:Key="UnselectedPatientToShortNameConverter"
+                                  KeepSourceValueOnDefault="True">
+                <converters:ConverterItem From=""
+                                          To="не выбран" />
+                <converters:ConverterItem From="{x:Null}"
+                                          To="не выбран" />
+            </converters:Converter>
+        </ResourceDictionary>
+    </fluent:RibbonTabItem.Resources>
+    <fluent:RibbonGroupBox Header="Фильтр даты">
+        <StackPanel Orientation="Vertical">
+            <DatePicker VerticalAlignment="Center"
+                        SelectedDate="{Binding MultiAssignsContentViewModel.SelectedDate, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Добавить услугу">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Text="Тип услуги"
+                        VerticalAlignment="Center"
+                       Margin="5 0 0 0" />
+            <controls:TreeViewComboBox Grid.Row="0"
+                                       Grid.Column="1"
+                                       ItemsSource="{Binding MultiAssignsContentViewModel.RecordTypes}"
+                                       SelectedItem="{Binding MultiAssignsContentViewModel.SelectedRecordType}"
+                                       DisplayMemberPath="Name"
+                                       Width="300" 
+                                       ItemTemplate="{StaticResource NonAssignableTypesGrayedOut}"
+                                       SelectionPredicate="{x:Static data:RecordType.AssignableRecordTypeSelectorPredicate}"
+                                       FilterPredicate="{x:Static data:RecordType.AssignableRecordTypeFilterPredicate}"/>
+            <fluent:Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Size="Large" Command="{Binding MultiAssignsContentViewModel.AddRecordTypeCommand, Mode=OneTime}" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentAdd48x48.png" Header="Добавить" />
+
+        </Grid>
+    </fluent:RibbonGroupBox>
+   
+</fluent:RibbonTabItem>

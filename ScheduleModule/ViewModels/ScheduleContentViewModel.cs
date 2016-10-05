@@ -917,14 +917,14 @@ namespace ScheduleModule.ViewModels
                 ClearFiltersCommand.RaiseCanExecuteChanged();
             }
         }
-
-        private bool isRecordTypeSelected;
+ private bool isRecordTypeSelected;
 
         public bool IsRecordTypeSelected
         {
             get { return isRecordTypeSelected; }
             private set { SetProperty(ref isRecordTypeSelected, value); }
         }
+       
 
         private string currentPatientShortName;
 

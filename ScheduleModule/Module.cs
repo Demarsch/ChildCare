@@ -67,6 +67,9 @@ namespace ScheduleModule
             container.RegisterType<ScheduleAssignmentUpdateViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<TimeTickerViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<ScheduleContentViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<MultiAssignsContentViewModel>(new ContainerControlledLifetimeManager());
+
+            container.RegisterType<MultiAssignRecordTypeViewModel>(new TransientLifetimeManager());
         }
 
         private void RegisterViews()
@@ -74,7 +77,9 @@ namespace ScheduleModule
             //This is required by Prism navigation mechanism to resolve view
             container.RegisterType<object, ScheduleContentView>(viewNameResolver.Resolve<ScheduleContentViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<ScheduleContentView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<MultiAssignsContentView>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<ScheduleHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<MultiAssignsHeaderView>());
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/ScheduleModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 

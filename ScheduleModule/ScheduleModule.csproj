@@ -130,6 +130,9 @@
     <Compile Include="Services\Implementations\ScheduleService.cs" />
     <Compile Include="Services\Interfaces\IScheduleService.cs" />
     <Compile Include="ViewModels\DateTimeSelectionDialogViewModel.cs" />
+    <Compile Include="ViewModels\MultiAssigns\MultiAssignRecordTypeViewModel.cs" />
+    <Compile Include="ViewModels\MultiAssigns\MultiAssignsHeaderViewModel.cs" />
+    <Compile Include="ViewModels\MultiAssigns\MultiAssignsContentViewModel.cs" />
     <Compile Include="ViewModels\ScheduleHeaderViewModel.cs" />
     <Compile Include="ViewModels\OverlayAssignmentCollectionViewModel.cs" />
     <Compile Include="ViewModels\OverlayAssignmentViewModel.cs" />
@@ -141,6 +144,12 @@
     <Compile Include="ViewModels\WorkingTimeViewModel.cs" />
     <Compile Include="ViewModels\ScheduleContentViewModel.cs" />
     <Compile Include="ViewModels\TimeTickerViewModel.cs" />
+    <Compile Include="Views\MultiAssigns\MultiAssignsHeaderView.xaml.cs">
+      <DependentUpon>MultiAssignsHeaderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MultiAssigns\MultiAssignsContentView.xaml.cs">
+      <DependentUpon>MultiAssignsContentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ScheduleHeaderView.xaml.cs">
       <DependentUpon>ScheduleHeaderView.xaml</DependentUpon>
     </Compile>
@@ -203,6 +212,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\MultiAssigns\MultiAssignRecordTypeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MultiAssigns\MultiAssignsHeaderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MultiAssigns\MultiAssignsContentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\ScheduleHeaderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -239,6 +260,7 @@
     <Resource Include="Resources\Images\Today48x48.png" />
     <Resource Include="Resources\Images\ViewSchedule48x48.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
