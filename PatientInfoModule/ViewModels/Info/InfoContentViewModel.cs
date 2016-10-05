@@ -157,6 +157,8 @@ namespace PatientInfoModule.ViewModels
             createAmbCardCommand = new DelegateCommand(CreateAmbCardAsync, CanCreateAmbCard);
             deleteAmbCardCommand = new DelegateCommand(DeleteAmbCardAsync, CanDeleteAmbCard);
             printAmbCardCommand = new DelegateCommand(PrintAmbCardAsync, CanPrintAmbCard);
+            printAssignmentsOnDateCommand = new DelegateCommand(PrintAssignmentsOnDate, CanPrintAssignmentsOnDate);
+            printAmbTalonCommand = new DelegateCommand(PrintAmbTalon, CanPrintAmbTalon);
             showAgreementsCommand = new DelegateCommand(ShowAgreementsAsync, CanShowAgreements);
             saveChangesCommandWrapper = new CommandWrapper { Command = SaveChangesCommand };
             recreateAmbCardWrapper = new CommandWrapper { Command = CreateAmbCardCommand };
@@ -164,6 +166,7 @@ namespace PatientInfoModule.ViewModels
             loadRelativeListWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadPatientAndRelativesAsync(patientIdBeingLoaded)) };
             currentOperation = new TaskCompletionSource<object>();
             currentOperation.SetResult(null);
+            SelectedAssignDate = DateTime.Now;
             eventAggregator.GetEvent<BeforeSelectionChangedEvent<Person>>().Subscribe(OnBeforePatientSelected);
         }
 
@@ -196,6 +199,7 @@ namespace PatientInfoModule.ViewModels
             addRelativeCommand.RaiseCanExecuteChanged();
             searchRelativeCommand.RaiseCanExecuteChanged();
             showAgreementsCommand.RaiseCanExecuteChanged();
+            printAssignmentsOnDateCommand.RaiseCanExecuteChanged();
         }
 
         private void UpdateAmbCardCommandsState()
@@ -203,6 +207,7 @@ namespace PatientInfoModule.ViewModels
             createAmbCardCommand.RaiseCanExecuteChanged();
             deleteAmbCardCommand.RaiseCanExecuteChanged();
             printAmbCardCommand.RaiseCanExecuteChanged();
+            printAmbTalonCommand.RaiseCanExecuteChanged();
             OnPropertyChanged(() => CanViewCreateAmbCardButton);
             OnPropertyChanged(() => CanViewDeleteAmbCardButton);
         }
@@ -224,6 +229,10 @@ namespace PatientInfoModule.ViewModels
         private readonly DelegateCommand deleteAmbCardCommand;
 
         private readonly DelegateCommand printAmbCardCommand;
+
+        private readonly DelegateCommand printAssignmentsOnDateCommand;
+
+        private readonly DelegateCommand printAmbTalonCommand;
 
         private readonly DelegateCommand showAgreementsCommand;
 
@@ -249,6 +258,16 @@ namespace PatientInfoModule.ViewModels
         {
             get { return printAmbCardCommand; }
         }
+
+        public ICommand PrintAssignmentsOnDateCommand
+        {
+            get { return printAssignmentsOnDateCommand; }
+        }
+
+        public ICommand PrintAmbTalonCommand
+        {
+            get { return printAmbTalonCommand; }
+        }       
 
         public ICommand ShowAgreementsCommand
         {
@@ -435,6 +454,25 @@ namespace PatientInfoModule.ViewModels
             printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AmbCard, new FieldValue() { Field = "PersonId", Value = currentPatientId });            
         }
 
+        private void PrintAmbTalon()
+        {
+            if (SpecialValues.IsNewOrNonExisting(currentPatientId)) return;
+            var patient = patientService.GetPatientQuery(currentPatientId).FirstOrDefault();
+            if (patient != null && patient.AmbNumber <= 0)
+            {
+                FailureMediator.Activate("Отсутствует номер А/К. Печать невозможна.", true);
+                return;
+            }
+            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AmbTalon, new FieldValue() { Field = "PersonId", Value = currentPatientId });            
+        }
+
+        private void PrintAssignmentsOnDate()
+        {
+            if (SpecialValues.IsNewOrNonExisting(currentPatientId)) return;
+            var patient = patientService.GetPatientQuery(currentPatientId).FirstOrDefault();
+            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AssignmentsOnDate, new FieldValue() { Field = "PersonId", Value = currentPatientId }, SelectedAssignDate);            
+        }
+
         private bool CanAddRelative()
         {
             return currentPatientId != SpecialValues.NonExistingId;
@@ -459,11 +497,21 @@ namespace PatientInfoModule.ViewModels
             return currentPatientId > 0 && !string.IsNullOrEmpty(patientInfo.AmbNumber) && selectedPatientOrRelative == patientInfo;
         }
 
+        private bool CanPrintAmbTalon()
+        {
+            return currentPatientId > 0 && !string.IsNullOrEmpty(patientInfo.AmbNumber) && selectedPatientOrRelative == patientInfo;
+        }
+
         private bool CanShowAgreements()
         {
             return currentPatientId > 0 && selectedPatientOrRelative == patientInfo;
         }
-        
+
+        private bool CanPrintAssignmentsOnDate()
+        {
+            return currentPatientId > 0 && selectedPatientOrRelative == patientInfo;
+        }
+
         public ICommand SearchRelativeCommand
         {
             get { return searchRelativeCommand; }
@@ -606,6 +654,16 @@ namespace PatientInfoModule.ViewModels
 
         private int patientIdBeingLoaded;
 
+        private DateTime selectedAssignDate;
+        public DateTime SelectedAssignDate
+        {
+            get { return selectedAssignDate; }
+            set
+            {
+                SetProperty(ref selectedAssignDate, value);               
+            }
+        }
+
         public async void OnNavigatedTo(NavigationContext navigationContext)
         {
             var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
@@ -630,6 +688,7 @@ namespace PatientInfoModule.ViewModels
                 patientIdBeingLoaded = SpecialValues.NonExistingId;
                 ChangeTracker.IsEnabled = true;
                 UpdateCommandsState();
+                UpdateAmbCardCommandsState();
                 SelectedPatientOrRelative = patientInfo;
             }
             catch (OperationCanceledException)

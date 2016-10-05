@@ -50,6 +50,7 @@ namespace ScheduleModule
         {
             RegisterLogger();
             log.InfoFormat("{0} module init start", WellKnownModuleNames.ScheduleModule);
+            RegisterModules();
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
@@ -82,6 +83,11 @@ namespace ScheduleModule
         {
             container.RegisterType<IScheduleService, ScheduleService>(new ContainerControlledLifetimeManager());
             PersonServicesInitializer.Initialize(container);
+        }
+
+        private void RegisterModules()
+        {
+            Core.Reports.CoreReports.Initialize(container);
         }
     }
 }

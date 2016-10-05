@@ -59,6 +59,8 @@ namespace Core.Data.Misc
         public static readonly string CommissionProtocols = "|commissionProtocols|";
         public static readonly string CommissionMisc = "|commissionMisc|";
         public static readonly string AmbCard = "|ambCard|";
+        public static readonly string AmbTalon = "|ambTalon|";
+        public static readonly string AssignmentsOnDate = "|assignmentsOnDate|"; 
         public static readonly string PayContract = "|payContract|";
         public static readonly string ReferralToHospitalisationCommission = "|referralToHospitalisationCommission|";
         public static readonly string ReferralToCommonCommission = "|referralToCommonCommission|";
@@ -68,6 +70,6 @@ namespace Core.Data.Misc
         public static readonly string CommonConsiliumProtocol = "|commonConsiliumProtocol|";
         public static readonly string NoticeSideEffects = "|noticeSideEffects|";
         public static readonly string SanCurCard = "|sanCurCard|";
-        public static readonly string ExcerptCommissionProtocol = "|excerptCommissionProtocol|";
+        public static readonly string ExceptCommissionProtocol = "|exceptCommissionProtocol|";
     }
 }

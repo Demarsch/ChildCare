@@ -17,6 +17,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using System.Threading.Tasks;
 using Shared.Commissions.Services;
+using System.Data.Entity.Validation;
 
 namespace Shared.Commissions.ViewModels
 {
@@ -79,7 +80,7 @@ namespace Shared.Commissions.ViewModels
             }
         }
         
-        private async void CreateAssignmentCommission()
+        private async Task CreateAssignmentCommission()
         {
             logService.Info("Create commission assignment ...");
             saveIsSucceessfull = false; 
@@ -95,7 +96,20 @@ namespace Shared.Commissions.ViewModels
                 var exception = string.Empty;
                 ProtocolId = await commissionService.CreateCommissionAssignment(personId, commissionDateTime, selectedCommissionTypeId, selectedCommissionQuestionId, codeMKB, commissionDetails, token);
                 saveIsSucceessfull = true; 
-            }           
+            }
+            catch (DbEntityValidationException e)
+            {
+                saveIsSucceessfull = false; 
+                string err = string.Empty;
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    err += string.Format("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:", eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                        err += string.Format("- Property: \"{0}\", Error: \"{1}\"", ve.PropertyName, ve.ErrorMessage);
+                }
+                logService.ErrorFormatEx(e, "Failed to create commission assignment for person with Id = {0}. {1}", this.personId, err);
+                NotificationMediator.Activate("Ошибка при направлении на комиссию", NotificationMediator.DefaultHideTime);
+            }
             catch (Exception ex)
             {
                 saveIsSucceessfull = false; 
@@ -104,6 +118,8 @@ namespace Shared.Commissions.ViewModels
             }
             finally
             {
+                if (saveIsSucceessfull)
+                    NotificationMediator.Activate("Направление на комиссию создано", NotificationMediator.DefaultHideTime);
                 BusyMediator.Deactivate();
             }
         }
@@ -233,13 +249,13 @@ namespace Shared.Commissions.ViewModels
         public DelegateCommand<bool?> CloseCommand { get; private set; }
         private bool saveIsSucceessfull = false;
 
-        private void Close(bool? validate)
+        private async void Close(bool? validate)
         {
             if (validate == true)
             {
                 if (IsValid)
                 {
-                    CreateAssignmentCommission();
+                    await CreateAssignmentCommission();
                     if (saveIsSucceessfull)
                         OnCloseRequested(new ReturnEventArgs<bool>(true));
                 }

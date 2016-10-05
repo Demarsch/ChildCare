@@ -120,7 +120,7 @@
                                                         VerticalAlignment="Stretch">
                                                 <TextBlock HorizontalAlignment="Center"
                                                            Margin="3"
-                                                           Text="{Binding Room.Number, StringFormat='#{0}', Mode=OneTime}" />
+                                                           Text="{Binding Room.Number, Mode=OneTime}" />
                                                 <TextBlock HorizontalAlignment="Center"
                                                            Margin="3"
                                                            Text="{Binding Room.Name, Mode=OneTime}"

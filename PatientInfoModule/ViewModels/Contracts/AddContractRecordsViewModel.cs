@@ -103,7 +103,9 @@ namespace PatientInfoModule.ViewModels
                     if (selectedRecord != null && isNewRecordChecked)
                         AssignRecordTypeCost = (recordService.GetRecordTypeCost(selectedRecord.Id, selectedFinancingSourceId, contractDate, isChild) * recordsCount);
                     Assignments = new ObservableCollectionEx<ContractAssignmentsViewModel>(assignmentService.GetPersonAssignments(personId)
-                                            .Where(x => x.FinancingSourceId == selectedFinancingSourceId && !x.RecordContractItems.Any()).ToList()
+                                            .Where(x => x.FinancingSourceId == selectedFinancingSourceId && !x.RecordContractItems.Any())
+                                            .OrderBy(x => x.AssignDateTime)
+                                            .ToArray()
                                             .Select(x => new ContractAssignmentsViewModel()
                                             {
                                                 Id = x.Id,

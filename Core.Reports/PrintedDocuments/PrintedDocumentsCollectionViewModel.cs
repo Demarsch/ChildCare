@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using Core.Reports;
 using Core.Reports.Services;
 using Core.Reports.DTO;
+using System.Collections.Generic;
 
 namespace Core.Reports
 {
@@ -220,6 +221,33 @@ namespace Core.Reports
                 }
                 report.Data["PatientLastDiagnos"] = diagnos;
                 report.Data["PatientMKB"] = mkb;
+
+                var relativeRelation = patient.PersonRelatives.Any(x => x.IsRepresentative) ? patient.PersonRelatives.First(x => x.IsRepresentative) : null;
+                if (relativeRelation != null)
+                {
+                    var relative = relativeRelation.Person1;
+                    report.Data["RelativeFullName"] = relative.ToString();
+                    report.Data["RelativeTypeName"] = relativeRelation.RelativeRelationship.Name;
+                    if (relative.PersonIdentityDocuments.Any())
+                    {
+                        var doc = relative.PersonIdentityDocuments.OrderByDescending(x => x.BeginDate).First();
+                        report.Data["RelativeIdentityDocument"] = doc.IdentityDocumentType.Name + ": " + doc.SeriesAndNumber + " выдан: " + doc.GivenOrg + " " + doc.BeginDate.ToShortDateString();
+                    }
+                    else
+                        report.Data["RelativeIdentityDocument"] = defValue;
+
+                    if (relative.PersonAddresses.Any(x => x.AddressType.Options.Contains(OptionValues.AddressForAmbCard)))
+                    {
+                        var address = relative.PersonAddresses.Where(x => x.AddressType.Options.Contains(OptionValues.AddressForAmbCard)).OrderByDescending(x => x.BeginDateTime).First();
+                        report.Data["RelativeAddress"] = address.UserText +
+                                                 (!string.IsNullOrEmpty(address.House) ? " д." + address.House : string.Empty) +
+                                                 (!string.IsNullOrEmpty(address.Building) ? " корп." + address.Building : string.Empty) +
+                                                 (!string.IsNullOrEmpty(address.Apartment) ? " кв." + address.Apartment : string.Empty);
+                    }
+                    else
+                        report.Data["RelativeAddress"] = defValue;
+                }
+
                 #endregion
             }
 
@@ -228,6 +256,9 @@ namespace Core.Reports
 
             if (SelectedPrintedDocument.Options == OptionValues.AmbCard)
                 report = GetAmbCardPartReport(ref report, patient);
+
+            if (SelectedPrintedDocument.Options == OptionValues.AmbTalon)
+                report = GetAmbTalonPartReport(ref report, patient);
 
             if (SelectedPrintedDocument.Options == OptionValues.PayContract)
                 report = GetPayContractPartReport(ref report, contract);
@@ -259,8 +290,11 @@ namespace Core.Reports
             if (SelectedPrintedDocument.Options == OptionValues.SanCurCard)
                 report = GetSanCurCardPartReport(ref report, patient);
 
-            if (SelectedPrintedDocument.Options == OptionValues.ExcerptCommissionProtocol)
-                report = GetExcerptCommissionProtocolPartReport(ref report, (obj as CommissionJournalDTO));
+            if (SelectedPrintedDocument.Options == OptionValues.ExceptCommissionProtocol)
+                report = GetExceptCommissionProtocolPartReport(ref report, (obj as CommissionJournalDTO));
+
+            if (SelectedPrintedDocument.Options == OptionValues.AssignmentsOnDate)
+                report = GetAssignmentsOnDatePartReport(ref report, patient, (DateTime)obj);
             
             report.Editable = this.canEdit;
             report.Show();
@@ -296,7 +330,7 @@ namespace Core.Reports
             return report;
         }
 
-        private IReportGenerator GetExcerptCommissionProtocolPartReport(ref IReportGenerator report, CommissionJournalDTO commissionJournalItemViewModel)
+        private IReportGenerator GetExceptCommissionProtocolPartReport(ref IReportGenerator report, CommissionJournalDTO commissionJournalItemViewModel)
         {
             return report;
         }
@@ -310,6 +344,18 @@ namespace Core.Reports
         {
             return report;
         }
+
+        private IReportGenerator GetAssignmentsOnDatePartReport(ref IReportGenerator report, Person patient, DateTime onDate)
+        {
+            if (patient == null) return report;
+            report.Data["onDate"] = onDate.ToShortDateString();            
+            var assignments = patient.Assignments.Where(x => x.AssignDateTime.Date == onDate.Date).OrderBy(x => x.AssignDateTime).ThenBy(x => x.RecordType.Name);
+            if (!assignments.Any())
+                report.Data.Tables["tbldata"].AddRow();
+            foreach (var item in assignments)
+                report.Data.Tables["tbldata"].AddRow(item.AssignDateTime.ToShortTimeString(), item.Room.Number + " - " + item.Room.Name, item.RecordType.Name);
+            return report;
+        }        
 
         private IReportGenerator GetCommissionJournalPartReport(ref IReportGenerator report, CommissionJournalDTO[] collection)
         {
@@ -382,6 +428,49 @@ namespace Core.Reports
 
             return report;
         }
+
+        private IReportGenerator GetAmbTalonPartReport(ref IReportGenerator report, Person patient)
+        {
+            if (patient == null) return report;
+            var omsDocument = patient.InsuranceDocuments.OrderByDescending(x => x.BeginDate).FirstOrDefault();
+            if (omsDocument != null)
+            {
+                report.Data["InsuranceDocument"] = omsDocument.InsuranceDocumentType.Name + ": серия " + omsDocument.Series + " № " + omsDocument.Number;
+                report.Data["InsuranceCompany"] = omsDocument.InsuranceCompany.NameSMOK;
+            }
+            else
+            {
+                report.Data["OMSDocument"] = nonExistValue;
+                report.Data["InsuranceCompany"] = nonExistValue;
+            }
+
+            if (patient.PersonDisabilities.Any(x => !x.DisabilityType.IsDisability))
+                report.Data["BenefitCode"] = patient.PersonDisabilities.Where(x => !x.DisabilityType.IsDisability).OrderByDescending(x => x.BeginDate).First().DisabilityType.BenefitCode;
+            else
+                report.Data["BenefitCode"] = defValue;                
+
+            report.Data["Employment"] = patient.PersonSocialStatuses.Any() ? patient.PersonSocialStatuses.OrderByDescending(x => x.BeginDateTime).First().SocialStatusType.Name : defValue;
+            if (patient.PersonSocialStatuses.Any(x => x.OrgId.HasValue))
+            {
+                var business = patient.PersonSocialStatuses.Where(x => x.OrgId.HasValue).OrderByDescending(x => x.BeginDateTime).First();
+                report.Data["Business"] = business.Org.Name + (!string.IsNullOrEmpty(business.Office) + (", " + business.Office) + string.Empty);
+            }
+            else
+                report.Data["Business"] = defValue;
+
+            if (patient.PersonDisabilities.Any(x => x.DisabilityType.IsDisability))
+            {
+                var disability = patient.PersonDisabilities.Where(x => x.DisabilityType.IsDisability).OrderByDescending(x => x.BeginDate).First();
+                report.Data["Disability"] = disability.DisabilityType.Name;
+                report.Data["IsDisabledChild"] = disability.DisabilityType.BenefitCode == 9 ? "да" : "нет";
+            }
+            else
+            {
+                report.Data["Disability"] = nonExistValue;
+                report.Data["IsDisabledChild"] = defValue;
+            }
+            return report;
+        }       
 
         private IReportGenerator GetAmbCardPartReport(ref IReportGenerator report, Person patient)
         {
@@ -464,54 +553,15 @@ namespace Core.Reports
         private IReportGenerator GetAgreementsPartReport(ref IReportGenerator report, Person patient)
         {
             if (patient == null) return report;
-            report.Data["PatientFullName"] = patient.ToString();
-            if (patient.PersonIdentityDocuments.Any())
-            {
-                var doc = patient.PersonIdentityDocuments.OrderByDescending(x => x.BeginDate).First();
-                report.Data["PatientIdentityDocument"] = doc.IdentityDocumentType.Name + ": " + doc.SeriesAndNumber + " выдан: " + doc.GivenOrg + " " + doc.BeginDate.ToShortDateString();
-            }
-            else
-                report.Data["PatientIdentityDocument"] = defValue;
-
-            if (patient.PersonAddresses.Any(x => x.AddressType.Options.Contains(OptionValues.AddressForAmbCard)))
-            {
-                var address = patient.PersonAddresses.Where(x => x.AddressType.Options.Contains(OptionValues.AddressForAmbCard)).OrderByDescending(x => x.BeginDateTime).First();
-                report.Data["PatientAddress"] = address.UserText +
-                                         (!string.IsNullOrEmpty(address.House) ? " д." + address.House : string.Empty) +
-                                         (!string.IsNullOrEmpty(address.Building) ? " корп." + address.Building : string.Empty) +
-                                         (!string.IsNullOrEmpty(address.Apartment) ? " кв." + address.Apartment : string.Empty);
-            }
-            else
-                report.Data["PatientAddress"] = defValue;
-
             if (patient.BirthDate.AddYears(childAge).Date > DateTime.Now.Date)
             {
-                var relativeRelation = patient.PersonRelatives.Any(x => x.IsRepresentative) ? patient.PersonRelatives.First(x => x.IsRepresentative) : null;
-                if (relativeRelation != null)
-                {
-                    var relative = relativeRelation.Person1;
-                    report.Data["ClientFullName"] = relative.ToString();
-                    report.Data["RelativeTypeName"] = relativeRelation.RelativeRelationship.Name + " пациента ";
-                    if (relative.PersonIdentityDocuments.Any())
-                    {
-                        var doc = relative.PersonIdentityDocuments.OrderByDescending(x => x.BeginDate).First();
-                        report.Data["ClientIdentityDocument"] = doc.IdentityDocumentType.Name + ": " + doc.SeriesAndNumber + " выдан: " + doc.GivenOrg + " " + doc.BeginDate.ToShortDateString();
-                    }
-                    else
-                        report.Data["ClientIdentityDocument"] = defValue;
-                }
-                else
-                {
-                    report.Data["ClientFullName"] = defValue;
-                    report.Data["ClientIdentityDocument"] = defValue;
-                    report.Data["RelativeTypeName"] = defValue;
-                }
+                report.Data.Sections["PatientSection"].Clear();
+                report.Data["RelativeSection"] = string.Empty;
             }
             else
             {
-                report.Data["ClientFullName"] = emptyValue;
-                report.Data["ClientIdentityDocument"] = emptyValue;
-                report.Data["RelativeTypeName"] = emptyValue;
+                report.Data.Sections["RelativeSection"].Clear();
+                report.Data["PatientSection"] = string.Empty;
             }
             return report;
         }

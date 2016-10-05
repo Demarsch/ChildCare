@@ -604,7 +604,7 @@ namespace CommissionsModule.Services
         public IDisposableQueryable<CommissionProtocol> GetCommissionProtocols(int selectedPatientId, DateTime beginDate, DateTime endDate, int selectedCommissionTypeId, int selectedCommissionQuestionId, string commissionNumberFilter, string protocolNumberFilter)
         {
             var context = contextProvider.CreateNewContext();
-            var query = context.Set<CommissionProtocol>().Where(x => x.CommissionDate >= beginDate.Date && x.CommissionDate <= endDate.Date);
+            var query = context.Set<CommissionProtocol>().Where(x => DbFunctions.TruncateTime(x.CommissionDate) >= beginDate.Date && DbFunctions.TruncateTime(x.CommissionDate) <= endDate.Date);
             if (selectedPatientId != SpecialValues.NonExistingId)
                 query = query.Where(x => x.PersonId == selectedPatientId);
             if (selectedCommissionTypeId != SpecialValues.NonExistingId)

@@ -31,6 +31,8 @@ namespace ScheduleModule.DTO
 
         public int FinancingSourceId { get; set; }
 
+        public string FinancingSourceName { get; set; }
+
         TimeSpan ITimeInterval.StartTime
         {
             get { return StartTime.TimeOfDay; }

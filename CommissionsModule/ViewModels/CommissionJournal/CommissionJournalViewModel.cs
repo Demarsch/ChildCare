@@ -350,6 +350,9 @@ namespace CommissionsModule.ViewModels
 
             CommissionItems.Clear();
             CommissionItems.AddRange(journalItems);
+
+            if (CommissionItems.Any())
+                SelectedCommissionItem = CommissionItems.First();
         }
 
         private void PrintCommissionAssignment()

@@ -58,20 +58,30 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Top"
                            Margin="2 2 0 0" 
                            FontSize="9" 
                            Text="{Binding StartTime, StringFormat='HH:mm', Mode=OneTime}" />
-                <TextBlock Grid.Row="1" 
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Margin="0 2 2 0" 
+                           FontSize="9" 
+                           Text="{Binding FinancingSourceName, Mode=OneTime}" />                            
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="2"
                            Panel.ZIndex="1"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            Margin="2 2 0 0"
                            FontWeight="SemiBold" 
                            Text="{Binding PersonShortName, Mode=OneTime}" />
-                <TextBlock Grid.Row="2" 
+                <TextBlock Grid.Row="2" Grid.ColumnSpan="2"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Bottom" 
                            Margin="0 0 2 2" 

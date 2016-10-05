@@ -27,6 +27,8 @@ using ScheduleModule.Misc;
 using ScheduleModule.Services;
 using Shared.Patient.ViewModels;
 using Shared.Schedule.Events;
+using System.Windows.Input;
+using Core.Reports;
 
 namespace ScheduleModule.ViewModels
 {
@@ -52,10 +54,13 @@ namespace ScheduleModule.ViewModels
 
         private readonly IEventAggregator eventAggregator;
 
+        private readonly Func<PrintedDocumentsCollectionViewModel> printedDocumentsCollectionFactory;
+
         public ScheduleContentViewModel(OverlayAssignmentCollectionViewModel overlayAssignmentCollectionViewModel,
                                         PatientAssignmentListViewModel patientAssignmentListViewModel,
                                         INotificationService notificationService,
                                         IScheduleService scheduleService,
+                                        Func<PrintedDocumentsCollectionViewModel> printedDocumentsCollectionFactory,
                                         ILog log,
                                         ICacheService cacheService,
                                         IEnvironment environment,
@@ -103,6 +108,10 @@ namespace ScheduleModule.ViewModels
             {
                 throw new ArgumentNullException("patientAssignmentListViewModel");
             }
+            if (printedDocumentsCollectionFactory == null)
+            {
+                throw new ArgumentNullException("printedDocumentsCollectionFactory");
+            }
             OverlayAssignmentCollectionViewModel = overlayAssignmentCollectionViewModel;
             PatientAssignmentListViewModel = patientAssignmentListViewModel;
             this.notificationService = notificationService;
@@ -113,6 +122,7 @@ namespace ScheduleModule.ViewModels
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
+            this.printedDocumentsCollectionFactory = printedDocumentsCollectionFactory;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             filteredRooms = new CollectionViewSource();
@@ -121,12 +131,14 @@ namespace ScheduleModule.ViewModels
             closeTime = overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(17.0);
             CancelAssignmentMovementCommand = new DelegateCommand(CancelAssignmentMovement);
             ChangeDateCommand = new DelegateCommand<int?>(ChangeDate);
+            printAssignmentsOnDateCommand = new DelegateCommand(PrintAssignmentsOnDate);
             ClearFiltersCommand = new DelegateCommand(ClearFilters, CanClearFilters);
             unseletedRoom = new RoomViewModel(new Room { Name = "Выберите кабинет" }, scheduleService);
             unselectedRecordType = new RecordType { Name = "Выберите услугу", Assignable = true };
             initialLoadingCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await InitialLoadingAsync()) };
             loadAssignmentsCommandWrapper = new CommandWrapper { Command = new DelegateCommand(async () => await LoadAssignmentsAsync(selectedDate)) };
             SubscribeToEvents();
+            SelectedAssignDate = DateTime.Now;
             firstTimeLoad = true;
         }
 
@@ -402,11 +414,34 @@ namespace ScheduleModule.ViewModels
             }
         }
 
+        private DateTime selectedAssignDate;
+        public DateTime SelectedAssignDate
+        {
+            get { return selectedAssignDate; }
+            set
+            {
+                SetProperty(ref selectedAssignDate, value);
+            }
+        }
+
+        private void PrintAssignmentsOnDate()
+        {
+            if (SpecialValues.IsNewOrNonExisting(currentPatientId)) return;
+            var patient = scheduleService.GetPatientQuery(currentPatientId).FirstOrDefault();
+            printedDocumentsCollectionFactory().LoadPrintedDocumentsAsync(OptionValues.AssignmentsOnDate, new FieldValue() { Field = "PersonId", Value = currentPatientId }, SelectedAssignDate);
+        }
+
         public DelegateCommand<int?> ChangeDateCommand { get; private set; }
 
         private void ChangeDate(int? days)
         {
             SelectedDate = days.HasValue ? SelectedDate.AddDays(days.Value) : DateTime.Today;
+        }
+
+        private readonly DelegateCommand printAssignmentsOnDateCommand;
+        public ICommand PrintAssignmentsOnDateCommand
+        {
+            get { return printAssignmentsOnDateCommand; }
         }
 
         #region Assignments
@@ -500,7 +535,8 @@ namespace ScheduleModule.ViewModels
                                        AssignUserId = assignment.AssignUserId,
                                        AssignLpuId = assignment.AssignLpuId,
                                        Note = assignment.Note,
-                                       FinancingSourceId = assignment.FinancingSourceId
+                                       FinancingSourceId = assignment.FinancingSourceId,
+                                       FinancingSourceName = assignment.FinancingSource.ShortName
                                    };
             var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment, securityService, cacheService);
             newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
