@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Core.Notification</RootNamespace>
     <AssemblyName>Core.Notification</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -114,7 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core.Data\Core.Data.csproj">
-      <Project>{304F5AEB-4189-4C9F-96DA-C32E57E5E1BE}</Project>
+      <Project>{304f5aeb-4189-4c9f-96da-c32e57e5e1be}</Project>
       <Name>Core.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\NotificationServiceEngine\NotificationServiceEngine.csproj">

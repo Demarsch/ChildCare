@@ -8,43 +8,41 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using NotificationServiceEngine;
-
 namespace Core.Notification.NotificationServiceEngine {
     
     
-    //[System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    //[System.ServiceModel.ServiceContractAttribute(ConfigurationName="NotificationServiceEngine.INotificationServiceEngine", CallbackContract=typeof(INotificationServiceEngineCallback), SessionMode=System.ServiceModel.SessionMode.Required)]
-    //public interface INotificationServiceEngine {
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="NotificationServiceEngine.INotificationServiceEngine", CallbackContract=typeof(Core.Notification.NotificationServiceEngine.INotificationServiceEngineCallback), SessionMode=System.ServiceModel.SessionMode.Required)]
+    public interface INotificationServiceEngine {
         
-    //    [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationServiceEngine/Subscribe", ReplyAction="http://tempuri.org/INotificationServiceEngine/SubscribeResponse")]
-    //    void Subscribe(System.Type subscriptionType);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationServiceEngine/Subscribe", ReplyAction="http://tempuri.org/INotificationServiceEngine/SubscribeResponse")]
+        void Subscribe(System.Type subscriptionType);
         
-    //    [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/INotificationServiceEngine/Notify")]
-    //    [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Type))]
-    //    [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Reflection.MemberInfo))]
-    //    void Notify(System.Type subscriptionType, object oldItem, object newItem);
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/INotificationServiceEngine/Notify")]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Type))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Reflection.MemberInfo))]
+        void Notify(System.Type subscriptionType, object oldItem, object newItem);
         
-    //    [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/INotificationServiceEngine/Unsubscribe")]
-    //    void Unsubscribe(System.Type subscriptionType);
-    //}
-    
-    //[System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    //public interface INotificationServiceEngineCallback {
-        
-    //    [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/INotificationServiceEngine/OnNotified")]
-    //    [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Type))]
-    //    [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Reflection.MemberInfo))]
-    //    void OnNotified(System.Type type, object oldItem, object newItem);
-    //}
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/INotificationServiceEngine/Unsubscribe")]
+        void Unsubscribe(System.Type subscriptionType);
+    }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface INotificationServiceEngineChannel : INotificationServiceEngine, System.ServiceModel.IClientChannel {
+    public interface INotificationServiceEngineCallback {
+        
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/INotificationServiceEngine/OnNotified")]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Type))]
+        [System.ServiceModel.ServiceKnownTypeAttribute(typeof(System.Reflection.MemberInfo))]
+        void OnNotified(System.Type type, object oldItem, object newItem);
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public interface INotificationServiceEngineChannel : Core.Notification.NotificationServiceEngine.INotificationServiceEngine, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class NotificationServiceEngineClient : System.ServiceModel.DuplexClientBase<INotificationServiceEngine>, INotificationServiceEngine {
+    public partial class NotificationServiceEngineClient : System.ServiceModel.DuplexClientBase<Core.Notification.NotificationServiceEngine.INotificationServiceEngine>, Core.Notification.NotificationServiceEngine.INotificationServiceEngine {
         
         public NotificationServiceEngineClient(System.ServiceModel.InstanceContext callbackInstance) : 
                 base(callbackInstance) {
@@ -66,15 +64,15 @@ namespace Core.Notification.NotificationServiceEngine {
                 base(callbackInstance, binding, remoteAddress) {
         }
         
-        public void Subscribe(string subscriptionType) {
+        public void Subscribe(System.Type subscriptionType) {
             base.Channel.Subscribe(subscriptionType);
         }
         
-        public void Notify(string subscriptionType, byte[] oldItem, byte[] newItem) {
+        public void Notify(System.Type subscriptionType, object oldItem, object newItem) {
             base.Channel.Notify(subscriptionType, oldItem, newItem);
         }
         
-        public void Unsubscribe(string subscriptionType) {
+        public void Unsubscribe(System.Type subscriptionType) {
             base.Channel.Unsubscribe(subscriptionType);
         }
     }

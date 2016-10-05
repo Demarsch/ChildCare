@@ -36,7 +36,7 @@ namespace Core.Notification
             client = new NotificationServiceEngineClient(new InstanceContext(callback));
             client.Endpoint.Address = new EndpointAddress(string.Join("/", new[] { notificationService.ServiceBaseAddress, client.Endpoint.Address == null ? string.Empty : client.Endpoint.Address.Uri.ToString() }));
             client.Open();
-            client.Subscribe(typeof(TItem).FullName);
+            client.Subscribe(typeof(TItem));
         }
 
         private void CallbackOnNotified(object sender, NotificationEventArgs<TItem> e)
@@ -56,7 +56,7 @@ namespace Core.Notification
             {
                 try
                 {
-                    client.Unsubscribe(typeof(TItem).FullName);
+                    client.Unsubscribe(typeof(TItem));
                     client.Close();
                 }
                 catch
@@ -74,7 +74,7 @@ namespace Core.Notification
         {
             try
             {
-                client.Notify(typeof(TItem).FullName, originalItem.Serialize(), newItem.Serialize());
+                client.Notify(typeof(TItem), originalItem.Serialize(), newItem.Serialize());
             }
             catch (Exception ex)
             {

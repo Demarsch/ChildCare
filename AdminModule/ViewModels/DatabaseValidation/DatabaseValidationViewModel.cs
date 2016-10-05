@@ -52,7 +52,7 @@ namespace AdminModule.ViewModels
         public int PassedValidationStepCount
         {
             get { return passedValidationStepCount; }
-            private set { SetProperty(ref passedValidationStepCount, value); }
+            set { SetProperty(ref passedValidationStepCount, value); }
         }
 
         public FailureMediator FailureMediator { get; private set; }
