@@ -132,8 +132,6 @@ namespace ScheduleModule.ViewModels
 
         public string PersonShortName { get { return assignment.PersonShortName; } }
 
-        public string FinancingSourceName { get { return assignment.FinancingSourceName; } }
-
         public bool IsCompleted
         {
             get { return assignment.IsCompleted; }
@@ -316,6 +314,19 @@ namespace ScheduleModule.ViewModels
                 if (assignment.FinancingSourceId != value)
                 {
                     assignment.FinancingSourceId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string FinancingSourceName
+        {
+            get { return assignment.FinancingSourceName; }
+            set
+            {
+                if (assignment.FinancingSourceName != value)
+                {
+                    assignment.FinancingSourceName = value;
                     OnPropertyChanged();
                 }
             }
