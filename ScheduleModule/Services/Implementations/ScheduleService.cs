@@ -12,6 +12,8 @@ using Core.Services;
 using ScheduleModule.DTO;
 using ScheduleModule.Exceptions;
 using Shared.Schedule.Services;
+using Core.Extensions;
+
 
 namespace ScheduleModule.Services
 {
@@ -114,16 +116,16 @@ namespace ScheduleModule.Services
                                               .Select(x => new TimeInterval(freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * x)),
                                                                             freeTime.StartTime.Add(TimeSpan.FromMinutes(nominalDurationInMinutes * (x + 1))))));
                 }
-                    //If total time is less then minimum duration we can't put assignment inside it
+                //If total time is less then minimum duration we can't put assignment inside it
                 else if (totalFreeMinutes < minimumDurationInMinutes)
                 {
                 }
-                    //If total time is between minimum and nominal duration we just use it all
+                //If total time is between minimum and nominal duration we just use it all
                 else if (totalFreeMinutes < nominalDurationInMinutes)
                 {
                     result.Add(new TimeInterval(freeTime.StartTime, freeTime.EndTime));
                 }
-                    //If we can't split total time in whole pieces...
+                //If we can't split total time in whole pieces...
                 else
                 {
                     var nominalDurationIntervalCount = totalFreeMinutes / nominalDurationInMinutes;
@@ -425,6 +427,31 @@ namespace ScheduleModule.Services
                               .OrderBy(x => x.Name)
                               .ToArray();
             }
+        }
+
+
+        public async Task<IEnumerable<ITimeInterval>> GetAvailiableTimeSlots(DateTime date, RecordType selectedRecordType, Room selectedRoom = null)
+        {
+            var timeSlots = new List<ITimeInterval>();
+
+            using (var context = contextProvider.CreateNewContext())
+            {
+                var rooms = new List<Room>();
+                var workingTimes = (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => this.GetRoomsWorkingTimeForDay((DateTime)x), date))
+                    .Where(x => x.RecordTypeId.HasValue && x.RecordTypeId == selectedRecordType.Id && (selectedRoom == null || selectedRoom.Id == x.RoomId))
+                    .Select(x => new { x.RoomId, Times = new TimeInterval(x.StartTime, x.EndTime)})
+                    .ToArray();
+                foreach (var workingTime in workingTimes.GroupBy(x => x.RoomId))
+                {
+                    var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => this.GetRoomsAssignments(date), date);
+                    var availableTimeIntervals = this.GenerateAvailableTimeIntervals(workingTime.Select(x => x.Times),
+                                                                                           assignments as IEnumerable<ITimeInterval>,
+                                                                                           selectedRecordType.Duration,
+                                                                                           selectedRecordType.MinDuration);
+                    timeSlots.AddRange(availableTimeIntervals);
+                }
+            }
+            return timeSlots;
         }
     }
 }

@@ -125,6 +125,7 @@ namespace ScheduleModule.ViewModels
             this.scheduleService = scheduleService;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            SelectedTimeIntervalWrapper = new SelectedTimeIntervalWrapper();
             SelectedRecordTypes = new ObservableCollectionEx<MultiAssignRecordTypeViewModel>();
             addRecordTypeCommand = new DelegateCommand(AddRecordType);
             selectedDate = overlayAssignmentCollectionViewModel.CurrentDate = DateTime.Today;
@@ -139,11 +140,39 @@ namespace ScheduleModule.ViewModels
             firstTimeLoad = true;
         }
 
-        private void AddRecordType()
+        private async void AddRecordType()
         {
             var newItem = multiAssignRecordTypeViewModelFactory();
-            newItem.Initialize(SelectedRecordType);
+            await newItem.Initialize(SelectedRecordType, Dates);
+            newItem.SelectedTimesChanged += selectedRecordType_SelectedTimesChanged;
             SelectedRecordTypes.Add(newItem);
+        }
+
+
+
+        private void selectedRecordType_SelectedTimesChanged(object sender, SelectedTimesEventArg e)
+        {
+            if (e.IsAdded)
+                SelectedTimeIntervalWrapper.AddTimeInterval(e.TimeInterval, e.Date);
+            else
+                SelectedTimeIntervalWrapper.RemoveTimeInterval(e.TimeInterval, e.Date);
+        }
+
+        private async void DateChanged()
+        {
+            List<Task> tasks = new List<Task>();
+            var recType = SelectedRecordType;
+            var dates = Dates;
+            foreach (var selectedRecordType in SelectedRecordTypes)
+            {
+                selectedRecordType.SelectedTimesChanged -= selectedRecordType_SelectedTimesChanged;
+                await selectedRecordType.Initialize(selectedRecordType.RecordType, dates);
+                selectedRecordType.SelectedTimesChanged += selectedRecordType_SelectedTimesChanged;
+                //var task = selectedRecordType.Initialize(selectedRecordType.RecordType, dates);
+                //task.Start();
+                //tasks.Add(task);
+            }
+            //await Task.WhenAll(tasks);
         }
 
         private readonly CommandWrapper loadAssignmentsCommandWrapper;
@@ -179,6 +208,8 @@ namespace ScheduleModule.ViewModels
         private INotificationServiceSubscription<Assignment> assignmentChangeSubscription;
 
         public ObservableCollectionEx<MultiAssignRecordTypeViewModel> SelectedRecordTypes { get; private set; }
+
+        public SelectedTimeIntervalWrapper SelectedTimeIntervalWrapper { get; private set; }
 
         private RecordType selectedRecordType;
 
@@ -254,6 +285,7 @@ namespace ScheduleModule.ViewModels
                     return;
                 }
                 OnPropertyChanged(() => Dates);
+                DateChanged();
                 //ClearScheduleGrid();
                 //LoadAssignmentsAsync(selectedDate).ContinueWith(x => UpdateRoomFilter(), TaskScheduler.FromCurrentSynchronizationContext());
             }
@@ -289,10 +321,10 @@ namespace ScheduleModule.ViewModels
                 BusyMediator.Activate("Загрузка расписания...");
                 FailureMediator.Deactivate();
                 await Task.Delay(TimeSpan.FromSeconds(1.0));
-                var workingTimes =
-                    (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTimeForDay((DateTime)x), date)).Where(x => x.RecordTypeId.HasValue)
-                                                                                                                                               .ToLookup(x => x.RoomId);
-                var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
+                //var workingTimes =
+                //    (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => scheduleService.GetRoomsWorkingTimeForDay((DateTime)x), date)).Where(x => x.RecordTypeId.HasValue)
+                //                                                                                                                               .ToLookup(x => x.RoomId);
+                //var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => scheduleService.GetRoomsAssignments((DateTime)x), date);
                 //foreach (var roomViewModel in rooms)
                 //{
                 //    roomViewModel.OpenTime = OpenTime;

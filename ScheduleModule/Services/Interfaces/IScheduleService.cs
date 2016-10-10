@@ -38,5 +38,7 @@ namespace ScheduleModule.Services
         IEnumerable<Org> GetLpus();
 
         Task MarkAssignmentCompletedAsync(int id, DateTime selectedDateTime, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
+
+        Task<IEnumerable<ITimeInterval>> GetAvailiableTimeSlots(DateTime date, RecordType selectedRecordType, Room selectedRoom);
     }
 }

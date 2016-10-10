@@ -25,23 +25,23 @@
                   VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <!--Time tickers-->
+                <TextBlock Width="300" Grid.Row="0" Grid.Column="0"/>
+                <!--RecordType row header-->
                 <ScrollViewer Grid.Row="1"
-                              Grid.Column="0"
-                              HorizontalScrollBarVisibility="Disabled"
-                              VerticalScrollBarVisibility="Hidden"
+                              Grid.Column="0" Grid.ColumnSpan="2"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto"
+                              behaviors:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll"
                               behaviors:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll"
                               Background="White">
                     <Grid>
-                        <ListBox IsHitTestVisible="False"
-                                 ItemsSource="{Binding SelectedRecordTypes}"
-                                 Width="200"
+                        <ListBox ItemsSource="{Binding SelectedRecordTypes}"
                                  HorizontalContentAlignment="Stretch"
                                  VerticalContentAlignment="Stretch"
                                  Background="Transparent"
@@ -85,26 +85,35 @@
                                    Visibility="Hidden" />
                     </StackPanel>
                 </ScrollViewer>
-                <!--Assignments-->
-                <Grid Grid.Row="1"
-                      Grid.Column="1">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Auto"
-                                  behaviors:ScrollSynchronizer.HorizontalScrollGroup="ScheduleHorizontalScroll"
-                                  behaviors:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll">
-                        <ItemsControl ItemsSource="{Binding FilteredRooms}">
-                            <i:Interaction.Behaviors>
-                                <behaviors:IgnoreMouseWheelBehavior />
-                            </i:Interaction.Behaviors>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </Grid>
             </Grid>
+            <!-- Bind Rows using the default StackPanel for the ItemsPanel -->
+            <!--
+            <ItemsControl ItemsSource="{Binding SelectedRecordTypes}">
+                -->
+            <!-- Set the Template for each row to a TextBlock and another ItemsControl -->
+            <!--
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            -->
+            <!-- Need to set Width of name TextBlock so items line up correctly -->
+            <!--
+                            <TextBlock Width="200" Text="{Binding RecordTypeName}" />
+
+                            <ItemsControl ItemsSource="{Binding Dates}">
+                                -->
+            <!-- Use a horizontal StackPanel to display columns -->
+            <!--
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>-->
         </DockPanel>
         <ContentControl Content="{Binding BusyMediator}"
                         HorizontalAlignment="Stretch"

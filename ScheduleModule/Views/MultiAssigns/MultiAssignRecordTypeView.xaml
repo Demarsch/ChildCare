@@ -3,26 +3,62 @@
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels">
     <DataTemplate DataType="{x:Type viewModels:MultiAssignRecordTypeViewModel}">
-        <Border HorizontalAlignment="Stretch" 
-                VerticalAlignment="Stretch"
-                Background="White"
+        <Border Background="White"
                 BorderBrush="DarkGoldenrod"
-                BorderThickness="1"
-                x:Name="border" 
-                CornerRadius="2">
+                BorderThickness="0 0 0 1">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Path=RecordTypeName}"/>
-                <Button Grid.Row="1" Command="{Binding AddRoomFilter}" Content="{Binding SelectedRoom}" BorderThickness="0"/>
-                <Button Grid.Row="2" Command="{Binding AddDoctorFilter}" Content="{Binding SelectedDoctor}" BorderThickness="0"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="301"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Text="{Binding Path=RecordTypeName}" FontWeight="Bold"/>
+                    <Button Command="{Binding AddRoomFilter}" Content="{Binding SelectedRoomName}" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" Foreground="#FF1E09F0" Width="auto"/>
+                    <Button Command="{Binding AddDoctorFilter}" Content="{Binding SelectedDoctorName}" BorderThickness="0" Background="Transparent" HorizontalContentAlignment="Left" Foreground="#FF1E09F0" Width="auto"/>
+                </StackPanel>
+                <StackPanel  Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                    <ItemsControl ItemsSource="{Binding Dates}"
+                                      VerticalContentAlignment="Stretch">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" FlowDirection="LeftToRight"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" BorderBrush="DarkGoldenrod" BorderThickness="1 0 0 0"  Width="200">
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                                        <ItemsControl ItemsSource="{Binding Times}" Width="200">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <ToggleButton Width="auto" Background="Transparent" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, 
+                                                    Path=DataContext.AddSelectedTimeCommand}" CommandParameter="{Binding Path=.}">
+                                                        <TextBlock>
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat="{}{0:00}:{1:00;00}">
+                                                                    <Binding Path="StartTime.Hours" />
+                                                                    <Binding Path="StartTime.Minutes" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </ToggleButton>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </Grid>
         </Border>
     </DataTemplate>
