@@ -5,8 +5,11 @@
     [ShortName]        VARCHAR (100) CONSTRAINT [DF_Table_1_ShartName] DEFAULT ('') NOT NULL,
     [ReportTemplateId] INT           NULL,
     [Options]          VARCHAR (500) CONSTRAINT [DF_PrintedDocuments_Options] DEFAULT ('') NOT NULL,
+    [Priority]         INT           CONSTRAINT [DF_PrintedDocuments_Priority] DEFAULT ((1)) NOT NULL,
     CONSTRAINT [PK_PrintedDocuments] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_PrintedDocuments_PrintedDocuments] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[PrintedDocuments] ([Id]),
     CONSTRAINT [FK_PrintedDocuments_ReportTemplates] FOREIGN KEY ([ReportTemplateId]) REFERENCES [dbo].[ReportTemplates] ([Id])
 );
+
+
 

@@ -85,7 +85,7 @@ namespace Core.Reports.Services
             if (query.Any())
                 query = query.Union(query.SelectMany(x => x.PrintedDocuments1.Where(a => a.ReportTemplateId.HasValue)));
 
-            return new DisposableQueryable<ReportTemplate>(query.Where(x => x.ReportTemplateId.HasValue).Distinct().Select(x => x.ReportTemplate), context);
+            return new DisposableQueryable<ReportTemplate>(query.Where(x => x.ReportTemplateId.HasValue).OrderBy(x => x.Priority).Distinct().Select(x => x.ReportTemplate), context);
         }
         
         public IDisposableQueryable<PrintedDocument> GetPrintedDocumentById(int printedDocumentId)

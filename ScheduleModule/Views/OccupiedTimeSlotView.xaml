@@ -73,7 +73,7 @@
                            VerticalAlignment="Top"
                            Margin="0 2 2 0" 
                            FontSize="9" 
-                           Text="{Binding FinancingSourceName, Mode=OneTime}" />                            
+                           Text="{Binding FinancingSourceName, Mode=TwoWay}" />                            
                 <TextBlock Grid.Row="1" Grid.ColumnSpan="2"
                            Panel.ZIndex="1"
                            HorizontalAlignment="Center"

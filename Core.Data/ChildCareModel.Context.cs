@@ -113,7 +113,6 @@ namespace Core.Data
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<Assignment> Assignments { get; set; }
         public virtual DbSet<CommissionDecision> CommissionDecisions { get; set; }
-        public virtual DbSet<PrintedDocument> PrintedDocuments { get; set; }
         public virtual DbSet<ReportTemplate> ReportTemplates { get; set; }
         public virtual DbSet<CommissionQuestion> CommissionQuestions { get; set; }
         public virtual DbSet<CommissionType> CommissionTypes { get; set; }
@@ -121,5 +120,6 @@ namespace Core.Data
         public virtual DbSet<DecisionKind> DecisionKinds { get; set; }
         public virtual DbSet<Decision> Decisions { get; set; }
         public virtual DbSet<CommissionProtocol> CommissionProtocols { get; set; }
+        public virtual DbSet<PrintedDocument> PrintedDocuments { get; set; }
     }
 }

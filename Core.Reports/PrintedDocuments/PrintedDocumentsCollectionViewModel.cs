@@ -120,7 +120,7 @@ namespace Core.Reports
             PrintedDocuments.Clear();
             try
             {
-                var documentsQuery = await documentService.GetPrintedDocuments(documentOption)
+                var documentsQuery = await documentService.GetPrintedDocuments(documentOption)                                                               
                                                                 .Select(x => new { TemplateId = x.Id, 
                                                                                    SystemName = x.Name, 
                                                                                    ReportFullName = x.PrintedDocuments.FirstOrDefault().Name, 

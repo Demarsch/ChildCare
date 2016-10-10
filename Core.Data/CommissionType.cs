@@ -56,14 +56,6 @@ namespace Core.Data
      		set { commissionSources = value; }
     	}
         [NonSerialized]
-    	protected PrintedDocument printedDocument;
-    
-    	public virtual PrintedDocument PrintedDocument
-    	{
-     		get { return printedDocument; }
-     		set { printedDocument = value; }
-    	}
-        [NonSerialized]
     	protected CommissionTypeGroup commissionTypeGroup;
     
     	public virtual CommissionTypeGroup CommissionTypeGroup
@@ -78,6 +70,14 @@ namespace Core.Data
     	{
      		get { return commissionProtocols; }
      		set { commissionProtocols = value; }
+    	}
+        [NonSerialized]
+    	protected PrintedDocument printedDocument;
+    
+    	public virtual PrintedDocument PrintedDocument
+    	{
+     		get { return printedDocument; }
+     		set { printedDocument = value; }
     	}
     
     	public object Clone()

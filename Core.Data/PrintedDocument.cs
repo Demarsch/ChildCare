@@ -17,9 +17,9 @@ namespace Core.Data
     {
         public PrintedDocument()
         {
-            this.PrintedDocuments1 = new HashSet<PrintedDocument>();
             this.CommissionQuestions = new HashSet<CommissionQuestion>();
             this.CommissionTypes = new HashSet<CommissionType>();
+            this.PrintedDocuments1 = new HashSet<PrintedDocument>();
         }
     
         public int Id { get; set; }
@@ -28,7 +28,24 @@ namespace Core.Data
         public string ShortName { get; set; }
         public Nullable<int> ReportTemplateId { get; set; }
         public string Options { get; set; }
+        public int Priority { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<CommissionQuestion> commissionQuestions;
+    
+    	public virtual ICollection<CommissionQuestion> CommissionQuestions
+    	{
+     		get { return commissionQuestions; }
+     		set { commissionQuestions = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<CommissionType> commissionTypes;
+    
+    	public virtual ICollection<CommissionType> CommissionTypes
+    	{
+     		get { return commissionTypes; }
+     		set { commissionTypes = value; }
+    	}
         [NonSerialized]
     	protected ICollection<PrintedDocument> printedDocuments1;
     
@@ -52,22 +69,6 @@ namespace Core.Data
     	{
      		get { return reportTemplate; }
      		set { reportTemplate = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionQuestion> commissionQuestions;
-    
-    	public virtual ICollection<CommissionQuestion> CommissionQuestions
-    	{
-     		get { return commissionQuestions; }
-     		set { commissionQuestions = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<CommissionType> commissionTypes;
-    
-    	public virtual ICollection<CommissionType> CommissionTypes
-    	{
-     		get { return commissionTypes; }
-     		set { commissionTypes = value; }
     	}
     
     	public object Clone()

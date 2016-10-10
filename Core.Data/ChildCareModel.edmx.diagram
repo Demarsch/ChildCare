@@ -245,18 +245,13 @@
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users1" />
-        <EntityTypeShape EntityType="DataLib.PrintedDocument" Width="1.5" PointX="3" PointY="1" />
         <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="0.75" PointY="1.125" />
-        <AssociationConnector Association="DataLib.FK_PrintedDocuments_PrintedDocuments" />
-        <AssociationConnector Association="DataLib.FK_PrintedDocuments_ReportTemplates" />
         <EntityTypeShape EntityType="DataLib.CommissionQuestion" Width="1.5" PointX="5.25" PointY="0.75" />
         <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="16.75" PointY="23.75" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_CommissionTypes" />
         <AssociationConnector Association="DataLib.FK_CommissionQuestions_CommissionTypes" />
-        <AssociationConnector Association="DataLib.FK_CommissionQuestions_PrintedDocuments" />
         <AssociationConnector Association="DataLib.FK_CommissionSources_CommissionTypes" />
-        <AssociationConnector Association="DataLib.FK_CommissionTypes_PrintedDocuments" />
         <EntityTypeShape EntityType="DataLib.CommissionTypeGroup" Width="1.5" PointX="12.375" PointY="4.875" />
         <AssociationConnector Association="DataLib.FK_CommissionTypes_CommissionTypeGroups" />
         <EntityTypeShape EntityType="DataLib.DecisionKind" Width="1.5" PointX="3" PointY="16.5" />
@@ -280,6 +275,11 @@
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_PersonTalons" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_CommissionProtocols_RemovedUsers" />
+        <EntityTypeShape EntityType="DataLib.PrintedDocument" Width="1.5" PointX="3" PointY="0.75" />
+        <AssociationConnector Association="DataLib.FK_CommissionQuestions_PrintedDocuments" />
+        <AssociationConnector Association="DataLib.FK_CommissionTypes_PrintedDocuments" />
+        <AssociationConnector Association="DataLib.FK_PrintedDocuments_PrintedDocuments" />
+        <AssociationConnector Association="DataLib.FK_PrintedDocuments_ReportTemplates" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

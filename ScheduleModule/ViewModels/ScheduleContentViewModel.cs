@@ -536,7 +536,7 @@ namespace ScheduleModule.ViewModels
                                        AssignLpuId = assignment.AssignLpuId,
                                        Note = assignment.Note,
                                        FinancingSourceId = assignment.FinancingSourceId,
-                                       FinancingSourceName = assignment.FinancingSource.ShortName
+                                       FinancingSourceName = cacheService.GetItems<FinancingSource>().First(x => x.Id == assignment.FinancingSourceId).ShortName
                                    };
             var newAssignment = new OccupiedTimeSlotViewModel(newAssignmentDTO, environment, securityService, cacheService);
             newAssignment.CancelOrDeleteRequested += RoomOnAssignmentCancelOrDeleteRequested;
@@ -592,6 +592,7 @@ namespace ScheduleModule.ViewModels
                     await scheduleService.SaveAssignmentAsync(assignment, assignmentChangeSubscription);
                     newAssignment.IsTemporary = false;
                     newAssignment.FinancingSourceId = assignment.FinancingSourceId;
+                    newAssignment.FinancingSourceName = cacheService.GetItems<FinancingSource>().First(x => x.Id == dialogViewModel.SelectedFinancingSource.Id).ShortName;
                     newAssignment.Note = assignment.Note;
                     newAssignment.AssignLpuId = assignment.AssignLpuId;
                     log.Info("New assignment was updated and moved from temporary state");
