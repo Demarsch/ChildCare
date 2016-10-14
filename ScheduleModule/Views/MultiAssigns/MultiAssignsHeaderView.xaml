@@ -68,5 +68,9 @@
 
         </Grid>
     </fluent:RibbonGroupBox>
-   
+    <fluent:RibbonGroupBox>
+        <fluent:Button Size="Large" Command="{Binding MultiAssignsContentViewModel.CreateAssignmnetsCommand, Mode=OneTime}" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentAdd48x48.png" Header="Назначить" />
+    </fluent:RibbonGroupBox>
+
 </fluent:RibbonTabItem>

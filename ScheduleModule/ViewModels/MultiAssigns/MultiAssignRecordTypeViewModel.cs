@@ -1,4 +1,5 @@
 ﻿using Core.Data;
+using System.Data.Entity;
 using log4net;
 using Prism.Mvvm;
 using System;
@@ -27,6 +28,8 @@ namespace ScheduleModule.ViewModels
 
         private readonly ICacheService cacheService;
 
+        private IList<RecordTypeDateTimeInterval> selectedDateTimes;
+
         private readonly string unselectedDoctorName = "Врач не выбран";
         private readonly string unselectedRoomName = "Кабинет не выбран";
         #endregion
@@ -49,8 +52,9 @@ namespace ScheduleModule.ViewModels
             this.cacheService = cacheService;
             this.scheduleService = scheduleService;
             this.log = log;
-            addSelectedTimeCommand = new DelegateCommand<ITimeInterval>(AddSelectedTime, CanAddSelectedTime);
-            SelectedTimes = new List<ITimeInterval>();
+            addSelectedTimeCommand = new DelegateCommand<RecordTypeDateTimeInterval>(AddSelectedTime, CanAddSelectedTime);
+            selectedDateTimes = new List<RecordTypeDateTimeInterval>();
+            SelectedTimes = new List<RecordTypeDateTimeInterval>();
             Dates = new ObservableCollectionEx<ScheduleDateTimesDTO>();
             SelectedDoctorName = unselectedDoctorName;
             SelectedRoomName = unselectedRoomName;
@@ -91,7 +95,7 @@ namespace ScheduleModule.ViewModels
         }
 
         public ObservableCollectionEx<ScheduleDateTimesDTO> Dates { get; private set; }
-        public IList<ITimeInterval> SelectedTimes { get; private set; }
+        public IList<RecordTypeDateTimeInterval> SelectedTimes { get; private set; }
         #endregion
 
         #region Events
@@ -103,12 +107,25 @@ namespace ScheduleModule.ViewModels
         {
             RecordType = recordType;
             RecordTypeName = recordType.Name;
+            SelectedTimes.Clear();
+            selectedDateTimes.Clear();
             Dates.Clear();
             foreach (var date in dates)
             {
-                var task = scheduleService.GetAvailiableTimeSlots(date, recordType, room);
+                var task = scheduleService.GetAvailiableTimeSlots(date, recordType, room, !recordType.IsAnalyse);
                 var availiableTimesTaskResult = await task;
-                Dates.Add(new ScheduleDateTimesDTO() { Date = date, Times = availiableTimesTaskResult });
+                Dates.Add(new ScheduleDateTimesDTO()
+                {
+                    Date = date,
+                    Times = availiableTimesTaskResult.GroupBy(x => x.Value).Select(x => new RecordTypeDateTimeInterval()
+                        {
+                            RecordType = this.RecordType,
+                            Date = date,
+                            StartTime = x.Key.StartTime,
+                            EndTime = x.Key.EndTime,
+                            RoomIds = x.Select(y => y.Key).ToArray()
+                        }).ToArray().Distinct()
+                });
             }
         }
 
@@ -117,29 +134,36 @@ namespace ScheduleModule.ViewModels
 
         }
 
-        private bool CanAddSelectedTime(ITimeInterval timeInterval)
+        public void CheckCanAddSelectedTime(IList<RecordTypeDateTimeInterval> selectedItems)
         {
-            return true;
+            selectedDateTimes = selectedItems;
+            addSelectedTimeCommand.RaiseCanExecuteChanged();
         }
 
-        private void AddSelectedTime(ITimeInterval timeInterval)
+        private bool CanAddSelectedTime(RecordTypeDateTimeInterval dateTime)
+        {
+            return /*selectedDateTimes.Any(x => dateTime.RecordType == x.RecordType && dateTime.Date == x.Date && x.EndTime == dateTime.StartTime && x.StartTime == dateTime.EndTime) ||*/
+                !selectedDateTimes.Any(x => dateTime.RecordType != x.RecordType && dateTime.Date == x.Date && x.EndTime > dateTime.StartTime && x.StartTime < dateTime.EndTime);
+        }
+
+        private void AddSelectedTime(RecordTypeDateTimeInterval dateTime)
         {
             bool isAdded = false;
-            if (SelectedTimes.Contains(timeInterval))
-                SelectedTimes.Remove(timeInterval);
+            if (SelectedTimes.Contains(dateTime))
+                SelectedTimes.Remove(dateTime);
             else
             {
-                SelectedTimes.Add(timeInterval);
+                SelectedTimes.Add(dateTime);
                 isAdded = true;
             }
             if (SelectedTimesChanged != null)
-                SelectedTimesChanged(this, new SelectedTimesEventArg() { TimeInterval = timeInterval, RecordType = RecordType, IsAdded = isAdded });
+                SelectedTimesChanged(this, new SelectedTimesEventArg() { Date = dateTime, IsAdded = isAdded });
         }
         #endregion
 
         #region Commands
 
-        private DelegateCommand<ITimeInterval> addSelectedTimeCommand;
+        private DelegateCommand<RecordTypeDateTimeInterval> addSelectedTimeCommand;
         public ICommand AddSelectedTimeCommand { get { return addSelectedTimeCommand; } }
 
         #endregion

@@ -125,9 +125,11 @@ namespace ScheduleModule.ViewModels
             this.scheduleService = scheduleService;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
-            SelectedTimeIntervalWrapper = new SelectedTimeIntervalWrapper();
+            SelectedDateTimes = new List<RecordTypeDateTimeInterval>();
             SelectedRecordTypes = new ObservableCollectionEx<MultiAssignRecordTypeViewModel>();
-            addRecordTypeCommand = new DelegateCommand(AddRecordType);
+            addRecordTypeCommand = new DelegateCommand(AddRecordType, CanAddRecordType);
+            deleteRecordTypeCommand = new DelegateCommand<MultiAssignRecordTypeViewModel>(DeleteRecordType);
+            сreateAssignmnetsCommand = new DelegateCommand(CreateAssignmnets, CanCreateAssignmnets);
             selectedDate = overlayAssignmentCollectionViewModel.CurrentDate = DateTime.Today;
             overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(8.0);
             overlayAssignmentCollectionViewModel.CurrentDateRoomsOpenTime = selectedDate.AddHours(17.0);
@@ -144,18 +146,27 @@ namespace ScheduleModule.ViewModels
         {
             var newItem = multiAssignRecordTypeViewModelFactory();
             await newItem.Initialize(SelectedRecordType, Dates);
+            newItem.CheckCanAddSelectedTime(SelectedDateTimes);
             newItem.SelectedTimesChanged += selectedRecordType_SelectedTimesChanged;
             SelectedRecordTypes.Add(newItem);
+
         }
 
-
-
-        private void selectedRecordType_SelectedTimesChanged(object sender, SelectedTimesEventArg e)
+        private async void selectedRecordType_SelectedTimesChanged(object sender, SelectedTimesEventArg e)
         {
             if (e.IsAdded)
-                SelectedTimeIntervalWrapper.AddTimeInterval(e.TimeInterval, e.Date);
+            {
+                SelectedDateTimes.Add(e.Date);
+                e.Date.AssignItem = await CreateTemporaryAssignmentAsync(e.Date);
+            }
             else
-                SelectedTimeIntervalWrapper.RemoveTimeInterval(e.TimeInterval, e.Date);
+            {
+                SelectedDateTimes.Remove(e.Date);
+                CancelAssignmentAsync(e.Date.AssignItem);
+            }
+            foreach (var viewModel in SelectedRecordTypes)
+                viewModel.CheckCanAddSelectedTime(SelectedDateTimes);
+            сreateAssignmnetsCommand.RaiseCanExecuteChanged();
         }
 
         private async void DateChanged()
@@ -167,6 +178,7 @@ namespace ScheduleModule.ViewModels
             {
                 selectedRecordType.SelectedTimesChanged -= selectedRecordType_SelectedTimesChanged;
                 await selectedRecordType.Initialize(selectedRecordType.RecordType, dates);
+                selectedRecordType.CheckCanAddSelectedTime(SelectedDateTimes);
                 selectedRecordType.SelectedTimesChanged += selectedRecordType_SelectedTimesChanged;
                 //var task = selectedRecordType.Initialize(selectedRecordType.RecordType, dates);
                 //task.Start();
@@ -209,7 +221,7 @@ namespace ScheduleModule.ViewModels
 
         public ObservableCollectionEx<MultiAssignRecordTypeViewModel> SelectedRecordTypes { get; private set; }
 
-        public SelectedTimeIntervalWrapper SelectedTimeIntervalWrapper { get; private set; }
+        public IList<RecordTypeDateTimeInterval> SelectedDateTimes { get; private set; }
 
         private RecordType selectedRecordType;
 
@@ -220,6 +232,7 @@ namespace ScheduleModule.ViewModels
             {
                 value = value ?? unselectedRecordType;
                 SetProperty(ref selectedRecordType, value);
+                addRecordTypeCommand.RaiseCanExecuteChanged();
                 IsRecordTypeSelected = selectedRecordType != null && !ReferenceEquals(selectedRecordType, unselectedRecordType);
                 //UpdateRoomFilter();
             }
@@ -248,7 +261,8 @@ namespace ScheduleModule.ViewModels
             get { return currentPatientId; }
             set
             {
-                //PatientAssignmentListViewModel.PatientId = currentPatientId = value;
+                //PatientAssignmentListViewModel.PatientId = 
+                currentPatientId = value;
                 if (currentPatientId.IsNewOrNonExisting())
                 {
                     CurrentPatientShortName = string.Empty;
@@ -437,6 +451,140 @@ namespace ScheduleModule.ViewModels
             }
         }
 
+        private async Task<Assignment> CreateTemporaryAssignmentAsync(RecordTypeDateTimeInterval recordTypeDateTimeInterval)
+        {
+            log.InfoFormat("Trying to create new assignment: start time is {0:dd.MM HH:mm}, proposed duration {1}, record type Id {2}",
+                           recordTypeDateTimeInterval.StartTime,
+                           (int)recordTypeDateTimeInterval.EndTime.Subtract(recordTypeDateTimeInterval.StartTime).TotalMinutes,
+                           recordTypeDateTimeInterval.RecordType.Id);
+            var financingSource = GetFinancingSource();
+            if (financingSource == 0)
+            {
+                log.Error("There are no financing sources in database");
+                FailureMediator.Activate("В базе данных отсутствует информация о доступных источниках финансирования. Обратитесь в службу поддержки", true);
+                return null;
+            }
+            var plannedUrgency = cacheService.GetItems<Urgently>().FirstOrDefault(x => x.IsDefault);
+            if (plannedUrgency == null)
+            {
+                FailureMediator.Activate("В базе данных отсутствует информация о плановой срочности назначения. Обратитесь в службу поддержки", true);
+                return null;
+            }
+            var polyclinicPlace = cacheService.GetItems<ExecutionPlace>().FirstOrDefault(x => x.IsPolyclynic);
+            if (polyclinicPlace == null)
+            {
+                FailureMediator.Activate("В базе данных отсутствует информация об амбулаторном месте выполнения назначения. Обратитесь в службу поддержки", true);
+                return null;
+            }
+
+            //var task = scheduleService.GetAvailiableTimeSlots(recordTypeDateTimeInterval.Date, recordTypeDateTimeInterval.RecordType, room);
+            //var availiableTimesTaskResult = await task;
+
+            var assignment = new Assignment
+            {
+                AssignDateTime = recordTypeDateTimeInterval.AssignDateTime,
+                Duration = (int)recordTypeDateTimeInterval.EndTime.Subtract(recordTypeDateTimeInterval.StartTime).TotalMinutes,
+                AssignUserId = environment.CurrentUser.Id,
+                Note = string.Empty,
+                FinancingSourceId = financingSource,
+                PersonId = currentPatientId,
+                RecordTypeId = recordTypeDateTimeInterval.RecordType.Id,
+                //ToDo: Check room for free time and check other rooms
+                RoomId = recordTypeDateTimeInterval.RoomIds[0],
+                IsTemporary = true,
+                UrgentlyId = plannedUrgency.Id,
+                ExecutionPlaceId = polyclinicPlace.Id
+            };
+            try
+            {
+                await scheduleService.SaveAssignmentAsync(assignment, assignmentChangeSubscription);
+                log.InfoFormat("New assignment (Id = {0}) is saved as temporary", assignment.Id);
+            }
+            catch (AssignmentConflictException ex)
+            {
+                FailureMediator.Activate(ex.Message, true);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Failed to save new assignment", ex);
+                FailureMediator.Activate("Не удалось создать назначение. Попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки",
+                                         exception: ex,
+                                         canBeDeactivated: true);
+                return null;
+            }
+            if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
+            {
+                OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
+            }
+            return assignment;
+        }
+
+        private async void CancelAssignmentAsync(Assignment assignment)
+        {
+            if (assignment.IsTemporary)
+            {
+                try
+                {
+                    log.InfoFormat("Trying to manually delete temporary assignment (Id = {0})", assignment.Id);
+                    await scheduleService.DeleteAssignmentAsync(assignment.Id, assignmentChangeSubscription);
+
+                    // RebuildScheduleGrid();
+                    log.Info("Temporary assignment was manually deleted");
+                    if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
+                    {
+                        OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to manually delete temporary assignment (Id = {0})", assignment.Id), ex);
+                    FailureMediator.Activate("Не удалось удалить временное назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", true);
+                }
+            }
+            else
+            {
+                try
+                {
+                    var confirmation = new ConfirmationDialogViewModel
+                    {
+                        Question = string.Format("Вы действительно хотите отменить назначение пациента {0} на {1:d MMMM HH:mm}?",
+                            /*assignment.PersonShortName*/ string.Empty,
+                            /*assignment.StartTime*/ new TimeSpan())
+                    };
+                    var result = await dialogService.ShowDialogAsync(confirmation);
+                    if (result != true)
+                    {
+                        return;
+                    }
+                    log.InfoFormat("Trying to cancel assignment (Id = {0})", assignment.Id);
+                    await scheduleService.CancelAssignmentAsync(assignment.Id, assignmentChangeSubscription);
+
+                    //RebuildScheduleGrid();
+                    log.Info("Assignment was canceled");
+                    if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
+                    {
+                        OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to cancel assignment (Id = {0})", assignment.Id), ex);
+                    FailureMediator.Activate("Не удалось отменить назначение. Пожалуйста, попробуйте еще раз. Если ошибка повторится, обратитесь в службу поддержки", exception: ex);
+                }
+            }
+        }
+
+        private int GetFinancingSource()
+        {
+            var result = cacheService.GetItems<FinancingSource>().Where(x => !x.IsActive && !string.IsNullOrEmpty(x.Options)).Select(x => x.Id).FirstOrDefault();
+            if (result == 0)
+            {
+                result = cacheService.GetItems<FinancingSource>().Where(x => !string.IsNullOrEmpty(x.Options)).Select(x => x.Id).FirstOrDefault();
+            }
+            return result;
+        }
+
         private void FillCache()
         {
             cacheService.GetItems<Room>();
@@ -501,10 +649,52 @@ namespace ScheduleModule.ViewModels
             UnsubscribeFromAssignmentChanges();
         }
 
+        private bool CanAddRecordType()
+        {
+            return SelectedRecordType != unselectedRecordType;
+        }
+
+        private bool CanCreateAssignmnets()
+        {
+            return SelectedDateTimes.Any();
+        }
+
+        private void CreateAssignmnets()
+        {
+            throw new NotImplementedException();
+
+            //foreach (var selectedTime in SelectedDateTimes)
+            //{
+
+            //}
+            //SaveAssignmentAsync()
+        }
+
+        private void DeleteRecordType(MultiAssignRecordTypeViewModel multiAssignRecordTypeViewModel)
+        {
+            SelectedRecordTypes.Remove(multiAssignRecordTypeViewModel);
+        }
+
+        #region Commands
+
         public DelegateCommand addRecordTypeCommand;
         public ICommand AddRecordTypeCommand
         {
             get { return addRecordTypeCommand; }
         }
+
+        public DelegateCommand<MultiAssignRecordTypeViewModel> deleteRecordTypeCommand;
+        public ICommand DeleteRecordTypeCommand
+        {
+            get { return deleteRecordTypeCommand; }
+        }
+
+        public DelegateCommand сreateAssignmnetsCommand;
+        public ICommand CreateAssignmnetsCommand
+        {
+            get { return сreateAssignmnetsCommand; }
+        }
+        #endregion
+
     }
 }

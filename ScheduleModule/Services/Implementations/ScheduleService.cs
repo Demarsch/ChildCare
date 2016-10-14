@@ -430,25 +430,28 @@ namespace ScheduleModule.Services
         }
 
 
-        public async Task<IEnumerable<ITimeInterval>> GetAvailiableTimeSlots(DateTime date, RecordType selectedRecordType, Room selectedRoom = null)
+        public async Task<IEnumerable<KeyValuePair<int, ITimeInterval>>> GetAvailiableTimeSlots(DateTime date, RecordType selectedRecordType, Room selectedRoom = null, bool checkExistingAssignments = true)
         {
-            var timeSlots = new List<ITimeInterval>();
+            var timeSlots = new List<KeyValuePair<int, ITimeInterval>>();
 
             using (var context = contextProvider.CreateNewContext())
             {
                 var rooms = new List<Room>();
                 var workingTimes = (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => this.GetRoomsWorkingTimeForDay((DateTime)x), date))
                     .Where(x => x.RecordTypeId.HasValue && x.RecordTypeId == selectedRecordType.Id && (selectedRoom == null || selectedRoom.Id == x.RoomId))
-                    .Select(x => new { x.RoomId, Times = new TimeInterval(x.StartTime, x.EndTime)})
+                    .Select(x => new { x.RoomId, Times = new TimeInterval(x.StartTime, x.EndTime) })
                     .ToArray();
                 foreach (var workingTime in workingTimes.GroupBy(x => x.RoomId))
                 {
-                    var assignments = await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => this.GetRoomsAssignments(date), date);
-                    var availableTimeIntervals = this.GenerateAvailableTimeIntervals(workingTime.Select(x => x.Times),
-                                                                                           assignments as IEnumerable<ITimeInterval>,
-                                                                                           selectedRecordType.Duration,
-                                                                                           selectedRecordType.MinDuration);
-                    timeSlots.AddRange(availableTimeIntervals);
+                    var assignments = checkExistingAssignments ? await Task<ILookup<int, ScheduledAssignmentDTO>>.Factory.StartNew(x => this.GetRoomsAssignments(date), date) : null;
+                    var availableTimeIntervals = this.GenerateAvailableTimeIntervals
+                        (
+                        workingTime.Select(x => x.Times),
+                        assignments.SelectMany(x => x),
+                        selectedRecordType.Duration,
+                        selectedRecordType.MinDuration
+                        );
+                    timeSlots = timeSlots.Union(availableTimeIntervals.Select(x => new KeyValuePair<int, ITimeInterval>(workingTime.Key, x))).ToList();
                 }
             }
             return timeSlots;

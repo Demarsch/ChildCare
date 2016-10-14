@@ -14,7 +14,7 @@ namespace ScheduleModule.Services
     public interface IScheduleService : IScheduleServiceBase
     {
         ILookup<int, ScheduledAssignmentDTO> GetRoomsAssignments(DateTime date);
-        
+
         IEnumerable<ITimeInterval> GenerateAvailableTimeIntervals(IEnumerable<ITimeInterval> workingTime, IEnumerable<ITimeInterval> occupiedTime, int nominalDurationInMinutes, int minimumDurationInMinutes);
 
         Task SaveAssignmentAsync(Assignment newAssignment, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
@@ -39,6 +39,6 @@ namespace ScheduleModule.Services
 
         Task MarkAssignmentCompletedAsync(int id, DateTime selectedDateTime, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
 
-        Task<IEnumerable<ITimeInterval>> GetAvailiableTimeSlots(DateTime date, RecordType selectedRecordType, Room selectedRoom);
+        Task<IEnumerable<KeyValuePair<int, ITimeInterval>>> GetAvailiableTimeSlots(DateTime date, RecordType selectedRecordType, Room selectedRoom, bool checkExistingAssignments);
     }
 }

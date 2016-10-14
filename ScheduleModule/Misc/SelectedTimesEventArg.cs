@@ -10,9 +10,7 @@ namespace ScheduleModule.Misc
 {
     public class SelectedTimesEventArg : EventArgs
     {
-        public ITimeInterval TimeInterval { get; set; }
-        public DateTime Date { get; set; }
-        public RecordType RecordType { get; set; }
+        public RecordTypeDateTimeInterval Date { get; set; }
         public bool IsAdded { get; set; }
     }
 }
