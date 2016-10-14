@@ -91,6 +91,7 @@
     <Compile Include="Misc\Change Tracking\IChangeTrackable.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\CommonIdName.cs" />
+    <Compile Include="Misc\DataGridRowDefinition.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
     <Compile Include="Misc\IHierarchyItem.cs" />

@@ -15,10 +15,16 @@
         <ResourceDictionary Source="../Views/Analyses/AnalyseProtocolView.xaml" />
         <ResourceDictionary Source="../Views/Analyses/AnalyseRefferencesView.xaml" />
 
+        <ResourceDictionary Source="../Views/VisitCloseView.xaml" />
+        <ResourceDictionary Source="../Views/VisitEditorView.xaml" />
         
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate DataType="{x:Type viewModels:PersonRecordEditorViewModel}">
         <views:PersonRecordEditorView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:PersonRecordsToolboxViewModel}">
+        <views:PersonRecordsToolboxView/>
     </DataTemplate>
 </ResourceDictionary>

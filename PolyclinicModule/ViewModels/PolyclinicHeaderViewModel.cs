@@ -1,43 +1,51 @@
-﻿using System;
-using System.Windows.Input;
-using Core.Data;
+﻿using Core.Data;
 using Core.Data.Misc;
-using Core.Data.Services;
 using Core.Wpf.Events;
+using Core.Wpf.Extensions;
 using Core.Wpf.Services;
-using log4net;
 using Prism;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
+using Shared.PatientRecords.ViewModels;
 using Shell.Shared;
-using Core.Wpf.Mvvm;
-using System.Threading;
-using System.Threading.Tasks;
-using Core.Misc;
-using System.Linq;
-using Shared.PatientRecords.Services;
-using System.Data.Entity;
-using Core.Extensions;
-using Shared.PatientRecords.DTO;
-using Microsoft.Practices.Unity;
-using Core.Wpf.Misc;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
-namespace Shared.PatientRecords.ViewModels
+namespace PolyclinicModule.ViewModels
 {
-    public class PersonRecordsHeaderViewModel : BindableBase, IActiveAware
+    public class PolyclinicHeaderViewModel : BindableBase, IActiveAware
     {
         #region Fields       
 
         private readonly Func<PersonRecordsToolboxViewModel> personRecordsToolboxViewModelFactory;
 
+        private readonly IRegionManager regionManager;
+
+        private readonly IViewNameResolver viewNameResolver;
+
         #endregion
 
         #region Constructors
-        public PersonRecordsHeaderViewModel(PersonRecordsToolboxViewModel personRecordsToolboxViewModel, Func<PersonRecordsToolboxViewModel> personRecordsToolboxViewModelFactory)
-        {        
+        public PolyclinicHeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, 
+                                         PersonRecordsToolboxViewModel personRecordsToolboxViewModel, Func<PersonRecordsToolboxViewModel> personRecordsToolboxViewModelFactory)
+        {
+            if (regionManager == null)
+            {
+                throw new ArgumentNullException("regionManager");
+            }
+            if (viewNameResolver == null)
+            {
+                throw new ArgumentNullException("viewNameResolver");
+            }
+            this.regionManager = regionManager;
+            this.viewNameResolver = viewNameResolver;
+
             this.personRecordsToolboxViewModelFactory = personRecordsToolboxViewModelFactory;
             PersonRecordsToolboxViewModel = personRecordsToolboxViewModel;           
         }
@@ -66,22 +74,28 @@ namespace Shared.PatientRecords.ViewModels
                     {
                         ActivateHeader();
                     }
+                    else
+                    {
+                        regionManager.Regions[RegionNames.ListItems].DeactivateActiveViews();
+                    }
                 }
             }
         }
 
         private void ActivateHeader()
-        {
+        {            
             if (personRecordsToolboxViewModel == null)
                 PersonRecordsToolboxViewModel = personRecordsToolboxViewModelFactory();
-
             PersonRecordsToolboxViewModel.ActivatePersonRecords();
+
+            regionManager.RequestNavigate(RegionNames.ListItems, viewNameResolver.Resolve<PolyclinicPersonListViewModel>());
         }        
 
         #region Events
         public event EventHandler IsActiveChanged = delegate { };
         #endregion
-
-       
     }
 }
+
+
+          

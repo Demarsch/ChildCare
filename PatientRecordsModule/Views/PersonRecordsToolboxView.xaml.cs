@@ -1,6 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using Shared.PatientRecords.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,20 +16,13 @@ using System.Windows.Shapes;
 namespace Shared.PatientRecords.Views
 {
     /// <summary>
-    /// Interaction logic for NewVisitCreating.xaml
+    /// Interaction logic for PersonRecordsToolboxView.xaml
     /// </summary>
-    public partial class VisitCloseView : UserControl
+    public partial class PersonRecordsToolboxView : UserControl
     {
-        public VisitCloseView()
+        public PersonRecordsToolboxView()
         {
             InitializeComponent();
-        }
-
-        [Dependency]
-        public VisitCloseView ContentViewModel
-        {
-            get { return DataContext as VisitCloseView; }
-            set { DataContext = value; }
         }
     }
 }

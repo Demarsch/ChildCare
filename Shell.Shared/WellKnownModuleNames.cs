@@ -17,5 +17,7 @@
         public const string ScheduleEditorModule = "ScheduleEditorModule";
 
         public const string StatisticsModule = "StatisticsModule";
+
+        public const string PolyclinicModule = "PolyclinicModule";
     }
 }

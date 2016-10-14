@@ -1,6 +1,5 @@
 ﻿using Core.Data;
 using Core.Data.Misc;
-using StatisticsModule.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,9 @@ namespace StatisticsModule.Services
     {
         IDisposableQueryable<FinancingSource> GetActualFinancingSources();
 
-        IDisposableQueryable<Record> GetRecords(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isCompleted, bool isInProgress, bool isAmbulatory, bool isStationary, bool isDayStationary);
+        IDisposableQueryable<PersonStaff> GetPersonStaffs();
+
+        IDisposableQueryable<Record> GetRecords(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isCompleted, bool isInProgress, bool isAmbulatory, bool isStationary, bool isDayStationary, int employeeId);
 
         IDisposableQueryable<Assignment> GetAssignments(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isAmbulatory, bool isStationary, bool isDayStationary);
 

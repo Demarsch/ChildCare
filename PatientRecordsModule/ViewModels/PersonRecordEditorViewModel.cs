@@ -1113,9 +1113,9 @@ namespace Shared.PatientRecords.ViewModels
 
         private void UnsubscriveFromEvents()
         {
-            eventAggregator.GetEvent<SelectionChangedEvent<Visit>>().Subscribe(OnVisitSelected);
-            eventAggregator.GetEvent<SelectionChangedEvent<Assignment>>().Subscribe(OnAssignmentSelected);
-            eventAggregator.GetEvent<SelectionChangedEvent<Record>>().Subscribe(OnRecordSelected);
+            eventAggregator.GetEvent<SelectionChangedEvent<Visit>>().Unsubscribe(OnVisitSelected);
+            eventAggregator.GetEvent<SelectionChangedEvent<Assignment>>().Unsubscribe(OnAssignmentSelected);
+            eventAggregator.GetEvent<SelectionChangedEvent<Record>>().Unsubscribe(OnRecordSelected);
         }
 
         private void PrintProtocol()
