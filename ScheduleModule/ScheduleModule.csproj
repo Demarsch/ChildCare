@@ -124,6 +124,7 @@
     <Compile Include="DTO\ScheduleDateTimesDTO.cs" />
     <Compile Include="Exceptions\AssignmentConflictException.cs" />
     <Compile Include="Exceptions\SamePatientAssignmentConflictException.cs" />
+    <Compile Include="Misc\RecordTypeDateTimeInterval.cs" />
     <Compile Include="Misc\ParameterNames.cs" />
     <Compile Include="Misc\SelectedTimeIntervalWrapper.cs" />
     <Compile Include="Misc\SelectedTimesEventArg.cs" />

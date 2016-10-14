@@ -1,4 +1,5 @@
 ﻿using Core.Misc;
+using ScheduleModule.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,6 @@ namespace ScheduleModule.DTO
     {
         public DateTime Date { get; set; }
 
-        public IEnumerable<ITimeInterval> Times { get; set; }
+        public IEnumerable<RecordTypeDateTimeInterval> Times { get; set; }
     }
 }

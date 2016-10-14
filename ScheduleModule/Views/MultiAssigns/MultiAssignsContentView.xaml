@@ -41,11 +41,12 @@
                               behaviors:ScrollSynchronizer.VerticalScrollGroup="ScheduleVerticalScroll"
                               Background="White">
                     <Grid>
-                        <ListBox ItemsSource="{Binding SelectedRecordTypes}"
-                                 HorizontalContentAlignment="Stretch"
-                                 VerticalContentAlignment="Stretch"
-                                 Background="Transparent"
-                                 BorderThickness="0 1 0 1">
+                        <ListBox x:Name="SelectedRecordTypesContainer"
+                            ItemsSource="{Binding SelectedRecordTypes}"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Background="Transparent"
+                            BorderThickness="0 1 0 1">
                         </ListBox>
                     </Grid>
                 </ScrollViewer>
