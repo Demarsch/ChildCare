@@ -123,8 +123,10 @@ namespace ScheduleModule.ViewModels
             this.cacheService = cacheService;
             this.log = log;
             this.scheduleService = scheduleService;
+            CurrentPatientId = SpecialValues.NonExistingId;
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
+            NotificationMediator = new NotificationMediator();
             SelectedDateTimes = new List<RecordTypeDateTimeInterval>();
             SelectedRecordTypes = new ObservableCollectionEx<MultiAssignRecordTypeViewModel>();
             addRecordTypeCommand = new DelegateCommand(AddRecordType, CanAddRecordType);
@@ -211,9 +213,13 @@ namespace ScheduleModule.ViewModels
             CurrentPatientId = patientId;
         }
 
+        public bool IsNotEmptyPatient { get { return !SpecialValues.IsNewOrNonExisting(CurrentPatientId); } }
+
         public BusyMediator BusyMediator { get; private set; }
 
         public FailureMediator FailureMediator { get; private set; }
+
+        public NotificationMediator NotificationMediator { get; private set; }
 
         public OverlayAssignmentCollectionViewModel OverlayAssignmentCollectionViewModel { get; private set; }
 
@@ -263,6 +269,7 @@ namespace ScheduleModule.ViewModels
             {
                 //PatientAssignmentListViewModel.PatientId = 
                 currentPatientId = value;
+                OnPropertyChanged(() => IsNotEmptyPatient);
                 if (currentPatientId.IsNewOrNonExisting())
                 {
                     CurrentPatientShortName = string.Empty;
@@ -651,23 +658,62 @@ namespace ScheduleModule.ViewModels
 
         private bool CanAddRecordType()
         {
-            return SelectedRecordType != unselectedRecordType;
+            return (SelectedRecordType != unselectedRecordType) && IsNotEmptyPatient;
         }
 
         private bool CanCreateAssignmnets()
         {
-            return SelectedDateTimes.Any();
+            return SelectedDateTimes.Any() && IsNotEmptyPatient;
         }
 
-        private void CreateAssignmnets()
+        private async void CreateAssignmnets()
         {
-            throw new NotImplementedException();
+            var dialogViewModel = new ScheduleAssignmentUpdateViewModel(scheduleService, cacheService, true);
+            //dialogViewModel.SelectedFinancingSource = dialogViewModel.FinancingSources.First(x => x.Id == assignment.FinancingSourceId);
+            var dialogResult = await dialogService.ShowDialogAsync(dialogViewModel);
+            if (dialogResult == true)
+            {
+                var dates = Dates;
+                BusyMediator.Activate("Сохранение дополнительной информации...");
+                try
+                {
+                    log.Info("User has chosen to save multiple assignments, trying to update assignments...");
+                    foreach (var assignment in SelectedDateTimes.Select(x => x.AssignItem))
+                    {
+                        assignment.IsTemporary = false;
+                        assignment.FinancingSourceId = dialogViewModel.SelectedFinancingSource.Id;
+                        assignment.Note = dialogViewModel.Note;
+                        assignment.AssignLpuId = dialogViewModel.IsSelfAssigned || dialogViewModel.SelectedAssignLpu == null ? null : (int?)dialogViewModel.SelectedAssignLpu.Id;
+                        await scheduleService.SaveAssignmentAsync(assignment, assignmentChangeSubscription);
+                        //newAssignment.IsTemporary = false;
+                        //newAssignment.FinancingSourceId = assignment.FinancingSourceId;
+                        //newAssignment.FinancingSourceName = cacheService.GetItems<FinancingSource>().First(x => x.Id == dialogViewModel.SelectedFinancingSource.Id).ShortName;
+                        //newAssignment.Note = assignment.Note;
+                        //newAssignment.AssignLpuId = assignment.AssignLpuId;
 
-            //foreach (var selectedTime in SelectedDateTimes)
-            //{
-
-            //}
-            //SaveAssignmentAsync()
+                        log.Info("New assignment was updated and moved from temporary state");
+                        if (OverlayAssignmentCollectionViewModel.ShowCurrentPatientAssignments)
+                        {
+                            OverlayAssignmentCollectionViewModel.UpdateAssignmentAsync(assignment.Id);
+                        }
+                    }
+                    NotificationMediator.Activate("Назначения успешно созданы", NotificationMediator.DefaultHideTime);
+                    SelectedDateTimes.Clear();
+                    foreach (var viewModel in SelectedRecordTypes)
+                        await viewModel.Initialize(viewModel.RecordType, dates);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to save additional data for temporary multi assignments"), ex);
+                    FailureMediator.Activate("Не удалось обновить данные назначения. Пожалуйста, попробуйте еще раз или отмените операцию",
+                                             exception: ex,
+                                             canBeDeactivated: true);
+                }
+                finally
+                {
+                    BusyMediator.Deactivate();
+                }
+            }
         }
 
         private void DeleteRecordType(MultiAssignRecordTypeViewModel multiAssignRecordTypeViewModel)

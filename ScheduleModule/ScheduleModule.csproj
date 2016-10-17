@@ -134,6 +134,7 @@
     <Compile Include="Services\Implementations\ScheduleService.cs" />
     <Compile Include="Services\Interfaces\IScheduleService.cs" />
     <Compile Include="ViewModels\DateTimeSelectionDialogViewModel.cs" />
+    <Compile Include="ViewModels\EmptyPatientInfoViewModel.cs" />
     <Compile Include="ViewModels\MultiAssigns\MultiAssignRecordTypeViewModel.cs" />
     <Compile Include="ViewModels\MultiAssigns\MultiAssignsHeaderViewModel.cs" />
     <Compile Include="ViewModels\MultiAssigns\MultiAssignsContentViewModel.cs" />
@@ -148,6 +149,9 @@
     <Compile Include="ViewModels\WorkingTimeViewModel.cs" />
     <Compile Include="ViewModels\ScheduleContentViewModel.cs" />
     <Compile Include="ViewModels\TimeTickerViewModel.cs" />
+    <Compile Include="Views\EmptyPatientInfoView.xaml.cs">
+      <DependentUpon>EmptyPatientInfoView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MultiAssigns\MultiAssignsHeaderView.xaml.cs">
       <DependentUpon>MultiAssignsHeaderView.xaml</DependentUpon>
     </Compile>
@@ -209,6 +213,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CurrentPatientAssignmentsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EmptyPatientInfoView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -7,6 +7,7 @@
              xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
              xmlns:behaviors="clr-namespace:Core.Wpf.Behaviors;assembly=Core.Wpf"
              xmlns:viewModels="clr-namespace:ScheduleModule.ViewModels"
+             xmlns:views ="clr-namespace:ScheduleModule.Views"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
@@ -20,7 +21,7 @@
         </ControlTemplate>
     </UserControl.Resources>
     <Grid>
-        <DockPanel LastChildFill="True">
+        <DockPanel LastChildFill="True" Visibility="{Binding IsNotEmptyPatient, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
             <Grid HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -87,40 +88,16 @@
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
-            <!-- Bind Rows using the default StackPanel for the ItemsPanel -->
-            <!--
-            <ItemsControl ItemsSource="{Binding SelectedRecordTypes}">
-                -->
-            <!-- Set the Template for each row to a TextBlock and another ItemsControl -->
-            <!--
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            -->
-            <!-- Need to set Width of name TextBlock so items line up correctly -->
-            <!--
-                            <TextBlock Width="200" Text="{Binding RecordTypeName}" />
-
-                            <ItemsControl ItemsSource="{Binding Dates}">
-                                -->
-            <!-- Use a horizontal StackPanel to display columns -->
-            <!--
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>-->
         </DockPanel>
+        <views:EmptyPatientInfoView Visibility="{Binding IsNotEmptyPatient, Converter={x:Static converters:BoolToInversedVisibilitConverter.Instance}}"/>
         <ContentControl Content="{Binding BusyMediator}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch" />
         <ContentControl Content="{Binding FailureMediator}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch" />
+        <ContentControl Content="{Binding NotificationMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom" />
     </Grid>
 </UserControl>
