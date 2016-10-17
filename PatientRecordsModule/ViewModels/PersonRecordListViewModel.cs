@@ -28,13 +28,16 @@ using Core.Wpf.Services;
 using Core.Services;
 using Core.Data.Services;
 using Shared.PatientRecords.ViewModels.PersonHierarchicalItemViewModels;
+using Shared.PatientRecords.Events;
+using Shell.Shared;
 
 namespace Shared.PatientRecords.ViewModels
 {
     public class PersonRecordListViewModel : BindableBase, IDisposable
     {
         #region Fields
-
+        private readonly IRegionManager regionManager;
+        private readonly IViewNameResolver viewNameResolver;
         private readonly IPatientRecordsService patientRecordsService;
         private readonly IEventAggregator eventAggregator;
         private readonly IDialogServiceAsync dialogService;
@@ -55,7 +58,8 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region  Constructors
-        public PersonRecordListViewModel(IPatientRecordsService patientRecordsService, ILog logService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator, 
+        public PersonRecordListViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, 
+            IPatientRecordsService patientRecordsService, ILog logService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator, 
             IHierarchicalRepository childItemViewModelRepository)
         {
             if (patientRecordsService == null)
@@ -69,6 +73,14 @@ namespace Shared.PatientRecords.ViewModels
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
+            }
+            if (regionManager == null)
+            {
+                throw new ArgumentNullException("regionManager");
+            }
+            if (viewNameResolver == null)
+            {
+                throw new ArgumentNullException("viewNameResolver");
             }
             if (dialogService == null)
             {
@@ -86,6 +98,8 @@ namespace Shared.PatientRecords.ViewModels
             this.dialogService = dialogService;
             this.userService = userService;
             this.eventAggregator = eventAggregator;
+            this.viewNameResolver = viewNameResolver;
+            this.regionManager = regionManager;
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
             //changeTracker = new ChangeTrackerEx<PersonRecordListViewModel>(this);
@@ -101,6 +115,7 @@ namespace Shared.PatientRecords.ViewModels
             addNewRecordInListVisitCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => AddNewRecordToList(recordId)) };
             RootItems = new ObservableCollectionEx<IHierarchicalItem>();
             this.PersonId = SpecialValues.NonExistingId;
+            SubscribeToEvents();
         }
         #endregion
 
@@ -491,9 +506,10 @@ namespace Shared.PatientRecords.ViewModels
         {
             addNewVisitInListVisitCommandWrapper.Dispose();
             reloadPatientVisitsCommandWrapper.Dispose();
+            UnsubscriveFromEvents();
         }
 
-        public async void LoadRootItemsAsync(int personId)
+        public async Task LoadRootItemsAsync(int personId)
         {
             RootItems.Clear();
             this.PersonId = personId;
@@ -556,6 +572,45 @@ namespace Shared.PatientRecords.ViewModels
                 }
             }
         }
+
+        private void SubscribeToEvents()
+        {
+            eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Subscribe(OnPolyclinicPersonListItemSelected);
+        }
+
+        private void UnsubscriveFromEvents()
+        {
+            eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Unsubscribe(OnPolyclinicPersonListItemSelected);
+        }
+
+        private void OnPolyclinicPersonListItemSelected(object parameters)
+        {
+            if (parameters == null) return;
+
+            int personId = (parameters as object[])[0].ToInt();
+            int assignmentId = (parameters as object[])[1].ToInt();
+            int recordId = (parameters as object[])[2].ToInt();
+
+            if (SpecialValues.IsNewOrNonExisting(personId))
+            {
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<EmptyPatientInfoViewModel>());
+            }
+            else
+            {
+                var navigationParameters = new NavigationParameters { { "PatientId", personId } };
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonRecordsViewModel>(), navigationParameters);
+            }
+
+            /*if (assignmentId != 0)
+                eventAggregator.GetEvent<SelectionChangedEvent<Assignment>>().Publish(assignmentId);
+            else if (recordId != 0)
+                eventAggregator.GetEvent<SelectionChangedEvent<Record>>().Publish(recordId);*/
+
+            var item = RootItems.FirstOrDefault(x => x.Item.Id == (assignmentId != 0 ? assignmentId : recordId) && x.Item.Type == ItemType.Assignment);
+            if (item != null)
+                item.IsSelected = true;
+
+        }            
 
         #endregion
 

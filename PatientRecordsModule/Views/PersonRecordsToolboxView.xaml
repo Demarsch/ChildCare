@@ -1,0 +1,125 @@
+﻿<UserControl x:Class="Shared.PatientRecords.Views.PersonRecordsToolboxView"             
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:fluent="urn:fluent-ribbon"
+             xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel Orientation="Horizontal" >
+        <fluent:RibbonGroupBox Header="Случай">
+            <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitAdd48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True" Command="{Binding CreateNewVisitCommand}" >
+                <fluent:SplitButton.ItemContainerStyle>
+                    <Style TargetType="{x:Type fluent:MenuItem}">
+                        <Setter Property="Command" Value="{Binding DataContext.CreateNewVisitCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:SplitButton}}}"/>
+                        <Setter Property="CommandParameter" Value="{Binding Id}"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    </Style>
+                </fluent:SplitButton.ItemContainerStyle>
+                <fluent:SplitButton.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Text="{Binding Name}" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Foreground="Gray" Text="Договор:" Visibility="{Binding Contract, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Visibility="{Binding Contract, Converter={x:Static converters:StringToVisibilityConverter.Instance}}" Text="{Binding Contract}"
+                                   Foreground="Gray"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Foreground="Gray" Text="Ист. фин.:" 
+                                   Visibility="{Binding FinancingSource, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FinancingSource}" 
+                                   Visibility="{Binding FinancingSource, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"  Foreground="Gray"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Foreground="Gray" Text="Срочность:" 
+                                   Visibility="{Binding Urgently, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Urgently}" Visibility="{Binding Urgently, Converter={x:Static converters:StringToVisibilityConverter.Instance}}"
+                                   Foreground="Gray"/>
+                            <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
+                        </Grid>
+                    </DataTemplate>
+                </fluent:SplitButton.ItemTemplate>
+            </fluent:SplitButton>
+            <StackPanel>
+                <fluent:Button Header="Завершить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitCompleted48x48.png" 
+                           Command="{Binding CompleteVisitCommand}" CommandParameter="{Binding VisitId}" Visibility="{Binding IsVisitCanBeClosed, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                <fluent:Button Header="Продолжить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitInProgress48x48.png" 
+                           Command="{Binding ReturnToActiveVisitCommand}" CommandParameter="{Binding VisitId}" Visibility="{Binding IsVisitCanBeOpened, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            </StackPanel>
+            <StackPanel>
+                <fluent:Button Header="Изменить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitEdit48x48.png" 
+                           Command="{Binding EditVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
+                <fluent:Button Header="Удалить" SizeDefinition="Middle" Icon="pack://application:,,,/Core;Component/Resources/Images/VisitRemove48x48.png" 
+                           Command="{Binding DeleteVisitCommand}" CommandParameter="{Binding VisitId}" IsEnabled="{Binding IsVisitSelected}"/>
+            </StackPanel>
+            <ContentControl Content="{Binding BisyMediator}" HorizontalAlignment="Stretch" />
+        </fluent:RibbonGroupBox>
+        <fluent:RibbonGroupBox Header="Запись на услугу">
+            <fluent:Button Size="Large" Header="Прием врача" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentAdd48x48.png"/>
+            <fluent:Button Size="Large" Header="Анализы" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AnalyseAdd48x48.png"
+                       Command="{Binding CreateAnalyseCommand}">
+                <fluent:Button.CommandParameter>
+                    <MultiBinding Converter="{x:Static converters:CommandMultiValueConverter.Instance}">
+                        <Binding Path="AssignmentId"/>
+                        <Binding Path="RecordId"/>
+                        <Binding Path="VisitId"/>
+                    </MultiBinding>
+                </fluent:Button.CommandParameter>
+            </fluent:Button>
+        </fluent:RibbonGroupBox>
+        <fluent:RibbonGroupBox Header="Услуги">
+            <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png" Command="{Binding CreateRecordCommand}"/>
+            <StackPanel Orientation="Horizontal">
+                <fluent:Button Header="Завершить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordCompleted48x48.png" 
+                           Command="{Binding CompleteRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeCompleted, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                           IsEnabled="{Binding IsRecordCanBeCompletedEnabled}"/>
+                <fluent:Button Header="Продолжить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordInProgress48x48.png"
+                           Command="{Binding InProgressRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeInProgress, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+            </StackPanel>
+        </fluent:RibbonGroupBox>
+        <fluent:RibbonGroupBox Header="Документы" FontWeight="Medium" Visibility="{Binding AllowDocuments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+            <fluent:Button x:Name="btnAttachDocument" Command="{Binding AttachDocumentCommand}" 
+                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachDocument48x48.png" />
+            <fluent:Button x:Name="btnDetachDocument" Command="{Binding DetachDocumentCommand}"
+                       Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachDocument48x48.png" />
+        </fluent:RibbonGroupBox>
+
+        <fluent:RibbonGroupBox Header="DICOM" FontWeight="Medium" Visibility="{Binding AllowDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
+            <fluent:Button x:Name="btnAttachDICOM" Command="{Binding AttachDICOMCommand}" 
+                       Visibility="{Binding CanAttachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                       Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachFile48x48.png" />
+            <fluent:Button x:Name="btnDetachDICOM" Command="{Binding DetachDICOMCommand}"
+                       Visibility="{Binding CanDetachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                       Header="Открепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachFile48x48.png" />
+            <!--<fluent:Button x:Name="btnMarkDICOM" Command="{Binding MarkDICOMCommand}" 
+                       Header="Отметить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Mark48x48.png" />-->
+        </fluent:RibbonGroupBox>
+
+        <fluent:RibbonGroupBox Header="Изменения">
+            <fluent:Button Header="Печать"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" Command="{Binding PrintProtocolCommand}"/>
+            <fluent:Button Header="Изменить"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" Command="{Binding ShowInEditModeCommand}" IsEnabled="{Binding IsViewModeActive}"/>
+            <fluent:Button Header="Сохранить"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png" Command="{Binding SaveProtocolCommand}" IsEnabled="{Binding IsEditModeActive}"/>
+            <fluent:Button Header="Закрыть"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" Command="{Binding ShowInViewModeCommand}"  IsEnabled="{Binding IsEditModeActive}"/>
+        </fluent:RibbonGroupBox>
+    </StackPanel>
+</UserControl>

@@ -61,7 +61,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <ContentControl Grid.Column="0" 
+                <ContentControl Grid.Column="0" Margin="1 1 0 0" MaxWidth="210"
                                 regions:RegionManager.RegionName="{x:Static shared:RegionNames.ListItems}"
                                 x:Name="listItems"
                                 HorizontalAlignment="Stretch"

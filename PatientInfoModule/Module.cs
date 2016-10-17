@@ -87,7 +87,7 @@ namespace PatientInfoModule
             RegisterViews();            
             InitiateLongRunningOperations();
             var patientRecords = container.Resolve<PatientRecords>();
-            patientRecords.Initialize();
+            PatientRecords.Initialize(container, regionManager, contextProvider, viewNameResolver, eventAggregator, log);
             log.InfoFormat("{0} module init finished", WellKnownModuleNames.PatientInfoModule);
         }
 

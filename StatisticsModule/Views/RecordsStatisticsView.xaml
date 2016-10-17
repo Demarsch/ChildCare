@@ -167,6 +167,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -196,8 +198,16 @@
                 <CheckBox Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" Content="амбулаторно" IsChecked="{Binding IsAmbulatory}"  Margin="5,2"/>
                 <CheckBox Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Content="в условиях стационара" IsChecked="{Binding IsStationary}"  Margin="5,2"/>
                 <CheckBox Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" Content="в условиях дневного стационара" IsChecked="{Binding IsDayStationary}" Margin="5,2"/>
+
+                <TextBlock Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Text="Бригада (для выполненных услуг):" Margin="5,20,5,2" />
+                <ComboBox Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3"
+                          ItemsSource="{Binding PersonStaffs}" 
+                            DisplayMemberPath="Field" 
+                            SelectedValuePath="Value"
+                            SelectedValue="{Binding SelectedPersonStaffId, Mode=TwoWay}"
+                            Margin="5,2"/>
                 
-                <Button Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Command="{Binding LoadResultCommand}" Margin="5,10">
+                <Button Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3" Command="{Binding LoadResultCommand}" Margin="5,10">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="pack://application:,,,/Core;Component/Resources/Images/Ok48x48.png" Stretch="Uniform" Height="24" Width="24"/>
                         <TextBlock Text="Показать результат" Margin="5,10" FontWeight="SemiBold" FontSize="14"/>

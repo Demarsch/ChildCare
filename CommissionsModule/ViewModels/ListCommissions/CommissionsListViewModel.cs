@@ -320,14 +320,18 @@ namespace CommissionsModule.ViewModels
                 return await completionTaskSource.Task;
             completionTaskSource = new TaskCompletionSource<bool>();
             var commissionProtocol = commissionService.GetCommissionProtocolById(protocolId).First();
-            SelectedCommission.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
-            SelectedCommission.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";
-            SelectedCommission.MKB = (string.IsNullOrEmpty(commissionProtocol.MKB) ? "МКБ: " + commissionProtocol.MKB : string.Empty);
-            SelectedCommission.CommissionDate = commissionProtocol.IncomeDateTime.ToShortDateString();
-            SelectedCommission.IsCompleted = commissionProtocol.IsCompleted;
-            SelectedCommission.DecisionColorHex = commissionService.GetDecisionColorHex(commissionProtocol.DecisionId);
-            SelectedCommission.DecisionText = commissionProtocol.DecisionId.HasValue ? commissionService.GetDecisionById(commissionProtocol.DecisionId.Value).Name : "не рассмотрено";
-            SelectedCommission.Question = commissionProtocol.CommissionQuestion.ShortName;
+            var updateCommission = Commissions.FirstOrDefault(x => x.Id == protocolId);
+            if (updateCommission != null)
+            {
+                updateCommission.BirthDate = commissionProtocol.Person.BirthDate + " г.р.";
+                updateCommission.Talon = commissionProtocol.PersonTalon != null ? commissionProtocol.PersonTalon.TalonNumber + " от " + commissionProtocol.PersonTalon.TalonDateTime.ToShortDateString() : "талон отсутствует";
+                updateCommission.MKB = (string.IsNullOrEmpty(commissionProtocol.MKB) ? "МКБ: " + commissionProtocol.MKB : string.Empty);
+                updateCommission.CommissionDate = commissionProtocol.IncomeDateTime.ToShortDateString();
+                updateCommission.IsCompleted = commissionProtocol.IsCompleted;
+                updateCommission.DecisionColorHex = commissionService.GetDecisionColorHex(commissionProtocol.DecisionId);
+                updateCommission.DecisionText = commissionProtocol.DecisionId.HasValue ? commissionService.GetDecisionById(commissionProtocol.DecisionId.Value).Name : "не рассмотрено";
+                updateCommission.Question = commissionProtocol.CommissionQuestion.ShortName;
+            }
             completionTaskSource.SetResult(true);
             return true;
         }

@@ -21,10 +21,11 @@ using System.Data.Entity;
 using Core.Extensions;
 using Core.Wpf.Misc;
 using Core.Misc;
+using System.Windows.Navigation;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class VisitEditorViewModel : TrackableBindableBase, INotification, IPopupWindowActionAware, IChangeTrackerMediator, IDataErrorInfo, IDisposable
+    public class VisitEditorViewModel : TrackableBindableBase, IChangeTrackerMediator, IDataErrorInfo, IDisposable, IDialogViewModel
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -38,6 +39,7 @@ namespace Shared.PatientRecords.ViewModels
         private TaskCompletionSource<bool> dataSourcesLoadingTaskSource;
 
         private bool needLoadTemplateData = true;
+        private string title;
 
         #endregion
 
@@ -55,9 +57,7 @@ namespace Shared.PatientRecords.ViewModels
             this.patientRecordsService = patientRecordsService;
             this.logService = logService;
             ChangeTracker = new ChangeTrackerEx<VisitEditorViewModel>(this);
-            ChangeTracker.PropertyChanged += OnChangesTracked;
-            CreateVisitCommand = new DelegateCommand(SaveChangesAsync, CanSaveChanges);
-            CancelCommand = new DelegateCommand(Cancel);
+            ChangeTracker.PropertyChanged += OnChangesTracked;            
             VisitTemplates = new ObservableCollectionEx<CommonIdName>();
             Contracts = new ObservableCollectionEx<CommonIdName>();
             FinancingSources = new ObservableCollectionEx<CommonIdName>();
@@ -74,6 +74,7 @@ namespace Shared.PatientRecords.ViewModels
             reloadDataSourceCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => EnsureDataSourceLoaded()) };
             reloadVisitDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitDataAsync(visitId)) };
             saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => SaveChangesAsync()) };
+            CloseCommand = new DelegateCommand<bool?>(Close);
         }
         #endregion
 
@@ -225,8 +226,7 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region Commands
-        public ICommand CreateVisitCommand { get; private set; }
-        private async void SaveChangesAsync()
+        private async Task SaveChangesAsync()
         {
             FailureMediator.Deactivate();
             if (!IsValid)
@@ -243,13 +243,13 @@ namespace Shared.PatientRecords.ViewModels
             string visitIdString = visitId > 0 ? visitId.ToString() : "(new visit)";
             logService.InfoFormat("Saving data for visit with Id = {0} for person with Id = {1}", visitIdString, personId);
             BusyMediator.Activate("Сохранение изменений...");
-            var saveSuccesfull = false;
+            SaveIsSuccessful = false;
             try
             {
                 var result = await patientRecordsService.SaveVisitAsync(visitId, personId, Date, SelectedContractId.Value, SelectedFinancingSourceId.Value, SelectedUrgentlyId.Value, SelectedVisitTemplateId.Value, SelectedExecutionPlaceId.Value,
                     SelectedLPUId.Value, Note, token);
                 visitId = result;
-                saveSuccesfull = true;
+                SaveIsSuccessful = true;
             }
             catch (OperationCanceledException)
             {
@@ -263,30 +263,20 @@ namespace Shared.PatientRecords.ViewModels
             finally
             {
                 BusyMediator.Deactivate();
-                if (saveSuccesfull)
+                if (SaveIsSuccessful)
                 {
                     ChangeTracker.AcceptChanges();
                     /////ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
-                    HostWindow.Close();
-
                 }
             }
         }
 
-        public ICommand CancelCommand { get; private set; }
-        private void Cancel()
-        {
-            FailureMediator.Deactivate();
-            ChangeTracker.RestoreChanges();
-            visitId = -1;
-            HostWindow.Close();
-        }
         #endregion
 
         #region Methods
 
-        public void IntializeCreation(int personId, int? visitTemplateId, int? visitId, DateTime date, string title)
+        public async void IntializeCreation(int personId, int? visitTemplateId, int? visitId, DateTime date, string title)
         {
             ContractSetByVisitTemplate = false;
             FinancingSourceSetByVisitTemplate = false;
@@ -301,11 +291,15 @@ namespace Shared.PatientRecords.ViewModels
             this.SelectedVisitTemplateId = visitTemplateId;
             this.Date = date;
             this.Note = string.Empty;
-            this.Title = title;
+            this.title = title;
             BusyMediator.Deactivate();
             FailureMediator.Deactivate();
             FailureMediator = new FailureMediator();
-            this.visitId = visitId.ToInt();
+            var dataSourcesLoaded = await EnsureDataSourceLoaded();
+            if (!dataSourcesLoaded)
+            {
+                return;
+            }
             if (visitId.HasValue)
                 LoadVisitDataAsync(this.visitId);
         }
@@ -316,17 +310,13 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private async void LoadVisitDataAsync(int visitId)
-        {
-            var dataSourcesLoaded = await EnsureDataSourceLoaded();
+        {            
             ContractSetByVisitTemplate = false;
             FinancingSourceSetByVisitTemplate = false;
             UrgentlySetByVisitTemplate = false;
             ExecutionPlaceSetByVisitTemplate = false;
             ChangeTracker.IsEnabled = false;
-            if (!dataSourcesLoaded)
-            {
-                return;
-            }
+            
             if (visitId < 1)
                 return;
             if (currentOperationToken != null)
@@ -575,22 +565,10 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
             {
-                (CreateVisitCommand as DelegateCommand).RaiseCanExecuteChanged();
+                
             }
         }
 
-        #endregion
-
-        #region IPopupWindowActionAware implementation
-        public System.Windows.Window HostWindow { get; set; }
-
-        public INotification HostNotification { get; set; }
-        #endregion
-
-        #region INotification implementation
-        public object Content { get; set; }
-
-        public string Title { get; set; }
         #endregion
 
         #region IDataErrorInfo implementation
@@ -652,6 +630,57 @@ namespace Shared.PatientRecords.ViewModels
         {
             get { throw new NotImplementedException(); }
         }
+        #endregion
+
+        #region IDialogViewModel
+
+        public string Title
+        {
+            get { return this.title; }
+        }
+
+        public string ConfirmButtonText
+        {
+            get { return "Сохранить"; }
+        }
+
+        public string CancelButtonText
+        {
+            get { return "Отмена"; }
+        }
+
+        public DelegateCommand<bool?> CloseCommand { get; private set; }
+
+        public bool SaveIsSuccessful;
+
+        private async void Close(bool? validate)
+        {
+            if (validate == true)
+            {
+                if (IsValid)
+                {
+                    await SaveChangesAsync();
+                    if (SaveIsSuccessful)
+                        OnCloseRequested(new ReturnEventArgs<bool>(true));
+                }
+            }
+            else
+            {
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+            }
+        }
+
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
+
+        protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
         #endregion
     }
 }

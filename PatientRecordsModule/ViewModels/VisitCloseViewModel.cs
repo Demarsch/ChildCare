@@ -25,10 +25,11 @@ using WpfControls.Editors;
 using Microsoft.Practices.Unity;
 using Shared.PatientRecords.Misc;
 using ISuggestionProvider = WpfControls.Editors.ISuggestionProvider;
+using System.Windows.Navigation;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class VisitCloseViewModel : TrackableBindableBase, INotification, IPopupWindowActionAware, IDataErrorInfo, IChangeTrackerMediator, IDisposable
+    public class VisitCloseViewModel : TrackableBindableBase, IDataErrorInfo, IChangeTrackerMediator, IDisposable, IDialogViewModel
     {
         #region Fields
         private readonly IPatientRecordsService patientRecordsService;
@@ -39,6 +40,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly CommandWrapper saveChangesCommandWrapper;
 
         private int visitId = 0;
+        private string title;
         #endregion
 
         #region Constructors
@@ -58,12 +60,11 @@ namespace Shared.PatientRecords.ViewModels
             ChangeTracker.PropertyChanged += OnChangesTracked;
             VisitResults = new ObservableCollectionEx<CommonIdName>();
             VisitOutcomes = new ObservableCollectionEx<CommonIdName>();
-            CloseVisitCommand = new DelegateCommand(CloseVisitAsync, CanSaveChanges);
-            CancelCommand = new DelegateCommand(Cancel);
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             reloadVisitDataCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitDataAsync(visitId)) };
             saveChangesCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => CloseVisitAsync()) };
+            CloseCommand = new DelegateCommand<bool?>(Close);
         }
         #endregion
 
@@ -118,7 +119,6 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region Commands
-        public ICommand CloseVisitCommand { get; private set; }
         private async void CloseVisitAsync()
         {
             FailureMediator.Deactivate();
@@ -136,11 +136,11 @@ namespace Shared.PatientRecords.ViewModels
             string visitIdString = visitId < 1 ? visitId.ToString() : "(new visit)";
             logService.InfoFormat("Saving data while closing visit for visit with Id = {0}", visitIdString);
             BusyMediator.Activate("Сохранение изменений...");
-            var saveSuccesfull = false;
+            SaveIsSuccessful = false;
             try
             {
                 var result = await patientRecordsService.CloseVisitAsync(visitId, Date, MKB.Code, SelectedVisitOutcomeId, SelectedVisitResultId, token);
-                saveSuccesfull = true;
+                SaveIsSuccessful = true;
             }
             catch (OperationCanceledException)
             {
@@ -154,31 +154,22 @@ namespace Shared.PatientRecords.ViewModels
             finally
             {
                 BusyMediator.Deactivate();
-                if (saveSuccesfull)
+                if (SaveIsSuccessful)
                 {
                     ChangeTracker.AcceptChanges();
                     ChangeTracker.IsEnabled = true;
                     //changeTracker.UntrackAll();
-                    HostWindow.Close();
                 }
             }
         }
-
-        public ICommand CancelCommand { get; private set; }
-        private void Cancel()
-        {
-            FailureMediator.Deactivate();
-            ChangeTracker.RestoreChanges();
-            visitId = -1;
-            HostWindow.Close();
-        }
+       
         #endregion
 
         #region Methods
 
         public void IntializeCreation(int visitId, string title)
         {
-            this.Title = title;
+            this.title = title;
             BusyMediator.Deactivate();
             FailureMediator.Deactivate();
             FailureMediator = new FailureMediator();
@@ -197,7 +188,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             if (string.IsNullOrWhiteSpace(e.PropertyName) || string.CompareOrdinal(e.PropertyName, "HasChanges") == 0)
             {
-                (CloseVisitCommand as DelegateCommand).RaiseCanExecuteChanged();
+                
             }
         }
         private bool CanSaveChanges()
@@ -267,19 +258,7 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
         #endregion
-
-        #region IPopupWindowActionAware implementation
-        public System.Windows.Window HostWindow { get; set; }
-
-        public INotification HostNotification { get; set; }
-        #endregion
-
-        #region INotification implementation
-        public object Content { get; set; }
-
-        public string Title { get; set; }
-        #endregion
-
+        
         #region IDataErrorInfo implementation
         private bool saveWasRequested;
 
@@ -333,6 +312,53 @@ namespace Shared.PatientRecords.ViewModels
         {
             get { throw new NotImplementedException(); }
         }
+        #endregion
+
+        #region IDialogViewModel
+
+        public string Title
+        {
+            get { return this.title; }
+        }
+
+        public string ConfirmButtonText
+        {
+            get { return "Сохранить"; }
+        }
+
+        public string CancelButtonText
+        {
+            get { return "Отмена"; }
+        }
+
+        public DelegateCommand<bool?> CloseCommand { get; private set; }
+
+        public bool SaveIsSuccessful;
+
+        private void Close(bool? validate)
+        {
+            //assignWasRequested = true;
+            if (IsValid)
+            {
+                CloseVisitAsync();
+            }
+            else
+            {
+                OnCloseRequested(new ReturnEventArgs<bool>(false));
+            }
+        }
+
+        public event EventHandler<ReturnEventArgs<bool>> CloseRequested;
+
+        protected virtual void OnCloseRequested(ReturnEventArgs<bool> e)
+        {
+            var handler = CloseRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
         #endregion
     }
 }

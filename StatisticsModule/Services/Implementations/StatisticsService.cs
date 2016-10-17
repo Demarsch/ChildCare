@@ -31,14 +31,20 @@ namespace StatisticsModule.Services
             return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().AsNoTracking().Where(x => x.IsActive), context);
         }
 
-
-        public IDisposableQueryable<Record> GetRecords(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isCompleted, bool isInProgress, bool isAmbulatory, bool isStationary, bool isDayStationary)
+        public IDisposableQueryable<PersonStaff> GetPersonStaffs()
         {
             var context = contextProvider.CreateNewContext();
-            var query = context.Set<Record>().Where(x => (selectedFinSourceId == -1 || x.RecordContract.FinancingSourceId == selectedFinSourceId) &&
+            return new DisposableQueryable<PersonStaff>(context.Set<PersonStaff>().OrderBy(x => x.Person.ShortName), context);
+        }
+
+        public IDisposableQueryable<Record> GetRecords(DateTime beginDate, DateTime endDate, int finSourceId, bool isCompleted, bool isInProgress, bool isAmbulatory, bool isStationary, bool isDayStationary, int employeeId)
+        {
+            var context = contextProvider.CreateNewContext();
+            var query = context.Set<Record>().Where(x => (finSourceId == -1 || x.RecordContract.FinancingSourceId == finSourceId) &&
                                                         DbFunctions.TruncateTime(x.BeginDateTime) <= DbFunctions.TruncateTime(endDate) &&
                                                         DbFunctions.TruncateTime(x.EndDateTime) >= DbFunctions.TruncateTime(beginDate) &&
                                                         ((isInProgress && x.IsCompleted == false) || (isCompleted && x.IsCompleted == true)) &&
+                                                        (employeeId == -1 || x.RecordMembers.Any(a => a.PersonStaff.PersonId == employeeId)) &&
                                                         ((isAmbulatory && x.ExecutionPlace.Options.Contains(OptionValues.Ambulatory)) || (isStationary && x.ExecutionPlace.Options.Contains(OptionValues.Stationary)) || (isDayStationary && x.ExecutionPlace.Options.Contains(OptionValues.DayStationary)))
                                                         );
             
@@ -47,10 +53,10 @@ namespace StatisticsModule.Services
         }
 
 
-        public IDisposableQueryable<Assignment> GetAssignments(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isAmbulatory, bool isStationary, bool isDayStationary)
+        public IDisposableQueryable<Assignment> GetAssignments(DateTime beginDate, DateTime endDate, int finSourceId, bool isAmbulatory, bool isStationary, bool isDayStationary)
         {
             var context = contextProvider.CreateNewContext();
-            var query = context.Set<Assignment>().Where(x => (selectedFinSourceId == -1 || x.FinancingSourceId == selectedFinSourceId) &&
+            var query = context.Set<Assignment>().Where(x => (finSourceId == -1 || x.FinancingSourceId == finSourceId) &&
                                                         DbFunctions.TruncateTime(beginDate) <= DbFunctions.TruncateTime(x.AssignDateTime) &&
                                                         DbFunctions.TruncateTime(endDate) >= DbFunctions.TruncateTime(x.AssignDateTime) &&
                                                         !x.RecordId.HasValue &&

@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace StatisticsModule.Classes
+namespace Core.Misc
 {
     public class DataGridRowDefinition
     {
@@ -29,7 +21,7 @@ namespace StatisticsModule.Classes
         public ObservableCollection<string> Cells
         {
             get { return cells; }
-            internal set { cells = value; }
+            set { cells = value; }
         }
 
         List<DataGridRowDefinition> details;
@@ -102,6 +94,13 @@ namespace StatisticsModule.Classes
         {
             get { return hasChildren; }
             set { hasChildren = value; }
+        }
+
+        object[] parameters;
+        public object[] Parameters
+        {
+            get { return parameters; }
+            set { parameters = value; }
         }
     }
 }

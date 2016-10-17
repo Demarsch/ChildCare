@@ -23,6 +23,8 @@
 
         public const string StatisticsModuleAccess = "Доступ к модулю \"Статистика\"";
 
+        public const string PolyclinicModuleAccess = "Доступ к модулю \"КДЦ\"";
+
         #endregion
 
         #region Assignments

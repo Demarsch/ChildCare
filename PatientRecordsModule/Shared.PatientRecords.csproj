@@ -133,6 +133,7 @@
     <Compile Include="DTOs\AnalyseParameterDTO.cs" />
     <Compile Include="DTOs\BrigadeDTO.cs" />
     <Compile Include="DTOs\CommonRecordAssignmentDTO.cs" />
+    <Compile Include="Events\PolyclinicPersonListChangedEvent.cs" />
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\PersonItem.cs" />
     <Compile Include="ViewModels\Analyses\AnalyseRefferenceCollectionViewModel.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="ViewModels\RecordDocuments\RecordDocumentViewModel.cs" />
     <Compile Include="ViewModels\RecordTypesProtocolViewModels\DefaultProtocolViewModel.cs" />
     <Compile Include="ViewModels\RecordTypesProtocolViewModels\VisitProtocolViewModel.cs" />
+    <Compile Include="ViewModels\UserControls\PersonRecordsToolboxViewModel.cs" />
     <Compile Include="ViewModels\VisitCloseViewModel.cs" />
     <Compile Include="ViewModels\VisitEditorViewModel.cs" />
     <Compile Include="ViewModels\PersonRecordEditorViewModel.cs" />
@@ -200,14 +202,11 @@
     <Compile Include="Views\EmptyPatientInfoView.xaml.cs">
       <DependentUpon>EmptyPatientInfoView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PersonRecordsToolboxView.xaml.cs">
+      <DependentUpon>PersonRecordsToolboxView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RecordDocuments\RecordDocumentsView.xaml.cs">
       <DependentUpon>RecordDocumentsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\VisitCloseView.xaml.cs">
-      <DependentUpon>VisitCloseView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\VisitEditorView.xaml.cs">
-      <DependentUpon>VisitEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PersonRecordEditorView.xaml.cs">
       <DependentUpon>PersonRecordEditorView.xaml</DependentUpon>
@@ -280,6 +279,10 @@
     <Page Include="Views\EmptyPatientInfoView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PersonRecordsToolboxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RecordDocuments\RecordDocumentsView.xaml">
       <Generator>MSBuild:Compile</Generator>

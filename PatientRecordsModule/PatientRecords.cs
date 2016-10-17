@@ -32,63 +32,38 @@ namespace Shared.PatientRecords
         #region Fields
         private const string PatientIsNotSelected = "Пациент не выбран";
 
-        private readonly IUnityContainer container;
+        private static IUnityContainer container;
 
-        private readonly IRegionManager regionManager;
+        private static IRegionManager regionManager;
 
-        private readonly IDbContextProvider contextProvider;
+        private static IDbContextProvider contextProvider;
 
-        private readonly IEventAggregator eventAggregator;
+        private static IEventAggregator eventAggregator;
 
-        private readonly IViewNameResolver viewNameResolver;
+        private static IViewNameResolver viewNameResolver;
 
-        private readonly ILog log;
+        private static ILog log;
         #endregion
 
         #region Constructors
-        public PatientRecords(IUnityContainer container,
-                     IRegionManager regionManager,
-                     IDbContextProvider contextProvider,
-                     IViewNameResolver viewNameResolver,
-                     IEventAggregator eventAggregator,
-                     ILog log)
-        {
-            if (container == null)
-            {
-                throw new ArgumentNullException("container");
-            }
-            if (regionManager == null)
-            {
-                throw new ArgumentNullException("regionManager");
-            }
-            if (viewNameResolver == null)
-            {
-                throw new ArgumentNullException("viewNameResolver");
-            }
-            if (contextProvider == null)
-            {
-                throw new ArgumentNullException("contextProvider");
-            }
-            if (eventAggregator == null)
-            {
-                throw new ArgumentNullException("eventAggregator");
-            }
-            if (log == null)
-            {
-                throw new ArgumentNullException("log");
-            }
-            this.container = container;
-            this.regionManager = regionManager;
-            this.viewNameResolver = viewNameResolver;
-            this.contextProvider = contextProvider;
-            this.eventAggregator = eventAggregator;
-            this.log = log;
-        }
+
         #endregion
 
         #region Methods
-        public void Initialize()
+        public static void Initialize(IUnityContainer unityContainer,
+                     IRegionManager manager,
+                     IDbContextProvider provider,
+                     IViewNameResolver resolver,
+                     IEventAggregator aggregator,
+                     ILog loger)
         {
+            container = unityContainer;
+            regionManager = manager;
+            viewNameResolver = resolver;
+            contextProvider = provider;
+            eventAggregator = aggregator;
+            log = loger;
+
             log.InfoFormat("Patient records library start");
             RegisterServices();
             RegisterViewModels();
@@ -96,7 +71,7 @@ namespace Shared.PatientRecords
             log.InfoFormat("Patient records library finished");
         }
 
-        private void RegisterViewModels()
+        private static void RegisterViewModels()
         {
             container.RegisterType<PersonRecordsViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PersonRecordListViewModel>(new ContainerControlledLifetimeManager());
@@ -128,7 +103,7 @@ namespace Shared.PatientRecords
             container.RegisterType<VisitProtocolViewModel>(new TransientLifetimeManager());
         }
 
-        private void RegisterViews()
+        private static void RegisterViews()
         {
             container.RegisterType<object, PersonRecordsView>(viewNameResolver.Resolve<PersonRecordsViewModel>(), new ContainerControlledLifetimeManager());
             container.RegisterType<object, PersonRecordListView>(viewNameResolver.Resolve<PersonRecordListViewModel>(), new ContainerControlledLifetimeManager());
@@ -148,14 +123,13 @@ namespace Shared.PatientRecords
             container.RegisterType<object, AnalyseProtocolView>(viewNameResolver.Resolve<AnalyseProtocolViewModel>(), new ContainerControlledLifetimeManager());
             //RecordTypes Protocols
             container.RegisterType<object, DefaultProtocolView>(viewNameResolver.Resolve<DefaultProtocolViewModel>(), new ContainerControlledLifetimeManager());
-
-
+            
             regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<PersonRecordsHeader>());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<PersonRecordsView>());
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/Shared.PatientRecords;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
 
-        private void RegisterServices()
+        private static void RegisterServices()
         {
             container.RegisterType<IHierarchicalRepository, HierarchicalRepository>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPersonRecordEditor, PersonRecordEditorViewModel>(new ContainerControlledLifetimeManager());

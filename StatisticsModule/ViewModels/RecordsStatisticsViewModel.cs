@@ -20,8 +20,8 @@ using StatisticsModule.Services;
 using Prism.Regions;
 using System.Windows.Input;
 using StatisticsModule.DTO;
-using StatisticsModule.Classes;
 using System.Collections.ObjectModel;
+using Core.Misc;
 
 namespace StatisticsModule.ViewModels
 {
@@ -77,6 +77,7 @@ namespace StatisticsModule.ViewModels
 
             BusyMediator = new BusyMediator();
             FinSources = new ObservableCollectionEx<FieldValue>();
+            Employees = new ObservableCollectionEx<FieldValue>();
             Source = new ObservableCollectionEx<DataGridRowDefinition>();
             Details = new ObservableCollectionEx<DataGridRowDefinition>();
         }
@@ -113,10 +114,12 @@ namespace StatisticsModule.ViewModels
 
         internal async Task InitialLoadingAsync()
         {
-            FinSources.Clear();            
+            FinSources.Clear();
+            Employees.Clear();
             BusyMediator.Activate("Загрузка данных...");
             logService.Info("Loading data sources...");
             IDisposableQueryable<FinancingSource> finSourcesQuery = null;
+            IDisposableQueryable<PersonStaff> employeesQuery = null;
             try
             {               
                 finSourcesQuery = statisticsService.GetActualFinancingSources();
@@ -124,6 +127,12 @@ namespace StatisticsModule.ViewModels
                 FinSources.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- все ист. финансирования -" });
                 FinSources.AddRange(finSourcesSelectQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
                 SelectedFinSourceId = SpecialValues.NonExistingId;
+
+                employeesQuery = statisticsService.GetPersonStaffs();
+                var employeesSelectQuery = await employeesQuery.Select(x => new { x.PersonId, PersonName = x.Person.ShortName }).ToArrayAsync();
+                Employees.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- все сотрудники -" });
+                Employees.AddRange(employeesSelectQuery.Select(x => new FieldValue { Value = x.PersonId, Field = x.PersonName }));
+                SelectedEmployeeId = SpecialValues.NonExistingId;
 
                 BeginDate = DateTime.Now.Date;
                 EndDate = new DateTime(BeginDate.Year + 1, 1, 1);
@@ -142,6 +151,8 @@ namespace StatisticsModule.ViewModels
             {
                 if (finSourcesQuery != null)
                     finSourcesQuery.Dispose();
+                if (employeesQuery != null)
+                    employeesQuery.Dispose();
                 BusyMediator.Deactivate();
             }
         }
@@ -157,7 +168,7 @@ namespace StatisticsModule.ViewModels
             var token = currentLoadingToken.Token;
 
             #region Get Data
-            var recordsQuery = statisticsService.GetRecords(beginDate, endDate, selectedFinSourceId, isCompleted, isInProgress, isAmbulatory, isStationary, isDayStationary);
+            var recordsQuery = statisticsService.GetRecords(beginDate, endDate, selectedFinSourceId, isCompleted, isInProgress, isAmbulatory, isStationary, isDayStationary, selectedEmployeeId);
             RecordDTO[] recordsResult = await Task.Factory.StartNew(() =>
             {
                 return recordsQuery.Select(x => new RecordDTO
@@ -345,6 +356,20 @@ namespace StatisticsModule.ViewModels
         {
             get { return selectedFinSourceId; }
             set { SetProperty(ref selectedFinSourceId, value); }
+        }
+
+        private ObservableCollectionEx<FieldValue> employees;
+        public ObservableCollectionEx<FieldValue> Employees
+        {
+            get { return employees; }
+            set { SetProperty(ref employees, value); }
+        }
+
+        private int selectedEmployeeId;
+        public int SelectedEmployeeId
+        {
+            get { return selectedEmployeeId; }
+            set { SetProperty(ref selectedEmployeeId, value); }
         }
 
         private DateTime beginDate;

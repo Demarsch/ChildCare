@@ -22,6 +22,7 @@
                        Header="Поиск пациента"
                        Command="{Binding CommissionJournalViewModel.SearchPatientCommand, Mode=OneTime}"/>
     </fluent:RibbonGroupBox>
+    
     <fluent:RibbonGroupBox>        
         <StackPanel Orientation="Vertical">
             <TextBlock Margin="5 0" Text="Фильтр по пациенту:" VerticalAlignment="Center" HorizontalAlignment="Left"/>

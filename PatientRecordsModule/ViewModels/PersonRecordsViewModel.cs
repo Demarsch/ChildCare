@@ -139,10 +139,7 @@ namespace Shared.PatientRecords.ViewModels
             completeVisitCommandWrapper = new CommandWrapper { Command = completeVisitCommand };
             completeRecordCommandWrapper = new CommandWrapper { Command = completeRecordCommand };
             inProgressRecordCommandWrapper = new CommandWrapper { Command = inProgressRecordCommand };
-
-            VisitEditorInteractionRequest = new InteractionRequest<VisitEditorViewModel>();
-            VisitCloseInteractionRequest = new InteractionRequest<VisitCloseViewModel>();
-
+            
             FailureMediator = new FailureMediator();
             BusyMediator = new BusyMediator();
             NotificationMediator = new NotificationMediator();
@@ -171,10 +168,6 @@ namespace Shared.PatientRecords.ViewModels
         public FailureMediator FailureMediator { get; private set; }
 
         public NotificationMediator NotificationMediator { get; private set; }
-
-        public InteractionRequest<VisitEditorViewModel> VisitEditorInteractionRequest { get; private set; }
-
-        public InteractionRequest<VisitCloseViewModel> VisitCloseInteractionRequest { get; private set; }
 
         //Properties form personRecordEditorViewModel for header
         public bool IsViewModeInCurrentProtocolEditor
@@ -227,8 +220,8 @@ namespace Shared.PatientRecords.ViewModels
 
         private void OnPatientSelected(int personId)
         {
-            this.PersonId = personId;
-            personRecordListViewModel.LoadRootItemsAsync(this.PersonId);
+            if (this.PersonId != personId)
+                personRecordListViewModel.LoadRootItemsAsync(personId);
         }
 
         private void OnEditorSelected(IPersonRecordEditor personRecordEditor)
@@ -263,41 +256,57 @@ namespace Shared.PatientRecords.ViewModels
 
         #region Commands
         public ICommand CreateNewVisitCommand { get { return createNewVisitCommand; } }
-        private void CreateNewVisit(int? selectedTemplate)
+        private async void CreateNewVisit(int? selectedTemplate)
         {
+            if (SpecialValues.IsNewOrNonExisting(this.PersonId))
+            {
+                messageService.ShowError("Не выбран пациент");
+                return;
+            }
             var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, selectedTemplate, null, DateTime.Now, "Создать новый случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) =>
+            var result = await dialogServiceAsync.ShowDialogAsync(newVisitCreatingViewModel);
+            if (newVisitCreatingViewModel.SaveIsSuccessful)
             {
-                personRecordListViewModel.AddNewVisitToList(vm.VisitId);
+                personRecordListViewModel.AddNewVisitToList(newVisitCreatingViewModel.VisitId);
                 NotificationMediator.Activate("Случай успешно создан", NotificationMediator.DefaultHideTime);
-            });
+            }
         }
 
         public ICommand EditVisitCommand { get { return editVisitCommand; } }
-        private void EditVisit(int? visitId)
+        private async void EditVisit(int? visitId)
         {
             if (visitId < 1)
             {
-                FailureMediator.Activate("Данная случай не найден", true);
+                FailureMediator.Activate("Случай не найден", true);
                 return;
             }
             var newVisitCreatingViewModel = visitEditorViewModelFactory();
             newVisitCreatingViewModel.IntializeCreation(PersonId, null, visitId, DateTime.Now, "Редактировать случай");
-            VisitEditorInteractionRequest.Raise(newVisitCreatingViewModel, (vm) => { /*UpdateVisit(vm.VisitId);*/ });
+            var result = await dialogServiceAsync.ShowDialogAsync(newVisitCreatingViewModel);
+            if (newVisitCreatingViewModel.SaveIsSuccessful)
+            {
+                //UpdateVisit(vm.VisitId);
+                //NotificationMediator.Activate("Данные случая обновлены", NotificationMediator.DefaultHideTime);
+            }
         }
 
         public ICommand CompleteVisitCommand { get { return completeVisitCommand; } }
-        private void CompleteVisitAsync(int? visitId)
+        private async void CompleteVisitAsync(int? visitId)
         {
             if (visitId < 1)
             {
-                messageService.ShowError("Данная случай не найден");
+                FailureMediator.Activate("Случай не найден", true);
                 return;
             }
             var visitCloseViewModel = visitCloseViewModelFactory();
             visitCloseViewModel.IntializeCreation(visitId.Value, "Завершить случай");
-            VisitCloseInteractionRequest.Raise(visitCloseViewModel, (vm) => {/* UpdateVisit(vm.VisitId);*/ });
+            var result = await dialogServiceAsync.ShowDialogAsync(visitCloseViewModel);
+            if (visitCloseViewModel.SaveIsSuccessful)
+            {
+                //UpdateVisit(vm.VisitId);
+                //NotificationMediator.Activate("Данные случая обновлены", NotificationMediator.DefaultHideTime);
+            }
         }
 
 
@@ -594,7 +603,10 @@ namespace Shared.PatientRecords.ViewModels
         {
             var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
             if (targetPatientId != personId)
+            {
                 PersonId = targetPatientId;
+                personRecordListViewModel.LoadRootItemsAsync(this.PersonId);
+            }
         }
 
         #endregion

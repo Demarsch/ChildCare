@@ -1,40 +1,38 @@
-﻿<UserControl x:Class="Shared.PatientRecords.Views.VisitCloseView"
+﻿<ResourceDictionary x:Class="Shared.PatientRecords.Views.VisitCloseView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:Shared.PatientRecords.ViewModels"
              xmlns:editors="http://wpfcontrols.com/"
-             xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" 
-             d:DesignWidth="300"
-             d:DataContext="{d:DesignInstance viewModels:VisitEditorViewModel}">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-    <Grid>
+             xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit">
+    <DataTemplate DataType="{x:Type viewModels:VisitEditorViewModel}">
+        <DataTemplate.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/Core.Wpf;Component/Themes/Generic.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </DataTemplate.Resources>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Дата/время окончания случая:"/>
-            <extToolkit:DateTimePicker Grid.Row="0" Grid.Column="1" Margin="1" HorizontalAlignment="Left" Width="165" Value="{Binding Date}" Format="Custom" FormatString="dd MMMM yyyy HH:mm"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Дата/время окончания случая:"/>
+                <extToolkit:DateTimePicker Grid.Row="0" Grid.Column="1" Margin="1" HorizontalAlignment="Left" Width="165" Value="{Binding Date}" Format="Custom" FormatString="dd MMMM yyyy HH:mm"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Диагноз по МКБ-10:"/>
-            <editors:AutoCompleteTextBox Grid.Row="1"
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Диагноз по МКБ-10:"/>
+                <editors:AutoCompleteTextBox Grid.Row="1"
                                      Grid.Column="1"
                                      Margin="1"
                                      Background="White"
@@ -44,30 +42,28 @@
                                      Watermark="Введите код диагноза или любое слово из его названия"
                                      Validation.ErrorTemplate="{StaticResource ValidationTemplateRightIcon}"
                                      HorizontalAlignment="Stretch">
-            </editors:AutoCompleteTextBox>
+                </editors:AutoCompleteTextBox>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Результат:"/>
-            <ComboBox Grid.Row="2" Grid.Column="1" Margin="3,1,20,1" ItemsSource="{Binding VisitResults}" 
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Результат:"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="3,1,20,1" ItemsSource="{Binding VisitResults}" 
                       SelectedValue="{Binding SelectedVisitResultId, ValidatesOnDataErrors=True}" 
                       Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       SelectedValuePath="Id" DisplayMemberPath="Name"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Исход:"/>
-            <ComboBox Grid.Row="3" Grid.Column="1" Margin="3,1,20,1" ItemsSource="{Binding VisitOutcomes}" 
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Исход:"/>
+                <ComboBox Grid.Row="3" Grid.Column="1" Margin="3,1,20,1" ItemsSource="{Binding VisitOutcomes}" 
                       SelectedValue="{Binding SelectedVisitOutcomeId, ValidatesOnDataErrors=True}" 
                       Validation.ErrorTemplate="{StaticResource ValidationTemplate}" 
                       SelectedValuePath="Id" DisplayMemberPath="Name"/>
 
-            <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Сохранить" Margin="3" Command="{Binding CloseVisitCommand}"/>
-                <Button Content="Отмена" Margin="3" Command="{Binding CancelCommand}"/>
-            </StackPanel>
+                
+            </Grid>
+            <ContentControl Content="{Binding BusyMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
+            <ContentControl Content="{Binding FailureMediator}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch" />
         </Grid>
-        <ContentControl Content="{Binding BusyMediator}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
-        <ContentControl Content="{Binding FailureMediator}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch" />
-    </Grid>
-</UserControl>
+    </DataTemplate>
+</ResourceDictionary>
