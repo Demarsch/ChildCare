@@ -25,11 +25,11 @@
                           SelectedValue="{Binding SelectedFilter, Mode=TwoWay}"
                           SelectedValuePath="Value" 
                           DisplayMemberPath="Field" />
-            <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding FilterDate}" Margin="2"
+            <DatePicker DockPanel.Dock="Top" SelectedDate="{Binding FilterDate}" Margin="2 0"
                         HorizontalAlignment="Stretch" Width="200"
                         Visibility="{Binding ShowDateFilter, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             <CheckBox DockPanel.Dock="Top" 
-                      Content="Мои комиссии" Margin="2,0,2,2" IsChecked="{Binding OnlyMyCommissions}"/>            
+                      Content="Мои комиссии" Margin="2 0" IsChecked="{Binding OnlyMyCommissions}"/>            
         </DockPanel>
         
         <ListBox Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="Black" 
@@ -73,6 +73,6 @@
 
         </ListBox>
 
-        <ContentControl Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <ContentControl Grid.RowSpan="2" Content="{Binding BusyMediator}" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
     </Grid>
 </UserControl>

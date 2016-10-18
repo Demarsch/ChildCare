@@ -205,7 +205,7 @@ namespace Shared.Patient.ViewModels
             {
                 log.Error("Failed to find patients", ex);
                 searchIsCompleted = true;
-                FailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", searchPersonsCommandWrapper, ex);
+                FailureMediator.Activate("Не удалось загрузить пациентов. Попробуйте еще раз или перезапустите приложение", searchPersonsCommandWrapper, ex, true);
             }
             finally
             {
@@ -216,6 +216,7 @@ namespace Shared.Patient.ViewModels
                 if (searchIsCompleted)
                 {
                     BusyMediator.Deactivate();
+                    FailureMediator.Deactivate();
                 }
             }
         }

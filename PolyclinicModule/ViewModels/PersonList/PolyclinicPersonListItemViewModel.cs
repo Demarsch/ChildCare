@@ -92,6 +92,13 @@ namespace PolyclinicModule.ViewModels
             set { hasChildren = value; }
         }
 
+        int index;
+        public int Index
+        {
+            get { return index; }
+            set { index = value; }
+        }
+
         #endregion
 
         int personId;
@@ -113,6 +120,13 @@ namespace PolyclinicModule.ViewModels
         {
             get { return recordId; }
             set { recordId = value; }
+        }
+
+        DateTime date;
+        public DateTime Date
+        {
+            get { return date; }
+            set { date = value; }
         }
 
         bool isCompleted;

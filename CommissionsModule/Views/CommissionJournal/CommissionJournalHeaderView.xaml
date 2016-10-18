@@ -14,18 +14,14 @@
                       d:DataContext="{d:DesignInstance viewModels:CommissionJournalHeaderViewModel}" 
                       Header="Журнал ВК">
     <!---->
-
-    <fluent:RibbonGroupBox>
-        <fluent:Button Size="Large"
+    <fluent:RibbonGroupBox Header="Фильтр по пациенту">        
+        <StackPanel Orientation="Horizontal">
+            <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SearchMan48x48.png"
                        ToolTip="Поиск пациента"
                        Header="Поиск пациента"
                        Command="{Binding CommissionJournalViewModel.SearchPatientCommand, Mode=OneTime}"/>
-    </fluent:RibbonGroupBox>
-    
-    <fluent:RibbonGroupBox>        
-        <StackPanel Orientation="Vertical">
-            <TextBlock Margin="5 0" Text="Фильтр по пациенту:" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            <Separator/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="5 0" Text="{Binding CommissionJournalViewModel.SelectedPatient}" VerticalAlignment="Center" HorizontalAlignment="Center" FontStyle="Italic" Foreground="Gray"/>
                 <Button Margin="5" Command="{Binding CommissionJournalViewModel.RemovePatientFilterCommand, Mode=OneTime}"
@@ -111,7 +107,7 @@
                        Command="{Binding CommissionJournalViewModel.LoadJournalCommand, Mode=OneTime}"/>
     </fluent:RibbonGroupBox>
 
-    <fluent:RibbonGroupBox HorizontalAlignment="Right">
+    <fluent:RibbonGroupBox HorizontalAlignment="Right" Header="Документы комиссии">
         <fluent:Button Size="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AssignmentPrint48x48.png"
                        ToolTip="Печать направления"

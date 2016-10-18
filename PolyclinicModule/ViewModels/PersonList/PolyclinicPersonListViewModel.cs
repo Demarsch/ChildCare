@@ -250,6 +250,7 @@ namespace PolyclinicModule.ViewModels
             Source.Clear();
 
             int parentId = -1;
+            int index = 0;
             foreach (var group in recordsResult.OrderBy(x => x.IsCompleted).GroupBy(x => x.IsCompleted))
             {
                 PolyclinicPersonListItemViewModel parentRow = new PolyclinicPersonListItemViewModel()
@@ -259,12 +260,13 @@ namespace PolyclinicModule.ViewModels
                     Level = 0,
                     IsExpanded = true,
                     IsVisible = true,
-                    HasChildren = group.Any()
+                    HasChildren = group.Any(),
+                    Index = index++
                 };
                 parentRow.Cells = new ObservableCollectionEx<string>() { string.Empty, (!group.Key ? "Назначенные" : "Выполненные") + " (" + group.Count()  + " услуги)", string.Empty };
                 Source.Add(parentRow);
 
-                foreach (var item in group)
+                foreach (var item in group.OrderBy(x => x.ResultDate))
                 {
                     PolyclinicPersonListItemViewModel row = new PolyclinicPersonListItemViewModel()
                     {
@@ -275,7 +277,9 @@ namespace PolyclinicModule.ViewModels
                         IsVisible = true,
                         AssignmentId = item.AssignmentId,
                         RecordId = item.RecordId,
-                        PersonId = item.PersonId
+                        PersonId = item.PersonId,
+                        Date = item.ResultDate,
+                        Index = index++
                     };
                     row.Cells = new ObservableCollectionEx<string>() { item.ResultDate.ToShortTimeString() + " ", item.PatientFIO, item.PersonBirthYear };
                     Source.Add(row);
@@ -330,7 +334,7 @@ namespace PolyclinicModule.ViewModels
             if (e.IsUpdate)
                 await UpdateRecordAsync(e.NewItem.Id, true);
             if (e.IsCreate)
-                await CreateRecordAsync(e.NewItem.Id, true, e.NewItem.PersonId);            
+                await CreateRecordAsync(e.NewItem.Id, true, e.NewItem.PersonId, e.NewItem.AssignDateTime);            
         }
         
         private async void OnRecordsNotificationRecievedAsync(object sender, NotificationEventArgs<Record> e)
@@ -340,14 +344,31 @@ namespace PolyclinicModule.ViewModels
             if (e.IsUpdate)
                 await UpdateRecordAsync(e.NewItem.Id, false);
             if (e.IsCreate)
-                await CreateRecordAsync(e.NewItem.Id, false, e.NewItem.PersonId);
+                await CreateRecordAsync(e.NewItem.Id, false, e.NewItem.PersonId, e.NewItem.BeginDateTime);
         }
 
-        private async Task<bool> CreateRecordAsync(int id, bool isAssignment, int personId)
+        private async Task<bool> CreateRecordAsync(int id, bool isAssignment, int personId, DateTime date)
         {
             if (completionTaskSource != null)
                 return await completionTaskSource.Task;
-            completionTaskSource = new TaskCompletionSource<bool>();            
+            completionTaskSource = new TaskCompletionSource<bool>();
+            
+            if (!Source.Any(x => x.ParentId == (isAssignment ? -1 : 0)))
+            {
+                PolyclinicPersonListItemViewModel parentRow = new PolyclinicPersonListItemViewModel()
+                {
+                    Id = isAssignment ? -1 : 0,
+                    ParentId = null,
+                    Level = 0,
+                    IsExpanded = true,
+                    IsVisible = true,
+                    HasChildren = true,
+                    Index = isAssignment ? 0 : source.Count,
+                };
+                parentRow.Cells = new ObservableCollectionEx<string>() { string.Empty, (isAssignment ? "Назначенные" : "Выполненные") + " (1 услуга)", string.Empty };
+                Source.Insert(parentRow.Index, parentRow);
+            }
+
             PolyclinicPersonListItemViewModel row = new PolyclinicPersonListItemViewModel()
             {            
                 Id = id,
@@ -357,11 +378,28 @@ namespace PolyclinicModule.ViewModels
                 IsVisible = true,
                 AssignmentId = isAssignment ? id : (int?)null,
                 RecordId = !isAssignment ? id : (int?)null,
-                PersonId = personId
-            };
-            Source.Add(row);
+                PersonId = personId,
+                Date = date,
+                Index = GetInsertRowIndex(isAssignment, date)
+            };            
+            Source.Insert(row.Index, row);
+            
             completionTaskSource.SetResult(true);
             return true;
+        }
+
+        private int GetInsertRowIndex(bool isAssignment, DateTime date)
+        {
+            var subSource = source.Where(x => x.ParentId == (isAssignment ? -1 : 0));
+            if (!subSource.Any())
+                return (isAssignment ? 1 : source.Count);
+            else
+            {
+                var item = subSource.FirstOrDefault(x => x.Date > date);
+                if (item != null)
+                    return item.Index;
+                return subSource.OrderByDescending(x => x.Date).First().Index;
+            }
         }
 
         private async Task<bool> UpdateRecordAsync(int id, bool isAssignment)
