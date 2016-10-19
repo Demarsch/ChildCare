@@ -9,10 +9,11 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal" >
         <fluent:RibbonGroupBox Header="Случай">
-            <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitAdd48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True" Command="{Binding CreateNewVisitCommand}" >
+            <fluent:SplitButton SizeDefinition="Large" Header="Создать" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/VisitAdd48x48.png" ItemsSource="{Binding VisitTemplates}" HasTriangle="True" 
+                                Command="{Binding PersonRecordsViewModel.CreateNewVisitCommand}" >
                 <fluent:SplitButton.ItemContainerStyle>
                     <Style TargetType="{x:Type fluent:MenuItem}">
-                        <Setter Property="Command" Value="{Binding DataContext.CreateNewVisitCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:SplitButton}}}"/>
+                        <Setter Property="Command" Value="{Binding DataContext.PersonRecordsViewModel.CreateNewVisitCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type fluent:SplitButton}}}"/>
                         <Setter Property="CommandParameter" Value="{Binding Id}"/>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                         <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -80,27 +81,27 @@
             </fluent:Button>
         </fluent:RibbonGroupBox>
         <fluent:RibbonGroupBox Header="Услуги">
-            <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png" Command="{Binding CreateRecordCommand}"/>
+            <fluent:Button Header="Создать" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordAdd48x48.png" Command="{Binding PersonRecordsViewModel.CreateRecordCommand}"/>
             <StackPanel Orientation="Horizontal">
                 <fluent:Button Header="Завершить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordCompleted48x48.png" 
-                           Command="{Binding CompleteRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeCompleted, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
+                           Command="{Binding PersonRecordsViewModel.CompleteRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeCompleted, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                            IsEnabled="{Binding IsRecordCanBeCompletedEnabled}"/>
                 <fluent:Button Header="Продолжить" SizeDefinition="Large" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/RecordInProgress48x48.png"
-                           Command="{Binding InProgressRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeInProgress, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
+                           Command="{Binding PersonRecordsViewModel.InProgressRecordCommand}" CommandParameter="{Binding RecordId}" Visibility="{Binding IsRecordCanBeInProgress, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"/>
             </StackPanel>
         </fluent:RibbonGroupBox>
         <fluent:RibbonGroupBox Header="Документы" FontWeight="Medium" Visibility="{Binding AllowDocuments, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-            <fluent:Button x:Name="btnAttachDocument" Command="{Binding AttachDocumentCommand}" 
+            <fluent:Button x:Name="btnAttachDocument" Command="{Binding PersonRecordsViewModel.AttachDocumentCommand}" 
                        Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachDocument48x48.png" />
-            <fluent:Button x:Name="btnDetachDocument" Command="{Binding DetachDocumentCommand}"
+            <fluent:Button x:Name="btnDetachDocument" Command="{Binding PersonRecordsViewModel.DetachDocumentCommand}"
                        Header="Удалить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachDocument48x48.png" />
         </fluent:RibbonGroupBox>
 
         <fluent:RibbonGroupBox Header="DICOM" FontWeight="Medium" Visibility="{Binding AllowDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}">
-            <fluent:Button x:Name="btnAttachDICOM" Command="{Binding AttachDICOMCommand}" 
+            <fluent:Button x:Name="btnAttachDICOM" Command="{Binding PersonRecordsViewModel.AttachDICOMCommand}" 
                        Visibility="{Binding CanAttachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                        Header="Прикрепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/AttachFile48x48.png" />
-            <fluent:Button x:Name="btnDetachDICOM" Command="{Binding DetachDICOMCommand}"
+            <fluent:Button x:Name="btnDetachDICOM" Command="{Binding PersonRecordsViewModel.DetachDICOMCommand}"
                        Visibility="{Binding CanDetachDICOM, Converter={x:Static converters:BoolToVisibilityConverter.Instance}}"
                        Header="Открепить" LargeIcon="pack://application:,,,/Core;Component/Resources/Images/DetachFile48x48.png" />
             <!--<fluent:Button x:Name="btnMarkDICOM" Command="{Binding MarkDICOMCommand}" 
@@ -110,16 +111,16 @@
         <fluent:RibbonGroupBox Header="Изменения">
             <fluent:Button Header="Печать"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" Command="{Binding PrintProtocolCommand}"/>
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Print48x48.png" Command="{Binding PersonRecordsViewModel.PrintProtocolCommand}"/>
             <fluent:Button Header="Изменить"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" Command="{Binding ShowInEditModeCommand}" IsEnabled="{Binding IsViewModeActive}"/>
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Edit48x48.png" Command="{Binding PersonRecordsViewModel.ShowInEditModeCommand}" IsEnabled="{Binding IsViewModeActive}"/>
             <fluent:Button Header="Сохранить"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png" Command="{Binding SaveProtocolCommand}" IsEnabled="{Binding IsEditModeActive}"/>
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/SaveChanges-48x48.png" Command="{Binding PersonRecordsViewModel.SaveProtocolCommand}" IsEnabled="{Binding IsEditModeActive}"/>
             <fluent:Button Header="Закрыть"
                        SizeDefinition="Large"
-                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" Command="{Binding ShowInViewModeCommand}"  IsEnabled="{Binding IsEditModeActive}"/>
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Cancel-48x48.png" Command="{Binding PersonRecordsViewModel.ShowInViewModeCommand}"  IsEnabled="{Binding IsEditModeActive}"/>
         </fluent:RibbonGroupBox>
     </StackPanel>
 </UserControl>
