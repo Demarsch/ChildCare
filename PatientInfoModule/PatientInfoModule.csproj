@@ -112,11 +112,10 @@
     <Compile Include="Misc\ParameterNames.cs" />
     <Compile Include="Misc\SuggestionProviders\DisabilityDocumentGivenOrgSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\IdentityDocumentGivenOrgSuggestionsProvider.cs" />
-    <Compile Include="Misc\SuggestionProviders\OrganizationSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\InsuranceCompanySuggestionsProvider.cs" />
+    <Compile Include="Misc\SuggestionProviders\OrganizationSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\PersonSuggestionsProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\RecordTypesSuggestionsProvider.cs" />
-    <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\ContractService.cs" />

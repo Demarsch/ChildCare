@@ -24,6 +24,7 @@ using WpfControls.Editors;
 using Shared.PatientRecords.ViewModels.RecordTypesProtocolViewModels;
 using Shared.PatientRecords.Views.RecordTypesProtocolViewModels;
 using Shared.PatientRecords.ViewModels.PersonHierarchicalItemViewModels;
+using Core.Wpf.Misc;
 
 namespace Shared.PatientRecords
 {
@@ -96,7 +97,7 @@ namespace Shared.PatientRecords
             container.RegisterType<ComplicationsTreeViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<ComplicationViewModel>(new ContainerControlledLifetimeManager());
             //Analyses
-            container.RegisterType<AnalyseCreateViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<AnalyseCreateViewModel>(new TransientLifetimeManager());
             container.RegisterType<AnalyseProtocolViewModel>(new TransientLifetimeManager());
             //RecordTypes Protocols
             container.RegisterType<DefaultProtocolViewModel>(new TransientLifetimeManager());

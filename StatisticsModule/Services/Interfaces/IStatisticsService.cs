@@ -14,10 +14,16 @@ namespace StatisticsModule.Services
 
         IDisposableQueryable<PersonStaff> GetPersonStaffs();
 
-        IDisposableQueryable<Record> GetRecords(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isCompleted, bool isInProgress, bool isAmbulatory, bool isStationary, bool isDayStationary, int employeeId);
+        IDisposableQueryable<Record> GetRecords(DateTime beginDate, DateTime endDate, int selectedFinSourceId, string codeOKATO, bool isCompleted, bool isInProgress, bool isAmbulatory, bool isStationary, bool isDayStationary, int employeeId);
+
+        IDisposableQueryable<Visit> GetVisits(DateTime beginDate, DateTime endDate, int selectedFinSourceId, string codeOKATO, bool isCompleted, bool isInProgress, bool isAmbulatory, bool isPlanned, bool isStationary, bool isDayStationary);
 
         IDisposableQueryable<Assignment> GetAssignments(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isAmbulatory, bool isStationary, bool isDayStationary);
 
         double GetRecordTypeCost(int recordTypeId, int financingSourceId, DateTime onDate, bool? isChild = null, bool isIncome = true);
+
+        IEnumerable<MKBGroup> GetMKBGroups();
+
+        bool MKBFilter(string filter, string mkb);
     }
 }

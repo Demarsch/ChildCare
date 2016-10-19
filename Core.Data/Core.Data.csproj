@@ -214,6 +214,7 @@
     </Compile>
     <Compile Include="PartialClasses\Decision.cs" />
     <Compile Include="PartialClasses\IdentityDocumentType.cs" />
+    <Compile Include="PartialClasses\MKBGroup.cs" />
     <Compile Include="PartialClasses\Permission.cs" />
     <Compile Include="PartialClasses\PermissionGroup.cs" />
     <Compile Include="PaymentType.cs">

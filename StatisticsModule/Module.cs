@@ -12,6 +12,8 @@ using System.Windows;
 using StatisticsModule.ViewModels;
 using StatisticsModule.Views;
 using StatisticsModule.Services;
+using Shared.Patient.Misc;
+using Core.Wpf.Misc;
 
 namespace StatisticsModule
 {
@@ -82,6 +84,7 @@ namespace StatisticsModule
             RegisterServices();
             RegisterViewModels();
             RegisterViews();
+            InitiateLongRunningOperations();
             log.InfoFormat("{0} module init finished", WellKnownModuleNames.StatisticsModule);
         }
 
@@ -108,8 +111,18 @@ namespace StatisticsModule
        
         private void RegisterServices()
         {
+            PersonServicesInitializer.Initialize(container);
             container.RegisterType<IStatisticsService, StatisticsService>(new ContainerControlledLifetimeManager());
             container.RegisterType<IRecordTypesTree, RecordTypesTree>(new ContainerControlledLifetimeManager());
+
+            container.RegisterType<ISuggestionsProvider, OkatoRegionSuggestionsProvider>(SuggestionProviderNames.OkatoRegion, new ContainerControlledLifetimeManager());
+            container.RegisterType<IAddressSuggestionProvider, AddressSuggestionProvider>(new ContainerControlledLifetimeManager());
+        }
+
+        private void InitiateLongRunningOperations()
+        {
+            var addressSuggestionProvider = container.Resolve<IAddressSuggestionProvider>();
+            addressSuggestionProvider.EnsureDataSourceLoadedAsync();
         }
         #endregion
 

@@ -22,6 +22,7 @@ using System.Windows.Input;
 using StatisticsModule.DTO;
 using System.Collections.ObjectModel;
 using Core.Misc;
+using Shared.Patient.Misc;
 
 namespace StatisticsModule.ViewModels
 {
@@ -41,11 +42,14 @@ namespace StatisticsModule.ViewModels
 
         private CancellationTokenSource currentLoadingToken;
 
+        private readonly MKBGroup unselectedMKBGroup;
+
         public RecordsStatisticsViewModel(IStatisticsService statisticsService,
                                         IRecordTypesTree recordTypeTree,
                                       IDialogServiceAsync dialogService,
                                       IDialogService messageService,
-                                      ILog logService)
+                                      ILog logService,
+                                      IAddressSuggestionProvider addressSuggestionProvider)
         {
             if (logService == null)
             {
@@ -67,19 +71,25 @@ namespace StatisticsModule.ViewModels
             {
                 throw new ArgumentNullException("messageService");
             }
-
+            if (addressSuggestionProvider == null)
+            {
+                throw new ArgumentNullException("addressSuggestionProvider");
+            }
             this.statisticsService = statisticsService;
             this.recordTypeTree = recordTypeTree;
             this.logService = logService;
             this.dialogService = dialogService;
             this.messageService = messageService;
             loadResultCommand = new DelegateCommand(LoadResult);
-
+            AddressSuggestionProvider = addressSuggestionProvider;
             BusyMediator = new BusyMediator();
             FinSources = new ObservableCollectionEx<FieldValue>();
             Employees = new ObservableCollectionEx<FieldValue>();
             Source = new ObservableCollectionEx<DataGridRowDefinition>();
             Details = new ObservableCollectionEx<DataGridRowDefinition>();
+            unselectedMKBGroup = new MKBGroup { Name = "Все нозологические группы" };
+
+            InitialLoadingDataSources();
         }
         
         void RowDef_RowExpanding(DataGridRowDefinition row)
@@ -112,7 +122,7 @@ namespace StatisticsModule.ViewModels
             }
         }
 
-        internal async Task InitialLoadingAsync()
+        internal async Task InitialLoadingDataSources()
         {
             FinSources.Clear();
             Employees.Clear();
@@ -133,6 +143,12 @@ namespace StatisticsModule.ViewModels
                 Employees.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- все сотрудники -" });
                 Employees.AddRange(employeesSelectQuery.Select(x => new FieldValue { Value = x.PersonId, Field = x.PersonName }));
                 SelectedEmployeeId = SpecialValues.NonExistingId;
+
+                await Task.Run(() => AddressSuggestionProvider.EnsureDataSourceLoadedAsync());
+
+                var mkbGroupsSource = await Task.Run((Func<IEnumerable<MKBGroup>>)statisticsService.GetMKBGroups);
+                MKBGroups = new[] { unselectedMKBGroup }.Concat(mkbGroupsSource).ToArray();
+                SelectedMKBGroup = unselectedMKBGroup;
 
                 BeginDate = DateTime.Now.Date;
                 EndDate = new DateTime(BeginDate.Year + 1, 1, 1);
@@ -168,7 +184,9 @@ namespace StatisticsModule.ViewModels
             var token = currentLoadingToken.Token;
 
             #region Get Data
-            var recordsQuery = statisticsService.GetRecords(beginDate, endDate, selectedFinSourceId, isCompleted, isInProgress, isAmbulatory, isStationary, isDayStationary, selectedEmployeeId);
+
+            //выполненные услуги
+            var recordsQuery = statisticsService.GetRecords(beginDate, endDate, selectedFinSourceId, (region != null ? region.CodeOKATO : string.Empty), isCompleted, isInProgress, isAmbulatory, isStationary, isDayStationary, selectedEmployeeId);
             RecordDTO[] recordsResult = await Task.Factory.StartNew(() =>
             {
                 return recordsQuery.Select(x => new RecordDTO
@@ -183,7 +201,6 @@ namespace StatisticsModule.ViewModels
                     EndDate = x.EndDateTime,
                     ActualDateTime = x.ActualDateTime,
                     MKB = x.MKB,
-                    MKBId = x.MKBId.HasValue ? x.MKBId.Value : (int?)null,
                     RoomId = x.RoomId,
                     Room = x.Room.Name,
                     UrgentlyId = x.UrgentlyId,
@@ -195,16 +212,47 @@ namespace StatisticsModule.ViewModels
                     RelativeFIO = x.Person.PersonRelatives.Where(a => a.IsRepresentative).Select(a => a.Person1.FullName).FirstOrDefault(),
                     CardNumber = "А/К №" + x.Person.AmbNumberString,  // или И/Б
                     BranchName = "???",
-                    Executor = "???", // из бригады
+                    Brigade = x.RecordMembers.Select(a => new BrigadeWrapper { EmployeeName = a.PersonStaff.Person.ShortName, StaffName = a.PersonStaff.Staff.ShortName }), // из бригады
                     ExecutionPlaceId = x.ExecutionPlaceId,
                     ExecutionPlace = x.ExecutionPlace.Name,
                     ExecutionPlaceOption = x.ExecutionPlace.Options,
                     IsAnalyse = x.RecordType.IsAnalyse,
                 })
                 .OrderBy(x => x.ActualDateTime)
+                .ToArray();                
+            }, token);
+
+            if (recordsResult.Any() && !string.IsNullOrEmpty(selectedMKBGroup.MKBmax) && !string.IsNullOrEmpty(selectedMKBGroup.MKBmin))
+                recordsResult = recordsResult.Where(x => statisticsService.MKBFilter(selectedMKBGroup.MKBmin + "-" + selectedMKBGroup.MKBmax, x.MKB)).ToArray();
+
+            //случаи
+            var visitsQuery = statisticsService.GetVisits(beginDate, endDate, selectedFinSourceId, (region != null ? region.CodeOKATO : string.Empty), isCompleted, isInProgress, isPlanned, isAmbulatory, isStationary, isDayStationary);
+            VisitDTO[] visitsResult = await Task.Factory.StartNew(() =>
+            {
+                return visitsQuery.Select(x => new VisitDTO
+                {
+                    Id = x.Id,
+                    VisitTemplateId = x.VisitTemplateId,
+                    Name = x.VisitTemplate.Name,
+                    ContractName = x.VisitTemplate.FinancingSource.ShortName,
+                    BeginDate = x.BeginDateTime,
+                    EndDate = x.EndDateTime,
+                    MKB = x.MKB,
+                    UrgentlyName = x.VisitTemplate.Urgently.Name,
+                    PaymentType = x.VisitTemplate.RecordContract.PaymentType.Name,
+                    PersonBirthDate = x.Person.BirthDate,
+                    PatientFIO = x.Person.FullName + ", " + x.Person.BirthDate.Year + " г.р.",
+                    RelativeFIO = x.Person.PersonRelatives.Where(a => a.IsRepresentative).Select(a => a.Person1.FullName).FirstOrDefault(),
+                    CardNumber = "А/К №" + x.Person.AmbNumberString,  // или И/Б
+                    ExecutionPlaceId = x.ExecutionPlaceId,
+                    ExecutionPlace = x.ExecutionPlace.Name,
+                    ExecutionPlaceOption = x.ExecutionPlace.Options,
+                })
+                .OrderBy(x => x.BeginDate)
                 .ToArray();
             }, token);
 
+            //назначенные услуги
             if (IsPlanned)
             {
                 var assignmentsQuery = statisticsService.GetAssignments(beginDate, endDate, selectedFinSourceId, isAmbulatory, isStationary, isDayStationary);
@@ -229,7 +277,6 @@ namespace StatisticsModule.ViewModels
                         RelativeFIO = x.Person.PersonRelatives.Where(a => a.IsRepresentative).Select(a => a.Person1.FullName).FirstOrDefault(),
                         CardNumber = "А/К №" + x.Person.AmbNumberString,  // или И/Б
                         BranchName = "???",
-                        Executor = "???", // из бригады
                         ExecutionPlaceId = x.ExecutionPlaceId,
                         ExecutionPlace = x.ExecutionPlace.Name,
                         ExecutionPlaceOption = x.ExecutionPlace.Options,
@@ -283,7 +330,7 @@ namespace StatisticsModule.ViewModels
                                 record.ContractName,
                                 record.ExecutionPlace,
                                 record.BranchName,
-                                record.Executor,
+                                record.Brigade != null ? record.Brigade.Select(x => x.StaffName + ": " + x.EmployeeName).Aggregate((a,b) => a + "\r\n" + b) : "???",
                                 recordCost.ToString(),
                                 record.PaymentType
                             }
@@ -307,6 +354,50 @@ namespace StatisticsModule.ViewModels
                 }
             }
 
+            //Добавление случаев
+            if (visitsResult.Any())
+            {
+                DataGridRowDefinition visitHeaderRow = new DataGridRowDefinition()
+                {
+                    Id = -1,
+                    ParentId = null,
+                    Level = 0,
+                    Children = visitsResult.Select(x => x.Id).ToList(),
+                    IsExpanded = false,
+                    HasChildren = true,
+                    IsVisible = true,
+                    Details = visitsResult.Select(x => new DataGridRowDefinition()
+                    {
+                        Id = x.Id,
+                        IsVisible = true,
+                        Cells = new ObservableCollectionEx<string>() { x.BeginDate.ToShortDateString(), x.MKB, x.CardNumber, x.PatientFIO, x.RelativeFIO, x.ContractName, x.ExecutionPlace, "???", "???", "???", x.PaymentType }
+                    }).ToList()
+                };
+                visitHeaderRow.Cells = new ObservableCollectionEx<string>()  { "Случаи обращения", string.Empty, visitsResult.Count().ToSafeString(), visitsResult.Count(x => x.ExecutionPlaceOption == OptionValues.Ambulatory).ToString(), visitsResult.Count(x => x.ExecutionPlaceOption == OptionValues.Stationary).ToString(), visitsResult.Count(x => x.ExecutionPlaceOption == OptionValues.DayStationary).ToString(), string.Empty };
+                Source.Add(visitHeaderRow);
+
+                foreach (var visitGroup in visitsResult.GroupBy(x => x.VisitTemplateId))
+                {
+                    DataGridRowDefinition row = new DataGridRowDefinition()
+                    {
+                        ParentId = -1,
+                        Level = 1,
+                        Children = visitGroup.Select(x => x.Id).ToList(),
+                        IsExpanded = false,
+                        HasChildren = false,
+                        IsVisible = false,
+                        Details = visitGroup.Select(x => new DataGridRowDefinition()
+                        {
+                            Id = x.Id,
+                            IsVisible = true,
+                            Cells = new ObservableCollectionEx<string>() { x.BeginDate.ToShortDateString(), x.MKB, x.CardNumber, x.PatientFIO, x.RelativeFIO, x.ContractName, x.ExecutionPlace, "???", "???", "???", x.PaymentType }
+                        }).ToList()
+                    };
+                    row.Cells = new ObservableCollectionEx<string>() { visitGroup.First().Name, string.Empty, visitGroup.Count().ToSafeString(), visitGroup.Count(x => x.ExecutionPlaceOption == OptionValues.Ambulatory).ToString(), visitGroup.Count(x => x.ExecutionPlaceOption == OptionValues.Stationary).ToString(), visitGroup.Count(x => x.ExecutionPlaceOption == OptionValues.DayStationary).ToString(), string.Empty };
+                    Source.Add(row);
+                }
+            }
+
             DataGridRowDefinition.RowExpanding += new Action<DataGridRowDefinition>(RowDef_RowExpanding);
             DataGridRowDefinition.RowCollapsing += new Action<DataGridRowDefinition>(RowDef_RowCollapsing);
             #endregion            
@@ -316,6 +407,7 @@ namespace StatisticsModule.ViewModels
 
         private readonly DelegateCommand loadResultCommand;
         public ICommand LoadResultCommand { get { return loadResultCommand; } }
+        public IAddressSuggestionProvider AddressSuggestionProvider { get; private set; }
 
         ObservableCollectionEx<DataGridRowDefinition> source;
         public ObservableCollectionEx<DataGridRowDefinition> Source
@@ -426,7 +518,44 @@ namespace StatisticsModule.ViewModels
         {
             get { return isDayStationary; }
             set { SetProperty(ref isDayStationary, value); }
-        }  
+        }
+
+        private Okato region;
+        public Okato Region
+        {
+            get { return region; }
+            set
+            {
+                if (SetProperty(ref region, value))
+                {
+                    AddressSuggestionProvider.SelectedRegion = value;
+                };
+            }
+        }
+
+        private IEnumerable<MKBGroup> mkbGroups;
+        public IEnumerable<MKBGroup> MKBGroups
+        {
+            get { return mkbGroups; }
+            private set
+            {
+                if (SetProperty(ref mkbGroups, value))
+                {
+                    SelectedMKBGroup = unselectedMKBGroup;
+                }
+            }
+        }
+
+        private MKBGroup selectedMKBGroup;
+        public MKBGroup SelectedMKBGroup
+        {
+            get { return selectedMKBGroup; }
+            set
+            {
+                value = value ?? unselectedMKBGroup;
+                SetProperty(ref selectedMKBGroup, value);
+            }
+        }
 
         #endregion
 
@@ -438,7 +567,7 @@ namespace StatisticsModule.ViewModels
 
         public async void OnNavigatedTo(NavigationContext navigationContext)
         {
-            await InitialLoadingAsync();
+            
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

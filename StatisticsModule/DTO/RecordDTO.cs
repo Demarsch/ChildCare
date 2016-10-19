@@ -36,7 +36,7 @@ namespace StatisticsModule.DTO
         public string RelativeFIO { get; set; }
         public string CardNumber { get; set; }
         public string BranchName { get; set; }
-        public string Executor { get; set; }
+        public IEnumerable<BrigadeWrapper> Brigade { get; set; }
 
         public int ExecutionPlaceId { get; set; }
         public string ExecutionPlace { get; set; }
@@ -44,5 +44,37 @@ namespace StatisticsModule.DTO
 
         public bool IsAnalyse { get; set; }
 
+    }
+
+    public class VisitDTO
+    {
+        public int Id { get; set; }
+        public int VisitTemplateId { get; set; }
+        public string Name { get; set; }
+        public int ContractId { get; set; }
+        public int FinancingSourceId { get; set; }
+        public string ContractName { get; set; }
+        public DateTime BeginDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string MKB { get; set; }
+        public int UrgentlyId { get; set; }
+        public string UrgentlyName { get; set; }
+        public double Cost { get; set; }
+        public string PaymentType { get; set; }
+
+        public DateTime PersonBirthDate { get; set; }
+        public string PatientFIO { get; set; }
+        public string RelativeFIO { get; set; }
+        public string CardNumber { get; set; }
+
+        public int ExecutionPlaceId { get; set; }
+        public string ExecutionPlace { get; set; }
+        public string ExecutionPlaceOption { get; set; }
+    }
+
+    public class BrigadeWrapper
+    {
+        public string EmployeeName { get; set; }
+        public string StaffName { get; set; }
     }
 }

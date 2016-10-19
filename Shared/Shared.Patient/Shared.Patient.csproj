@@ -157,7 +157,6 @@
     <Compile Include="Misc\SuggestionProviders\AddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\IAddressSuggestionProvider.cs" />
     <Compile Include="Misc\SuggestionProviders\OkatoRegionSuggestionsProvider.cs" />
-    <Compile Include="Misc\SuggestionProviders\SuggestionProviderNames.cs" />
     <Compile Include="Model\User Input Processing\Input Normalization\IUserInputNormalizer.cs" />
     <Compile Include="Model\User Input Processing\Input Normalization\UserInputNormalizer.cs" />
     <Compile Include="Model\User Input Processing\Search Expression Providers\PersonBirthDateSearchExpressionProvider.cs" />

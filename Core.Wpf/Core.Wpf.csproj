@@ -159,6 +159,7 @@
     <Compile Include="Misc\KeyToCharTranslator.cs" />
     <Compile Include="Misc\InputHelpers\NoOpInputHelper.cs" />
     <Compile Include="Misc\StaticBoolean.cs" />
+    <Compile Include="Misc\SuggestionProviderNames.cs" />
     <Compile Include="Misc\TrackableBindableBase.cs" />
     <Compile Include="Mvvm\Mediators\BusyMediator.cs" />
     <Compile Include="Mvvm\Mediators\FailureMediator.cs" />

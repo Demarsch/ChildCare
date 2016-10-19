@@ -1,6 +1,6 @@
-﻿namespace PatientInfoModule.Misc
+﻿namespace Core.Wpf.Misc
 {
-    internal class SuggestionProviderNames
+    public class SuggestionProviderNames
     {
         public const string Organization = "Org";
 
@@ -13,5 +13,7 @@
         public const string DisabilityDocumentGivenOrganization = "DisabilityDocumentGivenOrganization";
 
         public const string OkatoRegion = "OkatoRegion";
+
+        public const string MKB = "MKB";
     }
 }

@@ -17,6 +17,13 @@
         <TextBlock Text="{Binding Name}" 
                        Foreground="{Binding Assignable, Converter={StaticResource AssignableToForegroundConverter}}"/>
     </HierarchicalDataTemplate>
+    
+    <HierarchicalDataTemplate DataType="{x:Type data:MKBGroup}"
+                              x:Key="MKBGroupTemplate"
+                              ItemsSource="{Binding MKBGroups1}">        
+        <TextBlock Text="{Binding Name}"/>        
+    </HierarchicalDataTemplate>
+    
     <!--Decision-->
     <HierarchicalDataTemplate DataType="{x:Type data:Decision}"
                               x:Key="DecisionsTree"
