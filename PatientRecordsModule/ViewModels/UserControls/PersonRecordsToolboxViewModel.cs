@@ -41,7 +41,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private readonly IUnityContainer container;
 
-        private readonly PersonRecordsViewModel personRecordsViewModel;
+        public PersonRecordsViewModel PersonRecordsViewModel { get; private set; }
 
         private readonly CommandWrapper reloadPatientVisitCompletedCommandWrapper;
 
@@ -51,7 +51,7 @@ namespace Shared.PatientRecords.ViewModels
 
         private CancellationTokenSource currentLoadingToken;
 
-        public PersonRecordsToolboxViewModel(PersonRecordsViewModel personRecordsViewModel,
+        public PersonRecordsToolboxViewModel(PersonRecordsViewModel PersonRecordsViewModel,
             IPatientRecordsService patientRecordsService, ILog logSevice,
             IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, IUnityContainer container)
         {
@@ -79,19 +79,19 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
-            if (personRecordsViewModel == null)
+            if (PersonRecordsViewModel == null)
             {
-                throw new ArgumentNullException("personRecordsViewModel");
+                throw new ArgumentNullException("PersonRecordsViewModel");
             }
-            this.personRecordsViewModel = personRecordsViewModel;
-            this.personRecordsViewModel.PropertyChanged += personRecordsViewModel_PropertyChanged;
+            this.PersonRecordsViewModel = PersonRecordsViewModel;
+            this.PersonRecordsViewModel.PropertyChanged += personRecordsViewModel_PropertyChanged;
             this.patientRecordsService = patientRecordsService;
             this.logService = logSevice;
             this.eventAggregator = eventAggregator;
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
             this.container = container;
-            
+
             reloadPatientVisitCompletedCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadVisitCompletedAsync(VisitId)) };
             reloadPatientRecordCompletedCommandWrapper = new CommandWrapper { Command = new DelegateCommand(() => LoadRecordCompletedAsync(VisitId)) };
             VisitTemplates = new ObservableCollectionEx<VisitTemplateDTO>();
@@ -173,7 +173,7 @@ namespace Shared.PatientRecords.ViewModels
 
         public bool IsRecordCanBeCompletedEnabled
         {
-            get { return personRecordsViewModel.IsRecordCanBeCompleted; }
+            get { return PersonRecordsViewModel.IsRecordCanBeCompleted; }
         }
 
         public bool IsRecordCanBeCompleted
@@ -200,12 +200,12 @@ namespace Shared.PatientRecords.ViewModels
 
         public bool IsViewModeActive
         {
-            get { return (AssignmentId > 0 || RecordId > 0) && personRecordsViewModel.IsViewModeInCurrentProtocolEditor; }
+            get { return /*(AssignmentId > 0 || RecordId > 0) && */PersonRecordsViewModel != null && PersonRecordsViewModel.IsViewModeInCurrentProtocolEditor; }
         }
 
         public bool IsEditModeActive
         {
-            get { return (AssignmentId > 0 || RecordId > 0) && personRecordsViewModel.IsEditModeInCurrentProtocolEditor; }
+            get { return /*(AssignmentId > 0 || RecordId > 0) &&*/ PersonRecordsViewModel != null && PersonRecordsViewModel.IsEditModeInCurrentProtocolEditor; }
         }
 
         public bool IsRecordSelected
@@ -223,28 +223,28 @@ namespace Shared.PatientRecords.ViewModels
         private bool allowDocuments;
         public bool AllowDocuments
         {
-            get { return personRecordsViewModel.AllowDocuments; }
+            get { return PersonRecordsViewModel.AllowDocuments; }
             set { SetProperty(ref allowDocuments, value); }
         }
 
         private bool allowDICOM;
         public bool AllowDICOM
         {
-            get { return personRecordsViewModel.AllowDICOM; }
+            get { return PersonRecordsViewModel.AllowDICOM; }
             set { SetProperty(ref allowDICOM, value); }
         }
 
         private bool canAttachDICOM;
         public bool CanAttachDICOM
         {
-            get { return personRecordsViewModel.CanAttachDICOM; }
+            get { return PersonRecordsViewModel.CanAttachDICOM; }
             set { SetProperty(ref canAttachDICOM, value); }
         }
 
         private bool canDetachDICOM;
         public bool CanDetachDICOM
         {
-            get { return personRecordsViewModel.CanDetachDICOM; }
+            get { return PersonRecordsViewModel.CanDetachDICOM; }
             set { SetProperty(ref canDetachDICOM, value); }
         }
 
@@ -471,41 +471,8 @@ namespace Shared.PatientRecords.ViewModels
                 OnPropertyChanged(() => CanAttachDICOM);
             if (e.PropertyName == "CanDetachDICOM")
                 OnPropertyChanged(() => CanDetachDICOM);
+            OnPropertyChanged();
         }
-
-        #endregion
-
-        #region Commands
-        public ICommand CreateNewVisitCommand { get { return personRecordsViewModel.CreateNewVisitCommand; } }
-
-        public ICommand EditVisitCommand { get { return personRecordsViewModel.EditVisitCommand; } }
-
-        public ICommand CompleteVisitCommand { get { return personRecordsViewModel.CompleteVisitCommand; } }
-
-        public ICommand ReturnToActiveVisitCommand { get { return personRecordsViewModel.ReturnToActiveVisitCommand; } }
-
-        public ICommand DeleteVisitCommand { get { return personRecordsViewModel.DeleteVisitCommand; } }
-
-        public ICommand CreateRecordCommand { get { return personRecordsViewModel.CreateRecordCommand; } }
-
-        public ICommand CompleteRecordCommand { get { return personRecordsViewModel.CompleteRecordCommand; } }
-
-        public ICommand InProgressRecordCommand { get { return personRecordsViewModel.InProgressRecordCommand; } }
-
-        public ICommand PrintProtocolCommand { get { return personRecordsViewModel.PrintProtocolCommand; } }
-
-        public ICommand SaveProtocolCommand { get { return personRecordsViewModel.SaveProtocolCommand; } }
-
-        public ICommand ShowInEditModeCommand { get { return personRecordsViewModel.ShowInEditModeCommand; } }
-
-        public ICommand ShowInViewModeCommand { get { return personRecordsViewModel.ShowInViewModeCommand; } }
-
-        public ICommand CreateAnalyseCommand { get { return personRecordsViewModel.CreateAnalyseCommand; } }
-
-        public ICommand AttachDocumentCommand { get { return personRecordsViewModel.AttachDocumentCommand; } }
-        public ICommand DetachDocumentCommand { get { return personRecordsViewModel.DetachDocumentCommand; } }
-        public ICommand AttachDICOMCommand { get { return personRecordsViewModel.AttachDICOMCommand; } }
-        public ICommand DetachDICOMCommand { get { return personRecordsViewModel.DetachDICOMCommand; } }
 
         #endregion
     }

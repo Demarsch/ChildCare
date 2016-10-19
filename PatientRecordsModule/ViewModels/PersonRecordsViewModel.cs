@@ -55,7 +55,7 @@ namespace Shared.PatientRecords.ViewModels
         private readonly Func<AnalyseCreateViewModel> analyseCreateViewModelFactory;
         private readonly Func<RecordCreateViewModel> recordCreateViewModelFactory;
 
-        private readonly PersonRecordEditorViewModel personRecordEditorViewModel;
+        //private readonly PersonRecordEditorViewModel personRecordEditorViewModel;
         private readonly PersonRecordListViewModel personRecordListViewModel;
 
         private CancellationTokenSource currentOperationToken;
@@ -65,7 +65,7 @@ namespace Shared.PatientRecords.ViewModels
 
         #region  Constructors
         public PersonRecordsViewModel(IPatientRecordsService patientRecordsService, IDialogService messageService, IDialogServiceAsync dialogServiceAsync, IEventAggregator eventAggregator, ILog logService,
-            PersonRecordEditorViewModel personRecordEditorViewModel, PersonRecordListViewModel personRecordListViewModel,
+            /*PersonRecordEditorViewModel personRecordEditorViewModel,*/ PersonRecordListViewModel personRecordListViewModel,
             Func<VisitEditorViewModel> visitEditorViewModelFactory, Func<VisitCloseViewModel> visitCloseViewModelFactory, Func<AnalyseCreateViewModel> analyseCreateViewModelFactory, Func<RecordCreateViewModel> recordCreateViewModelFactory)
         {
             if (patientRecordsService == null)
@@ -100,10 +100,10 @@ namespace Shared.PatientRecords.ViewModels
             {
                 throw new ArgumentNullException("dialogServiceAsync");
             }
-            if (personRecordEditorViewModel == null)
-            {
-                throw new ArgumentNullException("personRecordEditorViewModel");
-            }
+            //if (personRecordEditorViewModel == null)
+            //{
+            //    throw new ArgumentNullException("personRecordEditorViewModel");
+            //}
             if (personRecordListViewModel == null)
             {
                 throw new ArgumentNullException("personRecordListViewModel");
@@ -112,8 +112,8 @@ namespace Shared.PatientRecords.ViewModels
                 throw new ArgumentNullException("recordCreateViewModelFactory");
             }
             this.recordCreateViewModelFactory = recordCreateViewModelFactory;
-            this.personRecordEditorViewModel = personRecordEditorViewModel;
-            this.personRecordEditorViewModel.PropertyChanged += personRecordEditorViewModel_PropertyChanged;
+            //this.personRecordEditorViewModel = personRecordEditorViewModel;
+            //this.personRecordEditorViewModel.PropertyChanged += personRecordEditorViewModel_PropertyChanged;
             this.personRecordListViewModel = personRecordListViewModel;
             this.dialogServiceAsync = dialogServiceAsync;
             this.messageService = messageService;
@@ -139,7 +139,7 @@ namespace Shared.PatientRecords.ViewModels
             completeVisitCommandWrapper = new CommandWrapper { Command = completeVisitCommand };
             completeRecordCommandWrapper = new CommandWrapper { Command = completeRecordCommand };
             inProgressRecordCommandWrapper = new CommandWrapper { Command = inProgressRecordCommand };
-            
+
             FailureMediator = new FailureMediator();
             BusyMediator = new BusyMediator();
             NotificationMediator = new NotificationMediator();
@@ -160,7 +160,28 @@ namespace Shared.PatientRecords.ViewModels
         public IPersonRecordEditor SelectedItemEditor
         {
             get { return selectedItemEditor; }
-            set { SetProperty(ref selectedItemEditor, value); }
+            set
+            {
+                if (SetProperty(ref selectedItemEditor, value))
+                {
+                    OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
+                    OnPropertyChanged(() => IsEditModeInCurrentProtocolEditor);
+                    OnPropertyChanged(() => IsRecordCanBeCompleted);
+                    OnPropertyChanged(() => AllowDocuments);
+                    OnPropertyChanged(() => AllowDICOM);
+                    OnPropertyChanged(() => CanAttachDICOM);
+                    OnPropertyChanged(() => CanDetachDICOM);
+
+                    PrintProtocolCommand = selectedItemEditor.PrintProtocolCommand;
+                    SaveProtocolCommand = selectedItemEditor.SaveProtocolCommand;
+                    ShowInEditModeCommand = selectedItemEditor.ShowInEditModeCommand;
+                    ShowInViewModeCommand = selectedItemEditor.ShowInViewModeCommand;
+                    AttachDocumentCommand = selectedItemEditor.AttachDocumentCommand;
+                    DetachDocumentCommand = selectedItemEditor.DetachDocumentCommand;
+                    AttachDICOMCommand = selectedItemEditor.AttachDICOMCommand;
+                    DetachDICOMCommand = selectedItemEditor.DetachDICOMCommand;
+                }
+            }
         }
 
         public BusyMediator BusyMediator { get; set; }
@@ -172,31 +193,31 @@ namespace Shared.PatientRecords.ViewModels
         //Properties form personRecordEditorViewModel for header
         public bool IsViewModeInCurrentProtocolEditor
         {
-            get { return personRecordEditorViewModel.IsViewModeInCurrentProtocolEditor; }
+            get { return SelectedItemEditor != null && SelectedItemEditor.IsViewModeInCurrentProtocolEditor; }
         }
         public bool IsEditModeInCurrentProtocolEditor
         {
-            get { return personRecordEditorViewModel.IsEditModeInCurrentProtocolEditor; }
+            get { return SelectedItemEditor != null && SelectedItemEditor.IsEditModeInCurrentProtocolEditor; }
         }
         public bool IsRecordCanBeCompleted
         {
-            get { return personRecordEditorViewModel.IsRecordCanBeCompleted; }
+            get { return SelectedItemEditor != null && SelectedItemEditor.IsRecordCanBeCompleted; }
         }
         public bool AllowDocuments
         {
-            get { return personRecordEditorViewModel.AllowDocuments; }
+            get { return SelectedItemEditor != null && SelectedItemEditor.AllowDocuments; }
         }
         public bool AllowDICOM
         {
-            get { return personRecordEditorViewModel.AllowDICOM; }
+            get { return SelectedItemEditor != null && SelectedItemEditor.AllowDICOM; }
         }
         public bool CanAttachDICOM
         {
-            get { return personRecordEditorViewModel.CanAttachDICOM; }
+            get { return SelectedItemEditor != null && SelectedItemEditor.CanAttachDICOM; }
         }
         public bool CanDetachDICOM
         {
-            get { return personRecordEditorViewModel.CanDetachDICOM; }
+            get { return SelectedItemEditor != null && SelectedItemEditor.CanDetachDICOM; }
         }
         /////////////////////////////////////////////////////////
 
@@ -208,8 +229,10 @@ namespace Shared.PatientRecords.ViewModels
             UnsubscriveFromEvents();
             completeVisitCommandWrapper.Dispose();
             deleteVisitCommandWrapper.Dispose();
-            if (personRecordEditorViewModel != null)
-                personRecordEditorViewModel.PropertyChanged -= personRecordEditorViewModel_PropertyChanged;
+            if (SelectedItemEditor != null)
+                SelectedItemEditor.PropertyChanged -= SelectedItemEditor_PropertyChanged;
+            //if (personRecordEditorViewModel != null)
+            //    personRecordEditorViewModel.PropertyChanged -= personRecordEditorViewModel_PropertyChanged;
         }
 
         private void SubscribeToEvents()
@@ -218,15 +241,19 @@ namespace Shared.PatientRecords.ViewModels
             eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelected);
         }
 
-        private void OnPatientSelected(int personId)
+        private async void OnPatientSelected(int personId)
         {
             if (this.PersonId != personId)
-                personRecordListViewModel.LoadRootItemsAsync(personId);
+                await personRecordListViewModel.LoadRootItemsAsync(personId);
         }
 
         private void OnEditorSelected(IPersonRecordEditor personRecordEditor)
         {
+            if (SelectedItemEditor != null)
+                SelectedItemEditor.PropertyChanged -= SelectedItemEditor_PropertyChanged;
             SelectedItemEditor = personRecordEditor;
+            if (SelectedItemEditor != null)
+                SelectedItemEditor.PropertyChanged += SelectedItemEditor_PropertyChanged;
         }
 
         private void UnsubscriveFromEvents()
@@ -234,7 +261,7 @@ namespace Shared.PatientRecords.ViewModels
             eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Unsubscribe(OnPatientSelected);
         }
 
-        void personRecordEditorViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        void SelectedItemEditor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsViewModeInCurrentProtocolEditor")
                 OnPropertyChanged(() => IsViewModeInCurrentProtocolEditor);
@@ -251,6 +278,24 @@ namespace Shared.PatientRecords.ViewModels
                 OnPropertyChanged(() => CanAttachDICOM);
             if (e.PropertyName == "CanDetachDICOM")
                 OnPropertyChanged(() => CanDetachDICOM);
+
+            //if (e.PropertyName == "PrintProtocolCommand")
+            //    OnPropertyChanged(() => PrintProtocolCommand);
+            //if (e.PropertyName == "SaveProtocolCommand")
+            //    OnPropertyChanged(() => SaveProtocolCommand);
+            //if (e.PropertyName == "ShowInEditModeCommand")
+            //    OnPropertyChanged(() => ShowInEditModeCommand);
+            //if (e.PropertyName == "ShowInViewModeCommand")
+            //    OnPropertyChanged(() => ShowInViewModeCommand);
+            //if (e.PropertyName == "AttachDocumentCommand")
+            //    OnPropertyChanged(() => AttachDocumentCommand);
+            //if (e.PropertyName == "DetachDocumentCommand")
+            //    OnPropertyChanged(() => DetachDocumentCommand);
+            //if (e.PropertyName == "AttachDICOMCommand")
+            //    OnPropertyChanged(() => AttachDICOMCommand);
+            //if (e.PropertyName == "DetachDICOMCommand")
+            //    OnPropertyChanged(() => DetachDICOMCommand);
+            //OnPropertyChanged(e.PropertyName);
         }
         #endregion
 
@@ -568,18 +613,55 @@ namespace Shared.PatientRecords.ViewModels
             }
         }
 
-        public ICommand PrintProtocolCommand { get { return personRecordEditorViewModel.PrintProtocolCommand; } }
+        public ICommand printProtocolCommand;
+        public ICommand PrintProtocolCommand
+        {
+            get { return printProtocolCommand; }
+            set { SetProperty(ref printProtocolCommand, value); }
+        }
 
-        public ICommand SaveProtocolCommand { get { return personRecordEditorViewModel.SaveProtocolCommand; } }
-
-        public ICommand ShowInEditModeCommand { get { return personRecordEditorViewModel.ShowInEditModeCommand; } }
-
-        public ICommand ShowInViewModeCommand { get { return personRecordEditorViewModel.ShowInViewModeCommand; } }
-
-        public ICommand AttachDocumentCommand { get { return personRecordEditorViewModel.AttachDocumentCommand; } }
-        public ICommand DetachDocumentCommand { get { return personRecordEditorViewModel.DetachDocumentCommand; } }
-        public ICommand AttachDICOMCommand { get { return personRecordEditorViewModel.AttachDICOMCommand; } }
-        public ICommand DetachDICOMCommand { get { return personRecordEditorViewModel.DetachDICOMCommand; } }
+        public ICommand saveProtocolCommand;
+        public ICommand SaveProtocolCommand
+        {
+            get { return saveProtocolCommand; }
+            set { SetProperty(ref saveProtocolCommand, value); }
+        }
+        public ICommand showInEditModeCommand;
+        public ICommand ShowInEditModeCommand
+        {
+            get { return showInEditModeCommand; }
+            set { SetProperty(ref showInEditModeCommand, value); }
+        }
+        public ICommand showInViewModeCommand;
+        public ICommand ShowInViewModeCommand
+        {
+            get { return showInViewModeCommand; }
+            set { SetProperty(ref showInViewModeCommand, value); }
+        }
+        public ICommand attachDocumentCommand;
+        public ICommand AttachDocumentCommand
+        {
+            get { return attachDocumentCommand; }
+            set { SetProperty(ref attachDocumentCommand, value); }
+        }
+        public ICommand detachDocumentCommand;
+        public ICommand DetachDocumentCommand
+        {
+            get { return detachDocumentCommand; }
+            set { SetProperty(ref detachDocumentCommand, value); }
+        }
+        public ICommand attachDICOMCommand;
+        public ICommand AttachDICOMCommand
+        {
+            get { return attachDICOMCommand; }
+            set { SetProperty(ref attachDICOMCommand, value); }
+        }
+        public ICommand detachDICOMCommand;
+        public ICommand DetachDICOMCommand
+        {
+            get { return detachDICOMCommand; }
+            set { SetProperty(ref detachDICOMCommand, value); }
+        }
         #endregion
 
         #region IConfirmNavigationRequest implimentation

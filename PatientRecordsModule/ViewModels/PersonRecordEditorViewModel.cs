@@ -519,7 +519,6 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool allowDocuments;
-
         public bool AllowDocuments
         {
             get { return DocumentsViewer.AllowDocuments; }
@@ -527,7 +526,6 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool allowDICOM;
-
         public bool AllowDICOM
         {
             get { return DocumentsViewer.AllowDICOM; }
@@ -535,7 +533,6 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool canAttachDICOM;
-
         public bool CanAttachDICOM
         {
             get { return DocumentsViewer.CanAttachDICOM; }
@@ -543,7 +540,6 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         private bool canDetachDICOM;
-
         public bool CanDetachDICOM
         {
             get { return DocumentsViewer.CanDetachDICOM; }
@@ -1345,5 +1341,6 @@ namespace Shared.PatientRecords.ViewModels
         }
 
         #endregion
+
     }
 }
