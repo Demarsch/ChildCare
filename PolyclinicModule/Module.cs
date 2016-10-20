@@ -81,8 +81,7 @@ namespace PolyclinicModule
 
         private void RegisterViewModels()
         {
-            container.RegisterType<EmptyPatientInfoViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<PersonRecordsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<PolyclinicEmptyViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<PolyclinicPersonListViewModel>(new ContainerControlledLifetimeManager());
         }
 

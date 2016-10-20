@@ -25,6 +25,8 @@ using PolyclinicModule.Services;
 using PolyclinicModule.DTO;
 using Core.Wpf.Events;
 using Shared.PatientRecords.Events;
+using Shell.Shared;
+using Shared.PatientRecords.ViewModels;
 
 namespace PolyclinicModule.ViewModels
 {
@@ -50,16 +52,30 @@ namespace PolyclinicModule.ViewModels
 
         private TaskCompletionSource<bool> completionTaskSource;
 
+        private readonly IRegionManager regionManager;
+
+        private readonly IViewNameResolver viewNameResolver;
+
+        private bool sourcesLoaded;
+
         #endregion
 
         #region  Constructors
-      
-        public PolyclinicPersonListViewModel(ILog logService, IDialogServiceAsync dialogService, IDialogService messageService,
+
+        public PolyclinicPersonListViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, ILog logService, IDialogServiceAsync dialogService, IDialogService messageService,
                                         IUserService userService, INotificationService notificationService, IEventAggregator eventAggregator, IPolyclinicService polyclinicService)
         {            
             if (logService == null)
             {
                 throw new ArgumentNullException("logService");
+            }
+            if (regionManager == null)
+            {
+                throw new ArgumentNullException("regionManager");
+            }
+            if (viewNameResolver == null)
+            {
+                throw new ArgumentNullException("viewNameResolver");
             }
             if (eventAggregator == null)
             {
@@ -85,6 +101,8 @@ namespace PolyclinicModule.ViewModels
             {
                 throw new ArgumentNullException("polyclinicService");
             }
+            this.viewNameResolver = viewNameResolver;
+            this.regionManager = regionManager;
             this.dialogService = dialogService;
             this.userService = userService;
             this.messageService = messageService;
@@ -96,6 +114,7 @@ namespace PolyclinicModule.ViewModels
             BusyMediator = new BusyMediator();
             Rooms = new ObservableCollectionEx<FieldValue>();
             Source = new ObservableCollectionEx<PolyclinicPersonListItemViewModel>();
+            sourcesLoaded = false;
         }
 
         #endregion
@@ -110,6 +129,10 @@ namespace PolyclinicModule.ViewModels
             set { SetProperty(ref source, value); }
         }
 
+        int targetPersonId = SpecialValues.NonExistingId;
+        int? targetAssignmentId = SpecialValues.NonExistingId;
+        int? targetRecordId = SpecialValues.NonExistingId;
+
         PolyclinicPersonListItemViewModel selectedSource;
         public PolyclinicPersonListItemViewModel SelectedSource
         {
@@ -118,10 +141,15 @@ namespace PolyclinicModule.ViewModels
             {
                 if (SetProperty(ref selectedSource, value))
                 {
-                    if (value != null)
-                        eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Publish(new object[] { value.PersonId, value.AssignmentId, value.RecordId });
-                    else
-                        eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Publish(null);
+                    if (value != null && !SpecialValues.IsNewOrNonExisting(value.PersonId) && (value.PersonId != targetPersonId || value.AssignmentId != targetAssignmentId || value.RecordId != targetRecordId))
+                    {                        
+                        targetPersonId = value.PersonId;
+                        targetAssignmentId = value.AssignmentId;
+                        targetRecordId = value.RecordId;
+                        var navigationParameters = new NavigationParameters { { "PatientId", targetPersonId } };
+                        regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonRecordsViewModel>(), navigationParameters);                        
+                        eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Publish(new object[] { targetPersonId, targetAssignmentId, targetRecordId });
+                    }
                 }
             }
         }
@@ -164,7 +192,7 @@ namespace PolyclinicModule.ViewModels
         #region Methods
 
         internal async Task InitialLoadingAsync()
-        {
+        {           
             Rooms.Clear();
             SelectedDate = DateTime.MinValue;
             SelectedRoomId = -1;
@@ -194,6 +222,7 @@ namespace PolyclinicModule.ViewModels
                 if (roomQuery != null)
                     roomQuery.Dispose();
                 BusyMediator.Deactivate();
+                sourcesLoaded = true;
             }
         }
 
@@ -493,7 +522,10 @@ namespace PolyclinicModule.ViewModels
 
         public async void OnNavigatedTo(NavigationContext navigationContext)
         {
-            await InitialLoadingAsync();
+            if (sourcesLoaded && SelectedSource != null)
+                eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Publish(new object[] { SelectedSource.PersonId, SelectedSource.AssignmentId, SelectedSource.RecordId });
+            else
+                await InitialLoadingAsync();
         }
     }
 }

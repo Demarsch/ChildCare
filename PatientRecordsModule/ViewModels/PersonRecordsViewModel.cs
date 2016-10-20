@@ -22,13 +22,14 @@ using System.Threading;
 using System.Data.Entity;
 using Core.Extensions;
 using Shared.PatientRecords.Misc;
+using Shared.PatientRecords.Events;
 
 namespace Shared.PatientRecords.ViewModels
 {
-    public class PersonRecordsViewModel : BindableBase, IConfirmNavigationRequest, IDisposable
+    public class PersonRecordsViewModel : BindableBase, INavigationAware, IDisposable
     {
         #region Fields
-
+        
         private readonly IPatientRecordsService patientRecordsService;
         private readonly IEventAggregator eventAggregator;
         private readonly IDialogService messageService;
@@ -75,7 +76,7 @@ namespace Shared.PatientRecords.ViewModels
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("patientRecordsService");
-            }
+            }            
             if (logService == null)
             {
                 throw new ArgumentNullException("logService");
@@ -117,7 +118,7 @@ namespace Shared.PatientRecords.ViewModels
             this.personRecordListViewModel = personRecordListViewModel;
             this.dialogServiceAsync = dialogServiceAsync;
             this.messageService = messageService;
-            this.logService = logService;
+            this.logService = logService;           
             this.eventAggregator = eventAggregator;
             this.patientRecordsService = patientRecordsService;
             this.visitCloseViewModelFactory = visitCloseViewModelFactory;
@@ -239,6 +240,7 @@ namespace Shared.PatientRecords.ViewModels
         {
             eventAggregator.GetEvent<PubSubEvent<IPersonRecordEditor>>().Subscribe(OnEditorSelected);
             eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelected);
+            eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Subscribe(OnPolyclinicPersonListItemSelected);
         }
 
         private async void OnPatientSelected(int personId)
@@ -256,9 +258,29 @@ namespace Shared.PatientRecords.ViewModels
                 SelectedItemEditor.PropertyChanged += SelectedItemEditor_PropertyChanged;
         }
 
+        private async void OnPolyclinicPersonListItemSelected(object parameters)
+        {
+            if (parameters == null) return;
+            int personId = (parameters as object[])[0].ToInt();
+            int assignmentId = (parameters as object[])[1].ToInt();
+            int recordId = (parameters as object[])[2].ToInt();
+
+            if (this.PersonId != personId)
+                await personRecordListViewModel.LoadRootItemsAsync(personId);
+            personRecordListViewModel.SelectItem(assignmentId, recordId);
+                                                 
+            /*if (assignmentId != 0)
+                eventAggregator.GetEvent<SelectionChangedEvent<Assignment>>().Publish(assignmentId);
+            else if (recordId != 0)
+                eventAggregator.GetEvent<SelectionChangedEvent<Record>>().Publish(recordId);*/
+
+        }       
+
         private void UnsubscriveFromEvents()
         {
             eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Unsubscribe(OnPatientSelected);
+            eventAggregator.GetEvent<PubSubEvent<IPersonRecordEditor>>().Unsubscribe(OnEditorSelected);
+            eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Unsubscribe(OnPolyclinicPersonListItemSelected);
         }
 
         void SelectedItemEditor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -665,12 +687,7 @@ namespace Shared.PatientRecords.ViewModels
         #endregion
 
         #region IConfirmNavigationRequest implimentation
-
-        public void ConfirmNavigationRequest(NavigationContext navigationContext, Action<bool> continuationCallback)
-        {
-            continuationCallback(true);
-        }
-
+                
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true;
@@ -681,13 +698,13 @@ namespace Shared.PatientRecords.ViewModels
 
         }
 
-        public void OnNavigatedTo(NavigationContext navigationContext)
+        public async void OnNavigatedTo(NavigationContext navigationContext)
         {
-            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;
+            var targetPatientId = (int?)navigationContext.Parameters[ParameterNames.PatientId] ?? SpecialValues.NonExistingId;                                    
             if (targetPatientId != personId)
             {
                 PersonId = targetPatientId;
-                personRecordListViewModel.LoadRootItemsAsync(this.PersonId);
+                await personRecordListViewModel.LoadRootItemsAsync(this.PersonId);
             }
         }
 

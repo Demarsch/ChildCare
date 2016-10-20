@@ -3,11 +3,14 @@ using Core.Data.Misc;
 using Core.Wpf.Events;
 using Core.Wpf.Extensions;
 using Core.Wpf.Services;
+using Core.Extensions;
 using Prism;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
+using Shared.PatientRecords.Events;
+using Shared.PatientRecords.Misc;
 using Shared.PatientRecords.ViewModels;
 using Shell.Shared;
 using System;
@@ -19,7 +22,7 @@ using System.Windows.Input;
 
 namespace PolyclinicModule.ViewModels
 {
-    public class PolyclinicHeaderViewModel : BindableBase, IActiveAware
+    public class PolyclinicHeaderViewModel : BindableBase, IActiveAware, IDisposable
     {
         #region Fields       
 
@@ -29,10 +32,12 @@ namespace PolyclinicModule.ViewModels
 
         private readonly IViewNameResolver viewNameResolver;
 
+        private readonly IEventAggregator eventAggregator;
+
         #endregion
 
         #region Constructors
-        public PolyclinicHeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, 
+        public PolyclinicHeaderViewModel(IEventAggregator eventAggregator, IRegionManager regionManager, IViewNameResolver viewNameResolver, 
                                          PersonRecordsToolboxViewModel personRecordsToolboxViewModel, Func<PersonRecordsToolboxViewModel> personRecordsToolboxViewModelFactory)
         {
             if (regionManager == null)
@@ -43,11 +48,18 @@ namespace PolyclinicModule.ViewModels
             {
                 throw new ArgumentNullException("viewNameResolver");
             }
+            if (eventAggregator == null)
+            {
+                throw new ArgumentNullException("eventAggregator");
+            }
             this.regionManager = regionManager;
             this.viewNameResolver = viewNameResolver;
+            this.eventAggregator = eventAggregator;
 
             this.personRecordsToolboxViewModelFactory = personRecordsToolboxViewModelFactory;
-            PersonRecordsToolboxViewModel = personRecordsToolboxViewModel;           
+            PersonRecordsToolboxViewModel = personRecordsToolboxViewModel;
+
+            SubscribeToEvents();
         }
 
         #endregion
@@ -82,6 +94,33 @@ namespace PolyclinicModule.ViewModels
             }
         }
 
+        private int patientId;
+
+        public void Dispose()
+        {
+            UnsubscriveFromEvents();
+        }
+
+        private void SubscribeToEvents()
+        {
+            eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Subscribe(OnPolyclinicPersonListItemSelected);
+        }
+
+        private void UnsubscriveFromEvents()
+        {
+            eventAggregator.GetEvent<PolyclinicPersonListChangedEvent>().Unsubscribe(OnPolyclinicPersonListItemSelected);
+        }
+
+        private void OnPolyclinicPersonListItemSelected(object parameters)
+        {
+            if (parameters == null) return;
+            int personId = (parameters as object[])[0].ToInt();
+            int assignmentId = (parameters as object[])[1].ToInt();
+            int recordId = (parameters as object[])[2].ToInt();
+
+            this.patientId = personId;     
+        }      
+
         private void ActivateHeader()
         {            
             if (personRecordsToolboxViewModel == null)
@@ -89,6 +128,14 @@ namespace PolyclinicModule.ViewModels
             PersonRecordsToolboxViewModel.ActivatePersonRecords();
 
             regionManager.RequestNavigate(RegionNames.ListItems, viewNameResolver.Resolve<PolyclinicPersonListViewModel>());
+
+            if (SpecialValues.IsNewOrNonExisting(patientId))
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PolyclinicEmptyViewModel>());
+            else
+            {
+                var navigationParameters = new NavigationParameters { { ParameterNames.PatientId, patientId } };
+                regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<PersonRecordsViewModel>(), navigationParameters);
+            }
         }        
 
         #region Events
