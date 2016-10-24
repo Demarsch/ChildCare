@@ -19,5 +19,7 @@
         public const string StatisticsModule = "StatisticsModule";
 
         public const string PolyclinicModule = "PolyclinicModule";
+        
+        public const string UserMessagerModule = "UserMessagerModule";
     }
 }

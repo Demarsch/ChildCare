@@ -24,6 +24,8 @@
         public const string StatisticsModuleAccess = "Доступ к модулю \"Статистика\"";
 
         public const string PolyclinicModuleAccess = "Доступ к модулю \"КДЦ\"";
+        
+        public const string UserMessagerModuleAccess = "Доступ к модулю \"Сообщения\"";
 
         #endregion
 

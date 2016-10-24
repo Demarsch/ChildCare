@@ -123,6 +123,7 @@
     <Compile Include="Converters\AllMembersToTextConverter.cs" />
     <Compile Include="Converters\GridLengthConverter.cs" />
     <Compile Include="Converters\LevelToMarginConverter.cs" />
+    <Compile Include="Converters\ElementAtConverter.cs" />
     <Compile Include="Converters\TalonStateToImageConverter.cs" />
     <Compile Include="Converters\CommissionStatusToImageConverter.cs" />
     <Compile Include="Converters\DateToUserFriendlyStringConverter.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Converters\GenderToImageConverter.cs" />
     <Compile Include="Converters\GenderToTextConverter.cs" />
     <Compile Include="Converters\ProportionConverter.cs" />
+    <Compile Include="Converters\MultiToStringConverter.cs" />
     <Compile Include="Converters\ToStringConverter.cs" />
     <Compile Include="Events\BeforeSelectionChangedEvent.cs" />
     <Compile Include="Events\MainMenuCloseRequestedEvent.cs" />

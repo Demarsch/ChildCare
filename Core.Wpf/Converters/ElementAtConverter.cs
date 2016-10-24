@@ -4,17 +4,13 @@ using System.Windows.Data;
 
 namespace Core.Wpf.Converters
 {
-    public class ToStringConverter : IValueConverter
+    public class ElementAtConverter : IValueConverter
     {
-        public static readonly ToStringConverter Instance = new ToStringConverter();
+        public static readonly ElementAtConverter Instance = new ElementAtConverter();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null)
-                return string.Empty;
-            if ((parameter as string) == null)
-                return value.ToString();
-            return string.Format(culture, parameter as string, value);
+            return ((object[])parameter)[Math.Max(Math.Min((value is bool) ? ((bool)value ? 1 : 0) : (int)value, ((object[])parameter).Length), 0)];
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

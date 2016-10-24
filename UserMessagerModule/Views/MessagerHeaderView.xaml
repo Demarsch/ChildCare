@@ -1,0 +1,36 @@
+﻿<fluent:RibbonTabItem x:Class="UserMessagerModule.Views.MessagerHeaderView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:fluent="urn:fluent-ribbon"
+                      xmlns:viewModels="clr-namespace:UserMessagerModule.ViewModels"
+                      xmlns:converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf"
+                      mc:Ignorable="d"
+                      d:DesignHeight="300"
+                      d:DesignWidth="300"
+                      d:DataContext="{d:DesignInstance viewModels:MessagerHeaderViewModel}" 
+                      Header="{Binding MessagerSelectorViewModel.HeaderText}">
+    <fluent:RibbonGroupBox Header="Сообщения">
+        <fluent:Button Header="Обновить" SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/MailReceive.png"
+                       Command="{Binding RefreshAllCommand}" />
+        <fluent:Button Header="Отметить как прочитанное"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/MailRead.png" 
+                       Command="{Binding MessagerInboxViewModel.ReadMessageCommand}"/>
+        <fluent:Button Header="Открыть"
+                       SizeDefinition="Large"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/MailTask.png" 
+                       Command="{Binding MessagerInboxViewModel.OpenMessageCommand}"/>
+    </fluent:RibbonGroupBox>
+    <fluent:RibbonGroupBox Header="Параметры">
+        <StackPanel>
+            <fluent:CheckBox Header="Показывать прочитанные сообщения"
+                             IsChecked="{Binding MessagerInboxViewModel.ShowRead, Mode=TwoWay}"
+                             Command="{Binding MessagerInboxViewModel.RefreshAllCommand}"/>
+            <fluent:CheckBox Header="Отмечать открываемые сообщения как прочитанные"
+                             IsChecked="{Binding MessagerInboxViewModel.ReadOpened, Mode=TwoWay}"/>
+        </StackPanel>
+    </fluent:RibbonGroupBox>
+</fluent:RibbonTabItem>

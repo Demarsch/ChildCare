@@ -69,6 +69,7 @@
     <Compile Include="Attributes\IdPropertyAttribute.cs" />
     <Compile Include="Attributes\NamePropertyAttribute.cs" />
     <Compile Include="Attributes\NonCachableAttribute.cs" />
+    <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="Expressions\CompositeSearchExpressionProvider.cs" />
     <Compile Include="Expressions\DateBasedSearchExpressionProvider.cs" />
     <Compile Include="Expressions\ParameterReplacer.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="Misc\Change Tracking\IChangeTrackable.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\CommonIdName.cs" />
-    <Compile Include="Misc\DataGridRowDefinition.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
     <Compile Include="Misc\IHierarchyItem.cs" />
@@ -377,6 +377,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Refresh48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\MailFlag.png" />
+    <Resource Include="Resources\Images\MailFolder.png" />
+    <Resource Include="Resources\Images\MailInbox.png" />
+    <Resource Include="Resources\Images\MailRead.png" />
+    <Resource Include="Resources\Images\MailReceive.png" />
+    <Resource Include="Resources\Images\MailTag.png" />
+    <Resource Include="Resources\Images\MailTask.png" />
+    <Resource Include="Resources\Images\MailUnreadNew.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Statistics48x48.png" />
