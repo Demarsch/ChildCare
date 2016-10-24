@@ -19,11 +19,11 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using UserMessagerModule.Services;
+using UserMessageModule.Services;
 
-namespace UserMessagerModule.ViewModels
+namespace UserMessageModule.ViewModels
 {
-    public class MessagerSelectorViewModel : BindableBase, IDisposable, INavigationAware
+    public class MessageSelectorViewModel : BindableBase, IDisposable, INavigationAware
     {
         IUserMessageService userMessageService;
         ILog logService;
@@ -31,7 +31,7 @@ namespace UserMessagerModule.ViewModels
         INotificationService notificationService;
         IDialogService dialogService;
 
-        public MessagerSelectorViewModel(IUserMessageService userMessageService, ILog logService, IUserService userService,
+        public MessageSelectorViewModel(IUserMessageService userMessageService, ILog logService, IUserService userService,
             INotificationService notificationService, IDialogService dialogService)
         {
             if ((this.userMessageService = userMessageService) == null)
@@ -120,7 +120,7 @@ namespace UserMessagerModule.ViewModels
 
                 dynamic allitem = new ExpandoObject();
                 allitem.Id = 0;
-                allitem.Text = ModuleStrings.MessagerSelectorAllItem;
+                allitem.Text = ModuleStrings.MessageSelectorAllItem;
                 var allnew = result.Any() ? result.Sum(x => x.CountNew) : 0;
                 allitem.Info = result.Any() ? ((allnew > 0 ? allnew + " / " : "") + result.Sum(x => x.CountAll)) : "";
                 allitem.HasNew = (allnew > 0);

@@ -22,11 +22,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using UserMessagerModule.Services;
+using UserMessageModule.Services;
 
-namespace UserMessagerModule.ViewModels
+namespace UserMessageModule.ViewModels
 {
-    public class MessagerInboxViewModel : BindableBase, IDisposable
+    public class MessageInboxViewModel : BindableBase, IDisposable
     {
         IEventAggregator eventAggregator;
         IDialogService dialogService;
@@ -34,10 +34,10 @@ namespace UserMessagerModule.ViewModels
         IUserMessageService userMessageService;
         IUserService userService;
         INotificationService notificationService;
-        MessagerSelectorViewModel messageSelectorViewModel;
+        MessageSelectorViewModel messageSelectorViewModel;
         
-        public MessagerInboxViewModel(IEventAggregator eventAggregator, IDialogService dialogService, ILog logService,
-            IUserMessageService userMessageService, IUserService userService, INotificationService notificationService, MessagerSelectorViewModel messageSelectorViewModel)
+        public MessageInboxViewModel(IEventAggregator eventAggregator, IDialogService dialogService, ILog logService,
+            IUserMessageService userMessageService, IUserService userService, INotificationService notificationService, MessageSelectorViewModel messageSelectorViewModel)
         {
             if ((this.eventAggregator = eventAggregator) == null)
                 throw new ArgumentNullException("eventAggregatorСonclusionViewModel");
@@ -58,7 +58,7 @@ namespace UserMessagerModule.ViewModels
 
         public void Dispose()
         {
-//            eventAggregator.GetEvent<SelectionChangedEvent<MessagerSelectorViewModel>>().Unsubscribe(SetCurrentMessageTypeId);
+//            eventAggregator.GetEvent<SelectionChangedEvent<MessageSelectorViewModel>>().Unsubscribe(SetCurrentMessageTypeId);
             if (userMessagesChangeSubscription == null)
                 return;
             userMessagesChangeSubscription.Notified -= userMessagesChangeSubscription_Notified;

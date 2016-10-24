@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UserMessagerModule.Services
+namespace UserMessageModule.Services
 {
     public interface IUserMessageService
     {

@@ -1,4 +1,4 @@
-﻿using UserMessagerModule.ViewModels;
+﻿using UserMessageModule.ViewModels;
 using Microsoft.Practices.Unity;
 using System;
 using System.Collections.Generic;
@@ -15,22 +15,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UserMessagerModule.Views
+namespace UserMessageModule.Views
 {
     /// <summary>
-    /// Interaction logic for MessagerInboxView.xaml
+    /// Interaction logic for MessageInboxView.xaml
     /// </summary>
-    public partial class MessagerInboxView : UserControl
+    public partial class MessageInboxView : UserControl
     {
-        public MessagerInboxView()
+        public MessageInboxView()
         {
             InitializeComponent();
         }
 
         [Dependency]
-        public MessagerInboxViewModel ViewModel
+        public MessageInboxViewModel ViewModel
         {
-            get { return DataContext as MessagerInboxViewModel; }
+            get { return DataContext as MessageInboxViewModel; }
             set { DataContext = value; }
         }
     }

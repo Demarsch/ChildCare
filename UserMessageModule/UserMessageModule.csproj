@@ -7,8 +7,8 @@
     <ProjectGuid>{5AD0824E-B893-4899-BB7F-CB77F0E79B26}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UserMessagerModule</RootNamespace>
-    <AssemblyName>UserMessagerModule</AssemblyName>
+    <RootNamespace>UserMessageModule</RootNamespace>
+    <AssemblyName>UserMessageModule</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -96,17 +96,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\UserMessageService.cs" />
     <Compile Include="Services\Interfaces\IUserMessageService.cs" />
-    <Compile Include="ViewModels\MessagerInboxViewModel.cs" />
-    <Compile Include="ViewModels\MessagerSelectorViewModel.cs" />
-    <Compile Include="ViewModels\MessagerHeaderViewModel.cs" />
-    <Compile Include="Views\MessagerInboxView.xaml.cs">
-      <DependentUpon>MessagerInboxView.xaml</DependentUpon>
+    <Compile Include="ViewModels\MessageInboxViewModel.cs" />
+    <Compile Include="ViewModels\MessageSelectorViewModel.cs" />
+    <Compile Include="ViewModels\MessageHeaderViewModel.cs" />
+    <Compile Include="Views\MessageInboxView.xaml.cs">
+      <DependentUpon>MessageInboxView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MessagerSelectorView.xaml.cs">
-      <DependentUpon>MessagerSelectorView.xaml</DependentUpon>
+    <Compile Include="Views\MessageSelectorView.xaml.cs">
+      <DependentUpon>MessageSelectorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MessagerHeaderView.xaml.cs">
-      <DependentUpon>MessagerHeaderView.xaml</DependentUpon>
+    <Compile Include="Views\MessageHeaderView.xaml.cs">
+      <DependentUpon>MessageHeaderView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -137,15 +137,15 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Page Include="Views\MessagerInboxView.xaml">
+    <Page Include="Views\MessageInboxView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MessagerSelectorView.xaml">
+    <Page Include="Views\MessageSelectorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MessagerHeaderView.xaml">
+    <Page Include="Views\MessageHeaderView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

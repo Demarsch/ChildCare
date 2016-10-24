@@ -11,7 +11,7 @@ using Core.Notification;
 using System.Threading;
 using Core.Misc;
 
-namespace UserMessagerModule.Services
+namespace UserMessageModule.Services
 {
     public class UserMessageService : IUserMessageService
     {

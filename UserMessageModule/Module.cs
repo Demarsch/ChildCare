@@ -8,15 +8,15 @@ using Shell.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UserMessagerModule.Services;
-using UserMessagerModule.ViewModels;
-using UserMessagerModule.Views;
+using UserMessageModule.Services;
+using UserMessageModule.ViewModels;
+using UserMessageModule.Views;
 using Core.Data;
 
-namespace UserMessagerModule
+namespace UserMessageModule
 {
-    [Module(ModuleName = WellKnownModuleNames.UserMessagerModule, OnDemand = true)]
-    [PermissionRequired(Permission.UserMessagerModuleAccess)]
+    [Module(ModuleName = WellKnownModuleNames.UserMessageModule, OnDemand = true)]
+    [PermissionRequired(Permission.UserMessageModuleAccess)]
     public class Module : IModule
     {
         private readonly IUnityContainer container;
@@ -46,29 +46,29 @@ namespace UserMessagerModule
 
         public void Initialize()
         {
-            var log = LogManager.GetLogger("USERMESSAGER");
+            var log = LogManager.GetLogger("USERMESSAGE");
             container.RegisterInstance(log);
-            log.InfoFormat("{0} module init start", WellKnownModuleNames.UserMessagerModule);
+            log.InfoFormat("{0} module init start", WellKnownModuleNames.UserMessageModule);
 
             //services
             container.RegisterType<IUserMessageService, UserMessageService>(new ContainerControlledLifetimeManager());
 
             //viewmodels
-            container.RegisterType<MessagerHeaderViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<MessagerInboxViewModel>(new ContainerControlledLifetimeManager());
-            container.RegisterType<MessagerSelectorViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<MessageHeaderViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<MessageInboxViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<MessageSelectorViewModel>(new ContainerControlledLifetimeManager());
             
             //views
-            container.RegisterType<object, MessagerSelectorView>(viewNameResolver.Resolve<MessagerSelectorViewModel>(), new ContainerControlledLifetimeManager());
-            container.RegisterType<object, MessagerInboxView>(viewNameResolver.Resolve<MessagerInboxViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, MessageSelectorView>(viewNameResolver.Resolve<MessageSelectorViewModel>(), new ContainerControlledLifetimeManager());
+            container.RegisterType<object, MessageInboxView>(viewNameResolver.Resolve<MessageInboxViewModel>(), new ContainerControlledLifetimeManager());
 
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<MessagerHeaderView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleList, () => container.Resolve<MessageHeaderView>());
 
-            regionManager.RegisterViewWithRegion(RegionNames.ListItems, () => container.Resolve<MessagerSelectorView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ListItems, () => container.Resolve<MessageSelectorView>());
             regionManager.Regions[RegionNames.ListItems].DeactivateActiveViews();
-            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<MessagerInboxView>());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<MessageInboxView>());
 
-            log.InfoFormat("{0} module init finished", WellKnownModuleNames.UserMessagerModule);
+            log.InfoFormat("{0} module init finished", WellKnownModuleNames.UserMessageModule);
         }
 
     }

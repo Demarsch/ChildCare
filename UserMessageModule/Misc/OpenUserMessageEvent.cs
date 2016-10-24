@@ -1,6 +1,6 @@
 ﻿using Prism.Events;
 
-namespace UserMessagerModule
+namespace UserMessageModule
 {
     public class OpenUserMessageEvent : PubSubEvent<string>
     {

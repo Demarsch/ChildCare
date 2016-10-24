@@ -20,6 +20,7 @@
 
         public const string PolyclinicModule = "PolyclinicModule";
         
-        public const string UserMessagerModule = "UserMessagerModule";
+        public const string UserMessageModule = "UserMessageModule";
+        
     }
 }

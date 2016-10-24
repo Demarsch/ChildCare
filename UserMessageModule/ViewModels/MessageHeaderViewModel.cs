@@ -10,25 +10,25 @@ using Core.Wpf.Extensions;
 using System.Threading;
 using Prism.Commands;
 
-namespace UserMessagerModule.ViewModels
+namespace UserMessageModule.ViewModels
 {
-    public class MessagerHeaderViewModel: BindableBase, IActiveAware
+    public class MessageHeaderViewModel: BindableBase, IActiveAware
     {
         IRegionManager regionManager;
         IViewNameResolver viewNameResolver;
-        public MessagerInboxViewModel MessagerInboxViewModel { get; private set; }
-        public MessagerSelectorViewModel MessagerSelectorViewModel { get; private set; }
+        public MessageInboxViewModel MessageInboxViewModel { get; private set; }
+        public MessageSelectorViewModel MessageSelectorViewModel { get; private set; }
 
-        public MessagerHeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, MessagerInboxViewModel messagerInboxViewModel, MessagerSelectorViewModel messagerSelectorViewModel)
+        public MessageHeaderViewModel(IRegionManager regionManager, IViewNameResolver viewNameResolver, MessageInboxViewModel messageInboxViewModel, MessageSelectorViewModel messageSelectorViewModel)
         {
             if ((this.regionManager = regionManager) == null)
                 throw new ArgumentNullException("regionManager");
             if ((this.viewNameResolver = viewNameResolver) == null)
                 throw new ArgumentNullException("viewNameResolver");
-            if ((MessagerInboxViewModel = messagerInboxViewModel) == null)
-                throw new ArgumentNullException("messagerInboxViewModel");
-            if ((MessagerSelectorViewModel = messagerSelectorViewModel) == null)
-                throw new ArgumentNullException("messagerInboxViewModel");
+            if ((MessageInboxViewModel = messageInboxViewModel) == null)
+                throw new ArgumentNullException("messageInboxViewModel");
+            if ((MessageSelectorViewModel = messageSelectorViewModel) == null)
+                throw new ArgumentNullException("messageInboxViewModel");
         }
 
         private CompositeCommand refreshAllCommand;
@@ -39,8 +39,8 @@ namespace UserMessagerModule.ViewModels
                 if (refreshAllCommand != null)
                     return refreshAllCommand;
                 refreshAllCommand = new CompositeCommand();
-                refreshAllCommand.RegisterCommand(MessagerSelectorViewModel.RefreshAllCommand);
-                refreshAllCommand.RegisterCommand(MessagerInboxViewModel.RefreshAllCommand);
+                refreshAllCommand.RegisterCommand(MessageSelectorViewModel.RefreshAllCommand);
+                refreshAllCommand.RegisterCommand(MessageInboxViewModel.RefreshAllCommand);
                 return refreshAllCommand;
             }
         }
@@ -60,8 +60,8 @@ namespace UserMessagerModule.ViewModels
                 OnPropertyChanged(() => IsActive);
                 if (value)
                 {
-                    regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<MessagerInboxViewModel>());
-                    regionManager.RequestNavigate(RegionNames.ListItems, viewNameResolver.Resolve<MessagerSelectorViewModel>());
+                    regionManager.RequestNavigate(RegionNames.ModuleContent, viewNameResolver.Resolve<MessageInboxViewModel>());
+                    regionManager.RequestNavigate(RegionNames.ListItems, viewNameResolver.Resolve<MessageSelectorViewModel>());
                 }
                 else
                 {
