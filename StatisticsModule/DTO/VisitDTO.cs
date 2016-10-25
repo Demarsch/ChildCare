@@ -6,50 +6,30 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace StatisticsModule.DTO
-{
-    public class RecordDTO
+{    
+    public class VisitDTO
     {
         public int Id { get; set; }
-        public int RecordTypeId { get; set; }
-        public string Code { get; set; }
+        public int VisitTemplateId { get; set; }
         public string Name { get; set; }
         public int ContractId { get; set; }
         public int FinancingSourceId { get; set; }
-        public string FinancingSourceName { get; set; }
         public string ContractName { get; set; }
-        public DateTime AssignDateTime { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public DateTime ActualDateTime { get; set; }
-        public int RoomId { get; set; }
-        public string Room { get; set; }
-        public int? MKBId { get; set; }
         public string MKB { get; set; }
         public int UrgentlyId { get; set; }
         public string UrgentlyName { get; set; }
-        public bool IsChild { get; set; }
         public double Cost { get; set; }
-        public double Price { get; set; }
         public string PaymentType { get; set; }
 
         public DateTime PersonBirthDate { get; set; }
         public string PatientFIO { get; set; }
         public string RelativeFIO { get; set; }
         public string CardNumber { get; set; }
-        public string BranchName { get; set; }
-        public IEnumerable<BrigadeWrapper> Brigade { get; set; }
 
         public int ExecutionPlaceId { get; set; }
         public string ExecutionPlace { get; set; }
         public string ExecutionPlaceOption { get; set; }
-
-        public bool IsAnalyse { get; set; }
-        public bool AssignByRegistrator { get; set; }
-    }
-
-    public class BrigadeWrapper
-    {
-        public string EmployeeName { get; set; }
-        public string StaffName { get; set; }
     }
 }

@@ -105,6 +105,9 @@ namespace StatisticsModule
 
             container.RegisterType<object, RecordsStatisticsView>(viewNameResolver.Resolve<RecordsStatisticsViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<RecordsStatisticsView>());
+
+            container.RegisterType<object, ScheduleStatisticsView>(viewNameResolver.Resolve<ScheduleStatisticsViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<ScheduleStatisticsView>());
             
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/StatisticsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }

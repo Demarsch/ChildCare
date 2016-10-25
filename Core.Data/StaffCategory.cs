@@ -17,12 +17,31 @@ namespace Core.Data
     {
         public StaffCategory()
         {
+            this.StaffCategories1 = new HashSet<StaffCategory>();
             this.Staffs = new HashSet<Staff>();
         }
     
         public int Id { get; set; }
+        public Nullable<int> ParentId { get; set; }
         public string Name { get; set; }
+        public string Options { get; set; }
     
+        [NonSerialized]
+    	protected ICollection<StaffCategory> staffCategories1;
+    
+    	public virtual ICollection<StaffCategory> StaffCategories1
+    	{
+     		get { return staffCategories1; }
+     		set { staffCategories1 = value; }
+    	}
+        [NonSerialized]
+    	protected StaffCategory staffCategory1;
+    
+    	public virtual StaffCategory StaffCategory1
+    	{
+     		get { return staffCategory1; }
+     		set { staffCategory1 = value; }
+    	}
         [NonSerialized]
     	protected ICollection<Staff> staffs;
     

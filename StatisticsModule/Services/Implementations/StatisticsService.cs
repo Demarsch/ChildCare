@@ -36,7 +36,7 @@ namespace StatisticsModule.Services
         public IDisposableQueryable<FinancingSource> GetActualFinancingSources()
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().AsNoTracking().Where(x => x.IsActive), context);
+            return new DisposableQueryable<FinancingSource>(context.Set<FinancingSource>().AsNoTracking().Where(x => x.IsActive && !string.IsNullOrEmpty(x.Options)), context);
         }
 
         public IDisposableQueryable<PersonStaff> GetPersonStaffs()
@@ -80,6 +80,15 @@ namespace StatisticsModule.Services
                                                         !x.RecordId.HasValue &&
                                                         ((isAmbulatory && x.ExecutionPlace.Options.Contains(OptionValues.Ambulatory)) || (isStationary && x.ExecutionPlace.Options.Contains(OptionValues.Stationary)) || (isDayStationary && x.ExecutionPlace.Options.Contains(OptionValues.DayStationary)))
                                                         );
+            return new DisposableQueryable<Assignment>(query, context);
+        }
+
+        public IDisposableQueryable<Assignment> GetAssignments(DateTime beginDate, DateTime endDate, int employeeId)
+        {
+            var context = contextProvider.CreateNewContext();
+            var query = context.Set<Assignment>().Where(x => DbFunctions.TruncateTime(beginDate) <= DbFunctions.TruncateTime(x.AssignDateTime) && 
+                                                             DbFunctions.TruncateTime(endDate) >= DbFunctions.TruncateTime(x.AssignDateTime) && 
+                                                             (employeeId == -1 || x.User.PersonId == employeeId));
             return new DisposableQueryable<Assignment>(query, context);
         }
 

@@ -144,6 +144,7 @@
     <Compile Include="Events\BeforeSelectionChangedEvent.cs" />
     <Compile Include="Events\MainMenuCloseRequestedEvent.cs" />
     <Compile Include="Events\SelectionChangedEvent.cs" />
+    <Compile Include="Behaviors\DataGridColumnsBehavior.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\RegionExtensions.cs" />
     <Compile Include="MarkupExtensions\Int32Extension.cs" />

@@ -71,5 +71,8 @@ namespace Core.Data.Misc
         public static readonly string NoticeSideEffects = "|noticeSideEffects|";
         public static readonly string SanCurCard = "|sanCurCard|";
         public static readonly string ExceptCommissionProtocol = "|exceptCommissionProtocol|";
+
+        //Staffs
+        public static readonly string Registrator = "|registrator|";
     }
 }

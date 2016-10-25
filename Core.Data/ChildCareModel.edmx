@@ -1063,7 +1063,9 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Options" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Staffs">
           <Key>
@@ -1075,6 +1077,7 @@
           <Property Name="ShortName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="CategoryId" Type="int" Nullable="false" />
           <Property Name="IsSenior" Type="bit" Nullable="false" />
+          <Property Name="Options" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Units">
           <Key>
@@ -3094,6 +3097,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_StaffCategories_StaffCategories1">
+          <End Role="StaffCategories" Type="Self.StaffCategories" Multiplicity="0..1" />
+          <End Role="StaffCategories1" Type="Self.StaffCategories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StaffCategories">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StaffCategories1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Staffs_StaffCategories">
           <End Role="StaffCategories" Type="Self.StaffCategories" Multiplicity="1" />
           <End Role="Staffs" Type="Self.Staffs" Multiplicity="*" />
@@ -4093,6 +4108,10 @@
             <End Role="Rooms" EntitySet="Rooms" />
             <End Role="ScheduleItem" EntitySet="ScheduleItem" />
           </AssociationSet>
+          <AssociationSet Name="FK_StaffCategories_StaffCategories1" Association="Self.FK_StaffCategories_StaffCategories1">
+            <End Role="StaffCategories" EntitySet="StaffCategories" />
+            <End Role="StaffCategories1" EntitySet="StaffCategories" />
+          </AssociationSet>
           <AssociationSet Name="FK_Staffs_StaffCategories" Association="Self.FK_Staffs_StaffCategories">
             <End Role="StaffCategories" EntitySet="StaffCategories" />
             <End Role="Staffs" EntitySet="Staffs" />
@@ -4791,20 +4810,6 @@
             <End Role="RecordType" EntitySet="RecordTypes" />
             <End Role="ScheduleItem" EntitySet="ScheduleItems" />
           </AssociationSet>
-          <EntitySet Name="StaffCategories" EntityType="DataLib.StaffCategory" />
-          <EntitySet Name="Staffs" EntityType="DataLib.Staff" />
-          <AssociationSet Name="FK_CommissionMembers_Staffs" Association="DataLib.FK_CommissionMembers_Staffs">
-            <End Role="Staff" EntitySet="Staffs" />
-            <End Role="CommissionMember" EntitySet="CommissionMembers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PersonStaffs_Staffs" Association="DataLib.FK_PersonStaffs_Staffs">
-            <End Role="Staff" EntitySet="Staffs" />
-            <End Role="PersonStaff" EntitySet="PersonStaffs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Staffs_StaffCategories" Association="DataLib.FK_Staffs_StaffCategories">
-            <End Role="StaffCategory" EntitySet="StaffCategories" />
-            <End Role="Staff" EntitySet="Staffs" />
-          </AssociationSet>
           <EntitySet Name="Assignments" EntityType="DataLib.Assignment" />
           <AssociationSet Name="FK_Assignments_Assignments" Association="DataLib.FK_Assignments_Assignments">
             <End Role="Assignment" EntitySet="Assignments" />
@@ -5002,6 +5007,24 @@
           <AssociationSet Name="FK_PrintedDocuments_ReportTemplates" Association="DataLib.FK_PrintedDocuments_ReportTemplates">
             <End Role="ReportTemplate" EntitySet="ReportTemplates" />
             <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
+          </AssociationSet>
+          <EntitySet Name="StaffCategories" EntityType="DataLib.StaffCategory" />
+          <EntitySet Name="Staffs" EntityType="DataLib.Staff" />
+          <AssociationSet Name="FK_CommissionMembers_Staffs" Association="DataLib.FK_CommissionMembers_Staffs">
+            <End Role="Staff" EntitySet="Staffs" />
+            <End Role="CommissionMember" EntitySet="CommissionMembers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersonStaffs_Staffs" Association="DataLib.FK_PersonStaffs_Staffs">
+            <End Role="Staff" EntitySet="Staffs" />
+            <End Role="PersonStaff" EntitySet="PersonStaffs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StaffCategories_StaffCategories1" Association="DataLib.FK_StaffCategories_StaffCategories1">
+            <End Role="StaffCategory" EntitySet="StaffCategories" />
+            <End Role="StaffCategory1" EntitySet="StaffCategories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Staffs_StaffCategories" Association="DataLib.FK_Staffs_StaffCategories">
+            <End Role="StaffCategory" EntitySet="StaffCategories" />
+            <End Role="Staff" EntitySet="Staffs" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Branch">
@@ -7304,9 +7327,9 @@
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="CommissionMemberType" Relationship="DataLib.FK_CommissionMembers_CommissionMemberTypes" FromRole="CommissionMember" ToRole="CommissionMemberType" />
           <NavigationProperty Name="PersonStaff" Relationship="DataLib.FK_CommissionMembers_PersonStaffs" FromRole="CommissionMember" ToRole="PersonStaff" />
-          <NavigationProperty Name="Staff" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="CommissionMember" ToRole="Staff" />
           <NavigationProperty Name="CommissionDecisions" Relationship="DataLib.FK_CommissionDecisions_CommissionMembers" FromRole="CommissionMember" ToRole="CommissionDecision" />
           <NavigationProperty Name="CommissionType" Relationship="DataLib.FK_CommissionMembers_CommissionTypes" FromRole="CommissionMember" ToRole="CommissionType" />
+          <NavigationProperty Name="Staff" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="CommissionMember" ToRole="Staff" />
           </EntityType>
         <Association Name="FK_CommissionMembers_CommissionMemberTypes">
           <End Type="DataLib.CommissionMemberType" Role="CommissionMemberType" Multiplicity="1" />
@@ -7878,64 +7901,6 @@
             </Principal>
             <Dependent Role="ScheduleItem">
               <PropertyRef Name="RecordTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="StaffCategory">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Staffs" Relationship="DataLib.FK_Staffs_StaffCategories" FromRole="StaffCategory" ToRole="Staff" />
-        </EntityType>
-        <EntityType Name="Staff">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentId" Type="Int32" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="CategoryId" Type="Int32" Nullable="false" />
-          <Property Name="IsSenior" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="Staff" ToRole="CommissionMember" />
-          <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="Staff" ToRole="PersonStaff" />
-          <NavigationProperty Name="StaffCategory" Relationship="DataLib.FK_Staffs_StaffCategories" FromRole="Staff" ToRole="StaffCategory" />
-        </EntityType>
-        <Association Name="FK_CommissionMembers_Staffs">
-          <End Type="DataLib.Staff" Role="Staff" Multiplicity="0..1" />
-          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Staff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CommissionMember">
-              <PropertyRef Name="StaffId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PersonStaffs_Staffs">
-          <End Type="DataLib.Staff" Role="Staff" Multiplicity="1" />
-          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Staff">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PersonStaff">
-              <PropertyRef Name="StaffId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Staffs_StaffCategories">
-          <End Type="DataLib.StaffCategory" Role="StaffCategory" Multiplicity="1" />
-          <End Type="DataLib.Staff" Role="Staff" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="StaffCategory">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Staff">
-              <PropertyRef Name="CategoryId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8722,6 +8687,81 @@
             </Principal>
             <Dependent Role="PrintedDocument">
               <PropertyRef Name="ReportTemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="StaffCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="StaffCategories1" Relationship="DataLib.FK_StaffCategories_StaffCategories1" FromRole="StaffCategory" ToRole="StaffCategory1" />
+          <NavigationProperty Name="StaffCategory1" Relationship="DataLib.FK_StaffCategories_StaffCategories1" FromRole="StaffCategory1" ToRole="StaffCategory" />
+          <NavigationProperty Name="Staffs" Relationship="DataLib.FK_Staffs_StaffCategories" FromRole="StaffCategory" ToRole="Staff" />
+        </EntityType>
+        <EntityType Name="Staff">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="ShortName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CategoryId" Type="Int32" Nullable="false" />
+          <Property Name="IsSenior" Type="Boolean" Nullable="false" />
+          <Property Name="Options" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CommissionMembers" Relationship="DataLib.FK_CommissionMembers_Staffs" FromRole="Staff" ToRole="CommissionMember" />
+          <NavigationProperty Name="PersonStaffs" Relationship="DataLib.FK_PersonStaffs_Staffs" FromRole="Staff" ToRole="PersonStaff" />
+          <NavigationProperty Name="StaffCategory" Relationship="DataLib.FK_Staffs_StaffCategories" FromRole="Staff" ToRole="StaffCategory" />
+        </EntityType>
+        <Association Name="FK_CommissionMembers_Staffs">
+          <End Type="DataLib.Staff" Role="Staff" Multiplicity="0..1" />
+          <End Type="DataLib.CommissionMember" Role="CommissionMember" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Staff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionMember">
+              <PropertyRef Name="StaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersonStaffs_Staffs">
+          <End Type="DataLib.Staff" Role="Staff" Multiplicity="1" />
+          <End Type="DataLib.PersonStaff" Role="PersonStaff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Staff">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PersonStaff">
+              <PropertyRef Name="StaffId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StaffCategories_StaffCategories1">
+          <End Type="DataLib.StaffCategory" Role="StaffCategory" Multiplicity="0..1" />
+          <End Type="DataLib.StaffCategory" Role="StaffCategory1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StaffCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StaffCategory1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Staffs_StaffCategories">
+          <End Type="DataLib.StaffCategory" Role="StaffCategory" Multiplicity="1" />
+          <End Type="DataLib.Staff" Role="Staff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StaffCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Staff">
+              <PropertyRef Name="CategoryId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9831,26 +9871,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="StaffCategories">
-            <EntityTypeMapping TypeName="DataLib.StaffCategory">
-              <MappingFragment StoreEntitySet="StaffCategories">
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Staffs">
-            <EntityTypeMapping TypeName="DataLib.Staff">
-              <MappingFragment StoreEntitySet="Staffs">
-                <ScalarProperty Name="IsSenior" ColumnName="IsSenior" />
-                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
-                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Assignments">
             <EntityTypeMapping TypeName="DataLib.Assignment">
               <MappingFragment StoreEntitySet="Assignments">
@@ -10015,6 +10035,29 @@
                 <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="Options" ColumnName="Options" />
                 <ScalarProperty Name="ReportTemplateId" ColumnName="ReportTemplateId" />
+                <ScalarProperty Name="ShortName" ColumnName="ShortName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StaffCategories">
+            <EntityTypeMapping TypeName="DataLib.StaffCategory">
+              <MappingFragment StoreEntitySet="StaffCategories">
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Staffs">
+            <EntityTypeMapping TypeName="DataLib.Staff">
+              <MappingFragment StoreEntitySet="Staffs">
+                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="IsSenior" ColumnName="IsSenior" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />

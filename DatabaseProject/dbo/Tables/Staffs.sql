@@ -5,9 +5,12 @@
     [ShortName]  VARCHAR (100) NOT NULL,
     [CategoryId] INT           NOT NULL,
     [IsSenior]   BIT           NOT NULL,
+    [Options]    VARCHAR (50)  CONSTRAINT [DF_Staffs_Options] DEFAULT ('') NOT NULL,
     CONSTRAINT [PK_Staffs] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Staffs_StaffCategories] FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[StaffCategories] ([Id])
 );
+
+
 
 
 

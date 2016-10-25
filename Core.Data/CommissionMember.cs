@@ -45,14 +45,6 @@ namespace Core.Data
      		set { personStaff = value; }
     	}
         [NonSerialized]
-    	protected Staff staff;
-    
-    	public virtual Staff Staff
-    	{
-     		get { return staff; }
-     		set { staff = value; }
-    	}
-        [NonSerialized]
     	protected ICollection<CommissionDecision> commissionDecisions;
     
     	public virtual ICollection<CommissionDecision> CommissionDecisions
@@ -67,6 +59,14 @@ namespace Core.Data
     	{
      		get { return commissionType; }
      		set { commissionType = value; }
+    	}
+        [NonSerialized]
+    	protected Staff staff;
+    
+    	public virtual Staff Staff
+    	{
+     		get { return staff; }
+     		set { staff = value; }
     	}
     
     	public object Clone()

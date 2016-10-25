@@ -48,6 +48,7 @@ namespace StatisticsModule.ViewModels
 
             activeSubViewName = viewNameResolver.Resolve<StatisticsEmptyViewModel>();
             RecordsStatisticsCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<RecordsStatisticsViewModel>()));
+            ScheduleStatisticsCommand = new DelegateCommand(() => NavigateToSubView(viewNameResolver.Resolve<ScheduleStatisticsViewModel>()));
         }
 
         private string activeSubViewName;
@@ -89,5 +90,6 @@ namespace StatisticsModule.ViewModels
         }
 
         public ICommand RecordsStatisticsCommand { get; private set; }
+        public ICommand ScheduleStatisticsCommand { get; private set; }
     }
 }

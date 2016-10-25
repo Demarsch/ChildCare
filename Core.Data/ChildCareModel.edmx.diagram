@@ -218,11 +218,6 @@
         <AssociationConnector Association="DataLib.FK_RecordTypes_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_RecordTypeUnits_RecordTypes" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_RecordTypes" />
-        <EntityTypeShape EntityType="DataLib.StaffCategory" Width="1.5" PointX="3.375" PointY="13.5" />
-        <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="5.625" PointY="13" />
-        <AssociationConnector Association="DataLib.FK_CommissionMembers_Staffs" />
-        <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
-        <AssociationConnector Association="DataLib.FK_Staffs_StaffCategories" />
         <EntityTypeShape EntityType="DataLib.Assignment" Width="1.5" PointX="21.25" PointY="33.125" />
         <AssociationConnector Association="DataLib.FK_Assignments_Assignments" />
         <AssociationConnector Association="DataLib.FK_Assignments_ExecutionPlaces" />
@@ -280,6 +275,12 @@
         <AssociationConnector Association="DataLib.FK_CommissionTypes_PrintedDocuments" />
         <AssociationConnector Association="DataLib.FK_PrintedDocuments_PrintedDocuments" />
         <AssociationConnector Association="DataLib.FK_PrintedDocuments_ReportTemplates" />
+        <EntityTypeShape EntityType="DataLib.StaffCategory" Width="1.5" PointX="5.375" PointY="13.25" />
+        <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="7.625" PointY="13" />
+        <AssociationConnector Association="DataLib.FK_CommissionMembers_Staffs" />
+        <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
+        <AssociationConnector Association="DataLib.FK_StaffCategories_StaffCategories1" />
+        <AssociationConnector Association="DataLib.FK_Staffs_StaffCategories" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

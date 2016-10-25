@@ -27,6 +27,7 @@ namespace Core.Data
         public string ShortName { get; set; }
         public int CategoryId { get; set; }
         public bool IsSenior { get; set; }
+        public string Options { get; set; }
     
         [NonSerialized]
     	protected ICollection<CommissionMember> commissionMembers;

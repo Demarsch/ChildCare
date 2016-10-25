@@ -11,10 +11,15 @@
                       d:DataContext="{d:DesignInstance viewModels:StatisticsHeaderViewModel}" 
                       Header="Статистика">
     <fluent:RibbonGroupBox FontWeight="Medium">
-        <fluent:Button x:Name="btnAddContract" Command="{Binding RecordsStatisticsCommand}" 
+        <fluent:Button Command="{Binding RecordsStatisticsCommand}" 
                        Header="Статистика по услугам" 
                        Margin="1"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/File_Unknown.png" />        
+        <Separator/>
+        <fluent:Button Command="{Binding ScheduleStatisticsCommand}" 
+                       Header="Запись в расписание" 
+                       Margin="1"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/ScheduleStatistics48x48.png" />
     </fluent:RibbonGroupBox>    
 
 </fluent:RibbonTabItem>

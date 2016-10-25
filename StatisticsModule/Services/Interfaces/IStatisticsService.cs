@@ -20,6 +20,8 @@ namespace StatisticsModule.Services
 
         IDisposableQueryable<Assignment> GetAssignments(DateTime beginDate, DateTime endDate, int selectedFinSourceId, bool isAmbulatory, bool isStationary, bool isDayStationary);
 
+        IDisposableQueryable<Assignment> GetAssignments(DateTime beginDate, DateTime endDate, int employeeId);
+
         double GetRecordTypeCost(int recordTypeId, int financingSourceId, DateTime onDate, bool? isChild = null, bool isIncome = true);
 
         IEnumerable<MKBGroup> GetMKBGroups();

@@ -7,7 +7,7 @@
              xmlns:controls="clr-namespace:Core.Wpf.Controls;assembly=Core.Wpf"
              xmlns:data="clr-namespace:Core.Data;assembly=Core.Data"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="900">
+             d:DesignHeight="600" d:DesignWidth="900">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -189,6 +189,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -239,10 +241,10 @@
 
                 <TextBlock Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="3" Text="Бригада (для выполненных услуг):" Margin="5,20,5,2" />
                 <ComboBox Grid.Row="17" Grid.Column="0" Grid.ColumnSpan="3"
-                          ItemsSource="{Binding PersonStaffs}" 
+                          ItemsSource="{Binding Employees}" 
                             DisplayMemberPath="Field" 
                             SelectedValuePath="Value"
-                            SelectedValue="{Binding SelectedPersonStaffId, Mode=TwoWay}"
+                            SelectedValue="{Binding SelectedEmployeeId, Mode=TwoWay}"
                             Margin="5,2"/>
                 
                 <Button Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="3" Command="{Binding LoadResultCommand}" Margin="5,10">
@@ -262,7 +264,7 @@
                 <DataGrid Grid.Row="0" AutoGenerateColumns="False" CanUserAddRows="False" 
                           ItemsSource="{Binding Source, Mode=TwoWay}" 
                           SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
-                          SelectionMode="Extended"   
+                          SelectionMode="Single"   
                           ScrollViewer.CanContentScroll="True" 
                           ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.RowStyle>
@@ -333,7 +335,7 @@
                           ScrollViewer.CanContentScroll="True" 
                           ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Дата выполнения" Binding="{Binding Cells[0]}" IsReadOnly="True">
+                        <DataGridTextColumn Header="Дата" Binding="{Binding Cells[0]}" IsReadOnly="True">
                             <DataGridTextColumn.CellStyle>
                                 <Style>
                                     <Setter Property="TextBlock.TextAlignment" Value="Center"/>

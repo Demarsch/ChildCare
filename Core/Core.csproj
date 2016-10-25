@@ -378,6 +378,12 @@
   <ItemGroup>
     <Resource Include="Resources\Images\Refresh48x48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Statistics48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ScheduleStatistics48x48.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
