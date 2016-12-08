@@ -70,6 +70,9 @@ namespace ScheduleModule
             container.RegisterType<ScheduleContentViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<MultiAssignsContentViewModel>(new ContainerControlledLifetimeManager());
 
+            //container.RegisterType<Core.Data.Services.RecordTypesTree>(new ContainerControlledLifetimeManager());
+            container.Resolve<Core.Data.Services.RecordTypesTree>();
+
             container.RegisterType<MultiAssignRecordTypeViewModel>(new TransientLifetimeManager());
         }
 

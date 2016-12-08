@@ -48,6 +48,12 @@
                             VerticalContentAlignment="Stretch"
                             Background="Transparent"
                             BorderThickness="0 1 0 1">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Focusable" Value="False"/>
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
                     </Grid>
                 </ScrollViewer>

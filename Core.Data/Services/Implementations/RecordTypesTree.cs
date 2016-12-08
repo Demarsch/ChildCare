@@ -17,8 +17,9 @@ namespace Core.Data.Services
         public string Lvl { get; set; }
         public int Level { get; set; }
         public List<int> Childs { get; set; }
+        public List<int> Parents { get; set; }
 
-        private readonly IDbContextProvider contextProvider;
+        private static IDbContextProvider contextProvider;
 
         public RecordTypesTree(IDbContextProvider contextProvider)
         {
@@ -26,7 +27,22 @@ namespace Core.Data.Services
             {
                 throw new ArgumentNullException("contextProvider");
             }
-            this.contextProvider = contextProvider;
+            RecordTypesTree.contextProvider = contextProvider;
+        }
+
+
+        private static IList<RecordTypesTree> allRecordTypes = null;
+        public static IList<RecordTypesTree> AllRecordTypes
+        {
+            get
+            {
+                if (allRecordTypes == null)
+                {
+                    RecordTypesTree rtt = new RecordTypesTree(contextProvider);
+                    allRecordTypes = rtt.GetAllChilds();
+                }
+                return allRecordTypes;
+            }
         }
 
         private List<RecordTypesTree> GetRecordTypesTreeChilds(RecordTypesTreeQueryItem rtype, RecordTypesTreeQueryItem[] alltypes, int numlevel = 0, string txtlevel = "", string inclevel = "     ")
@@ -41,8 +57,16 @@ namespace Core.Data.Services
                 Name = rtype.Name,
                 Code = rtype.Code,
                 Childs = new List<int>(),
+                Parents = new List<int>()
             });
             list.First().Childs.Add(rtype.Id);
+            list.First().Parents.Add(rtype.Id);
+            var curRType = rtype;
+            while (curRType != null && curRType.ParentId.HasValue)
+            {
+                list.First().Parents.Add(curRType.ParentId.Value);
+                curRType = alltypes.FirstOrDefault(x => x.Id == curRType.ParentId);
+            }
             foreach (RecordTypesTreeQueryItem t in alltypes.Where(x => x.ParentId == rtype.Id).OrderBy(x => x.Priority).ThenBy(x => x.Name))
             {
                 List<RecordTypesTree> childs = GetRecordTypesTreeChilds(t, alltypes, numlevel + 1, txtlevel + inclevel, inclevel);

@@ -8,6 +8,7 @@ using Core.Misc;
 using Core.Notification;
 using ScheduleModule.DTO;
 using Shared.Schedule.Services;
+using System.Threading;
 
 namespace ScheduleModule.Services
 {
@@ -36,6 +37,8 @@ namespace ScheduleModule.Services
         IDisposableQueryable<Person> GetPatientQuery(int currentPatient);
 
         IEnumerable<Org> GetLpus();
+
+        DisposableQueryable<Room> GetRoomsforRecordType(int recordTypeId, IList<DateTime> onDate);
 
         Task MarkAssignmentCompletedAsync(int id, DateTime selectedDateTime, INotificationServiceSubscription<Assignment> assignmentChangeSubscription);
 

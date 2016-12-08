@@ -13,6 +13,7 @@ using ScheduleModule.DTO;
 using ScheduleModule.Exceptions;
 using Shared.Schedule.Services;
 using Core.Extensions;
+using System.Threading;
 
 
 namespace ScheduleModule.Services
@@ -433,12 +434,12 @@ namespace ScheduleModule.Services
         public async Task<IEnumerable<KeyValuePair<int, ITimeInterval>>> GetAvailiableTimeSlots(DateTime date, RecordType selectedRecordType, Room selectedRoom = null, bool checkExistingAssignments = true)
         {
             var timeSlots = new List<KeyValuePair<int, ITimeInterval>>();
-
             using (var context = contextProvider.CreateNewContext())
             {
                 var rooms = new List<Room>();
+                var perentsIds = RecordTypesTree.AllRecordTypes.FirstOrDefault(x => x.Id == selectedRecordType.Id).Parents;
                 var workingTimes = (await Task<IEnumerable<ScheduleItem>>.Factory.StartNew(x => this.GetRoomsWorkingTimeForDay((DateTime)x), date))
-                    .Where(x => x.RecordTypeId.HasValue && x.RecordTypeId == selectedRecordType.Id && (selectedRoom == null || selectedRoom.Id == x.RoomId))
+                    .Where(x => x.RecordTypeId.HasValue && perentsIds.Contains(x.RecordTypeId.Value) && (selectedRoom == null || selectedRoom.Id == x.RoomId))
                     .Select(x => new { x.RoomId, Times = new TimeInterval(x.StartTime, x.EndTime) })
                     .ToArray();
                 foreach (var workingTime in workingTimes.GroupBy(x => x.RoomId))
@@ -455,6 +456,14 @@ namespace ScheduleModule.Services
                 }
             }
             return timeSlots;
+        }
+
+
+        public DisposableQueryable<Room> GetRoomsforRecordType(int recordTypeId, IList<DateTime> onDate)
+        {
+            var context = contextProvider.CreateNewContext();
+            var perentsIds = RecordTypesTree.AllRecordTypes.FirstOrDefault(x => x.Id == recordTypeId).Parents;
+            return new DisposableQueryable<Room>(context.Set<Room>().Where(x => x.ScheduleItems.Any(y => onDate.Any(z => z >= y.BeginDate && z < y.EndDate) && perentsIds.Contains(y.RecordTypeId.Value))), context);
         }
     }
 }

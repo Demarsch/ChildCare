@@ -16,6 +16,8 @@ using Core.Misc;
 using System.Windows.Input;
 using Prism.Commands;
 using ScheduleModule.Misc;
+using Core.Data.Misc;
+using System.Threading;
 
 namespace ScheduleModule.ViewModels
 {
@@ -30,8 +32,12 @@ namespace ScheduleModule.ViewModels
 
         private IList<RecordTypeDateTimeInterval> selectedDateTimes;
 
-        private readonly string unselectedDoctorName = "Врач не выбран";
-        private readonly string unselectedRoomName = "Кабинет не выбран";
+        private CancellationTokenSource cancellationTokenSource;
+
+        private IList<DateTime> dateTimes;
+
+        private readonly CommonIdName unselectedDoctor = new CommonIdName { Name = "Врач не выбран", Id = SpecialValues.NonExistingId };
+        private readonly CommonIdName unselectedRoom = new CommonIdName { Name = "Кабинет не выбран", Id = SpecialValues.NonExistingId };
         #endregion
 
         #region Constructors
@@ -52,12 +58,16 @@ namespace ScheduleModule.ViewModels
             this.cacheService = cacheService;
             this.scheduleService = scheduleService;
             this.log = log;
+            BusyMediator = new BusyMediator();
+            FailureMediator = new FailureMediator();
             addSelectedTimeCommand = new DelegateCommand<RecordTypeDateTimeInterval>(AddSelectedTime, CanAddSelectedTime);
+            dateTimes = new List<DateTime>();
             selectedDateTimes = new List<RecordTypeDateTimeInterval>();
             SelectedTimes = new List<RecordTypeDateTimeInterval>();
+            Rooms = new ObservableCollectionEx<CommonIdName>();
             Dates = new ObservableCollectionEx<ScheduleDateTimesDTO>();
-            SelectedDoctorName = unselectedDoctorName;
-            SelectedRoomName = unselectedRoomName;
+            SelectedDoctorId = SpecialValues.NonExistingId;
+            SelectedRoomId = SpecialValues.NonExistingId;
         }
 
         #endregion
@@ -73,19 +83,26 @@ namespace ScheduleModule.ViewModels
             set { SetProperty(ref recordTypeName, value); }
         }
 
-        private string selectedDoctorName;
-        public string SelectedDoctorName
+        private int selectedDoctorId;
+        public int SelectedDoctorId
         {
-            get { return selectedDoctorName; }
-            set { SetProperty(ref selectedDoctorName, value); }
+            get { return selectedDoctorId; }
+            set { SetProperty(ref selectedDoctorId, value); }
         }
 
-        private string selectedRoomName;
-        public string SelectedRoomName
+        private int selectedRoomId = int.MinValue;
+        public int SelectedRoomId
         {
-            get { return selectedRoomName; }
-            set { SetProperty(ref selectedRoomName, value); }
+            get { return selectedRoomId; }
+            set
+            {
+                SetProperty(ref selectedRoomId, value);
+                if (RecordType != null)
+                    LoadScheduleTimes(dateTimes, selectedRoomId, RecordType.IsAnalyse);
+            }
         }
+
+        public ObservableCollectionEx<CommonIdName> Rooms { get; private set; }
 
         private IEnumerable<WorkingTimeViewModel> workingTimes;
         public IEnumerable<WorkingTimeViewModel> WorkingTimes
@@ -96,6 +113,9 @@ namespace ScheduleModule.ViewModels
 
         public ObservableCollectionEx<ScheduleDateTimesDTO> Dates { get; private set; }
         public IList<RecordTypeDateTimeInterval> SelectedTimes { get; private set; }
+
+        public BusyMediator BusyMediator { get; set; }
+        public FailureMediator FailureMediator { get; set; }
         #endregion
 
         #region Events
@@ -103,35 +123,103 @@ namespace ScheduleModule.ViewModels
         #endregion
 
         #region Methods
-        public async Task Initialize(RecordType recordType, IList<DateTime> dates, Room room = null)
+
+        public async void LoadScheduleTimes(IList<DateTime> dates, int roomId, bool isAnalyse)
         {
-            RecordType = recordType;
-            RecordTypeName = recordType.Name;
-            SelectedTimes.Clear();
+            BusyMediator.Activate("Загрузка данных...");
+            log.Info(String.Format("Loading schedule for roomId = {0}, from date {1}...", roomId, dates[0]));
+            ClearSelectedTimes();
             selectedDateTimes.Clear();
             Dates.Clear();
-            foreach (var date in dates)
+            try
             {
-                var task = scheduleService.GetAvailiableTimeSlots(date, recordType, room, !recordType.IsAnalyse);
-                var availiableTimesTaskResult = await task;
-                Dates.Add(new ScheduleDateTimesDTO()
+                var selectedRoom = scheduleService.GetRooms().FirstOrDefault(x => x.Id == roomId);
+                foreach (var date in dates)
                 {
-                    Date = date,
-                    Times = availiableTimesTaskResult.GroupBy(x => x.Value).Select(x => new RecordTypeDateTimeInterval()
+                    var task = scheduleService.GetAvailiableTimeSlots(date, RecordType, selectedRoom, !isAnalyse);
+                    var availiableTimesTaskResult = await task;
+                    Dates.Add(new ScheduleDateTimesDTO()
+                    {
+                        Date = date,
+                        Times = availiableTimesTaskResult.GroupBy(x => x.Value).Select(x => new RecordTypeDateTimeInterval()
                         {
                             RecordType = this.RecordType,
                             Date = date,
                             StartTime = x.Key.StartTime,
                             EndTime = x.Key.EndTime,
                             RoomIds = x.Select(y => y.Key).ToArray()
-                        }).ToArray().Distinct()
-                });
+                        }).Distinct().ToArray()
+                    });
+                }
+                log.Info(String.Format("Loading for schedule for roomId = {0}, from date {1} is completed!", roomId, dates[0]));
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Loading for schedule for roomId = {0}, from date {1} is completed!", roomId, dates[0]);
+                FailureMediator.Activate("Ошибка при попытке получить расписание для услуги", null, ex, true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+            }
+        }
+
+        public async Task Initialize(RecordType recordType, IList<DateTime> dates)
+        {
+            BusyMediator.Activate("Загрузка данных...");
+            if (recordType == null) return;
+            log.Info(String.Format("Initializing MultiAssignRecordType for recordTypeId = {0} - {1}, from date {2}...", recordType.Id, recordType.Name, dates[0]));
+            RecordType = recordType;
+            RecordTypeName = recordType.Name;
+            dateTimes = dates;
+
+            ClearSelectedTimes();
+            selectedDateTimes.Clear();
+            Dates.Clear();
+            Rooms.Clear();
+
+            if (cancellationTokenSource == null)
+                cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
+            DisposableQueryable<Room> roomsQuery = null;
+            Rooms.Add(unselectedRoom);
+            try
+            {
+                var resRooms = await scheduleService.GetRoomsforRecordType(recordType.Id, dates).Select(x => new CommonIdName { Id = x.Id, Name = x.Number + " - " + x.Name }).ToArrayAsync();
+                Rooms.AddRange(resRooms);
+                SelectedRoomId = SpecialValues.NonExistingId;
+                //LoadScheduleTimes(dates, SelectedRoomId, recordType.IsAnalyse);
+            }
+            catch (Exception ex)
+            {
+                log.ErrorFormatEx(ex, "Initializing MultiAssignRecordType for recordTypeId = {0} - {1}, from date {2} is completed!", recordType.Id, recordType.Name, dates[0]);
+                FailureMediator.Activate("Ошибка при попытке получить расписание для услуги", null, ex, true);
+            }
+            finally
+            {
+                BusyMediator.Deactivate();
+                if (roomsQuery != null)
+                    roomsQuery.Dispose();
             }
         }
 
         public void Dispose()
         {
+            foreach (var time in SelectedTimes)
+            {
+                if (SelectedTimesChanged != null)
+                    SelectedTimesChanged(this, new SelectedTimesEventArg() { Date = time, IsAdded = false });
+            }
+        }
 
+        private void ClearSelectedTimes()
+        {
+            for (int i = SelectedTimes.Count - 1; i >= 0; i--)
+            {
+                if (SelectedTimesChanged != null)
+                    SelectedTimesChanged(this, new SelectedTimesEventArg() { Date = SelectedTimes[i], IsAdded = false });
+                SelectedTimes.Remove(SelectedTimes[i]);
+            }
         }
 
         public void CheckCanAddSelectedTime(IList<RecordTypeDateTimeInterval> selectedItems)
@@ -159,6 +247,7 @@ namespace ScheduleModule.ViewModels
             if (SelectedTimesChanged != null)
                 SelectedTimesChanged(this, new SelectedTimesEventArg() { Date = dateTime, IsAdded = isAdded });
         }
+
         #endregion
 
         #region Commands

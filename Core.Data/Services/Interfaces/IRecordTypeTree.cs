@@ -15,6 +15,7 @@ namespace Core.Data.Services
         string Lvl { get; set; }
         int Level { get; set; }
         List<int> Childs { get; set; }
+        List<int> Parents { get; set; }
 
         List<RecordTypesTree> GetAllChilds();
     }

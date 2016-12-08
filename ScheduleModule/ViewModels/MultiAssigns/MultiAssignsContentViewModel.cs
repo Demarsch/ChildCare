@@ -719,6 +719,7 @@ namespace ScheduleModule.ViewModels
         private void DeleteRecordType(MultiAssignRecordTypeViewModel multiAssignRecordTypeViewModel)
         {
             SelectedRecordTypes.Remove(multiAssignRecordTypeViewModel);
+            multiAssignRecordTypeViewModel.Dispose();
         }
 
         #region Commands
