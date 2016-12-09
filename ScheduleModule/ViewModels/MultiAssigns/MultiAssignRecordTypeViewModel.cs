@@ -97,7 +97,7 @@ namespace ScheduleModule.ViewModels
             set
             {
                 SetProperty(ref selectedRoomId, value);
-                if (RecordType != null)
+                if (RecordType != null && SelectedRoomId != int.MinValue)
                     LoadScheduleTimes(dateTimes, selectedRoomId, RecordType.IsAnalyse);
             }
         }
@@ -173,9 +173,6 @@ namespace ScheduleModule.ViewModels
             RecordTypeName = recordType.Name;
             dateTimes = dates;
 
-            ClearSelectedTimes();
-            selectedDateTimes.Clear();
-            Dates.Clear();
             Rooms.Clear();
 
             if (cancellationTokenSource == null)
@@ -187,6 +184,8 @@ namespace ScheduleModule.ViewModels
             {
                 var resRooms = await scheduleService.GetRoomsforRecordType(recordType.Id, dates).Select(x => new CommonIdName { Id = x.Id, Name = x.Number + " - " + x.Name }).ToArrayAsync();
                 Rooms.AddRange(resRooms);
+                if (SelectedRoomId == SpecialValues.NonExistingId)
+                    SelectedRoomId = int.MinValue;
                 SelectedRoomId = SpecialValues.NonExistingId;
                 //LoadScheduleTimes(dates, SelectedRoomId, recordType.IsAnalyse);
             }
