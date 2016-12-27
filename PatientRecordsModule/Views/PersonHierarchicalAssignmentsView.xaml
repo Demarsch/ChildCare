@@ -4,7 +4,7 @@
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <HierarchicalDataTemplate DataType="{x:Type viewModels:PersonHierarchicalAssignmentsViewModel}" ItemsSource="{Binding Childs}">
         
-        <Border BorderBrush="Black" BorderThickness="0.5" Background="#FFD5DFEA" CornerRadius="4">            
+        <Border BorderBrush="Black" BorderThickness="0.5" CornerRadius="4">            
             <Grid HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition MinHeight="10"/>

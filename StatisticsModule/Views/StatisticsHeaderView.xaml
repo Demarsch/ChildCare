@@ -20,6 +20,11 @@
                        Header="Запись в расписание" 
                        Margin="1"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/ScheduleStatistics48x48.png" />
+        
+        <fluent:Button Command="{Binding RoomCapacityStatisticsCommand}" Visibility="Collapsed"
+                       Header="Загруженность работы кабинетов" 
+                       Margin="1"
+                       LargeIcon="pack://application:,,,/Core;Component/Resources/Images/Statistics48x48.png" />
     </fluent:RibbonGroupBox>    
 
 </fluent:RibbonTabItem>

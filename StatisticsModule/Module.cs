@@ -93,6 +93,7 @@ namespace StatisticsModule
             container.RegisterType<StatisticsHeaderViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<StatisticsEmptyViewModel>(new ContainerControlledLifetimeManager());
             container.RegisterType<RecordsStatisticsViewModel>(new ContainerControlledLifetimeManager());
+            container.RegisterType<RoomCapacityStatisticsViewModel>(new ContainerControlledLifetimeManager());
         }
 
         private void RegisterViews()
@@ -108,7 +109,10 @@ namespace StatisticsModule
 
             container.RegisterType<object, ScheduleStatisticsView>(viewNameResolver.Resolve<ScheduleStatisticsViewModel>(), new ContainerControlledLifetimeManager());
             regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<ScheduleStatisticsView>());
-            
+
+            container.RegisterType<object, RoomCapacityStatisticsView>(viewNameResolver.Resolve<RoomCapacityStatisticsViewModel>(), new ContainerControlledLifetimeManager());
+            regionManager.RegisterViewWithRegion(RegionNames.ModuleContent, () => container.Resolve<RoomCapacityStatisticsView>());
+
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(@"pack://application:,,,/StatisticsModule;Component/Themes/Generic.xaml", UriKind.Absolute) });
         }
        
