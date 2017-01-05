@@ -35,6 +35,7 @@
                         <ComboBox Grid.Row="2" Grid.Column="0" SelectedValue="{Binding SelectedRoomId}" SelectedValuePath="Id" ItemsSource="{Binding Rooms}" HorizontalAlignment="Left" />
                         <ComboBox Grid.Row="3" Grid.Column="0" SelectedValue="{Binding SelectedDoctorId}" SelectedValuePath="Id" ItemsSource="{Binding Doctors}" HorizontalAlignment="Left" />
                     </Grid>
+
                     <StackPanel  Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
                         <ItemsControl ItemsSource="{Binding Dates}"
                                       VerticalContentAlignment="Stretch">

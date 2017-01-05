@@ -10,6 +10,8 @@ namespace ScheduleModule.Misc
 {
     public class RecordTypeDateTimeInterval : ITimeInterval
     {
+        public Guid MultiAssignRecordTypeGuid { get; set; }
+
         public RecordType RecordType { get; set; }
 
         public DateTime Date { get; set; }
@@ -38,11 +40,11 @@ namespace ScheduleModule.Misc
             var obj2 = obj as RecordTypeDateTimeInterval;
             if (obj2 == null)
                 return false;
-            return this.RecordType == obj2.RecordType && this.Date == obj2.Date && this.StartTime == obj2.StartTime && this.EndTime == obj2.EndTime;
+            return this.MultiAssignRecordTypeGuid == obj2.MultiAssignRecordTypeGuid && this.RecordType == obj2.RecordType && this.Date == obj2.Date && this.StartTime == obj2.StartTime && this.EndTime == obj2.EndTime;
         }
         public override int GetHashCode()
         {
-            return this.RecordType.Id + this.Date.GetHashCode() + this.StartTime.GetHashCode() + this.EndTime.GetHashCode();
+            return this.MultiAssignRecordTypeGuid.GetHashCode() + this.Date.GetHashCode() + this.StartTime.GetHashCode() + this.EndTime.GetHashCode();
         }
     }
 }

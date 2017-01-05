@@ -166,7 +166,7 @@ namespace ScheduleModule.ViewModels
                 SelectedDateTimes.Remove(e.Date);
                 CancelAssignmentAsync(e.Date.AssignItem);
             }
-            foreach (var viewModel in SelectedRecordTypes)
+            foreach (var viewModel in SelectedRecordTypes.Where(x => x.Guid != e.Date.MultiAssignRecordTypeGuid))
                 viewModel.CheckCanAddSelectedTime(SelectedDateTimes);
             сreateAssignmnetsCommand.RaiseCanExecuteChanged();
         }
@@ -401,7 +401,7 @@ namespace ScheduleModule.ViewModels
             }
         }
 
-        private async void OnAssignmentNotificationRecievedAsync(object sender, NotificationEventArgs<Assignment> e)
+        private void OnAssignmentNotificationRecievedAsync(object sender, NotificationEventArgs<Assignment> e)
         {
             if (e.IsDelete || e.IsUpdate)
             {

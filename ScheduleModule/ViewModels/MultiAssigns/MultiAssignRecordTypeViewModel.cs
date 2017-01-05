@@ -58,6 +58,7 @@ namespace ScheduleModule.ViewModels
             this.cacheService = cacheService;
             this.scheduleService = scheduleService;
             this.log = log;
+            Guid = Guid.NewGuid();
             BusyMediator = new BusyMediator();
             FailureMediator = new FailureMediator();
             addSelectedTimeCommand = new DelegateCommand<RecordTypeDateTimeInterval>(AddSelectedTime, CanAddSelectedTime);
@@ -73,6 +74,8 @@ namespace ScheduleModule.ViewModels
         #endregion
 
         #region Properties
+
+        public Guid Guid { get; private set; }
         public RecordType RecordType { get; private set; }
         public DateTime Date { get; private set; }
 
@@ -147,7 +150,8 @@ namespace ScheduleModule.ViewModels
                             Date = date,
                             StartTime = x.Key.StartTime,
                             EndTime = x.Key.EndTime,
-                            RoomIds = x.Select(y => y.Key).ToArray()
+                            RoomIds = x.Select(y => y.Key).ToArray(),
+                            MultiAssignRecordTypeGuid = this.Guid
                         }).Distinct().ToArray()
                     });
                 }
@@ -230,7 +234,7 @@ namespace ScheduleModule.ViewModels
         private bool CanAddSelectedTime(RecordTypeDateTimeInterval dateTime)
         {
             return /*selectedDateTimes.Any(x => dateTime.RecordType == x.RecordType && dateTime.Date == x.Date && x.EndTime == dateTime.StartTime && x.StartTime == dateTime.EndTime) ||*/
-                !selectedDateTimes.Any(x => dateTime.RecordType != x.RecordType && dateTime.Date == x.Date && x.EndTime > dateTime.StartTime && x.StartTime < dateTime.EndTime);
+                !selectedDateTimes.Any(x =>  dateTime.RecordType != x.RecordType && dateTime.Date == x.Date && x.EndTime > dateTime.StartTime && x.StartTime < dateTime.EndTime);
         }
 
         private void AddSelectedTime(RecordTypeDateTimeInterval dateTime)
@@ -244,7 +248,7 @@ namespace ScheduleModule.ViewModels
                 isAdded = true;
             }
             if (SelectedTimesChanged != null)
-                SelectedTimesChanged(this, new SelectedTimesEventArg() { Date = dateTime, IsAdded = isAdded });
+                SelectedTimesChanged(this, new SelectedTimesEventArg() { Date = dateTime, IsAdded = isAdded});
         }
 
         #endregion

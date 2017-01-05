@@ -56,7 +56,7 @@ namespace Shared.PatientRecords.ViewModels
 
         #region  Constructors
         public PersonRecordListViewModel(
-            IPatientRecordsService patientRecordsService, ILog logService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator, 
+            IPatientRecordsService patientRecordsService, ILog logService, IDialogServiceAsync dialogService, IUserService userService, IEventAggregator eventAggregator,
             IHierarchicalRepository childItemViewModelRepository)
         {
             if (patientRecordsService == null)
@@ -70,7 +70,7 @@ namespace Shared.PatientRecords.ViewModels
             if (eventAggregator == null)
             {
                 throw new ArgumentNullException("eventAggregator");
-            }            
+            }
             if (dialogService == null)
             {
                 throw new ArgumentNullException("dialogService");
@@ -549,7 +549,10 @@ namespace Shared.PatientRecords.ViewModels
                 }).ToListAsync(token);
                 await Task.WhenAll(loadAssignmentsTask, loadRecordsTask, loadVisitsTask);
                 var resChilds = loadAssignmentsTask.Result.Union(loadRecordsTask.Result).Union(loadVisitsTask.Result).OrderBy(x => x.ActualDatetime);
-                RootItems.AddRange(resChilds.Select(x => hierarchicalItemViewModelRepository.GetHierarchicalItem(x)));
+                IEnumerable<IHierarchicalItem> items = null;
+                await Task.Factory.StartNew(new Action(() => { items = resChilds.Select(x => hierarchicalItemViewModelRepository.GetHierarchicalItem(x)); }));
+                if (items != null)
+                    RootItems.AddRange(items);
                 loadingIsCompleted = true;
             }
             catch (OperationCanceledException)
@@ -582,8 +585,8 @@ namespace Shared.PatientRecords.ViewModels
                     visitsQuery.Dispose();
                 }
             }
-        }       
-        
+        }
+
         #endregion
 
     }
