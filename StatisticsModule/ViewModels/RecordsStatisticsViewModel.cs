@@ -44,6 +44,8 @@ namespace StatisticsModule.ViewModels
 
         private readonly MKBGroup unselectedMKBGroup;
 
+        private bool isLoaded;
+
         public RecordsStatisticsViewModel(IStatisticsService statisticsService,
                                         IRecordTypesTree recordTypeTree,
                                       IDialogServiceAsync dialogService,
@@ -88,8 +90,7 @@ namespace StatisticsModule.ViewModels
             Source = new ObservableCollectionEx<DataGridRowDefinition>();
             Details = new ObservableCollectionEx<DataGridRowDefinition>();
             unselectedMKBGroup = new MKBGroup { Name = "Все нозологические группы" };
-
-            InitialLoadingDataSources();
+            isLoaded = false;
         }
         
         void RowDef_RowExpanding(DataGridRowDefinition row)
@@ -170,6 +171,7 @@ namespace StatisticsModule.ViewModels
                 if (employeesQuery != null)
                     employeesQuery.Dispose();
                 BusyMediator.Deactivate();
+                isLoaded = true;
             }
         }
 
@@ -330,7 +332,7 @@ namespace StatisticsModule.ViewModels
                                 record.ContractName,
                                 record.ExecutionPlace,
                                 record.BranchName,
-                                record.Brigade != null ? record.Brigade.Select(x => x.StaffName + ": " + x.EmployeeName).Aggregate((a,b) => a + "\r\n" + b) : "???",
+                                record.Brigade != null && record.Brigade.Any() ? record.Brigade.Select(x => x.StaffName + ": " + x.EmployeeName).Aggregate((a,b) => a + "\r\n" + b) : "???",
                                 recordCost.ToString(),
                                 record.PaymentType
                             }
@@ -567,7 +569,8 @@ namespace StatisticsModule.ViewModels
 
         public async void OnNavigatedTo(NavigationContext navigationContext)
         {
-            
+            if (!isLoaded)
+                await InitialLoadingDataSources();
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

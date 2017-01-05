@@ -62,7 +62,6 @@ namespace StatisticsModule.ViewModels
             this.messageService = messageService;
             loadResultCommand = new DelegateCommand(LoadResult);
             BusyMediator = new BusyMediator();
-            FinSources = new ObservableCollectionEx<FieldValue>();
             Employees = new ObservableCollectionEx<FieldValue>();            
             Source = new ObservableCollectionEx<ScheduleStatisticsRow>();
             Details = new ObservableCollectionEx<RecordDTO>();
@@ -70,7 +69,6 @@ namespace StatisticsModule.ViewModels
                
         internal async Task InitialLoadingDataSources()
         {
-            FinSources.Clear();
             Employees.Clear();
             BusyMediator.Activate("Загрузка данных...");
             logService.Info("Loading data sources...");
@@ -78,12 +76,6 @@ namespace StatisticsModule.ViewModels
             IDisposableQueryable<PersonStaff> employeesQuery = null;
             try
             {               
-                finSourcesQuery = statisticsService.GetActualFinancingSources();
-                var finSourcesSelectQuery = await finSourcesQuery.Where(x => x.Options != string.Empty).Select(x => new { x.Id, x.Name }).ToArrayAsync();
-                FinSources.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- все ист. финансирования -" });
-                FinSources.AddRange(finSourcesSelectQuery.Select(x => new FieldValue { Value = x.Id, Field = x.Name }));
-                SelectedFinSourceId = SpecialValues.NonExistingId;
-
                 employeesQuery = statisticsService.GetPersonStaffs();
                 var employeesSelectQuery = await employeesQuery.Select(x => new { x.PersonId, PersonName = x.Person.ShortName }).ToArrayAsync();
                 Employees.Add(new FieldValue { Value = SpecialValues.NonExistingId, Field = "- все сотрудники -" });
@@ -198,21 +190,7 @@ namespace StatisticsModule.ViewModels
                 }
             }
         }
-
-        private ObservableCollectionEx<FieldValue> finSources;
-        public ObservableCollectionEx<FieldValue> FinSources
-        {
-            get { return finSources; }
-            set { SetProperty(ref finSources, value); }
-        }
-
-        private int selectedFinSourceId;
-        public int SelectedFinSourceId
-        {
-            get { return selectedFinSourceId; }
-            set { SetProperty(ref selectedFinSourceId, value); }
-        }
-
+        
         private ObservableCollectionEx<FieldValue> employees;
         public ObservableCollectionEx<FieldValue> Employees
         {

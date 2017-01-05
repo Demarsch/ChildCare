@@ -144,8 +144,8 @@
                                         </Trigger.Value>
                                     </Trigger>
                                     <Trigger Property="TreeViewItem.IsSelected">
-                                        <Setter TargetName="Bd" Property="Panel.Background" Value="Transparent" />
-                                        <Setter Property="TextElement.Foreground" Value="#FFFF1F1F" />
+                                        <Setter TargetName="Bd" Property="Panel.Background" Value="CornflowerBlue" />
+                                        <Setter Property="TextElement.Foreground" Value="#FFDCECFF" />
                                         <Trigger.Value>
                                             <s:Boolean>True</s:Boolean>
                                         </Trigger.Value>
@@ -163,8 +163,8 @@
                                                 </Condition.Value>
                                             </Condition>
                                         </MultiTrigger.Conditions>
-                                        <Setter TargetName="Bd" Property="Panel.Background" Value="Transparent" />
-                                        <Setter Property="TextElement.Foreground" Value="#FFFF1F1F" />
+                                        <Setter TargetName="Bd" Property="Panel.Background" Value="CornflowerBlue" />
+                                        <Setter Property="TextElement.Foreground" Value="#FFDCECFF" />
                                     </MultiTrigger>
                                     <Trigger Property="UIElement.IsEnabled">
                                         <Setter Property="TextElement.Foreground">

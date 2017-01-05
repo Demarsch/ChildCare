@@ -265,6 +265,7 @@ namespace Shared.PatientRecords.ViewModels
             int assignmentId = (parameters as object[])[1].ToInt();
             int recordId = (parameters as object[])[2].ToInt();
 
+            await Task.Delay(1000);
             if (this.PersonId != personId)
                 await personRecordListViewModel.LoadRootItemsAsync(personId);
             personRecordListViewModel.SelectItem(assignmentId, recordId);
