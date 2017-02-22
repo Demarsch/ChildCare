@@ -28,7 +28,7 @@ namespace Core.Data.Services
             using (var db = contextProvider.CreateNewContext())
             {
                 var curSID = GetCurrentUserSID();
-                return db.Set<User>().Where(x => x.SID != null && x.SID.ToLower() == curSID).Select(x => x.Id).FirstOrDefault();
+                return db.Set<User>().Where(x => x.SID == curSID).Select(x => x.Id).FirstOrDefault();
             }
         }
 
@@ -37,7 +37,7 @@ namespace Core.Data.Services
             using (var db = contextProvider.CreateNewContext())
             {
                 var curSID = GetCurrentUserSID();
-                return db.Set<User>().FirstOrDefault(x => x.SID != null && x.SID.ToLower() == curSID);
+                return db.Set<User>().FirstOrDefault(x => x.SID == curSID);
             }
         }
 
@@ -46,7 +46,7 @@ namespace Core.Data.Services
             using (var db = contextProvider.CreateNewContext())
             {
                 var curSID = GetCurrentUserSID();
-                return db.Set<User>().Any(x => x.SID != null && x.SID.ToLower() == curSID && x.Person.PersonStaffs.Any(y => y.Id == personStaffId));
+                return db.Set<User>().Any(x => x.SID == curSID && x.Person.PersonStaffs.Any(y => y.Id == personStaffId));
             }
         }
 
@@ -56,7 +56,7 @@ namespace Core.Data.Services
             using (var db = contextProvider.CreateNewContext())
             {
                 var curSID = GetCurrentUserSID();
-                return db.Set<User>().Any(x => x.SID != null && x.SID.ToLower() == curSID && x.Person.PersonStaffs.Any(y => y.StaffId == staffId));
+                return db.Set<User>().Any(x => x.SID == curSID && x.Person.PersonStaffs.Any(y => y.StaffId == staffId));
             }
         }
 
@@ -66,7 +66,7 @@ namespace Core.Data.Services
             using (var db = contextProvider.CreateNewContext())
             {
                 var curSID = GetCurrentUserSID();
-                return db.Set<User>().Where(x => x.SID != null && x.SID.ToLower() == curSID).SelectMany(x => x.Person.PersonStaffs.Select(y => y.Id)).ToArray();
+                return db.Set<User>().Where(x => x.SID == curSID).SelectMany(x => x.Person.PersonStaffs.Select(y => y.Id)).ToArray();
             }
         }
 
@@ -75,7 +75,33 @@ namespace Core.Data.Services
             using (var db = contextProvider.CreateNewContext())
             {
                 var curSID = GetCurrentUserSID();
-                return db.Set<User>().Where(x => x.SID != null && x.SID.ToLower() == curSID).SelectMany(x => x.Person.PersonStaffs.Select(y => y.StaffId)).ToArray();
+                return db.Set<User>().Where(x => x.SID == curSID).SelectMany(x => x.Person.PersonStaffs.Select(y => y.StaffId)).ToArray();
+            }
+        }
+
+
+        public string GetCurrentUserSettingsValue(string parameterName)
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var curSID = GetCurrentUserSID();
+                return db.Set<UserSetting>().Where(x => x.Name.ToLower() == parameterName.ToLower() && x.User.SID == curSID).Select(x => x.Value).FirstOrDefault() ?? string.Empty;
+            }
+        }
+
+        public void SetCurrentUserSettingsValue(string parameterName, string value)
+        {
+            using (var db = contextProvider.CreateNewContext())
+            {
+                var curSID = GetCurrentUserSID();
+                var s = db.Set<UserSetting>().FirstOrDefault(x => x.Name.ToLower() == parameterName.ToLower() && x.User.SID == curSID);
+                if (s == null)
+                {
+                    s = new UserSetting() { UserId = GetCurrentUserId(), Name = parameterName };
+                    db.Set<UserSetting>().Add(s);
+                }
+                s.Value = value;
+                db.SaveChanges();
             }
         }
     }

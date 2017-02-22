@@ -16,5 +16,9 @@ namespace Core.Data.Services
         bool HasPersonStaff(int personStaffId);
 
         bool HasStaff(int staffId);
+
+        string GetCurrentUserSettingsValue(string parameterName);
+
+        void SetCurrentUserSettingsValue(string parameterName, string value);
     }
 }
