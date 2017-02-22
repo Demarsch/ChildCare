@@ -9,8 +9,8 @@
                       mc:Ignorable="d"
                       d:DesignHeight="300"
                       d:DesignWidth="300"
-                      d:DataContext="{d:DesignInstance viewModels:MessageHeaderViewModel}" 
-                      Header="{Binding MessageSelectorViewModel.HeaderText}">
+                      d:DataContext="{d:DesignInstance viewModels:MessageHeaderViewModel}"
+                      Header="{Binding MessageSelectorViewModel.HeaderText, Mode=OneWay}" >
     <fluent:RibbonGroupBox Header="Сообщения">
         <fluent:Button Header="Обновить" SizeDefinition="Large"
                        LargeIcon="pack://application:,,,/Core;Component/Resources/Images/MailReceive.png"

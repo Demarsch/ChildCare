@@ -30,9 +30,10 @@ namespace UserMessageModule.ViewModels
         IUserService userService;
         INotificationService notificationService;
         IDialogService dialogService;
+        IEventAggregator eventAggregator;
 
         public MessageSelectorViewModel(IUserMessageService userMessageService, ILog logService, IUserService userService,
-            INotificationService notificationService, IDialogService dialogService)
+            INotificationService notificationService, IDialogService dialogService, IEventAggregator eventAggregator)
         {
             if ((this.userMessageService = userMessageService) == null)
                 throw new ArgumentNullException("userMessageService");
@@ -44,6 +45,8 @@ namespace UserMessageModule.ViewModels
                 throw new ArgumentNullException("notificationService");
             if ((this.dialogService = dialogService) == null)
                 throw new ArgumentNullException("dialogService");
+            if ((this.eventAggregator = eventAggregator) == null)
+                throw new ArgumentNullException("eventAggregator");
             LoadItems();
         }
 
@@ -126,6 +129,12 @@ namespace UserMessageModule.ViewModels
                 allitem.HasNew = (allnew > 0);
 
                 HeaderText = string.Format("{0} {1}", ModuleStrings.TabHeaderTitle, allitem.Info);
+                if (allnew > 0)
+                    eventAggregator.GetEvent<ShellNotificationPopupEvent>().Publish(
+                        new Core.Wpf.Misc.ShellNotificationPopupEventData(
+                            ModuleStrings.TabHeaderTitle, 
+                            ModuleStrings.TabHeaderTipBegin + allnew + ((allnew % 10 == 1 && allnew / 10 != 1) ? ModuleStrings.TabHeaderTipEnd1 : ((allnew % 10 > 1 && allnew % 10 < 4 && allnew / 10 != 1) ? ModuleStrings.TabHeaderTipEnd234 : ModuleStrings.TabHeaderTipEnd))
+                            ));
 
                 items.Add(allitem);
                 items.AddRange(await result.Select(x =>
@@ -138,7 +147,10 @@ namespace UserMessageModule.ViewModels
                         return t;
                     }).OrderBy(x => x.Id == 1).ThenBy(x => x.Text).ToArrayAsync(loadItemsCTS.Token));
 
+                SelectedItemNoRaise = true;
                 Items.Replace(items);
+                SelectedItemNoRaise = false;
+                SelectedItem = Items.FirstOrDefault(x => x.Id == (SelectedItem != null ? SelectedItem.Id : -1)) ?? Items.FirstOrDefault();
 
                 //userMessagesChangeSubscription = notificationService.Subscribe<UserMessage>(x => x.RecieverUserId == currentUserId);
                 //if (userMessagesChangeSubscription != null)
@@ -160,6 +172,7 @@ namespace UserMessageModule.ViewModels
         private string headerText;
         public string HeaderText { get { return headerText; } set { SetProperty(ref headerText, value); } }
 
+        bool SelectedItemNoRaise;
         public event EventHandler<dynamic> SelectionChanged;
         private dynamic selectedItem;
         public dynamic SelectedItem
@@ -167,6 +180,8 @@ namespace UserMessageModule.ViewModels
             get { return selectedItem; }
             set
             {
+                if (SelectedItemNoRaise)
+                    return;
                 if (SetProperty(ref selectedItem, value) && SelectionChanged != null)
                     SelectionChanged(this, selectedItem);
             }

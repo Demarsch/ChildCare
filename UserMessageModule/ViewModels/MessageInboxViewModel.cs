@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using UserMessageModule.Services;
 
 namespace UserMessageModule.ViewModels
@@ -53,12 +54,13 @@ namespace UserMessageModule.ViewModels
                 throw new ArgumentNullException("notificationService");
             if ((this.messageSelectorViewModel = messageSelectorViewModel) == null)
                 throw new ArgumentNullException("messageSelectorViewModel");
+            ShowRead = userService.GetCurrentUserSettingsValue(ModuleStrings.ShowReadSetting) == bool.TrueString;
+            ReadOpened = userService.GetCurrentUserSettingsValue(ModuleStrings.ReadOpenedSetting) == bool.TrueString;
             messageSelectorViewModel.SelectionChanged += messageSelectorViewModel_SelectionChanged;
         }
 
         public void Dispose()
         {
-//            eventAggregator.GetEvent<SelectionChangedEvent<MessageSelectorViewModel>>().Unsubscribe(SetCurrentMessageTypeId);
             if (userMessagesChangeSubscription == null)
                 return;
             userMessagesChangeSubscription.Notified -= userMessagesChangeSubscription_Notified;
@@ -86,7 +88,15 @@ namespace UserMessageModule.ViewModels
         }
 
         private bool showRead;
-        public bool ShowRead { get { return showRead; } set { SetProperty(ref showRead, value); } }
+        public bool ShowRead
+        { 
+            get { return showRead; }
+            set 
+            { 
+                if (SetProperty(ref showRead, value))
+                    userService.SetCurrentUserSettingsValue(ModuleStrings.ShowReadSetting, ShowRead.ToString());
+            }
+        }
 
         private ObservableCollectionEx<dynamic> items;
         public ObservableCollectionEx<dynamic> Items { get { return items ?? (items = new ObservableCollectionEx<dynamic>()); } }
@@ -107,7 +117,7 @@ namespace UserMessageModule.ViewModels
             try
             {
                 if (currentUserId == 0)
-                    userService.GetCurrentUserId();
+                    currentUserId = userService.GetCurrentUserId();
 
                 query = userMessageService.GetMessages(0, currentUserId, DateTime.Now);
 
@@ -122,30 +132,36 @@ namespace UserMessageModule.ViewModels
                 }
                 loadItemsCTS = new CancellationTokenSource();
 
-                var result = await (await filtered.OrderByDescending(x => x.SendDateTime).Select(x => new
+                var result = await (await filtered.Select(x => new
                 {
                     x.Id,
+                    x.UserMessageTypeId,
                     x.UserMessageType.ShortName,
                     x.SendDateTime,
                     x.ReadDateTime,
                     x.MessageTag,
                     x.MessageText,
+                    x.IsHighPriority,
                     Sender = x.User.Person.ShortName
                 }).ToArrayAsync(loadItemsCTS.Token)).Select(x =>
                 {
                     dynamic t = new ExpandoObject();
                     t.Id = x.Id;
+                    t.TypeId = x.UserMessageTypeId;
                     t.Theme = x.ShortName;
                     t.SendDateTime = x.SendDateTime;
-                    t.Read = x.ReadDateTime.HasValue;
+                    t.State = x.ReadDateTime.HasValue ? 0 : (x.IsHighPriority ? 2 : 1);
                     t.Tag = x.MessageTag;
                     t.Text = x.MessageText;
                     t.Sender = x.Sender;
                     t.HasTag = !string.IsNullOrWhiteSpace(x.MessageTag);
                     return t;
-                }).OrderBy(x => x.SendDateTime).ToArrayAsync(loadItemsCTS.Token);
+                }).OrderByDescending(x => x.State == 2).ThenByDescending(x => x.SendDateTime).ToArrayAsync(loadItemsCTS.Token);
 
+                SelectedItemNoRaise = true;
                 Items.Replace(result);
+                SelectedItemNoRaise = false;
+                SelectedItem = Items.FirstOrDefault(x => x.Id == (SelectedItem != null ? SelectedItem.Id : -1)) ?? Items.FirstOrDefault();
 
                 //userMessagesChangeSubscription = notificationService.Subscribe<UserMessage>(x => x.RecieverUserId == currentUserId);
                 //if (userMessagesChangeSubscription != null)
@@ -165,6 +181,7 @@ namespace UserMessageModule.ViewModels
             }
         }
 
+        bool SelectedItemNoRaise;
         public event EventHandler<dynamic> SelectionChanged;
         private dynamic selectedItem;
         public dynamic SelectedItem
@@ -175,6 +192,8 @@ namespace UserMessageModule.ViewModels
             }
             set
             {
+                if (SelectedItemNoRaise)
+                    return;
                 if (!SetProperty(ref selectedItem, value))
                     return;
                 ReadMessageCommand.RaiseCanExecuteChanged();
@@ -184,29 +203,39 @@ namespace UserMessageModule.ViewModels
         }
 
         private DelegateCommand readMessageCommand;
-        public DelegateCommand ReadMessageCommand { get { return readMessageCommand ?? (readMessageCommand = new DelegateCommand(ReadMessageCommandAction, () => SelectedItem != null && !SelectedItem.Read)); } }
+        public DelegateCommand ReadMessageCommand { get { return readMessageCommand ?? (readMessageCommand = new DelegateCommand(ReadMessageCommandAction, () => SelectedItem != null && SelectedItem.State != 0)); } }
         public void ReadMessageCommandAction()
         {
-            try
+            Task.Factory.StartNew(() =>
             {
-                userMessageService.SetMessageReadAsync(SelectedItem.Id, DateTime.Now);
-            }
-            catch (Exception ex)
-            {
-                logService.ErrorFormatEx(ex, "Failed to mark message as readed");
-                dialogService.ShowError(ModuleStrings.MessageReadError);
-            }
+                try
+                {
+                    userMessageService.SetMessageReadDateTime(SelectedItem.Id, DateTime.Now);
+                }
+                catch (Exception ex)
+                {
+                    logService.ErrorFormatEx(ex, "Failed to mark message as readed");
+                    Dispatcher.CurrentDispatcher.Invoke(() => dialogService.ShowError(ModuleStrings.MessageReadError));
+                }
+            });        
         }
 
         private bool readOpened;
-        public bool ReadOpened { get { return readOpened; } set { SetProperty(ref readOpened, value); } }
+        public bool ReadOpened
+        { 
+            get { return readOpened; }
+            set
+            {
+                if (SetProperty(ref readOpened, value))
+                    userService.SetCurrentUserSettingsValue(ModuleStrings.ReadOpenedSetting, ReadOpened.ToString());
+            }
+        }
 
         private DelegateCommand openMessageCommand;
         public DelegateCommand OpenMessageCommand { get { return openMessageCommand ?? (openMessageCommand = new DelegateCommand(OpenMessageCommandAction, () => SelectedItem != null && SelectedItem.HasTag)); } }
         public void OpenMessageCommandAction()
         {
-            eventAggregator.GetEvent<OpenUserMessageEvent>().Publish(SelectedItem.Tag);
-
+            eventAggregator.GetEvent<OpenUserMessageEvent>().Publish(new OpenUserMessageEventData(SelectedItem.Id, SelectedItem.TypeId, SelectedItem.Text, SelectedItem.Tag));
             if (ReadOpened)
                 ReadMessageCommand.Execute();
         }

@@ -32,11 +32,32 @@ namespace UserMessageModule.Services
                 throw new ArgumentNullException("notificationService");
         }
 
-        public async void SendMessageAsync(int recieverUserId, int messageTypeId, string messageText, string messageTag, int outDays)
+        public void SendUserMessage(int recieverUserId, int messageTypeId, string messageText, string messageTag, bool highPriority, int outDays, bool resendAllways)
         {
             using (var context = contextProvider.CreateNewContext())
             {
-                var message = new UserMessage()
+                var curUserId = userService.GetCurrentUserId();
+                var message = context.Set<UserMessage>().FirstOrDefault(x => x.SenderUserId == curUserId && x.RecieverUserId == recieverUserId && x.UserMessageTypeId == messageTypeId && x.MessageTag == messageTag);
+                
+                if (message != null)
+                {
+                    var tonotifyold = (UserMessage)message.Clone();
+                    if (resendAllways || message.MessageText != messageText)
+                    {
+                        message.ReadDateTime = null;
+                        message.SendDateTime = DateTime.Now;
+                        message.MessageText = messageText;
+                    }
+                    message.OutDateTime = message.SendDateTime.AddDays(outDays > 0 ? outDays : 30);
+                    message.IsHighPriority = highPriority;
+                    var tonotifynew = (UserMessage)message.Clone();
+                    context.SaveChanges();
+                    using (var sb = notificationService.Subscribe<UserMessage>())
+                        if (sb != null) sb.Notify(tonotifyold, tonotifynew);
+                    return;
+                }
+
+                message = new UserMessage()
                 {
                     MessageTag = messageTag,
                     MessageText = messageText,
@@ -44,12 +65,13 @@ namespace UserMessageModule.Services
                     ReadDateTime = null,
                     RecieverUserId = recieverUserId,
                     SendDateTime = DateTime.Now,
-                    SenderUserId = userService.GetCurrentUserId(),
-                    UserMessageTypeId = messageTypeId
+                    SenderUserId = curUserId,
+                    UserMessageTypeId = messageTypeId,
+                    IsHighPriority = highPriority
                 };
                 var tonotify = (UserMessage)message.Clone();
                 context.Set<UserMessage>().Add(message);
-                await context.SaveChangesAsync();
+                context.SaveChanges();
 
                 using (var sb = notificationService.Subscribe<UserMessage>())
                     if (sb != null) sb.NotifyCreate(tonotify);
@@ -59,7 +81,7 @@ namespace UserMessageModule.Services
         public IDisposableQueryable<UserMessage> GetMessages(int senderUserId, int recieverUserId, DateTime toDate)
         {
             var context = contextProvider.CreateNewContext();
-            return new DisposableQueryable<UserMessage>(context.Set<UserMessage>().Where(x => (senderUserId == 0 || x.SenderUserId == senderUserId) && (recieverUserId == 0 || x.RecieverUserId == recieverUserId) && (!x.OutDateTime.HasValue || x.OutDateTime > toDate)) ,context);
+            return new DisposableQueryable<UserMessage>(context.Set<UserMessage>().Where(x => (senderUserId == 0 || x.SenderUserId == senderUserId) && (recieverUserId == 0 || x.RecieverUserId == recieverUserId) && x.OutDateTime > toDate) ,context);
         }
 
         public UserMessageType GetMessageTypeById(int id)
@@ -67,7 +89,7 @@ namespace UserMessageModule.Services
             return cacheService.GetItemById<UserMessageType>(id);
         }
 
-        public async void SetMessageReadAsync(int messageId, DateTime? readDateTime)
+        public void SetMessageReadDateTime(int messageId, DateTime? readDateTime)
         {
             using (var context = contextProvider.CreateNewContext())
             {
@@ -75,7 +97,7 @@ namespace UserMessageModule.Services
                 var tonotifyold = (UserMessage)message.Clone();
                 message.ReadDateTime = readDateTime;
                 var tonotifynew = (UserMessage)message.Clone();
-                await context.SaveChangesAsync();
+                context.SaveChanges();
 
                 using (var sb = notificationService.Subscribe<UserMessage>())
                     if (sb != null) sb.Notify(tonotifyold, tonotifynew);

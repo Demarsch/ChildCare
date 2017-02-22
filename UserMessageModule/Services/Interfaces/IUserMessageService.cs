@@ -10,12 +10,12 @@ namespace UserMessageModule.Services
 {
     public interface IUserMessageService
     {
-        void SendMessageAsync(int recieverUserId, int messageTypeId, string messageText, string messageTag, int outDays);
+        void SendUserMessage(int recieverUserId, int messageTypeId, string messageText, string messageTag, bool highPriority, int outDays, bool resendAllways);
 
         IDisposableQueryable<UserMessage> GetMessages(int senderUserId, int recieverUserId, DateTime toDate);
 
         UserMessageType GetMessageTypeById(int id);
 
-        void SetMessageReadAsync(int messageId, DateTime? readDateTime);
+        void SetMessageReadDateTime(int messageId, DateTime? readDateTime);
     }
 }

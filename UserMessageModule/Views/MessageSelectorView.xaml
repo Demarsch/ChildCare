@@ -51,7 +51,7 @@
                                         <Setter TargetName="MyBorder" Property="BorderBrush">
                                             <Setter.Value>
                                                 <LinearGradientBrush>
-                                                    <GradientStop Color="Gray" />
+                                                    <GradientStop Color="Black" />
                                                     <GradientStop Color="White" Offset="0.9" />
                                                 </LinearGradientBrush>
                                             </Setter.Value>

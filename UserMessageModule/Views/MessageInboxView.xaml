@@ -12,13 +12,14 @@
     <UserControl.Resources>
         <converters:ElementAtConverter x:Key="ElementAt" />
         <converters:BoolToCollapsedConverter x:Key="BoolToCollapsed" />
-        <x:Array x:Key="ItemsReadImages" Type="sys:String">
-            <sys:String>pack://application:,,,/Core;Component/Resources/Images/MailUnreadNew.png</sys:String>
+        <x:Array x:Key="ItemsStateImages" Type="sys:String">
             <sys:String>pack://application:,,,/Core;Component/Resources/Images/MailRead.png</sys:String>
+            <sys:String>pack://application:,,,/Core;Component/Resources/Images/MailUnreadNew.png</sys:String>
+            <sys:String>pack://application:,,,/Core;Component/Resources/Images/HighPriority48x48.png</sys:String>
         </x:Array>
-        <x:Array x:Key="ItemsReadColors" Type="sys:String">
-            <sys:String>Black</sys:String>
+        <x:Array x:Key="ItemsStateColors" Type="sys:String">
             <sys:String>DarkGray</sys:String>
+            <sys:String>Black</sys:String>
         </x:Array>
         <converters:ToStringConverter x:Key="StringFormat" />
         <sys:String x:Key="FullDateTimeFormat">{0:dd.MM.yy HH.mm}</sys:String>
@@ -49,7 +50,7 @@
                                         <Setter TargetName="MyBorder" Property="BorderBrush">
                                             <Setter.Value>
                                                 <LinearGradientBrush>
-                                                    <GradientStop Color="Gray" />
+                                                    <GradientStop Color="Black" />
                                                     <GradientStop Color="White" Offset="0.9" />
                                                 </LinearGradientBrush>
                                             </Setter.Value>
@@ -78,7 +79,7 @@
                         </Grid.RowDefinitions>
                         
                         <Image Grid.RowSpan="3" Width="32" Height="32" Margin="2" VerticalAlignment="Top"
-                               Source="{Binding Read, Converter={StaticResource ElementAt}, ConverterParameter={StaticResource ItemsReadImages}}"/>
+                               Source="{Binding State, Converter={StaticResource ElementAt}, ConverterParameter={StaticResource ItemsStateImages}}"/>
 
                         <Image Grid.Column="1" Width="16" Height="16" Margin="2"
                                Visibility="{Binding HasTag, Converter={StaticResource BoolToCollapsed}}"                                                     
@@ -86,7 +87,7 @@
 
                         <TextBlock Grid.Column="2" Margin="2" FontWeight="SemiBold" 
                                Text="{Binding Theme}"
-                               Foreground="{Binding Read, Converter={StaticResource ElementAt}, ConverterParameter={StaticResource ItemsReadColors}}"/>
+                               Foreground="{Binding State, Converter={StaticResource ElementAt}, ConverterParameter={StaticResource ItemsStateColors}}"/>
 
                         <TextBlock Grid.Column="3" Margin="2" FontWeight="Light" Foreground="Silver" HorizontalAlignment="Right" 
                                Text="{Binding Sender}" />
@@ -96,7 +97,7 @@
                         
                         <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Margin="2,0,2,0" VerticalAlignment="Center" 
                                Text="{Binding Text}"
-                               Foreground="{Binding Read, Converter={StaticResource ElementAt}, ConverterParameter={StaticResource ItemsReadColors}}"/>
+                               Foreground="{Binding State, Converter={StaticResource ElementAt}, ConverterParameter={StaticResource ItemsStateColors}}"/>
                         
                     </Grid>
                 </DataTemplate>
