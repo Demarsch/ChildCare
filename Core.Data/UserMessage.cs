@@ -16,14 +16,15 @@ namespace Core.Data
     public partial class UserMessage : ICloneable
     {
         public int Id { get; set; }
-        public int SenderUserId { get; set; }
-        public int RecieverUserId { get; set; }
-        public System.DateTime SendDateTime { get; set; }
-        public System.DateTime OutDateTime { get; set; }
-        public System.DateTime ReadDateTime { get; set; }
-        public string MessageText { get; set; }
-        public int MessageData { get; set; }
         public int UserMessageTypeId { get; set; }
+        public int SenderUserId { get; set; }
+        public System.DateTime SendDateTime { get; set; }
+        public int RecieverUserId { get; set; }
+        public System.DateTime OutDateTime { get; set; }
+        public Nullable<System.DateTime> ReadDateTime { get; set; }
+        public string MessageText { get; set; }
+        public string MessageTag { get; set; }
+        public bool IsHighPriority { get; set; }
     
         [NonSerialized]
     	protected UserMessageType userMessageType;

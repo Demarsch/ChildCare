@@ -13,28 +13,20 @@ namespace Core.Data
     using System.Collections.Generic;
     
     [Serializable]
-    public partial class ReportTemplate : ICloneable
+    public partial class UserSetting : ICloneable
     {
-        public ReportTemplate()
-        {
-            this.PrintedDocuments = new HashSet<PrintedDocument>();
-        }
-    
         public int Id { get; set; }
+        public int UserId { get; set; }
         public string Name { get; set; }
-        public string ReportTitle { get; set; }
-        public string Description { get; set; }
-        public bool IsDocXTemplate { get; set; }
-        public string Template { get; set; }
-        public Nullable<System.DateTime> BeginDateTime { get; set; }
+        public string Value { get; set; }
     
         [NonSerialized]
-    	protected ICollection<PrintedDocument> printedDocuments;
+    	protected User user;
     
-    	public virtual ICollection<PrintedDocument> PrintedDocuments
+    	public virtual User User
     	{
-     		get { return printedDocuments; }
-     		set { printedDocuments = value; }
+     		get { return user; }
+     		set { user = value; }
     	}
     
     	public object Clone()

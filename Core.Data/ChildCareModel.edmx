@@ -1023,6 +1023,7 @@
           <Property Name="Description" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="IsDocXTemplate" Type="bit" Nullable="false" />
           <Property Name="Template" Type="text" />
+          <Property Name="BeginDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="Rooms">
           <Key>
@@ -1106,14 +1107,15 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SenderUserId" Type="int" Nullable="false" />
-          <Property Name="RecieverUserId" Type="int" Nullable="false" />
-          <Property Name="SendDateTime" Type="datetime" Nullable="false" />
-          <Property Name="OutDateTime" Type="datetime" Nullable="false" />
-          <Property Name="ReadDateTime" Type="datetime" Nullable="false" />
-          <Property Name="MessageText" Type="varchar" MaxLength="8000" Nullable="false" />
-          <Property Name="MessageData" Type="int" Nullable="false" />
           <Property Name="UserMessageTypeId" Type="int" Nullable="false" />
+          <Property Name="SenderUserId" Type="int" Nullable="false" />
+          <Property Name="SendDateTime" Type="datetime" Nullable="false" />
+          <Property Name="RecieverUserId" Type="int" Nullable="false" />
+          <Property Name="OutDateTime" Type="datetime" Nullable="false" />
+          <Property Name="ReadDateTime" Type="datetime" />
+          <Property Name="MessageText" Type="varchar" MaxLength="8000" Nullable="false" />
+          <Property Name="MessageTag" Type="varchar" MaxLength="8000" Nullable="false" />
+          <Property Name="IsHighPriority" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="UserMessageTypes">
           <Key>
@@ -1142,6 +1144,15 @@
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="Login" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="SystemName" Type="varchar" MaxLength="300" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserSettings">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="Value" Type="varchar" MaxLength="8000" Nullable="false" />
         </EntityType>
         <EntityType Name="VisitOutcomes">
           <Key>
@@ -3121,19 +3132,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserMessages_RecieverUsers1">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+        <Association Name="FK_UserMessages_UserMessageTypes">
+          <End Role="UserMessageTypes" Type="Self.UserMessageTypes" Multiplicity="1" />
           <End Role="UserMessages" Type="Self.UserMessages" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Users">
+            <Principal Role="UserMessageTypes">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="UserMessages">
-              <PropertyRef Name="RecieverUserId" />
+              <PropertyRef Name="UserMessageTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserMessages_SenderUsers">
+        <Association Name="FK_UserMessages_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="UserMessages" Type="Self.UserMessages" Multiplicity="*" />
           <ReferentialConstraint>
@@ -3145,15 +3156,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserMessages_UserMessageTypes">
-          <End Role="UserMessageTypes" Type="Self.UserMessageTypes" Multiplicity="1" />
+        <Association Name="FK_UserMessages_Users1">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="UserMessages" Type="Self.UserMessages" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="UserMessageTypes">
+            <Principal Role="Users">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="UserMessages">
-              <PropertyRef Name="UserMessageTypeId" />
+              <PropertyRef Name="RecieverUserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3192,6 +3203,18 @@
             </Principal>
             <Dependent Role="Users">
               <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserSettings_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="UserSettings" Type="Self.UserSettings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserSettings">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3480,6 +3503,7 @@
           <EntitySet Name="UserMessageTypes" EntityType="Self.UserMessageTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPermissionGroups" EntityType="Self.UserPermissionGroups" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserSettings" EntityType="Self.UserSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitOutcomes" EntityType="Self.VisitOutcomes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VisitResults" EntityType="Self.VisitResults" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Visits" EntityType="Self.Visits" Schema="dbo" store:Type="Tables" />
@@ -4116,16 +4140,16 @@
             <End Role="StaffCategories" EntitySet="StaffCategories" />
             <End Role="Staffs" EntitySet="Staffs" />
           </AssociationSet>
-          <AssociationSet Name="FK_UserMessages_RecieverUsers1" Association="Self.FK_UserMessages_RecieverUsers1">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="UserMessages" EntitySet="UserMessages" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserMessages_SenderUsers" Association="Self.FK_UserMessages_SenderUsers">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="UserMessages" EntitySet="UserMessages" />
-          </AssociationSet>
           <AssociationSet Name="FK_UserMessages_UserMessageTypes" Association="Self.FK_UserMessages_UserMessageTypes">
             <End Role="UserMessageTypes" EntitySet="UserMessageTypes" />
+            <End Role="UserMessages" EntitySet="UserMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserMessages_Users" Association="Self.FK_UserMessages_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserMessages" EntitySet="UserMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserMessages_Users1" Association="Self.FK_UserMessages_Users1">
+            <End Role="Users" EntitySet="Users" />
             <End Role="UserMessages" EntitySet="UserMessages" />
           </AssociationSet>
           <AssociationSet Name="FK_UserPermissionGroups_PermissionGroups" Association="Self.FK_UserPermissionGroups_PermissionGroups">
@@ -4139,6 +4163,10 @@
           <AssociationSet Name="FK_Users_Persons" Association="Self.FK_Users_Persons">
             <End Role="Persons" EntitySet="Persons" />
             <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserSettings_Users" Association="Self.FK_UserSettings_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserSettings" EntitySet="UserSettings" />
           </AssociationSet>
           <AssociationSet Name="FK_VisitOutcomes_ExecutionPlaces" Association="Self.FK_VisitOutcomes_ExecutionPlaces">
             <End Role="ExecutionPlaces" EntitySet="ExecutionPlaces" />
@@ -4243,7 +4271,6 @@
           <EntitySet Name="Rooms" EntityType="DataLib.Room" />
           <EntitySet Name="ScheduleItems" EntityType="DataLib.ScheduleItem" />
           <EntitySet Name="SocialStatusTypes" EntityType="DataLib.SocialStatusType" />
-          <EntitySet Name="UserMessages" EntityType="DataLib.UserMessage" />
           <EntitySet Name="UserMessageTypes" EntityType="DataLib.UserMessageType" />
           <EntitySet Name="VisitOutcomes" EntityType="DataLib.VisitOutcome" />
           <EntitySet Name="VisitResults" EntityType="DataLib.VisitResult" />
@@ -4403,10 +4430,6 @@
           <AssociationSet Name="FK_ScheduleItem_Rooms" Association="DataLib.FK_ScheduleItem_Rooms">
             <End Role="Room" EntitySet="Rooms" />
             <End Role="ScheduleItem" EntitySet="ScheduleItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserMessages_UserMessageTypes" Association="DataLib.FK_UserMessages_UserMessageTypes">
-            <End Role="UserMessageType" EntitySet="UserMessageTypes" />
-            <End Role="UserMessage" EntitySet="UserMessages" />
           </AssociationSet>
           <AssociationSet Name="FK_Visits_VisitOutcomes" Association="DataLib.FK_Visits_VisitOutcomes">
             <End Role="VisitOutcome" EntitySet="VisitOutcomes" />
@@ -4582,14 +4605,6 @@
           <AssociationSet Name="FK_Users_Persons" Association="DataLib.FK_Users_Persons">
             <End Role="Person" EntitySet="Persons" />
             <End Role="User" EntitySet="Users" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserMessages_RecieverUsers1" Association="DataLib.FK_UserMessages_RecieverUsers1">
-            <End Role="User" EntitySet="Users" />
-            <End Role="UserMessage" EntitySet="UserMessages" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserMessages_SenderUsers" Association="DataLib.FK_UserMessages_SenderUsers">
-            <End Role="User" EntitySet="Users" />
-            <End Role="UserMessage" EntitySet="UserMessages" />
           </AssociationSet>
           <AssociationSet Name="FK_UserPermissionGroups_Users" Association="DataLib.FK_UserPermissionGroups_Users">
             <End Role="User" EntitySet="Users" />
@@ -4892,7 +4907,6 @@
             <End Role="User" EntitySet="Users" />
             <End Role="CommissionDecision" EntitySet="CommissionDecisions" />
           </AssociationSet>
-          <EntitySet Name="ReportTemplates" EntityType="DataLib.ReportTemplate" />
           <EntitySet Name="CommissionQuestions" EntityType="DataLib.CommissionQuestion" />
           <EntitySet Name="CommissionTypes" EntityType="DataLib.CommissionType" />
           <AssociationSet Name="FK_CommissionDecisionsLinks_CommissionQuestions" Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions">
@@ -5004,10 +5018,6 @@
             <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
             <End Role="PrintedDocument1" EntitySet="PrintedDocuments" />
           </AssociationSet>
-          <AssociationSet Name="FK_PrintedDocuments_ReportTemplates" Association="DataLib.FK_PrintedDocuments_ReportTemplates">
-            <End Role="ReportTemplate" EntitySet="ReportTemplates" />
-            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
-          </AssociationSet>
           <EntitySet Name="StaffCategories" EntityType="DataLib.StaffCategory" />
           <EntitySet Name="Staffs" EntityType="DataLib.Staff" />
           <AssociationSet Name="FK_CommissionMembers_Staffs" Association="DataLib.FK_CommissionMembers_Staffs">
@@ -5025,6 +5035,29 @@
           <AssociationSet Name="FK_Staffs_StaffCategories" Association="DataLib.FK_Staffs_StaffCategories">
             <End Role="StaffCategory" EntitySet="StaffCategories" />
             <End Role="Staff" EntitySet="Staffs" />
+          </AssociationSet>
+          <EntitySet Name="ReportTemplates" EntityType="DataLib.ReportTemplate" />
+          <EntitySet Name="UserMessages" EntityType="DataLib.UserMessage" />
+          <EntitySet Name="UserSettings" EntityType="DataLib.UserSetting" />
+          <AssociationSet Name="FK_PrintedDocuments_ReportTemplates" Association="DataLib.FK_PrintedDocuments_ReportTemplates">
+            <End Role="ReportTemplate" EntitySet="ReportTemplates" />
+            <End Role="PrintedDocument" EntitySet="PrintedDocuments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserMessages_UserMessageTypes" Association="DataLib.FK_UserMessages_UserMessageTypes">
+            <End Role="UserMessageType" EntitySet="UserMessageTypes" />
+            <End Role="UserMessage" EntitySet="UserMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserMessages_Users" Association="DataLib.FK_UserMessages_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserMessage" EntitySet="UserMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserMessages_Users1" Association="DataLib.FK_UserMessages_Users1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserMessage" EntitySet="UserMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserSettings_Users" Association="DataLib.FK_UserSettings_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserSetting" EntitySet="UserSettings" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Branch">
@@ -5529,23 +5562,6 @@
           <Property Name="NeedPlace" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="PersonSocialStatuses" Relationship="DataLib.FK_PersonSocialStatuses_SocialStatusTypes" FromRole="SocialStatusType" ToRole="PersonSocialStatus" />
         </EntityType>
-        <EntityType Name="UserMessage">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SenderUserId" Type="Int32" Nullable="false" />
-          <Property Name="RecieverUserId" Type="Int32" Nullable="false" />
-          <Property Name="SendDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="OutDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ReadDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="MessageText" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
-          <Property Name="MessageData" Type="Int32" Nullable="false" />
-          <Property Name="UserMessageTypeId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="UserMessageType" Relationship="DataLib.FK_UserMessages_UserMessageTypes" FromRole="UserMessage" ToRole="UserMessageType" />
-          <NavigationProperty Name="User" Relationship="DataLib.FK_UserMessages_RecieverUsers1" FromRole="UserMessage" ToRole="User" />
-          <NavigationProperty Name="User1" Relationship="DataLib.FK_UserMessages_SenderUsers" FromRole="UserMessage" ToRole="User" />
-          </EntityType>
         <EntityType Name="UserMessageType">
           <Key>
             <PropertyRef Name="Id" />
@@ -6086,18 +6102,6 @@
             </Principal>
             <Dependent Role="ScheduleItem">
               <PropertyRef Name="RoomId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserMessages_UserMessageTypes">
-          <End Type="DataLib.UserMessageType" Role="UserMessageType" Multiplicity="1" />
-          <End Type="DataLib.UserMessage" Role="UserMessage" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="UserMessageType">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserMessage">
-              <PropertyRef Name="UserMessageTypeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6944,8 +6948,6 @@
           <Property Name="Login" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
           <Property Name="SystemName" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Person" Relationship="DataLib.FK_Users_Persons" FromRole="User" ToRole="Person" />
-          <NavigationProperty Name="UserMessages" Relationship="DataLib.FK_UserMessages_RecieverUsers1" FromRole="User" ToRole="UserMessage" />
-          <NavigationProperty Name="UserMessages1" Relationship="DataLib.FK_UserMessages_SenderUsers" FromRole="User" ToRole="UserMessage" />
           <NavigationProperty Name="UserPermissionGroups" Relationship="DataLib.FK_UserPermissionGroups_Users" FromRole="User" ToRole="UserPermissionGroup" />
           <NavigationProperty Name="Visits" Relationship="DataLib.FK_Visits_Users_RemovedByUser" FromRole="User" ToRole="Visit" />
           <NavigationProperty Name="PersonTalons" Relationship="DataLib.FK_PersonTalons_CreateUsers" FromRole="User" ToRole="PersonTalon" />
@@ -6958,6 +6960,9 @@
           <NavigationProperty Name="CommissionDecisions1" Relationship="DataLib.FK_CommissionDecisions_Users1" FromRole="User" ToRole="CommissionDecision" />
           <NavigationProperty Name="CommissionProtocols" Relationship="DataLib.FK_CommissionProtocols_CreateUsers" FromRole="User" ToRole="CommissionProtocol" />
           <NavigationProperty Name="CommissionProtocols1" Relationship="DataLib.FK_CommissionProtocols_RemovedUsers" FromRole="User" ToRole="CommissionProtocol" />
+          <NavigationProperty Name="UserMessages" Relationship="DataLib.FK_UserMessages_Users" FromRole="User" ToRole="UserMessage" />
+          <NavigationProperty Name="UserMessages1" Relationship="DataLib.FK_UserMessages_Users1" FromRole="User" ToRole="UserMessage" />
+          <NavigationProperty Name="UserSettings" Relationship="DataLib.FK_UserSettings_Users" FromRole="User" ToRole="UserSetting" />
           </EntityType>
         <Association Name="FK_Users_Persons">
           <End Type="DataLib.Person" Role="Person" Multiplicity="1" />
@@ -6968,30 +6973,6 @@
             </Principal>
             <Dependent Role="User">
               <PropertyRef Name="PersonId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserMessages_RecieverUsers1">
-          <End Type="DataLib.User" Role="User" Multiplicity="1" />
-          <End Type="DataLib.UserMessage" Role="UserMessage" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserMessage">
-              <PropertyRef Name="RecieverUserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserMessages_SenderUsers">
-          <End Type="DataLib.User" Role="User" Multiplicity="1" />
-          <End Type="DataLib.UserMessage" Role="UserMessage" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserMessage">
-              <PropertyRef Name="SenderUserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8214,18 +8195,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="ReportTemplate">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ReportTitle" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="IsDocXTemplate" Type="Boolean" Nullable="false" />
-          <Property Name="Template" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PrintedDocuments" Relationship="DataLib.FK_PrintedDocuments_ReportTemplates" FromRole="ReportTemplate" ToRole="PrintedDocument" />
-        </EntityType>
         <EntityType Name="CommissionQuestion">
           <Key>
             <PropertyRef Name="Id" />
@@ -8678,18 +8647,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_PrintedDocuments_ReportTemplates">
-          <End Type="DataLib.ReportTemplate" Role="ReportTemplate" Multiplicity="0..1" />
-          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ReportTemplate">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PrintedDocument">
-              <PropertyRef Name="ReportTemplateId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="StaffCategory">
           <Key>
             <PropertyRef Name="Id" />
@@ -8762,6 +8719,107 @@
             </Principal>
             <Dependent Role="Staff">
               <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ReportTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ReportTitle" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="IsDocXTemplate" Type="Boolean" Nullable="false" />
+          <Property Name="Template" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BeginDateTime" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="PrintedDocuments" Relationship="DataLib.FK_PrintedDocuments_ReportTemplates" FromRole="ReportTemplate" ToRole="PrintedDocument" />
+        </EntityType>
+        <EntityType Name="UserMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserMessageTypeId" Type="Int32" Nullable="false" />
+          <Property Name="SenderUserId" Type="Int32" Nullable="false" />
+          <Property Name="SendDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RecieverUserId" Type="Int32" Nullable="false" />
+          <Property Name="OutDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ReadDateTime" Type="DateTime" Precision="3" />
+          <Property Name="MessageText" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="MessageTag" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <Property Name="IsHighPriority" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="UserMessageType" Relationship="DataLib.FK_UserMessages_UserMessageTypes" FromRole="UserMessage" ToRole="UserMessageType" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_UserMessages_Users" FromRole="UserMessage" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="DataLib.FK_UserMessages_Users1" FromRole="UserMessage" ToRole="User" />
+        </EntityType>
+        <EntityType Name="UserSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="8000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="User" Relationship="DataLib.FK_UserSettings_Users" FromRole="UserSetting" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_PrintedDocuments_ReportTemplates">
+          <End Type="DataLib.ReportTemplate" Role="ReportTemplate" Multiplicity="0..1" />
+          <End Type="DataLib.PrintedDocument" Role="PrintedDocument" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ReportTemplate">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PrintedDocument">
+              <PropertyRef Name="ReportTemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserMessages_UserMessageTypes">
+          <End Type="DataLib.UserMessageType" Role="UserMessageType" Multiplicity="1" />
+          <End Type="DataLib.UserMessage" Role="UserMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserMessageType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserMessage">
+              <PropertyRef Name="UserMessageTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserMessages_Users">
+          <End Type="DataLib.User" Role="User" Multiplicity="1" />
+          <End Type="DataLib.UserMessage" Role="UserMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserMessage">
+              <PropertyRef Name="SenderUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserMessages_Users1">
+          <End Type="DataLib.User" Role="User" Multiplicity="1" />
+          <End Type="DataLib.UserMessage" Role="UserMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserMessage">
+              <PropertyRef Name="RecieverUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserSettings_Users">
+          <End Type="DataLib.User" Role="User" Multiplicity="1" />
+          <End Type="DataLib.UserSetting" Role="UserSetting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserSetting">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9191,21 +9249,6 @@
                 <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
                 <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UserMessages">
-            <EntityTypeMapping TypeName="DataLib.UserMessage">
-              <MappingFragment StoreEntitySet="UserMessages">
-                <ScalarProperty Name="UserMessageTypeId" ColumnName="UserMessageTypeId" />
-                <ScalarProperty Name="MessageData" ColumnName="MessageData" />
-                <ScalarProperty Name="MessageText" ColumnName="MessageText" />
-                <ScalarProperty Name="ReadDateTime" ColumnName="ReadDateTime" />
-                <ScalarProperty Name="OutDateTime" ColumnName="OutDateTime" />
-                <ScalarProperty Name="SendDateTime" ColumnName="SendDateTime" />
-                <ScalarProperty Name="RecieverUserId" ColumnName="RecieverUserId" />
-                <ScalarProperty Name="SenderUserId" ColumnName="SenderUserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -9920,18 +9963,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ReportTemplates">
-            <EntityTypeMapping TypeName="DataLib.ReportTemplate">
-              <MappingFragment StoreEntitySet="ReportTemplates">
-                <ScalarProperty Name="Template" ColumnName="Template" />
-                <ScalarProperty Name="IsDocXTemplate" ColumnName="IsDocXTemplate" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="ReportTitle" ColumnName="ReportTitle" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CommissionQuestions">
             <EntityTypeMapping TypeName="DataLib.CommissionQuestion">
               <MappingFragment StoreEntitySet="CommissionQuestions">
@@ -10061,6 +10092,45 @@
                 <ScalarProperty Name="ShortName" ColumnName="ShortName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportTemplates">
+            <EntityTypeMapping TypeName="DataLib.ReportTemplate">
+              <MappingFragment StoreEntitySet="ReportTemplates">
+                <ScalarProperty Name="BeginDateTime" ColumnName="BeginDateTime" />
+                <ScalarProperty Name="Template" ColumnName="Template" />
+                <ScalarProperty Name="IsDocXTemplate" ColumnName="IsDocXTemplate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ReportTitle" ColumnName="ReportTitle" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserMessages">
+            <EntityTypeMapping TypeName="DataLib.UserMessage">
+              <MappingFragment StoreEntitySet="UserMessages">
+                <ScalarProperty Name="IsHighPriority" ColumnName="IsHighPriority" />
+                <ScalarProperty Name="MessageTag" ColumnName="MessageTag" />
+                <ScalarProperty Name="MessageText" ColumnName="MessageText" />
+                <ScalarProperty Name="ReadDateTime" ColumnName="ReadDateTime" />
+                <ScalarProperty Name="OutDateTime" ColumnName="OutDateTime" />
+                <ScalarProperty Name="RecieverUserId" ColumnName="RecieverUserId" />
+                <ScalarProperty Name="SendDateTime" ColumnName="SendDateTime" />
+                <ScalarProperty Name="SenderUserId" ColumnName="SenderUserId" />
+                <ScalarProperty Name="UserMessageTypeId" ColumnName="UserMessageTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserSettings">
+            <EntityTypeMapping TypeName="DataLib.UserSetting">
+              <MappingFragment StoreEntitySet="UserSettings">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

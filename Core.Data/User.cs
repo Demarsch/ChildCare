@@ -17,8 +17,6 @@ namespace Core.Data
     {
         public User()
         {
-            this.UserMessages = new HashSet<UserMessage>();
-            this.UserMessages1 = new HashSet<UserMessage>();
             this.UserPermissionGroups = new HashSet<UserPermissionGroup>();
             this.Visits = new HashSet<Visit>();
             this.PersonTalons = new HashSet<PersonTalon>();
@@ -31,6 +29,9 @@ namespace Core.Data
             this.CommissionDecisions1 = new HashSet<CommissionDecision>();
             this.CommissionProtocols = new HashSet<CommissionProtocol>();
             this.CommissionProtocols1 = new HashSet<CommissionProtocol>();
+            this.UserMessages = new HashSet<UserMessage>();
+            this.UserMessages1 = new HashSet<UserMessage>();
+            this.UserSettings = new HashSet<UserSetting>();
         }
     
         public int Id { get; set; }
@@ -48,22 +49,6 @@ namespace Core.Data
     	{
      		get { return person; }
      		set { person = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<UserMessage> userMessages;
-    
-    	public virtual ICollection<UserMessage> UserMessages
-    	{
-     		get { return userMessages; }
-     		set { userMessages = value; }
-    	}
-        [NonSerialized]
-    	protected ICollection<UserMessage> userMessages1;
-    
-    	public virtual ICollection<UserMessage> UserMessages1
-    	{
-     		get { return userMessages1; }
-     		set { userMessages1 = value; }
     	}
         [NonSerialized]
     	protected ICollection<UserPermissionGroup> userPermissionGroups;
@@ -160,6 +145,30 @@ namespace Core.Data
     	{
      		get { return commissionProtocols1; }
      		set { commissionProtocols1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<UserMessage> userMessages;
+    
+    	public virtual ICollection<UserMessage> UserMessages
+    	{
+     		get { return userMessages; }
+     		set { userMessages = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<UserMessage> userMessages1;
+    
+    	public virtual ICollection<UserMessage> UserMessages1
+    	{
+     		get { return userMessages1; }
+     		set { userMessages1 = value; }
+    	}
+        [NonSerialized]
+    	protected ICollection<UserSetting> userSettings;
+    
+    	public virtual ICollection<UserSetting> UserSettings
+    	{
+     		get { return userSettings; }
+     		set { userSettings = value; }
     	}
     
     	public object Clone()

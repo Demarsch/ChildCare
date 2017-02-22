@@ -5,8 +5,11 @@
     [Description]    VARCHAR (1000) NOT NULL,
     [IsDocXTemplate] BIT            NOT NULL,
     [Template]       TEXT           NULL,
+    [BeginDateTime]  DATETIME       NULL,
     CONSTRAINT [PK_ReportTemplates] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
 
 
 

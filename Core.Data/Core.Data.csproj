@@ -396,6 +396,9 @@
     <Compile Include="UserPermissionGroup.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="UserSetting.cs">
+      <DependentUpon>ChildCareModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Visit.cs">
       <DependentUpon>ChildCareModel.tt</DependentUpon>
     </Compile>

@@ -38,7 +38,6 @@
         <EntityTypeShape EntityType="DataLib.Room" Width="1.5" PointX="18" PointY="70" />
         <EntityTypeShape EntityType="DataLib.ScheduleItem" Width="1.5" PointX="20.25" PointY="65.75" />
         <EntityTypeShape EntityType="DataLib.SocialStatusType" Width="1.5" PointX="6" PointY="67.625" />
-        <EntityTypeShape EntityType="DataLib.UserMessage" Width="1.5" PointX="10.5" PointY="103.25" />
         <EntityTypeShape EntityType="DataLib.UserMessageType" Width="1.5" PointX="8.25" PointY="101" />
         <EntityTypeShape EntityType="DataLib.VisitOutcome" Width="1.5" PointX="15.75" PointY="74" />
         <EntityTypeShape EntityType="DataLib.VisitResult" Width="1.5" PointX="15.75" PointY="77.5" />
@@ -82,7 +81,6 @@
         <AssociationConnector Association="DataLib.FK_RecordContractLimits_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_Visits_RecordContracts" />
         <AssociationConnector Association="DataLib.FK_ScheduleItem_Rooms" />
-        <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitOutcomes" />
         <AssociationConnector Association="DataLib.FK_Visits_VisitResults" />
         <EntityTypeShape EntityType="DataLib.RecordDocument" Width="1.5" PointX="22.5" PointY="63.25" />
@@ -150,8 +148,6 @@
         <AssociationConnector Association="DataLib.FK_RecordTypeRolePermissions_Permissions" />
         <EntityTypeShape EntityType="DataLib.User" Width="1.5" PointX="5.25" PointY="28.625" />
         <AssociationConnector Association="DataLib.FK_Users_Persons" />
-        <AssociationConnector Association="DataLib.FK_UserMessages_RecieverUsers1" />
-        <AssociationConnector Association="DataLib.FK_UserMessages_SenderUsers" />
         <AssociationConnector Association="DataLib.FK_UserPermissionGroups_Users" />
         <AssociationConnector Association="DataLib.FK_Visits_Users_RemovedByUser" />
         <EntityTypeShape EntityType="DataLib.ColorsSetting" Width="1.5" PointX="0.75" PointY="15.625" />
@@ -240,7 +236,6 @@
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_CommissionMembers" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisions_Users1" />
-        <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="0.75" PointY="1.125" />
         <EntityTypeShape EntityType="DataLib.CommissionQuestion" Width="1.5" PointX="5.25" PointY="0.75" />
         <EntityTypeShape EntityType="DataLib.CommissionType" Width="1.5" PointX="16.75" PointY="23.75" />
         <AssociationConnector Association="DataLib.FK_CommissionDecisionsLinks_CommissionQuestions" />
@@ -274,13 +269,20 @@
         <AssociationConnector Association="DataLib.FK_CommissionQuestions_PrintedDocuments" />
         <AssociationConnector Association="DataLib.FK_CommissionTypes_PrintedDocuments" />
         <AssociationConnector Association="DataLib.FK_PrintedDocuments_PrintedDocuments" />
-        <AssociationConnector Association="DataLib.FK_PrintedDocuments_ReportTemplates" />
         <EntityTypeShape EntityType="DataLib.StaffCategory" Width="1.5" PointX="5.375" PointY="13.25" />
         <EntityTypeShape EntityType="DataLib.Staff" Width="1.5" PointX="7.625" PointY="13" />
         <AssociationConnector Association="DataLib.FK_CommissionMembers_Staffs" />
         <AssociationConnector Association="DataLib.FK_PersonStaffs_Staffs" />
         <AssociationConnector Association="DataLib.FK_StaffCategories_StaffCategories1" />
         <AssociationConnector Association="DataLib.FK_Staffs_StaffCategories" />
+        <EntityTypeShape EntityType="DataLib.ReportTemplate" Width="1.5" PointX="0.75" PointY="1.125" />
+        <EntityTypeShape EntityType="DataLib.UserMessage" Width="1.5" PointX="13.5" PointY="65" />
+        <EntityTypeShape EntityType="DataLib.UserSetting" Width="1.5" PointX="7.5" PointY="33.375" />
+        <AssociationConnector Association="DataLib.FK_PrintedDocuments_ReportTemplates" />
+        <AssociationConnector Association="DataLib.FK_UserMessages_UserMessageTypes" />
+        <AssociationConnector Association="DataLib.FK_UserMessages_Users" />
+        <AssociationConnector Association="DataLib.FK_UserMessages_Users1" />
+        <AssociationConnector Association="DataLib.FK_UserSettings_Users" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
