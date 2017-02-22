@@ -2,7 +2,7 @@
 
 namespace UserMessageModule
 {
-    public class OpenUserMessageEvent : PubSubEvent<string>
+    public class OpenUserMessageEvent : PubSubEvent<OpenUserMessageEventData>
     {
     }
 }
