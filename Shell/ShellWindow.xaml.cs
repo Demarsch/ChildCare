@@ -12,6 +12,7 @@ using Core.Wpf.Views;
 using Fluent;
 using Microsoft.Practices.Unity;
 using Prism.Regions;
+using System.Windows.Controls.Primitives;
 
 namespace Shell
 {

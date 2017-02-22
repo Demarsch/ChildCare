@@ -92,6 +92,7 @@
     <Compile Include="Misc\Change Tracking\IChangeTrackable.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTrackerMediator.cs" />
     <Compile Include="Misc\CommonIdName.cs" />
+    <Compile Include="Misc\DataGridRowDefinition.cs" />
     <Compile Include="Misc\DateTimeFormats.cs" />
     <Compile Include="Misc\Change Tracking\IChangeTracker.cs" />
     <Compile Include="Misc\IHierarchyItem.cs" />
@@ -387,6 +388,9 @@
     <Resource Include="Resources\Images\MailTag.png" />
     <Resource Include="Resources\Images\MailTask.png" />
     <Resource Include="Resources\Images\MailUnreadNew.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\HighPriority48x48.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Statistics48x48.png" />

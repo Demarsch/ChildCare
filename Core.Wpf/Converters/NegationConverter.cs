@@ -12,23 +12,23 @@ namespace Core.Wpf.Converters
         {
             if (value is int)
             {
-                return -(int)value;
+                return ((parameter != null && parameter is int) ? (int)parameter : 0) - (int)value;
             }
             if (value is double)
             {
-                return -(double)value;
+                return ((parameter != null && parameter is double) ? (double)parameter : 0) - (double)value;
             }
             if (value is float)
             {
-                return -(float)value;
+                return ((parameter != null && parameter is float) ? (float)parameter : 0) - (float)value;
             }
             if (value is decimal)
             {
-                return -(decimal)value;
+                return ((parameter != null && parameter is decimal) ? (decimal)parameter : 0) - (decimal)value;
             }
             if (value is long)
             {
-                return -(long)value;
+                return ((parameter != null && parameter is long) ? (long)parameter : 0) - (long)value;
             }
             throw new NotSupportedException(string.Format("Value '{0}' of type '{1}' doesn't support negation operation", value, value == null ? "???" : value.GetType().ToString()));
         }

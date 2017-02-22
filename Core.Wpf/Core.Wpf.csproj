@@ -145,11 +145,13 @@
     <Compile Include="Converters\ToStringConverter.cs" />
     <Compile Include="Events\BeforeSelectionChangedEvent.cs" />
     <Compile Include="Events\MainMenuCloseRequestedEvent.cs" />
+    <Compile Include="Events\ShellNotificationPopupEvent.cs" />
     <Compile Include="Events\SelectionChangedEvent.cs" />
     <Compile Include="Behaviors\DataGridColumnsBehavior.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\RegionExtensions.cs" />
     <Compile Include="MarkupExtensions\Int32Extension.cs" />
+    <Compile Include="Misc\ShellNotificationPopupEventData.cs" />
     <Compile Include="Misc\BeforeSelectionChangedEventData.cs" />
     <Compile Include="Misc\BindingProxy.cs" />
     <Compile Include="Misc\CommandWrapper.cs" />

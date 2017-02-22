@@ -14,7 +14,10 @@ using Prism.Events;
 using Prism.Mvvm;
 using Prism.Regions;
 using Shell.Shared;
-
+using Core.Wpf.Misc;
+using System.Windows.Input;
+using System.Windows;
+using Prism.Commands;
 namespace Shell
 {
     public class ShellWindowViewModel : BindableBase, IDisposable
@@ -165,7 +168,35 @@ namespace Shell
         {
             disposables.Add(eventAggregator.GetEvent<SelectionChangedEvent<Person>>().Subscribe(OnPatientSelected));
             disposables.Add(eventAggregator.GetEvent<MainMenuCloseRequestedEvent>().Subscribe(OnMainMenuCloseRequested));
+            disposables.Add(eventAggregator.GetEvent<ShellNotificationPopupEvent>().Subscribe(OnShellNotificationPopup));
         }
+
+        private void OnShellNotificationPopup(ShellNotificationPopupEventData ed)
+        {
+            NotificationPopupCaption = ed.PopupCaption;
+            NotificationPopupText = ed.PopupMessageText;
+            NotificationPopupData = ed;
+            NotificationPopupIsOpen = true;
+        }
+
+        private DelegateCommand notificationPopupCommand;
+        public DelegateCommand NotificationPopupCommand { get { return notificationPopupCommand ?? (notificationPopupCommand = new DelegateCommand(NotificationPopupCommandAction)); } }
+        private ShellNotificationPopupEventData NotificationPopupData { get; set; }
+        public void NotificationPopupCommandAction()
+        {
+            NotificationPopupIsOpen = false;
+            if (NotificationPopupData != null && NotificationPopupData.PopupClickAction != null)
+                NotificationPopupData.PopupClickAction(NotificationPopupData.PopupClickActionData);
+        }
+
+        private bool notificationPopupIsOpen;
+        public bool NotificationPopupIsOpen { get { return notificationPopupIsOpen; } set { SetProperty(ref notificationPopupIsOpen, value); } }
+
+        private string notificationPopupCaption;
+        public string NotificationPopupCaption { get { return notificationPopupCaption; } set { SetProperty(ref notificationPopupCaption, value); } }
+
+        private string notificationPopupText;
+        public string NotificationPopupText { get { return notificationPopupText; } set { SetProperty(ref notificationPopupText, value); } }
 
         private void OnMainMenuCloseRequested(object obj)
         {

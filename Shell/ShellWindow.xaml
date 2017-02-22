@@ -1,4 +1,4 @@
-﻿<fluent:RibbonWindow x:Class="Shell.ShellWindow"
+﻿<fluent:RibbonWindow
                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                      xmlns:fluent="urn:fluent-ribbon"
@@ -9,47 +9,66 @@
                      xmlns:shell="clr-namespace:Shell"
                      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
                      xmlns:views="clr-namespace:Core.Wpf.Views;assembly=Core.Wpf"
+                     xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid" 
+                     xmlns:i ="http://schemas.microsoft.com/expression/2010/interactivity"
+                     xmlns:Converters="clr-namespace:Core.Wpf.Converters;assembly=Core.Wpf" x:Class="Shell.ShellWindow"
                      mc:Ignorable="d"
                      Title="Добро пожаловать"
                      Height="350"
                      Width="525"
                      WindowState="Maximized"
-                     d:DataContext="{d:DesignInstance shell:ShellWindowViewModel}">
+                     d:DataContext="{d:DesignInstance {x:Type shell:ShellWindowViewModel}}">
     <fluent:RibbonWindow.Resources>
+        <Converters:NegationConverter x:Key="NegationConverter"/>
         <xctk:VisibilityToBoolConverter x:Key="VisibilityToBoolConverter" />
     </fluent:RibbonWindow.Resources>
     <Grid>
-        <DockPanel LastChildFill="True">
+        <DockPanel>
+            <Label DockPanel.Dock="Top" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Popup PopupAnimation="Fade" IsOpen="{Binding NotificationPopupIsOpen, Mode=OneWay}" Placement="Left" HorizontalOffset="-20" VerticalOffset="20">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDown" >
+                            <i:InvokeCommandAction Command="{Binding NotificationPopupCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <Border Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.InfoTextBrushKey}}" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="{Binding NotificationPopupCaption, Mode=OneWay}" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding NotificationPopupText, Mode=OneWay}"></TextBlock>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+            </Label>
             <shell:RibbonEx regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleList}"
-                           DockPanel.Dock="Top"
-                           x:Name="ribbon">
+				DockPanel.Dock="Top"
+				x:Name="ribbon" ClipToBounds="True">
                 <shell:RibbonEx.Resources>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="VerticalAlignment"
-                                Value="Center" />
+							Value="Center" />
                     </Style>
                 </shell:RibbonEx.Resources>
-                <fluent:Ribbon.Menu>
+                <shell:RibbonEx.Menu>
                     <fluent:Backstage IsEnabled="{Binding CanOpenMenu}"
-                                      IsOpen="{Binding IsMenuOpen, Mode=TwoWay}">
+						IsOpen="{Binding IsMenuOpen, Mode=TwoWay}">
                         <fluent:Backstage.Header>
                             <TextBlock Margin="3"
-                                       Text="Меню" />
+								Text="Меню" />
                         </fluent:Backstage.Header>
                         <fluent:BackstageTabControl
-                            regions:RegionManager.RegionName="{x:Static shared:RegionNames.MainMenu}" />
+							regions:RegionManager.RegionName="{x:Static shared:RegionNames.MainMenu}" />
                     </fluent:Backstage>
-                </fluent:Ribbon.Menu>
+                </shell:RibbonEx.Menu>
                 <shell:RibbonEx.ContextMenuOverride>
-                    <ContextMenu ItemsSource="{Binding PlacementTarget.Tabs, RelativeSource={RelativeSource Self}, Mode=OneWay}">
+                    <ContextMenu ItemsSource="{Binding PlacementTarget.Tabs, Mode=OneWay, RelativeSource={RelativeSource Self}}">
                         <ContextMenu.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}">
                                 <Setter Property="IsCheckable"
-                                        Value="True" />
+									Value="True" />
                                 <Setter Property="IsChecked"
-                                        Value="{Binding Visibility, Converter={StaticResource VisibilityToBoolConverter}}" />
+									Value="{Binding Visibility, Converter={StaticResource VisibilityToBoolConverter}}" />
                                 <Setter Property="Header"
-                                        Value="{Binding Header}" />
+									Value="{Binding Header}" />
                             </Style>
                         </ContextMenu.ItemContainerStyle>
                     </ContextMenu>
@@ -58,37 +77,27 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <ContentControl Grid.Column="0" Margin="1 1 0 0" MaxWidth="210"
-                                regions:RegionManager.RegionName="{x:Static shared:RegionNames.ListItems}"
-                                x:Name="listItems"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch" />
+                <ContentControl Margin="1 1 0 0" MaxWidth="210"
+					regions:RegionManager.RegionName="{x:Static shared:RegionNames.ListItems}"
+					x:Name="listItems" />
                 <ContentControl Grid.Column="1" 
-                                regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
-                                x:Name="moduleContent"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch" />
-                <ContentControl Grid.ColumnSpan="2" Content="{Binding BusyMediator}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch" />
-                <ContentControl Grid.ColumnSpan="2" Content="{Binding FailureMediator}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch" />
+					regions:RegionManager.RegionName="{x:Static shared:RegionNames.ModuleContent}"
+					x:Name="moduleContent" />
+                <ContentControl Grid.ColumnSpan="2" Content="{Binding BusyMediator}" />
+                <ContentControl Grid.ColumnSpan="2" Content="{Binding FailureMediator}" />
             </Grid>
         </DockPanel>
-        <xctk:WindowContainer ModalBackgroundBrush="#33333333"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch">
+        <xctk:WindowContainer ModalBackgroundBrush="#33333333" SnapsToDevicePixels="True">
             <views:ChildDialogWindow x:Name="childDialogWindow"
-                                     WindowStartupLocation="Center"
-                                     WindowStyle="None"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center"
-                                     HorizontalContentAlignment="Center"
-                                     VerticalContentAlignment="Center"/>
+				WindowStartupLocation="Center"
+				WindowStyle="None"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"/>
         </xctk:WindowContainer>
     </Grid>
 </fluent:RibbonWindow>
