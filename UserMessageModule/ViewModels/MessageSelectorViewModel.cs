@@ -152,9 +152,9 @@ namespace UserMessageModule.ViewModels
                 SelectedItemNoRaise = false;
                 SelectedItem = Items.FirstOrDefault(x => x.Id == (SelectedItem != null ? SelectedItem.Id : -1)) ?? Items.FirstOrDefault();
 
-                //userMessagesChangeSubscription = notificationService.Subscribe<UserMessage>(x => x.RecieverUserId == currentUserId);
-                //if (userMessagesChangeSubscription != null)
-                //    userMessagesChangeSubscription.Notified += userMessagesChangeSubscription_Notified;
+                userMessagesChangeSubscription = notificationService.Subscribe<UserMessage>(x => x.RecieverUserId == currentUserId);
+                if (userMessagesChangeSubscription != null)
+                    userMessagesChangeSubscription.Notified += userMessagesChangeSubscription_Notified;
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
